@@ -1,11 +1,11 @@
 {
   "projects": {
-    "default": "hocapp-44760"
+    "default": "pickletour"
   },
   "targets": {
-    "hocapp-44760": {
+    "pickletour": {
       "hosting": {
-        "pickleball": ["pickleball"]
+        "pickletour": ["pickletour"]
       }
     }
   }

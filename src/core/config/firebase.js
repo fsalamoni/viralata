@@ -16,7 +16,7 @@ const firebaseConfig = {
 export const app = initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
-const firestoreDatabaseId = import.meta.env.VITE_FIRESTORE_DATABASE_ID || 'bolao2026';
+const firestoreDatabaseId = import.meta.env.VITE_FIRESTORE_DATABASE_ID || 'pickleball';
 export const db = getFirestore(app, firestoreDatabaseId);
 export const functions = getFunctions(app, 'southamerica-east1');
 
