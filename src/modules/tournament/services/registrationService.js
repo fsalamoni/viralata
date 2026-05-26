@@ -32,8 +32,7 @@ import { getModality } from './modalityService.js';
 import { getTournament, isTournamentAdmin } from './tournamentService.js';
 
 const COL = 'tournament_registrations';
-const FIRESTORE_BATCH_WRITE_LIMIT = 500;
-const SAFE_BATCH_WRITE_SIZE = 450;
+const SAFE_BATCH_WRITE_SIZE = 450; // abaixo do limite de 500 operações por batch do Firestore
 
 function buildRegistrationLabel(reg, format) {
   if (format === MODALITY_FORMAT.DOUBLES) {
@@ -181,7 +180,7 @@ export async function claimProvisionalRegistrationsForUser(user, profile = {}) {
 
   for (let i = 0; i < batchUpdates.length; i += SAFE_BATCH_WRITE_SIZE) {
     const batch = writeBatch(db);
-    batchUpdates.slice(i, i + Math.min(SAFE_BATCH_WRITE_SIZE, FIRESTORE_BATCH_WRITE_LIMIT)).forEach(({ ref, payload }) => {
+    batchUpdates.slice(i, i + SAFE_BATCH_WRITE_SIZE).forEach(({ ref, payload }) => {
       batch.update(ref, payload);
     });
     await batch.commit();
