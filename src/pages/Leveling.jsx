@@ -69,7 +69,6 @@ export default function Leveling() {
       ) : (
         <LevelingQuestionnaire
           initialAnswers={savedAssessment?.answers}
-          initialResult={savedAssessment?.result || null}
           onComplete={saveAssessment}
           onSaveDraft={saveDraft}
           saveLabel="Salvar rascunho no perfil"

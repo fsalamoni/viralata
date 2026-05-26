@@ -270,7 +270,10 @@ export function getLevelByUsap(usapEquivalent) {
   const value = Number(usapEquivalent);
   return (
     LEVEL_TABLE.find((level) => {
-      const [min, max] = level.normalizedRange;
+      const [min, max = min] = level.usap
+        .replace('+', '')
+        .split('–')
+        .map((part) => Number(part.trim()));
       return value >= min && value <= max;
     }) || LEVEL_TABLE[LEVEL_TABLE.length - 1]
   );
