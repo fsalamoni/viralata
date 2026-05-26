@@ -32,6 +32,8 @@ import { getModality } from './modalityService.js';
 import { getTournament, isTournamentAdmin } from './tournamentService.js';
 
 const COL = 'tournament_registrations';
+const FIRESTORE_BATCH_WRITE_LIMIT = 500;
+const SAFE_BATCH_WRITE_SIZE = 450;
 
 function buildRegistrationLabel(reg, format) {
   if (format === MODALITY_FORMAT.DOUBLES) {
@@ -129,6 +131,7 @@ export async function claimProvisionalRegistrationsForUser(user, profile = {}) {
   if (!user?.uid || !email) return 0;
 
   const [playerASnap, playerBSnap] = await Promise.all([
+    // Keep matching by email even after claiming so later profile edits refresh tournament data.
     getDocs(query(collection(db, COL), where('player_a_email_lc', '==', email))),
     getDocs(query(collection(db, COL), where('player_b_email_lc', '==', email))),
   ]);
@@ -176,9 +179,9 @@ export async function claimProvisionalRegistrationsForUser(user, profile = {}) {
     });
   });
 
-  for (let i = 0; i < batchUpdates.length; i += 450) {
+  for (let i = 0; i < batchUpdates.length; i += SAFE_BATCH_WRITE_SIZE) {
     const batch = writeBatch(db);
-    batchUpdates.slice(i, i + 450).forEach(({ ref, payload }) => {
+    batchUpdates.slice(i, i + Math.min(SAFE_BATCH_WRITE_SIZE, FIRESTORE_BATCH_WRITE_LIMIT)).forEach(({ ref, payload }) => {
       batch.update(ref, payload);
     });
     await batch.commit();

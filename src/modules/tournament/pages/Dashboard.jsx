@@ -8,6 +8,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useMyTournaments, usePublicTournaments } from '@/modules/tournament/hooks/useTournament';
 import {
   TOURNAMENT_STATUS_LABELS,
+  TOURNAMENT_USER_ROLE,
   TOURNAMENT_VISIBILITY,
   TOURNAMENT_VISIBILITY_LABELS,
 } from '@/modules/tournament/domain/constants';
@@ -19,7 +20,7 @@ export default function Dashboard() {
     const byId = new Map();
     (tournaments || []).forEach((t) => byId.set(t.id, t));
     publicTournaments.forEach((t) => {
-      if (!byId.has(t.id)) byId.set(t.id, { ...t, my_role: 'public' });
+      if (!byId.has(t.id)) byId.set(t.id, { ...t, my_role: TOURNAMENT_USER_ROLE.PUBLIC });
     });
     return Array.from(byId.values());
   }, [tournaments, publicTournaments]);
@@ -66,8 +67,14 @@ export default function Dashboard() {
                         {t.city ? `${t.city}${t.state ? ' / ' + t.state : ''}` : 'Local não informado'}
                       </p>
                     </div>
-                    <Badge variant={t.my_role === 'owner' || t.my_role === 'admin' ? 'success' : 'secondary'}>
-                      {t.my_role === 'owner' ? 'Owner' : t.my_role === 'admin' ? 'Admin' : t.my_role === 'public' ? 'Público' : 'Jogador'}
+                    <Badge variant={t.my_role === TOURNAMENT_USER_ROLE.OWNER || t.my_role === TOURNAMENT_USER_ROLE.ADMIN ? 'success' : 'secondary'}>
+                      {t.my_role === TOURNAMENT_USER_ROLE.OWNER
+                        ? 'Owner'
+                        : t.my_role === TOURNAMENT_USER_ROLE.ADMIN
+                          ? 'Admin'
+                          : t.my_role === TOURNAMENT_USER_ROLE.PUBLIC
+                            ? 'Público'
+                            : 'Jogador'}
                     </Badge>
                   </div>
                   <div className="mt-3 flex items-center gap-3 text-xs text-slate-600 flex-wrap">

@@ -27,6 +27,7 @@ import {
   REGISTRATION_STATUS_LABELS,
   MODALITY_FORMAT_LABELS,
   TOURNAMENT_VISIBILITY,
+  REGISTRATION_PROVISIONAL_LABEL,
 } from '@/modules/tournament/domain/constants';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { LEVEL_OPTIONS } from '@/modules/leveling/data/levels';
@@ -235,7 +236,7 @@ function ModalityRegistrationsBlock({ tournament, modality, registrations, isAdm
                       <div>{r.label || `${r.player_a_name}${r.player_b_name ? ' / ' + r.player_b_name : ''}`}</div>
                       <div className="text-xs text-slate-500">
                         {[r.player_a_email, r.player_b_email].filter(Boolean).join(' / ')}
-                        {r.is_provisional ? ' · provisório' : ''}
+                        {r.is_provisional ? ` · ${REGISTRATION_PROVISIONAL_LABEL.toLowerCase()}` : ''}
                       </div>
                     </td>
                     <td className="px-3 py-2">

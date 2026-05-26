@@ -182,8 +182,17 @@ export const TOURNAMENT_ADMIN_ROLE = Object.freeze({
   ADMIN: 'admin',
 });
 
+export const TOURNAMENT_USER_ROLE = Object.freeze({
+  OWNER: 'owner',
+  ADMIN: 'admin',
+  PLAYER: 'player',
+  PUBLIC: 'public',
+});
+
 /** Capacidade máxima por modalidade. Requisito do produto: até 500 inscritos. */
 export const MAX_REGISTRATIONS_PER_MODALITY = 500;
+
+export const REGISTRATION_PROVISIONAL_LABEL = 'Provisório';
 
 /** Tempo de experiência do usuário em pickleball. */
 export const PICKLEBALL_EXPERIENCE = Object.freeze({
