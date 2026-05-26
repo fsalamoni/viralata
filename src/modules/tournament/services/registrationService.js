@@ -37,21 +37,21 @@ function buildRegistrationLabel(reg, format) {
   if (format === MODALITY_FORMAT.DOUBLES) {
     return `${reg.player_a_name || '—'} / ${reg.player_b_name || '—'}`;
   }
-
-  function normalizeEmail(email) {
-    return String(email || '').trim().toLowerCase();
-  }
-
-  function officialPlayerData(user, profile = {}) {
-    const name = profile.platform_name || profile.full_name || user?.displayName || user?.email || '';
-    return {
-      user_id: user?.uid || null,
-      name,
-      email: user?.email || profile.email || '',
-      level: profile.level || profile.leveling_level || null,
-    };
-  }
   return reg.player_a_name || '—';
+}
+
+function normalizeEmail(email) {
+  return String(email || '').trim().toLowerCase();
+}
+
+function officialPlayerData(user, profile = {}) {
+  const name = profile.platform_name || profile.full_name || user?.displayName || user?.email || '';
+  return {
+    user_id: user?.uid || null,
+    name,
+    email: user?.email || profile.email || '',
+    level: profile.level || profile.leveling_level || null,
+  };
 }
 
 export async function createRegistration(input, actor) {
