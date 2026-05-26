@@ -14,9 +14,13 @@ export default function LevelTable() {
         </p>
       </div>
 
-      <div className="flex h-4 overflow-hidden rounded-full shadow-inner">
+      <div
+        className="flex h-4 overflow-hidden rounded-full shadow-inner"
+        role="img"
+        aria-label={`Progressão dos níveis: ${LEVEL_TABLE.map((level) => `${level.name}, USAP ${level.usap}`).join('; ')}`}
+      >
         {LEVEL_TABLE.map((level) => (
-          <div key={level.id} className={`${level.badgeBg} flex-1`} title={`USAP ${level.usap}`} />
+          <div key={level.id} className={`${level.badgeBg} flex-1`} title={`${level.name} — USAP ${level.usap}`} />
         ))}
       </div>
 

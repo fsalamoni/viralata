@@ -764,7 +764,7 @@ export function calculateAssessment(answers) {
   const normalizedScore = calculateWeightedScore(answers);
   const level = determineLevel(normalizedScore);
   const usapEquivalent = getUSAPEquivalent(normalizedScore);
-  const score = Object.values({ ...INITIAL_LEVELING_ANSWERS, ...answers }).reduce((sum, value) => sum + Number(value || 0), 0);
+  const score = LIKERT_STATEMENTS.reduce((sum, question) => sum + Number(answers?.[question.id] ?? 3), 0);
   return {
     level,
     levelName: getLevelName(level),

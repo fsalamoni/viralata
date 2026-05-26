@@ -36,7 +36,15 @@ export default function Profile() {
     setManualLevel(userProfile?.leveling_level || '');
     setVisibleResult(userProfile?.leveling_assessment?.result || null);
     setErrors({});
-  }, [userProfile]);
+  }, [
+    userProfile?.uid,
+    userProfile?.platform_name,
+    userProfile?.full_name,
+    userProfile?.birth_date,
+    userProfile?.phone,
+    userProfile?.leveling_level,
+    userProfile?.leveling_assessment,
+  ]);
 
   const onSave = async (e) => {
     e.preventDefault();
