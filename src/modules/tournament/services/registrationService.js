@@ -162,17 +162,27 @@ export async function claimProvisionalRegistrationsForUser(user, profile = {}) {
 
   if (updatesById.size === 0) return 0;
 
-  const batch = writeBatch(db);
+  const batchUpdates = [];
   updatesById.forEach(({ ref, data }) => {
     data.is_provisional = Boolean(data.player_a_provisional || data.player_b_provisional);
     data.label = buildRegistrationLabel(data, data.format);
-    batch.update(ref, {
-      ...data,
-      claimed_at: serverTimestamp(),
-      updated_at: serverTimestamp(),
+    batchUpdates.push({
+      ref,
+      payload: {
+        ...data,
+        claimed_at: serverTimestamp(),
+        updated_at: serverTimestamp(),
+      },
     });
   });
-  await batch.commit();
+
+  for (let i = 0; i < batchUpdates.length; i += 450) {
+    const batch = writeBatch(db);
+    batchUpdates.slice(i, i + 450).forEach(({ ref, payload }) => {
+      batch.update(ref, payload);
+    });
+    await batch.commit();
+  }
   await createAuditLog({
     action: 'provisional_registrations_claimed',
     actor: user,
