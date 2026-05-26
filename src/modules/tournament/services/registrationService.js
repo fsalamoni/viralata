@@ -25,9 +25,9 @@ import { createAuditLog } from '@/core/services/auditService';
 import {
   REGISTRATION_STATUS,
   MODALITY_FORMAT,
-  MAX_REGISTRATIONS_PER_MODALITY,
   TOURNAMENT_VISIBILITY,
 } from '../domain/constants.js';
+import { isRegistrationCapacityReached } from '../domain/capacity.js';
 import { getModality } from './modalityService.js';
 import { getTournament, isTournamentAdmin } from './tournamentService.js';
 
@@ -43,6 +43,14 @@ function buildRegistrationLabel(reg, format) {
 
 function normalizeEmail(email) {
   return String(email || '').trim().toLowerCase();
+}
+
+function occupiesCapacity(registration) {
+  return ![
+    REGISTRATION_STATUS.CANCELLED,
+    REGISTRATION_STATUS.WAITLIST,
+    REGISTRATION_STATUS.WITHDRAWN,
+  ].includes(registration.status);
 }
 
 function officialPlayerData(user, profile = {}) {
@@ -72,7 +80,8 @@ export async function createRegistration(input, actor) {
   }
 
   const existing = await listRegistrations(modality_id);
-  if (existing.length >= Math.min(modality.max_entries || MAX_REGISTRATIONS_PER_MODALITY, MAX_REGISTRATIONS_PER_MODALITY)) {
+  const occupiedCount = existing.filter(occupiesCapacity).length;
+  if (isRegistrationCapacityReached(occupiedCount, modality.max_entries)) {
     throw new Error('Modalidade lotada.');
   }
 

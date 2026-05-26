@@ -94,6 +94,7 @@ export function useUpdateTournament(id) {
       qc.invalidateQueries({ queryKey: ['tournament', id] });
       qc.invalidateQueries({ queryKey: ['my-tournaments'] });
       qc.invalidateQueries({ queryKey: ['tournaments-public'] });
+      qc.invalidateQueries({ queryKey: ['tournaments-all'] });
     },
   });
 }
@@ -103,7 +104,12 @@ export function useSetTournamentStatus(id) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (status) => setTournamentStatus(id, status, user),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['tournament', id] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['tournament', id] });
+      qc.invalidateQueries({ queryKey: ['my-tournaments'] });
+      qc.invalidateQueries({ queryKey: ['tournaments-public'] });
+      qc.invalidateQueries({ queryKey: ['tournaments-all'] });
+    },
   });
 }
 

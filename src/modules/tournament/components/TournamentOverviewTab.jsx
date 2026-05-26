@@ -24,6 +24,7 @@ import {
   REGISTRATION_STATUS,
   TOURNAMENT_VISIBILITY,
 } from '@/modules/tournament/domain/constants';
+import { getCapacityProgress, hasUnlimitedEntries, isRegistrationCapacityReached } from '@/modules/tournament/domain/capacity';
 import ModalityInfoModal from './ModalityInfoModal';
 import ModalityRegistrationDialog from './ModalityRegistrationDialog';
 
@@ -219,11 +220,15 @@ function ModalityCard({
         r.player_b_user_id === currentUserId),
   );
   const canRegister = isAdmin || isPublic || hasPrivateAccess;
-  const slotsFull = confirmed >= modality.max_entries;
-  const pct = Math.max(0, Math.min(100, Math.round((confirmed / Math.max(1, modality.max_entries)) * 100)));
+  const occupied = allRegistrations.filter((r) => (
+    r.modality_id === modality.id &&
+    ![REGISTRATION_STATUS.CANCELLED, REGISTRATION_STATUS.WAITLIST, REGISTRATION_STATUS.WITHDRAWN].includes(r.status)
+  )).length;
+  const slotsFull = isRegistrationCapacityReached(occupied, modality.max_entries);
+  const pct = getCapacityProgress(confirmed, modality.max_entries);
   const barTone = slotsFull
     ? 'bg-amber-500'
-    : pct >= 80
+    : (pct || 0) >= 80
       ? 'bg-amber-400'
       : 'bg-emerald-500';
 
@@ -250,23 +255,37 @@ function ModalityCard({
             <div className="mt-3 max-w-md">
               <div className="flex items-center justify-between text-xs text-slate-600 mb-1">
                 <span>
-                  <strong>{confirmed}</strong> / {modality.max_entries} inscritos
+                  {hasUnlimitedEntries(modality.max_entries) ? (
+                    <>
+                      <strong>{confirmed}</strong> inscritos · vagas abertas
+                    </>
+                  ) : (
+                    <>
+                      <strong>{confirmed}</strong> / {modality.max_entries} inscritos
+                    </>
+                  )}
                 </span>
                 <span className="inline-flex items-center gap-1">
                   <Wallet className="w-3 h-3" />
                   {fee > 0 ? formatBRL(fee) : 'Gratuita'}
                 </span>
               </div>
-              <div className="h-1.5 w-full rounded-full bg-slate-200 overflow-hidden">
-                <div
-                  className={`h-full ${barTone} transition-all duration-300`}
-                  style={{ width: `${pct}%` }}
-                  role="progressbar"
-                  aria-valuenow={confirmed}
-                  aria-valuemin={0}
-                  aria-valuemax={modality.max_entries}
-                />
-              </div>
+              {pct !== null ? (
+                <div className="h-1.5 w-full rounded-full bg-slate-200 overflow-hidden">
+                  <div
+                    className={`h-full ${barTone} transition-all duration-300`}
+                    style={{ width: `${pct}%` }}
+                    role="progressbar"
+                    aria-valuenow={confirmed}
+                    aria-valuemin={0}
+                    aria-valuemax={modality.max_entries}
+                  />
+                </div>
+              ) : (
+                <div className="rounded-md border border-dashed border-emerald-300 bg-emerald-50 px-2 py-1 text-[11px] text-emerald-900">
+                  Vagas abertas — o sorteio vai considerar o total confirmado no encerramento das inscrições.
+                </div>
+              )}
             </div>
           </div>
           <div className="flex items-center gap-2 flex-wrap">

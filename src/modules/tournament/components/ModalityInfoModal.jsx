@@ -19,6 +19,7 @@ import {
   TOURNAMENT_STAGE_TYPE_LABELS,
   RULESET_LABELS,
 } from '@/modules/tournament/domain/constants';
+import { hasUnlimitedEntries } from '@/modules/tournament/domain/capacity';
 import { normalizeScoringConfig } from '@/modules/tournament/domain/scoring';
 import { americanoMatchCount } from '@/modules/tournament/domain/draw';
 
@@ -110,7 +111,12 @@ export default function ModalityInfoModal({ modality, tournament, registrationsC
             </h4>
             <p>{FORMAT_DESCRIPTION[modality.format]}</p>
             <ul className="list-disc pl-5 space-y-1 text-slate-700">
-              <li><strong>Vagas:</strong> até {modality.max_entries} inscrições. Atualmente {registrationsCount} confirmada(s).</li>
+              <li>
+                <strong>Vagas:</strong>{' '}
+                {hasUnlimitedEntries(modality.max_entries)
+                  ? `abertas. O sistema organizará a modalidade com base nas ${registrationsCount} inscrição(ões) confirmada(s) ao encerrar as inscrições.`
+                  : `até ${modality.max_entries} inscrições. Atualmente ${registrationsCount} confirmada(s).`}
+              </li>
               <li><strong>Categoria de gênero:</strong> {GENDER_CATEGORY_LABELS[modality.gender_category]}</li>
               <li><strong>Faixa etária:</strong> {AGE_CATEGORY_LABELS[modality.age_category]} <span className="text-xs text-slate-500">(a plataforma é aberta a todas as idades; esta categoria define apenas a faixa elegível para esta modalidade)</span></li>
               <li><strong>Nível recomendado:</strong> {SKILL_LEVEL_LABELS[modality.skill_level]}</li>
