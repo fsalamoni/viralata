@@ -25,9 +25,9 @@ import { createAuditLog } from '@/core/services/auditService';
 import {
   REGISTRATION_STATUS,
   MODALITY_FORMAT,
-  MAX_REGISTRATIONS_PER_MODALITY,
   TOURNAMENT_VISIBILITY,
 } from '../domain/constants.js';
+import { countOccupiedRegistrations, isRegistrationCapacityReached } from '../domain/capacity.js';
 import { getModality } from './modalityService.js';
 import { getTournament, isTournamentAdmin } from './tournamentService.js';
 
@@ -72,7 +72,8 @@ export async function createRegistration(input, actor) {
   }
 
   const existing = await listRegistrations(modality_id);
-  if (existing.length >= Math.min(modality.max_entries || MAX_REGISTRATIONS_PER_MODALITY, MAX_REGISTRATIONS_PER_MODALITY)) {
+  const occupiedCount = countOccupiedRegistrations(existing);
+  if (isRegistrationCapacityReached(occupiedCount, modality.max_entries)) {
     throw new Error('Modalidade lotada.');
   }
 

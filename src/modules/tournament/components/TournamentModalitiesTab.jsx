@@ -11,13 +11,14 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog';
-import { Plus, Trash2 } from 'lucide-react';
+import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import {
   useModalities,
   useCreateModality,
   useDeleteModality,
+  useUpdateModality,
 } from '@/modules/tournament/hooks/useTournament';
 import {
   MODALITY_FORMAT,
@@ -32,6 +33,7 @@ import {
   TOURNAMENT_STAGE_TYPE_LABELS,
   MAX_REGISTRATIONS_PER_MODALITY,
 } from '@/modules/tournament/domain/constants';
+import { DEFAULT_MAX_ENTRIES, hasUnlimitedEntries } from '@/modules/tournament/domain/capacity';
 
 const emptyForm = {
   name: '',
@@ -39,7 +41,8 @@ const emptyForm = {
   skill_level: SKILL_LEVEL.INTERMEDIATE,
   gender_category: GENDER_CATEGORY.OPEN,
   age_category: AGE_CATEGORY.OPEN,
-  max_entries: 32,
+  max_entries: DEFAULT_MAX_ENTRIES,
+  has_unlimited_entries: false,
   entry_fee_brl: 0,
   stage_type: TOURNAMENT_STAGE_TYPE.ROUND_ROBIN,
   group_count: 1,
@@ -47,44 +50,92 @@ const emptyForm = {
   notes: '',
 };
 
+function buildFormState(modality) {
+  if (!modality) return emptyForm;
+  const stage = modality.stages?.[0] || {};
+  return {
+    name: modality.name || '',
+    format: modality.format || MODALITY_FORMAT.DOUBLES,
+    skill_level: modality.skill_level || SKILL_LEVEL.INTERMEDIATE,
+    gender_category: modality.gender_category || GENDER_CATEGORY.OPEN,
+    age_category: modality.age_category || AGE_CATEGORY.OPEN,
+    max_entries: hasUnlimitedEntries(modality.max_entries) ? DEFAULT_MAX_ENTRIES : modality.max_entries,
+    has_unlimited_entries: hasUnlimitedEntries(modality.max_entries),
+    entry_fee_brl: ((Number(modality.entry_fee_cents || 0)) / 100).toFixed(2),
+    stage_type: stage.type || TOURNAMENT_STAGE_TYPE.ROUND_ROBIN,
+    group_count: stage.group_count || 1,
+    seed_count: stage.seed_count || 0,
+    notes: modality.notes || '',
+  };
+}
+
 export default function TournamentModalitiesTab({ tournament, isAdmin }) {
   const { data: modalities = [], isLoading } = useModalities(tournament.id);
   const createMutation = useCreateModality(tournament.id);
+  const updateMutation = useUpdateModality(tournament.id);
   const deleteMutation = useDeleteModality(tournament.id);
   const [open, setOpen] = useState(false);
+  const [editingModality, setEditingModality] = useState(null);
   const [form, setForm] = useState(emptyForm);
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const isEditing = Boolean(editingModality);
+  const saving = createMutation.isPending || updateMutation.isPending;
 
   function set(field, value) {
     setForm((f) => ({ ...f, [field]: value }));
   }
 
-  async function handleCreate() {
-    if (!form.name.trim()) return toast.error('Informe um nome.');
-    try {
-      await createMutation.mutateAsync({
-        name: form.name,
-        format: form.format,
-        skill_level: form.skill_level,
-        gender_category: form.gender_category,
-        age_category: form.age_category,
-        max_entries: Math.min(Number(form.max_entries) || 32, MAX_REGISTRATIONS_PER_MODALITY),
-        entry_fee_cents: Math.round(Number(form.entry_fee_brl || 0) * 100),
-        stages: [
-          {
-            type: form.stage_type,
-            name: TOURNAMENT_STAGE_TYPE_LABELS[form.stage_type],
-            group_count: Number(form.group_count) || 1,
-            seed_count: Number(form.seed_count) || 0,
-          },
-        ],
-        notes: form.notes,
-      });
-      toast.success('Modalidade criada.');
-      setOpen(false);
+  function openCreate() {
+    setEditingModality(null);
+    setForm(emptyForm);
+    setOpen(true);
+  }
+
+  function openEdit(modality) {
+    setEditingModality(modality);
+    setForm(buildFormState(modality));
+    setOpen(true);
+  }
+
+  function closeDialog(nextOpen) {
+    setOpen(nextOpen);
+    if (!nextOpen) {
+      setEditingModality(null);
       setForm(emptyForm);
+    }
+  }
+
+  async function handleSave() {
+    if (!form.name.trim()) return toast.error('Informe um nome.');
+    const payload = {
+      name: form.name,
+      format: form.format,
+      skill_level: form.skill_level,
+      gender_category: form.gender_category,
+      age_category: form.age_category,
+      max_entries: form.has_unlimited_entries ? null : form.max_entries,
+      entry_fee_cents: Math.round(Number(form.entry_fee_brl || 0) * 100),
+      stages: [
+        {
+          type: form.stage_type,
+          name: TOURNAMENT_STAGE_TYPE_LABELS[form.stage_type],
+          group_count: Number(form.group_count) || 1,
+          seed_count: Number(form.seed_count) || 0,
+        },
+      ],
+      notes: form.notes,
+    };
+    try {
+      if (isEditing) {
+        await updateMutation.mutateAsync({ id: editingModality.id, updates: payload });
+        toast.success('Modalidade atualizada.');
+      } else {
+        await createMutation.mutateAsync(payload);
+        toast.success('Modalidade criada.');
+      }
+      closeDialog(false);
     } catch (err) {
-      toast.error(err.message || 'Falha ao criar.');
+      toast.error(err.message || 'Falha ao salvar.');
     }
   }
 
@@ -102,7 +153,7 @@ export default function TournamentModalitiesTab({ tournament, isAdmin }) {
     <div className="space-y-4">
       {isAdmin && (
         <div className="flex justify-end">
-          <Button onClick={() => setOpen(true)}>
+          <Button onClick={openCreate}>
             <Plus className="w-4 h-4 mr-1" /> Nova modalidade
           </Button>
         </div>
@@ -131,15 +182,20 @@ export default function TournamentModalitiesTab({ tournament, isAdmin }) {
                       <Badge variant="secondary">{AGE_CATEGORY_LABELS[m.age_category]}</Badge>
                     </div>
                     <div className="text-xs text-slate-600 mt-2">
-                      Vagas: {m.max_entries} · Taxa: R${' '}
+                      Vagas: {hasUnlimitedEntries(m.max_entries) ? 'abertas' : m.max_entries} · Taxa: R${' '}
                       {((m.entry_fee_cents || 0) / 100).toFixed(2).replace('.', ',')} · Fase:{' '}
                       {TOURNAMENT_STAGE_TYPE_LABELS[m.stages?.[0]?.type] || '—'}
                     </div>
                   </div>
                   {isAdmin && (
-                    <Button variant="ghost" size="icon" title="Excluir modalidade" onClick={() => setDeleteTarget(m)}>
-                      <Trash2 className="w-4 h-4 text-red-600" />
-                    </Button>
+                    <div className="flex gap-1">
+                      <Button variant="ghost" size="icon" title="Editar modalidade" onClick={() => openEdit(m)}>
+                        <Pencil className="w-4 h-4" />
+                      </Button>
+                      <Button variant="ghost" size="icon" title="Excluir modalidade" onClick={() => setDeleteTarget(m)}>
+                        <Trash2 className="w-4 h-4 text-red-600" />
+                      </Button>
+                    </div>
                   )}
                 </div>
               </CardContent>
@@ -159,10 +215,10 @@ export default function TournamentModalitiesTab({ tournament, isAdmin }) {
         onConfirm={() => deleteTarget && handleDelete(deleteTarget.id)}
       />
 
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog open={open} onOpenChange={closeDialog}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Nova modalidade</DialogTitle>
+            <DialogTitle>{isEditing ? 'Editar modalidade' : 'Nova modalidade'}</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 max-h-[70vh] overflow-y-auto">
             <div>
@@ -174,9 +230,35 @@ export default function TournamentModalitiesTab({ tournament, isAdmin }) {
               <SelectRow label="Nível" value={form.skill_level} options={SKILL_LEVEL_LABELS} onChange={(v) => set('skill_level', v)} />
               <SelectRow label="Gênero" value={form.gender_category} options={GENDER_CATEGORY_LABELS} onChange={(v) => set('gender_category', v)} />
               <SelectRow label="Idade" value={form.age_category} options={AGE_CATEGORY_LABELS} onChange={(v) => set('age_category', v)} />
-              <div>
-                <Label>Vagas (até {MAX_REGISTRATIONS_PER_MODALITY})</Label>
-                <Input type="number" min={2} max={MAX_REGISTRATIONS_PER_MODALITY} value={form.max_entries} onChange={(e) => set('max_entries', e.target.value)} />
+              <div className="space-y-2 md:col-span-2">
+                <div className="flex items-center justify-between gap-3 rounded-md border border-slate-200 p-3">
+                  <div>
+                    <Label className="text-sm">Quantidade de participantes</Label>
+                    <p className="text-xs text-slate-500">
+                      Use vagas abertas para fechar as inscrições primeiro e organizar a chave com o total efetivo de inscritos.
+                    </p>
+                  </div>
+                  <label className="flex items-center gap-2 text-sm font-medium text-slate-700">
+                    <input
+                      type="checkbox"
+                      checked={form.has_unlimited_entries}
+                      onChange={(e) => set('has_unlimited_entries', e.target.checked)}
+                    />
+                    Vagas abertas
+                  </label>
+                </div>
+                {!form.has_unlimited_entries && (
+                  <div>
+                    <Label>Vagas (até {MAX_REGISTRATIONS_PER_MODALITY})</Label>
+                    <Input
+                      type="number"
+                      min={2}
+                      max={MAX_REGISTRATIONS_PER_MODALITY}
+                      value={form.max_entries}
+                      onChange={(e) => set('max_entries', e.target.value)}
+                    />
+                  </div>
+                )}
               </div>
               <div>
                 <Label>Taxa de inscrição (R$)</Label>
@@ -207,9 +289,9 @@ export default function TournamentModalitiesTab({ tournament, isAdmin }) {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
-            <Button onClick={handleCreate} disabled={createMutation.isPending}>
-              {createMutation.isPending ? 'Criando…' : 'Criar'}
+            <Button variant="outline" onClick={() => closeDialog(false)}>Cancelar</Button>
+            <Button onClick={handleSave} disabled={saving}>
+              {saving ? 'Salvando…' : isEditing ? 'Salvar' : 'Criar'}
             </Button>
           </DialogFooter>
         </DialogContent>
