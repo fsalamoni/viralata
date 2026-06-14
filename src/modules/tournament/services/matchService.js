@@ -169,6 +169,73 @@ export async function scheduleMatch(id, schedule, actor) {
   await createAuditLog({ action: 'match_scheduled', actor, details: { match_id: id } });
 }
 
+export async function markMatchInProgress(matchId, actor) {
+  await updateDoc(doc(db, COL, matchId), {
+    status: MATCH_STATUS.IN_PROGRESS,
+    updated_at: serverTimestamp(),
+  });
+  await createAuditLog({ action: 'match_started', actor, details: { match_id: matchId } });
+}
+
+export async function reShuffleRemainingMatches(modalityId, stageIndex, actor) {
+  const allMatches = await listMatches(modalityId, stageIndex);
+  const doneStatuses = new Set([MATCH_STATUS.FINISHED, MATCH_STATUS.WALKOVER]);
+  const pending = allMatches.filter((m) => !doneStatuses.has(m.status));
+
+  if (pending.length === 0) throw new Error('Nenhum jogo pendente para resortear.');
+
+  // Fisher-Yates inline com Math.random (reshuffle não precisa ser reproduzível)
+  const shuffled = pending.slice();
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+
+  // Reatribui rodadas garantindo que nenhum jogador jogue duas vezes na mesma rodada
+  const reassigned = [];
+  const remaining = shuffled.slice();
+  let round = 1;
+  while (remaining.length > 0) {
+    const busy = new Set();
+    const scheduled = [];
+    const leftovers = [];
+    for (const m of remaining) {
+      const players = [...(m.side_a_ids || []), ...(m.side_b_ids || [])];
+      if (players.some((p) => busy.has(p))) {
+        leftovers.push(m);
+      } else {
+        players.forEach((p) => busy.add(p));
+        scheduled.push({ ...m, round, position: reassigned.length + scheduled.length + 1 });
+      }
+    }
+    if (scheduled.length === 0 && leftovers.length > 0) {
+      const m = leftovers.shift();
+      reassigned.push({ ...m, round, position: reassigned.length + 1 });
+      remaining.splice(0, remaining.length, ...leftovers);
+    } else {
+      reassigned.push(...scheduled);
+      remaining.splice(0, remaining.length, ...leftovers);
+    }
+    round++;
+  }
+
+  const batch = writeBatch(db);
+  reassigned.forEach((m) => {
+    batch.update(doc(db, COL, m.id), {
+      round: m.round,
+      position: m.position,
+      updated_at: serverTimestamp(),
+    });
+  });
+  await batch.commit();
+  await createAuditLog({
+    action: 'matches_reshuffled',
+    actor,
+    details: { modality_id: modalityId, stage_index: stageIndex, count: reassigned.length },
+  });
+  return { count: reassigned.length };
+}
+
 export async function substitutePlayer(matchId, { oldRegistrationId, newRegistrationId }, actor) {
   const match = await getMatch(matchId);
   if (!match) throw new Error('Jogo não encontrado.');

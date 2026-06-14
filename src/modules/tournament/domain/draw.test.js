@@ -207,6 +207,22 @@ describe('draw engine', () => {
       expect(pairs.size).toBe(36); // C(9,2)
     });
 
+    it('N=13 (≡1 mod 4): exatamente 39 jogos cobrindo todas as 78 parcerias sem repetição', () => {
+      const players = Array.from({ length: 13 }, (_, i) => `p${i}`);
+      const matches = buildAmericanoRotation(players, { seed: 'fixed' });
+      expect(matches).toHaveLength(39);
+      const pairs = new Set();
+      matches.forEach((m) => {
+        const keyA = [...m.side_a].sort().join('|');
+        const keyB = [...m.side_b].sort().join('|');
+        expect(pairs.has(keyA)).toBe(false);
+        expect(pairs.has(keyB)).toBe(false);
+        pairs.add(keyA);
+        pairs.add(keyB);
+      });
+      expect(pairs.size).toBe(78); // C(13,2) = 78 parcerias únicas
+    });
+
     it('N ≡ 2 ou 3 (mod 4): recusa gerar a chave (precisão perfeita ou erro)', () => {
       [6, 7, 10, 11, 14, 15].forEach((n) => {
         const players = Array.from({ length: n }, (_, i) => `p${i}`);

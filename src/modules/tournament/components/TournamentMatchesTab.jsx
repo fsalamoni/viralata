@@ -12,12 +12,13 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { Trophy } from 'lucide-react';
+import { Trophy, Play } from 'lucide-react';
 import {
   useModalities,
   useMatches,
   useRecordMatchResult,
   useRegistrations,
+  useMarkMatchInProgress,
 } from '@/modules/tournament/hooks/useTournament';
 import { MATCH_STATUS, MATCH_STATUS_LABELS } from '@/modules/tournament/domain/constants';
 import { normalizeScoringConfig } from '@/modules/tournament/domain/scoring';
@@ -42,9 +43,16 @@ export default function TournamentMatchesTab({ tournament, isAdmin }) {
   );
 }
 
+function statusBadgeVariant(status) {
+  if (status === MATCH_STATUS.FINISHED || status === MATCH_STATUS.WALKOVER) return 'success';
+  if (status === MATCH_STATUS.IN_PROGRESS) return 'warning';
+  return 'secondary';
+}
+
 function ModalityMatchesBlock({ tournament, modality, isAdmin }) {
   const { data: matches = [] } = useMatches(modality.id, 0);
   const { data: registrations = [] } = useRegistrations(modality.id);
+  const markInProgressMutation = useMarkMatchInProgress(modality.id);
   const labelById = useMemo(() => {
     const map = new Map();
     registrations.forEach((r) => map.set(r.id, r.label || r.player_a_name));
@@ -54,6 +62,17 @@ function ModalityMatchesBlock({ tournament, modality, isAdmin }) {
   const cfg = normalizeScoringConfig(modality.scoring_override || tournament.scoring);
   const [openMatchId, setOpenMatchId] = useState(null);
   const openMatch = matches.find((m) => m.id === openMatchId);
+
+  async function handleMarkInProgress(matchId) {
+    try {
+      await markInProgressMutation.mutateAsync(matchId);
+      toast.success('Partida marcada como em andamento.');
+    } catch (err) {
+      toast.error(err.message || 'Falha ao atualizar status.');
+    }
+  }
+
+  const hasGroups = matches.some((m) => m.group);
 
   return (
     <Card>
@@ -71,12 +90,12 @@ function ModalityMatchesBlock({ tournament, modality, isAdmin }) {
             <table className="w-full text-sm">
               <thead className="bg-slate-50">
                 <tr className="text-left">
-                  {matches.some((m) => m.group) && <th className="px-3 py-2">Grupo</th>}
+                  {hasGroups && <th className="px-3 py-2">Grupo</th>}
                   <th className="px-3 py-2">Rod.</th>
                   <th className="px-3 py-2">Partida</th>
                   <th className="px-3 py-2">Placar (sets)</th>
                   <th className="px-3 py-2">Status</th>
-                  {isAdmin && <th className="px-3 py-2 text-right">Resultado</th>}
+                  {isAdmin && <th className="px-3 py-2 text-right">Ações</th>}
                 </tr>
               </thead>
               <tbody>
@@ -84,11 +103,15 @@ function ModalityMatchesBlock({ tournament, modality, isAdmin }) {
                   const sideA = m.side_a_ids?.map((id) => labelById.get(id) || id).join(' + ') || m.side_a;
                   const sideB = m.side_b_ids?.map((id) => labelById.get(id) || id).join(' + ') || m.side_b;
                   const finished = m.status === MATCH_STATUS.FINISHED || m.status === MATCH_STATUS.WALKOVER;
+                  const inProgress = m.status === MATCH_STATUS.IN_PROGRESS;
                   const winA = finished && m.winner_side === 'a';
                   const winB = finished && m.winner_side === 'b';
                   return (
-                    <tr key={m.id} className="border-t">
-                      {matches.some((mm) => mm.group) && <td className="px-3 py-2">{m.group || '—'}</td>}
+                    <tr
+                      key={m.id}
+                      className={`border-t ${inProgress ? 'bg-amber-50' : ''}`}
+                    >
+                      {hasGroups && <td className="px-3 py-2">{m.group || '—'}</td>}
                       <td className="px-3 py-2">{m.round}</td>
                       <td className="px-3 py-2">
                         <div className={`flex items-center gap-1 ${winA ? 'font-bold text-emerald-700' : 'font-medium'}`}>
@@ -107,15 +130,32 @@ function ModalityMatchesBlock({ tournament, modality, isAdmin }) {
                         ))}
                       </td>
                       <td className="px-3 py-2">
-                        <Badge variant={finished ? 'success' : 'secondary'}>
+                        <Badge variant={statusBadgeVariant(m.status)}>
                           {MATCH_STATUS_LABELS[m.status] || m.status}
                         </Badge>
                       </td>
                       {isAdmin && (
                         <td className="px-3 py-2 text-right">
-                          <Button size="sm" variant="outline" onClick={() => setOpenMatchId(m.id)}>
-                            {finished ? 'Editar' : 'Lançar'}
-                          </Button>
+                          <div className="flex items-center justify-end gap-1">
+                            {m.status === MATCH_STATUS.SCHEDULED && (
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => handleMarkInProgress(m.id)}
+                                disabled={markInProgressMutation.isPending}
+                                title="Marcar como em andamento"
+                              >
+                                <Play className="w-3.5 h-3.5" />
+                              </Button>
+                            )}
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => setOpenMatchId(m.id)}
+                            >
+                              {finished ? 'Editar' : 'Lançar'}
+                            </Button>
+                          </div>
                         </td>
                       )}
                     </tr>

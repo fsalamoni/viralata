@@ -34,6 +34,8 @@ import {
   recordMatchResult,
   scheduleMatch,
   substitutePlayer,
+  markMatchInProgress,
+  reShuffleRemainingMatches,
 } from '../services/matchService';
 import { runDraw } from '../services/drawService';
 import { computeModalityRanking } from '../services/rankingService';
@@ -327,6 +329,24 @@ export function useSubstitutePlayer(modalityId) {
   return useMutation({
     mutationFn: ({ matchId, oldRegistrationId, newRegistrationId }) =>
       substitutePlayer(matchId, { oldRegistrationId, newRegistrationId }, user),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['matches', modalityId] }),
+  });
+}
+
+export function useMarkMatchInProgress(modalityId) {
+  const { user } = useAuth();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (matchId) => markMatchInProgress(matchId, user),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['matches', modalityId] }),
+  });
+}
+
+export function useReShuffleRemainingMatches(modalityId) {
+  const { user } = useAuth();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (stageIndex) => reShuffleRemainingMatches(modalityId, stageIndex, user),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['matches', modalityId] }),
   });
 }

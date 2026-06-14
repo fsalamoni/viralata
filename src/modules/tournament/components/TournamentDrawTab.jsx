@@ -11,7 +11,7 @@ import {
   DialogFooter,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { Shuffle, AlertTriangle, Pencil } from 'lucide-react';
+import { Shuffle, AlertTriangle, Pencil, ListRestart } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   useModalities,
@@ -19,10 +19,12 @@ import {
   useMatches,
   useRegistrations,
   useSubstitutePlayer,
+  useReShuffleRemainingMatches,
 } from '@/modules/tournament/hooks/useTournament';
 import {
   TOURNAMENT_STAGE_TYPE_LABELS,
   REGISTRATION_STATUS,
+  MATCH_STATUS,
 } from '@/modules/tournament/domain/constants';
 
 export default function TournamentDrawTab({ tournament, isAdmin }) {
@@ -49,10 +51,12 @@ export default function TournamentDrawTab({ tournament, isAdmin }) {
 
 function ModalityDrawBlock({ tournament, modality, isAdmin }) {
   const drawMutation = useRunDraw();
+  const reShuffleMutation = useReShuffleRemainingMatches(modality.id);
   const { data: matches = [] } = useMatches(modality.id, 0);
   const { data: registrations = [] } = useRegistrations(modality.id);
   const [running, setRunning] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [reshuffleConfirmOpen, setReshuffleConfirmOpen] = useState(false);
   const [error, setError] = useState(null);
   const [substitution, setSubstitution] = useState(null);
 
@@ -71,6 +75,11 @@ function ModalityDrawBlock({ tournament, modality, isAdmin }) {
       ),
     [registrations],
   );
+
+  const doneStatuses = new Set([MATCH_STATUS.FINISHED, MATCH_STATUS.WALKOVER]);
+  const playedCount = matches.filter((m) => doneStatuses.has(m.status)).length;
+  const pendingCount = matches.length - playedCount;
+  const canReshuffleRemaining = isAdmin && playedCount > 0 && pendingCount > 0;
 
   async function performDraw() {
     setError(null);
@@ -92,6 +101,19 @@ function ModalityDrawBlock({ tournament, modality, isAdmin }) {
     }
   }
 
+  async function performReshuffleRemaining() {
+    setRunning(true);
+    try {
+      const { count } = await reShuffleMutation.mutateAsync(0);
+      toast.success(`${count} jogo(s) restante(s) resorteados!`);
+      setReshuffleConfirmOpen(false);
+    } catch (err) {
+      toast.error(err?.message || 'Falha ao resortear.');
+    } finally {
+      setRunning(false);
+    }
+  }
+
   const stageName = modality.stages?.[0]?.name || 'fase 1';
   const hasGroups = matches.some((m) => m.group);
 
@@ -107,9 +129,21 @@ function ModalityDrawBlock({ tournament, modality, isAdmin }) {
             </p>
           </div>
           {isAdmin && (
-            <Button size="sm" onClick={() => setConfirmOpen(true)} disabled={running}>
-              <Shuffle className="w-4 h-4 mr-1" /> {matches.length > 0 ? 'Re-sortear' : 'Sortear'}
-            </Button>
+            <div className="flex gap-2 flex-wrap">
+              {canReshuffleRemaining && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setReshuffleConfirmOpen(true)}
+                  disabled={running}
+                >
+                  <ListRestart className="w-4 h-4 mr-1" /> Resortear restantes ({pendingCount})
+                </Button>
+              )}
+              <Button size="sm" onClick={() => setConfirmOpen(true)} disabled={running}>
+                <Shuffle className="w-4 h-4 mr-1" /> {matches.length > 0 ? 'Re-sortear tudo' : 'Sortear'}
+              </Button>
+            </div>
           )}
         </div>
 
@@ -187,6 +221,26 @@ function ModalityDrawBlock({ tournament, modality, isAdmin }) {
             </Button>
             <Button onClick={performDraw} disabled={running}>
               {running ? 'Sorteando…' : 'Confirmar sorteio'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={reshuffleConfirmOpen} onOpenChange={(o) => !running && setReshuffleConfirmOpen(o)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Resortear jogos restantes</DialogTitle>
+            <DialogDescription>
+              Os {pendingCount} jogo(s) ainda não disputado(s) serão resorteados em nova ordem.
+              Os {playedCount} jogo(s) já concluído(s) não serão alterados.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setReshuffleConfirmOpen(false)} disabled={running}>
+              Cancelar
+            </Button>
+            <Button onClick={performReshuffleRemaining} disabled={running}>
+              {running ? 'Resorteando…' : 'Confirmar'}
             </Button>
           </DialogFooter>
         </DialogContent>
