@@ -26,6 +26,7 @@ const AthletesDirectory = lazy(() => import('@/modules/athletes/pages/AthletesDi
 const ClubsDirectory = lazy(() => import('@/modules/clubs/pages/ClubsDirectory'));
 const CreateClub = lazy(() => import('@/modules/clubs/pages/CreateClub'));
 const ClubDetail = lazy(() => import('@/modules/clubs/pages/ClubDetail'));
+const ChatPage = lazy(() => import('@/modules/chat/pages/ChatPage'));
 const PageNotFound = lazy(() => import('@/pages/PageNotFound'));
 
 const LOCAL_PREVIEW_PROTECTED_PATHS = new Set([
@@ -118,6 +119,7 @@ export default function App() {
               {/* Authenticated */}
               <Route path="/inicio" element={<ProtectedRoute>{withLayout('Inicio', Inicio)}</ProtectedRoute>} />
               <Route path="/perfil" element={<ProtectedRoute>{withLayout('Profile', Profile)}</ProtectedRoute>} />
+              <Route path="/chat" element={<ProtectedRoute>{withLayout('Chat', ChatPage)}</ProtectedRoute>} />
               <Route path="/torneios" element={<Navigate to="/inicio" replace />} />
               <Route path="/torneios/criar" element={<ProtectedRoute>{withLayout('CreateTournament', CreateTournament)}</ProtectedRoute>} />
               <Route path="/torneios/ingressar" element={<ProtectedRoute>{withLayout('JoinTournament', JoinTournament)}</ProtectedRoute>} />

@@ -27,6 +27,7 @@ import {
 } from '@/components/ui/dialog';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { useAthletes } from '@/modules/athletes/hooks/useAthletes';
+import ChatLauncherButton from '@/modules/chat/components/ChatLauncherButton';
 import {
   ATHLETE_GENDER_LABELS,
   genderLabel,
@@ -334,10 +335,11 @@ function AthleteCard({ athlete, onOpen }) {
           </div>
         )}
 
-        <div className="mt-auto pt-5">
-          <Button variant="outline" size="sm" className="w-full" onClick={onOpen}>
+        <div className="mt-auto flex gap-2 pt-5">
+          <Button variant="outline" size="sm" className="flex-1" onClick={onOpen}>
             Ver detalhes
           </Button>
+          <ChatLauncherButton athlete={athlete} size="sm" className="flex-1" />
         </div>
       </CardContent>
     </Card>
@@ -371,6 +373,8 @@ function AthleteDialog({ athlete, open, onClose }) {
         </DialogHeader>
 
         <div className="space-y-4">
+          <ChatLauncherButton athlete={athlete} className="w-full" label="Conversar com este atleta" />
+
           <div className="grid gap-3 sm:grid-cols-2">
             <InfoRow icon={MapPin} label="Cidade" value={location} />
             <InfoRow icon={Award} label="Nível" value={athlete.level} />

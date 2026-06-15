@@ -20,6 +20,7 @@ import {
   Sparkles,
   Users,
   Building2,
+  MessageCircle,
 } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { useMyTournaments } from '@/modules/tournament/hooks/useTournament';
@@ -56,6 +57,11 @@ const PAGE_META = {
     eyebrow: 'Conta',
     title: 'Perfil do atleta',
     description: 'Organize sua identidade na plataforma e melhore a confiança nas inscrições.',
+  },
+  Chat: {
+    eyebrow: 'Conversas',
+    title: 'Mensagens',
+    description: 'Converse com atletas e grupos da comunidade em tempo real.',
   },
   CreateTournament: {
     eyebrow: 'Organização',
@@ -227,6 +233,13 @@ export default function Layout({ children, currentPageName }) {
                 icon={User}
                 label="Meu perfil"
                 active={currentPageName === 'Profile'}
+                onClick={() => setSidebarOpen(false)}
+              />
+              <NavItem
+                to="/chat"
+                icon={MessageCircle}
+                label="Chat"
+                active={currentPageName === 'Chat'}
                 onClick={() => setSidebarOpen(false)}
               />
               <NavItem
@@ -533,6 +546,13 @@ function SidebarSection({ title, hint, children }) {
 }
 
 function NotificationsMenu({ notifications, unreadCount, markAsRead }) {
+  const navigate = useNavigate();
+
+  const handleSelect = (n) => {
+    if (!n.read) markAsRead(n.id);
+    if (n.link) navigate(n.link);
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -563,7 +583,7 @@ function NotificationsMenu({ notifications, unreadCount, markAsRead }) {
             <DropdownMenuItem
               key={n.id}
               className="mt-1 flex cursor-pointer flex-col items-start rounded-[1rem] px-3 py-3 focus:bg-emerald-50"
-              onClick={() => !n.read && markAsRead(n.id)}
+              onClick={() => handleSelect(n)}
             >
               <div className={cn('text-sm font-medium', n.read ? 'text-slate-600' : 'text-slate-950')}>{n.title}</div>
               <div className="mt-1 text-xs leading-5 text-slate-500">{n.message}</div>

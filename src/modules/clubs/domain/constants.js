@@ -2,11 +2,14 @@
  * Constantes do domínio de Clubes.
  *
  * Coleções Firestore:
- *  - clubs               (dados do clube)
- *  - club_members        (vínculo usuário↔clube, id = `${clubId}_${uid}`)
- *  - club_events         (eventos: confraternização, torneio interno, treino…)
- *  - club_event_rsvps    (presença em evento, id = `${eventId}_${uid}`)
- *  - club_posts          (mural de avisos/interação)
+ *  - clubs                   (dados do clube)
+ *  - club_members            (vínculo usuário↔clube, id = `${clubId}_${uid}`)
+ *  - club_events             (eventos: confraternização, torneio interno, treino…)
+ *  - club_event_rsvps        (presença em evento, id = `${eventId}_${uid}`)
+ *  - club_posts              (mural de avisos/interação)
+ *  - club_forum_threads      (tópicos de fórum do clube)
+ *  - club_forum_comments     (comentários dos tópicos)
+ *  - club_forum_poll_votes   (votos de enquete, id = `${threadId}_${uid}`)
  */
 
 export const CLUB_COLLECTIONS = Object.freeze({
@@ -15,6 +18,25 @@ export const CLUB_COLLECTIONS = Object.freeze({
   events: 'club_events',
   rsvps: 'club_event_rsvps',
   posts: 'club_posts',
+  forumThreads: 'club_forum_threads',
+  forumComments: 'club_forum_comments',
+  forumPollVotes: 'club_forum_poll_votes',
+});
+
+/** Limites e regras das enquetes do fórum. */
+export const FORUM_POLL = Object.freeze({
+  MIN_OPTIONS: 2,
+  MAX_OPTIONS: 10,
+  OPTION_MAX_CHARS: 120,
+  QUESTION_MAX_CHARS: 200,
+});
+
+/** Limites gerais do fórum. */
+export const FORUM_LIMITS = Object.freeze({
+  TITLE_MAX: 140,
+  BODY_MAX: 20000,
+  COMMENT_MAX: 20000,
+  MAX_ATTACHMENTS: 10,
 });
 
 /** Papel do membro dentro do clube. */

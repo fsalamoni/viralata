@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { Link, useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
   ArrowLeft,
@@ -11,6 +11,7 @@ import {
   Mail,
   MapPin,
   MessageSquare,
+  MessagesSquare,
   Phone,
   Settings,
   Users,
@@ -29,6 +30,7 @@ import { CLUB_ROLE } from '@/modules/clubs/domain/constants';
 import ClubMembersTab from '@/modules/clubs/components/ClubMembersTab';
 import ClubEventsTab from '@/modules/clubs/components/ClubEventsTab';
 import ClubFeedTab from '@/modules/clubs/components/ClubFeedTab';
+import ClubForumsTab from '@/modules/clubs/components/ClubForumsTab';
 import ClubAdminTab from '@/modules/clubs/components/ClubAdminTab';
 
 export default function ClubDetail() {
@@ -41,6 +43,24 @@ export default function ClubDetail() {
   const leaveClub = useLeaveClub(clubId);
   const [code, setCode] = useState('');
   const [confirmLeave, setConfirmLeave] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get('tab') || 'members';
+  const threadParam = searchParams.get('thread') || null;
+
+  const setActiveTab = (tab) => {
+    const next = new URLSearchParams(searchParams);
+    next.set('tab', tab);
+    if (tab !== 'forums') next.delete('thread');
+    setSearchParams(next, { replace: true });
+  };
+
+  const setThreadParam = (threadId) => {
+    const next = new URLSearchParams(searchParams);
+    next.set('tab', 'forums');
+    if (threadId) next.set('thread', threadId);
+    else next.delete('thread');
+    setSearchParams(next, { replace: true });
+  };
 
   const isMember = !!membership;
   const isAdmin = membership?.role === CLUB_ROLE.ADMIN;
@@ -173,11 +193,12 @@ export default function ClubDetail() {
         </Card>
       )}
 
-      <Tabs defaultValue="members" className="w-full">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="flex h-auto w-full flex-wrap justify-start gap-1 bg-muted/60 p-1">
           <TabsTrigger value="members"><Users className="mr-1.5 h-4 w-4" /> Membros</TabsTrigger>
           {isMember && <TabsTrigger value="events"><CalendarDays className="mr-1.5 h-4 w-4" /> Eventos</TabsTrigger>}
           {isMember && <TabsTrigger value="feed"><MessageSquare className="mr-1.5 h-4 w-4" /> Mural</TabsTrigger>}
+          {isMember && <TabsTrigger value="forums"><MessagesSquare className="mr-1.5 h-4 w-4" /> Fóruns</TabsTrigger>}
           {isAdmin && <TabsTrigger value="admin"><Settings className="mr-1.5 h-4 w-4" /> Administração</TabsTrigger>}
         </TabsList>
 
@@ -194,6 +215,17 @@ export default function ClubDetail() {
         {isMember && (
           <TabsContent value="feed" className="mt-4">
             <ClubFeedTab clubId={clubId} isAdmin={isAdmin} />
+          </TabsContent>
+        )}
+
+        {isMember && (
+          <TabsContent value="forums" className="mt-4">
+            <ClubForumsTab
+              clubId={clubId}
+              isAdmin={isAdmin}
+              initialThreadId={threadParam}
+              onThreadChange={setThreadParam}
+            />
           </TabsContent>
         )}
 

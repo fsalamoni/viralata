@@ -125,3 +125,105 @@ export async function downloadImage(url, fileName = 'imagem') {
     window.open(url, '_blank', 'noopener,noreferrer');
   }
 }
+
+/* ------------------------- Anexos genéricos (qualquer arquivo) ----------- */
+
+// Limite maior para documentos (PDF, planilhas, etc.) usados em chat e fóruns.
+export const MAX_FILE_BYTES = 25 * 1024 * 1024; // 25 MB
+export const ACCEPTED_FILE_ATTR =
+  'image/*,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip,.rar,.7z';
+
+export function maxFileMb() {
+  return Math.round(MAX_FILE_BYTES / (1024 * 1024));
+}
+
+/** Formata um tamanho em bytes para exibição (ex.: "1,2 MB"). */
+export function formatBytes(bytes) {
+  const size = Number(bytes) || 0;
+  if (size <= 0) return '';
+  const units = ['B', 'KB', 'MB', 'GB'];
+  const exponent = Math.min(Math.floor(Math.log(size) / Math.log(1024)), units.length - 1);
+  const value = size / 1024 ** exponent;
+  const formatted = exponent === 0 ? String(size) : value.toFixed(value >= 10 ? 0 : 1).replace('.', ',');
+  return `${formatted} ${units[exponent]}`;
+}
+
+/** Indica se o tipo de conteúdo é uma imagem exibível inline. */
+export function isImageContentType(contentType) {
+  return String(contentType || '').startsWith('image/');
+}
+
+/** Valida um arquivo genérico (qualquer tipo). Retorna mensagem de erro ou null. */
+export function validateUploadFile(file) {
+  if (!file) return 'Selecione um arquivo.';
+  if (file.size > MAX_FILE_BYTES) return `Arquivo muito grande (máximo ${maxFileMb()} MB).`;
+  return null;
+}
+
+/**
+ * Faz upload de um anexo de qualquer tipo (imagem ou documento) e resolve com
+ * metadados. Imagens são marcadas com `kind: 'image'` para exibição inline.
+ * @returns {Promise<{url:string, path:string, name:string, size:number, content_type:string, kind:'image'|'file'}>}
+ */
+export function uploadAttachment(file, { uid, folder = 'attachments', onProgress } = {}) {
+  return new Promise((resolve, reject) => {
+    if (!storage) {
+      reject(new Error('Armazenamento de arquivos indisponível neste ambiente.'));
+      return;
+    }
+    if (!uid) {
+      reject(new Error('Usuário não autenticado.'));
+      return;
+    }
+    const validationError = validateUploadFile(file);
+    if (validationError) {
+      reject(new Error(validationError));
+      return;
+    }
+
+    const path = `uploads/${uid}/${folder}/${Date.now()}-${sanitizeName(file.name)}`;
+    const task = uploadBytesResumable(ref(storage, path), file, {
+      contentType: file.type || 'application/octet-stream',
+      cacheControl: 'public, max-age=31536000, immutable',
+    });
+
+    task.on(
+      'state_changed',
+      (snap) => {
+        if (onProgress && snap.totalBytes) {
+          onProgress(Math.round((snap.bytesTransferred / snap.totalBytes) * 100));
+        }
+      },
+      (error) => {
+        logger.error('Falha no upload de anexo:', error);
+        reject(new Error('Não foi possível enviar o arquivo. Tente novamente.'));
+      },
+      async () => {
+        try {
+          const url = await getDownloadURL(task.snapshot.ref);
+          resolve({
+            url,
+            path,
+            name: file.name,
+            size: file.size,
+            content_type: file.type || 'application/octet-stream',
+            kind: isImageContentType(file.type) ? 'image' : 'file',
+          });
+        } catch (error) {
+          logger.error('Falha ao obter URL do anexo:', error);
+          reject(new Error('Arquivo enviado, mas não foi possível obter o link.'));
+        }
+      },
+    );
+  });
+}
+
+/** Remove um anexo do Storage (best-effort). Alias semântico de deleteImage. */
+export async function deleteAttachment(path) {
+  return deleteImage(path);
+}
+
+/** Baixa um anexo qualquer preservando o nome original. */
+export async function downloadAttachment(url, fileName = 'arquivo') {
+  return downloadImage(url, fileName);
+}
