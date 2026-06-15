@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { AvatarGroup } from '@/components/ui/user-avatar';
 import { Trophy, MapPin, Calendar, Hash, Eye, Printer, Share2, Copy, Check } from 'lucide-react';
 import { getTournament } from '@/modules/tournament/services/tournamentService';
 import { listModalities } from '@/modules/tournament/services/modalityService';
@@ -189,6 +190,19 @@ function PublicModalityBlock({ modality }) {
     );
     return map;
   }, [registrations]);
+  const peopleById = useMemo(() => {
+    const map = new Map();
+    registrations.forEach((r) => map.set(r.id, [
+      { name: r.player_a_name, photoUrl: r.player_a_photo },
+      ...(r.player_b_name ? [{ name: r.player_b_name, photoUrl: r.player_b_photo }] : []),
+    ]));
+    return map;
+  }, [registrations]);
+
+  function sidePeople(match, key) {
+    const ids = match[`${key}_ids`];
+    return Array.isArray(ids) ? ids.flatMap((id) => peopleById.get(id) || []) : [];
+  }
 
   function renderSide(match, key) {
     const ids = match[`${key}_ids`];
@@ -235,7 +249,12 @@ function PublicModalityBlock({ modality }) {
                     return (
                       <tr key={r.participant_id} className="border-t">
                         <td className="px-3 py-2 font-semibold">{r.position}</td>
-                        <td className="px-3 py-2">{r.label || r.participant_id}</td>
+                        <td className="px-3 py-2">
+                          <div className="flex items-center gap-2">
+                            <AvatarGroup size="sm" people={r.players || []} />
+                            <span>{r.label || r.participant_id}</span>
+                          </div>
+                        </td>
                         <td className="px-3 py-2 text-center">{r.played}</td>
                         <td className="px-3 py-2 text-center font-semibold">{r.wins}</td>
                         <td className="px-3 py-2 text-center">{r.sets_won}–{r.sets_lost}</td>
@@ -285,8 +304,18 @@ function PublicModalityBlock({ modality }) {
                           <td className="px-3 py-2 tabular-nums">{formatPublicMatchTime(m.scheduled_at)}</td>
                         </>
                       )}
-                      <td className="px-3 py-2">{renderSide(m, 'side_a')}</td>
-                      <td className="px-3 py-2">{renderSide(m, 'side_b')}</td>
+                      <td className="px-3 py-2">
+                        <div className="flex items-center gap-1.5">
+                          <AvatarGroup size="xs" people={sidePeople(m, 'side_a')} />
+                          <span>{renderSide(m, 'side_a')}</span>
+                        </div>
+                      </td>
+                      <td className="px-3 py-2">
+                        <div className="flex items-center gap-1.5">
+                          <AvatarGroup size="xs" people={sidePeople(m, 'side_b')} />
+                          <span>{renderSide(m, 'side_b')}</span>
+                        </div>
+                      </td>
                       <td className="px-3 py-2 text-right tabular-nums">
                         {(m.games || []).map((g, i) => (
                           <span key={i} className="ml-1">

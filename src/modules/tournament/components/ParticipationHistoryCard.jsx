@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { UserAvatar } from '@/components/ui/user-avatar';
 import { History, Trophy, MapPin, CalendarDays, Users, ChevronRight } from 'lucide-react';
 import { useMyTournamentHistory } from '@/modules/tournament/hooks/useTournament';
 import {
@@ -69,7 +70,7 @@ function RankingBadge({ ranking }) {
 }
 
 function EntryRow({ entry }) {
-  const { registration: reg, modality, partnerName, ranking } = entry;
+  const { registration: reg, modality, partnerName, partnerPhoto, ranking } = entry;
   const name = modality?.name || 'Modalidade';
   return (
     <div className="rounded-md border border-emerald-950/10 bg-white/60 p-3">
@@ -93,8 +94,10 @@ function EntryRow({ entry }) {
             )}
           </div>
           {partnerName && (
-            <div className="mt-1.5 flex items-center gap-1 text-xs text-slate-600">
-              <Users className="h-3.5 w-3.5" /> Dupla com {partnerName}
+            <div className="mt-1.5 flex items-center gap-1.5 text-xs text-slate-600">
+              <Users className="h-3.5 w-3.5" /> Dupla com
+              <UserAvatar size="xs" name={partnerName} photoUrl={partnerPhoto} />
+              {partnerName}
             </div>
           )}
         </div>

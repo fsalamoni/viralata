@@ -28,6 +28,15 @@ export function partnerNameFor(reg, userId) {
   return reg.player_b_name || null;
 }
 
+/** Foto do parceiro de dupla (o outro jogador), quando aplicável. */
+export function partnerPhotoFor(reg, userId) {
+  const isPlayerB = reg.player_b_user_id === userId;
+  const isPlayerA = reg.player_a_user_id === userId || reg.user_id === userId;
+  if (isPlayerB) return reg.player_a_photo || null;
+  if (isPlayerA) return reg.player_b_photo || null;
+  return reg.player_b_photo || null;
+}
+
 function isInactiveStatus(status) {
   return status === REGISTRATION_STATUS.CANCELLED || status === REGISTRATION_STATUS.WITHDRAWN;
 }
@@ -68,6 +77,7 @@ export function buildParticipationHistory(registrations, ctx) {
       registration: reg,
       modality: modalityById.get(reg.modality_id) || null,
       partnerName: partnerNameFor(reg, userId),
+      partnerPhoto: partnerPhotoFor(reg, userId),
       ranking:
         entry && started
           ? {
