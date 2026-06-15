@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { toMillis, partnerNameFor, buildParticipationHistory } from './participation.js';
+import { toMillis, partnerNameFor, partnerPhotoFor, buildParticipationHistory } from './participation.js';
 import { REGISTRATION_STATUS } from './constants.js';
 
 describe('toMillis', () => {
@@ -28,6 +28,21 @@ describe('partnerNameFor', () => {
   it('singles (sem B) → null', () => {
     const reg = { player_a_user_id: 'u1', player_a_name: 'Ana', player_b_name: '' };
     expect(partnerNameFor(reg, 'u1')).toBeNull();
+  });
+});
+
+describe('partnerPhotoFor', () => {
+  it('jogador A → foto do parceiro B', () => {
+    const reg = { player_a_user_id: 'u1', player_b_photo: 'b.jpg', player_a_photo: 'a.jpg' };
+    expect(partnerPhotoFor(reg, 'u1')).toBe('b.jpg');
+  });
+  it('jogador B → foto do parceiro A', () => {
+    const reg = { player_b_user_id: 'u2', player_a_photo: 'a.jpg', player_b_photo: 'b.jpg' };
+    expect(partnerPhotoFor(reg, 'u2')).toBe('a.jpg');
+  });
+  it('sem foto do parceiro → null', () => {
+    const reg = { player_a_user_id: 'u1', player_a_photo: 'a.jpg' };
+    expect(partnerPhotoFor(reg, 'u1')).toBeNull();
   });
 });
 
