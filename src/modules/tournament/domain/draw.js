@@ -7,6 +7,8 @@
  */
 
 import { MODALITY_FORMAT } from './constants.js';
+import { buildDoubleEliminationBracket } from './doubleElimination.js';
+import { pairSwissRound } from './swiss.js';
 
 /* ----------------------------- RNG semeado ------------------------------- */
 
@@ -55,21 +57,42 @@ export function shuffle(list, rng) {
  * Suporta "seeds" (cabeças-de-chave) — os primeiros `seedCount` itens da lista
  * de entrada são distribuídos um por grupo antes do sorteio dos demais.
  *
+ * Estratégias:
+ *  - 'shuffle' (padrão): sorteia os não-cabeças e distribui em round-robin.
+ *  - 'tiered': preserva a ordem recebida (já ordenada por nível/gênero) e
+ *    preenche os grupos com blocos contíguos, formando grupos homogêneos —
+ *    níveis próximos no mesmo grupo (assim os fortes se enfrentam entre si) e
+ *    duplas do mesmo gênero juntas, dentro do possível.
+ *
  * @param {string[]} participantIds
- * @param {{ groupCount: number, seedCount?: number, seed?: string }} options
+ * @param {{ groupCount: number, seedCount?: number, seed?: string, strategy?: 'shuffle'|'tiered' }} options
  * @returns {Array<{ name: string, participants: string[] }>}
  */
 export function distributeGroups(participantIds, options) {
-  const { groupCount, seedCount = 0, seed = 'groups' } = options;
+  const { groupCount, seedCount = 0, seed = 'groups', strategy = 'shuffle' } = options;
   if (groupCount <= 0) return [];
   if (!participantIds || participantIds.length === 0) return [];
 
-  const rng = seededRng(seed);
   const groups = Array.from({ length: groupCount }, (_, i) => ({
     name: `Grupo ${String.fromCharCode(65 + i)}`,
     participants: [],
   }));
 
+  if (strategy === 'tiered') {
+    // Tamanhos equilibrados: os primeiros (resto) grupos recebem um a mais.
+    const total = participantIds.length;
+    const base = Math.floor(total / groupCount);
+    const extra = total % groupCount;
+    let cursor = 0;
+    for (let g = 0; g < groupCount; g += 1) {
+      const size = base + (g < extra ? 1 : 0);
+      groups[g].participants = participantIds.slice(cursor, cursor + size);
+      cursor += size;
+    }
+    return groups;
+  }
+
+  const rng = seededRng(seed);
   const seeds = participantIds.slice(0, seedCount);
   const rest = shuffle(participantIds.slice(seedCount), rng);
 
@@ -562,6 +585,7 @@ export function generateDraw(input) {
     groupCount = 4,
     seedCount = 0,
     seed = 'draw',
+    groupStrategy = 'shuffle',
   } = input;
 
   if (stageType === 'americano') {
@@ -576,12 +600,46 @@ export function generateDraw(input) {
     return { stageType, matches: buildRoundRobinMatches(participants) };
   }
   if (stageType === 'groups') {
-    const groups = distributeGroups(participants, { groupCount, seedCount, seed });
+    const groups = distributeGroups(participants, { groupCount, seedCount, seed, strategy: groupStrategy });
     return { stageType, groups, matches: buildGroupMatches(groups) };
   }
   if (stageType === 'knockout') {
     const { slots, matches, totalRounds } = buildKnockoutBracket(participants, { seedCount, seed });
     return { stageType, bracket: { slots, totalRounds }, matches };
+  }
+  if (stageType === 'double_knockout') {
+    // Gera a chave completa; persistimos os jogos jogáveis da 1ª rodada da
+    // chave de vencedores (os demais dependem dos resultados, como no mata-mata
+    // simples). A estrutura da chave fica disponível como metadado.
+    const bracket = buildDoubleEliminationBracket(participants, { seedCount, seed });
+    const matches = bracket.wb
+      .filter((m) => m.round === 1)
+      .map((m) => ({
+        round: 1,
+        position: m.position,
+        side_a: m.side_a,
+        side_b: m.side_b,
+        bye: Boolean(m.bye),
+      }));
+    return {
+      stageType,
+      bracket: { size: bracket.size, wbRounds: bracket.wbRounds, lbRounds: bracket.lbRounds },
+      matches,
+    };
+  }
+  if (stageType === 'swiss') {
+    // Pareamento da 1ª rodada (sem pontuação ainda). As rodadas seguintes são
+    // pareadas conforme a classificação, após os resultados.
+    const standings = participants.map((id) => ({ id, points: 0, byesReceived: 0 }));
+    const { pairings } = pairSwissRound(standings, [], { round: 1, seed });
+    const matches = pairings.map((p, i) => ({
+      round: 1,
+      position: i + 1,
+      side_a: p.side_a,
+      side_b: p.side_b ?? null,
+      bye: Boolean(p.bye),
+    }));
+    return { stageType, matches };
   }
   throw new Error(`Tipo de fase desconhecido: ${stageType}`);
 }

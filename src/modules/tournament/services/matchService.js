@@ -21,18 +21,34 @@ import { db } from '@/core/config/firebase';
 import { createAuditLog } from '@/core/services/auditService';
 import { MATCH_STATUS } from '../domain/constants.js';
 import { getMatchResult } from '../domain/scoring.js';
+import { assignSchedule } from '../domain/scheduling.js';
 
 const COL = 'tournament_matches';
 
-export async function persistMatches(tournamentId, modalityId, stageIndex, draw, actor) {
+/**
+ * Persiste os jogos gerados por um sorteio. Quando uma configuração de
+ * agendamento é fornecida (`scheduleOptions.schedulingConfig`), cada jogo é
+ * automaticamente alocado em uma quadra e horário, sem conflito de jogadores,
+ * respeitando a duração média e a janela de horários da modalidade.
+ *
+ * @param {string} tournamentId
+ * @param {string} modalityId
+ * @param {number} stageIndex
+ * @param {object} draw saída de generateDraw
+ * @param {object} actor
+ * @param {{ schedulingConfig?: object, fallbackDate?: string|Date|null }} [scheduleOptions]
+ * @returns {Promise<{ scheduleWarnings: string[] }>}
+ */
+export async function persistMatches(tournamentId, modalityId, stageIndex, draw, actor, scheduleOptions = {}) {
   const batch = writeBatch(db);
   // remove jogos anteriores da fase (se houver) → este re-sorteio sobrescreve
   const existing = await listMatches(modalityId, stageIndex);
   existing.forEach((m) => batch.delete(doc(db, COL, m.id)));
 
-  draw.matches.forEach((m, idx) => {
+  // 1) Monta os payloads (com ids estáveis) antes de agendar.
+  const payloads = draw.matches.map((m, idx) => {
     const id = doc(collection(db, COL)).id;
-    const payload = {
+    return {
       id,
       tournament_id: tournamentId,
       modality_id: modalityId,
@@ -50,12 +66,36 @@ export async function persistMatches(tournamentId, modalityId, stageIndex, draw,
       status: m.bye ? MATCH_STATUS.WALKOVER : MATCH_STATUS.SCHEDULED,
       scheduled_at: null,
       court: null,
+      court_index: null,
+      slot: null,
       result_recorded_at: null,
       created_at: serverTimestamp(),
       updated_at: serverTimestamp(),
     };
-    batch.set(doc(db, COL, id), payload);
   });
+
+  // 2) Agendamento automático em quadras/horários (somente jogos disputáveis;
+  // byes não ocupam quadra).
+  let scheduleWarnings = [];
+  if (scheduleOptions.schedulingConfig) {
+    const schedulable = payloads.filter((p) => p.status !== MATCH_STATUS.WALKOVER);
+    const { byMatchId, warnings } = assignSchedule(schedulable, scheduleOptions.schedulingConfig, {
+      fallbackDate: scheduleOptions.fallbackDate || null,
+    });
+    payloads.forEach((p) => {
+      const slot = byMatchId.get(p.id);
+      if (slot) {
+        p.court = slot.court;
+        p.court_index = slot.court_index;
+        p.slot = slot.slot;
+        p.scheduled_at = slot.scheduled_at;
+      }
+    });
+    scheduleWarnings = warnings;
+  }
+
+  // 3) Grava todos os jogos.
+  payloads.forEach((p) => batch.set(doc(db, COL, p.id), p));
 
   if (draw.groups) {
     // persiste a definição de grupos como metadados em tournament_groups
@@ -84,8 +124,15 @@ export async function persistMatches(tournamentId, modalityId, stageIndex, draw,
   await createAuditLog({
     action: 'matches_generated',
     actor,
-    details: { tournament_id: tournamentId, modality_id: modalityId, stage_index: stageIndex, count: draw.matches.length },
+    details: {
+      tournament_id: tournamentId,
+      modality_id: modalityId,
+      stage_index: stageIndex,
+      count: draw.matches.length,
+      schedule_warnings: scheduleWarnings.length,
+    },
   });
+  return { scheduleWarnings };
 }
 
 function serializeSide(side) {
@@ -175,6 +222,63 @@ export async function markMatchInProgress(matchId, actor) {
     updated_at: serverTimestamp(),
   });
   await createAuditLog({ action: 'match_started', actor, details: { match_id: matchId } });
+}
+
+/**
+ * Reagenda (recalcula quadras e horários) os jogos de uma fase SEM alterar os
+ * confrontos. Útil após substituições, troca de configuração de quadras/horário
+ * ou simplesmente para reorganizar a grade. Bloqueia se algum jogo já começou
+ * ou terminou, para não bagunçar o andamento.
+ *
+ * @param {string} modalityId
+ * @param {number} stageIndex
+ * @param {object} modality modalidade (com a config de agendamento)
+ * @param {object|null} tournament torneio (para data base, opcional)
+ * @param {object} actor
+ * @returns {Promise<{ scheduleWarnings: string[], count: number }>}
+ */
+export async function rescheduleMatches(modalityId, stageIndex, modality, tournament, actor) {
+  const all = await listMatches(modalityId, stageIndex);
+  if (all.length === 0) {
+    throw new Error('Não há jogos para reagendar. Faça o sorteio primeiro.');
+  }
+  const started = all.filter(
+    (m) => m.status === MATCH_STATUS.IN_PROGRESS || m.status === MATCH_STATUS.FINISHED,
+  );
+  if (started.length > 0) {
+    throw new Error(
+      'Já existem jogos em andamento ou encerrados. Não é possível reagendar sem afetar o andamento.',
+    );
+  }
+
+  const schedulable = all.filter((m) => m.status !== MATCH_STATUS.WALKOVER);
+  const { byMatchId, warnings } = assignSchedule(schedulable, modality || {}, {
+    fallbackDate: tournament?.starts_at || null,
+  });
+
+  const batch = writeBatch(db);
+  all.forEach((m) => {
+    const slot = byMatchId.get(m.id);
+    batch.update(doc(db, COL, m.id), {
+      court: slot?.court ?? null,
+      court_index: slot?.court_index ?? null,
+      slot: slot?.slot ?? null,
+      scheduled_at: slot?.scheduled_at ?? null,
+      updated_at: serverTimestamp(),
+    });
+  });
+  await batch.commit();
+  await createAuditLog({
+    action: 'matches_rescheduled',
+    actor,
+    details: {
+      modality_id: modalityId,
+      stage_index: stageIndex,
+      count: schedulable.length,
+      schedule_warnings: warnings.length,
+    },
+  });
+  return { scheduleWarnings: warnings, count: schedulable.length };
 }
 
 export async function reShuffleRemainingMatches(modalityId, stageIndex, actor) {
