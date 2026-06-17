@@ -71,7 +71,7 @@ function ModalityRankingBlock({ modality }) {
         ) : ranking.length === 0 ? (
           <p className="text-sm text-slate-500 mt-2">Aguardando resultados.</p>
         ) : (
-          <div className="mt-3 arena-table-wrap">
+          <div className="mt-3 hidden sm:block arena-table-wrap">
             <table className="w-full text-sm">
               <thead className="bg-slate-50 sticky top-0 z-10">
                 <tr className="text-left">
@@ -115,7 +115,46 @@ function ModalityRankingBlock({ modality }) {
             </table>
           </div>
         )}
+        {!isLoading && ranking.length > 0 && (
+          <div className="mt-3 space-y-2 sm:hidden">
+            {ranking.map((r) => {
+              const balance = (r.points_for || 0) - (r.points_against || 0);
+              const tone = ROW_TONE_BY_POSITION[r.position] || 'bg-white';
+              return (
+                <div key={r.participant_id} className={`rounded-2xl border border-slate-200 p-3 ${tone}`}>
+                  <div className="flex items-center gap-2">
+                    <PositionCell position={r.position} />
+                    <AvatarGroup size="sm" people={r.players || []} />
+                    <span className="min-w-0 flex-1 truncate font-medium">{r.label}</span>
+                  </div>
+                  <div className="mt-2.5 grid grid-cols-4 gap-1.5 text-center">
+                    <RankStat label="PJ" value={r.played} />
+                    <RankStat label="V" value={r.wins} strong />
+                    <RankStat label="D" value={r.losses} />
+                    <RankStat label="Sets" value={`${r.sets_won}–${r.sets_lost}`} />
+                    <RankStat label="PF" value={r.points_for} />
+                    <RankStat label="PC" value={r.points_against} />
+                    <RankStat
+                      label="Saldo"
+                      value={balance > 0 ? `+${balance}` : balance}
+                      tone={balance > 0 ? 'text-emerald-700' : balance < 0 ? 'text-red-600' : 'text-slate-700'}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </CardContent>
     </Card>
+  );
+}
+
+function RankStat({ label, value, strong, tone }) {
+  return (
+    <div className="rounded-lg bg-white/70 px-1 py-1.5">
+      <div className="text-[10px] font-medium uppercase tracking-wide text-slate-400">{label}</div>
+      <div className={`text-sm tabular-nums ${strong ? 'font-bold text-slate-900' : `font-medium ${tone || 'text-slate-700'}`}`}>{value}</div>
+    </div>
   );
 }

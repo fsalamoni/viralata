@@ -2,7 +2,7 @@ import { cn } from '@/core/lib/utils';
 
 export function EmptyState({ icon: Icon, title, description, action, className }) {
   return (
-    <div className={cn('flex flex-col items-center justify-center text-center py-12 px-6', className)}>
+    <div className={cn('flex flex-col items-center justify-center text-center px-4 py-10 sm:px-6 sm:py-12', className)}>
       {Icon && (
         <div className="w-14 h-14 rounded-full bg-muted flex items-center justify-center mb-4">
           <Icon className="w-7 h-7 text-muted-foreground" />

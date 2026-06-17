@@ -263,7 +263,7 @@ export default function Dashboard() {
 
       {visibleTournaments.length === 0 ? (
         <Card className="rounded-[2rem] border-white/80 bg-white/82">
-          <CardContent className="flex flex-col items-center px-6 py-12 text-center sm:px-10">
+          <CardContent className="flex flex-col items-center px-4 py-10 text-center sm:px-10 sm:py-12">
             <div className="flex h-16 w-16 items-center justify-center rounded-[1.5rem] bg-emerald-100 text-emerald-700">
               <Users className="h-8 w-8" />
             </div>

@@ -124,7 +124,7 @@ export default function Tournament() {
     return (
       <div className="mx-auto max-w-xl">
         <Card className="rounded-[2rem] border-white/80 bg-white/85">
-          <CardContent className="p-8 text-center sm:p-10">
+          <CardContent className="p-6 text-center sm:p-10">
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-[1.5rem] bg-emerald-100 text-emerald-700">
               <Trophy className="h-8 w-8" />
             </div>

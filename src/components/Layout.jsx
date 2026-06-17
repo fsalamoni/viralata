@@ -406,8 +406,10 @@ export default function Layout({ children, currentPageName }) {
           </div>
         </header>
 
-        <main className="safe-px mx-auto max-w-7xl pb-10 pt-6 lg:px-8 lg:pb-12">{children}</main>
+        <main className="safe-px mx-auto max-w-7xl pb-[calc(5.25rem+env(safe-area-inset-bottom))] pt-6 lg:px-8 lg:pb-12">{children}</main>
       </div>
+
+      <MobileBottomNav currentPageName={currentPageName} />
 
       <ProfileCompletionModal />
     </div>
@@ -515,6 +517,57 @@ function pageMeta(name) {
     title: name || APP_NAME,
     description: '',
   };
+}
+
+const BOTTOM_NAV = [
+  { to: '/inicio', icon: LayoutDashboard, label: 'Início', match: (n) => n === 'Dashboard' || n === 'Inicio' },
+  { to: '/torneios/publicos', icon: Globe, label: 'Explorar', match: (n) => n === 'PublicTournamentsList' },
+  { to: '/torneios/criar', icon: Plus, label: 'Criar', primary: true, match: (n) => n === 'CreateTournament' },
+  { to: '/chat', icon: MessageCircle, label: 'Chat', match: (n) => n === 'Chat' },
+  { to: '/perfil', icon: User, label: 'Perfil', match: (n) => n === 'Profile' },
+];
+
+/**
+ * Barra de navegação inferior — só no mobile. Dá acesso de um toque às
+ * destinações principais, com alvo de toque generoso e respeito à safe-area.
+ * O menu completo (hambúrguer) continua disponível para o resto.
+ */
+function MobileBottomNav({ currentPageName }) {
+  return (
+    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-slate-950/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl lg:hidden">
+      <div className="mx-auto flex max-w-lg items-stretch justify-around px-1">
+        {BOTTOM_NAV.map((item) => {
+          const active = item.match(currentPageName);
+          const Icon = item.icon;
+          return (
+            <Link
+              key={item.to}
+              to={item.to}
+              aria-current={active ? 'page' : undefined}
+              className={cn(
+                'flex min-w-0 flex-1 flex-col items-center justify-center gap-1 py-2 text-[0.65rem] font-medium transition-colors',
+                active ? 'text-emerald-300' : 'text-emerald-50/65 hover:text-white',
+              )}
+            >
+              <span
+                className={cn(
+                  'flex h-9 w-9 items-center justify-center rounded-2xl transition-colors',
+                  item.primary
+                    ? 'bg-[linear-gradient(135deg,#facc15,#34d399)] text-slate-950 shadow-[0_12px_24px_-12px_rgba(250,204,21,0.8)]'
+                    : active
+                      ? 'bg-white/10'
+                      : '',
+                )}
+              >
+                <Icon className="h-5 w-5" />
+              </span>
+              <span className="max-w-full truncate">{item.label}</span>
+            </Link>
+          );
+        })}
+      </div>
+    </nav>
+  );
 }
 
 function BrandLockup({ to, subtitle }) {

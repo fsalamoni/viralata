@@ -110,8 +110,8 @@ export default function AthletesDirectory() {
   return (
     <div className="space-y-8">
       <section className="grid gap-6 xl:grid-cols-[1.08fr,0.92fr]">
-        <Card className="arena-panel-strong overflow-hidden rounded-[2rem] border-0">
-          <CardContent className="relative p-7 sm:p-8 lg:p-10">
+        <Card className="arena-panel-strong overflow-hidden rounded-[1.25rem] border-0 sm:rounded-[2rem]">
+          <CardContent className="relative p-5 sm:p-8 lg:p-10">
             <div className="relative max-w-2xl">
               <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-50/80">
                 <Sparkles className="h-3.5 w-3.5" /> Comunidade de atletas
@@ -231,7 +231,7 @@ export default function AthletesDirectory() {
         </div>
       ) : filtered.length === 0 ? (
         <Card className="rounded-[2rem] border-white/80 bg-white/82">
-          <CardContent className="flex flex-col items-center px-6 py-12 text-center sm:px-10">
+          <CardContent className="flex flex-col items-center px-4 py-10 text-center sm:px-10 sm:py-12">
             <div className="flex h-16 w-16 items-center justify-center rounded-[1.5rem] bg-emerald-100 text-emerald-700">
               <Users className="h-8 w-8" />
             </div>

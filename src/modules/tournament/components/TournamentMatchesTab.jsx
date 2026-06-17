@@ -134,7 +134,7 @@ function ModalityMatchesBlock({ tournament, modality, isAdmin }) {
         {matches.length === 0 ? (
           <p className="text-sm text-slate-500">Nenhum jogo gerado ainda.</p>
         ) : (
-          <div className="arena-table-wrap">
+          <div className="hidden sm:block arena-table-wrap">
             <table className="w-full text-sm">
               <thead className="bg-slate-50">
                 <tr className="text-left">
@@ -217,6 +217,82 @@ function ModalityMatchesBlock({ tournament, modality, isAdmin }) {
                 })}
               </tbody>
             </table>
+          </div>
+        )}
+        {matches.length > 0 && (
+          <div className="mt-1 space-y-2.5 sm:hidden">
+            {matches.map((m) => {
+              const sideA = m.side_a_ids?.map((id) => labelById.get(id) || id).join(' + ') || m.side_a;
+              const sideB = m.side_b_ids?.map((id) => labelById.get(id) || id).join(' + ') || m.side_b;
+              const sideAPeople = (m.side_a_ids || []).flatMap((id) => peopleById.get(id) || []);
+              const sideBPeople = (m.side_b_ids || []).flatMap((id) => peopleById.get(id) || []);
+              const finished = m.status === MATCH_STATUS.FINISHED || m.status === MATCH_STATUS.WALKOVER;
+              const inProgress = m.status === MATCH_STATUS.IN_PROGRESS;
+              const winA = finished && m.winner_side === 'a';
+              const winB = finished && m.winner_side === 'b';
+              const hasScore = (m.games || []).length > 0;
+              return (
+                <div
+                  key={m.id}
+                  className={`rounded-2xl border p-3 ${inProgress ? 'border-amber-200 bg-amber-50' : 'border-slate-200 bg-white'}`}
+                >
+                  <div className="mb-2 flex flex-wrap items-center gap-1.5">
+                    {hasGroups && m.group && (
+                      <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-600">{m.group}</span>
+                    )}
+                    <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-600">Rod. {roundLabel(m)}</span>
+                    {hasSchedule && m.court && (
+                      <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-600">{m.court}</span>
+                    )}
+                    {hasSchedule && m.scheduled_at && (
+                      <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium tabular-nums text-slate-600">{formatMatchTime(m.scheduled_at)}</span>
+                    )}
+                    <Badge variant={statusBadgeVariant(m.status)} className="ml-auto">
+                      {MATCH_STATUS_LABELS[m.status] || m.status}
+                    </Badge>
+                  </div>
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between gap-3">
+                      <MatchSideCell people={sideAPeople} fallback={sideA} win={winA} />
+                      {hasScore && (
+                        <span className="shrink-0 tabular-nums text-sm font-semibold text-slate-700">
+                          {m.games.map((g) => g.a).join('  ')}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wider text-slate-300">
+                      <span className="h-px flex-1 bg-slate-100" />vs<span className="h-px flex-1 bg-slate-100" />
+                    </div>
+                    <div className="flex items-center justify-between gap-3">
+                      <MatchSideCell people={sideBPeople} fallback={sideB} win={winB} />
+                      {hasScore && (
+                        <span className="shrink-0 tabular-nums text-sm font-semibold text-slate-700">
+                          {m.games.map((g) => g.b).join('  ')}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  {isAdmin && (
+                    <div className="mt-3 flex items-center gap-2">
+                      {m.status === MATCH_STATUS.SCHEDULED && (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="flex-1"
+                          onClick={() => handleMarkInProgress(m.id)}
+                          disabled={markInProgressMutation.isPending}
+                        >
+                          <Play className="mr-1 h-3.5 w-3.5" /> Iniciar
+                        </Button>
+                      )}
+                      <Button size="sm" variant="outline" className="flex-1" onClick={() => setOpenMatchId(m.id)}>
+                        {finished ? 'Editar placar' : 'Lançar placar'}
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
       </CardContent>

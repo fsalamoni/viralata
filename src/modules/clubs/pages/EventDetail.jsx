@@ -88,7 +88,7 @@ export default function EventDetail() {
         <Link to={`/clubes/${clubId}?tab=events`}><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para eventos</Link>
       </Button>
 
-      <section className="arena-panel-strong overflow-hidden rounded-[2rem] p-6 sm:p-8">
+      <section className="arena-panel-strong overflow-hidden rounded-[1.25rem] p-5 sm:rounded-[2rem] sm:p-8">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
