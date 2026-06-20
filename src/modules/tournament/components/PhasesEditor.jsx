@@ -235,12 +235,21 @@ export default function PhasesEditor({ phases, format, onChange }) {
                   options={PHASE_QUALIFIER_MODE_LABELS}
                   onChange={(v) => update(index, { qualifier_mode: v })}
                 />
-                <MiniSelect
-                  label="Formar duplas com os classificados?"
-                  value={phase.pairing_mode}
-                  options={PHASE_PAIRING_MODE_LABELS}
-                  onChange={(v) => update(index, { pairing_mode: v })}
-                />
+                {![TOURNAMENT_STAGE_TYPE.AMERICANO, TOURNAMENT_STAGE_TYPE.MEXICANO].includes(
+                  phases[index + 1]?.type,
+                ) ? (
+                  <MiniSelect
+                    label="Formar duplas com os classificados?"
+                    value={phase.pairing_mode}
+                    options={PHASE_PAIRING_MODE_LABELS}
+                    onChange={(v) => update(index, { pairing_mode: v })}
+                  />
+                ) : (
+                  <p className="md:col-span-2 text-[11px] text-slate-500">
+                    A próxima fase é de rotação (Americano/Mexicano): os classificados avançam
+                    individualmente e as duplas são montadas a cada rodada.
+                  </p>
+                )}
                 {phase.qualifier_mode === PHASE_QUALIFIER_MODE.BY_GENDER && (
                   <p className="md:col-span-2 text-[11px] text-slate-500">
                     Passa o(s) melhor(es) de cada gênero (M e F) — útil para formar duplas mistas.

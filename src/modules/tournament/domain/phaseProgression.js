@@ -22,8 +22,15 @@ import {
   PHASE_PAIRING_MODE,
   PHASE_DIVISION_MODE,
   PHASE_BRACKET_SEEDING,
+  TOURNAMENT_STAGE_TYPE,
 } from './constants.js';
 import { supportsGroups, BRACKET_FORMATS } from './phases.js';
+
+/** Formatos de ROTAÇÃO de parceiros (jogam com duplas montadas por rodada). */
+const ROTATION_FORMATS = new Set([
+  TOURNAMENT_STAGE_TYPE.AMERICANO,
+  TOURNAMENT_STAGE_TYPE.MEXICANO,
+]);
 
 /** Comparador oficial de classificação (mesmos critérios de ranking.js). */
 function compareStats(x, y) {
@@ -181,11 +188,18 @@ function applyPairing(qualifiers, pairingMode, groupLabel) {
 export function buildNextPhaseEntrants(sourceGroups, prevPhase, nextPhase, options = {}) {
   const seed = options.seed || 'phase';
 
+  // Formar duplas FIXAS (mista/2 melhores) não faz sentido quando a próxima
+  // fase é de ROTAÇÃO (Americano/Mexicano), que monta as duplas a cada rodada.
+  // Nesse caso os classificados avançam individualmente.
+  const effectivePairing = ROTATION_FORMATS.has(nextPhase.type)
+    ? PHASE_PAIRING_MODE.NONE
+    : prevPhase.pairing_mode;
+
   // 1) Classificados (com pairing) por grupo de origem, preservando a ordem.
   const advancersByGroup = sourceGroups.map((g) => {
     const quals = selectQualifiers(g.ranked, prevPhase);
     const letter = (g.name || '').replace(/^Grupo\s+/i, '') || groupLetter(g.index || 0);
-    const entrants = applyPairing(quals, prevPhase.pairing_mode, letter).map((e, j) => ({
+    const entrants = applyPairing(quals, effectivePairing, letter).map((e, j) => ({
       ...e,
       _groupIndex: g.index || 0,
       _seedRank: j + 1, // 1º, 2º… classificado do grupo

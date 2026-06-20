@@ -164,6 +164,41 @@ describe('buildNextPhaseEntrants — Exemplo 2 (fusão de grupos AB/CD)', () => 
   });
 });
 
+describe('buildNextPhaseEntrants — pairing é ignorado quando a próxima fase é rotação', () => {
+  it('2 grupos, 2 classificados, PAIR_TOP_TWO + próxima Americano: avançam 4 individuais (grupo AB)', () => {
+    const prev = normalizePhase({
+      type: TOURNAMENT_STAGE_TYPE.AMERICANO,
+      division_mode: PHASE_DIVISION_MODE.GROUP_COUNT,
+      group_count: 2,
+      qualifier_mode: PHASE_QUALIFIER_MODE.OVERALL,
+      qualifiers_per_group: 2,
+      pairing_mode: PHASE_PAIRING_MODE.PAIR_TOP_TWO, // será ignorado (rotação)
+    });
+    const next = normalizePhase({
+      type: TOURNAMENT_STAGE_TYPE.AMERICANO,
+      division_mode: PHASE_DIVISION_MODE.SINGLE,
+      feed_mode: PHASE_FEED_MODE.MERGE_GROUPS,
+      merge_size: 2,
+    });
+    const sourceGroups = ['A', 'B'].map((letter, i) => ({
+      index: i,
+      name: `Grupo ${letter}`,
+      ranked: [
+        entrant(`${letter}1`, { rank: 1 }),
+        entrant(`${letter}2`, { rank: 2 }),
+        entrant(`${letter}3`, { rank: 3 }),
+      ],
+    }));
+    const { groups, entrants } = buildNextPhaseEntrants(sourceGroups, prev, next);
+    expect(groups).toHaveLength(1);
+    expect(groups[0].name).toBe('Grupo AB');
+    // 4 entrants individuais (não 2 duplas)
+    expect(entrants).toHaveLength(4);
+    entrants.forEach((e) => expect(e.members).toHaveLength(1));
+    expect(groups[0].entrants.map((e) => e.id)).toEqual(['A1', 'A2', 'B1', 'B2']);
+  });
+});
+
 describe('buildNextPhaseEntrants — final por duplas (PAIR_TOP_TWO)', () => {
   it('forma 1 dupla com os 2 melhores de cada grupo para a final', () => {
     const prev = normalizePhase({
