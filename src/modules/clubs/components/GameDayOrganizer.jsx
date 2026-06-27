@@ -438,6 +438,7 @@ function GameRow({ eventId, game }) {
   const deleteGame = useDeleteEventGame(eventId);
   const [a, setA] = useState(game.score_a ?? '');
   const [b, setB] = useState(game.score_b ?? '');
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   const saveScore = () => {
     const score_a = a === '' ? null : Number(a);
@@ -479,9 +480,27 @@ function GameRow({ eventId, game }) {
       <div className={`flex-1 ${winB ? 'font-bold text-emerald-700' : 'font-medium text-slate-700'}`}>
         {sideNames(game.side_b)}
       </div>
-      <button onClick={() => deleteGame.mutate(game.id)} className="text-slate-400 transition-colors hover:text-red-600" title="Excluir jogo">
+      <button
+        type="button"
+        onClick={() => setConfirmDelete(true)}
+        className="text-slate-400 transition-colors hover:text-red-600"
+        title="Excluir jogo"
+        aria-label="Excluir jogo"
+      >
         <Trash2 className="h-3.5 w-3.5" />
       </button>
+      <ConfirmDialog
+        open={confirmDelete}
+        onOpenChange={setConfirmDelete}
+        destructive
+        title="Excluir jogo?"
+        description="Este jogo do dia será removido."
+        confirmLabel="Excluir"
+        onConfirm={() => {
+          setConfirmDelete(false);
+          deleteGame.mutate(game.id);
+        }}
+      />
     </div>
   );
 }

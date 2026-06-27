@@ -1,24 +1,16 @@
-import React from 'react';
-import {
-  AlertDialog,
-  AlertDialogTrigger,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogCancel,
-  AlertDialogAction,
-} from '@/components/ui/alert-dialog';
-import { cn } from '@/core/lib/utils';
+import React, { useState, cloneElement } from 'react';
+import { ConfirmDialog as ControlledConfirmDialog } from '@/components/ui/confirm-dialog';
 
 /**
- * Confirmação reutilizável para ações destrutivas (excluir/remover). Evita
- * perdas acidentais — o `trigger` (um botão) abre o diálogo e `onConfirm` só
- * roda após o usuário confirmar.
+ * Açúcar sintático "trigger-based" sobre o ConfirmDialog canônico
+ * (`@/components/ui/confirm-dialog`). Útil para botões de ação em listas, onde
+ * manter estado controlado por item seria verboso.
+ *
+ * O `trigger` (um botão/elemento clicável) recebe um onClick que abre o diálogo;
+ * `onConfirm` só roda após o usuário confirmar.
  *
  * @param {{
- *   trigger: React.ReactNode,
+ *   trigger: React.ReactElement,
  *   title?: string,
  *   description?: string,
  *   confirmLabel?: string,
@@ -36,24 +28,33 @@ export default function ConfirmDialog({
   destructive = true,
   onConfirm,
 }) {
+  const [open, setOpen] = useState(false);
+
+  const triggerWithHandler = cloneElement(trigger, {
+    onClick: (e) => {
+      e?.stopPropagation?.();
+      e?.preventDefault?.();
+      setOpen(true);
+      trigger.props?.onClick?.(e);
+    },
+  });
+
   return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>{title}</AlertDialogTitle>
-          {description && <AlertDialogDescription>{description}</AlertDialogDescription>}
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>{cancelLabel}</AlertDialogCancel>
-          <AlertDialogAction
-            className={cn(destructive && 'bg-red-600 text-white hover:bg-red-700')}
-            onClick={onConfirm}
-          >
-            {confirmLabel}
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+    <>
+      {triggerWithHandler}
+      <ControlledConfirmDialog
+        open={open}
+        onOpenChange={setOpen}
+        title={title}
+        description={description}
+        confirmLabel={confirmLabel}
+        cancelLabel={cancelLabel}
+        destructive={destructive}
+        onConfirm={() => {
+          setOpen(false);
+          onConfirm?.();
+        }}
+      />
+    </>
   );
 }

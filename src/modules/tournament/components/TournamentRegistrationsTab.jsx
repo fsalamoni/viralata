@@ -14,6 +14,7 @@ import {
 } from '@/modules/tournament/hooks/useTournament';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
+import ConfirmDialog from '@/components/ConfirmDialog';
 import {
   REGISTRATION_STATUS,
   REGISTRATION_STATUS_LABELS,
@@ -160,9 +161,17 @@ function ModalityRegistrationsBlock({ tournament, modality, registrations, isAdm
                             <X className="w-4 h-4 text-amber-600" />
                           </Button>
                         )}
-                        <Button size="icon" variant="ghost" title="Remover" onClick={() => deleteMutation.mutate(r.id)}>
-                          <Trash2 className="w-4 h-4 text-red-600" />
-                        </Button>
+                        <ConfirmDialog
+                          title="Remover inscrição?"
+                          description="A inscrição será removida permanentemente deste torneio."
+                          confirmLabel="Remover"
+                          onConfirm={() => deleteMutation.mutate(r.id)}
+                          trigger={(
+                            <Button size="icon" variant="ghost" title="Remover" aria-label="Remover inscrição">
+                              <Trash2 className="w-4 h-4 text-red-600" />
+                            </Button>
+                          )}
+                        />
                       </td>
                     )}
                   </tr>
