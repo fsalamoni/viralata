@@ -11,6 +11,9 @@ import ParticipationHistoryCard from '@/modules/tournament/components/Participat
 import AchievementsCard from '@/modules/achievements/components/AchievementsCard';
 import RatingSparkline from '@/modules/rating/components/RatingSparkline';
 import { useRatingHistory } from '@/modules/rating/hooks/useRating';
+import ProgressionCard from '@/modules/progression/components/ProgressionCard';
+import GoalsCard from '@/modules/progression/components/GoalsCard';
+import { usePlayerMatchDates } from '@/modules/progression/hooks/useProgression';
 import { usePlayerStats } from '../hooks/usePlayerStats.js';
 
 function formatPercent(rate) {
@@ -39,9 +42,12 @@ export default function MyPerformance() {
   const enabled = useFeatureFlag(FEATURE_FLAG.PLAYER_PERFORMANCE);
   const achievementsOn = useFeatureFlag(FEATURE_FLAG.ACHIEVEMENTS);
   const ratingHistoryOn = useFeatureFlag(FEATURE_FLAG.RATING_HISTORY);
+  const progressionOn = useFeatureFlag(FEATURE_FLAG.PLAYER_PROGRESSION);
   const { user } = useAuth();
   const { stats, isLoading } = usePlayerStats();
   const { data: ratingHistory = [] } = useRatingHistory(user?.uid, ratingHistoryOn);
+  const { data: matchDates = [] } = usePlayerMatchDates(user?.uid, progressionOn);
+  const currentRating = ratingHistory.length ? ratingHistory[ratingHistory.length - 1].rating : 0;
 
   if (!enabled) return <Navigate to="/inicio" replace />;
 
@@ -96,9 +102,18 @@ export default function MyPerformance() {
         </Card>
       )}
 
+      {progressionOn && <ProgressionCard summary={stats} matchDates={matchDates} />}
+
       {ratingHistoryOn && <RatingSparkline points={ratingHistory} />}
 
       {achievementsOn && <AchievementsCard summary={stats} />}
+
+      {progressionOn && (
+        <GoalsCard
+          uid={user?.uid}
+          values={{ games: stats.played, wins: stats.wins, tournaments: stats.tournaments, rating: currentRating }}
+        />
+      )}
 
       <ParticipationHistoryCard />
     </div>

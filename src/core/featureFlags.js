@@ -130,6 +130,13 @@ export const FEATURE_FLAG = Object.freeze({
    * dos atletas que você segue. Aditivo — desligado, a rota e o menu somem.
    */
   COMMUNITY_FEED: 'community_feed',
+
+  /**
+   * Progressão do jogador: XP e nível de perfil, sequência (streak) de semanas
+   * ativas e metas pessoais. XP/streak são calculados; metas ficam em
+   * `player_goals` (do próprio dono). Aditivo — desligado, a seção não aparece.
+   */
+  PLAYER_PROGRESSION: 'player_progression',
 });
 
 /** Metadados de exibição para o painel de flags (admin master). */
@@ -251,6 +258,13 @@ export const FEATURE_FLAG_META = Object.freeze({
       'Página "Novidades" com a atividade recente da comunidade (torneios '
       + 'públicos, convites de jogo) e dos atletas que você segue. Desligado, a '
       + 'rota e o item de menu ficam ocultos.',
+  },
+  [FEATURE_FLAG.PLAYER_PROGRESSION]: {
+    label: 'Progressão (XP, streak e metas)',
+    description:
+      'Mostra XP e nível de perfil, sequência de semanas ativas e metas pessoais '
+      + 'em "Meu Desempenho". XP e streak são calculados dos dados; as metas são '
+      + 'do próprio atleta. Desligado, a seção não aparece.',
   },
 });
 
