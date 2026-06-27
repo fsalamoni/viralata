@@ -151,6 +151,24 @@ service cloud.firestore {
       allow write: if isPlatformAdmin();
     }
 
+    // ---- Procura-se jogo (partidas sociais abertas) ----------------------
+    // Mural de convites. Leitura por autenticados; criação pelo próprio autor;
+    // edição/remoção só do autor (ou admin master).
+    match /open_games/{gameId} {
+      allow read: if isAuthed();
+      allow create: if isAuthed() && request.resource.data.created_by == request.auth.uid;
+      allow update, delete: if isAuthed()
+        && (resource.data.created_by == request.auth.uid || isPlatformAdmin());
+    }
+
+    // ---- Afiliados e parcerias -------------------------------------------
+    // Catálogo de links de afiliado/patrocinadores. Leitura pública (a página
+    // de parceiros é aberta). Escrita só do admin master.
+    match /affiliate_links/{linkId} {
+      allow read: if true;
+      allow write: if isPlatformAdmin();
+    }
+
     // ---- Users -----------------------------------------------------------
     match /users/{userId} {
       allow read: if isOwner(userId) || isPlatformAdmin();

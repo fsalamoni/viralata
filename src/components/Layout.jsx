@@ -24,6 +24,7 @@ import {
   Activity,
   Medal,
   Swords,
+  Megaphone,
 } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
@@ -78,6 +79,21 @@ const PAGE_META = {
     eyebrow: 'Explorar',
     title: 'Encontrar jogadores',
     description: 'Parceiros e adversários do seu nível, prontos para um jogo.',
+  },
+  OpenGames: {
+    eyebrow: 'Explorar',
+    title: 'Procura-se jogo',
+    description: 'Convites de partidas sociais abertas na comunidade.',
+  },
+  Partners: {
+    eyebrow: 'Explorar',
+    title: 'Parceiros',
+    description: 'Marcas, lojas e patrocinadores parceiros da Pickleholics.',
+  },
+  AdminPartners: {
+    eyebrow: 'Admin geral',
+    title: 'Parceiros e afiliados',
+    description: 'Cadastre e gerencie links de afiliado e patrocinadores.',
   },
   CreateTournament: {
     eyebrow: 'Organização',
@@ -158,6 +174,8 @@ export default function Layout({ children, currentPageName }) {
   const performanceOn = useFeatureFlag(FEATURE_FLAG.PLAYER_PERFORMANCE);
   const ratingOn = useFeatureFlag(FEATURE_FLAG.PLAYER_RATING);
   const matchmakingOn = useFeatureFlag(FEATURE_FLAG.MATCHMAKING);
+  const openGamesOn = useFeatureFlag(FEATURE_FLAG.OPEN_GAMES);
+  const affiliatesOn = useFeatureFlag(FEATURE_FLAG.AFFILIATE_LINKS);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const isStandalonePublicPage = STANDALONE_PUBLIC_PAGES.includes(currentPageName);
   const isUtilityPublicPage = UTILITY_PUBLIC_PAGES.includes(currentPageName);
@@ -348,6 +366,24 @@ export default function Layout({ children, currentPageName }) {
                   onClick={() => setSidebarOpen(false)}
                 />
               )}
+              {openGamesOn && (
+                <NavItem
+                  to="/procura-jogo"
+                  icon={Megaphone}
+                  label="Procura-se jogo"
+                  active={currentPageName === 'OpenGames'}
+                  onClick={() => setSidebarOpen(false)}
+                />
+              )}
+              {affiliatesOn && (
+                <NavItem
+                  to="/parceiros"
+                  icon={HeartHandshake}
+                  label="Parceiros"
+                  active={currentPageName === 'Partners'}
+                  onClick={() => setSidebarOpen(false)}
+                />
+              )}
               <NavItem
                 to="/clubes"
                 icon={Building2}
@@ -394,6 +430,15 @@ export default function Layout({ children, currentPageName }) {
                   active={currentPageName === 'AdminMetrics'}
                   onClick={() => setSidebarOpen(false)}
                 />
+                {affiliatesOn && (
+                  <NavItem
+                    to="/admin/parceiros"
+                    icon={HeartHandshake}
+                    label="Parceiros e afiliados"
+                    active={currentPageName === 'AdminPartners'}
+                    onClick={() => setSidebarOpen(false)}
+                  />
+                )}
               </SidebarSection>
             )}
 

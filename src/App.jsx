@@ -33,6 +33,9 @@ const ChatPage = lazy(() => import('@/modules/chat/pages/ChatPage'));
 const MyPerformance = lazy(() => import('@/modules/performance/pages/MyPerformance'));
 const NationalRanking = lazy(() => import('@/modules/rating/pages/NationalRanking'));
 const FindPlayers = lazy(() => import('@/modules/rating/pages/FindPlayers'));
+const OpenGames = lazy(() => import('@/modules/games/pages/OpenGames'));
+const Partners = lazy(() => import('@/modules/partners/pages/Partners'));
+const AdminPartners = lazy(() => import('@/modules/partners/pages/AdminPartners'));
 const PageNotFound = lazy(() => import('@/pages/PageNotFound'));
 
 const LOCAL_PREVIEW_PROTECTED_PATHS = new Set([
@@ -115,6 +118,7 @@ export default function App() {
               {/* Public spectator view (sem auth) */}
               <Route path="/p/:tournamentId" element={<PublicTournament />} />
               <Route path="/ranking" element={<NationalRanking />} />
+              <Route path="/parceiros" element={<Partners />} />
               <Route path="/torneios/:tournamentId/imprimir" element={<PrintTournament />} />
 
               {/* Legacy redirects (Bolão → Pickleball) */}
@@ -131,6 +135,7 @@ export default function App() {
               <Route path="/chat" element={<ProtectedRoute>{withLayout('Chat', ChatPage)}</ProtectedRoute>} />
               <Route path="/meu-desempenho" element={<ProtectedRoute>{withLayout('MyPerformance', MyPerformance)}</ProtectedRoute>} />
               <Route path="/encontrar-jogadores" element={<ProtectedRoute>{withLayout('FindPlayers', FindPlayers)}</ProtectedRoute>} />
+              <Route path="/procura-jogo" element={<ProtectedRoute>{withLayout('OpenGames', OpenGames)}</ProtectedRoute>} />
               <Route path="/torneios" element={<Navigate to="/inicio" replace />} />
               <Route path="/torneios/criar" element={<ProtectedRoute>{withLayout('CreateTournament', CreateTournament)}</ProtectedRoute>} />
               <Route path="/torneios/ingressar" element={<ProtectedRoute>{withLayout('JoinTournament', JoinTournament)}</ProtectedRoute>} />
@@ -149,6 +154,7 @@ export default function App() {
               <Route path="/admin" element={<AdminRoute>{withLayout('AdminTournaments', AdminTournaments)}</AdminRoute>} />
               <Route path="/admin/torneios" element={<AdminRoute>{withLayout('AdminTournaments', AdminTournaments)}</AdminRoute>} />
               <Route path="/admin/metricas" element={<AdminRoute>{withLayout('AdminMetrics', AdminMetrics)}</AdminRoute>} />
+              <Route path="/admin/parceiros" element={<AdminRoute>{withLayout('AdminPartners', AdminPartners)}</AdminRoute>} />
 
               <Route path="*" element={<PageNotFound />} />
             </Routes>

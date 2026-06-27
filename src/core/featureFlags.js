@@ -58,6 +58,21 @@ export const FEATURE_FLAG = Object.freeze({
    * Aditivo — desligado, a rota e o item de menu ficam ocultos.
    */
   MATCHMAKING: 'matchmaking',
+
+  /**
+   * "Procura-se jogo": mural de partidas sociais abertas. O atleta publica um
+   * convite (quando, cidade, nível, formato, observações) e outros encontram
+   * por cidade/nível e chamam pelo chat. Aditivo — desligado, a rota e o menu
+   * ficam ocultos.
+   */
+  OPEN_GAMES: 'open_games',
+
+  /**
+   * Afiliados e parcerias: o admin cadastra links de afiliado/patrocinadores e
+   * os atletas veem uma página de parceiros; os cliques são medidos via
+   * analytics. Aditivo — desligado, as rotas e os menus ficam ocultos.
+   */
+  AFFILIATE_LINKS: 'affiliate_links',
 });
 
 /** Metadados de exibição para o painel de flags (admin master). */
@@ -110,6 +125,22 @@ export const FEATURE_FLAG_META = Object.freeze({
       'Página "Encontrar jogadores" que sugere parceiros e adversários com '
       + 'rating próximo (opcionalmente da mesma cidade), com atalho para o chat. '
       + 'Requer o "Rating ELO" ativado. Desligado, a rota e o menu ficam ocultos.',
+  },
+  [FEATURE_FLAG.OPEN_GAMES]: {
+    label: 'Procura-se jogo',
+    description:
+      'Mural de partidas sociais abertas: o atleta publica um convite (quando, '
+      + 'cidade, nível, formato e observações) e outros encontram por cidade/nível '
+      + 'e chamam pelo chat. Aumenta a retenção fora dos torneios. Desligado, a '
+      + 'rota e o item de menu ficam ocultos.',
+  },
+  [FEATURE_FLAG.AFFILIATE_LINKS]: {
+    label: 'Afiliados e parcerias',
+    description:
+      'Permite ao admin cadastrar links de afiliado e patrocinadores, exibidos '
+      + 'em uma página de parceiros para os atletas; os cliques são medidos via '
+      + 'analytics. Primeira fonte de receita sem barreira. Desligado, as rotas '
+      + 'e os itens de menu ficam ocultos.',
   },
 });
 
