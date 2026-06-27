@@ -30,6 +30,8 @@ import { LEVEL_TABLE } from '@/modules/leveling/data/levels';
 import { computeRatings, seedFromLevelOrdinal } from '../domain/elo.js';
 
 const RATINGS_COLLECTION = 'player_ratings';
+const HISTORY_COLLECTION = 'rating_history';
+const HISTORY_MAX_POINTS = 50;
 const SAFE_BATCH_WRITE_SIZE = 450;
 const FINISHED_STATUSES = [MATCH_STATUS.FINISHED, MATCH_STATUS.WALKOVER];
 
@@ -128,13 +130,32 @@ export async function recomputeAllRatings(actor) {
       state: profile.state || null,
       level: profile.level || null,
       leveling_level: profile.leveling_level || null,
+      // Denormalizado para rankings segmentados (Fase ranking_filters).
+      gender: profile.gender || null,
+      age: Number.isFinite(profile.age) ? profile.age : null,
+      club_ids: Array.isArray(profile.club_ids) ? profile.club_ids : [],
+      clubs: Array.isArray(profile.clubs) ? profile.clubs : [],
     };
   });
+
+  // Histórico de rating: lê o existente uma vez e acrescenta um ponto por jogador.
+  const historySnap = await getDocs(collection(db, HISTORY_COLLECTION));
+  const historyByUid = new Map(historySnap.docs.map((d) => [d.id, d.data()]));
+  const snapshotAt = Date.now();
 
   for (let i = 0; i < rows.length; i += SAFE_BATCH_WRITE_SIZE) {
     const batch = writeBatch(db);
     rows.slice(i, i + SAFE_BATCH_WRITE_SIZE).forEach((row) => {
       batch.set(doc(db, RATINGS_COLLECTION, row.uid), { ...row, updated_at: serverTimestamp() });
+
+      const prev = historyByUid.get(row.uid);
+      const points = Array.isArray(prev?.points) ? prev.points.slice(-(HISTORY_MAX_POINTS - 1)) : [];
+      points.push({ at: snapshotAt, rating: row.rating });
+      batch.set(doc(db, HISTORY_COLLECTION, row.uid), {
+        uid: row.uid,
+        points,
+        updated_at: serverTimestamp(),
+      });
     });
     await batch.commit();
   }
@@ -160,4 +181,12 @@ export async function getPlayerRating(uid) {
   if (!db || !uid) return null;
   const snap = await getDoc(doc(db, RATINGS_COLLECTION, uid));
   return snap.exists() ? { id: snap.id, ...snap.data() } : null;
+}
+
+/** Histórico de rating de um atleta (lista de pontos {at, rating}), ou []. */
+export async function getRatingHistory(uid) {
+  if (!db || !uid) return [];
+  const snap = await getDoc(doc(db, HISTORY_COLLECTION, uid));
+  const points = snap.exists() ? snap.data().points : null;
+  return Array.isArray(points) ? points : [];
 }

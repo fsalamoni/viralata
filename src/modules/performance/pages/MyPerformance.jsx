@@ -3,11 +3,14 @@ import { Navigate } from 'react-router-dom';
 import { Trophy, Swords, Percent, Medal, Award, ListChecks } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
 import { MODALITY_FORMAT_LABELS } from '@/modules/tournament/domain/constants';
 import ParticipationHistoryCard from '@/modules/tournament/components/ParticipationHistoryCard';
 import AchievementsCard from '@/modules/achievements/components/AchievementsCard';
+import RatingSparkline from '@/modules/rating/components/RatingSparkline';
+import { useRatingHistory } from '@/modules/rating/hooks/useRating';
 import { usePlayerStats } from '../hooks/usePlayerStats.js';
 
 function formatPercent(rate) {
@@ -35,7 +38,10 @@ function StatCard({ icon: Icon, label, value, hint }) {
 export default function MyPerformance() {
   const enabled = useFeatureFlag(FEATURE_FLAG.PLAYER_PERFORMANCE);
   const achievementsOn = useFeatureFlag(FEATURE_FLAG.ACHIEVEMENTS);
+  const ratingHistoryOn = useFeatureFlag(FEATURE_FLAG.RATING_HISTORY);
+  const { user } = useAuth();
   const { stats, isLoading } = usePlayerStats();
+  const { data: ratingHistory = [] } = useRatingHistory(user?.uid, ratingHistoryOn);
 
   if (!enabled) return <Navigate to="/inicio" replace />;
 
@@ -89,6 +95,8 @@ export default function MyPerformance() {
           </CardContent>
         </Card>
       )}
+
+      {ratingHistoryOn && <RatingSparkline points={ratingHistory} />}
 
       {achievementsOn && <AchievementsCard summary={stats} />}
 

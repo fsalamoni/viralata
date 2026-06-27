@@ -95,6 +95,20 @@ export const FEATURE_FLAG = Object.freeze({
    * desligado, a seção de conquistas não aparece.
    */
   ACHIEVEMENTS: 'achievements',
+
+  /**
+   * Filtros segmentados no ranking nacional (clube, gênero, faixa etária),
+   * além dos já existentes de estado/nível. Aditivo — desligado, apenas os
+   * filtros atuais aparecem.
+   */
+  RANKING_FILTERS: 'ranking_filters',
+
+  /**
+   * Evolução do rating: a cada recálculo, grava um ponto histórico por jogador
+   * e exibe um gráfico de evolução no perfil e em "Meu Desempenho". Aditivo —
+   * desligado, o gráfico não aparece (os pontos seguem sendo registrados).
+   */
+  RATING_HISTORY: 'rating_history',
 });
 
 /** Metadados de exibição para o painel de flags (admin master). */
@@ -184,6 +198,18 @@ export const FEATURE_FLAG_META = Object.freeze({
       'Exibe medalhas desbloqueadas por marcos (vitórias, pódios, títulos, '
       + 'torneios e rating) no perfil do atleta e em "Meu Desempenho", calculadas '
       + 'dos dados existentes. Desligado, a seção de conquistas não aparece.',
+  },
+  [FEATURE_FLAG.RANKING_FILTERS]: {
+    label: 'Rankings segmentados',
+    description:
+      'Adiciona filtros de clube, gênero e faixa etária ao ranking nacional, '
+      + 'além de estado e nível. Desligado, apenas os filtros atuais aparecem.',
+  },
+  [FEATURE_FLAG.RATING_HISTORY]: {
+    label: 'Evolução do rating',
+    description:
+      'Mostra um gráfico de evolução do rating (snapshots a cada recálculo) no '
+      + 'perfil do atleta e em "Meu Desempenho". Desligado, o gráfico não aparece.',
   },
 });
 

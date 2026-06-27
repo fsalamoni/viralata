@@ -151,6 +151,12 @@ service cloud.firestore {
       allow write: if isPlatformAdmin();
     }
 
+    // Histórico de rating (snapshots por recálculo). Leitura pública; escrita só admin.
+    match /rating_history/{uid} {
+      allow read: if true;
+      allow write: if isPlatformAdmin();
+    }
+
     // ---- Procura-se jogo (partidas sociais abertas) ----------------------
     // Mural de convites. Leitura por autenticados; criação pelo próprio autor;
     // edição/remoção só do autor (ou admin master).
