@@ -204,6 +204,14 @@ jobs:
             echo "Live URL: https://$HOSTING_SITE_ID.web.app"
             exit 0
           fi
+          # Idempotência: quando o conteúdo construído é idêntico ao que já está
+          # no ar, o release responde 400 "is the current active version". Isso
+          # significa que o site JÁ está servindo esta versão — não é uma falha.
+          if echo "$OUT" | grep -qiE "is the current active version"; then
+            echo "Hosting já está na versão atual (nada a publicar). OK."
+            echo "Live URL: https://$HOSTING_SITE_ID.web.app"
+            exit 0
+          fi
           if echo "$OUT" | grep -qiE "HTTP Error: 403|PERMISSION_DENIED|caller does not have permission"; then
             echo "::error title=Missing IAM permission for Hosting deploy::Service account '$SA_EMAIL' cannot deploy to hosting site '$HOSTING_SITE_ID' in '$FIREBASE_PROJECT_ID'. Grant role 'Firebase Hosting Admin' at https://console.cloud.google.com/iam-admin/iam?project=$FIREBASE_PROJECT_ID"
           fi
