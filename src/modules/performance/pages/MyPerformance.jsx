@@ -7,6 +7,7 @@ import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
 import { MODALITY_FORMAT_LABELS } from '@/modules/tournament/domain/constants';
 import ParticipationHistoryCard from '@/modules/tournament/components/ParticipationHistoryCard';
+import AchievementsCard from '@/modules/achievements/components/AchievementsCard';
 import { usePlayerStats } from '../hooks/usePlayerStats.js';
 
 function formatPercent(rate) {
@@ -33,6 +34,7 @@ function StatCard({ icon: Icon, label, value, hint }) {
 
 export default function MyPerformance() {
   const enabled = useFeatureFlag(FEATURE_FLAG.PLAYER_PERFORMANCE);
+  const achievementsOn = useFeatureFlag(FEATURE_FLAG.ACHIEVEMENTS);
   const { stats, isLoading } = usePlayerStats();
 
   if (!enabled) return <Navigate to="/inicio" replace />;
@@ -87,6 +89,8 @@ export default function MyPerformance() {
           </CardContent>
         </Card>
       )}
+
+      {achievementsOn && <AchievementsCard summary={stats} />}
 
       <ParticipationHistoryCard />
     </div>

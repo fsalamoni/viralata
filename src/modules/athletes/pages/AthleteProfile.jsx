@@ -7,6 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
 import ChatLauncherButton from '@/modules/chat/components/ChatLauncherButton';
+import AchievementsCard from '@/modules/achievements/components/AchievementsCard';
 import { genderLabel } from '@/modules/athletes/domain/constants';
 import { MODALITY_FORMAT_LABELS } from '@/modules/tournament/domain/constants';
 import { useAthleteProfile } from '../hooks/useAthleteProfile.js';
@@ -34,6 +35,7 @@ function StatTile({ icon: Icon, label, value, hint }) {
 
 export default function AthleteProfile() {
   const enabled = useFeatureFlag(FEATURE_FLAG.ATHLETE_PROFILE_PAGE);
+  const achievementsOn = useFeatureFlag(FEATURE_FLAG.ACHIEVEMENTS);
   const { uid } = useParams();
   const { data, isLoading } = useAthleteProfile(uid);
 
@@ -146,6 +148,8 @@ export default function AthleteProfile() {
           </CardContent>
         </Card>
       )}
+
+      {achievementsOn && <AchievementsCard summary={{ ...stats, rating: rating?.rating }} />}
 
       {/* Torneios recentes */}
       {history.length > 0 && (

@@ -88,6 +88,13 @@ export const FEATURE_FLAG = Object.freeze({
    * a rota some e os links para ela não aparecem (o diretório segue igual).
    */
   ATHLETE_PROFILE_PAGE: 'athlete_profile_page',
+
+  /**
+   * Conquistas/medalhas: desbloqueadas por marcos (vitórias, pódios, títulos,
+   * torneios, rating), calculadas a partir dos dados já existentes. Aditivo —
+   * desligado, a seção de conquistas não aparece.
+   */
+  ACHIEVEMENTS: 'achievements',
 });
 
 /** Metadados de exibição para o painel de flags (admin master). */
@@ -170,6 +177,13 @@ export const FEATURE_FLAG_META = Object.freeze({
       'Habilita a página de perfil do atleta (/atleta/:uid) com desempenho, '
       + 'rating, conquistas e clubes, e torna o diretório e o ranking clicáveis '
       + 'para ela. Desligado, a rota e os links ficam ocultos.',
+  },
+  [FEATURE_FLAG.ACHIEVEMENTS]: {
+    label: 'Conquistas / medalhas',
+    description:
+      'Exibe medalhas desbloqueadas por marcos (vitórias, pódios, títulos, '
+      + 'torneios e rating) no perfil do atleta e em "Meu Desempenho", calculadas '
+      + 'dos dados existentes. Desligado, a seção de conquistas não aparece.',
   },
 });
 
