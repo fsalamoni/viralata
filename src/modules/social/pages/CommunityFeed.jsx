@@ -6,6 +6,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
+import ErrorState from '@/components/ErrorState';
 import { useFeed } from '../hooks/useFeed.js';
 import { useFollowing } from '../hooks/useFollow.js';
 import { filterFeedByFollowing, FEED_ITEM_TYPE } from '../domain/feed.js';
@@ -23,7 +24,7 @@ export default function CommunityFeed() {
   const enabled = useFeatureFlag(FEATURE_FLAG.COMMUNITY_FEED);
   const followOn = useFeatureFlag(FEATURE_FLAG.FOLLOW_ATHLETES);
   const { user } = useAuth();
-  const { data: items = [], isLoading } = useFeed();
+  const { data: items = [], isLoading, isError, refetch } = useFeed();
   const { data: following = [] } = useFollowing(user?.uid, followOn);
   const [onlyFollowing, setOnlyFollowing] = useState(false);
 
@@ -57,7 +58,9 @@ export default function CommunityFeed() {
         )}
       </div>
 
-      {isLoading ? (
+      {isError ? (
+        <ErrorState message="Não foi possível carregar as novidades." onRetry={refetch} />
+      ) : isLoading ? (
         <Skeleton className="h-64" />
       ) : visible.length === 0 ? (
         <Card>

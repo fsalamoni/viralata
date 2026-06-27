@@ -10,6 +10,8 @@ import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
 import ChatLauncherButton from '@/modules/chat/components/ChatLauncherButton';
+import ConfirmDialog from '@/components/ConfirmDialog';
+import ErrorState from '@/components/ErrorState';
 import CreateOpenGameDialog from '@/modules/games/components/CreateOpenGameDialog';
 import { getLevelByCode, LEVEL_OPTIONS } from '@/modules/leveling/data/levels';
 import {
@@ -29,7 +31,7 @@ function levelLabel(code) {
 export default function OpenGames() {
   const enabled = useFeatureFlag(FEATURE_FLAG.OPEN_GAMES);
   const { user } = useAuth();
-  const { data: games = [], isLoading } = useOpenGames();
+  const { data: games = [], isLoading, isError, refetch } = useOpenGames();
   const { data: myGames = [] } = useMyOpenGames();
   const closeGame = useCloseOpenGame();
   const deleteGame = useDeleteOpenGame();
@@ -75,9 +77,17 @@ export default function OpenGames() {
                     <Button size="sm" variant="outline" onClick={() => closeGame.mutate(g.id)} disabled={closeGame.isPending}>
                       <X className="h-4 w-4" /> <span className="ml-1 hidden sm:inline">Encerrar</span>
                     </Button>
-                    <Button size="sm" variant="outline" onClick={() => deleteGame.mutate(g.id)} disabled={deleteGame.isPending}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    <ConfirmDialog
+                      title="Excluir convite?"
+                      description="Seu convite será removido do mural."
+                      confirmLabel="Excluir"
+                      onConfirm={() => deleteGame.mutate(g.id)}
+                      trigger={(
+                        <Button size="sm" variant="outline" disabled={deleteGame.isPending} aria-label="Excluir convite">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
+                    />
                   </div>
                 </div>
               ))}
@@ -114,7 +124,9 @@ export default function OpenGames() {
         </CardContent>
       </Card>
 
-      {isLoading ? (
+      {isError ? (
+        <ErrorState message="Não foi possível carregar os convites." onRetry={refetch} />
+      ) : isLoading ? (
         <Skeleton className="h-48" />
       ) : filtered.length === 0 ? (
         <Card>

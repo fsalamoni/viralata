@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { ImageUpload } from '@/components/ui/image-upload';
+import ConfirmDialog from '@/components/ConfirmDialog';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
 import {
@@ -212,9 +213,17 @@ export default function AdminPartners() {
                     <Button size="sm" variant="outline" onClick={() => startEdit(link)}>
                       <Pencil className="h-4 w-4" />
                     </Button>
-                    <Button size="sm" variant="outline" onClick={() => handleDelete(link)}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    <ConfirmDialog
+                      title="Remover parceiro?"
+                      description={`"${link.title}" deixará de aparecer na página de parceiros.`}
+                      confirmLabel="Remover"
+                      onConfirm={() => handleDelete(link)}
+                      trigger={(
+                        <Button size="sm" variant="outline" aria-label="Remover parceiro">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
+                    />
                   </div>
                 </div>
               ))}

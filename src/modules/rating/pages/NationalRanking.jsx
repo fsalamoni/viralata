@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
 import { genderLabel } from '@/modules/athletes/domain/constants';
+import ErrorState from '@/components/ErrorState';
 import { useNationalRanking } from '../hooks/useRating.js';
 
 const ALL = 'all';
@@ -36,7 +37,7 @@ export default function NationalRanking() {
   const enabled = useFeatureFlag(FEATURE_FLAG.PLAYER_RATING);
   const profilePageOn = useFeatureFlag(FEATURE_FLAG.ATHLETE_PROFILE_PAGE);
   const rankingFiltersOn = useFeatureFlag(FEATURE_FLAG.RANKING_FILTERS);
-  const { data: players = [], isLoading } = useNationalRanking();
+  const { data: players = [], isLoading, isError, refetch } = useNationalRanking();
   const [search, setSearch] = useState('');
   const [stateFilter, setStateFilter] = useState(ALL);
   const [levelFilter, setLevelFilter] = useState(ALL);
@@ -174,7 +175,9 @@ export default function NationalRanking() {
           </CardContent>
         </Card>
 
-        {isLoading ? (
+        {isError ? (
+          <ErrorState message="Não foi possível carregar o ranking." onRetry={refetch} />
+        ) : isLoading ? (
           <Skeleton className="h-72" />
         ) : filtered.length === 0 ? (
           <Card>

@@ -4,6 +4,7 @@ import { Target, Plus, Trash2, Check } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import ConfirmDialog from '@/components/ConfirmDialog';
 import { GOAL_METRIC_LABELS, goalProgress } from '../domain/progression.js';
 import { useGoals, useCreateGoal, useDeleteGoal } from '../hooks/useProgression.js';
 
@@ -75,9 +76,17 @@ export default function GoalsCard({ uid, values }) {
                     <div className="flex items-center gap-2">
                       {p.done && <Check className="h-4 w-4 text-emerald-600" />}
                       <span className="text-xs text-slate-500 tabular-nums">{p.current}/{p.target}</span>
-                      <button type="button" onClick={() => remove.mutate(g.id)} aria-label="Remover meta" className="text-slate-400 hover:text-red-600">
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                      <ConfirmDialog
+                        title="Remover meta?"
+                        description="A meta será removida permanentemente."
+                        confirmLabel="Remover"
+                        onConfirm={() => remove.mutate(g.id)}
+                        trigger={(
+                          <button type="button" aria-label="Remover meta" className="text-slate-400 hover:text-red-600">
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        )}
+                      />
                     </div>
                   </div>
                   <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-slate-100">

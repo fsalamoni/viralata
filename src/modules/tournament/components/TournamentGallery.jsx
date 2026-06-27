@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import { Images, Trash2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { ImageUpload } from '@/components/ui/image-upload';
+import ConfirmDialog from '@/components/ConfirmDialog';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
 import {
@@ -65,14 +66,21 @@ export default function TournamentGallery({ tournamentId, canManage = false }) {
               <div key={p.id} className="group relative overflow-hidden rounded-lg">
                 <img src={p.url} alt="" className="h-28 w-full object-cover" />
                 {canManage && (
-                  <button
-                    type="button"
-                    onClick={() => remove.mutate(p.id)}
-                    aria-label="Remover foto"
-                    className="absolute right-1 top-1 rounded-full bg-black/60 p-1 text-white opacity-0 transition-opacity group-hover:opacity-100"
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </button>
+                  <ConfirmDialog
+                    title="Remover foto?"
+                    description="A foto será removida da galeria."
+                    confirmLabel="Remover"
+                    onConfirm={() => remove.mutate(p.id)}
+                    trigger={(
+                      <button
+                        type="button"
+                        aria-label="Remover foto"
+                        className="absolute right-1 top-1 rounded-full bg-black/60 p-1 text-white opacity-0 transition-opacity group-hover:opacity-100"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    )}
+                  />
                 )}
               </div>
             ))}

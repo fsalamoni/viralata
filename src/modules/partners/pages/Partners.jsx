@@ -7,12 +7,13 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
 import { recordEvent } from '@/core/services/observabilityService';
+import ErrorState from '@/components/ErrorState';
 import { sortActiveLinks, AFFILIATE_CATEGORY_LABELS } from '../domain/affiliate.js';
 import { useAffiliateLinks } from '../hooks/useAffiliates.js';
 
 export default function Partners() {
   const enabled = useFeatureFlag(FEATURE_FLAG.AFFILIATE_LINKS);
-  const { data: links = [], isLoading } = useAffiliateLinks();
+  const { data: links = [], isLoading, isError, refetch } = useAffiliateLinks();
   const active = useMemo(() => sortActiveLinks(links), [links]);
 
   if (!enabled) return <Navigate to="/" replace />;
@@ -47,7 +48,9 @@ export default function Partners() {
           </CardContent>
         </Card>
 
-        {isLoading ? (
+        {isError ? (
+          <ErrorState message="Não foi possível carregar os parceiros." onRetry={refetch} />
+        ) : isLoading ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {[1, 2, 3].map((i) => <Skeleton key={i} className="h-44 rounded-xl" />)}
           </div>
