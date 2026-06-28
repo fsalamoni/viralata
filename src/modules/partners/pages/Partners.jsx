@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
-import { Link, Navigate } from 'react-router-dom';
-import { Trophy, ExternalLink, Handshake } from 'lucide-react';
+import { Navigate } from 'react-router-dom';
+import { ExternalLink, Handshake } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -24,30 +24,7 @@ export default function Partners() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-emerald-50/50 to-white">
-      <header className="border-b bg-white/80 backdrop-blur sticky top-0 z-10">
-        <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
-          <Link to="/" className="flex items-center gap-2 font-bold text-emerald-700">
-            <Trophy className="w-5 h-5" /> Pickleholics
-          </Link>
-          <Badge variant="success" className="text-xs">
-            <Handshake className="w-3 h-3 mr-1" /> Parceiros
-          </Badge>
-        </div>
-      </header>
-
-      <main className="max-w-5xl mx-auto p-4 space-y-4">
-        <Card>
-          <CardContent className="p-5">
-            <h1 className="text-2xl font-bold arena-heading flex items-center gap-2">
-              <Handshake className="w-6 h-6 text-emerald-600" /> Parceiros e ofertas
-            </h1>
-            <p className="text-sm text-slate-600 mt-1">
-              Marcas, lojas e patrocinadores que apoiam a comunidade do pickleball.
-            </p>
-          </CardContent>
-        </Card>
-
+    <div className="mx-auto max-w-5xl space-y-4">
         {isError ? (
           <ErrorState message="Não foi possível carregar os parceiros." onRetry={refetch} />
         ) : isLoading ? (
@@ -96,9 +73,6 @@ export default function Partners() {
             ))}
           </div>
         )}
-      </main>
-
-      <footer className="text-center text-xs text-slate-400 py-6">Pickleholics · Parceiros</footer>
     </div>
   );
 }

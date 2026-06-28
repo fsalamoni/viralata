@@ -47,7 +47,14 @@ import { cn } from '@/core/lib/utils';
 import { isRequiredProfileComplete } from '@/core/lib/profileValidation';
 
 const STANDALONE_PUBLIC_PAGES = ['Landing', 'Login'];
-const UTILITY_PUBLIC_PAGES = ['PrivacyPolicy', 'ConductFairPlay', 'PickleballRules', 'Leveling'];
+const UTILITY_PUBLIC_PAGES = [
+  'PrivacyPolicy',
+  'ConductFairPlay',
+  'PickleballRules',
+  'Leveling',
+  'NationalRanking',
+  'Partners',
+];
 const APP_NAME = 'Pickleball';
 
 const PAGE_META = {
@@ -95,6 +102,11 @@ const PAGE_META = {
     eyebrow: 'Explorar',
     title: 'Parceiros',
     description: 'Marcas, lojas e patrocinadores parceiros da Pickleholics.',
+  },
+  NationalRanking: {
+    eyebrow: 'Explorar',
+    title: 'Ranking nacional',
+    description: 'Rating calculado a partir dos jogos disputados nos torneios da plataforma.',
   },
   AdminPartners: {
     eyebrow: 'Admin geral',
@@ -553,6 +565,9 @@ export default function Layout({ children, currentPageName }) {
 function PublicUtilityLayout({ children, currentPageName }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const currentMeta = pageMeta(currentPageName);
+  const ratingOn = useFeatureFlag(FEATURE_FLAG.PLAYER_RATING);
+  const affiliatesOn = useFeatureFlag(FEATURE_FLAG.AFFILIATE_LINKS);
+  const hasExplore = ratingOn || affiliatesOn;
 
   return (
     <div className="min-h-screen arena-page">
@@ -588,6 +603,16 @@ function PublicUtilityLayout({ children, currentPageName }) {
           </div>
 
           <nav className="flex-1 overflow-y-auto px-4 py-6">
+            {hasExplore && (
+              <SidebarSection title="Explorar" hint="Aberto à comunidade">
+                {ratingOn && (
+                  <NavItem to="/ranking" icon={Medal} label="Ranking nacional" active={currentPageName === 'NationalRanking'} onClick={() => setSidebarOpen(false)} />
+                )}
+                {affiliatesOn && (
+                  <NavItem to="/parceiros" icon={HeartHandshake} label="Parceiros" active={currentPageName === 'Partners'} onClick={() => setSidebarOpen(false)} />
+                )}
+              </SidebarSection>
+            )}
             <SidebarSection title="Sobre o esporte" hint="Leitura pública">
               <NavItem to="/regras" icon={BookOpen} label="Regras" active={currentPageName === 'PickleballRules'} onClick={() => setSidebarOpen(false)} />
               <NavItem to="/nivelamento" icon={Award} label="Nivelamento" active={currentPageName === 'Leveling'} onClick={() => setSidebarOpen(false)} />

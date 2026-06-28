@@ -125,8 +125,8 @@ export default function App() {
 
               {/* Public spectator view (sem auth) */}
               <Route path="/p/:tournamentId" element={<PublicTournament />} />
-              <Route path="/ranking" element={<NationalRanking />} />
-              <Route path="/parceiros" element={<Partners />} />
+              <Route path="/ranking" element={withLayout('NationalRanking', NationalRanking)} />
+              <Route path="/parceiros" element={withLayout('Partners', Partners)} />
               <Route path="/torneios/:tournamentId/imprimir" element={<PrintTournament />} />
 
               {/* Legacy redirects (Bolão → Pickleball) */}

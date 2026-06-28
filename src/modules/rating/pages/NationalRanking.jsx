@@ -1,10 +1,9 @@
 import React, { useMemo, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
-import { Trophy, Search, Medal, X } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Badge } from '@/components/ui/badge';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
 import { genderLabel } from '@/modules/athletes/domain/constants';
@@ -91,32 +90,9 @@ export default function NationalRanking() {
   if (!enabled) return <Navigate to="/" replace />;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-emerald-50/50 to-white">
-      <header className="border-b bg-white/80 backdrop-blur sticky top-0 z-10">
-        <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
-          <Link to="/" className="flex items-center gap-2 font-bold text-emerald-700">
-            <Trophy className="w-5 h-5" /> Pickleholics
-          </Link>
-          <Badge variant="success" className="text-xs">
-            <Medal className="w-3 h-3 mr-1" /> Ranking nacional
-          </Badge>
-        </div>
-      </header>
-
-      <main className="max-w-5xl mx-auto p-4 space-y-4">
-        <Card>
-          <CardContent className="p-5">
-            <h1 className="text-2xl font-bold arena-heading flex items-center gap-2">
-              <Medal className="w-6 h-6 text-emerald-600" /> Ranking nacional
-            </h1>
-            <p className="text-sm text-slate-600 mt-1">
-              Rating calculado a partir dos jogos disputados nos torneios da plataforma.
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="space-y-3 p-4">
+    <div className="mx-auto max-w-5xl space-y-4">
+      <Card>
+        <CardContent className="space-y-3 p-4">
             <div className="relative">
               <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
               <Input
@@ -243,9 +219,6 @@ export default function NationalRanking() {
             </CardContent>
           </Card>
         )}
-      </main>
-
-      <footer className="text-center text-xs text-slate-400 py-6">Pickleholics · Ranking nacional</footer>
     </div>
   );
 }
