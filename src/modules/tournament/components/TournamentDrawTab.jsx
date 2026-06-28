@@ -158,7 +158,7 @@ function ModalityDrawBlock({ tournament, modality, isAdmin }) {
       const warns = scheduleWarnings || [];
       if (warns.length > 0) {
         toast.warning(
-          `Jogos reagendados, mas ${warns.length} não couberam na janela de horário. Ajuste quadras ou horário de término.`,
+          `Jogos reagendados. ${warns.length} ficaram além do horário de término planejado — ajuste quadras ou horário para encaixá-los.`,
         );
       } else {
         toast.success('Jogos reagendados nas quadras e horários.');
@@ -183,7 +183,7 @@ function ModalityDrawBlock({ tournament, modality, isAdmin }) {
       const warns = result?.scheduleWarnings || [];
       if (warns.length > 0) {
         toast.warning(
-          `${warns.length} jogo(s) não couberam na janela de horário definida. Revise as quadras ou o horário de término da modalidade.`,
+          `Todos os jogos foram sorteados e agendados. ${warns.length} ficaram além do horário de término planejado — adicione quadras ou estenda o horário para encaixá-los na janela.`,
         );
       }
       setConfirmOpen(false);

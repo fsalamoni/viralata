@@ -136,32 +136,33 @@ describe('assignSchedule', () => {
     expect(Math.min(...startHours)).toBe(14);
   });
 
-  it('respeita a janela de término emitindo avisos', () => {
+  it('agenda TODOS os jogos e apenas avisa os que passam da janela de término', () => {
     const cfg = {
       court_count: 1,
       match_duration_minutes: 60,
       play_date: '2026-06-20',
       play_start_time: '14:00',
-      play_end_time: '15:00', // cabe apenas 1 jogo em 1 quadra
+      play_end_time: '15:00', // janela curta: só o 1º jogo cabe dentro dela
     };
     const { byMatchId, warnings } = assignSchedule(makeMatches(), cfg);
+    // nenhum jogo fica sem horário — todos são agendados
+    expect(byMatchId.size).toBe(3);
+    expect([...byMatchId.values()].every((v) => v.scheduled_at)).toBe(true);
+    // os que estouraram a janela geram aviso
     expect(warnings.length).toBeGreaterThan(0);
-    // apenas 1 jogo coube
-    const scheduled = [...byMatchId.values()].filter((v) => v.scheduled_at);
-    expect(scheduled).toHaveLength(1);
   });
 
-  it('janela menor que a duração de um jogo não agenda nada (todos avisados)', () => {
+  it('janela menor que a duração: ainda agenda todos, avisando todos', () => {
     const cfg = {
       court_count: 2,
       match_duration_minutes: 60,
       play_date: '2026-06-20',
       play_start_time: '14:00',
-      play_end_time: '14:30', // 0 jogos cabem
+      play_end_time: '14:30', // 0 slots dentro da janela
     };
     const { byMatchId, warnings } = assignSchedule(makeMatches(), cfg);
+    expect(byMatchId.size).toBe(3);
     expect(warnings.length).toBe(3);
-    expect(byMatchId.size).toBe(0);
   });
 
   it('funciona sem horário definido (apenas quadras/slots)', () => {

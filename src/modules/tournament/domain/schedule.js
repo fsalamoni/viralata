@@ -47,11 +47,13 @@
  */
 export function scheduleMatches(matches, options) {
   const { courts, slotMinutes = 45, restSlots = 0, startAt = null, maxSlots = null } = options;
-  // Limite rígido de slots (janela de término). Quando definido, um jogo que
-  // não couber dentro de [0, maxSlots) não é agendado (court/slot nulos) e um
-  // aviso é emitido — preferimos não agendar a criar conflitos.
-  const hasCap = Number.isFinite(maxSlots) && maxSlots >= 0;
-  const slotCap = hasCap ? Math.floor(maxSlots) : 10000;
+  // Janela de término (maxSlots) é um ALVO, não um corte: TODOS os jogos são
+  // sempre agendados — assim todos os jogos de todos os grupos aparecem na grade,
+  // dimensionada para caber todos. Quando um jogo cai DEPOIS do término planejado,
+  // emitimos um aviso (faltam quadras ou a janela é curta), sem nunca deixar jogos
+  // sem horário nem criar conflitos de jogador.
+  const windowSlots = Number.isFinite(maxSlots) && maxSlots >= 0 ? Math.floor(maxSlots) : null;
+  const slotCap = 100000;
   if (!Array.isArray(courts) || courts.length === 0) {
     return { assignments: [], totalSlots: 0, warnings: ['Nenhuma quadra disponível.'] };
   }
@@ -124,14 +126,16 @@ export function scheduleMatches(matches, options) {
       assignments.push({ match_id: m.id, court_id: court.id, slot, start_at: startIso });
       maxSlot = Math.max(maxSlot, slot + m.duration);
       placed = true;
+      // Todos os jogos são agendados; se passou do término planejado, avisa.
+      if (windowSlots != null && slot + m.duration > windowSlots) {
+        warnings.push(
+          `O jogo ${m.id} foi agendado após o horário de término planejado — há mais jogos do que a janela/quadras comportam. Adicione quadras ou estenda o horário.`,
+        );
+      }
       break;
     }
     if (!placed) {
-      warnings.push(
-        hasCap
-          ? `O jogo ${m.id} não coube na janela de horário definida (término muito cedo para a quantidade de quadras).`
-          : `Sem horário disponível para o jogo ${m.id}.`,
-      );
+      warnings.push(`Sem horário disponível para o jogo ${m.id}.`);
     }
   }
 

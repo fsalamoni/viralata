@@ -92,16 +92,18 @@ describe('scheduleMatches', () => {
     expect(estimateScheduleDurationMinutes({ totalSlots: 4 }, 30)).toBe(120);
   });
 
-  it('maxSlots limita a janela e avisa sobre jogos que não cabem', () => {
+  it('maxSlots é um alvo: agenda TODOS os jogos e avisa os que passam do término', () => {
     const matches = [
       { id: 'm1', round: 1, position: 1, player_ids: ['a', 'b'] },
       { id: 'm2', round: 2, position: 1, player_ids: ['a', 'c'] },
       { id: 'm3', round: 3, position: 1, player_ids: ['a', 'd'] },
     ];
-    // 1 quadra, descanso 0, janela de apenas 2 slots → cabem 2 jogos do jogador "a"
+    // 1 quadra, descanso 0, janela de apenas 2 slots → o 3º jogo passa do término,
+    // mas continua agendado (nenhum jogo fica sem horário).
     const res = scheduleMatches(matches, { courts: courts(1), restSlots: 0, maxSlots: 2 });
-    expect(res.assignments).toHaveLength(2);
+    expect(res.assignments).toHaveLength(3);
     expect(res.warnings.length).toBe(1);
-    expect(res.assignments.every((a) => a.slot < 2)).toBe(true);
+    // o jogo que estourou a janela foi agendado em um slot >= 2
+    expect(res.assignments.some((a) => a.slot >= 2)).toBe(true);
   });
 });
