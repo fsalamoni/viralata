@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
-import { Swords, MapPin, Medal } from 'lucide-react';
+import { MapPin, Medal } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
@@ -74,10 +74,7 @@ export default function FindPlayers() {
     <div className="mx-auto max-w-4xl space-y-4">
       <Card>
         <CardContent className="p-5">
-          <h1 className="flex items-center gap-2 text-2xl font-bold arena-heading">
-            <Swords className="h-6 w-6 text-emerald-600" /> Encontrar jogadores
-          </h1>
-          <p className="mt-1 text-sm text-slate-600">
+          <p className="text-sm text-slate-600">
             Seu rating: <strong className="text-emerald-700">{me.rating}</strong>
             {myCity ? <> · {myCity}</> : null}. Sugestões de parceiros e adversários do seu nível.
           </p>
