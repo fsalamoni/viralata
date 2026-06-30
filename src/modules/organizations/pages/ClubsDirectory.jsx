@@ -25,8 +25,8 @@ import {
   useMyJoinRequests,
   useMyClubInvites,
   useRequestToJoinClub,
-} from '@/modules/clubs/hooks/useClubs';
-import { JOIN_REQUEST_STATUS } from '@/modules/clubs/domain/constants';
+} from '@/modules/organizations/hooks/useClubs';
+import { JOIN_REQUEST_STATUS } from '@/modules/organizations/domain/constants';
 
 function locationText(club) {
   return [club.city, club.state].filter(Boolean).join(' / ') || null;

@@ -5,7 +5,7 @@ import {
   collection, addDoc, getDocs, query, where, orderBy, serverTimestamp,
 } from 'firebase/firestore';
 import { db } from '@/core/config/firebase';
-import { storageService } from '@/core/services/storageService';
+import { uploadImage } from '@/core/services/storageService';
 import { createAuditLog } from '@/core/services/auditService';
 import { logger } from '@/core/lib/logger';
 
@@ -16,7 +16,7 @@ export async function createAbuseReport({ description, latitude, longitude, addr
   let photo_urls = [];
   if (photoFiles?.length) {
     photo_urls = await Promise.all(
-      photoFiles.map((f) => storageService.uploadFile(f, `reports/${actor.uid}/${Date.now()}_${f.name}`))
+      photoFiles.map((f) => uploadImage(f, { uid: actor.uid, folder: 'reports' }))
     );
   }
   const ref = await addDoc(collection(db, COLLECTION), {

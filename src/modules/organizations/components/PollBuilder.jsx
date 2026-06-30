@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
-import { FORUM_POLL } from '@/modules/clubs/domain/constants';
+import { FORUM_POLL } from '@/modules/organizations/domain/constants';
 
 /**
  * Construtor de enquete (controlado). `value` = { question, options[], multiple,

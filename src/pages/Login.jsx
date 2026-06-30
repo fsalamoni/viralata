@@ -1,25 +1,27 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
-import { ArrowRight, Sparkles, Trophy } from 'lucide-react';
+import { ArrowRight, PawPrint } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
 const LOGIN_HIGHLIGHTS = [
-  'Acesse torneios, ranking e ferramentas com menos atrito.',
-  'Mantenha a identidade do evento consistente do convite ao resultado final.',
-  'Use uma interface mais clara para operar no balcão, no desktop e na quadra.',
+  'Encontre o pet ideal com base no seu espaço, rotina e estilo de vida.',
+  'Converse diretamente com ONGs e responsáveis pelo chat integrado.',
+  'Cadastre pets para adoção e acompanhe os interessados em tempo real.',
 ];
 
 export default function Login() {
   const { signInWithGoogle, isAuthenticated, isLoadingAuth, authError, isAuthAvailable, authUnavailableReason } = useAuth();
   const [busy, setBusy] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || '/feed';
 
   useEffect(() => {
-    if (isAuthenticated) navigate('/inicio');
-  }, [isAuthenticated, navigate]);
+    if (isAuthenticated) navigate(from, { replace: true });
+  }, [isAuthenticated, navigate, from]);
 
   useEffect(() => {
     if (authError?.message) toast.error(authError.message);
@@ -39,101 +41,108 @@ export default function Login() {
   if (isLoadingAuth) return null;
 
   return (
-    <div className="relative min-h-screen overflow-hidden arena-page">
-      <div className="absolute inset-x-0 top-0 h-[28rem] bg-[radial-gradient(circle_at_top,rgba(16,185,129,0.2),transparent_58%)]" />
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-orange-950 via-orange-900 to-amber-900">
+      {/* Gradiente decorativo */}
+      <div className="absolute inset-x-0 top-0 h-[28rem] bg-[radial-gradient(circle_at_top,rgba(251,146,60,0.25),transparent_60%)]" />
+      <div className="absolute inset-0 bg-[url('/noise.svg')] opacity-[0.03]" />
+
       <div className="relative mx-auto grid min-h-screen max-w-6xl gap-8 px-6 py-8 lg:grid-cols-[1.05fr,0.95fr] lg:items-center">
-        <div className="hidden h-full min-h-[42rem] flex-col justify-between rounded-[2.25rem] arena-panel-strong p-8 lg:flex">
+
+        {/* Painel esquerdo — desktop */}
+        <div className="hidden h-full min-h-[42rem] flex-col justify-between rounded-[2.25rem] border border-white/10 bg-white/5 p-8 backdrop-blur-sm lg:flex">
           <div>
             <Link to="/" className="inline-flex items-center gap-3 text-white">
               <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/15 bg-white/10">
-                <Trophy className="h-5 w-5" />
+                <span className="text-xl">🐾</span>
               </div>
               <div>
-                <span className="block text-sm font-semibold uppercase tracking-[0.24em] text-emerald-50/80">Pickleball</span>
-                <span className="block text-xl font-semibold">Organização com cara de evento</span>
+                <span className="block text-sm font-semibold uppercase tracking-[0.24em] text-orange-200/80">Viralata</span>
+                <span className="block text-xl font-semibold text-white">Adoção responsável de pets</span>
               </div>
             </Link>
           </div>
 
           <div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-50/80">
-              <Sparkles className="h-3.5 w-3.5" /> Entrada principal da plataforma
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-orange-200/80">
+              <PawPrint className="h-3.5 w-3.5" /> Plataforma gratuita de adoção
             </span>
-            <h1 className="mt-6 text-3xl font-semibold leading-tight text-white sm:text-4xl sm:leading-[0.95] lg:text-5xl">
-              Entre para criar, administrar e acompanhar cada modalidade do seu torneio.
+            <h1 className="mt-6 text-3xl font-semibold leading-tight text-white sm:text-4xl lg:text-5xl">
+              Conecte-se com pets que precisam de um lar e famílias que têm amor para dar.
             </h1>
 
             <div className="mt-8 grid gap-3">
               {LOGIN_HIGHLIGHTS.map((item) => (
-                <div key={item} className="rounded-[1.35rem] border border-white/10 bg-white/10 p-4 text-sm leading-6 text-emerald-50/80 backdrop-blur-sm">
+                <div key={item} className="rounded-[1.35rem] border border-white/10 bg-white/10 p-4 text-sm leading-6 text-orange-50/80 backdrop-blur-sm">
                   {item}
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-3 text-sm text-emerald-50/75">
-            <Link to="/regras" className="transition-colors hover:text-white">Regras oficiais</Link>
-            <Link to="/nivelamento" className="transition-colors hover:text-white">Nivelamento</Link>
-            <Link to="/conduta" className="transition-colors hover:text-white">Fair Play</Link>
+          <div className="flex flex-wrap gap-3 text-sm text-orange-50/75">
+            <Link to="/politica-privacidade" className="transition-colors hover:text-white">Política de Privacidade</Link>
+            <Link to="/sobre" className="transition-colors hover:text-white">Sobre o Viralata</Link>
           </div>
         </div>
 
+        {/* Card de login */}
         <div className="flex items-center justify-center">
-          <Card className="w-full max-w-lg rounded-[2.25rem] border-white/80 bg-white/90 p-1.5 shadow-[0_35px_80px_-40px_rgba(15,23,42,0.45)] sm:p-2">
+          <Card className="w-full max-w-lg rounded-[2.25rem] border-white/80 bg-white/95 p-1.5 shadow-[0_35px_80px_-40px_rgba(15,23,42,0.55)] sm:p-2">
             <CardHeader className="px-5 pb-4 pt-6 text-center sm:px-8">
+              {/* Logo mobile */}
               <Link to="/" className="mx-auto mb-4 inline-flex items-center gap-3 text-slate-950 lg:hidden">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-emerald-200/70 bg-emerald-50">
-                  <Trophy className="h-5 w-5 text-emerald-700" />
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-orange-200/70 bg-orange-50">
+                  <span className="text-xl">🐾</span>
                 </div>
-                <span className="text-lg font-semibold">Pickleball</span>
+                <span className="text-lg font-semibold">Viralata</span>
               </Link>
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-700 shadow-[0_18px_35px_-26px_rgba(16,185,129,0.7)]">
-                <Trophy className="h-6 w-6" />
+
+              {/* Ícone central */}
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-orange-100 text-orange-600 shadow-[0_18px_35px_-26px_rgba(249,115,22,0.6)]">
+                <PawPrint className="h-6 w-6" />
               </div>
-              <CardTitle className="mt-5 text-[2.2rem] font-semibold leading-[1.02] text-slate-950 sm:text-3xl">
-                Entrar para publicar e operar torneios com mais confiança.
+
+              <CardTitle className="mt-5 text-[2rem] font-semibold leading-[1.05] text-slate-950 sm:text-3xl">
+                Bem-vindo ao Viralata
               </CardTitle>
               <CardDescription className="mx-auto mt-3 max-w-md text-sm leading-7 text-slate-600">
-                Use sua conta Google para acessar a plataforma e manter inscrições, modalidades e resultados sob controle.
+                Use sua conta Google para acessar a plataforma e encontrar ou cadastrar pets para adoção responsável.
               </CardDescription>
             </CardHeader>
 
             <CardContent className="space-y-5 px-5 pb-6 sm:px-8">
-              <Button onClick={onClick} disabled={busy || !isAuthAvailable} className="h-12 w-full text-[15px]" size="lg">
-                <GoogleIcon className="h-4 w-4" />
+              <Button
+                onClick={onClick}
+                disabled={busy || !isAuthAvailable}
+                className="h-12 w-full gap-3 bg-orange-500 text-[15px] hover:bg-orange-600 text-white"
+                size="lg"
+              >
+                <GoogleIcon className="h-4 w-4 flex-shrink-0" />
                 {busy ? (
                   'Conectando…'
                 ) : isAuthAvailable ? (
                   <>
-                    <span className="sm:hidden">Continuar</span>
+                    <span className="sm:hidden">Continuar com Google</span>
                     <span className="hidden sm:inline">Continuar com Google</span>
                   </>
                 ) : (
-                  <>
-                    <span className="sm:hidden">Login indisponível</span>
-                    <span className="hidden sm:inline">Login indisponível neste ambiente</span>
-                  </>
+                  'Login indisponível'
                 )}
-                <ArrowRight className="h-4 w-4" />
+                {!busy && isAuthAvailable && <ArrowRight className="h-4 w-4 ml-auto" />}
               </Button>
 
               {!isAuthAvailable && (
                 <p className="rounded-[1.15rem] border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-900">
-                  {authUnavailableReason || 'Configure o Firebase para habilitar autenticação e dados em tempo real.'}
+                  {authUnavailableReason || 'Configure o Firebase para habilitar autenticação.'}
                 </p>
               )}
 
-              <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-slate-600">
-                <Link to="/regras" className="font-medium text-emerald-800 transition-colors hover:text-emerald-950">Conhecer as regras</Link>
-                <Link to="/nivelamento" className="font-medium text-emerald-800 transition-colors hover:text-emerald-950">Ver nivelamento</Link>
-              </div>
-
               <p className="text-center text-xs leading-6 text-slate-500">
                 Ao continuar você aceita nossa{' '}
-                <Link to="/politica-uso" className="font-medium text-slate-700 underline underline-offset-4">Política de Uso</Link>
-                {' '}e o{' '}
-                <Link to="/conduta" className="font-medium text-slate-700 underline underline-offset-4">Conduta &amp; Fair Play</Link>.
+                <Link to="/politica-privacidade" className="font-medium text-slate-700 underline underline-offset-4">
+                  Política de Privacidade
+                </Link>
+                . O Viralata é 100% gratuito e não realiza venda de animais.
               </p>
             </CardContent>
           </Card>

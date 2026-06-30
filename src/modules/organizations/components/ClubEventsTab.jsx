@@ -26,7 +26,7 @@ import {
   useUpdateClubEvent,
   useDeleteClubEvent,
   useEventInvites,
-} from '@/modules/clubs/hooks/useClubs';
+} from '@/modules/organizations/hooks/useClubs';
 import {
   CLUB_EVENT_TYPE,
   CLUB_EVENT_TYPE_LABELS,
@@ -36,7 +36,7 @@ import {
   eventTypeLabel,
   isGameDayEvent,
   isPrivateEvent,
-} from '@/modules/clubs/domain/constants';
+} from '@/modules/organizations/domain/constants';
 
 function formatDateTime(value) {
   if (!value) return null;

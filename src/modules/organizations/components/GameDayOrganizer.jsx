@@ -31,10 +31,10 @@ import {
   useReplaceEventGames,
   useClearEventGames,
   useClubMembers,
-} from '@/modules/clubs/hooks/useClubs';
-import { useAthletes } from '@/modules/athletes/hooks/useAthletes';
-import { PARTICIPANT_SOURCE, INVITE_STATUS, GAME_DAY_LIMITS } from '@/modules/clubs/domain/constants';
-import { generateGameDayGames, suggestRounds } from '@/modules/clubs/domain/gameDayDraw';
+} from '@/modules/organizations/hooks/useClubs';
+// useAthletes removido — usar busca de usuários do viralata
+import { PARTICIPANT_SOURCE, INVITE_STATUS, GAME_DAY_LIMITS } from '@/modules/organizations/domain/constants';
+import { generateGameDayGames, suggestRounds } from '@/modules/organizations/domain/gameDayDraw';
 
 const SOURCE_LABEL = {
   [PARTICIPANT_SOURCE.CONFIRMED]: 'Confirmou no dia',
@@ -70,7 +70,7 @@ function ParticipantsSection({ eventId, clubId, dateId, participants, isLoading 
   const { data: invites = [] } = useEventInvites(eventId);
   const { data: dateRsvps = [] } = useEventDateRsvps(eventId);
   const { data: members = [] } = useClubMembers(clubId);
-  const { data: athletes = [] } = useAthletes();
+  const { data: athletes = [] } = { data: [] };
   const [guestName, setGuestName] = useState('');
   const [pickerOpen, setPickerOpen] = useState(false);
 

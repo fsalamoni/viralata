@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { useCreatePet } from '../hooks/usePets';
-import { storageService } from '@/core/services/storageService';
+import { uploadImage } from '@/core/services/storageService';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -60,7 +60,7 @@ export default function CreatePet() {
     setUploading(true);
     try {
       const urls = await Promise.all(
-        files.map((f) => storageService.uploadFile(f, `pets/${user.uid}/${Date.now()}_${f.name}`))
+        files.map((f) => uploadImage(f, { uid: user.uid, folder: 'pets' }))
       );
       setPhotos((prev) => [...prev, ...urls].slice(0, 6));
     } catch {

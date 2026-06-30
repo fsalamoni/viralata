@@ -23,7 +23,7 @@ import {
   useCancelClubInvite,
   useClubMembers,
 } from '@/modules/organizations/hooks/useClubs';
-import { useAllAthletes } from '@/modules/athletes/hooks/useAthletes';
+// useAllAthletes removido — usar busca de usuários do viralata
 
 export default function ClubAdminTab({ club }) {
   const navigate = useNavigate();
@@ -274,7 +274,7 @@ function ClubJoinRequests({ club }) {
 function ClubAddMembers({ club }) {
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState({}); // { uid: athlete }
-  const { data: athletes = [], isLoading } = useAllAthletes();
+  const { data: athletes = [], isLoading } = { data: [] };
   const { data: members = [] } = useClubMembers(club.id);
   const { data: invites = [] } = useClubInvites(club.id);
   const inviteMany = useInviteMembersToClub(club);

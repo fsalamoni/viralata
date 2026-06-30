@@ -28,7 +28,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
-import { FORUM_LIMITS } from '@/modules/clubs/domain/constants';
+import { FORUM_LIMITS } from '@/modules/organizations/domain/constants';
 import {
   useForumThread,
   useForumComments,
@@ -38,7 +38,7 @@ import {
   useUpdateThread,
   useDeleteThread,
   useSetThreadPinned,
-} from '@/modules/clubs/hooks/useClubForum';
+} from '@/modules/organizations/hooks/useClubForum';
 import ForumPoll from './ForumPoll';
 
 function timeAgo(ms) {

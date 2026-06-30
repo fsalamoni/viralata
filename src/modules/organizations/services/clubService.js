@@ -29,7 +29,7 @@ import { db } from '@/core/config/firebase';
 import { logger } from '@/core/lib/logger';
 import { createAuditLog } from '@/core/services/auditService';
 import { notifyUsers, NOTIFICATION_TYPE } from '@/core/services/notificationService';
-import { syncAthleteProfile } from '@/modules/athletes/services/athleteService';
+// syncAthleteProfile removido
 import {
   CLUB_COLLECTIONS,
   CLUB_ROLE,
@@ -128,7 +128,6 @@ export async function createClub(creator, profile, data) {
     throw err;
   }
 
-  await syncAthleteProfile(creator, profile);
   await createAuditLog({ action: 'club_created', actor: creator, details: { club_id: id, name: payload.name } });
   logger.info('club_created', { id });
   return id;
@@ -233,7 +232,6 @@ export async function joinClubByCode(code, user, profile) {
   await setDoc(doc(db, COL.members, memberDocId(club.id, user.uid)), memberPayload(club.id, user, profile, CLUB_ROLE.MEMBER));
   // Atualização cosmética do contador (best-effort).
   await updateDoc(doc(db, COL.clubs, club.id), { member_count: increment(1), updated_at: serverTimestamp() }).catch(() => {});
-  await syncAthleteProfile(user, profile);
   await createAuditLog({ action: 'club_member_joined', actor: user, details: { club_id: club.id } });
   return club;
 }
@@ -250,7 +248,6 @@ export async function leaveClub(clubId, user, profile) {
 
   await deleteDoc(doc(db, COL.members, memberDocId(clubId, user.uid)));
   await updateDoc(doc(db, COL.clubs, clubId), { member_count: increment(-1), updated_at: serverTimestamp() }).catch(() => {});
-  await syncAthleteProfile(user, profile);
   await createAuditLog({ action: 'club_member_left', actor: user, details: { club_id: clubId } });
 }
 
@@ -468,7 +465,6 @@ export async function acceptClubInvite(invite, user, profile) {
     updated_at: serverTimestamp(),
   }).catch(() => {});
   await updateDoc(doc(db, COL.clubs, invite.club_id), { member_count: increment(1), updated_at: serverTimestamp() }).catch(() => {});
-  await syncAthleteProfile(user, profile);
   const me = profile?.platform_name || user.displayName || user.email || 'Um atleta';
   if (invite.invited_by) {
     notifyUsers([invite.invited_by], {

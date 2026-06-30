@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ImageUpload } from '@/components/ui/image-upload';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
-import { useCreateClub } from '@/modules/clubs/hooks/useClubs';
+import { useCreateClub } from '@/modules/organizations/hooks/useClubs';
 
 const INITIAL = {
   name: '',

@@ -19,12 +19,12 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { EmptyState } from '@/components/ui/empty-state';
-import { useMyMembership, useClubEvent } from '@/modules/clubs/hooks/useClubs';
-import { CLUB_EVENT_TYPE, eventTypeLabel, isGameDayEvent, isPrivateEvent } from '@/modules/clubs/domain/constants';
-import { EventFormDialog } from '@/modules/clubs/components/ClubEventsTab';
-import EventDatesPanel from '@/modules/clubs/components/EventDatesPanel';
-import EventParticipantsPanel from '@/modules/clubs/components/EventParticipantsPanel';
-import EventChat from '@/modules/clubs/components/EventChat';
+import { useMyMembership, useClubEvent } from '@/modules/organizations/hooks/useClubs';
+import { CLUB_EVENT_TYPE, eventTypeLabel, isGameDayEvent, isPrivateEvent } from '@/modules/organizations/domain/constants';
+import { EventFormDialog } from '@/modules/organizations/components/ClubEventsTab';
+import EventDatesPanel from '@/modules/organizations/components/EventDatesPanel';
+import EventParticipantsPanel from '@/modules/organizations/components/EventParticipantsPanel';
+import EventChat from '@/modules/organizations/components/EventChat';
 
 function formatDateTime(value) {
   if (!value) return null;

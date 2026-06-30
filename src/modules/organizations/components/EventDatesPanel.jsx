@@ -18,9 +18,9 @@ import {
   useDeleteEventDate,
   useEventDateRsvps,
   useSetEventDateRsvp,
-} from '@/modules/clubs/hooks/useClubs';
-import { RSVP_STATUS, RSVP_STATUS_LABELS } from '@/modules/clubs/domain/constants';
-import GameDayOrganizer from '@/modules/clubs/components/GameDayOrganizer';
+} from '@/modules/organizations/hooks/useClubs';
+import { RSVP_STATUS, RSVP_STATUS_LABELS } from '@/modules/organizations/domain/constants';
+import GameDayOrganizer from '@/modules/organizations/components/GameDayOrganizer';
 
 function formatDateTime(value) {
   if (!value) return 'Data a definir';

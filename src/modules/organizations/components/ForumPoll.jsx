@@ -3,8 +3,8 @@ import { toast } from 'sonner';
 import { BarChart3, Check, Clock, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/core/lib/utils';
-import { tallyVotes, isPollClosed, toggleOption } from '@/modules/clubs/domain/forumPoll';
-import { usePollVotes, useMyPollVote, useSetPollVote } from '@/modules/clubs/hooks/useClubForum';
+import { tallyVotes, isPollClosed, toggleOption } from '@/modules/organizations/domain/forumPoll';
+import { usePollVotes, useMyPollVote, useSetPollVote } from '@/modules/organizations/hooks/useClubForum';
 
 function closesLabel(ms) {
   if (!ms) return null;

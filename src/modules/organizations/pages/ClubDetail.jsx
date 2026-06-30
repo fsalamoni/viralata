@@ -35,13 +35,13 @@ import {
   useMyClubInvite,
   useAcceptClubInvite,
   useDeclineClubInvite,
-} from '@/modules/clubs/hooks/useClubs';
-import { CLUB_ROLE, JOIN_REQUEST_STATUS } from '@/modules/clubs/domain/constants';
-import ClubMembersTab from '@/modules/clubs/components/ClubMembersTab';
-import ClubEventsTab from '@/modules/clubs/components/ClubEventsTab';
-import ClubFeedTab from '@/modules/clubs/components/ClubFeedTab';
-import ClubForumsTab from '@/modules/clubs/components/ClubForumsTab';
-import ClubAdminTab from '@/modules/clubs/components/ClubAdminTab';
+} from '@/modules/organizations/hooks/useClubs';
+import { CLUB_ROLE, JOIN_REQUEST_STATUS } from '@/modules/organizations/domain/constants';
+import ClubMembersTab from '@/modules/organizations/components/ClubMembersTab';
+import ClubEventsTab from '@/modules/organizations/components/ClubEventsTab';
+import ClubFeedTab from '@/modules/organizations/components/ClubFeedTab';
+import ClubForumsTab from '@/modules/organizations/components/ClubForumsTab';
+import ClubAdminTab from '@/modules/organizations/components/ClubAdminTab';
 
 export default function ClubDetail() {
   const { clubId } = useParams();

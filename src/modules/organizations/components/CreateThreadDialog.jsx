@@ -19,8 +19,8 @@ import {
   PendingAttachmentList,
   useAttachmentUploader,
 } from '@/components/ui/attachments';
-import { FORUM_LIMITS } from '@/modules/clubs/domain/constants';
-import { useCreateThread } from '@/modules/clubs/hooks/useClubForum';
+import { FORUM_LIMITS } from '@/modules/organizations/domain/constants';
+import { useCreateThread } from '@/modules/organizations/hooks/useClubForum';
 import PollBuilder from './PollBuilder';
 
 const EMPTY_POLL = { question: '', options: ['', ''], multiple: false, closesAt: '' };

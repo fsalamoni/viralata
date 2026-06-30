@@ -24,14 +24,14 @@ import {
   useRemoveEventInvite,
   useUpdateEvent,
   useClubMembers,
-} from '@/modules/clubs/hooks/useClubs';
-import { useAthletes } from '@/modules/athletes/hooks/useAthletes';
+} from '@/modules/organizations/hooks/useClubs';
+// useAthletes removido — usar busca de usuários do viralata
 import {
   INVITE_STATUS,
   INVITE_SOURCE,
   EVENT_VISIBILITY,
   isPrivateEvent,
-} from '@/modules/clubs/domain/constants';
+} from '@/modules/organizations/domain/constants';
 
 export default function EventParticipantsPanel({ event, clubId }) {
   const { user } = useAuth();
@@ -221,7 +221,7 @@ export default function EventParticipantsPanel({ event, clubId }) {
 function InviteDialog({ open, onClose, event, clubId, invites }) {
   const invite = useInviteToEvent(event);
   const { data: members = [] } = useClubMembers(clubId);
-  const { data: athletes = [] } = useAthletes();
+  const { data: athletes = [] } = { data: [] };
   const [search, setSearch] = useState('');
 
   const invitedIds = useMemo(() => new Set(invites.map((i) => i.user_id)), [invites]);

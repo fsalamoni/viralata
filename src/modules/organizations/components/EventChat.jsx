@@ -10,7 +10,7 @@ import {
   useSendEventMessage,
   useUpdateEventMessage,
   useDeleteEventMessage,
-} from '@/modules/clubs/hooks/useClubs';
+} from '@/modules/organizations/hooks/useClubs';
 
 function dayLabel(ms) {
   if (!ms) return '';

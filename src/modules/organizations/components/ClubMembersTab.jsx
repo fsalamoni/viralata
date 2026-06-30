@@ -14,8 +14,8 @@ import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
-import { useClubMembers, useSetMemberRole, useRemoveMember } from '@/modules/clubs/hooks/useClubs';
-import { CLUB_ROLE, CLUB_ROLE_LABELS } from '@/modules/clubs/domain/constants';
+import { useClubMembers, useSetMemberRole, useRemoveMember } from '@/modules/organizations/hooks/useClubs';
+import { CLUB_ROLE, CLUB_ROLE_LABELS } from '@/modules/organizations/domain/constants';
 
 function initials(name) {
   return String(name || 'A').split(' ').filter(Boolean).slice(0, 2).map((p) => p[0]?.toUpperCase()).join('') || 'A';

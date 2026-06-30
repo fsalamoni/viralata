@@ -7,7 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
-import { useClubPosts, useCreateClubPost, useDeleteClubPost } from '@/modules/clubs/hooks/useClubs';
+import { useClubPosts, useCreateClubPost, useDeleteClubPost } from '@/modules/organizations/hooks/useClubs';
 import {
   uploadImage,
   downloadImage,

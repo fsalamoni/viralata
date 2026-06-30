@@ -13,7 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 import { UserAvatar } from '@/components/ui/user-avatar';
-import { useForumThreads } from '@/modules/clubs/hooks/useClubForum';
+import { useForumThreads } from '@/modules/organizations/hooks/useClubForum';
 import CreateThreadDialog from './CreateThreadDialog';
 import ForumThreadView from './ForumThreadView';
 
