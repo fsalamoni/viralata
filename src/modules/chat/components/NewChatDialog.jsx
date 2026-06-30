@@ -15,7 +15,7 @@ import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
-import { useAthletes } from '@/modules/athletes/hooks/useAthletes';
+// Athletes hook removed — use user search instead
 import { toMember } from '@/modules/chat/domain/conversations';
 
 /**

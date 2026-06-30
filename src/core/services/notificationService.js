@@ -20,20 +20,28 @@ export const NOTIFICATION_COLLECTION = 'notifications';
 
 /** Tipos de notificação conhecidos (para ícones/agrupamento futuro). */
 export const NOTIFICATION_TYPE = Object.freeze({
+  // Chat
   CHAT_MESSAGE: 'chat_message',
   CHAT_INVITE: 'chat_invite',
+  // Adoção
+  ADOPTION_INTEREST: 'adoption_interest',
+  ADOPTION_MATCH: 'adoption_match',
+  ADOPTION_REJECTED: 'adoption_rejected',
+  ADOPTION_COMPLETED: 'adoption_completed',
+  // Pets
+  PET_STATUS_CHANGED: 'pet_status_changed',
+  PET_RADAR_MATCH: 'pet_radar_match',
+  // Organizações
+  ORG_INVITE: 'org_invite',
+  ORG_INVITE_ACCEPTED: 'org_invite_accepted',
+  ORG_JOIN_REQUEST: 'org_join_request',
+  ORG_JOIN_APPROVED: 'org_join_approved',
+  ORG_JOIN_REJECTED: 'org_join_rejected',
+  // Fórum
   FORUM_REPLY: 'forum_reply',
   FORUM_MENTION: 'forum_mention',
-  EVENT_INVITE: 'event_invite',
-  CLUB_JOIN_REQUEST: 'club_join_request',
-  CLUB_JOIN_APPROVED: 'club_join_approved',
-  CLUB_JOIN_REJECTED: 'club_join_rejected',
-  CLUB_INVITE: 'club_invite',
-  CLUB_INVITE_ACCEPTED: 'club_invite_accepted',
-  CLUB_EVENT_PUBLISHED: 'club_event_published',
-  TOURNAMENT_OPEN: 'tournament_open',
+  // Plataforma
   PROFILE_REMINDER: 'profile_reminder',
-  LEVELING_REMINDER: 'leveling_reminder',
   GENERIC: 'generic',
 });
 

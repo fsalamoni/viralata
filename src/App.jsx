@@ -6,65 +6,67 @@ import { FeatureFlagsProvider } from '@/core/lib/FeatureFlagsContext';
 import Layout from '@/components/Layout';
 import { Toaster } from '@/components/ui/sonner';
 import { recordPageView } from '@/core/services/observabilityService';
-import AuthFunnelTracker from '@/modules/analytics/components/AuthFunnelTracker';
 
-const Landing = lazy(() => import('@/pages/Landing'));
+// ─── Páginas Públicas ─────────────────────────────────────────────────────────
+const Home = lazy(() => import('@/pages/Home'));
 const Login = lazy(() => import('@/pages/Login'));
-const Inicio = lazy(() => import('@/modules/tournament/pages/Dashboard'));
-const Profile = lazy(() => import('@/pages/Profile'));
-const CreateTournament = lazy(() => import('@/modules/tournament/pages/CreateTournament'));
-const JoinTournament = lazy(() => import('@/modules/tournament/pages/JoinTournament'));
-const PublicTournamentsList = lazy(() => import('@/modules/tournament/pages/PublicTournamentsList'));
-const Tournament = lazy(() => import('@/modules/tournament/pages/Tournament'));
 const PrivacyPolicy = lazy(() => import('@/pages/PrivacyPolicy'));
-const PickleballRules = lazy(() => import('@/pages/PickleballRules'));
-const Leveling = lazy(() => import('@/pages/Leveling'));
-const ConductFairPlay = lazy(() => import('@/pages/ConductFairPlay'));
-const AdminMetrics = lazy(() => import('@/modules/admin/pages/AdminMetrics'));
-const AdminTournaments = lazy(() => import('@/modules/admin/pages/AdminTournaments'));
-const TournamentFormatsGuide = lazy(() => import('@/modules/tournament/pages/TournamentFormatsGuide'));
-const PublicTournament = lazy(() => import('@/pages/PublicTournament'));
-const PrintTournament = lazy(() => import('@/pages/PrintTournament'));
-const AthletesDirectory = lazy(() => import('@/modules/athletes/pages/AthletesDirectory'));
-const AthleteProfile = lazy(() => import('@/modules/athletes/pages/AthleteProfile'));
-const ClubsDirectory = lazy(() => import('@/modules/clubs/pages/ClubsDirectory'));
-const CreateClub = lazy(() => import('@/modules/clubs/pages/CreateClub'));
-const ClubDetail = lazy(() => import('@/modules/clubs/pages/ClubDetail'));
-const EventDetail = lazy(() => import('@/modules/clubs/pages/EventDetail'));
-const ChatPage = lazy(() => import('@/modules/chat/pages/ChatPage'));
-const MyPerformance = lazy(() => import('@/modules/performance/pages/MyPerformance'));
-const NationalRanking = lazy(() => import('@/modules/rating/pages/NationalRanking'));
-const FindPlayers = lazy(() => import('@/modules/rating/pages/FindPlayers'));
-const OpenGames = lazy(() => import('@/modules/games/pages/OpenGames'));
-const Partners = lazy(() => import('@/modules/partners/pages/Partners'));
-const CommunityFeed = lazy(() => import('@/modules/social/pages/CommunityFeed'));
-const AdminPartners = lazy(() => import('@/modules/partners/pages/AdminPartners'));
 const PageNotFound = lazy(() => import('@/pages/PageNotFound'));
 
-const LOCAL_PREVIEW_PROTECTED_PATHS = new Set([
-  '/torneios/criar',
-  '/torneios/ingressar',
-  '/torneios/publicos',
-  '/atletas',
-  '/clubes',
-  '/clubes/criar',
-]);
+// ─── Onboarding ───────────────────────────────────────────────────────────────
+const OnboardingQuestionnaire = lazy(() => import('@/modules/onboarding/pages/OnboardingQuestionnaire'));
 
+// ─── Pets ─────────────────────────────────────────────────────────────────────
+const PetFeed = lazy(() => import('@/modules/pets/pages/PetFeed'));
+const PetDetail = lazy(() => import('@/modules/pets/pages/PetDetail'));
+const CreatePet = lazy(() => import('@/modules/pets/pages/CreatePet'));
+const MyPets = lazy(() => import('@/modules/pets/pages/MyPets'));
+
+// ─── Organizações ─────────────────────────────────────────────────────────────
+const OrganizationsDirectory = lazy(() => import('@/modules/organizations/pages/ClubsDirectory'));
+const CreateOrganization = lazy(() => import('@/modules/organizations/pages/CreateClub'));
+const OrganizationDetail = lazy(() => import('@/modules/organizations/pages/ClubDetail'));
+
+// ─── Chat ─────────────────────────────────────────────────────────────────────
+const ChatPage = lazy(() => import('@/modules/chat/pages/ChatPage'));
+
+// ─── Denúncias ────────────────────────────────────────────────────────────────
+const CreateReport = lazy(() => import('@/modules/reports/pages/CreateReport'));
+
+// ─── Perfil ───────────────────────────────────────────────────────────────────
+const Profile = lazy(() => import('@/pages/Profile'));
+
+// ─── Admin ────────────────────────────────────────────────────────────────────
+const AdminDashboard = lazy(() => import('@/modules/admin/pages/AdminDashboard'));
+const AdminPets = lazy(() => import('@/modules/admin/pages/AdminPets'));
+const AdminReports = lazy(() => import('@/modules/admin/pages/AdminReports'));
+
+// ─── QueryClient ─────────────────────────────────────────────────────────────
 const queryClient = new QueryClient({
   defaultOptions: {
-    queries: { staleTime: 30_000, refetchOnWindowFocus: false },
+    queries: {
+      staleTime: 30_000,
+      refetchOnWindowFocus: false,
+      retry: 2,
+    },
   },
 });
 
+// ─── Guards ───────────────────────────────────────────────────────────────────
 function ProtectedRoute({ children }) {
   const location = useLocation();
-  const { isAuthenticated, isLoadingAuth, isAuthAvailable } = useAuth();
-  const isLocalPreviewRoute = import.meta.env.DEV
-    && !isAuthAvailable
-    && LOCAL_PREVIEW_PROTECTED_PATHS.has(location.pathname);
-
+  const { isAuthenticated, isLoadingAuth } = useAuth();
   if (isLoadingAuth) return <FullScreenSpinner />;
-  if (!isAuthenticated && !isLocalPreviewRoute) return <Navigate to="/login" replace />;
+  if (!isAuthenticated) return <Navigate to="/login" state={{ from: location }} replace />;
+  return children;
+}
+
+function OnboardedRoute({ children }) {
+  const location = useLocation();
+  const { isAuthenticated, isLoadingAuth, userProfile } = useAuth();
+  if (isLoadingAuth) return <FullScreenSpinner />;
+  if (!isAuthenticated) return <Navigate to="/login" state={{ from: location }} replace />;
+  if (!userProfile?.profile_completed) return <Navigate to="/onboarding" replace />;
   return children;
 }
 
@@ -72,14 +74,17 @@ function AdminRoute({ children }) {
   const { isAuthenticated, isLoadingAuth, isPlatformAdmin } = useAuth();
   if (isLoadingAuth) return <FullScreenSpinner />;
   if (!isAuthenticated) return <Navigate to="/login" replace />;
-  if (!isPlatformAdmin) return <Navigate to="/inicio" replace />;
+  if (!isPlatformAdmin) return <Navigate to="/feed" replace />;
   return children;
 }
 
 function FullScreenSpinner() {
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-background">
-      <div className="h-10 w-10 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+    <div className="fixed inset-0 flex items-center justify-center bg-white">
+      <div className="flex flex-col items-center gap-3">
+        <div className="text-3xl">🐾</div>
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-orange-500 border-t-transparent" />
+      </div>
     </div>
   );
 }
@@ -96,7 +101,6 @@ function RouteTelemetry() {
   const location = useLocation();
   useEffect(() => {
     recordPageView(location.pathname);
-    // Reinicia o scroll no topo a cada navegação (evita abrir páginas "no meio").
     if (typeof window !== 'undefined') {
       window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
     }
@@ -104,73 +108,107 @@ function RouteTelemetry() {
   return null;
 }
 
+// ─── App ──────────────────────────────────────────────────────────────────────
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <FeatureFlagsProvider>
-        <BrowserRouter basename={import.meta.env.BASE_URL}>
-          <RouteTelemetry />
-          <AuthFunnelTracker />
-          <Suspense fallback={<FullScreenSpinner />}>
-            <Routes>
-              {/* Public */}
-              <Route path="/" element={withLayout('Landing', Landing)} />
-              <Route path="/login" element={withLayout('Login', Login)} />
-              <Route path="/regras" element={withLayout('PickleballRules', PickleballRules)} />
-              <Route path="/torneios/guia" element={withLayout('TournamentFormatsGuide', TournamentFormatsGuide)} />
-              <Route path="/nivelamento" element={withLayout('Leveling', Leveling)} />
-              <Route path="/conduta" element={withLayout('ConductFairPlay', ConductFairPlay)} />
-              <Route path="/politica-uso" element={withLayout('PrivacyPolicy', PrivacyPolicy)} />
+          <BrowserRouter basename={import.meta.env.BASE_URL}>
+            <RouteTelemetry />
+            <Suspense fallback={<FullScreenSpinner />}>
+              <Routes>
+                {/* ── Públicas ─────────────────────────────────────────── */}
+                <Route path="/" element={withLayout('Home', Home)} />
+                <Route path="/login" element={withLayout('Login', Login)} />
+                <Route path="/politica-privacidade" element={withLayout('PrivacyPolicy', PrivacyPolicy)} />
 
-              {/* Public spectator view (sem auth) */}
-              <Route path="/p/:tournamentId" element={<PublicTournament />} />
-              <Route path="/ranking" element={withLayout('NationalRanking', NationalRanking)} />
-              <Route path="/parceiros" element={withLayout('Partners', Partners)} />
-              <Route path="/torneios/:tournamentId/imprimir" element={<PrintTournament />} />
+                {/* ── Onboarding (auth obrigatória, perfil ainda não completo) ── */}
+                <Route
+                  path="/onboarding"
+                  element={
+                    <ProtectedRoute>
+                      <OnboardingQuestionnaire />
+                    </ProtectedRoute>
+                  }
+                />
 
-              {/* Legacy redirects (Bolão → Pickleball) */}
-              <Route path="/aviso-jogos" element={<Navigate to="/conduta" replace />} />
-              <Route path="/dashboard" element={<Navigate to="/inicio" replace />} />
-              <Route path="/boloes" element={<Navigate to="/inicio" replace />} />
-              <Route path="/boloes/criar" element={<Navigate to="/torneios/criar" replace />} />
-              <Route path="/boloes/ingressar" element={<Navigate to="/torneios/ingressar" replace />} />
-              <Route path="/boloes/:tournamentId" element={<Navigate to="/torneios/:tournamentId" replace />} />
+                {/* ── Feed público de pets (auth opcional) ─────────────── */}
+                <Route path="/feed" element={withLayout('PetFeed', PetFeed)} />
+                <Route path="/pets/:petId" element={withLayout('PetDetail', PetDetail)} />
 
-              {/* Authenticated */}
-              <Route path="/inicio" element={<ProtectedRoute>{withLayout('Inicio', Inicio)}</ProtectedRoute>} />
-              <Route path="/perfil" element={<ProtectedRoute>{withLayout('Profile', Profile)}</ProtectedRoute>} />
-              <Route path="/chat" element={<ProtectedRoute>{withLayout('Chat', ChatPage)}</ProtectedRoute>} />
-              <Route path="/meu-desempenho" element={<ProtectedRoute>{withLayout('MyPerformance', MyPerformance)}</ProtectedRoute>} />
-              <Route path="/encontrar-jogadores" element={<ProtectedRoute>{withLayout('FindPlayers', FindPlayers)}</ProtectedRoute>} />
-              <Route path="/procura-jogo" element={<ProtectedRoute>{withLayout('OpenGames', OpenGames)}</ProtectedRoute>} />
-              <Route path="/novidades" element={<ProtectedRoute>{withLayout('CommunityFeed', CommunityFeed)}</ProtectedRoute>} />
-              <Route path="/torneios" element={<Navigate to="/inicio" replace />} />
-              <Route path="/torneios/criar" element={<ProtectedRoute>{withLayout('CreateTournament', CreateTournament)}</ProtectedRoute>} />
-              <Route path="/torneios/ingressar" element={<ProtectedRoute>{withLayout('JoinTournament', JoinTournament)}</ProtectedRoute>} />
-              <Route path="/torneios/publicos" element={<ProtectedRoute>{withLayout('PublicTournamentsList', PublicTournamentsList)}</ProtectedRoute>} />
-              <Route path="/torneios/:tournamentId" element={<ProtectedRoute>{withLayout('Tournament', Tournament)}</ProtectedRoute>} />
-              <Route path="/torneios/:tournamentId/:tab" element={<ProtectedRoute>{withLayout('Tournament', Tournament)}</ProtectedRoute>} />
+                {/* ── Pets autenticados ─────────────────────────────────── */}
+                <Route
+                  path="/pets/new"
+                  element={<ProtectedRoute>{withLayout('CreatePet', CreatePet)}</ProtectedRoute>}
+                />
+                <Route
+                  path="/pets/:petId/edit"
+                  element={<ProtectedRoute>{withLayout('CreatePet', CreatePet)}</ProtectedRoute>}
+                />
+                <Route
+                  path="/meus-pets"
+                  element={<ProtectedRoute>{withLayout('MyPets', MyPets)}</ProtectedRoute>}
+                />
 
-              {/* Comunidade: atletas e clubes */}
-              <Route path="/atletas" element={<ProtectedRoute>{withLayout('AthletesDirectory', AthletesDirectory)}</ProtectedRoute>} />
-              <Route path="/atleta/:uid" element={<ProtectedRoute>{withLayout('AthleteProfile', AthleteProfile)}</ProtectedRoute>} />
-              <Route path="/clubes" element={<ProtectedRoute>{withLayout('ClubsDirectory', ClubsDirectory)}</ProtectedRoute>} />
-              <Route path="/clubes/criar" element={<ProtectedRoute>{withLayout('CreateClub', CreateClub)}</ProtectedRoute>} />
-              <Route path="/clubes/:clubId" element={<ProtectedRoute>{withLayout('ClubDetail', ClubDetail)}</ProtectedRoute>} />
-              <Route path="/clubes/:clubId/eventos/:eventId" element={<ProtectedRoute>{withLayout('EventDetail', EventDetail)}</ProtectedRoute>} />
+                {/* ── Organizações ─────────────────────────────────────── */}
+                <Route path="/organizacoes" element={withLayout('OrganizationsDirectory', OrganizationsDirectory)} />
+                <Route
+                  path="/organizacoes/criar"
+                  element={<ProtectedRoute>{withLayout('CreateOrganization', CreateOrganization)}</ProtectedRoute>}
+                />
+                <Route
+                  path="/organizacoes/:orgId"
+                  element={<ProtectedRoute>{withLayout('OrganizationDetail', OrganizationDetail)}</ProtectedRoute>}
+                />
 
-              {/* Platform admin */}
-              <Route path="/admin" element={<AdminRoute>{withLayout('AdminTournaments', AdminTournaments)}</AdminRoute>} />
-              <Route path="/admin/torneios" element={<AdminRoute>{withLayout('AdminTournaments', AdminTournaments)}</AdminRoute>} />
-              <Route path="/admin/metricas" element={<AdminRoute>{withLayout('AdminMetrics', AdminMetrics)}</AdminRoute>} />
-              <Route path="/admin/parceiros" element={<AdminRoute>{withLayout('AdminPartners', AdminPartners)}</AdminRoute>} />
+                {/* ── Chat ─────────────────────────────────────────────── */}
+                <Route
+                  path="/chat"
+                  element={<ProtectedRoute>{withLayout('Chat', ChatPage)}</ProtectedRoute>}
+                />
+                <Route
+                  path="/chat/:conversationId"
+                  element={<ProtectedRoute>{withLayout('Chat', ChatPage)}</ProtectedRoute>}
+                />
 
-              <Route path="*" element={<PageNotFound />} />
-            </Routes>
-          </Suspense>
-        </BrowserRouter>
-        <Toaster />
+                {/* ── Denúncias ─────────────────────────────────────────── */}
+                <Route
+                  path="/denuncias/nova"
+                  element={<ProtectedRoute>{withLayout('CreateReport', CreateReport)}</ProtectedRoute>}
+                />
+
+                {/* ── Perfil ────────────────────────────────────────────── */}
+                <Route
+                  path="/perfil"
+                  element={<ProtectedRoute>{withLayout('Profile', Profile)}</ProtectedRoute>}
+                />
+
+                {/* ── Admin ─────────────────────────────────────────────── */}
+                <Route
+                  path="/admin"
+                  element={<AdminRoute>{withLayout('AdminDashboard', AdminDashboard)}</AdminRoute>}
+                />
+                <Route
+                  path="/admin/pets"
+                  element={<AdminRoute>{withLayout('AdminPets', AdminPets)}</AdminRoute>}
+                />
+                <Route
+                  path="/admin/denuncias"
+                  element={<AdminRoute>{withLayout('AdminReports', AdminReports)}</AdminRoute>}
+                />
+
+                {/* ── Redirects legados ─────────────────────────────────── */}
+                <Route path="/inicio" element={<Navigate to="/feed" replace />} />
+                <Route path="/clubes" element={<Navigate to="/organizacoes" replace />} />
+                <Route path="/atletas" element={<Navigate to="/feed" replace />} />
+
+                {/* ── 404 ───────────────────────────────────────────────── */}
+                <Route path="*" element={<PageNotFound />} />
+              </Routes>
+            </Suspense>
+          </BrowserRouter>
+          <Toaster />
         </FeatureFlagsProvider>
       </AuthProvider>
     </QueryClientProvider>

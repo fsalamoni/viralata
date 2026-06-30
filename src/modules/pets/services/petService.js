@@ -1,0 +1,102 @@
+/**
+ * @fileoverview Serviço de Pets — CRUD na coleção `pets`
+ */
+import {
+  collection, doc, getDoc, getDocs, addDoc, updateDoc,
+  deleteDoc, query, where, orderBy, limit, serverTimestamp, writeBatch,
+} from 'firebase/firestore';
+import { db } from '@/core/config/firebase';
+import { logger } from '@/core/lib/logger';
+import { createAuditLog } from '@/core/services/auditService';
+import { calculatePriorityScore } from '@/modules/pets/domain/priority';
+
+const PETS_COLLECTION = 'pets';
+
+/** Busca um pet por ID. */
+export async function getPetById(petId) {
+  if (!db || !petId) return null;
+  const snap = await getDoc(doc(db, PETS_COLLECTION, petId));
+  return snap.exists() ? { id: snap.id, ...snap.data() } : null;
+}
+
+/** Lista todos os pets disponíveis (para o feed). */
+export async function getAvailablePets({ species, size, city, state, limitCount = 100 } = {}) {
+  if (!db) return [];
+  const constraints = [where('status', '==', 'available'), orderBy('priority_score', 'desc'), orderBy('created_at', 'asc')];
+  if (species) constraints.push(where('species', '==', species));
+  if (size) constraints.push(where('size', '==', size));
+  if (city) constraints.push(where('city', '==', city));
+  if (state) constraints.push(where('state', '==', state));
+  constraints.push(limit(limitCount));
+  const snap = await getDocs(query(collection(db, PETS_COLLECTION), ...constraints));
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
+/** Lista pets de um dono (usuário ou organização). */
+export async function getPetsByOwner(ownerId) {
+  if (!db || !ownerId) return [];
+  const snap = await getDocs(
+    query(collection(db, PETS_COLLECTION), where('owner_id', '==', ownerId), orderBy('created_at', 'desc'))
+  );
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
+/** Cria um novo pet. */
+export async function createPet(petData, actor) {
+  if (!db) throw new Error('Firebase não disponível');
+  const priorityScore = calculatePriorityScore({ created_at: { seconds: Date.now() / 1000 } });
+  const payload = {
+    ...petData,
+    status: 'available',
+    priority_score: priorityScore,
+    created_at: serverTimestamp(),
+    updated_at: serverTimestamp(),
+  };
+  const ref = await addDoc(collection(db, PETS_COLLECTION), payload);
+  await createAuditLog({ action: 'pet_created', actor, details: { pet_id: ref.id, title: petData.title } });
+  return ref.id;
+}
+
+/** Atualiza dados de um pet. */
+export async function updatePet(petId, updates, actor) {
+  if (!db || !petId) throw new Error('Dados inválidos');
+  await updateDoc(doc(db, PETS_COLLECTION, petId), { ...updates, updated_at: serverTimestamp() });
+  await createAuditLog({ action: 'pet_updated', actor, details: { pet_id: petId, changed_fields: Object.keys(updates) } });
+}
+
+/** Marca um pet como adotado. */
+export async function completePetAdoption(petId, adoptedByUid, actor) {
+  if (!db || !petId) throw new Error('Dados inválidos');
+  const batch = writeBatch(db);
+  batch.update(doc(db, PETS_COLLECTION, petId), {
+    status: 'adopted',
+    adopted_by: adoptedByUid,
+    adopted_at: serverTimestamp(),
+    updated_at: serverTimestamp(),
+  });
+  await batch.commit();
+  await createAuditLog({ action: 'adoption_completed', actor, details: { pet_id: petId, adopted_by: adoptedByUid } });
+}
+
+/** Remove um pet (apenas se ainda disponível). */
+export async function deletePet(petId, actor) {
+  if (!db || !petId) throw new Error('Dados inválidos');
+  await deleteDoc(doc(db, PETS_COLLECTION, petId));
+  await createAuditLog({ action: 'pet_deleted', actor, details: { pet_id: petId } });
+}
+
+/** Recalcula e atualiza o priority_score de todos os pets disponíveis. */
+export async function recalculatePriorityScores() {
+  if (!db) return;
+  const snap = await getDocs(query(collection(db, PETS_COLLECTION), where('status', '==', 'available')));
+  const BATCH_SIZE = 400;
+  const docs = snap.docs;
+  for (let i = 0; i < docs.length; i += BATCH_SIZE) {
+    const batch = writeBatch(db);
+    docs.slice(i, i + BATCH_SIZE).forEach((d) => {
+      const score = calculatePriorityScore(d.data());
+      batch.update(d.ref, { priority_score: score });
+    });
+    await batch.commit().catch((err) => logger.error('recalculatePriorityScores batch error', err));
+  }
+}

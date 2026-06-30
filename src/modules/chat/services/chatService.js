@@ -80,11 +80,11 @@ export async function getConversation(id) {
  * Abre (ou cria) uma conversa direta entre o usuário atual e outra pessoa.
  * Idempotente graças ao id determinístico.
  */
-export async function getOrCreateDirectConversation(user, profile, other) {
+export async function getOrCreateDirectConversation(user, profile, other, petContext = null) {
   if (!user?.uid) throw new Error('Usuário não autenticado.');
   const me = toMember({ uid: user.uid, name: profile?.platform_name || user.displayName || user.email, photo_url: profile?.photo_url || user.photoURL });
   const target = toMember(other);
-  if (!target) throw new Error('Selecione um atleta válido.');
+  if (!target) throw new Error('Selecione um participante válido.');
   if (target.uid === me.uid) throw new Error('Você não pode iniciar uma conversa consigo mesmo.');
 
   const id = directConversationId(me.uid, target.uid);
@@ -94,6 +94,14 @@ export async function getOrCreateDirectConversation(user, profile, other) {
     if ((existing.hidden_for || []).includes(me.uid)) {
       await updateDoc(doc(db, COL.conversations, id), {
         hidden_for: (existing.hidden_for || []).filter((uid) => uid !== me.uid),
+        updated_at: serverTimestamp(),
+      }).catch(() => {});
+    }
+    // Atualiza contexto do pet se fornecido
+    if (petContext?.pet_id && !existing.pet_id) {
+      await updateDoc(doc(db, COL.conversations, id), {
+        pet_id: petContext.pet_id,
+        pet_title: petContext.pet_title || '',
         updated_at: serverTimestamp(),
       }).catch(() => {});
     }
@@ -109,6 +117,9 @@ export async function getOrCreateDirectConversation(user, profile, other) {
     members,
     created_by: me.uid,
     hidden_for: [],
+    // Contexto de adoção (opcional)
+    pet_id: petContext?.pet_id || null,
+    pet_title: petContext?.pet_title || null,
     last_message: null,
     last_message_at_ms: Date.now(),
     created_at: serverTimestamp(),

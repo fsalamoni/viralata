@@ -1,149 +1,147 @@
-# Pickleball
+# 🐾 Viralata — Plataforma de Adoção Responsável de Pets
 
-Plataforma web para criação e administração de torneios amadores de **pickleball** no Brasil.
+> Site: [viralata.web.app](https://viralata.web.app)
 
-## Funcionalidades
+## Sobre
 
-- 🏆 **Torneios** com formatos single, duplas e americana
-- 📋 **Modalidades múltiplas** por torneio com níveis (iniciante → elite), categorias por gênero e idade
-- 📏 **Regras configuráveis**: CBP ou USAP, jogos de 11/15/21 pontos, 1+ sets
-- 🎲 **Sorteio automático** de grupos e chaves (com seed reproduzível)
-- 🪜 **Formatos avançados de fase**: pontos corridos, grupos, mata-mata (single), **dupla eliminação** com bracket reset e **sistema suíço** com pareamento por pontuação
-- 📅 **Agendamento por quadras** com slots de tempo e descanso mínimo entre jogos
-- 📊 **Ranking ao vivo** adaptado ao formato (pontos corridos, grupos, mata-mata, americana)
-- 👥 **Admins compartilhados** por torneio sem afetar o admin geral da plataforma
-- 📖 **Páginas educativas**: regras (CBP/USAP) e nivelamento (CBPE/USAP) com formulário auto-avaliativo
-- 🎫 Até **500 inscritos por modalidade**, taxa de inscrição opcional, check-in de jogadores
-- 👀 **Visão pública** (`/p/:id`) para espectadores, sem login, com atualização automática
-- 🖨️ **Versão para impressão** (`/torneios/:id/imprimir`) das chaves e classificação
-- 🔐 Login com **Google** (Firebase Auth) e auditoria de ações administrativas
+O **Viralata** é uma plataforma PWA (Progressive Web App) de marketplace de adoção de pets. Conecta animais que precisam de um lar com famílias que têm amor para dar. **Não há venda de animais** — apenas doações responsáveis.
 
-## Stack
+A plataforma é baseada na arquitetura do [PickleTour](https://pickletour.web.app), reutilizando o core de Firebase, chat em tempo real, notificações e sistema de organizações.
 
-- **React 18** + Vite + Tailwind + shadcn/ui
-- **Firebase**: Auth, Firestore (database `pickleball`), Hosting
-- **React Query** para data fetching
-- **Vitest** para testes unitários · **Playwright** para E2E
+---
 
-## Como rodar
+## Stack Tecnológica
 
-```bash
-npm install
-cp .env.example .env.local   # preencha as variáveis do Firebase
-npm run dev                  # http://localhost:5173
-```
+| Camada | Tecnologia |
+|---|---|
+| Frontend | React 18 + Vite + TailwindCSS + shadcn/ui |
+| Estado | TanStack Query (React Query) |
+| Auth | Firebase Authentication (Google, Email) |
+| Banco de dados | Cloud Firestore |
+| Storage | Firebase Storage |
+| Hosting | Firebase Hosting (viralata.web.app) |
+| PWA | vite-plugin-pwa + Workbox |
+| CI/CD | GitHub Actions → Firebase Hosting |
 
-## Scripts úteis
+---
 
-| Script | Descrição |
-| --- | --- |
-| `npm run dev` | Vite em modo desenvolvimento |
-| `npm run build` | Build de produção (`dist/`) |
-| `npm run lint` | ESLint |
-| `npm run test` | Vitest (unit) |
-| `npm run e2e` | Playwright (E2E) |
-
-## App mobile (PWA)
-
-A plataforma pode ser instalada como app no celular **sem passar pelas lojas**,
-direto do site (Android via prompt nativo; iOS/Safari via "Adicionar à Tela de
-Início"). É um PWA — totalmente aditivo, não altera banco de dados nem
-funcionalidades.
-
-Fica **desligado por padrão** atrás da flag `VITE_PWA_ENABLED`:
-
-- `VITE_PWA_ENABLED=false` (padrão): nenhum service worker é registrado e o
-  botão "Baixar o app" não aparece. Zero impacto.
-- `VITE_PWA_ENABLED=true`: ativa o registro do service worker (apenas em build de
-  produção) e exibe o botão de instalação na landing.
-
-Os ícones do app são gerados por `node scripts/generate-pwa-icons.mjs`
-(saída em `public/`). Após validar tudo, basta ligar a flag no ambiente de build.
-
-## Feature flags (admin master)
-
-Algumas funcionalidades nascem **desligadas** e são ativadas em tempo real pelo
-admin master na página **Métricas da Plataforma** (`/admin/metricas`), no card
-**Funcionalidades (flags)**. As flags ficam em `platform_settings/global`
-(Firestore) e são puramente aditivas — desligar não afeta nada do que já existe.
-
-- **Torneios em múltiplas fases** (`multi_phase_tournaments`): permite configurar
-  uma modalidade com várias fases encadeadas (grupos, americano, **mexicano**,
-  mata-mata, dupla eliminação, suíço), com **divisão em grupos equilibrados** por
-  gênero e nível (diferença máxima de 1 atleta por grupo), sorteio ou seleção
-  manual, **qualificação de classificados** (geral ou por gênero) e **progressão
-  automática entre fases** (fusão de grupos A+B → AB, formação de duplas mistas,
-  chaveamento clássico ou cruzado A×B / C×D, disputa de 3º lugar). A inscrição
-  continua em **lista única** por modalidade. Com a flag desligada, o fluxo de
-  fase única permanece idêntico ao atual.
-
-  **Modelos prontos** (catálogo organizado, escolhido no editor de fases):
-  pontos corridos (com/sem final), grupos + mata-mata (clássico e cruzado),
-  mata-mata simples (com/sem disputa de 3º lugar), dupla eliminação, suíço
-  (com/sem playoffs), cascata de grupos, **americano** e **mexicano**, e os
-  encadeamentos sociais (americano em grupos → final de duplas mistas; americano
-  em 3 fases com fusão de grupos).
-
-  **Formatos de jogo cobertos** (espectro completo): pontos corridos, fase de
-  grupos, mata-mata (eliminação simples), dupla eliminação (com repescagem),
-  sistema suíço, americano (rotação por tabela de Whist) e mexicano (rotação
-  dinâmica por classificação). O mexicano fica oculto nos seletores até a flag
-  ser ligada.
-
-> Após o primeiro uso, lembre-se de publicar as regras do Firestore
-> (`firestore.rules`) — há uma regra nova para `platform_settings` (leitura
-> pública, escrita só do admin master).
-
-## Publicação no GitHub Pages
-
-O repositório já está preparado para publicar a aplicação em **GitHub Pages** via workflow do GitHub Actions (`.github/workflows/deploy-pages.yml`).
-
-### 1. Habilite o GitHub Pages
-
-No GitHub, abra **Settings → Pages** e selecione **Build and deployment → Source: GitHub Actions**.
-
-### 2. Configure as variáveis do build
-
-Em **Settings → Secrets and variables → Actions**, crie as variáveis (ou secrets) abaixo com os valores reais do seu projeto Firebase:
-
-- `VITE_FIREBASE_API_KEY`
-- `VITE_FIREBASE_AUTH_DOMAIN`
-- `VITE_FIREBASE_PROJECT_ID`
-- `VITE_FIREBASE_STORAGE_BUCKET`
-- `VITE_FIREBASE_MESSAGING_SENDER_ID`
-- `VITE_FIREBASE_APP_ID`
-
-Opcionais:
-
-- `VITE_FIREBASE_MEASUREMENT_ID`
-- `VITE_FIRESTORE_DATABASE_ID` (padrão recomendado: `pickleball`)
-- `VITE_ENABLE_FIREBASE_ANALYTICS`
-- `VITE_ENABLE_FIREBASE_PERFORMANCE`
-
-### 3. Deploy
-
-Ao fazer push para `main`, o workflow publica automaticamente em:
-
-`https://fsalamoni.github.io/pickleball/`
-
-O workflow também gera `404.html` a partir do `index.html` para manter o roteamento SPA funcionando em refresh e links diretos.
-
-## Estrutura
+## Estrutura de Módulos
 
 ```
 src/
-├── App.jsx                # Roteamento
-├── core/                  # Auth, Firebase, serviços compartilhados, design system
-├── components/            # Layout, AuditLogTable, UI primitives (shadcn)
-├── pages/                 # Landing, Login, Regras, Nivelamento, Conduta, Política
-└── modules/
-    ├── tournament/        # Domínio principal (torneios, modalidades, jogos, ranking)
-    │   ├── domain/        # constants, scoring, draw, ranking (puros, testados)
-    │   ├── services/      # Firestore CRUD
-    │   ├── hooks/         # React Query
-    │   ├── pages/         # Dashboard, CreateTournament, JoinTournament, Tournament
-    │   └── components/    # Tabs do torneio + dialogs
-    ├── leveling/          # Tabela e formulário de nivelamento (CBPE/USAP)
-    ├── notifications/     # Notificações in-app
-    └── admin/             # Painel administrativo da plataforma
+├── core/               # Infraestrutura: Firebase, Auth, Services, Utils
+├── modules/
+│   ├── pets/           # 🐾 Catálogo, CRUD, matching, interesses
+│   ├── onboarding/     # 📋 Questionário comportamental
+│   ├── organizations/  # 🏢 ONGs e lojas parceiras
+│   ├── chat/           # 💬 Chat em tempo real (Firestore)
+│   ├── reports/        # 🚨 Denúncias de maus-tratos + PDF
+│   ├── admin/          # 🛡️ Painel administrativo
+│   ├── adopters/       # 👤 Perfis de adotantes
+│   └── notifications/  # 🔔 Notificações em tempo real
+├── pages/              # Páginas públicas (Home, Login, Profile, etc.)
+└── components/         # Layout, UI compartilhados
 ```
+
+---
+
+## Configuração do Ambiente
+
+### 1. Variáveis de Ambiente
+
+Crie o arquivo `.env.local` na raiz do projeto:
+
+```env
+VITE_FIREBASE_API_KEY=sua_api_key
+VITE_FIREBASE_AUTH_DOMAIN=viralata.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=viralata
+VITE_FIREBASE_STORAGE_BUCKET=viralata.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=seu_sender_id
+VITE_FIREBASE_APP_ID=seu_app_id
+VITE_FIREBASE_DATABASE_ID=(default)
+```
+
+### 2. Instalar dependências
+
+```bash
+npm install
+```
+
+### 3. Rodar localmente
+
+```bash
+npm run dev
+```
+
+### 4. Build para produção
+
+```bash
+npm run build
+```
+
+### 5. Deploy no Firebase
+
+```bash
+firebase deploy --only hosting,firestore:rules,storage
+```
+
+---
+
+## CI/CD — GitHub Actions
+
+O deploy automático está configurado em `.github/workflows/deploy.yml`:
+
+- **Push para `main`** → deploy em produção (`viralata.web.app`)
+- **Pull Request** → deploy em canal de preview
+
+### Secrets necessários no GitHub
+
+| Secret | Descrição |
+|---|---|
+| `FIREBASE_SERVICE_ACCOUNT` | JSON da conta de serviço do Firebase |
+| `VITE_FIREBASE_API_KEY` | API Key do Firebase |
+| `VITE_FIREBASE_AUTH_DOMAIN` | Auth domain |
+| `VITE_FIREBASE_PROJECT_ID` | Project ID |
+| `VITE_FIREBASE_STORAGE_BUCKET` | Storage bucket |
+| `VITE_FIREBASE_MESSAGING_SENDER_ID` | Messaging sender ID |
+| `VITE_FIREBASE_APP_ID` | App ID |
+| `VITE_FIREBASE_DATABASE_ID` | Database ID |
+
+---
+
+## Coleções Firestore
+
+| Coleção | Descrição |
+|---|---|
+| `users` | Perfis de usuários com dados de onboarding |
+| `pets` | Anúncios de pets para adoção |
+| `adoption_interests` | Interesses de adotantes (ID: `{petId}_{userId}`) |
+| `organizations` | ONGs e lojas parceiras |
+| `organization_members` | Membros de organizações (ID: `{orgId}_{userId}`) |
+| `organization_reports` | Prestação de contas das organizações |
+| `conversations` | Conversas do chat |
+| `conversations/{id}/messages` | Mensagens de cada conversa |
+| `notifications` | Notificações em tempo real |
+| `abuse_reports` | Denúncias de maus-tratos |
+| `audit_logs` | Logs de auditoria (imutáveis) |
+| `feature_flags` | Flags de funcionalidades |
+
+---
+
+## Algoritmo de Matching
+
+O algoritmo (`src/modules/pets/domain/matching.js`) é **puro e testável** (sem efeitos colaterais). Ele filtra e pontua pets com base em:
+
+- Compatibilidade de espaço (pátio, tela de proteção)
+- Outros animais em casa
+- Presença de crianças/idosos
+- Orçamento disponível
+- Localização (mesma cidade/estado)
+
+Pets com `priority_score > 0` (cadastrados há mais de 90 dias) recebem bônus e aparecem primeiro no feed.
+
+---
+
+## Licença
+
+Proprietário — todos os direitos reservados.

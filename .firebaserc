@@ -1,5 +1,12 @@
 {
   "projects": {
-    "default": "pickletour"
+    "default": "viralata"
+  },
+  "targets": {
+    "viralata": {
+      "hosting": {
+        "viralata": ["viralata"]
+      }
+    }
   }
 }

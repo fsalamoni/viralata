@@ -28,7 +28,7 @@ export const firebaseDisabledReason = firebaseServicesEnabled
 
 export const app = firebaseServicesEnabled ? initializeApp(firebaseConfig) : null;
 
-const firestoreDatabaseId = import.meta.env.VITE_FIRESTORE_DATABASE_ID || 'pickleball';
+const firestoreDatabaseId = import.meta.env.VITE_FIRESTORE_DATABASE_ID || 'viralata';
 export const auth = app ? getAuth(app) : null;
 export const db = app ? getFirestore(app, firestoreDatabaseId) : null;
 export const functions = app ? getFunctions(app, 'southamerica-east1') : null;

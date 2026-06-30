@@ -7,7 +7,7 @@ import { birthDateToBrtDate, isRequiredProfileComplete, validateRequiredProfile 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { PICKLEBALL_EXPERIENCE_LABELS } from '@/modules/tournament/domain/constants';
+
 import {
   AlertDialog,
   AlertDialogContent,

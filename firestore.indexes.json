@@ -1,15 +1,40 @@
 {
   "indexes": [
     {
-      "collectionGroup": "tournaments",
+      "collectionGroup": "pets",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "creator_uid", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" },
         { "fieldPath": "created_at", "order": "DESCENDING" }
       ]
     },
     {
-      "collectionGroup": "tournament_admins",
+      "collectionGroup": "pets",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "species", "order": "ASCENDING" },
+        { "fieldPath": "created_at", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "pets",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "owner_id", "order": "ASCENDING" },
+        { "fieldPath": "created_at", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "adoption_interests",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "pet_id", "order": "ASCENDING" },
+        { "fieldPath": "created_at", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "adoption_interests",
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "user_id", "order": "ASCENDING" },
@@ -17,53 +42,34 @@
       ]
     },
     {
-      "collectionGroup": "tournament_registrations",
+      "collectionGroup": "organization_members",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "tournament_id", "order": "ASCENDING" },
-        { "fieldPath": "created_at", "order": "ASCENDING" }
+        { "fieldPath": "org_id", "order": "ASCENDING" },
+        { "fieldPath": "joined_at", "order": "ASCENDING" }
       ]
     },
     {
-      "collectionGroup": "tournament_registrations",
+      "collectionGroup": "organization_members",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "modality_id", "order": "ASCENDING" },
-        { "fieldPath": "created_at", "order": "ASCENDING" }
+        { "fieldPath": "user_id", "order": "ASCENDING" }
       ]
     },
     {
-      "collectionGroup": "tournament_matches",
+      "collectionGroup": "abuse_reports",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "modality_id", "order": "ASCENDING" },
-        { "fieldPath": "stage_index", "order": "ASCENDING" },
-        { "fieldPath": "round", "order": "ASCENDING" },
-        { "fieldPath": "position", "order": "ASCENDING" }
+        { "fieldPath": "reporter_uid", "order": "ASCENDING" },
+        { "fieldPath": "created_at", "order": "DESCENDING" }
       ]
     },
     {
-      "collectionGroup": "tournament_modalities",
+      "collectionGroup": "notifications",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "tournament_id", "order": "ASCENDING" },
-        { "fieldPath": "created_at", "order": "ASCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "tournament_courts",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "tournament_id", "order": "ASCENDING" },
-        { "fieldPath": "order", "order": "ASCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "club_events",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "club_id", "order": "ASCENDING" },
-        { "fieldPath": "visibility", "order": "ASCENDING" }
+        { "fieldPath": "user_id", "order": "ASCENDING" },
+        { "fieldPath": "created_at", "order": "DESCENDING" }
       ]
     }
   ],
