@@ -11,6 +11,8 @@ import { recordPageView } from '@/core/services/observabilityService';
 const Home = lazy(() => import('@/pages/Home'));
 const Login = lazy(() => import('@/pages/Login'));
 const PrivacyPolicy = lazy(() => import('@/pages/PrivacyPolicy'));
+const Terms = lazy(() => import('@/pages/Terms'));
+const Legislation = lazy(() => import('@/pages/Legislation'));
 const PageNotFound = lazy(() => import('@/pages/PageNotFound'));
 
 // ─── Onboarding ───────────────────────────────────────────────────────────────
@@ -123,6 +125,8 @@ export default function App() {
                 <Route path="/" element={withLayout('Home', Home)} />
                 <Route path="/login" element={withLayout('Login', Login)} />
                 <Route path="/politica-privacidade" element={withLayout('PrivacyPolicy', PrivacyPolicy)} />
+                <Route path="/termos" element={withLayout('Terms', Terms)} />
+                <Route path="/legislacao" element={withLayout('Legislation', Legislation)} />
 
                 {/* ── Onboarding (auth obrigatória, perfil ainda não completo) ── */}
                 <Route

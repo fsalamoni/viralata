@@ -83,11 +83,10 @@ export default function Home() {
       {/* Footer */}
       <footer className="border-t py-8 px-4 text-center text-sm text-gray-400">
         <p>© {new Date().getFullYear()} Viralata — Adoção responsável de pets</p>
-        <div className="flex justify-center gap-4 mt-2">
-          <Link to="/sobre" className="hover:text-gray-600">Sobre</Link>
+        <div className="flex flex-wrap justify-center gap-4 mt-2">
           <Link to="/termos" className="hover:text-gray-600">Termos</Link>
-          <Link to="/privacidade" className="hover:text-gray-600">Privacidade</Link>
-          <Link to="/contato" className="hover:text-gray-600">Contato</Link>
+          <Link to="/politica-privacidade" className="hover:text-gray-600">Privacidade</Link>
+          <Link to="/legislacao" className="hover:text-gray-600">Legislação e boas práticas</Link>
         </div>
       </footer>
     </div>
