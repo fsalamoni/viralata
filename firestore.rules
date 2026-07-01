@@ -40,12 +40,21 @@ service cloud.firestore {
     // ─── Pets ─────────────────────────────────────────────────────────────────
     match /pets/{petId} {
       allow read: if true; // Feed público
-      allow create: if isAuth();
+      // owner_id pode ser o uid do próprio usuário ou o id de uma organização
+      // da qual ele é admin (owner_type == 'organization') — nunca de terceiros.
+      allow create: if isAuth() && (
+        request.resource.data.owner_id == request.auth.uid ||
+        (request.resource.data.owner_type == 'organization' && isClubAdmin(request.resource.data.owner_id))
+      );
       allow update: if isAuth() && (
-        resource.data.owner_id == request.auth.uid || isPlatformAdmin()
+        resource.data.owner_id == request.auth.uid ||
+        (resource.data.owner_type == 'organization' && isClubAdmin(resource.data.owner_id)) ||
+        isPlatformAdmin()
       );
       allow delete: if isAuth() && (
-        resource.data.owner_id == request.auth.uid || isPlatformAdmin()
+        resource.data.owner_id == request.auth.uid ||
+        (resource.data.owner_type == 'organization' && isClubAdmin(resource.data.owner_id)) ||
+        isPlatformAdmin()
       );
     }
 

@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
-import { useCreatePet } from '../hooks/usePets';
+import { useCreatePet, useUpdatePet, usePet } from '../hooks/usePets';
+import { useMyClubs } from '@/modules/organizations/hooks/useClubs';
 import { uploadImage } from '@/core/services/storageService';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -39,12 +40,19 @@ const schema = z.object({
 
 export default function CreatePet() {
   const navigate = useNavigate();
+  const { petId } = useParams();
+  const isEditing = Boolean(petId);
   const { user, userProfile } = useAuth();
+  const { data: existingPet, isLoading: loadingPet } = usePet(petId);
   const createPet = useCreatePet();
+  const updatePet = useUpdatePet();
+  const { data: myClubs = [] } = useMyClubs();
+  const adminClubs = myClubs.filter((c) => c.my_role === 'admin');
+  const [ownerId, setOwnerId] = useState('me');
   const [photos, setPhotos] = useState([]);
   const [uploading, setUploading] = useState(false);
 
-  const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm({
+  const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
       neutered: false, dewormed: false, needs_yard: false,
@@ -53,6 +61,33 @@ export default function CreatePet() {
       city: userProfile?.city || '', state: userProfile?.state || '',
     },
   });
+
+  useEffect(() => {
+    if (!existingPet) return;
+    reset({
+      title: existingPet.title || '',
+      name: existingPet.name || '',
+      species: existingPet.species,
+      size: existingPet.size,
+      age_group: existingPet.age_group,
+      gender: existingPet.gender,
+      breed: existingPet.breed || '',
+      vaccinated: existingPet.vaccinated,
+      neutered: Boolean(existingPet.neutered),
+      dewormed: Boolean(existingPet.dewormed),
+      needs_yard: Boolean(existingPet.needs_yard),
+      needs_screened_apt: Boolean(existingPet.needs_screened_apt),
+      good_with_kids: existingPet.good_with_kids !== false,
+      good_with_dogs: existingPet.good_with_dogs !== false,
+      good_with_cats: existingPet.good_with_cats !== false,
+      health_notes: existingPet.health_notes || '',
+      adoption_requirements: existingPet.adoption_requirements || '',
+      city: existingPet.city || '',
+      state: existingPet.state || '',
+    });
+    setPhotos(existingPet.photos || []);
+    setOwnerId(existingPet.owner_type === 'organization' ? existingPet.owner_id : 'me');
+  }, [existingPet, reset]);
 
   async function handlePhotoUpload(e) {
     const files = Array.from(e.target.files);
@@ -73,17 +108,28 @@ export default function CreatePet() {
   async function onSubmit(data) {
     if (photos.length === 0) { toast.error('Adicione pelo menos uma foto.'); return; }
     try {
-      const petId = await createPet.mutateAsync({
+      if (isEditing) {
+        await updatePet.mutateAsync({ petId, updates: { ...data, photos } });
+        toast.success('Pet atualizado com sucesso!');
+        navigate(`/pets/${petId}`);
+        return;
+      }
+      const isOrg = ownerId !== 'me';
+      const newPetId = await createPet.mutateAsync({
         ...data,
         photos,
-        owner_id: user.uid,
-        owner_type: 'user',
+        owner_id: isOrg ? ownerId : user.uid,
+        owner_type: isOrg ? 'organization' : 'user',
       });
       toast.success('Pet cadastrado com sucesso!');
-      navigate(`/pets/${petId}`);
+      navigate(`/pets/${newPetId}`);
     } catch {
-      toast.error('Erro ao cadastrar pet. Tente novamente.');
+      toast.error(isEditing ? 'Erro ao atualizar pet. Tente novamente.' : 'Erro ao cadastrar pet. Tente novamente.');
     }
+  }
+
+  if (isEditing && loadingPet) {
+    return <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500" /></div>;
   }
 
   return (
@@ -92,10 +138,27 @@ export default function CreatePet() {
         <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
           <ArrowLeft className="w-4 h-4" />
         </Button>
-        <h1 className="text-2xl font-bold text-gray-900">Cadastrar Pet para Adoção</h1>
+        <h1 className="text-2xl font-bold text-gray-900">
+          {isEditing ? 'Editar Pet' : 'Cadastrar Pet para Adoção'}
+        </h1>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        {!isEditing && adminClubs.length > 0 && (
+          <div className="space-y-1">
+            <Label>Cadastrar em nome de</Label>
+            <Select value={ownerId} onValueChange={setOwnerId}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="me">Eu mesmo</SelectItem>
+                {adminClubs.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+
         {/* Fotos */}
         <div className="space-y-2">
           <Label>Fotos <span className="text-red-500">*</span></Label>
@@ -130,7 +193,7 @@ export default function CreatePet() {
           </div>
           <div className="space-y-1">
             <Label>Espécie <span className="text-red-500">*</span></Label>
-            <Select onValueChange={(v) => setValue('species', v)}>
+            <Select value={watch('species')} onValueChange={(v) => setValue('species', v, { shouldValidate: true })}>
               <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="dog">Cachorro</SelectItem>
@@ -142,7 +205,7 @@ export default function CreatePet() {
           </div>
           <div className="space-y-1">
             <Label>Porte <span className="text-red-500">*</span></Label>
-            <Select onValueChange={(v) => setValue('size', v)}>
+            <Select value={watch('size')} onValueChange={(v) => setValue('size', v, { shouldValidate: true })}>
               <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="mini">Mini</SelectItem>
@@ -156,7 +219,7 @@ export default function CreatePet() {
           </div>
           <div className="space-y-1">
             <Label>Faixa etária <span className="text-red-500">*</span></Label>
-            <Select onValueChange={(v) => setValue('age_group', v)}>
+            <Select value={watch('age_group')} onValueChange={(v) => setValue('age_group', v, { shouldValidate: true })}>
               <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="puppy">Filhote</SelectItem>
@@ -167,7 +230,7 @@ export default function CreatePet() {
           </div>
           <div className="space-y-1">
             <Label>Sexo <span className="text-red-500">*</span></Label>
-            <Select onValueChange={(v) => setValue('gender', v)}>
+            <Select value={watch('gender')} onValueChange={(v) => setValue('gender', v, { shouldValidate: true })}>
               <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="male">Macho</SelectItem>
@@ -177,7 +240,7 @@ export default function CreatePet() {
           </div>
           <div className="space-y-1">
             <Label>Vacinação <span className="text-red-500">*</span></Label>
-            <Select onValueChange={(v) => setValue('vaccinated', v)}>
+            <Select value={watch('vaccinated')} onValueChange={(v) => setValue('vaccinated', v, { shouldValidate: true })}>
               <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="yes">Vacinado</SelectItem>
