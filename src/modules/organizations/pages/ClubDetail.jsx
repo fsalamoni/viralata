@@ -46,6 +46,7 @@ import ClubAdminTab from '@/modules/organizations/components/ClubAdminTab';
 import ClubPetsDataGrid from '@/modules/organizations/components/ClubPetsDataGrid';
 import RatingBadge from '@/modules/pets/components/RatingBadge';
 import { QrCode } from '@/components/ui/qr-code';
+import AdSlot from '@/components/AdSlot';
 
 export default function ClubDetail() {
   const { clubId } = useParams();
@@ -326,7 +327,8 @@ export default function ClubDetail() {
           </TabsContent>
 
           {canEditPets && (
-            <TabsContent value="pets" className="mt-4">
+            <TabsContent value="pets" className="mt-4 space-y-4">
+              <AdSlot />
               <ClubPetsDataGrid clubId={clubId} />
             </TabsContent>
           )}

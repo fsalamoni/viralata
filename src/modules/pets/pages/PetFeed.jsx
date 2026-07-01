@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { usePetFeed } from '../hooks/usePets';
 import PetCard from '../components/PetCard';
+import AdSlot from '@/components/AdSlot';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { PlusCircle, SlidersHorizontal } from 'lucide-react';
@@ -89,11 +90,14 @@ export default function PetFeed() {
       )}
 
       {!isLoading && pets.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {pets.map((pet) => (
-            <PetCard key={pet.id} pet={pet} />
-          ))}
-        </div>
+        <>
+          <AdSlot className="mb-2" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {pets.map((pet) => (
+              <PetCard key={pet.id} pet={pet} />
+            ))}
+          </div>
+        </>
       )}
     </div>
   );

@@ -163,6 +163,15 @@ export const FEATURE_FLAG = Object.freeze({
    * desligado, a seção não aparece.
    */
   TOURNAMENT_UX: 'tournament_ux',
+
+  /**
+   * Espaço de anúncios: exibe um card "Conteúdo patrocinado" não intrusivo no
+   * feed de pets e no painel de gestão de pets da ONG. Não há integração real
+   * com uma rede de anúncios — é apenas o placeholder visual/estrutural,
+   * pronto para receber um script de ads futuramente. Aditivo — desligado,
+   * nenhum card aparece.
+   */
+  AD_SLOTS: 'ad_slots',
 });
 
 /** Metadados de exibição para o painel de flags (admin master). */
@@ -316,6 +325,14 @@ export const FEATURE_FLAG_META = Object.freeze({
     description:
       'Mostra os próximos jogos agendados do atleta no painel inicial. '
       + 'Desligado, a seção não aparece.',
+  },
+  [FEATURE_FLAG.AD_SLOTS]: {
+    label: 'Espaço de anúncios',
+    description:
+      'Exibe um card "Conteúdo patrocinado" no feed de pets e no painel de '
+      + 'gestão de pets da ONG. Apenas o placeholder visual — não há '
+      + 'integração com uma rede de anúncios real. Desligado, nenhum card '
+      + 'aparece.',
   },
 });
 
