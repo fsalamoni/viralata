@@ -21,6 +21,7 @@ const PetFeed = lazy(() => import('@/modules/pets/pages/PetFeed'));
 const PetDetail = lazy(() => import('@/modules/pets/pages/PetDetail'));
 const CreatePet = lazy(() => import('@/modules/pets/pages/CreatePet'));
 const MyPets = lazy(() => import('@/modules/pets/pages/MyPets'));
+const RadarSettings = lazy(() => import('@/modules/pets/pages/RadarSettings'));
 
 // ─── Organizações ─────────────────────────────────────────────────────────────
 const OrganizationsDirectory = lazy(() => import('@/modules/organizations/pages/ClubsDirectory'));
@@ -149,6 +150,10 @@ export default function App() {
                 <Route
                   path="/meus-pets"
                   element={<ProtectedRoute>{withLayout('MyPets', MyPets)}</ProtectedRoute>}
+                />
+                <Route
+                  path="/radar"
+                  element={<ProtectedRoute>{withLayout('RadarSettings', RadarSettings)}</ProtectedRoute>}
                 />
 
                 {/* ── Organizações ─────────────────────────────────────── */}

@@ -16,12 +16,33 @@ const GENDER_OPTIONS = [
   { value: 'prefer_not_to_say', label: 'Prefiro não informar' },
 ];
 
+// Mesmos valores usados em modules/onboarding/pages/OnboardingQuestionnaire.jsx
+// e checados por modules/pets/domain/matching.js — não renomear sem atualizar os dois.
 const HOUSING_OPTIONS = [
-  { value: 'apartment_no_yard', label: 'Apartamento sem área externa' },
-  { value: 'apartment_balcony', label: 'Apartamento com varanda/sacada' },
-  { value: 'house_small_yard', label: 'Casa com quintal pequeno' },
-  { value: 'house_large_yard', label: 'Casa com quintal grande' },
-  { value: 'farm', label: 'Sítio / Chácara / Fazenda' },
+  { value: 'house_with_yard', label: '🏡 Casa com pátio' },
+  { value: 'house_no_yard', label: '🏠 Casa sem pátio' },
+  { value: 'apartment_screened', label: '🏢 Apartamento com tela de proteção' },
+  { value: 'apartment_unscreened', label: '🏢 Apartamento sem tela' },
+  { value: 'farm', label: '🌾 Sítio / Fazenda' },
+];
+
+const WALKS_OPTIONS = [
+  { value: 'none', label: 'Não costumo passear' },
+  { value: 'short', label: 'Passeios curtos (menos de 30 min)' },
+  { value: 'long', label: 'Passeios longos (mais de 30 min)' },
+];
+
+const BUDGET_OPTIONS = [
+  { value: 'basic', label: 'Básico — até R$200/mês' },
+  { value: 'moderate', label: 'Moderado — R$200 a R$500/mês' },
+  { value: 'high', label: 'Alto — acima de R$500/mês' },
+];
+
+const OTHER_PET_OPTIONS = [
+  { value: 'dog', label: '🐶 Cachorro' },
+  { value: 'cat', label: '🐱 Gato' },
+  { value: 'bird', label: '🐦 Pássaro' },
+  { value: 'other', label: '🐾 Outro' },
 ];
 
 export default function Profile() {
@@ -33,15 +54,19 @@ export default function Profile() {
   const [stateUf, setStateUf] = useState(userProfile?.state || '');
   const [gender, setGender] = useState(userProfile?.gender || '');
   const [housing, setHousing] = useState(userProfile?.housing_type || '');
-  const [hasYard, setHasYard] = useState(userProfile?.has_yard === true);
-  const [hasScreens, setHasScreens] = useState(userProfile?.has_screens === true);
+  const [dailyWalks, setDailyWalks] = useState(userProfile?.daily_walks || '');
   const [hasChildren, setHasChildren] = useState(userProfile?.has_children === true);
+  const [childrenAges, setChildrenAges] = useState(userProfile?.children_ages || '');
   const [hasElderly, setHasElderly] = useState(userProfile?.has_elderly === true);
-  const [hasOtherPets, setHasOtherPets] = useState(userProfile?.has_other_pets === true);
-  const [monthlyBudget, setMonthlyBudget] = useState(userProfile?.monthly_budget || '');
+  const [otherPets, setOtherPets] = useState(Array.isArray(userProfile?.other_pets) ? userProfile.other_pets : []);
+  const [budgetLevel, setBudgetLevel] = useState(userProfile?.budget_level || '');
   const [phonePublic, setPhonePublic] = useState(userProfile?.phone_public === true);
   const [photoUrl, setPhotoUrl] = useState(userProfile?.photo_url || user?.photoURL || '');
   const [busy, setBusy] = useState(false);
+
+  function toggleOtherPet(pet) {
+    setOtherPets((prev) => (prev.includes(pet) ? prev.filter((p) => p !== pet) : [...prev, pet]));
+  }
 
   async function handleSave(e) {
     e.preventDefault();
@@ -54,12 +79,12 @@ export default function Profile() {
         state: stateUf.trim().toUpperCase(),
         gender,
         housing_type: housing,
-        has_yard: hasYard,
-        has_screens: hasScreens,
+        daily_walks: dailyWalks,
         has_children: hasChildren,
+        children_ages: hasChildren ? childrenAges.trim() : '',
         has_elderly: hasElderly,
-        has_other_pets: hasOtherPets,
-        monthly_budget: monthlyBudget,
+        other_pets: otherPets,
+        budget_level: budgetLevel,
         phone_public: phonePublic,
         photo_url: photoUrl,
         profile_completed: Boolean(fullName.trim() && city.trim()),
@@ -179,30 +204,69 @@ export default function Profile() {
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="budget">Orçamento mensal estimado para o pet (R$)</Label>
-            <Input
-              id="budget"
-              type="number"
-              min="0"
-              value={monthlyBudget}
-              onChange={(e) => setMonthlyBudget(e.target.value)}
-              placeholder="Ex: 300"
-            />
+            <Label htmlFor="dailyWalks">Rotina de passeios</Label>
+            <select
+              id="dailyWalks"
+              value={dailyWalks}
+              onChange={(e) => setDailyWalks(e.target.value)}
+              className="h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <option value="">Selecione...</option>
+              {WALKS_OPTIONS.map(({ value, label }) => (
+                <option key={value} value={value}>{label}</option>
+              ))}
+            </select>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            {[
-              { label: 'Tem quintal / área externa', value: hasYard, set: setHasYard },
-              { label: 'Tem tela de proteção', value: hasScreens, set: setHasScreens },
-              { label: 'Tem crianças em casa', value: hasChildren, set: setHasChildren },
-              { label: 'Tem idosos em casa', value: hasElderly, set: setHasElderly },
-              { label: 'Já tem outros pets', value: hasOtherPets, set: setHasOtherPets },
-            ].map(({ label, value, set }) => (
-              <div key={label} className="flex items-center justify-between rounded-lg border p-3">
-                <p className="text-sm">{label}</p>
-                <Switch checked={value} onCheckedChange={set} />
-              </div>
-            ))}
+          <div className="space-y-1.5">
+            <Label htmlFor="budget">Orçamento para cuidados do pet</Label>
+            <select
+              id="budget"
+              value={budgetLevel}
+              onChange={(e) => setBudgetLevel(e.target.value)}
+              className="h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <option value="">Selecione...</option>
+              {BUDGET_OPTIONS.map(({ value, label }) => (
+                <option key={value} value={value}>{label}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex items-center justify-between rounded-lg border p-3">
+            <p className="text-sm">Tem crianças em casa</p>
+            <Switch checked={hasChildren} onCheckedChange={setHasChildren} />
+          </div>
+          {hasChildren && (
+            <Input
+              value={childrenAges}
+              onChange={(e) => setChildrenAges(e.target.value)}
+              placeholder="Idades das crianças (ex: 3, 7 anos)"
+            />
+          )}
+          <div className="flex items-center justify-between rounded-lg border p-3">
+            <p className="text-sm">Tem idosos em casa</p>
+            <Switch checked={hasElderly} onCheckedChange={setHasElderly} />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label>Já tem outros animais?</Label>
+            <div className="grid grid-cols-2 gap-2">
+              {OTHER_PET_OPTIONS.map(({ value, label }) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => toggleOtherPet(value)}
+                  className={`text-left px-3 py-2 rounded-lg border-2 text-sm transition-colors ${
+                    otherPets.includes(value)
+                      ? 'border-orange-500 bg-orange-50 text-orange-900 font-medium'
+                      : 'border-gray-200 hover:border-gray-300 text-gray-700'
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
           </div>
 
           <Button onClick={handleSave} disabled={busy} className="w-full bg-orange-500 hover:bg-orange-600 text-white">

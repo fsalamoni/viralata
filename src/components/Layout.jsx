@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   PawPrint, Heart, Building2, MessageCircle, Bell, User, Menu, X,
-  Plus, Shield, AlertTriangle, LogOut, Home,
+  Plus, Shield, AlertTriangle, LogOut, Home, Radar,
 } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { useNotifications } from '@/modules/notifications/hooks/useNotifications';
@@ -121,6 +121,11 @@ export default function Layout({ children, currentPageName }) {
                     <DropdownMenuItem asChild>
                       <Link to="/meus-pets" className="flex items-center gap-2 cursor-pointer">
                         <Heart className="w-4 h-4" /> Meus Pets
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/radar" className="flex items-center gap-2 cursor-pointer">
+                        <Radar className="w-4 h-4" /> Radar de Pets
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>

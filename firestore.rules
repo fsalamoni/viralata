@@ -49,6 +49,14 @@ service cloud.firestore {
       );
     }
 
+    // ─── Radar de Pets (alerta de pet compatível) ──────────────────────────────
+    // Escrita pela Cloud Function usa o Admin SDK e ignora estas regras.
+    match /pet_radars/{uid} {
+      allow read: if isOwner(uid) || isPlatformAdmin();
+      allow create, update: if isOwner(uid) && request.resource.data.user_id == uid;
+      allow delete: if isOwner(uid) || isPlatformAdmin();
+    }
+
     // ─── Interesses de Adoção ─────────────────────────────────────────────────
     match /adoption_interests/{interestId} {
       allow read: if isAuth() && (

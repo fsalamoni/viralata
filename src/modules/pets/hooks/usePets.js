@@ -10,6 +10,7 @@ import {
 import {
   createInterest, getInterestsByPet, getInterestsByUser, hasInterest, updateInterestStatus,
 } from '../services/interestService';
+import { getMyRadar, setRadarActive } from '../services/petRadarService';
 import { filterCompatiblePets, sortByRelevance } from '../domain/matching';
 
 // ─── Pets ────────────────────────────────────────────────────────────────────
@@ -135,5 +136,25 @@ export function useUpdateInterestStatus() {
   return useMutation({
     mutationFn: ({ petId, userId, status }) => updateInterestStatus(petId, userId, status, user),
     onSuccess: (_, { petId }) => qc.invalidateQueries({ queryKey: ['interests', 'pet', petId] }),
+  });
+}
+
+// ─── Radar de Pets ───────────────────────────────────────────────────────────
+
+export function useMyRadar(uid) {
+  return useQuery({
+    queryKey: ['pet_radar', uid],
+    queryFn: () => getMyRadar(uid),
+    enabled: Boolean(uid),
+    staleTime: 1000 * 60,
+  });
+}
+
+export function useSetRadarActive() {
+  const { user } = useAuth();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (active) => setRadarActive(user.uid, active),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['pet_radar', user?.uid] }),
   });
 }
