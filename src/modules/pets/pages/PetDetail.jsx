@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import {
@@ -7,10 +7,12 @@ import {
 } from '../hooks/usePets';
 import InterestPanel from '../components/InterestPanel';
 import RatingForm from '../components/RatingForm';
+import PetShareCard from '../components/PetShareCard';
+import { usePetShareImage } from '../hooks/usePetShareImage';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Heart, MapPin, CheckCircle, Trash2 } from 'lucide-react';
+import { ArrowLeft, Heart, MapPin, CheckCircle, Trash2, Share2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 const SIZE_LABEL = { mini: 'Mini', small: 'Pequeno', medium: 'Médio', large: 'Grande', giant: 'Gigante' };
@@ -34,6 +36,8 @@ export default function PetDetail() {
   const canRate = pet?.status === 'adopted' && (isOwner || isAdopter) && Boolean(ratedUid);
   const { data: myRating } = useMyRatingForPet(canRate ? petId : null, user?.uid);
   const createRating = useCreateRating();
+  const shareCardRef = useRef(null);
+  const { shareFromNode, generating: sharing } = usePetShareImage();
 
   if (isLoading) return <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500" /></div>;
   if (!pet) return <div className="text-center py-16 text-gray-500">Pet não encontrado.</div>;
@@ -57,6 +61,15 @@ export default function PetDetail() {
     } catch (e) {
       toast.error('Erro ao registrar interesse. Tente novamente.');
     }
+  }
+
+  async function handleShare() {
+    const shareUrl = `${window.location.origin}/pets/${petId}`;
+    await shareFromNode(shareCardRef.current, {
+      fileName: `${(pet.name || pet.title || 'pet').toLowerCase().replace(/\s+/g, '-')}.png`,
+      title: pet.title || pet.name,
+      text: `Conheça ${pet.name || pet.title} no Viralata! ${shareUrl}`,
+    });
   }
 
   async function handleDelete() {
@@ -173,6 +186,10 @@ export default function PetDetail() {
                 </Button>
               </div>
             )}
+            <Button variant="outline" onClick={handleShare} disabled={sharing || !pet.photos?.[0]} className="w-full">
+              <Share2 className="w-4 h-4 mr-2" />
+              {sharing ? 'Gerando imagem...' : 'Compartilhar'}
+            </Button>
           </div>
         </div>
       </div>
@@ -206,6 +223,11 @@ export default function PetDetail() {
           submitting={createRating.isPending}
         />
       )}
+
+      {/* Nó oculto usado apenas para gerar a imagem de compartilhamento */}
+      <div style={{ position: 'fixed', top: 0, left: '-99999px', pointerEvents: 'none' }} aria-hidden="true">
+        <PetShareCard ref={shareCardRef} pet={pet} shareUrl={`${window.location.origin}/pets/${petId}`} />
+      </div>
     </div>
   );
 }
