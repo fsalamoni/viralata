@@ -41,12 +41,33 @@ service cloud.firestore {
           isClubAdmin(petData.owner_id) || canEditClubPets(petData.owner_id)
         ));
     }
+    // Dono fixo da plataforma (bootstrap do primeiro platform_admin) — espelha
+    // a mesma checagem por e-mail já feita no client (FirebaseAuthContext).
+    function isPlatformOwnerAuth() {
+      return isAuth() && request.auth.token.email != null
+        && request.auth.token.email.lower() == 'fsalamoni@gmail.com';
+    }
 
     // ─── Usuários ─────────────────────────────────────────────────────────────
     match /users/{userId} {
       allow read: if isAuth();
-      allow create: if isOwner(userId);
-      allow update: if isOwner(userId) || isPlatformAdmin();
+      // role só pode ser 'platform_admin' na criação se for o dono fixo da
+      // plataforma — evita que qualquer usuário se autopromova a admin.
+      allow create: if isOwner(userId) && (
+        request.resource.data.get('role', 'user') == 'user' ||
+        (request.resource.data.role == 'platform_admin' && isPlatformOwnerAuth())
+      );
+      // O próprio usuário só edita seu perfil; role/banimento são imutáveis
+      // por ele mesmo (exceto o bootstrap do dono fixo), só um platform_admin
+      // pode banir/desbanir ou alterar papéis.
+      allow update: if isPlatformAdmin() || (
+        isOwner(userId) &&
+        (request.resource.data.get('role', 'user') == resource.data.get('role', 'user') ||
+          (request.resource.data.role == 'platform_admin' && isPlatformOwnerAuth())) &&
+        request.resource.data.get('banned', false) == resource.data.get('banned', false) &&
+        request.resource.data.get('banned_at', null) == resource.data.get('banned_at', null) &&
+        request.resource.data.get('banned_reason', null) == resource.data.get('banned_reason', null)
+      );
       allow delete: if isPlatformAdmin();
     }
 

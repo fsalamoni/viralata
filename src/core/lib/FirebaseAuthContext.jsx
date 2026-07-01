@@ -165,6 +165,7 @@ export const AuthProvider = ({ children }) => {
     updateUserProfile,
     isPlatformAdmin: userProfile?.role === 'platform_admin',
     isProfileComplete: userProfile?.profile_completed === true,
+    isBanned: userProfile?.banned === true,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

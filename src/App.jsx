@@ -14,6 +14,7 @@ const PrivacyPolicy = lazy(() => import('@/pages/PrivacyPolicy'));
 const Terms = lazy(() => import('@/pages/Terms'));
 const Legislation = lazy(() => import('@/pages/Legislation'));
 const PageNotFound = lazy(() => import('@/pages/PageNotFound'));
+const BannedNotice = lazy(() => import('@/pages/BannedNotice'));
 
 // ─── Onboarding ───────────────────────────────────────────────────────────────
 const OnboardingQuestionnaire = lazy(() => import('@/modules/onboarding/pages/OnboardingQuestionnaire'));
@@ -43,6 +44,9 @@ const Profile = lazy(() => import('@/pages/Profile'));
 const AdminDashboard = lazy(() => import('@/modules/admin/pages/AdminDashboard'));
 const AdminPets = lazy(() => import('@/modules/admin/pages/AdminPets'));
 const AdminReports = lazy(() => import('@/modules/admin/pages/AdminReports'));
+const AdminUsers = lazy(() => import('@/modules/admin/pages/AdminUsers'));
+const AdminOrganizations = lazy(() => import('@/modules/admin/pages/AdminOrganizations'));
+const AdminMetrics = lazy(() => import('@/modules/admin/pages/AdminMetrics'));
 
 // ─── QueryClient ─────────────────────────────────────────────────────────────
 const queryClient = new QueryClient({
@@ -78,6 +82,12 @@ function AdminRoute({ children }) {
   if (isLoadingAuth) return <FullScreenSpinner />;
   if (!isAuthenticated) return <Navigate to="/login" replace />;
   if (!isPlatformAdmin) return <Navigate to="/feed" replace />;
+  return children;
+}
+
+function BannedGate({ children }) {
+  const { isAuthenticated, isBanned } = useAuth();
+  if (isAuthenticated && isBanned) return <BannedNotice />;
   return children;
 }
 
@@ -120,6 +130,7 @@ export default function App() {
           <BrowserRouter basename={import.meta.env.BASE_URL}>
             <RouteTelemetry />
             <Suspense fallback={<FullScreenSpinner />}>
+              <BannedGate>
               <Routes>
                 {/* ── Públicas ─────────────────────────────────────────── */}
                 <Route path="/" element={withLayout('Home', Home)} />
@@ -206,6 +217,18 @@ export default function App() {
                   path="/admin/denuncias"
                   element={<AdminRoute>{withLayout('AdminReports', AdminReports)}</AdminRoute>}
                 />
+                <Route
+                  path="/admin/usuarios"
+                  element={<AdminRoute>{withLayout('AdminUsers', AdminUsers)}</AdminRoute>}
+                />
+                <Route
+                  path="/admin/organizacoes"
+                  element={<AdminRoute>{withLayout('AdminOrganizations', AdminOrganizations)}</AdminRoute>}
+                />
+                <Route
+                  path="/admin/metricas"
+                  element={<AdminRoute>{withLayout('AdminMetrics', AdminMetrics)}</AdminRoute>}
+                />
 
                 {/* ── Redirects legados ─────────────────────────────────── */}
                 <Route path="/inicio" element={<Navigate to="/feed" replace />} />
@@ -215,6 +238,7 @@ export default function App() {
                 {/* ── 404 ───────────────────────────────────────────────── */}
                 <Route path="*" element={<PageNotFound />} />
               </Routes>
+              </BannedGate>
             </Suspense>
           </BrowserRouter>
           <Toaster />
