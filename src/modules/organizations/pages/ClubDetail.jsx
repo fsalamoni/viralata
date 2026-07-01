@@ -45,6 +45,7 @@ import ClubForumsTab from '@/modules/organizations/components/ClubForumsTab';
 import ClubAdminTab from '@/modules/organizations/components/ClubAdminTab';
 import ClubPetsDataGrid from '@/modules/organizations/components/ClubPetsDataGrid';
 import RatingBadge from '@/modules/pets/components/RatingBadge';
+import { QrCode } from '@/components/ui/qr-code';
 
 export default function ClubDetail() {
   const { clubId } = useParams();
@@ -211,7 +212,26 @@ export default function ClubDetail() {
           {club.contact_email && <InfoChip icon={Mail}>{club.contact_email}</InfoChip>}
           {club.contact_phone && <InfoChip icon={Phone}>{club.contact_phone}</InfoChip>}
           {club.instagram && <InfoChip icon={Instagram}>{club.instagram}</InfoChip>}
+          {club.cnpj && <InfoChip icon={Hash}>CNPJ {club.cnpj}</InfoChip>}
         </div>
+
+        {club.donation_link && (
+          <div className="mt-5 flex flex-col items-start gap-3 rounded-2xl bg-white/10 p-4 sm:flex-row sm:items-center">
+            <QrCode value={club.donation_link} size={104} className="rounded-lg bg-white p-1.5" />
+            <div>
+              <p className="text-sm font-semibold text-white">Apoie este clube com uma doação</p>
+              <p className="mt-1 text-xs text-emerald-50/80">Aponte a câmera para o QR Code ou toque no link.</p>
+              <a
+                href={club.donation_link}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-1 inline-block text-xs font-medium text-amber-200 underline"
+              >
+                {club.donation_link}
+              </a>
+            </div>
+          </div>
+        )}
       </section>
 
       {!isMember && myInvite && (

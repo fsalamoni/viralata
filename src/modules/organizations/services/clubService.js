@@ -111,6 +111,8 @@ export async function createClub(creator, profile, data) {
     contact_phone: trimmed(data.contact_phone),
     instagram: trimmed(data.instagram),
     home_venue: trimmed(data.home_venue),
+    cnpj: trimmed(data.cnpj),
+    donation_link: trimmed(data.donation_link),
     invite_code: inviteCode(),
     member_count: 1,
     created_by: creator.uid,
@@ -167,7 +169,7 @@ export async function listMyClubs(userId) {
 }
 
 export async function updateClub(id, updates, actor) {
-  const allowed = ['name', 'description', 'city', 'state', 'logo_url', 'contact_email', 'contact_phone', 'instagram', 'home_venue'];
+  const allowed = ['name', 'description', 'city', 'state', 'logo_url', 'contact_email', 'contact_phone', 'instagram', 'home_venue', 'cnpj', 'donation_link'];
   const sanitized = {};
   allowed.forEach((key) => {
     if (updates[key] !== undefined) sanitized[key] = trimmed(updates[key]);

@@ -44,6 +44,8 @@ export default function ClubAdminTab({ club }) {
     contact_phone: club.contact_phone || '',
     instagram: club.instagram || '',
     logo_url: club.logo_url || '',
+    cnpj: club.cnpj || '',
+    donation_link: club.donation_link || '',
   });
 
   const setField = (key) => (e) => setForm((prev) => ({ ...prev, [key]: e.target.value }));
@@ -170,6 +172,16 @@ export default function ClubAdminTab({ club }) {
             <div className="space-y-2">
               <Label htmlFor="admin_instagram">Instagram</Label>
               <Input id="admin_instagram" value={form.instagram} onChange={setField('instagram')} maxLength={60} />
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="admin_cnpj">CNPJ (se for ONG formalizada)</Label>
+                <Input id="admin_cnpj" value={form.cnpj} onChange={setField('cnpj')} maxLength={18} placeholder="00.000.000/0000-00" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="admin_donation_link">Link de doação (Pix, vaquinha…)</Label>
+                <Input id="admin_donation_link" value={form.donation_link} onChange={setField('donation_link')} maxLength={300} placeholder="https://..." />
+              </div>
             </div>
             <Button type="submit" disabled={updateClub.isPending} className="bg-emerald-700 hover:bg-emerald-800">
               <Save className="mr-1.5 h-4 w-4" /> {updateClub.isPending ? 'Salvando…' : 'Salvar alterações'}

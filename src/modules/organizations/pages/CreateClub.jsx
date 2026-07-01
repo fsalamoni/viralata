@@ -20,6 +20,8 @@ const INITIAL = {
   contact_phone: '',
   instagram: '',
   logo_url: '',
+  cnpj: '',
+  donation_link: '',
 };
 
 export default function CreateClub() {
@@ -144,6 +146,17 @@ export default function CreateClub() {
             <div className="space-y-2">
               <Label htmlFor="instagram">Instagram</Label>
               <Input id="instagram" value={form.instagram} onChange={setField('instagram')} maxLength={60} placeholder="@seuclube" />
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="cnpj">CNPJ (se for ONG formalizada)</Label>
+                <Input id="cnpj" value={form.cnpj} onChange={setField('cnpj')} maxLength={18} placeholder="00.000.000/0000-00" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="donation_link">Link de doação (Pix, vaquinha…)</Label>
+                <Input id="donation_link" value={form.donation_link} onChange={setField('donation_link')} maxLength={300} placeholder="https://..." />
+              </div>
             </div>
 
             <Button type="submit" disabled={createClub.isPending || !isAuthenticated} className="bg-emerald-700 hover:bg-emerald-800">
