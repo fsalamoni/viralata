@@ -58,7 +58,7 @@ VITE_FIREBASE_PROJECT_ID=viralata
 VITE_FIREBASE_STORAGE_BUCKET=viralata.appspot.com
 VITE_FIREBASE_MESSAGING_SENDER_ID=seu_sender_id
 VITE_FIREBASE_APP_ID=seu_app_id
-VITE_FIREBASE_DATABASE_ID=(default)
+VITE_FIRESTORE_DATABASE_ID=viralata
 ```
 
 ### 2. Instalar dependências
@@ -105,7 +105,31 @@ O deploy automático está configurado em `.github/workflows/deploy.yml`:
 | `VITE_FIREBASE_STORAGE_BUCKET` | Storage bucket |
 | `VITE_FIREBASE_MESSAGING_SENDER_ID` | Messaging sender ID |
 | `VITE_FIREBASE_APP_ID` | App ID |
-| `VITE_FIREBASE_DATABASE_ID` | Database ID |
+| `VITE_FIRESTORE_DATABASE_ID` | ID do banco Firestore nomeado (`viralata`) |
+
+### Troubleshooting: deploy falhando com `PERMISSION_DENIED` / "Failed to get Firebase project"
+
+Se o job de deploy falhar com `Failed to get Firebase project viralata. Please make sure
+the project exists and your account has permission to access it.` (HTTP 403,
+`USER_PROJECT_DENIED`), o build e os testes passaram — o problema é de
+permissão no lado do Google Cloud/Firebase, não no código. Para resolver:
+
+1. Confirme em [console.firebase.google.com](https://console.firebase.google.com)
+   que existe um projeto com o **Project ID** exatamente `viralata` (case-sensitive).
+2. Gere uma nova chave da conta de serviço em *Configurações do projeto → Contas
+   de serviço → Gerar nova chave privada* e garanta que essa conta tenha os
+   papéis **Firebase Hosting Admin**, **Cloud Datastore User** (ou **Owner**/
+   **Editor**) e **Service Usage Consumer** no projeto `viralata`
+   (IAM: `console.cloud.google.com/iam-admin/iam?project=viralata`).
+3. Atualize o secret `FIREBASE_SERVICE_ACCOUNT` no GitHub com o conteúdo desse
+   novo JSON (Settings → Secrets and variables → Actions).
+4. Confirme que existe um banco Firestore **nomeado** `viralata` no projeto
+   (Firestore usa um banco `(default)` por padrão; este projeto usa um banco
+   nomeado — crie-o em *Firestore Database → Criar banco de dados*, ID
+   `viralata`, ou via `firebase firestore:databases:create viralata --project viralata`).
+
+Nenhuma dessas ações pode ser feita por push de código — exigem acesso ao
+Console do Firebase/Google Cloud do dono do projeto.
 
 ---
 
@@ -114,17 +138,29 @@ O deploy automático está configurado em `.github/workflows/deploy.yml`:
 | Coleção | Descrição |
 |---|---|
 | `users` | Perfis de usuários com dados de onboarding |
+| `athlete_profiles` | Projeção pública do perfil (diretório), `{uid}` |
 | `pets` | Anúncios de pets para adoção |
 | `adoption_interests` | Interesses de adotantes (ID: `{petId}_{userId}`) |
-| `organizations` | ONGs e lojas parceiras |
-| `organization_members` | Membros de organizações (ID: `{orgId}_{userId}`) |
-| `organization_reports` | Prestação de contas das organizações |
+| `clubs` | Clubes/organizações da comunidade (rota `/organizacoes`) |
+| `club_members` | Vínculo usuário↔clube (ID: `{clubId}_{userId}`) |
+| `club_join_requests` | Pedido de ingresso (ID: `{clubId}_{userId}`) |
+| `club_member_invites` | Convite de associação (ID: `{clubId}_{userId}`) |
+| `club_events` | Eventos do clube (+ subcoleções `dates`, `date_rsvps`, `messages`, `participants`, `games`) |
+| `club_event_rsvps` | Presença em evento (legado, nível superior) |
+| `event_invites` | Convite/participação em evento (ID: `{eventId}_{userId}`) |
+| `club_posts` | Mural do clube |
+| `club_forum_threads` | Tópicos de fórum (+ subcoleções `comments`, `poll_votes`) |
 | `conversations` | Conversas do chat |
 | `conversations/{id}/messages` | Mensagens de cada conversa |
 | `notifications` | Notificações em tempo real |
 | `abuse_reports` | Denúncias de maus-tratos |
 | `audit_logs` | Logs de auditoria (imutáveis) |
-| `feature_flags` | Flags de funcionalidades |
+| `platform_settings/global` | Doc único com o mapa de feature flags |
+
+> Nota: `organizations`, `organization_members` e `organization_reports`
+> (serviço `organizationService.js`) existem no código mas não estão
+> conectados a nenhuma rota/UI hoje — a feature de comunidade em produção usa
+> as coleções `clubs`/`club_*` acima (serviços `clubService.js`/`forumService.js`).
 
 ---
 

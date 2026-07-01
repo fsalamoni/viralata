@@ -35,7 +35,7 @@ jobs:
           VITE_FIREBASE_STORAGE_BUCKET: ${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}
           VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
           VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
-          VITE_FIREBASE_DATABASE_ID: ${{ secrets.VITE_FIREBASE_DATABASE_ID }}
+          VITE_FIRESTORE_DATABASE_ID: ${{ secrets.VITE_FIRESTORE_DATABASE_ID }}
 
       - name: Deploy to Firebase Hosting (Preview — PRs)
         if: github.event_name == 'pull_request'
@@ -54,3 +54,12 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           projectId: viralata
           channelId: live
+
+      - name: Deploy Firestore rules/indexes & Storage rules (Production — main)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          echo "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/firebase-sa.json"
+          npx firebase-tools@latest deploy --only firestore:rules,firestore:indexes,storage --project viralata --non-interactive
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/firebase-sa.json
