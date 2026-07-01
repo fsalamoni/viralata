@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { User, MapPin, Phone, Mail, Eye, EyeOff } from 'lucide-react';
+import { User, MapPin, Phone, Mail, Eye, EyeOff, Download, ShieldAlert } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,7 +9,10 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ImageUpload } from '@/components/ui/image-upload';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import RatingBadge from '@/modules/pets/components/RatingBadge';
+import { exportMyData, downloadDataExport } from '@/core/services/dataExportService';
+import { deleteMyAccount } from '@/core/services/deleteAccountService';
 
 const GENDER_OPTIONS = [
   { value: 'male', label: 'Masculino' },
@@ -47,7 +51,11 @@ const OTHER_PET_OPTIONS = [
 ];
 
 export default function Profile() {
-  const { user, userProfile, updateUserProfile } = useAuth();
+  const navigate = useNavigate();
+  const { user, userProfile, updateUserProfile, signOut } = useAuth();
+  const [exporting, setExporting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   const [fullName, setFullName] = useState(userProfile?.full_name || user?.displayName || '');
   const [phone, setPhone] = useState(userProfile?.phone || '');
@@ -95,6 +103,38 @@ export default function Profile() {
       toast.error('Erro ao salvar. Tente novamente.');
     } finally {
       setBusy(false);
+    }
+  }
+
+  async function handleExportData() {
+    setExporting(true);
+    try {
+      const data = await exportMyData(user.uid);
+      downloadDataExport(data, user.uid);
+      toast.success('Seus dados foram baixados.');
+    } catch (err) {
+      toast.error('Erro ao exportar dados. Tente novamente.');
+    } finally {
+      setExporting(false);
+    }
+  }
+
+  async function handleDeleteAccount() {
+    setDeleting(true);
+    try {
+      await deleteMyAccount(user);
+      toast.success('Sua conta foi excluída.');
+      await signOut();
+      navigate('/');
+    } catch (err) {
+      if (err?.code === 'auth/requires-recent-login') {
+        toast.error('Por segurança, saia e entre novamente antes de excluir sua conta.');
+      } else {
+        toast.error('Erro ao excluir conta. Tente novamente.');
+      }
+    } finally {
+      setDeleting(false);
+      setConfirmDelete(false);
     }
   }
 
@@ -278,6 +318,42 @@ export default function Profile() {
           </Button>
         </CardContent>
       </Card>
+
+      {/* Privacidade e dados (LGPD) */}
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base">Privacidade e dados</CardTitle>
+          <CardDescription>
+            Em conformidade com a LGPD, você pode baixar uma cópia dos seus dados ou excluir sua
+            conta permanentemente a qualquer momento.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <Button variant="outline" onClick={handleExportData} disabled={exporting} className="w-full">
+            <Download className="w-4 h-4 mr-2" />
+            {exporting ? 'Preparando arquivo...' : 'Baixar meus dados'}
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => setConfirmDelete(true)}
+            className="w-full text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700"
+          >
+            <ShieldAlert className="w-4 h-4 mr-2" />
+            Excluir minha conta
+          </Button>
+        </CardContent>
+      </Card>
+
+      <ConfirmDialog
+        open={confirmDelete}
+        onOpenChange={setConfirmDelete}
+        title="Excluir sua conta"
+        description="Seu perfil será anonimizado e sua conta de acesso removida. Pets, posts e mensagens já publicados permanecem para não quebrar o histórico de outros usuários. Esta ação não pode ser desfeita."
+        confirmLabel="Excluir definitivamente"
+        destructive
+        loading={deleting}
+        onConfirm={handleDeleteAccount}
+      />
     </div>
   );
 }

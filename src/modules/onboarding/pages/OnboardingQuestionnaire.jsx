@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -65,6 +65,12 @@ const STEPS = [
     description: 'Para mostrar pets próximos a você.',
     type: 'location',
   },
+  {
+    id: 'consent',
+    title: 'Privacidade dos seus dados',
+    description: 'Última etapa antes de ver os pets disponíveis.',
+    type: 'consent',
+  },
 ];
 
 export default function OnboardingQuestionnaire() {
@@ -81,6 +87,7 @@ export default function OnboardingQuestionnaire() {
     budget_level: '',
     city: userProfile?.city || '',
     state: userProfile?.state || '',
+    lgpd_consent: false,
   });
   const [saving, setSaving] = useState(false);
   const current = STEPS[step];
@@ -102,13 +109,18 @@ export default function OnboardingQuestionnaire() {
   function canAdvance() {
     if (current.type === 'radio') return Boolean(answers[current.field]);
     if (current.type === 'location') return answers.city.length >= 2 && answers.state.length === 2;
+    if (current.type === 'consent') return answers.lgpd_consent === true;
     return true;
   }
 
   async function handleFinish() {
     setSaving(true);
     try {
-      await updateUserProfile({ ...answers, profile_completed: true });
+      await updateUserProfile({
+        ...answers,
+        profile_completed: true,
+        lgpd_consent_at: new Date().toISOString(),
+      });
       toast.success('Perfil concluído! Bem-vindo ao Viralata 🐾');
       navigate('/feed');
     } catch {
@@ -213,6 +225,35 @@ export default function OnboardingQuestionnaire() {
               <div className="space-y-1">
                 <Label htmlFor="state">Estado</Label>
                 <Input id="state" value={answers.state} onChange={(e) => setField('state', e.target.value.toUpperCase())} placeholder="SP" maxLength={2} />
+              </div>
+            </div>
+          )}
+
+          {current.type === 'consent' && (
+            <div className="space-y-3">
+              <p className="text-sm text-gray-600">
+                Usamos os dados deste questionário para sugerir pets compatíveis com a sua
+                realidade. Você pode revisar nossa{' '}
+                <Link to="/politica-privacidade" target="_blank" className="text-orange-600 underline">
+                  Política de Privacidade
+                </Link>{' '}
+                e nossos{' '}
+                <Link to="/termos" target="_blank" className="text-orange-600 underline">
+                  Termos de Uso
+                </Link>. A qualquer momento você pode baixar ou excluir seus dados na página de
+                perfil.
+              </p>
+              <div className="flex items-start gap-3 rounded-xl border-2 border-gray-200 p-4">
+                <Checkbox
+                  id="lgpd_consent"
+                  checked={answers.lgpd_consent}
+                  onCheckedChange={(v) => setField('lgpd_consent', v)}
+                  className="mt-0.5"
+                />
+                <Label htmlFor="lgpd_consent" className="cursor-pointer text-sm font-normal">
+                  Li e concordo com o uso dos meus dados conforme descrito acima, em conformidade
+                  com a LGPD.
+                </Label>
               </div>
             </div>
           )}
