@@ -56,7 +56,7 @@ jobs:
           channelId: live
 
       - name: Deploy Firestore rules/indexes & Storage rules (Production — main)
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: always() && github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
           echo "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/firebase-sa.json"
           npx firebase-tools@latest deploy --only firestore:rules,firestore:indexes,storage --project viralata --non-interactive
