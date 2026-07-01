@@ -73,6 +73,14 @@ service cloud.firestore {
       allow delete: if isPlatformAdmin();
     }
 
+    // ─── Avaliações pós-adoção ──────────────────────────────────────────────────
+    match /adoption_ratings/{ratingId} {
+      allow read: if true; // Reputação pública do adotante/doador
+      allow create: if isAuth() && request.resource.data.rater_uid == request.auth.uid
+        && request.resource.data.rated_uid != request.auth.uid;
+      allow update, delete: if isPlatformAdmin();
+    }
+
     // ─── Organizações ─────────────────────────────────────────────────────────
     match /organizations/{orgId} {
       allow read: if true;

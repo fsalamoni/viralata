@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
-import { usePet, useCreateInterest, useHasInterest, useCompleteAdoption, useDeletePet } from '../hooks/usePets';
+import {
+  usePet, useCreateInterest, useHasInterest, useCompleteAdoption, useDeletePet,
+  useMyRatingForPet, useCreateRating,
+} from '../hooks/usePets';
 import InterestPanel from '../components/InterestPanel';
+import RatingForm from '../components/RatingForm';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -24,11 +28,26 @@ export default function PetDetail() {
   const deletePet = useDeletePet();
   const [currentPhoto, setCurrentPhoto] = useState(0);
 
+  const isOwner = user?.uid === pet?.owner_id;
+  const isAdopter = user?.uid === pet?.adopted_by;
+  const ratedUid = isAdopter ? pet?.owner_id : pet?.adopted_by;
+  const canRate = pet?.status === 'adopted' && (isOwner || isAdopter) && Boolean(ratedUid);
+  const { data: myRating } = useMyRatingForPet(canRate ? petId : null, user?.uid);
+  const createRating = useCreateRating();
+
   if (isLoading) return <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500" /></div>;
   if (!pet) return <div className="text-center py-16 text-gray-500">Pet não encontrado.</div>;
 
-  const isOwner = user?.uid === pet.owner_id;
   const canManage = isOwner || isPlatformAdmin;
+
+  async function handleRate({ ratedUid: target, stars, comment }) {
+    try {
+      await createRating.mutateAsync({ petId, ratedUid: target, stars, comment });
+      toast.success('Avaliação enviada. Obrigado!');
+    } catch (e) {
+      toast.error(e?.message || 'Erro ao enviar avaliação.');
+    }
+  }
 
   async function handleInterest() {
     if (!user) { navigate('/login'); return; }
@@ -176,6 +195,16 @@ export default function PetDetail() {
             </div>
           </TabsContent>
         </Tabs>
+      )}
+
+      {/* Avaliação pós-adoção */}
+      {canRate && !myRating && (
+        <RatingForm
+          ratedUid={ratedUid}
+          ratedLabel={isAdopter ? 'o responsável pelo pet' : 'o adotante'}
+          onSubmit={handleRate}
+          submitting={createRating.isPending}
+        />
       )}
     </div>
   );

@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ImageUpload } from '@/components/ui/image-upload';
+import RatingBadge from '@/modules/pets/components/RatingBadge';
 
 const GENDER_OPTIONS = [
   { value: 'male', label: 'Masculino' },
@@ -99,7 +100,10 @@ export default function Profile() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
-      <h1 className="text-xl font-bold text-gray-900">Meu Perfil</h1>
+      <div className="flex items-center gap-3">
+        <h1 className="text-xl font-bold text-gray-900">Meu Perfil</h1>
+        <RatingBadge uid={user?.uid} />
+      </div>
 
       {/* Dados pessoais */}
       <Card>

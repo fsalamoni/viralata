@@ -42,6 +42,7 @@ import ClubEventsTab from '@/modules/organizations/components/ClubEventsTab';
 import ClubFeedTab from '@/modules/organizations/components/ClubFeedTab';
 import ClubForumsTab from '@/modules/organizations/components/ClubForumsTab';
 import ClubAdminTab from '@/modules/organizations/components/ClubAdminTab';
+import RatingBadge from '@/modules/pets/components/RatingBadge';
 
 export default function ClubDetail() {
   const { clubId } = useParams();
@@ -176,6 +177,7 @@ export default function ClubDetail() {
               <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-emerald-50/80">
                 {location && <span className="inline-flex items-center gap-1"><MapPin className="h-4 w-4" /> {location}</span>}
                 <span className="inline-flex items-center gap-1"><Users className="h-4 w-4" /> {club.member_count || 0} membro(s)</span>
+                <RatingBadge uid={club.id} className="text-amber-200" />
               </div>
               {isMember && (
                 <Badge variant={isAdmin ? 'warning' : 'success'} className="mt-3 rounded-full uppercase tracking-[0.12em]">
