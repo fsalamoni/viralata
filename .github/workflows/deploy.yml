@@ -43,7 +43,7 @@ jobs:
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          projectId: viralata
+          projectId: viralata-4cf0b
           channelId: pr-${{ github.event.pull_request.number }}
 
       - name: Deploy to Firebase Hosting (Production — main)
@@ -52,14 +52,14 @@ jobs:
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          projectId: viralata
+          projectId: viralata-4cf0b
           channelId: live
 
       - name: Deploy Firestore rules/indexes & Storage rules (Production — main)
         if: always() && github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
           echo "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/firebase-sa.json"
-          npx firebase-tools@latest deploy --only firestore:rules,firestore:indexes,storage --project viralata --non-interactive
+          npx firebase-tools@latest deploy --only firestore:rules,firestore:indexes,storage --project viralata-4cf0b --non-interactive
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/firebase-sa.json
