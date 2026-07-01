@@ -267,6 +267,25 @@ export async function setMemberRole(clubId, member, role, actor) {
   });
 }
 
+/**
+ * Permissão granular de um membro comum (admins já têm tudo implicitamente).
+ * Hoje só existe `edit_pets` — as demais capacidades de gestão (excluir
+ * clube, regenerar código, editar dados do clube) continuam exclusivas do
+ * admin, sem equivalente granular ainda.
+ */
+export async function setMemberPermissions(clubId, member, permissions, actor) {
+  if (!member?.user_id) throw new Error('Membro inválido.');
+  await updateDoc(doc(db, COL.members, memberDocId(clubId, member.user_id)), {
+    permissions: { edit_pets: !!permissions.edit_pets },
+    updated_at: serverTimestamp(),
+  });
+  await createAuditLog({
+    action: 'club_member_permissions_updated',
+    actor,
+    details: { club_id: clubId, user_id: member.user_id, permissions },
+  });
+}
+
 export async function removeMember(clubId, member, actor) {
   if (!member?.user_id) throw new Error('Membro inválido.');
   if (member.role === CLUB_ROLE.ADMIN) {

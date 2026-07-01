@@ -28,6 +28,12 @@ service cloud.firestore {
     function eventClubId(eventId) {
       return get(/databases/$(database)/documents/club_events/$(eventId)).data.club_id;
     }
+    // Permissão granular de um membro comum para editar os pets do clube
+    // (admins já podem via isClubAdmin, independente desta flag).
+    function canEditClubPets(clubId) {
+      return isAuth() && exists(/databases/$(database)/documents/club_members/$(clubId + '_' + request.auth.uid))
+        && get(/databases/$(database)/documents/club_members/$(clubId + '_' + request.auth.uid)).data.get('permissions', {}).get('edit_pets', false) == true;
+    }
 
     // ─── Usuários ─────────────────────────────────────────────────────────────
     match /users/{userId} {
@@ -48,7 +54,9 @@ service cloud.firestore {
       );
       allow update: if isAuth() && (
         resource.data.owner_id == request.auth.uid ||
-        (resource.data.owner_type == 'organization' && isClubAdmin(resource.data.owner_id)) ||
+        (resource.data.owner_type == 'organization' && (
+          isClubAdmin(resource.data.owner_id) || canEditClubPets(resource.data.owner_id)
+        )) ||
         isPlatformAdmin()
       );
       allow delete: if isAuth() && (

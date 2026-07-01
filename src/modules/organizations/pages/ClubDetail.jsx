@@ -82,6 +82,7 @@ export default function ClubDetail() {
 
   const isMember = !!membership;
   const isAdmin = membership?.role === CLUB_ROLE.ADMIN;
+  const canEditPets = isAdmin || membership?.permissions?.edit_pets === true;
 
   const handleJoin = async (e) => {
     e.preventDefault();
@@ -273,13 +274,13 @@ export default function ClubDetail() {
       )}
 
       {isMember && (
-        <Tabs value={(activeTab === 'admin' || activeTab === 'pets') && !isAdmin ? 'members' : activeTab} onValueChange={setActiveTab} className="w-full">
+        <Tabs value={(activeTab === 'admin' || (activeTab === 'pets' && !canEditPets)) && !isAdmin ? 'members' : activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="flex h-auto w-full flex-wrap justify-start gap-1 bg-muted/60 p-1">
             <TabsTrigger value="members"><Users className="mr-1.5 h-4 w-4" /> Membros</TabsTrigger>
             <TabsTrigger value="events"><CalendarDays className="mr-1.5 h-4 w-4" /> Eventos</TabsTrigger>
             <TabsTrigger value="feed"><MessageSquare className="mr-1.5 h-4 w-4" /> Mural</TabsTrigger>
             <TabsTrigger value="forums"><MessagesSquare className="mr-1.5 h-4 w-4" /> Fóruns</TabsTrigger>
-            {isAdmin && <TabsTrigger value="pets"><PawPrint className="mr-1.5 h-4 w-4" /> Pets</TabsTrigger>}
+            {canEditPets && <TabsTrigger value="pets"><PawPrint className="mr-1.5 h-4 w-4" /> Pets</TabsTrigger>}
             {isAdmin && <TabsTrigger value="admin"><Settings className="mr-1.5 h-4 w-4" /> Administração</TabsTrigger>}
           </TabsList>
 
@@ -304,7 +305,7 @@ export default function ClubDetail() {
             />
           </TabsContent>
 
-          {isAdmin && (
+          {canEditPets && (
             <TabsContent value="pets" className="mt-4">
               <ClubPetsDataGrid clubId={clubId} />
             </TabsContent>

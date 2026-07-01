@@ -13,6 +13,7 @@ import {
   joinClubByCode,
   leaveClub,
   setMemberRole,
+  setMemberPermissions,
   removeMember,
   requestToJoinClub,
   getMyJoinRequest,
@@ -183,6 +184,15 @@ export function useSetMemberRole(clubId) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: ({ member, role }) => setMemberRole(clubId, member, role, user),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['club-members', clubId] }),
+  });
+}
+
+export function useSetMemberPermissions(clubId) {
+  const { user } = useAuth();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ member, permissions }) => setMemberPermissions(clubId, member, permissions, user),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['club-members', clubId] }),
   });
 }
