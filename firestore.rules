@@ -15,6 +15,19 @@ service cloud.firestore {
     function isOrgMember(orgId) {
       return isAuth() && exists(/databases/$(database)/documents/organization_members/$(orgId + '_' + request.auth.uid));
     }
+    function isClubMember(clubId) {
+      return isAuth() && exists(/databases/$(database)/documents/club_members/$(clubId + '_' + request.auth.uid));
+    }
+    function isClubAdmin(clubId) {
+      return isAuth() && exists(/databases/$(database)/documents/club_members/$(clubId + '_' + request.auth.uid))
+        && get(/databases/$(database)/documents/club_members/$(clubId + '_' + request.auth.uid)).data.role == 'admin';
+    }
+    function hasEventInvite(eventId) {
+      return isAuth() && exists(/databases/$(database)/documents/event_invites/$(eventId + '_' + request.auth.uid));
+    }
+    function eventClubId(eventId) {
+      return get(/databases/$(database)/documents/club_events/$(eventId)).data.club_id;
+    }
 
     // ─── Usuários ─────────────────────────────────────────────────────────────
     match /users/{userId} {
@@ -89,7 +102,7 @@ service cloud.firestore {
       match /messages/{messageId} {
         allow read: if isAuth() && request.auth.uid in get(/databases/$(database)/documents/conversations/$(conversationId)).data.member_ids;
         allow create: if isAuth() && request.auth.uid in get(/databases/$(database)/documents/conversations/$(conversationId)).data.member_ids;
-        allow update: if isAuth() && resource.data.sender_uid == request.auth.uid;
+        allow update: if isAuth() && resource.data.sender_id == request.auth.uid;
         allow delete: if isPlatformAdmin();
       }
     }
@@ -117,10 +130,180 @@ service cloud.firestore {
       allow update, delete: if false; // Imutável
     }
 
-    // ─── Feature Flags ────────────────────────────────────────────────────────
-    match /feature_flags/{flagId} {
+    // ─── Configurações da plataforma (feature flags, doc único `global`) ───────
+    match /platform_settings/{docId} {
       allow read: if true;
       allow write: if isPlatformAdmin();
+    }
+
+    // ─── Diretório de atletas/adotantes (perfil público) ───────────────────────
+    match /athlete_profiles/{uid} {
+      allow read: if true;
+      allow write: if isOwner(uid) || isPlatformAdmin();
+    }
+
+    // ─── Clubes (comunidade) ────────────────────────────────────────────────────
+    match /clubs/{clubId} {
+      allow read: if true; // Diretório e detalhe públicos
+      allow create: if isAuth() && request.resource.data.created_by == request.auth.uid;
+      allow update: if isClubAdmin(clubId) || isPlatformAdmin() ||
+        (isClubMember(clubId) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['member_count', 'updated_at']));
+      allow delete: if isClubAdmin(clubId) || isPlatformAdmin();
+    }
+
+    match /club_members/{memberId} {
+      allow read: if isAuth();
+      allow create: if isAuth() && (
+        request.resource.data.user_id == request.auth.uid ||
+        isClubAdmin(request.resource.data.club_id) ||
+        isPlatformAdmin()
+      );
+      allow update: if isClubAdmin(resource.data.club_id) || isPlatformAdmin();
+      allow delete: if isAuth() && (
+        resource.data.user_id == request.auth.uid ||
+        isClubAdmin(resource.data.club_id) ||
+        isPlatformAdmin()
+      );
+    }
+
+    match /club_join_requests/{requestId} {
+      allow read: if isAuth() && (
+        resource.data.user_id == request.auth.uid ||
+        isClubAdmin(resource.data.club_id) ||
+        isPlatformAdmin()
+      );
+      allow create: if isAuth() && request.resource.data.user_id == request.auth.uid;
+      allow update, delete: if isClubAdmin(resource.data.club_id) || isPlatformAdmin();
+    }
+
+    match /club_member_invites/{inviteId} {
+      allow read: if isAuth() && (
+        resource.data.user_id == request.auth.uid ||
+        isClubAdmin(resource.data.club_id) ||
+        isPlatformAdmin()
+      );
+      allow create: if isAuth() && isClubAdmin(request.resource.data.club_id) && request.resource.data.invited_by == request.auth.uid;
+      allow update: if isAuth() && resource.data.user_id == request.auth.uid;
+      allow delete: if isClubAdmin(resource.data.club_id) || isPlatformAdmin();
+    }
+
+    match /club_events/{eventId} {
+      allow read: if isAuth() && (
+        (resource.data.visibility == 'public' && isClubMember(resource.data.club_id)) ||
+        hasEventInvite(eventId) ||
+        isClubAdmin(resource.data.club_id) ||
+        isPlatformAdmin()
+      );
+      allow create: if isAuth() && isClubMember(request.resource.data.club_id) && request.resource.data.created_by == request.auth.uid;
+      allow update, delete: if isAuth() && (
+        resource.data.created_by == request.auth.uid ||
+        isClubAdmin(resource.data.club_id) ||
+        isPlatformAdmin()
+      );
+
+      match /dates/{dateId} {
+        allow read: if isClubMember(eventClubId(eventId)) || hasEventInvite(eventId) || isPlatformAdmin();
+        allow write: if isClubMember(eventClubId(eventId)) || isPlatformAdmin();
+      }
+      match /date_rsvps/{rsvpId} {
+        allow read: if isClubMember(eventClubId(eventId)) || hasEventInvite(eventId) || isPlatformAdmin();
+        allow write: if isClubMember(eventClubId(eventId)) || hasEventInvite(eventId) || isPlatformAdmin();
+      }
+      match /messages/{messageId} {
+        allow read: if isClubMember(eventClubId(eventId)) || hasEventInvite(eventId) || isPlatformAdmin();
+        allow create: if isAuth() && (isClubMember(eventClubId(eventId)) || hasEventInvite(eventId))
+          && request.resource.data.sender_id == request.auth.uid;
+        allow update: if isAuth() && resource.data.sender_id == request.auth.uid;
+        allow delete: if isAuth() && (
+          resource.data.sender_id == request.auth.uid ||
+          isClubAdmin(eventClubId(eventId)) ||
+          isPlatformAdmin()
+        );
+      }
+      match /participants/{participantId} {
+        allow read: if isClubMember(eventClubId(eventId)) || hasEventInvite(eventId) || isPlatformAdmin();
+        allow write: if isClubMember(eventClubId(eventId)) || hasEventInvite(eventId) || isPlatformAdmin();
+      }
+      match /games/{gameId} {
+        allow read: if isClubMember(eventClubId(eventId)) || hasEventInvite(eventId) || isPlatformAdmin();
+        allow write: if isClubMember(eventClubId(eventId)) || hasEventInvite(eventId) || isPlatformAdmin();
+      }
+    }
+
+    // Legado: RSVP de evento em coleção de nível superior (mantido por compatibilidade).
+    match /club_event_rsvps/{rsvpId} {
+      allow read: if isAuth() && (
+        resource.data.user_id == request.auth.uid ||
+        isClubAdmin(resource.data.club_id) ||
+        isPlatformAdmin()
+      );
+      allow create, update: if isAuth() && request.resource.data.user_id == request.auth.uid;
+      allow delete: if isAuth() && (
+        resource.data.user_id == request.auth.uid ||
+        isClubAdmin(resource.data.club_id) ||
+        isPlatformAdmin()
+      );
+    }
+
+    match /event_invites/{inviteId} {
+      allow read: if isAuth() && (
+        resource.data.user_id == request.auth.uid ||
+        resource.data.invited_by == request.auth.uid ||
+        isClubAdmin(resource.data.club_id) ||
+        isPlatformAdmin()
+      );
+      allow create: if isAuth() && (
+        request.resource.data.user_id == request.auth.uid ||
+        request.resource.data.invited_by == request.auth.uid
+      );
+      allow update: if isAuth() && resource.data.user_id == request.auth.uid;
+      allow delete: if isAuth() && (
+        resource.data.user_id == request.auth.uid ||
+        resource.data.invited_by == request.auth.uid ||
+        isClubAdmin(resource.data.club_id) ||
+        isPlatformAdmin()
+      );
+    }
+
+    match /club_posts/{postId} {
+      allow read: if isClubMember(resource.data.club_id) || isPlatformAdmin();
+      allow create: if isAuth() && isClubMember(request.resource.data.club_id) && request.resource.data.author_id == request.auth.uid;
+      allow delete: if isAuth() && (
+        resource.data.author_id == request.auth.uid ||
+        isClubAdmin(resource.data.club_id) ||
+        isPlatformAdmin()
+      );
+    }
+
+    match /club_forum_threads/{threadId} {
+      allow read: if isClubMember(resource.data.club_id) || isPlatformAdmin();
+      allow create: if isAuth() && isClubMember(request.resource.data.club_id) && request.resource.data.author_id == request.auth.uid;
+      allow update: if isAuth() && (
+        resource.data.author_id == request.auth.uid ||
+        isClubAdmin(resource.data.club_id) ||
+        isPlatformAdmin()
+      );
+      allow delete: if isAuth() && (
+        resource.data.author_id == request.auth.uid ||
+        isClubAdmin(resource.data.club_id) ||
+        isPlatformAdmin()
+      );
+
+      match /comments/{commentId} {
+        allow read: if isClubMember(resource.data.club_id) || isPlatformAdmin();
+        allow create: if isAuth() && isClubMember(request.resource.data.club_id) && request.resource.data.author_id == request.auth.uid;
+        allow update: if isAuth() && resource.data.author_id == request.auth.uid;
+        allow delete: if isAuth() && (
+          resource.data.author_id == request.auth.uid ||
+          isClubAdmin(resource.data.club_id) ||
+          isPlatformAdmin()
+        );
+      }
+      match /poll_votes/{voteUid} {
+        allow read: if isClubMember(resource.data.club_id) || isPlatformAdmin();
+        allow create, update: if isAuth() && voteUid == request.auth.uid && isClubMember(request.resource.data.club_id);
+        allow delete: if isAuth() && voteUid == request.auth.uid;
+      }
     }
   }
 }

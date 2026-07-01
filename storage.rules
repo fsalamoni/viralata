@@ -1,6 +1,15 @@
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
+    // Uploads gerais (pets, denúncias, posts de clube, anexos de fórum/chat).
+    // storageService.js grava tudo em `uploads/{uid}/{folder}/...`; dono grava
+    // no próprio caminho, leitura pública (fotos/anexos exibidos a outros
+    // usuários — feed de pets, mural do clube, fórum, chat).
+    match /uploads/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == userId
+        && request.resource.size < 25 * 1024 * 1024;
+    }
     // Pets: qualquer autenticado pode fazer upload, leitura pública
     match /pets/{userId}/{allPaths=**} {
       allow read: if true;
