@@ -34,6 +34,13 @@ service cloud.firestore {
       return isAuth() && exists(/databases/$(database)/documents/club_members/$(clubId + '_' + request.auth.uid))
         && get(/databases/$(database)/documents/club_members/$(clubId + '_' + request.auth.uid)).data.get('permissions', {}).get('edit_pets', false) == true;
     }
+    // Quem pode gerenciar um pet (dono pessoa física, ou clube dono via admin/permissão).
+    function canManagePet(petData) {
+      return petData.owner_id == request.auth.uid ||
+        (petData.get('owner_type', '') == 'organization' && (
+          isClubAdmin(petData.owner_id) || canEditClubPets(petData.owner_id)
+        ));
+    }
 
     // ─── Usuários ─────────────────────────────────────────────────────────────
     match /users/{userId} {
@@ -78,13 +85,13 @@ service cloud.firestore {
     match /adoption_interests/{interestId} {
       allow read: if isAuth() && (
         resource.data.user_id == request.auth.uid ||
-        // Dono do pet pode ver todos os interesses
-        get(/databases/$(database)/documents/pets/$(resource.data.pet_id)).data.owner_id == request.auth.uid ||
+        // Dono do pet (ou equipe do clube dono) pode ver todos os interesses
+        canManagePet(get(/databases/$(database)/documents/pets/$(resource.data.pet_id)).data) ||
         isPlatformAdmin()
       );
       allow create: if isAuth() && request.resource.data.user_id == request.auth.uid;
       allow update: if isAuth() && (
-        get(/databases/$(database)/documents/pets/$(resource.data.pet_id)).data.owner_id == request.auth.uid ||
+        canManagePet(get(/databases/$(database)/documents/pets/$(resource.data.pet_id)).data) ||
         isPlatformAdmin()
       );
       allow delete: if isPlatformAdmin();
