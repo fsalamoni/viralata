@@ -4,7 +4,7 @@ import { MapPin, Heart } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { getPriorityLabel } from '../domain/priority';
 
-const SPECIES_EMOJI = { dog: '🐶', cat: '🐱', other: '🐾' };
+const SPECIES_EMOJI = { dog: '🐶', cat: '🐱', rabbit: '🐰', bird: '🐦', other: '🐾' };
 const SIZE_LABEL = { mini: 'Mini', small: 'Pequeno', medium: 'Médio', large: 'Grande', giant: 'Gigante' };
 const AGE_LABEL = { puppy: 'Filhote', adult: 'Adulto', senior: 'Idoso' };
 

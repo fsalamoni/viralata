@@ -44,6 +44,8 @@ export default function PetFeed() {
             <SelectItem value="all">Todas</SelectItem>
             <SelectItem value="dog">Cachorro</SelectItem>
             <SelectItem value="cat">Gato</SelectItem>
+            <SelectItem value="rabbit">Coelho</SelectItem>
+            <SelectItem value="bird">Pássaro</SelectItem>
             <SelectItem value="other">Outro</SelectItem>
           </SelectContent>
         </Select>

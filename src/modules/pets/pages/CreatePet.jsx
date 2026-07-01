@@ -19,7 +19,7 @@ import { Upload, ArrowLeft } from 'lucide-react';
 const schema = z.object({
   title: z.string().min(5, 'Título muito curto').max(100),
   name: z.string().optional(),
-  species: z.enum(['dog', 'cat', 'other']),
+  species: z.enum(['dog', 'cat', 'rabbit', 'bird', 'other']),
   size: z.enum(['mini', 'small', 'medium', 'large', 'giant']),
   age_group: z.enum(['puppy', 'adult', 'senior']),
   gender: z.enum(['male', 'female']),
@@ -198,6 +198,8 @@ export default function CreatePet() {
               <SelectContent>
                 <SelectItem value="dog">Cachorro</SelectItem>
                 <SelectItem value="cat">Gato</SelectItem>
+                <SelectItem value="rabbit">Coelho</SelectItem>
+                <SelectItem value="bird">Pássaro</SelectItem>
                 <SelectItem value="other">Outro</SelectItem>
               </SelectContent>
             </Select>

@@ -17,7 +17,7 @@ import { toast } from 'sonner';
 
 const SIZE_LABEL = { mini: 'Mini', small: 'Pequeno', medium: 'Médio', large: 'Grande', giant: 'Gigante' };
 const AGE_LABEL = { puppy: 'Filhote', adult: 'Adulto', senior: 'Idoso' };
-const SPECIES_LABEL = { dog: 'Cachorro', cat: 'Gato', other: 'Outro' };
+const SPECIES_LABEL = { dog: 'Cachorro', cat: 'Gato', rabbit: 'Coelho', bird: 'Pássaro', other: 'Outro' };
 
 export default function PetDetail() {
   const { petId } = useParams();
