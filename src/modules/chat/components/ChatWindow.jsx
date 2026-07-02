@@ -139,7 +139,7 @@ export default function ChatWindow({ conversation, currentUserId, onBack, onClos
   return (
     <div className="flex h-full min-h-0 flex-col">
       {/* Header */}
-      <div className="flex items-center gap-3 border-b border-primary/10 bg-white/85 px-3 py-2.5">
+      <div className="flex items-center gap-3 border-b border-primary/10 bg-card/85 px-3 py-2.5">
         {onBack && (
           <Button variant="ghost" size="icon" className="h-9 w-9 shrink-0 lg:hidden" onClick={onBack} aria-label="Voltar">
             <ArrowLeft className="h-5 w-5" />
@@ -201,7 +201,7 @@ export default function ChatWindow({ conversation, currentUserId, onBack, onClos
           rendered.map((item) =>
             item.type === 'day' ? (
               <div key={item.id} className="my-3 flex justify-center">
-                <span className="rounded-full bg-white/80 px-3 py-1 text-[11px] font-medium text-muted-foreground shadow-sm">{item.label}</span>
+                <span className="rounded-full bg-card/80 px-3 py-1 text-[11px] font-medium text-muted-foreground shadow-sm">{item.label}</span>
               </div>
             ) : (
               <MessageBubble

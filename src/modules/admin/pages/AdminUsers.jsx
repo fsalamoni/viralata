@@ -66,7 +66,7 @@ export default function AdminUsers() {
       {loading ? <p className="text-muted-foreground">Carregando...</p> : (
         <div className="space-y-2">
           {filtered.map((u) => (
-            <div key={u.id} className="flex items-center gap-3 p-3 rounded-xl border border-border bg-white">
+            <div key={u.id} className="flex items-center gap-3 p-3 rounded-xl border border-border bg-card">
               <Avatar className="w-10 h-10 flex-shrink-0">
                 <AvatarImage src={u.photo_url} />
                 <AvatarFallback>{(u.full_name || u.email || '?')[0]?.toUpperCase()}</AvatarFallback>

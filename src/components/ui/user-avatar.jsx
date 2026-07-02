@@ -53,7 +53,7 @@ export function AvatarGroup({ people = [], size = 'sm', className }) {
           name={person.name}
           photoUrl={person.photoUrl}
           size={size}
-          className="ring-2 ring-white"
+          className="ring-2 ring-card"
         />
       ))}
     </div>

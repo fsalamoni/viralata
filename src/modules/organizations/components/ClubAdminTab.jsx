@@ -255,7 +255,7 @@ function ClubJoinRequests({ club }) {
           <p className="text-sm text-muted-foreground">Nenhum pedido pendente.</p>
         ) : (
           requests.map((r) => (
-            <div key={r.id} className="flex items-center gap-3 rounded-xl border border-border bg-white p-3">
+            <div key={r.id} className="flex items-center gap-3 rounded-xl border border-border bg-card p-3">
               <UserAvatar name={r.user_name} photoUrl={r.photo_url} size="sm" />
               <div className="min-w-0 flex-1">
                 <div className="truncate text-sm font-medium text-foreground">{r.user_name}</div>
@@ -378,11 +378,11 @@ function ClubAddMembers({ club }) {
                   key={a.id}
                   onClick={() => toggle(a)}
                   className={`flex w-full items-center gap-3 rounded-lg border p-2.5 text-left transition-colors ${
-                    isSel ? 'border-primary/40 bg-primary/10' : 'border-transparent bg-white hover:bg-secondary'
+                    isSel ? 'border-primary/40 bg-primary/10' : 'border-transparent bg-card hover:bg-secondary'
                   }`}
                 >
                   <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border ${
-                    isSel ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-white'
+                    isSel ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-card'
                   }`}>
                     {isSel && <Check className="h-3.5 w-3.5" />}
                   </span>

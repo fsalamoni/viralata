@@ -74,7 +74,7 @@ export default function CreateClub() {
       </section>
 
       <Card className="overflow-hidden">
-        <CardHeader className="border-b border-primary/10 bg-white/45 p-4 sm:p-5">
+        <CardHeader className="border-b border-primary/10 bg-card/45 p-4 sm:p-5">
           <CardTitle className="text-base text-foreground">Dados do clube</CardTitle>
           <CardDescription>Apenas o nome é obrigatório. Quanto mais completo, melhor para a comunidade encontrar você.</CardDescription>
         </CardHeader>

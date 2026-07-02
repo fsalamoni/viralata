@@ -23,7 +23,7 @@ export default function AdminReports() {
       {loading ? <p className="text-muted-foreground">Carregando...</p> : (
         <div className="space-y-3">
           {reports.map((r) => (
-            <div key={r.id} className="p-4 rounded-xl border border-border bg-white space-y-2">
+            <div key={r.id} className="p-4 rounded-xl border border-border bg-card space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-xs text-muted-foreground">
                   {r.created_at?.seconds ? format(new Date(r.created_at.seconds * 1000), "dd/MM/yyyy HH:mm", { locale: ptBR }) : '—'}

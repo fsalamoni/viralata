@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-route
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider, useAuth } from '@/core/lib/FirebaseAuthContext';
 import { FeatureFlagsProvider } from '@/core/lib/FeatureFlagsContext';
+import { ThemeProvider } from '@/core/lib/ThemeContext';
 import Layout from '@/components/Layout';
 import { Toaster } from '@/components/ui/sonner';
 import { recordPageView } from '@/core/services/observabilityService';
@@ -94,7 +95,7 @@ function BannedGate({ children }) {
 
 function FullScreenSpinner() {
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-white">
+    <div className="fixed inset-0 flex items-center justify-center bg-background">
       <div className="flex flex-col items-center gap-3">
         <div className="text-3xl">🐾</div>
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
@@ -125,6 +126,7 @@ function RouteTelemetry() {
 // ─── App ──────────────────────────────────────────────────────────────────────
 export default function App() {
   return (
+    <ThemeProvider>
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <FeatureFlagsProvider>
@@ -250,5 +252,6 @@ export default function App() {
         </FeatureFlagsProvider>
       </AuthProvider>
     </QueryClientProvider>
+    </ThemeProvider>
   );
 }

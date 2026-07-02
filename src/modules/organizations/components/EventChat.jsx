@@ -71,7 +71,7 @@ export default function EventChat({ eventId }) {
               <React.Fragment key={m.id}>
                 {showDay && (
                   <div className="my-2 text-center">
-                    <span className="rounded-full bg-white px-3 py-1 text-[11px] font-medium text-muted-foreground shadow-sm">
+                    <span className="rounded-full bg-card px-3 py-1 text-[11px] font-medium text-muted-foreground shadow-sm">
                       {dayLabel(m.created_at_ms)}
                     </span>
                   </div>

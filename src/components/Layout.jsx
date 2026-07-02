@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   PawPrint, Heart, Building2, MessageCircle, Bell, User, Menu, X,
-  Plus, Shield, AlertTriangle, LogOut, Radar,
+  Plus, Shield, AlertTriangle, LogOut, Radar, Sun, Moon,
 } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
+import { useTheme } from '@/core/lib/ThemeContext';
 import { useNotifications } from '@/modules/notifications/hooks/useNotifications';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -29,6 +30,7 @@ export default function Layout({ children, currentPageName }) {
   const location = useLocation();
   const { user, userProfile, isAuthenticated, isPlatformAdmin, signOut } = useAuth();
   const { data: notifications = [] } = useNotifications(user?.uid);
+  const { theme, toggleTheme } = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
@@ -49,7 +51,7 @@ export default function Layout({ children, currentPageName }) {
   return (
     <div className="arena-page min-h-screen flex flex-col">
       {/* Header */}
-      <header className="sticky top-0 z-40 border-b border-white/60 bg-white/70 backdrop-blur-xl">
+      <header className="sticky top-0 z-40 border-b border-border bg-card/70 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-4 safe-px">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 flex-shrink-0 group">
@@ -69,7 +71,7 @@ export default function Layout({ children, currentPageName }) {
                   'flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-medium transition-all',
                   location.pathname.startsWith(to)
                     ? 'bg-primary text-primary-foreground shadow-[0_10px_20px_-12px_rgba(64,34,18,0.55)]'
-                    : 'text-stone-600 hover:bg-secondary/70'
+                    : 'text-foreground/70 hover:bg-secondary/70'
                 )}
               >
                 <Icon className="w-4 h-4" />
@@ -80,6 +82,15 @@ export default function Layout({ children, currentPageName }) {
 
           {/* Ações direita */}
           <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleTheme}
+              aria-label={theme === 'dark' ? 'Ativar tema claro' : 'Ativar tema escuro'}
+              title={theme === 'dark' ? 'Ativar tema claro' : 'Ativar tema escuro'}
+            >
+              {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </Button>
             {isAuthenticated ? (
               <>
                 {/* Cadastrar Pet */}
@@ -103,7 +114,7 @@ export default function Layout({ children, currentPageName }) {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <button className="flex items-center gap-2 rounded-full focus:outline-none focus:ring-2 focus:ring-ring">
-                      <Avatar className="w-8 h-8 ring-2 ring-white">
+                      <Avatar className="w-8 h-8 ring-2 ring-card">
                         <AvatarImage src={photoURL} />
                         <AvatarFallback className="bg-secondary text-secondary-foreground text-xs font-bold">{initials}</AvatarFallback>
                       </Avatar>
@@ -167,7 +178,7 @@ export default function Layout({ children, currentPageName }) {
 
         {/* Mobile Nav */}
         {mobileOpen && (
-          <div className="md:hidden border-t border-white/60 bg-white/90 backdrop-blur-xl px-4 py-3 space-y-1 safe-px">
+          <div className="md:hidden border-t border-border bg-card/90 backdrop-blur-xl px-4 py-3 space-y-1 safe-px">
             {NAV_ITEMS.filter((item) => !item.auth || isAuthenticated).map(({ label, icon: Icon, to }) => (
               <Link
                 key={to}
@@ -177,7 +188,7 @@ export default function Layout({ children, currentPageName }) {
                   'flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium transition-colors',
                   location.pathname.startsWith(to)
                     ? 'bg-primary text-primary-foreground'
-                    : 'text-stone-700 hover:bg-secondary/70'
+                    : 'text-foreground/70 hover:bg-secondary/70'
                 )}
               >
                 <Icon className="w-4 h-4" />

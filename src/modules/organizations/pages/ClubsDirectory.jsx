@@ -117,7 +117,7 @@ export default function ClubsDirectory() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-[2rem] border-white/80 bg-white/82">
+        <Card className="rounded-[2rem] border-border bg-card/85">
           <CardContent className="p-6 sm:p-7">
             <span className="arena-chip">Ingressar com código</span>
             <h3 className="mt-4 text-2xl font-semibold text-foreground">Tem um convite?</h3>
@@ -157,7 +157,7 @@ export default function ClubsDirectory() {
         </section>
       )}
 
-      <Card className="rounded-[2rem] border-white/80 bg-white/82">
+      <Card className="rounded-[2rem] border-border bg-card/85">
         <CardContent className="p-4 sm:p-5">
           <div className="relative">
             <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -165,7 +165,7 @@ export default function ClubsDirectory() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Buscar clube por nome, cidade ou descrição"
-              className="h-12 rounded-full border-white/80 bg-white/80 pl-11 pr-11"
+              className="h-12 rounded-full border-border bg-card/80 pl-11 pr-11"
             />
             {search && (
               <button
@@ -200,7 +200,7 @@ export default function ClubsDirectory() {
           ))}
         </div>
       ) : filtered.length === 0 ? (
-        <Card className="rounded-[2rem] border-white/80 bg-white/82">
+        <Card className="rounded-[2rem] border-border bg-card/85">
           <CardContent className="flex flex-col items-center px-4 py-10 text-center sm:px-10 sm:py-12">
             <div className="flex h-16 w-16 items-center justify-center rounded-[1.5rem] bg-primary/10 text-primary">
               <Building2 className="h-8 w-8" />
@@ -251,7 +251,7 @@ function ClubCard({ club, myRole, joinState = null, onRequest, requesting = fals
   };
   return (
     <Link to={`/organizacoes/${club.id}`} className="block h-full">
-      <Card className="match-surface h-full rounded-[1.75rem] border-white/80 bg-white/85">
+      <Card className="match-surface h-full rounded-[1.75rem] border-border bg-card/85">
         <CardContent className="flex h-full flex-col p-5 sm:p-6">
           <div className="flex items-start justify-between gap-3">
             <h4 className="flex min-w-0 items-center gap-3 text-lg font-semibold text-foreground">

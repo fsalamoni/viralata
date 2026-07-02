@@ -87,7 +87,7 @@ export default function Login() {
 
         {/* Card de login */}
         <div className="flex items-center justify-center">
-          <Card className="w-full max-w-lg rounded-[2.25rem] border-white/80 bg-white/95 p-1.5 shadow-[0_35px_80px_-40px_rgba(15,23,42,0.55)] sm:p-2">
+          <Card className="w-full max-w-lg rounded-[2.25rem] border-border bg-card/95 p-1.5 shadow-[0_35px_80px_-40px_rgba(15,23,42,0.55)] sm:p-2">
             <CardHeader className="px-5 pb-4 pt-6 text-center sm:px-8">
               {/* Logo mobile */}
               <Link to="/" className="mx-auto mb-4 inline-flex items-center gap-3 text-foreground lg:hidden">

@@ -19,7 +19,7 @@ export default class ErrorBoundary extends React.Component {
     if (this.state.hasError) {
       return (
         <div className="min-h-screen flex items-center justify-center bg-secondary p-6">
-          <div className="max-w-md w-full bg-white rounded-lg shadow p-6 border">
+          <div className="max-w-md w-full bg-card rounded-lg shadow p-6 border">
             <h1 className="text-xl font-semibold text-foreground mb-2">Algo deu errado</h1>
             <p className="text-sm text-muted-foreground mb-4">
               Ocorreu um erro inesperado. Recarregue a página para tentar novamente.

@@ -69,7 +69,7 @@ export function AuditLogTable({ title, description, tournamentId, userId, classN
 
   return (
     <Card className={`overflow-hidden ${className}`}>
-      <CardHeader className="border-b border-primary/10 bg-white/45 p-4 sm:p-5">
+      <CardHeader className="border-b border-primary/10 bg-card/45 p-4 sm:p-5">
         <CardTitle className="text-base text-foreground">{title}</CardTitle>
         {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>
@@ -94,7 +94,7 @@ export function AuditLogTable({ title, description, tournamentId, userId, classN
                 <th className="py-3 px-3 font-semibold">Informações</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-primary/10 bg-white/65">
+            <tbody className="divide-y divide-primary/10 bg-card/65">
               {visibleLogs.map((log) => (
                 <tr key={log.id} className="transition-colors hover:bg-primary/10">
                   <td className="py-3 pl-4 pr-3 font-mono text-xs text-muted-foreground">{log.log_number || '—'}</td>

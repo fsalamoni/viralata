@@ -28,7 +28,7 @@ export function CollapsibleSection({
 }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className={cn('rounded-md border border-border bg-white', className)}>
+    <div className={cn('rounded-md border border-border bg-card', className)}>
       <div className={cn('flex items-center justify-between gap-2 px-3 py-2', headerClassName)}>
         <button
           type="button"

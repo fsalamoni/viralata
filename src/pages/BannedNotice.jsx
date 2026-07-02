@@ -14,7 +14,7 @@ export default function BannedNotice() {
           Sua conta foi suspensa pela equipe do Viralata e você não pode mais acessar a plataforma.
         </p>
         {userProfile?.banned_reason && (
-          <p className="text-sm text-muted-foreground bg-white rounded-lg border border-border p-3">
+          <p className="text-sm text-muted-foreground bg-card rounded-lg border border-border p-3">
             <strong>Motivo:</strong> {userProfile.banned_reason}
           </p>
         )}

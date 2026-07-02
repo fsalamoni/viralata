@@ -156,6 +156,13 @@
     position: relative;
   }
 
+  .dark .arena-page {
+    background:
+      radial-gradient(circle at top left, hsl(16 45% 26% / 0.45), transparent 18%),
+      radial-gradient(circle at top right, hsl(42 55% 24% / 0.35), transparent 22%),
+      linear-gradient(180deg, hsl(20 22% 9%), hsl(20 18% 7%));
+  }
+
   .arena-page::before {
     content: '';
     position: fixed;
@@ -169,12 +176,12 @@
   }
 
   .arena-panel {
-    @apply border border-white/80 bg-white/80 text-card-foreground backdrop-blur-xl;
+    @apply border border-border bg-card/80 text-card-foreground backdrop-blur-xl;
     box-shadow: 0 24px 60px -28px rgba(64, 34, 18, 0.28);
   }
 
   .arena-panel-strong {
-    @apply border border-orange-200/30 text-white;
+    @apply border border-highlight/30 text-white;
     background:
       radial-gradient(circle at top right, hsl(42 88% 60% / 0.25), transparent 26%),
       linear-gradient(145deg, hsl(16 60% 30%), hsl(20 35% 18%) 55%, hsl(20 25% 11%));
@@ -186,16 +193,16 @@
   }
 
   .arena-chip {
-    @apply inline-flex h-8 items-center gap-2 rounded-full border border-white/70 bg-white/75 px-3 text-xs font-semibold text-slate-700 backdrop-blur-md;
+    @apply inline-flex h-8 items-center gap-2 rounded-full border border-border bg-card/75 px-3 text-xs font-semibold text-foreground backdrop-blur-md;
     box-shadow: 0 18px 30px -24px rgba(64, 34, 18, 0.35);
   }
 
   .arena-table-wrap {
-    @apply overflow-x-auto rounded-[1.25rem] border border-white/80 bg-white/75 shadow-[0_20px_50px_-32px_rgba(64,34,18,0.45)] backdrop-blur-xl;
+    @apply overflow-x-auto rounded-[1.25rem] border border-border bg-card/75 shadow-[0_20px_50px_-32px_rgba(64,34,18,0.45)] backdrop-blur-xl;
   }
 
   .match-surface {
-    @apply rounded-[1.25rem] border border-white/70 bg-white/80 shadow-[0_18px_42px_-28px_rgba(64,34,18,0.32)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 hover:border-orange-400/40;
+    @apply rounded-[1.25rem] border border-border bg-card/80 shadow-[0_18px_42px_-28px_rgba(64,34,18,0.32)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/40;
   }
 
   /* Respeita os recortes da tela (notch / barra de gestos) no app instalado:

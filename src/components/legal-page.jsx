@@ -20,7 +20,7 @@ export function LegalPage({ eyebrow, title, description, meta, children }) {
 export function LegalSection({ icon: Icon, title, description, children, className }) {
   return (
     <Card className={cn('overflow-hidden', className)}>
-      <CardHeader className="border-b border-primary/10 bg-white/45 p-4 sm:p-5">
+      <CardHeader className="border-b border-primary/10 bg-card/45 p-4 sm:p-5">
         <div className="flex items-start gap-3">
           {Icon && (
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground shadow-sm">
@@ -55,7 +55,7 @@ export function LegalListItem({ children }) {
 
 export function LegalStat({ label, value }) {
   return (
-    <div className="rounded-md border border-primary/10 bg-white/65 p-3">
+    <div className="rounded-md border border-primary/10 bg-card/65 p-3">
       <div className="text-xs text-muted-foreground">{label}</div>
       <div className="mt-1 text-lg font-bold text-primary">{value}</div>
     </div>
