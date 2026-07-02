@@ -14,7 +14,7 @@ export default function Legislation() {
           <LegalListItem><strong>Lei Federal nº 14.064/2020</strong> — aumentou as penas para maus-tratos a cães e gatos.</LegalListItem>
           <LegalListItem><strong>Decreto nº 24.645/1934</strong> — ainda referenciado em decisões judiciais como fundamento de proteção animal.</LegalListItem>
         </LegalList>
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-muted-foreground">
           Este resumo é meramente informativo. Para uma denúncia formal, utilize o botão "Fazer Denúncia" da
           plataforma, que gera um relatório para encaminhamento à Polícia Civil ou órgão ambiental competente.
         </p>

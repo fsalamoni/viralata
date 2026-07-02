@@ -56,26 +56,26 @@ export default function AdminUsers() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-6 space-y-4">
-      <h1 className="text-xl font-bold text-gray-900">Gerenciar Usuários</h1>
+      <h1 className="text-xl font-bold text-foreground">Gerenciar Usuários</h1>
       <Input
         placeholder="Buscar por nome ou e-mail..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         className="max-w-sm"
       />
-      {loading ? <p className="text-gray-400">Carregando...</p> : (
+      {loading ? <p className="text-muted-foreground">Carregando...</p> : (
         <div className="space-y-2">
           {filtered.map((u) => (
-            <div key={u.id} className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 bg-white">
+            <div key={u.id} className="flex items-center gap-3 p-3 rounded-xl border border-border bg-white">
               <Avatar className="w-10 h-10 flex-shrink-0">
                 <AvatarImage src={u.photo_url} />
                 <AvatarFallback>{(u.full_name || u.email || '?')[0]?.toUpperCase()}</AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
                 <p className="font-medium text-sm truncate">{u.full_name || 'Sem nome'}</p>
-                <p className="text-xs text-gray-400 truncate">{u.email}</p>
+                <p className="text-xs text-muted-foreground truncate">{u.email}</p>
                 <div className="flex gap-1 mt-1 flex-wrap">
-                  {u.role === 'platform_admin' && <Badge className="bg-purple-100 text-purple-800 text-xs">Admin</Badge>}
+                  {u.role === 'platform_admin' && <Badge className="bg-highlight/20 text-foreground text-xs">Admin</Badge>}
                   {u.banned && <Badge variant="destructive" className="text-xs">Banido{u.banned_reason ? `: ${u.banned_reason}` : ''}</Badge>}
                 </div>
               </div>
@@ -85,14 +85,14 @@ export default function AdminUsers() {
                     <ShieldCheck className="w-3.5 h-3.5 mr-1" /> Desbanir
                   </Button>
                 ) : (
-                  <Button size="sm" variant="ghost" className="text-red-500" onClick={() => handleBan(u)}>
+                  <Button size="sm" variant="ghost" className="text-destructive" onClick={() => handleBan(u)}>
                     <ShieldOff className="w-3.5 h-3.5 mr-1" /> Banir
                   </Button>
                 )
               )}
             </div>
           ))}
-          {filtered.length === 0 && <p className="text-center text-gray-400 py-8">Nenhum usuário encontrado.</p>}
+          {filtered.length === 0 && <p className="text-center text-muted-foreground py-8">Nenhum usuário encontrado.</p>}
         </div>
       )}
     </div>

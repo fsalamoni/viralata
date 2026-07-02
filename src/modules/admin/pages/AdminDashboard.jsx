@@ -7,21 +7,21 @@ import { Shield, PawPrint, Building2, AlertTriangle, Users, BarChart3 } from 'lu
 
 export default function AdminDashboard() {
   const { isPlatformAdmin } = useAuth();
-  if (!isPlatformAdmin) return <div className="text-center py-16 text-gray-500">Acesso restrito.</div>;
+  if (!isPlatformAdmin) return <div className="text-center py-16 text-muted-foreground">Acesso restrito.</div>;
 
   const sections = [
-    { icon: PawPrint, title: 'Gerenciar Pets', desc: 'Moderar anúncios, aprovar ou remover pets', link: '/admin/pets', color: 'text-orange-500' },
-    { icon: Building2, title: 'Organizações', desc: 'Verificar, gerenciar e excluir ONGs e lojas', link: '/admin/organizacoes', color: 'text-blue-500' },
-    { icon: AlertTriangle, title: 'Denúncias', desc: 'Revisar denúncias de maus-tratos', link: '/admin/denuncias', color: 'text-red-500' },
-    { icon: Users, title: 'Usuários', desc: 'Gerenciar contas, papéis e banimentos', link: '/admin/usuarios', color: 'text-purple-500' },
-    { icon: BarChart3, title: 'Métricas', desc: 'Adoções, crescimento e denúncias em gráficos', link: '/admin/metricas', color: 'text-green-500' },
+    { icon: PawPrint, title: 'Gerenciar Pets', desc: 'Moderar anúncios, aprovar ou remover pets', link: '/admin/pets', color: 'text-primary' },
+    { icon: Building2, title: 'Organizações', desc: 'Verificar, gerenciar e excluir ONGs e lojas', link: '/admin/organizacoes', color: 'text-accent' },
+    { icon: AlertTriangle, title: 'Denúncias', desc: 'Revisar denúncias de maus-tratos', link: '/admin/denuncias', color: 'text-destructive' },
+    { icon: Users, title: 'Usuários', desc: 'Gerenciar contas, papéis e banimentos', link: '/admin/usuarios', color: 'text-highlight' },
+    { icon: BarChart3, title: 'Métricas', desc: 'Adoções, crescimento e denúncias em gráficos', link: '/admin/metricas', color: 'text-primary/70' },
   ];
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
       <div className="flex items-center gap-3">
-        <Shield className="w-6 h-6 text-orange-500" />
-        <h1 className="text-2xl font-bold text-gray-900">Painel Administrativo</h1>
+        <Shield className="w-6 h-6 text-primary" />
+        <h1 className="text-2xl font-bold text-foreground">Painel Administrativo</h1>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {sections.map(({ icon: Icon, title, desc, link, color }) => (
@@ -33,7 +33,7 @@ export default function AdminDashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <p className="text-sm text-gray-500">{desc}</p>
+              <p className="text-sm text-muted-foreground">{desc}</p>
               <Button asChild variant="outline" size="sm">
                 <Link to={link}>Acessar</Link>
               </Button>
