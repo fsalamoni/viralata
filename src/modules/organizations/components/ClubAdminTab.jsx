@@ -23,7 +23,6 @@ import {
   useCancelClubInvite,
   useClubMembers,
 } from '@/modules/organizations/hooks/useClubs';
-// useAllAthletes removido — usar busca de usuários do viralata
 
 export default function ClubAdminTab({ club }) {
   const navigate = useNavigate();
@@ -78,7 +77,7 @@ export default function ClubAdminTab({ club }) {
     try {
       await deleteClub.mutateAsync();
       toast.success('Clube excluído.');
-      navigate('/clubes');
+      navigate('/organizacoes');
     } catch (err) {
       toast.error(err.message || 'Não foi possível excluir o clube.');
     }
@@ -92,7 +91,7 @@ export default function ClubAdminTab({ club }) {
       <Card className="rounded-xl">
         <CardHeader className="p-4 sm:p-5">
           <CardTitle className="text-base">Código de convite</CardTitle>
-          <CardDescription>Compartilhe este código para que atletas ingressem no clube.</CardDescription>
+          <CardDescription>Compartilhe este código para que novos membros ingressem na organização.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3 p-4 pt-0 sm:p-5 sm:pt-0">
           <div className="flex flex-wrap items-center gap-2">
@@ -156,7 +155,7 @@ export default function ClubAdminTab({ club }) {
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="admin_venue">Local / quadra principal</Label>
+              <Label htmlFor="admin_venue">Endereço / local principal</Label>
               <Input id="admin_venue" value={form.home_venue} onChange={setField('home_venue')} maxLength={120} />
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
@@ -247,7 +246,7 @@ function ClubJoinRequests({ club }) {
           Pedidos de ingresso
           {requests.length > 0 && <Badge variant="warning" className="rounded-full">{requests.length}</Badge>}
         </CardTitle>
-        <CardDescription>Atletas que pediram para entrar no clube.</CardDescription>
+        <CardDescription>Pessoas que pediram para entrar na organização.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-2 p-4 pt-0 sm:p-5 sm:pt-0">
         {isLoading ? (
@@ -279,7 +278,7 @@ function ClubJoinRequests({ club }) {
 }
 
 /**
- * Adicionar membros: lista navegável de TODOS os atletas/usuários da
+ * Adicionar membros: lista navegável de TODOS os usuários da
  * plataforma, com busca, seleção múltipla e convite em lote. Os convidados
  * recebem um aviso no sino e decidem aceitar ou recusar.
  */
@@ -295,7 +294,7 @@ function ClubAddMembers({ club }) {
   const memberIds = useMemo(() => new Set(members.map((m) => m.user_id)), [members]);
   const invitedIds = useMemo(() => new Set(invites.map((i) => i.user_id)), [invites]);
 
-  const athleteName = (a) => a.platform_name || a.full_name || a.name || 'Atleta';
+  const memberName = (a) => a.platform_name || a.full_name || a.name || 'Usuário';
 
   // Disponíveis = todos os perfis menos quem já é membro ou já tem convite.
   const available = useMemo(() => {
@@ -304,10 +303,10 @@ function ClubAddMembers({ club }) {
       .filter((a) => a.id && !memberIds.has(a.id) && !invitedIds.has(a.id))
       .filter((a) => {
         if (!q) return true;
-        const hay = `${athleteName(a)} ${a.city || ''} ${a.email || ''}`.toLowerCase();
+        const hay = `${memberName(a)} ${a.city || ''} ${a.email || ''}`.toLowerCase();
         return hay.includes(q);
       })
-      .sort((a, b) => athleteName(a).localeCompare(athleteName(b), 'pt-BR'));
+      .sort((a, b) => memberName(a).localeCompare(memberName(b), 'pt-BR'));
   }, [athletes, memberIds, invitedIds, search]);
 
   const selectedCount = Object.keys(selected).length;
@@ -322,7 +321,7 @@ function ClubAddMembers({ club }) {
   const handleInviteSelected = async () => {
     const targets = Object.values(selected).map((a) => ({
       user_id: a.id,
-      user_name: athleteName(a),
+      user_name: memberName(a),
       user_email: a.email || '',
       photo_url: a.photo_url || '',
     }));
@@ -349,7 +348,7 @@ function ClubAddMembers({ club }) {
     <Card className="rounded-xl">
       <CardHeader className="p-4 sm:p-5">
         <CardTitle className="flex items-center gap-2 text-base"><UserPlus className="h-4 w-4" /> Adicionar membros</CardTitle>
-        <CardDescription>Selecione atletas da plataforma e envie convites. Eles recebem um aviso e decidem aceitar.</CardDescription>
+        <CardDescription>Selecione usuários da plataforma e envie convites. Eles recebem um aviso e decidem aceitar.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3 p-4 pt-0 sm:p-5 sm:pt-0">
         <div className="relative">
@@ -363,11 +362,11 @@ function ClubAddMembers({ club }) {
         </div>
 
         {isLoading ? (
-          <p className="text-sm text-slate-500">Carregando atletas…</p>
+          <p className="text-sm text-slate-500">Carregando usuários…</p>
         ) : available.length === 0 ? (
           <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-4 text-sm text-slate-500">
             <Users className="h-4 w-4 shrink-0" />
-            {search.trim() ? 'Nenhum atleta encontrado para esse filtro.' : 'Todos os atletas já são membros ou já foram convidados.'}
+            {search.trim() ? 'Nenhum usuário encontrado para esse filtro.' : 'Todos os usuários já são membros ou já foram convidados.'}
           </div>
         ) : (
           <div className="max-h-80 space-y-1.5 overflow-y-auto rounded-lg border border-slate-100 p-1.5">
@@ -387,9 +386,9 @@ function ClubAddMembers({ club }) {
                   }`}>
                     {isSel && <Check className="h-3.5 w-3.5" />}
                   </span>
-                  <UserAvatar name={athleteName(a)} photoUrl={a.photo_url} size="sm" />
+                  <UserAvatar name={memberName(a)} photoUrl={a.photo_url} size="sm" />
                   <div className="min-w-0 flex-1">
-                    <div className="truncate text-sm font-medium text-slate-900">{athleteName(a)}</div>
+                    <div className="truncate text-sm font-medium text-slate-900">{memberName(a)}</div>
                     {(a.city || a.email) && (
                       <div className="truncate text-xs text-slate-500">
                         {a.city ? `${a.city}${a.state ? ` / ${a.state}` : ''}` : a.email}
@@ -410,7 +409,7 @@ function ClubAddMembers({ club }) {
           <UserPlus className="mr-1.5 h-4 w-4" />
           {inviteMany.isPending
             ? 'Enviando…'
-            : selectedCount > 0 ? `Convidar selecionados (${selectedCount})` : 'Selecione atletas para convidar'}
+            : selectedCount > 0 ? `Convidar selecionados (${selectedCount})` : 'Selecione usuários para convidar'}
         </Button>
 
         {invites.length > 0 && (

@@ -74,7 +74,7 @@ export default function ClubMembersTab({ clubId, isAdmin }) {
   }
 
   if (members.length === 0) {
-    return <EmptyState icon={Shield} title="Sem membros" description="Convide atletas com o código do clube." />;
+    return <EmptyState icon={Shield} title="Sem membros" description="Convide pessoas com o código do clube." />;
   }
 
   return (

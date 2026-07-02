@@ -1,11 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
-  <title>Pickleball</title>
-  <rect width="64" height="64" rx="16" fill="#065f46" />
-  <circle cx="32" cy="32" r="18" fill="#f59e0b" />
-  <circle cx="24" cy="24" r="2.5" fill="#065f46" />
-  <circle cx="32" cy="18" r="2.5" fill="#065f46" />
-  <circle cx="40" cy="24" r="2.5" fill="#065f46" />
-  <circle cx="24" cy="40" r="2.5" fill="#065f46" />
-  <circle cx="32" cy="46" r="2.5" fill="#065f46" />
-  <circle cx="40" cy="40" r="2.5" fill="#065f46" />
+  <title>Viralata</title>
+  <rect width="64" height="64" rx="16" fill="#c1522a" />
+  <g fill="#fbead9">
+    <ellipse cx="32" cy="40" rx="14" ry="11" />
+    <ellipse cx="16" cy="22" rx="6" ry="7.5" transform="rotate(-18 16 22)" />
+    <ellipse cx="26" cy="14" rx="5.5" ry="7" transform="rotate(-6 26 14)" />
+    <ellipse cx="38" cy="14" rx="5.5" ry="7" transform="rotate(6 38 14)" />
+    <ellipse cx="48" cy="22" rx="6" ry="7.5" transform="rotate(18 48 22)" />
+  </g>
 </svg>

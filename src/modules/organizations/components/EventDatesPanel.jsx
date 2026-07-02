@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { toast } from 'sonner';
-import { CalendarDays, MapPin, Plus, Trash2, Check, X, Pencil, ChevronDown, ChevronRight, Users, Swords } from 'lucide-react';
+import { CalendarDays, MapPin, Plus, Trash2, Check, X, Pencil, ChevronDown, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,7 +8,6 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import {
@@ -20,7 +19,6 @@ import {
   useSetEventDateRsvp,
 } from '@/modules/organizations/hooks/useClubs';
 import { RSVP_STATUS, RSVP_STATUS_LABELS } from '@/modules/organizations/domain/constants';
-import GameDayOrganizer from '@/modules/organizations/components/GameDayOrganizer';
 
 function formatDateTime(value) {
   if (!value) return 'Data a definir';
@@ -30,14 +28,11 @@ function formatDateTime(value) {
 }
 
 /**
- * Lista os "dias de jogo" (ou datas) do evento. Cada um é um card colapsável
- * com abas internas: Participação (RSVP + editar/excluir) e — quando o evento
- * comporta jogos — Organização de jogos própria daquele dia.
+ * Lista as datas do evento. Cada uma é um card colapsável com local,
+ * horário e a resposta de presença (RSVP) de cada membro.
  */
-export default function EventDatesPanel({ event, clubId, showGames = false }) {
+export default function EventDatesPanel({ event, clubId }) {
   const eventId = event.id;
-  const term = showGames ? 'dia de jogo' : 'data';
-  const termPlural = showGames ? 'Dias de jogo' : 'Datas';
   const { data: dates = [], isLoading } = useEventDates(eventId);
   const { data: rsvps = [] } = useEventDateRsvps(eventId);
   const addDate = useAddEventDate(eventId);
@@ -61,7 +56,7 @@ export default function EventDatesPanel({ event, clubId, showGames = false }) {
     }
     try {
       await addDate.mutateAsync({ club_id: event.club_id, date_time: form.date_time, location: form.location, note: form.note });
-      toast.success(`${showGames ? 'Dia de jogo' : 'Data'} adicionado.`);
+      toast.success('Data adicionada.');
       setForm({ date_time: '', location: event.location || '', note: '' });
       setAdding(false);
     } catch (err) {
@@ -73,14 +68,12 @@ export default function EventDatesPanel({ event, clubId, showGames = false }) {
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h3 className="text-base font-semibold text-slate-900">{termPlural} do evento</h3>
-          <p className="text-sm text-slate-500">
-            Cada {term} tem local, horário, sua resposta de presença{showGames ? ' e organização de jogos própria.' : '.'}
-          </p>
+          <h3 className="text-base font-semibold text-slate-900">Datas do evento</h3>
+          <p className="text-sm text-slate-500">Cada data tem local, horário e sua resposta de presença.</p>
         </div>
         {!adding && (
           <Button size="sm" onClick={() => setAdding(true)}>
-            <Plus className="mr-1.5 h-4 w-4" /> {showGames ? 'Novo dia de jogo' : 'Nova data'}
+            <Plus className="mr-1.5 h-4 w-4" /> Nova data
           </Button>
         )}
       </div>
@@ -99,7 +92,7 @@ export default function EventDatesPanel({ event, clubId, showGames = false }) {
               </div>
               <div className="space-y-1.5 sm:col-span-2">
                 <Label htmlFor="new_date_note">Observação</Label>
-                <Input id="new_date_note" value={form.note} onChange={(e) => setForm((p) => ({ ...p, note: e.target.value }))} maxLength={200} placeholder="Ex.: levar bola, quadra 2…" />
+                <Input id="new_date_note" value={form.note} onChange={(e) => setForm((p) => ({ ...p, note: e.target.value }))} maxLength={200} placeholder="Ex.: trazer caixas de transporte, chegar 30min antes…" />
               </div>
               <div className="flex justify-end gap-2 sm:col-span-2">
                 <Button type="button" variant="outline" size="sm" onClick={() => setAdding(false)}>Cancelar</Button>
@@ -115,8 +108,8 @@ export default function EventDatesPanel({ event, clubId, showGames = false }) {
       ) : dates.length === 0 ? (
         <EmptyState
           icon={CalendarDays}
-          title={`Nenhum ${term} cadastrado`}
-          description={`Adicione o primeiro ${term} com local e horário.`}
+          title="Nenhuma data cadastrada"
+          description="Adicione a primeira data com local e horário."
         />
       ) : (
         <div className="space-y-3">
@@ -127,8 +120,6 @@ export default function EventDatesPanel({ event, clubId, showGames = false }) {
               clubId={clubId}
               date={d}
               rsvps={rsvpsByDate.get(d.id) || []}
-              showGames={showGames}
-              term={term}
             />
           ))}
         </div>
@@ -137,7 +128,7 @@ export default function EventDatesPanel({ event, clubId, showGames = false }) {
   );
 }
 
-function DateCard({ event, clubId, date, rsvps, showGames, term }) {
+function DateCard({ event, date, rsvps }) {
   const { user } = useAuth();
   const eventId = event.id;
   const setRsvp = useSetEventDateRsvp(eventId);
@@ -146,7 +137,6 @@ function DateCard({ event, clubId, date, rsvps, showGames, term }) {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const [tab, setTab] = useState('presenca');
   const [form, setForm] = useState({
     date_time: toLocalInput(date.date_time),
     location: date.location || '',
@@ -181,7 +171,7 @@ function DateCard({ event, clubId, date, rsvps, showGames, term }) {
   const handleDelete = async () => {
     try {
       await deleteDate.mutateAsync(date.id);
-      toast.success(`${term === 'dia de jogo' ? 'Dia de jogo' : 'Data'} removido.`);
+      toast.success('Data removida.');
       setConfirmDelete(false);
     } catch (err) {
       toast.error(err.message || 'Não foi possível remover.');
@@ -214,56 +204,28 @@ function DateCard({ event, clubId, date, rsvps, showGames, term }) {
 
       {open && (
         <CardContent className="border-t border-slate-100 p-4">
-          {showGames ? (
-            <Tabs value={tab} onValueChange={setTab} className="w-full">
-              <TabsList className="mb-4 grid w-full grid-cols-2">
-                <TabsTrigger value="presenca"><Users className="mr-1.5 h-4 w-4" /> Participação</TabsTrigger>
-                <TabsTrigger value="jogos"><Swords className="mr-1.5 h-4 w-4" /> Organização de jogos</TabsTrigger>
-              </TabsList>
-              <TabsContent value="presenca">
-                <PresenceSection
-                  date={date}
-                  editing={editing}
-                  setEditing={setEditing}
-                  form={form}
-                  setForm={setForm}
-                  onSave={handleSave}
-                  saving={updateDate.isPending}
-                  onDeleteRequest={() => setConfirmDelete(true)}
-                  myStatus={myStatus}
-                  grouped={grouped}
-                  onRsvp={handleRsvp}
-                  rsvpPending={setRsvp.isPending}
-                />
-              </TabsContent>
-              <TabsContent value="jogos">
-                <GameDayOrganizer event={event} clubId={clubId} dateId={date.id} />
-              </TabsContent>
-            </Tabs>
-          ) : (
-            <PresenceSection
-              date={date}
-              editing={editing}
-              setEditing={setEditing}
-              form={form}
-              setForm={setForm}
-              onSave={handleSave}
-              saving={updateDate.isPending}
-              onDeleteRequest={() => setConfirmDelete(true)}
-              myStatus={myStatus}
-              grouped={grouped}
-              onRsvp={handleRsvp}
-              rsvpPending={setRsvp.isPending}
-            />
-          )}
+          <PresenceSection
+            date={date}
+            editing={editing}
+            setEditing={setEditing}
+            form={form}
+            setForm={setForm}
+            onSave={handleSave}
+            saving={updateDate.isPending}
+            onDeleteRequest={() => setConfirmDelete(true)}
+            myStatus={myStatus}
+            grouped={grouped}
+            onRsvp={handleRsvp}
+            rsvpPending={setRsvp.isPending}
+          />
         </CardContent>
       )}
 
       <ConfirmDialog
         open={confirmDelete}
         onOpenChange={setConfirmDelete}
-        title={`Remover ${term}`}
-        description={`O ${term}, suas respostas, participantes e jogos serão removidos.`}
+        title="Remover data"
+        description="A data, suas respostas e participantes serão removidos."
         confirmLabel="Remover"
         destructive
         loading={deleteDate.isPending}

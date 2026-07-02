@@ -103,7 +103,7 @@ export default function ClubDetail() {
       await leaveClub.mutateAsync();
       toast.success('Você saiu do clube.');
       setConfirmLeave(false);
-      navigate('/clubes');
+      navigate('/organizacoes');
     } catch (err) {
       toast.error(err.message || 'Não foi possível sair do clube.');
     }
@@ -153,7 +153,7 @@ export default function ClubDetail() {
           icon={Building2}
           title="Clube não encontrado"
           description="O clube que você procura não existe ou foi removido."
-          action={<Button asChild><Link to="/clubes">Voltar para clubes</Link></Button>}
+          action={<Button asChild><Link to="/organizacoes">Voltar para clubes</Link></Button>}
         />
       </div>
     );
@@ -164,7 +164,7 @@ export default function ClubDetail() {
   return (
     <div className="mx-auto max-w-4xl space-y-4">
       <Button asChild variant="ghost" size="sm" className="text-emerald-50 hover:bg-white/10 hover:text-white">
-        <Link to="/clubes"><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para clubes</Link>
+        <Link to="/organizacoes"><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para clubes</Link>
       </Button>
 
       <section className="arena-panel-strong overflow-hidden rounded-[1.25rem] p-5 sm:rounded-[2rem] sm:p-8">

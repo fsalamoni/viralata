@@ -21,7 +21,7 @@ export function initialsFor(name) {
 
 /**
  * Avatar do usuário: mostra a foto quando disponível ou as iniciais como
- * fallback. Reutilizável em todos os locais onde um atleta aparece.
+ * fallback. Reutilizável em todos os locais onde um usuário aparece.
  */
 export function UserAvatar({ name, photoUrl, size = 'sm', className, title }) {
   const dim = SIZES[size] || SIZES.sm;

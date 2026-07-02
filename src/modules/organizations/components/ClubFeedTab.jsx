@@ -112,7 +112,7 @@ export default function ClubFeedTab({ clubId, isAdmin }) {
               onChange={(e) => setContent(e.target.value)}
               rows={3}
               maxLength={2000}
-              placeholder="Compartilhe um aviso, combine um jogo, comemore uma vitória…"
+              placeholder="Compartilhe um aviso, avise sobre um mutirão, comemore uma adoção…"
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             />
 

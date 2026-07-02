@@ -124,7 +124,7 @@ export default function ChatPage() {
               </span>
               <h3 className="text-lg font-semibold text-slate-900">Suas conversas</h3>
               <p className="mt-2 max-w-sm text-sm leading-6">
-                Selecione uma conversa à esquerda ou inicie uma nova para falar com atletas e grupos da comunidade.
+                Selecione uma conversa à esquerda ou inicie uma nova para falar com pessoas e grupos da comunidade.
               </p>
               <Button className="mt-5" onClick={() => setNewOpen(true)}>
                 <Plus className="mr-1.5 h-4 w-4" /> Nova conversa

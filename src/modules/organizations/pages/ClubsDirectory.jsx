@@ -99,18 +99,18 @@ export default function ClubsDirectory() {
           <CardContent className="relative p-5 sm:p-8 lg:p-10">
             <div className="relative max-w-2xl">
               <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-50/80">
-                <Sparkles className="h-3.5 w-3.5" /> Clubes da comunidade
+                <Sparkles className="h-3.5 w-3.5" /> Organizações parceiras
               </span>
               <h2 className="mt-5 text-2xl font-semibold leading-tight text-white sm:text-3xl lg:text-4xl">
-                Encontre seu clube ou crie o seu.
+                Encontre uma organização ou cadastre a sua.
               </h2>
               <p className="mt-4 max-w-xl text-sm leading-7 text-emerald-50/75 sm:text-base">
-                Reúna sua turma, organize confraternizações e torneios internos e mantenha todos
-                conectados em um só lugar.
+                Gerencie pets para adoção, organize mutirões e mantenha sua equipe conectada
+                em um só lugar.
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
                 <Button asChild className="bg-white text-slate-950 hover:bg-emerald-50">
-                  <Link to="/clubes/criar"><Plus className="mr-1.5 h-4 w-4" /> Criar clube</Link>
+                  <Link to="/organizacoes/criar"><Plus className="mr-1.5 h-4 w-4" /> Cadastrar organização</Link>
                 </Button>
               </div>
             </div>
@@ -213,7 +213,7 @@ export default function ClubsDirectory() {
             </p>
             <div className="mt-6">
               <Button asChild>
-                <Link to="/clubes/criar"><Plus className="mr-1.5 h-4 w-4" /> Criar clube</Link>
+                <Link to="/organizacoes/criar"><Plus className="mr-1.5 h-4 w-4" /> Criar clube</Link>
               </Button>
             </div>
           </CardContent>
@@ -250,7 +250,7 @@ function ClubCard({ club, myRole, joinState = null, onRequest, requesting = fals
     onRequest?.(club);
   };
   return (
-    <Link to={`/clubes/${club.id}`} className="block h-full">
+    <Link to={`/organizacoes/${club.id}`} className="block h-full">
       <Card className="match-surface h-full rounded-[1.75rem] border-white/80 bg-white/85">
         <CardContent className="flex h-full flex-col p-5 sm:p-6">
           <div className="flex items-start justify-between gap-3">

@@ -45,7 +45,7 @@ export default function PollBuilder({ value, onChange }) {
           value={value.question}
           onChange={(e) => setField('question', e.target.value)}
           maxLength={FORUM_POLL.QUESTION_MAX_CHARS}
-          placeholder="Ex.: Qual o melhor dia para o torneio interno?"
+          placeholder="Ex.: Qual o melhor dia para o próximo mutirão de adoção?"
         />
       </div>
 

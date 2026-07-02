@@ -34,7 +34,7 @@ export default function ConversationList({ conversations, isLoading, selectedId,
       <EmptyState
         icon={Users}
         title="Nenhuma conversa"
-        description="Inicie uma conversa com atletas da comunidade."
+        description="Inicie uma conversa com adotantes e responsáveis da comunidade."
         className="py-10"
       />
     );

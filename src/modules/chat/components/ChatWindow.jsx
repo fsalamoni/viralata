@@ -160,7 +160,7 @@ export default function ChatWindow({ conversation, currentUserId, onBack, onClos
         </div>
 
         <Button variant="outline" size="sm" className="hidden sm:inline-flex" onClick={() => setAddOpen(true)}>
-          <UserPlus className="mr-1.5 h-4 w-4" /> Chamar atletas
+          <UserPlus className="mr-1.5 h-4 w-4" /> Chamar pessoas
         </Button>
 
         <DropdownMenu>
@@ -171,7 +171,7 @@ export default function ChatWindow({ conversation, currentUserId, onBack, onClos
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuItem onClick={() => setAddOpen(true)}>
-              <UserPlus className="mr-2 h-4 w-4" /> Chamar atletas
+              <UserPlus className="mr-2 h-4 w-4" /> Chamar pessoas
             </DropdownMenuItem>
             {isGroup && (
               <DropdownMenuItem onClick={() => { setRenameValue(conversation.title || ''); setRenameOpen(true); }}>
@@ -219,7 +219,7 @@ export default function ChatWindow({ conversation, currentUserId, onBack, onClos
 
       <ChatComposer onSend={handleSend} />
 
-      {/* Chamar atletas → novo grupo */}
+      {/* Chamar pessoas → novo grupo */}
       <NewChatDialog
         open={addOpen}
         onOpenChange={setAddOpen}

@@ -34,7 +34,6 @@ import {
   EVENT_VISIBILITY,
   EVENT_VISIBILITY_LABELS,
   eventTypeLabel,
-  isGameDayEvent,
   isPrivateEvent,
 } from '@/modules/organizations/domain/constants';
 
@@ -46,12 +45,10 @@ function formatDateTime(value) {
 }
 
 const TYPE_TONE = {
-  [CLUB_EVENT_TYPE.GAME_DAY]: 'success',
+  [CLUB_EVENT_TYPE.ADOPTION_FAIR]: 'success',
   [CLUB_EVENT_TYPE.SOCIAL]: 'success',
-  [CLUB_EVENT_TYPE.TOURNAMENT]: 'warning',
   [CLUB_EVENT_TYPE.MEETING]: 'outline',
   [CLUB_EVENT_TYPE.OTHER]: 'outline',
-  training: 'success',
 };
 
 export default function ClubEventsTab({ clubId, isAdmin }) {
@@ -61,7 +58,7 @@ export default function ClubEventsTab({ clubId, isAdmin }) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-3">
-        <p className="text-sm text-slate-600">Dias de jogo, confraternizações, torneios internos e reuniões do clube.</p>
+        <p className="text-sm text-slate-600">Mutirões de adoção, confraternizações e reuniões da organização.</p>
         <Button size="sm" onClick={() => setCreateOpen(true)}>
           <Plus className="mr-1.5 h-4 w-4" /> Novo evento
         </Button>
@@ -99,7 +96,6 @@ function EventCard({ event, clubId, isAdmin }) {
   const canManage = isAdmin || event.created_by === user?.uid;
   const participantCount = invites.filter((r) => r.status !== INVITE_STATUS.INVITED).length;
   const when = formatDateTime(event.starts_at);
-  const gameDay = isGameDayEvent(event.type);
   const isPrivate = isPrivateEvent(event);
 
   const handleDelete = async () => {
@@ -152,8 +148,8 @@ function EventCard({ event, clubId, isAdmin }) {
             <Pencil className="mr-1.5 h-3.5 w-3.5" /> Editar
           </Button>
           <Button asChild size="sm" variant="secondary" className="ml-auto">
-            <Link to={`/clubes/${clubId}/eventos/${event.id}`}>
-              {gameDay ? 'Organizar / ingressar' : 'Ingressar no evento'} <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+            <Link to={`/organizacoes/${clubId}/eventos/${event.id}`}>
+              Ingressar no evento <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
             </Link>
           </Button>
         </div>
@@ -194,7 +190,7 @@ export function EventFormDialog({ clubId, event, open, onClose }) {
   const buildInitial = () => ({
     title: event?.title || '',
     description: event?.description || '',
-    type: event?.type || CLUB_EVENT_TYPE.GAME_DAY,
+    type: event?.type || CLUB_EVENT_TYPE.ADOPTION_FAIR,
     location: event?.location || '',
     starts_at: toLocalInput(event?.starts_at),
     recurring: !!event?.recurring,
@@ -231,7 +227,6 @@ export function EventFormDialog({ clubId, event, open, onClose }) {
   };
 
   const pending = createEvent.isPending || updateEvent.isPending;
-  const gameDay = isGameDayEvent(form.type);
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
@@ -239,7 +234,7 @@ export function EventFormDialog({ clubId, event, open, onClose }) {
         <DialogHeader>
           <DialogTitle>{isEdit ? 'Editar evento' : 'Novo evento'}</DialogTitle>
           <DialogDescription>
-            Organize um dia de jogo, confraternização, torneio interno ou reunião.
+            Organize um mutirão de adoção, confraternização ou reunião.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -274,7 +269,7 @@ export function EventFormDialog({ clubId, event, open, onClose }) {
             <div>
               <Label htmlFor="event_recurring" className="font-medium">Evento recorrente</Label>
               <p className="text-xs text-slate-500">
-                {gameDay ? 'Permite adicionar várias datas na página do dia de jogo.' : 'Permite cadastrar mais de uma data na página do evento.'}
+                Permite cadastrar mais de uma data na página do evento.
               </p>
             </div>
             <Switch
@@ -297,8 +292,8 @@ export function EventFormDialog({ clubId, event, open, onClose }) {
             </select>
             <p className="text-xs text-slate-500">
               {form.visibility === EVENT_VISIBILITY.PRIVATE
-                ? 'Apenas atletas convidados verão e participarão do evento.'
-                : 'Todos os atletas do clube poderão ver e participar.'}
+                ? 'Apenas convidados verão e participarão do evento.'
+                : 'Todos os membros da organização poderão ver e participar.'}
             </p>
           </div>
           <div className="space-y-2">

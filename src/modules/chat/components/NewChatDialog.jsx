@@ -15,23 +15,27 @@ import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
-// Athletes hook removed — use user search instead
+import { useChatUserDirectory } from '@/modules/chat/hooks/useChat';
 import { toMember } from '@/modules/chat/domain/conversations';
+
+function personName(person) {
+  return person.platform_name || person.full_name || 'Usuário';
+}
 
 /**
  * Diálogo para iniciar uma nova conversa (direta ou em grupo) ou para chamar
- * mais atletas para um novo grupo a partir de uma conversa existente.
+ * mais pessoas para um novo grupo a partir de uma conversa existente.
  *
  * Props:
  *  - open, onOpenChange
- *  - onConfirm(people, title): Promise — recebe os atletas escolhidos
+ *  - onConfirm(people, title): Promise — recebe as pessoas escolhidas
  *  - excludeIds: uids a ocultar da lista (ex.: membros já presentes)
  *  - mode: 'new' | 'add'
  *  - busy: desabilita ações enquanto a operação ocorre
  */
 export default function NewChatDialog({ open, onOpenChange, onConfirm, excludeIds = [], mode = 'new', busy = false }) {
   const { user } = useAuth();
-  const { data: athletes = [], isLoading } = useAthletes();
+  const { data: people = [], isLoading } = useChatUserDirectory();
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState({});
   const [title, setTitle] = useState('');
@@ -40,24 +44,24 @@ export default function NewChatDialog({ open, onOpenChange, onConfirm, excludeId
 
   const candidates = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return athletes
-      .filter((a) => a.id && !exclude.has(a.id))
-      .filter((a) => {
+    return people
+      .filter((p) => p.id && !exclude.has(p.id))
+      .filter((p) => {
         if (!q) return true;
-        const haystack = [a.platform_name, a.city, a.state, a.level].filter(Boolean).join(' ').toLowerCase();
+        const haystack = [personName(p), p.city, p.state].filter(Boolean).join(' ').toLowerCase();
         return haystack.includes(q);
       })
-      .sort((a, b) => String(a.platform_name || '').localeCompare(String(b.platform_name || ''), 'pt-BR'));
-  }, [athletes, search, exclude]);
+      .sort((a, b) => personName(a).localeCompare(personName(b), 'pt-BR'));
+  }, [people, search, exclude]);
 
   const selectedList = useMemo(() => Object.values(selected), [selected]);
   const isGroup = selectedList.length > 1 || (mode === 'add' && selectedList.length >= 1);
 
-  const toggle = (athlete) => {
+  const toggle = (person) => {
     setSelected((prev) => {
       const next = { ...prev };
-      if (next[athlete.id]) delete next[athlete.id];
-      else next[athlete.id] = toMember(athlete);
+      if (next[person.id]) delete next[person.id];
+      else next[person.id] = toMember(person);
       return next;
     });
   };
@@ -70,7 +74,7 @@ export default function NewChatDialog({ open, onOpenChange, onConfirm, excludeId
 
   const handleConfirm = async () => {
     if (selectedList.length === 0) {
-      toast.error('Selecione pelo menos um atleta.');
+      toast.error('Selecione pelo menos uma pessoa.');
       return;
     }
     try {
@@ -92,12 +96,12 @@ export default function NewChatDialog({ open, onOpenChange, onConfirm, excludeId
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Users className="h-5 w-5 text-emerald-700" />
-            {mode === 'add' ? 'Chamar atletas para um novo grupo' : 'Nova conversa'}
+            {mode === 'add' ? 'Chamar pessoas para um novo grupo' : 'Nova conversa'}
           </DialogTitle>
           <DialogDescription>
             {mode === 'add'
-              ? 'Os participantes atuais e os atletas selecionados formarão um novo grupo.'
-              : 'Selecione um atleta para conversa direta ou vários para criar um grupo.'}
+              ? 'Os participantes atuais e as pessoas selecionadas formarão um novo grupo.'
+              : 'Selecione uma pessoa para conversa direta ou várias para criar um grupo.'}
           </DialogDescription>
         </DialogHeader>
 
@@ -107,7 +111,7 @@ export default function NewChatDialog({ open, onOpenChange, onConfirm, excludeId
             <Input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar atleta por nome, cidade ou nível"
+              placeholder="Buscar por nome ou cidade"
               className="pl-9"
             />
           </div>
@@ -140,23 +144,23 @@ export default function NewChatDialog({ open, onOpenChange, onConfirm, excludeId
               </div>
             ) : candidates.length === 0 ? (
               <p className="px-3 py-8 text-center text-sm text-slate-500">
-                {athletes.length <= 1 ? 'Ainda não há outros atletas no diretório.' : 'Nenhum atleta encontrado para a busca.'}
+                {people.length <= 1 ? 'Ainda não há outras pessoas na plataforma.' : 'Nenhuma pessoa encontrada para a busca.'}
               </p>
             ) : (
-              candidates.map((athlete) => {
-                const isChecked = !!selected[athlete.id];
+              candidates.map((person) => {
+                const isChecked = !!selected[person.id];
                 return (
                   <button
-                    key={athlete.id}
+                    key={person.id}
                     type="button"
-                    onClick={() => toggle(athlete)}
+                    onClick={() => toggle(person)}
                     className={`flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left transition-colors ${isChecked ? 'bg-emerald-50' : 'hover:bg-secondary/60'}`}
                   >
-                    <UserAvatar name={athlete.platform_name} photoUrl={athlete.photo_url} size="sm" />
+                    <UserAvatar name={personName(person)} photoUrl={person.photo_url} size="sm" />
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate text-sm font-medium text-slate-900">{athlete.platform_name}</span>
+                      <span className="block truncate text-sm font-medium text-slate-900">{personName(person)}</span>
                       <span className="block truncate text-xs text-slate-500">
-                        {[athlete.city, athlete.level].filter(Boolean).join(' · ') || 'Atleta'}
+                        {[person.city, person.state].filter(Boolean).join(' · ') || 'Usuário'}
                       </span>
                     </span>
                     <span className={`flex h-5 w-5 items-center justify-center rounded-full border ${isChecked ? 'border-emerald-600 bg-emerald-600 text-white' : 'border-slate-300'}`}>
@@ -176,7 +180,7 @@ export default function NewChatDialog({ open, onOpenChange, onConfirm, excludeId
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 maxLength={80}
-                placeholder="Ex.: Treino de quinta, Dupla do torneio…"
+                placeholder="Ex.: Voluntários do mutirão, Equipe de adoção…"
               />
             </div>
           )}

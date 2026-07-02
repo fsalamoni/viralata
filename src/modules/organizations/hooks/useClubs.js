@@ -55,12 +55,6 @@ import {
   listEventParticipants,
   addEventParticipant,
   removeEventParticipant,
-  listEventGames,
-  addEventGame,
-  updateEventGame,
-  deleteEventGame,
-  replaceEventGames,
-  clearEventGames,
   listClubPosts,
   createClubPost,
   deleteClubPost,
@@ -279,7 +273,7 @@ export function useInviteMemberToClub(club) {
   });
 }
 
-/** Convite em lote (vários atletas selecionados de uma vez). */
+/** Convite em lote (vários usuários selecionados de uma vez). */
 export function useInviteMembersToClub(club) {
   const { user, userProfile } = useAuth();
   const qc = useQueryClient();
@@ -577,7 +571,7 @@ export function useDeleteEventMessage(eventId) {
   });
 }
 
-/* -------------------------- Game day participants ----------------------- */
+/* ------------------------------ Participants ----------------------------- */
 
 export function useEventParticipants(eventId) {
   return useQuery({
@@ -601,58 +595,6 @@ export function useRemoveEventParticipant(eventId) {
   return useMutation({
     mutationFn: (participantId) => removeEventParticipant(eventId, participantId),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['event-participants', eventId] }),
-  });
-}
-
-/* ----------------------------- Game day games --------------------------- */
-
-export function useEventGames(eventId) {
-  return useQuery({
-    queryKey: ['event-games', eventId],
-    queryFn: () => listEventGames(eventId),
-    enabled: !!eventId,
-  });
-}
-
-export function useAddEventGame(eventId) {
-  const { user } = useAuth();
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (data) => addEventGame(eventId, data, user),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['event-games', eventId] }),
-  });
-}
-
-export function useUpdateEventGame(eventId) {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: ({ gameId, updates }) => updateEventGame(eventId, gameId, updates),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['event-games', eventId] }),
-  });
-}
-
-export function useDeleteEventGame(eventId) {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (gameId) => deleteEventGame(eventId, gameId),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['event-games', eventId] }),
-  });
-}
-
-export function useReplaceEventGames(eventId) {
-  const { user } = useAuth();
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: ({ games, dateId = null }) => replaceEventGames(eventId, games, user, dateId),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['event-games', eventId] }),
-  });
-}
-
-export function useClearEventGames(eventId) {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (dateId = null) => clearEventGames(eventId, dateId),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['event-games', eventId] }),
   });
 }
 

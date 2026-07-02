@@ -28,7 +28,7 @@ describe('chat/conversations domain', () => {
       expect(toMember(null)).toBeNull();
     });
     it('falls back to a default name', () => {
-      expect(toMember({ uid: 'a' }).name).toBe('Atleta');
+      expect(toMember({ uid: 'a' }).name).toBe('Usuário');
     });
   });
 

@@ -25,7 +25,6 @@ import {
   useUpdateEvent,
   useClubMembers,
 } from '@/modules/organizations/hooks/useClubs';
-// useAthletes removido — usar busca de usuários do viralata
 import {
   INVITE_STATUS,
   INVITE_SOURCE,
@@ -101,7 +100,7 @@ export default function EventParticipantsPanel({ event, clubId }) {
               <p className="text-xs text-slate-500">
                 {isPrivate
                   ? 'Visível apenas para participantes e convidados.'
-                  : 'Visível para todos os atletas do clube.'}
+                  : 'Visível para todos os membros da organização.'}
               </p>
             </div>
           </div>
@@ -126,7 +125,7 @@ export default function EventParticipantsPanel({ event, clubId }) {
         </CardContent>
       </Card>
 
-      {/* Minha participação no evento (a confirmação por dia fica em cada dia de jogo) */}
+      {/* Minha participação no evento (a confirmação por data fica em cada data) */}
       <Card className="rounded-xl">
         <CardContent className="flex flex-wrap items-center justify-between gap-3 p-4">
           <div>
@@ -134,7 +133,7 @@ export default function EventParticipantsPanel({ event, clubId }) {
               {amParticipant ? 'Você participa deste evento' : amInvited ? 'Você foi convidado' : 'Participe deste evento'}
             </h3>
             <p className="text-xs text-slate-500">
-              Confirme sua presença em cada dia de jogo na aba “Detalhes e dias de jogo”.
+              Confirme sua presença em cada data na aba “Detalhes e datas”.
             </p>
           </div>
           {amParticipant ? (
@@ -158,7 +157,7 @@ export default function EventParticipantsPanel({ event, clubId }) {
               <h3 className="text-base font-semibold text-slate-900">Participantes do evento</h3>
             </div>
             <Button size="sm" variant="outline" onClick={() => setInviteOpen(true)}>
-              <UserPlus className="mr-1.5 h-4 w-4" /> Convidar atletas
+              <UserPlus className="mr-1.5 h-4 w-4" /> Convidar pessoas
             </Button>
           </div>
 
@@ -170,7 +169,7 @@ export default function EventParticipantsPanel({ event, clubId }) {
           {isLoading ? (
             <Skeleton className="h-20 rounded-lg" />
           ) : invites.length === 0 ? (
-            <EmptyState icon={Users} title="Sem participantes ainda" description="Convide os atletas do clube para integrarem o evento." />
+            <EmptyState icon={Users} title="Sem participantes ainda" description="Convide os membros da organização para integrarem o evento." />
           ) : (
             <div className="divide-y divide-slate-100">
               {invites.map((inv) => {
@@ -221,7 +220,6 @@ export default function EventParticipantsPanel({ event, clubId }) {
 function InviteDialog({ open, onClose, event, clubId, invites }) {
   const invite = useInviteToEvent(event);
   const { data: members = [] } = useClubMembers(clubId);
-  const { data: athletes = [] } = { data: [] };
   const [search, setSearch] = useState('');
 
   const invitedIds = useMemo(() => new Set(invites.map((i) => i.user_id)), [invites]);
@@ -230,20 +228,10 @@ function InviteDialog({ open, onClose, event, clubId, invites }) {
     const map = new Map();
     members.forEach((m) => {
       if (!m.user_id || invitedIds.has(m.user_id) || map.has(m.user_id)) return;
-      map.set(m.user_id, { user_id: m.user_id, user_name: m.user_name || 'Atleta', user_photo: m.photo_url || '', source: INVITE_SOURCE.CLUB });
+      map.set(m.user_id, { user_id: m.user_id, user_name: m.user_name || 'Membro', user_photo: m.photo_url || '', source: INVITE_SOURCE.CLUB });
     });
     return Array.from(map.values()).sort((a, b) => a.user_name.localeCompare(b.user_name));
   }, [members, invitedIds]);
-
-  const platformPool = useMemo(() => {
-    const memberIds = new Set(members.map((m) => m.user_id));
-    const map = new Map();
-    athletes.forEach((a) => {
-      if (!a.id || invitedIds.has(a.id) || memberIds.has(a.id) || map.has(a.id)) return;
-      map.set(a.id, { user_id: a.id, user_name: a.platform_name || 'Atleta', user_photo: a.photo_url || '', source: INVITE_SOURCE.PLATFORM });
-    });
-    return Array.from(map.values()).sort((a, b) => a.user_name.localeCompare(b.user_name));
-  }, [athletes, members, invitedIds]);
 
   const q = search.trim().toLowerCase();
   const f = (p) => !q || p.user_name.toLowerCase().includes(q);
@@ -261,16 +249,14 @@ function InviteDialog({ open, onClose, event, clubId, invites }) {
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>Convidar atletas</DialogTitle>
+          <DialogTitle>Convidar pessoas</DialogTitle>
           <DialogDescription>
-            Convide atletas do clube. Em eventos privados, você também pode convidar outros atletas da plataforma —
-            eles recebem uma notificação para responder.
+            Convide membros da organização para o evento — eles recebem uma notificação para responder.
           </DialogDescription>
         </DialogHeader>
         <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar por nome…" />
         <div className="max-h-[50vh] space-y-4 overflow-y-auto">
-          <Pool title="Atletas do clube" people={clubPool.filter(f)} onInvite={handleInvite} emptyText="Todos os atletas do clube já participam." />
-          <Pool title="Outros atletas da plataforma" people={platformPool.filter(f)} onInvite={handleInvite} emptyText="Nenhum outro atleta disponível." />
+          <Pool title="Membros da organização" people={clubPool.filter(f)} onInvite={handleInvite} emptyText="Todos os membros já participam." />
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>Fechar</Button>

@@ -20,10 +20,9 @@ async function queryByField(col, field, uid) {
 export async function exportMyData(uid) {
   if (!db || !uid) throw new Error('Usuário não autenticado.');
 
-  const [profileSnap, athleteSnap, pets, adoptionInterests, clubMemberships,
+  const [profileSnap, pets, adoptionInterests, clubMemberships,
     notifications, abuseReports, ratingsGiven, ratingsReceived, conversations] = await Promise.all([
     getDoc(doc(db, 'users', uid)),
-    getDoc(doc(db, 'athlete_profiles', uid)),
     queryByField('pets', 'owner_id', uid),
     queryByField('adoption_interests', 'user_id', uid),
     queryByField('club_members', 'user_id', uid),
@@ -37,7 +36,6 @@ export async function exportMyData(uid) {
   return {
     exported_at: new Date().toISOString(),
     profile: profileSnap.exists() ? profileSnap.data() : null,
-    athlete_profile: athleteSnap.exists() ? athleteSnap.data() : null,
     pets,
     adoption_interests: adoptionInterests,
     club_memberships: clubMemberships,

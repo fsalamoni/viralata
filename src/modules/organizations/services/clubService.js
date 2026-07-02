@@ -1,14 +1,12 @@
 /**
- * Serviço de Clubes — CRUD, membros, eventos e mural.
+ * Serviço de Clubes (organizações de adoção) — CRUD, membros, eventos e mural.
  *
  * Decisões de segurança/robustez:
- *  - Criação do clube e da primeira associação (admin) são escritas
+ *  - Criação da organização e da primeira associação (admin) são escritas
  *    sequenciais (não em batch) para que a regra de segurança possa validar
  *    `clubs.created_by` ao criar o membro admin. Em caso de falha na segunda
- *    escrita, o clube é removido (rollback best-effort).
+ *    escrita, a organização é removida (rollback best-effort).
  *  - O contador `member_count` é apenas cosmético; nunca é fonte de verdade.
- *  - Sincronização do diretório de atletas é best-effort e nunca interrompe a
- *    operação principal.
  */
 
 import {
@@ -29,12 +27,11 @@ import { db } from '@/core/config/firebase';
 import { logger } from '@/core/lib/logger';
 import { createAuditLog } from '@/core/services/auditService';
 import { notifyUsers, NOTIFICATION_TYPE } from '@/core/services/notificationService';
-// syncAthleteProfile removido
 import {
   CLUB_COLLECTIONS,
   CLUB_ROLE,
   CLUB_EVENT_TYPE,
-  GAME_DAY_LIMITS,
+  EVENT_CHAT_LIMITS,
   EVENT_VISIBILITY,
   INVITE_STATUS,
   INVITE_SOURCE,
@@ -85,7 +82,7 @@ function memberPayload(clubId, user, profile, role) {
   return {
     club_id: clubId,
     user_id: user.uid,
-    user_name: profile?.platform_name || profile?.full_name || user.displayName || user.email || 'Atleta',
+    user_name: profile?.platform_name || profile?.full_name || user.displayName || user.email || 'Usuário',
     user_email: user.email || '',
     photo_url: profile?.photo_url || user.photoURL || '',
     role,
@@ -319,7 +316,7 @@ export async function requestToJoinClub(club, user, profile) {
   if (existingMember) return { alreadyMember: true };
 
   const id = memberDocId(club.id, user.uid);
-  const requesterName = profile?.platform_name || profile?.full_name || user.displayName || user.email || 'Atleta';
+  const requesterName = profile?.platform_name || profile?.full_name || user.displayName || user.email || 'Usuário';
   await setDoc(doc(db, COL.joinRequests, id), {
     id,
     club_id: club.id,
@@ -339,7 +336,7 @@ export async function requestToJoinClub(club, user, profile) {
     title: `${requesterName} pediu para entrar em "${trimmed(club.name).slice(0, 50)}"`,
     message: 'Toque para aprovar ou recusar o pedido na administração do clube.',
     type: NOTIFICATION_TYPE.CLUB_JOIN_REQUEST,
-    link: `/clubes/${club.id}?tab=admin`,
+    link: `/organizacoes/${club.id}?tab=admin`,
     actor: { uid: user.uid, displayName: requesterName },
   });
   await createAuditLog({ action: 'club_join_requested', actor: user, details: { club_id: club.id } });
@@ -374,7 +371,7 @@ export async function approveJoinRequest(request, actor) {
   await setDoc(doc(db, COL.members, memberDocId(request.club_id, request.user_id)), {
     club_id: request.club_id,
     user_id: request.user_id,
-    user_name: request.user_name || 'Atleta',
+    user_name: request.user_name || 'Usuário',
     user_email: request.user_email || '',
     photo_url: request.photo_url || '',
     role: CLUB_ROLE.MEMBER,
@@ -390,7 +387,7 @@ export async function approveJoinRequest(request, actor) {
     title: `Pedido aprovado: você agora é membro de "${trimmed(request.club_name).slice(0, 50)}"`,
     message: 'Toque para abrir o clube e ver eventos, mural e fórum.',
     type: NOTIFICATION_TYPE.CLUB_JOIN_APPROVED,
-    link: `/clubes/${request.club_id}`,
+    link: `/organizacoes/${request.club_id}`,
     actor,
   });
   await createAuditLog({ action: 'club_join_approved', actor, details: { club_id: request.club_id, user_id: request.user_id } });
@@ -407,21 +404,21 @@ export async function rejectJoinRequest(request, actor) {
     title: `Seu pedido para "${trimmed(request.club_name).slice(0, 50)}" não foi aprovado`,
     message: 'Você pode falar com um administrador do clube para mais informações.',
     type: NOTIFICATION_TYPE.CLUB_JOIN_REJECTED,
-    link: `/clubes/${request.club_id}`,
+    link: `/organizacoes/${request.club_id}`,
     actor,
   });
   await createAuditLog({ action: 'club_join_rejected', actor, details: { club_id: request.club_id, user_id: request.user_id } });
 }
 
 /**
- * Admin convida um atleta para o clube. `target` = { user_id, user_name,
+ * Admin convida um usuário para o clube. `target` = { user_id, user_name,
  * user_email, photo_url }. O convidado recebe notificação e decide aceitar.
  */
 export async function inviteMemberToClub(club, target, inviter, profile) {
   if (!inviter?.uid) throw new Error('Usuário não autenticado.');
-  if (!target?.user_id) throw new Error('Selecione um atleta para convidar.');
+  if (!target?.user_id) throw new Error('Selecione um usuário para convidar.');
   const existingMember = await getMembership(club.id, target.user_id).catch(() => null);
-  if (existingMember) throw new Error('Este atleta já é membro do clube.');
+  if (existingMember) throw new Error('Este usuário já é membro do clube.');
 
   const id = memberDocId(club.id, target.user_id);
   const inviterName = profile?.platform_name || inviter.displayName || inviter.email || 'Um administrador';
@@ -430,7 +427,7 @@ export async function inviteMemberToClub(club, target, inviter, profile) {
     club_id: club.id,
     club_name: trimmed(club.name),
     user_id: target.user_id,
-    user_name: target.user_name || 'Atleta',
+    user_name: target.user_name || 'Usuário',
     user_email: target.user_email || '',
     photo_url: target.photo_url || '',
     status: MEMBER_INVITE_STATUS.PENDING,
@@ -444,7 +441,7 @@ export async function inviteMemberToClub(club, target, inviter, profile) {
     title: `${inviterName} convidou você para o clube "${trimmed(club.name).slice(0, 50)}"`,
     message: 'Toque para aceitar ou recusar o convite.',
     type: NOTIFICATION_TYPE.CLUB_INVITE,
-    link: `/clubes/${club.id}`,
+    link: `/organizacoes/${club.id}`,
     actor: { uid: inviter.uid, displayName: inviterName },
   });
   await createAuditLog({ action: 'club_member_invited', actor: inviter, details: { club_id: club.id, user_id: target.user_id } });
@@ -486,13 +483,13 @@ export async function acceptClubInvite(invite, user, profile) {
     updated_at: serverTimestamp(),
   }).catch(() => {});
   await updateDoc(doc(db, COL.clubs, invite.club_id), { member_count: increment(1), updated_at: serverTimestamp() }).catch(() => {});
-  const me = profile?.platform_name || user.displayName || user.email || 'Um atleta';
+  const me = profile?.platform_name || user.displayName || user.email || 'Um usuário';
   if (invite.invited_by) {
     notifyUsers([invite.invited_by], {
       title: `${me} aceitou o convite e entrou em "${trimmed(invite.club_name).slice(0, 50)}"`,
-      message: 'O atleta agora faz parte do clube.',
+      message: 'O usuário agora faz parte do clube.',
       type: NOTIFICATION_TYPE.CLUB_INVITE_ACCEPTED,
-      link: `/clubes/${invite.club_id}?tab=members`,
+      link: `/organizacoes/${invite.club_id}?tab=members`,
       actor: { uid: user.uid, displayName: me },
     });
   }
@@ -509,12 +506,12 @@ export async function declineClubInvite(invite, user) {
 }
 
 /**
- * Convida vários atletas de uma vez. Cada convite é independente: falhas
+ * Convida vários usuários de uma vez. Cada convite é independente: falhas
  * individuais (ex.: já é membro) não abortam os demais. Retorna um resumo.
  */
 export async function inviteMembersToClub(club, targets, inviter, profile) {
   const list = (Array.isArray(targets) ? targets : [targets]).filter((t) => t?.user_id);
-  if (list.length === 0) throw new Error('Selecione ao menos um atleta.');
+  if (list.length === 0) throw new Error('Selecione ao menos um usuário.');
   const results = await Promise.allSettled(
     list.map((t) => inviteMemberToClub(club, t, inviter, profile)),
   );
@@ -607,7 +604,7 @@ export async function createClubEvent(clubId, data, user) {
       event_id: id,
       club_id: clubId,
       user_id: user.uid,
-      user_name: data.created_by_name || user.displayName || user.email || 'Atleta',
+      user_name: data.created_by_name || user.displayName || user.email || 'Usuário',
       user_photo: data.created_by_photo || user.photoURL || '',
       status: INVITE_STATUS.GOING,
       source: INVITE_SOURCE.CLUB,
@@ -637,7 +634,7 @@ export async function createClubEvent(clubId, data, user) {
         title: `Novo evento no clube: "${trimmed(data.title).slice(0, 60)}"`,
         message: `${creatorName} criou um evento. Toque para ver e responder.`,
         type: NOTIFICATION_TYPE.CLUB_EVENT_PUBLISHED,
-        link: `/clubes/${clubId}/eventos/${id}`,
+        link: `/organizacoes/${clubId}/eventos/${id}`,
         actor: { uid: user.uid, displayName: creatorName },
       });
     } catch (err) {
@@ -721,12 +718,12 @@ export async function getMyEventInvite(eventId, userId) {
 }
 
 /**
- * Convida um atleta (do clube ou da plataforma) para o evento e notifica-o.
+ * Convida um usuário (do clube ou da plataforma) para o evento e notifica-o.
  * `target` = { user_id, user_name, user_photo, source }.
  */
 export async function inviteToEvent(event, target, inviter, profile) {
   if (!inviter?.uid) throw new Error('Usuário não autenticado.');
-  if (!target?.user_id) throw new Error('Selecione um atleta para convidar.');
+  if (!target?.user_id) throw new Error('Selecione um usuário para convidar.');
   const id = eventInviteId(event.id, target.user_id);
   // Verificação best-effort: se já existe, não sobrescreve a resposta atual.
   try {
@@ -741,7 +738,7 @@ export async function inviteToEvent(event, target, inviter, profile) {
     event_id: event.id,
     club_id: event.club_id,
     user_id: target.user_id,
-    user_name: target.user_name || 'Atleta',
+    user_name: target.user_name || 'Usuário',
     user_photo: target.user_photo || '',
     status: INVITE_STATUS.INVITED,
     source: target.source === INVITE_SOURCE.PLATFORM ? INVITE_SOURCE.PLATFORM : INVITE_SOURCE.CLUB,
@@ -752,12 +749,12 @@ export async function inviteToEvent(event, target, inviter, profile) {
   };
   await setDoc(doc(db, COL.eventInvites, id), payload);
 
-  const inviterName = profile?.platform_name || inviter.displayName || inviter.email || 'Um atleta';
+  const inviterName = profile?.platform_name || inviter.displayName || inviter.email || 'Um usuário';
   notifyUsers([target.user_id], {
     title: `${inviterName} convidou você para "${trimmed(event.title).slice(0, 60)}"`,
     message: 'Toque para ver o evento e responder: Vou, Talvez ou Não vou.',
     type: NOTIFICATION_TYPE.EVENT_INVITE,
-    link: `/clubes/${event.club_id}/eventos/${event.id}`,
+    link: `/organizacoes/${event.club_id}/eventos/${event.id}`,
     actor: { uid: inviter.uid, displayName: inviterName },
   });
   return payload;
@@ -774,7 +771,7 @@ export async function setMyEventResponse(event, status, user, profile) {
       event_id: event.id,
       club_id: event.club_id,
       user_id: user.uid,
-      user_name: profile?.platform_name || user.displayName || user.email || 'Atleta',
+      user_name: profile?.platform_name || user.displayName || user.email || 'Usuário',
       user_photo: profile?.photo_url || user.photoURL || '',
       status,
       source: INVITE_SOURCE.CLUB,
@@ -810,7 +807,7 @@ export async function deleteClubEvent(eventId, actor) {
     }
   }
   // Limpa as subcoleções do evento (best-effort) antes de remover o documento.
-  for (const sub of [COL.eventDates, COL.eventDateRsvps, COL.eventMessages, COL.eventParticipants, COL.eventGames]) {
+  for (const sub of [COL.eventDates, COL.eventDateRsvps, COL.eventMessages, COL.eventParticipants]) {
     await deleteSubcollection(eventId, sub);
   }
   await deleteDoc(doc(db, COL.events, eventId));
@@ -855,7 +852,7 @@ export async function updateEventDate(eventId, dateId, updates) {
 }
 
 export async function deleteEventDate(eventId, dateId) {
-  await clearGameDayData(eventId, dateId);
+  await clearEventDateData(eventId, dateId);
   await deleteDoc(doc(db, COL.events, eventId, COL.eventDates, dateId));
 }
 
@@ -873,7 +870,7 @@ export async function setEventDateRsvp(eventId, dateId, status, user, profile) {
     event_id: eventId,
     date_id: dateId,
     user_id: user.uid,
-    user_name: profile?.platform_name || user.displayName || user.email || 'Atleta',
+    user_name: profile?.platform_name || user.displayName || user.email || 'Usuário',
     user_photo: profile?.photo_url || user.photoURL || '',
     status,
     updated_at: serverTimestamp(),
@@ -892,7 +889,7 @@ export async function listEventMessages(eventId) {
 
 export async function sendEventMessage(eventId, text, user, profile) {
   if (!user?.uid) throw new Error('Usuário não autenticado.');
-  const body = trimmed(text, GAME_DAY_LIMITS.MESSAGE_MAX);
+  const body = trimmed(text, EVENT_CHAT_LIMITS.MESSAGE_MAX);
   if (!body) throw new Error('Escreva uma mensagem.');
   const ref = doc(collection(db, COL.events, eventId, COL.eventMessages));
   await setDoc(ref, {
@@ -900,7 +897,7 @@ export async function sendEventMessage(eventId, text, user, profile) {
     event_id: eventId,
     text: body,
     sender_id: user.uid,
-    sender_name: profile?.platform_name || user.displayName || user.email || 'Atleta',
+    sender_name: profile?.platform_name || user.displayName || user.email || 'Usuário',
     sender_photo: profile?.photo_url || user.photoURL || '',
     edited: false,
     created_at_ms: Date.now(),
@@ -911,7 +908,7 @@ export async function sendEventMessage(eventId, text, user, profile) {
 
 export async function updateEventMessage(eventId, messageId, text) {
   await updateDoc(doc(db, COL.events, eventId, COL.eventMessages, messageId), {
-    text: trimmed(text, GAME_DAY_LIMITS.MESSAGE_MAX),
+    text: trimmed(text, EVENT_CHAT_LIMITS.MESSAGE_MAX),
     edited: true,
     edited_at: serverTimestamp(),
   });
@@ -921,7 +918,7 @@ export async function deleteEventMessage(eventId, messageId) {
   await deleteDoc(doc(db, COL.events, eventId, COL.eventMessages, messageId));
 }
 
-/* ----------------------- Game day participants -------------------------- */
+/* --------------------------- Participants -------------------------------- */
 
 export async function listEventParticipants(eventId) {
   if (!db || !eventId) return [];
@@ -955,108 +952,17 @@ export async function removeEventParticipant(eventId, participantId) {
   await deleteDoc(doc(db, COL.events, eventId, COL.eventParticipants, participantId));
 }
 
-/* -------------------------- Game day games ------------------------------ */
-
-export async function listEventGames(eventId) {
-  if (!db || !eventId) return [];
-  const snap = await getDocs(collection(db, COL.events, eventId, COL.eventGames));
-  return snap.docs
-    .map((d) => ({ id: d.id, ...d.data() }))
-    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0) || (a.created_at_ms || 0) - (b.created_at_ms || 0));
-}
-
-function sanitizeGameSide(side) {
-  return (Array.isArray(side) ? side : [])
-    .filter((p) => p && (p.name || p.id))
-    .slice(0, 2)
-    .map((p) => ({ id: p.id || null, name: trimmed(p.name) || 'Jogador' }));
-}
-
-export async function addEventGame(eventId, data, user) {
-  if (!user?.uid) throw new Error('Usuário não autenticado.');
-  const ref = doc(collection(db, COL.events, eventId, COL.eventGames));
-  await setDoc(ref, buildGamePayload(ref.id, eventId, data, user));
-  return ref.id;
-}
-
-function buildGamePayload(id, eventId, data, user) {
-  const side_a = sanitizeGameSide(data.side_a);
-  const side_b = sanitizeGameSide(data.side_b);
-  return {
-    id,
-    event_id: eventId,
-    date_id: data.date_id || null,
-    round: data.round ?? null,
-    kind: data.kind === 'singles' ? 'singles' : 'doubles',
-    side_a,
-    side_b,
-    score_a: Number.isFinite(data.score_a) ? data.score_a : null,
-    score_b: Number.isFinite(data.score_b) ? data.score_b : null,
-    order: Number.isFinite(data.order) ? data.order : Date.now(),
-    created_by: user.uid,
-    created_at_ms: Date.now(),
-    created_at: serverTimestamp(),
-  };
-}
-
-export async function updateEventGame(eventId, gameId, updates) {
-  const sanitized = {};
-  if (updates.side_a !== undefined) sanitized.side_a = sanitizeGameSide(updates.side_a);
-  if (updates.side_b !== undefined) sanitized.side_b = sanitizeGameSide(updates.side_b);
-  if (updates.round !== undefined) sanitized.round = updates.round;
-  if (updates.kind !== undefined) sanitized.kind = updates.kind === 'singles' ? 'singles' : 'doubles';
-  if (updates.score_a !== undefined) sanitized.score_a = Number.isFinite(updates.score_a) ? updates.score_a : null;
-  if (updates.score_b !== undefined) sanitized.score_b = Number.isFinite(updates.score_b) ? updates.score_b : null;
-  if (updates.order !== undefined) sanitized.order = updates.order;
-  await updateDoc(doc(db, COL.events, eventId, COL.eventGames, gameId), { ...sanitized, updated_at: serverTimestamp() });
-}
-
-export async function deleteEventGame(eventId, gameId) {
-  await deleteDoc(doc(db, COL.events, eventId, COL.eventGames, gameId));
-}
-
-/**
- * Substitui os jogos de um dia de jogo (date_id) por uma nova lista (sorteio).
- * Apaga apenas os jogos daquele dia e grava os novos em lote.
- */
-export async function replaceEventGames(eventId, games, user, dateId = null) {
-  if (!user?.uid) throw new Error('Usuário não autenticado.');
-  const existing = await getDocs(collection(db, COL.events, eventId, COL.eventGames));
-  const ops = existing.docs
-    .filter((d) => (d.data().date_id || null) === (dateId || null))
-    .map((d) => ({ type: 'delete', ref: d.ref }));
-  games.forEach((g, i) => {
-    const ref = doc(collection(db, COL.events, eventId, COL.eventGames));
-    ops.push({ type: 'set', ref, data: buildGamePayload(ref.id, eventId, { ...g, date_id: dateId, order: i }, user) });
-  });
-  await commitInChunks(ops);
-}
-
-export async function clearEventGames(eventId, dateId = null) {
-  const snap = await getDocs(collection(db, COL.events, eventId, COL.eventGames));
-  const ops = snap.docs
-    .filter((d) => (d.data().date_id || null) === (dateId || null))
-    .map((d) => ({ type: 'delete', ref: d.ref }));
-  if (ops.length > 0) await commitInChunks(ops);
-}
-
-/**
- * Remove participantes e jogos associados a um dia de jogo (ao excluí-lo).
- */
-export async function clearGameDayData(eventId, dateId) {
+/** Remove participantes associados a uma data do evento (ao excluí-la). */
+export async function clearEventDateData(eventId, dateId) {
   if (!dateId) return;
   try {
-    const [parts, games] = await Promise.all([
-      getDocs(collection(db, COL.events, eventId, COL.eventParticipants)),
-      getDocs(collection(db, COL.events, eventId, COL.eventGames)),
-    ]);
-    const ops = [
-      ...parts.docs.filter((d) => d.data().date_id === dateId),
-      ...games.docs.filter((d) => d.data().date_id === dateId),
-    ].map((d) => ({ type: 'delete', ref: d.ref }));
+    const parts = await getDocs(collection(db, COL.events, eventId, COL.eventParticipants));
+    const ops = parts.docs
+      .filter((d) => d.data().date_id === dateId)
+      .map((d) => ({ type: 'delete', ref: d.ref }));
     if (ops.length > 0) await commitInChunks(ops);
   } catch (err) {
-    logger.error('Falha ao limpar dados do dia de jogo:', err);
+    logger.error('Falha ao limpar dados da data do evento:', err);
   }
 }
 
@@ -1072,7 +978,7 @@ export async function setEventRsvp(event, status, user, profile) {
     event_id: event.id,
     club_id: event.club_id,
     user_id: user.uid,
-    user_name: profile?.platform_name || user.displayName || user.email || 'Atleta',
+    user_name: profile?.platform_name || user.displayName || user.email || 'Usuário',
     status,
     updated_at: serverTimestamp(),
   });
@@ -1113,7 +1019,7 @@ export async function createClubPost(clubId, input, user, profile) {
     id,
     club_id: clubId,
     author_id: user.uid,
-    author_name: profile?.platform_name || user.displayName || user.email || 'Atleta',
+    author_name: profile?.platform_name || user.displayName || user.email || 'Usuário',
     author_photo: profile?.photo_url || user.photoURL || '',
     content: text.slice(0, 2000),
     images,

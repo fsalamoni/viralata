@@ -71,7 +71,7 @@ export default function ClubForumsTab({ clubId, isAdmin, initialThreadId, onThre
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-3">
         <p className="text-sm text-slate-600">
-          Discussões do clube: combine jogos, faça enquetes e compartilhe avisos com formatação rica.
+          Discussões da organização: combine mutirões, faça enquetes e compartilhe avisos com formatação rica.
         </p>
         <Button size="sm" onClick={() => setCreateOpen(true)}>
           <Plus className="mr-1.5 h-4 w-4" /> Novo tópico

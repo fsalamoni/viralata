@@ -12,7 +12,7 @@ export function recordPageView(pathname) {
       const { logEvent } = await import('firebase/analytics');
       logEvent(analytics, 'page_view', {
         page_path: pagePath,
-        page_title: typeof document === 'undefined' ? 'Pickleball' : document.title,
+        page_title: typeof document === 'undefined' ? 'Viralata' : document.title,
       });
     })
     .catch((error) => logger.debug('page_view telemetry skipped:', error));

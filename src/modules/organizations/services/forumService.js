@@ -57,7 +57,7 @@ function sanitizeAttachments(attachments) {
 }
 
 function threadLink(clubId, threadId) {
-  return `/clubes/${clubId}?tab=forums&thread=${threadId}`;
+  return `/organizacoes/${clubId}?tab=forums&thread=${threadId}`;
 }
 
 /* -------------------------------- Threads ------------------------------- */
@@ -99,7 +99,7 @@ export async function createThread(clubId, input, user, profile) {
     attachments,
     poll,
     author_id: user.uid,
-    author_name: profile?.platform_name || user.displayName || user.email || 'Atleta',
+    author_name: profile?.platform_name || user.displayName || user.email || 'Usuário',
     author_photo: profile?.photo_url || user.photoURL || '',
     pinned: false,
     comment_count: 0,
@@ -173,7 +173,7 @@ export async function addComment(thread, input, user, profile) {
 
   const nowMs = Date.now();
   const ref = doc(collection(db, COL.forumThreads, thread.id, COL.forumComments));
-  const authorName = profile?.platform_name || user.displayName || user.email || 'Atleta';
+  const authorName = profile?.platform_name || user.displayName || user.email || 'Usuário';
 
   await setDoc(ref, {
     id: ref.id,

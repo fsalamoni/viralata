@@ -46,7 +46,7 @@ export default function CreateClub() {
     try {
       const id = await createClub.mutateAsync(form);
       toast.success('Clube criado com sucesso!');
-      navigate(`/clubes/${id}`);
+      navigate(`/organizacoes/${id}`);
     } catch (err) {
       toast.error(err.message || 'Não foi possível criar o clube.');
     }
@@ -55,7 +55,7 @@ export default function CreateClub() {
   return (
     <div className="mx-auto max-w-3xl space-y-4">
       <Button asChild variant="ghost" size="sm" className="text-emerald-50 hover:bg-white/10 hover:text-white">
-        <Link to="/clubes"><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para clubes</Link>
+        <Link to="/organizacoes"><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para clubes</Link>
       </Button>
 
       <section className="arena-panel-strong rounded-lg p-5 sm:p-6">
@@ -64,10 +64,10 @@ export default function CreateClub() {
             <Building2 className="h-5 w-5" />
           </div>
           <div className="max-w-2xl space-y-2">
-            <p className="text-xs font-semibold uppercase tracking-wider text-emerald-200">Novo clube</p>
-            <h1 className="text-2xl font-bold text-white sm:text-3xl">Criar clube</h1>
+            <p className="text-xs font-semibold uppercase tracking-wider text-emerald-200">Nova organização</p>
+            <h1 className="text-2xl font-bold text-white sm:text-3xl">Cadastrar organização</h1>
             <p className="text-sm leading-6 text-emerald-50/85">
-              Você será o administrador do clube e poderá convidar atletas por meio de um código exclusivo.
+              Você será o administrador da organização e poderá convidar sua equipe por meio de um código exclusivo.
             </p>
           </div>
         </div>
@@ -110,7 +110,7 @@ export default function CreateClub() {
                 onChange={setField('description')}
                 maxLength={1000}
                 rows={4}
-                placeholder="Conte sobre o clube, horários de jogo, ambiente, valores…"
+                placeholder="Conte sobre a organização, horário de funcionamento, missão, valores…"
                 className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               />
             </div>
@@ -127,7 +127,7 @@ export default function CreateClub() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="home_venue">Local / quadra principal</Label>
+              <Label htmlFor="home_venue">Endereço / local principal</Label>
               <Input id="home_venue" value={form.home_venue} onChange={setField('home_venue')} maxLength={120} />
             </div>
 

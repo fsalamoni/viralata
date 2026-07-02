@@ -30,6 +30,7 @@ const RadarSettings = lazy(() => import('@/modules/pets/pages/RadarSettings'));
 const OrganizationsDirectory = lazy(() => import('@/modules/organizations/pages/ClubsDirectory'));
 const CreateOrganization = lazy(() => import('@/modules/organizations/pages/CreateClub'));
 const OrganizationDetail = lazy(() => import('@/modules/organizations/pages/ClubDetail'));
+const OrganizationEventDetail = lazy(() => import('@/modules/organizations/pages/EventDetail'));
 
 // ─── Chat ─────────────────────────────────────────────────────────────────────
 const ChatPage = lazy(() => import('@/modules/chat/pages/ChatPage'));
@@ -176,6 +177,10 @@ export default function App() {
                 <Route
                   path="/organizacoes/criar"
                   element={<ProtectedRoute>{withLayout('CreateOrganization', CreateOrganization)}</ProtectedRoute>}
+                />
+                <Route
+                  path="/organizacoes/:orgId/eventos/:eventId"
+                  element={<ProtectedRoute>{withLayout('OrganizationEventDetail', OrganizationEventDetail)}</ProtectedRoute>}
                 />
                 <Route
                   path="/organizacoes/:orgId"
