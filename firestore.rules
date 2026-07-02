@@ -28,6 +28,12 @@ service cloud.firestore {
     function eventClubId(eventId) {
       return get(/databases/$(database)/documents/club_events/$(eventId)).data.club_id;
     }
+    // Só quem criou o clube pode se auto-nomear admin ao criar o primeiro
+    // club_members (bootstrap) — created_by é imutável desde a criação do
+    // documento `clubs` (a regra de create do clube já trava esse campo).
+    function isClubCreator(clubId) {
+      return isAuth() && get(/databases/$(database)/documents/clubs/$(clubId)).data.created_by == request.auth.uid;
+    }
     // Permissões granulares de um membro comum do clube (admins já podem
     // tudo via isClubAdmin, independente destas flags).
     function hasClubPermission(clubId, key) {
@@ -214,19 +220,34 @@ service cloud.firestore {
 
     match /club_members/{memberId} {
       allow read: if isAuth();
+      // Um membro só pode se auto-cadastrar como 'member' e sem permissões —
+      // exceto o criador do clube, que pode se auto-nomear 'admin' no
+      // bootstrap (criação do clube). Sem essa trava, qualquer usuário
+      // autenticado poderia se auto-promover a admin de qualquer clube
+      // escrevendo o documento diretamente, sem passar pelas telas de
+      // ingresso/convite.
       allow create: if isAuth() && (
-        request.resource.data.user_id == request.auth.uid ||
+        isPlatformAdmin() ||
         isClubAdmin(request.resource.data.club_id) ||
-        canManageClubTeam(request.resource.data.club_id) ||
-        isPlatformAdmin()
+        (canManageClubTeam(request.resource.data.club_id)
+          && request.resource.data.get('role', 'member') == 'member'
+          && request.resource.data.get('permissions', {}) == {}) ||
+        (request.resource.data.user_id == request.auth.uid
+          && request.resource.data.get('permissions', {}) == {}
+          && (
+            request.resource.data.get('role', 'member') == 'member' ||
+            (request.resource.data.role == 'admin' && isClubCreator(request.resource.data.club_id))
+          ))
       );
       // Papel e permissões só mudam pela mão de um admin — escalação de
       // privilégio não é delegável via canManageClubTeam.
       allow update: if isClubAdmin(resource.data.club_id) || isPlatformAdmin();
+      // canManageClubTeam nunca remove um admin — só um admin remove outro
+      // admin (mesma trava que já existe para a role em si).
       allow delete: if isAuth() && (
         resource.data.user_id == request.auth.uid ||
         isClubAdmin(resource.data.club_id) ||
-        canManageClubTeam(resource.data.club_id) ||
+        (canManageClubTeam(resource.data.club_id) && resource.data.get('role', 'member') != 'admin') ||
         isPlatformAdmin()
       );
     }

@@ -202,10 +202,19 @@ conversations ──< messages
 
 Todo upload de imagem/anexo (`core/services/storageService.js`) grava em
 `uploads/{uid}/{folder}/...` (`folder`: `pets`, `reports`, `posts`, `forum`,
-`chat`, `misc`) — dono grava no próprio caminho, leitura pública. Além disso,
-`pets/{uid}/**`, `reports/{uid}/**`, `organizations/{orgId}/**` e
-`users/{uid}/**` têm regras dedicadas (usadas por fluxos específicos, ex.
-avatar em `users/{uid}/avatar`).
+`chat`, `misc`) — dono grava no próprio caminho, leitura pública. Além
+disso, `users/{uid}/**` tem regra dedicada para o avatar
+(`users/{uid}/avatar`). Os caminhos legados `pets/{uid}/**`,
+`reports/{uid}/**` e `organizations/{orgId}/**` foram removidos das regras
+por não serem usados por nenhum fluxo do app (uploads de pets, denúncias e
+logo de organização sempre passam por `uploads/{uid}/{folder}`).
+
+> Nota de privacidade: as fotos de denúncia de maus-tratos, embora
+> potencialmente sensíveis, hoje ficam em `uploads/{uid}/reports/...`, com
+> **leitura pública** (mesma regra genérica de `uploads/`). Restringi-las
+> exigiria trocar o caminho de upload e a forma como `AdminReports.jsx`
+> exibe as imagens (hoje `<img src>` direto) — decisão de produto em
+> aberto, não implementada nesta revisão.
 
 ## Regras de segurança (`firestore.rules`) — princípios
 
@@ -219,5 +228,12 @@ avatar em `users/{uid}/avatar`).
   um bootstrap fixo por e-mail (`isPlatformOwnerAuth`) para o primeiro admin.
 - Campos sensíveis de `users/{uid}` (`role`, `banned*`) são **imutáveis pelo
   próprio dono** na regra de `update` — só um `platform_admin` os altera.
+- Mesmo princípio vale para `club_members`: o próprio usuário só pode se
+  auto-criar como `role: 'member'` e sem `permissions` (exceto o criador do
+  clube, que pode se auto-nomear `admin` no bootstrap — `isClubCreator`,
+  amarrado ao campo imutável `clubs.created_by`). `role`/`permissions` só
+  mudam pela mão de um admin real; `canManageClubTeam` cria/remove membros
+  comuns, mas nunca cria um admin nem remove um admin existente — a regra
+  de `create`/`delete` valida isso explicitamente, não só a UI.
 - Ids deterministas permitem regras simples do tipo "dono do par
   recurso+uid".
