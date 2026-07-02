@@ -94,7 +94,7 @@ export default function EventParticipantsPanel({ event, clubId }) {
       <Card className="rounded-xl">
         <CardContent className="flex flex-wrap items-center justify-between gap-3 p-4">
           <div className="flex items-center gap-2">
-            {isPrivate ? <Lock className="h-5 w-5 text-amber-600" /> : <Globe className="h-5 w-5 text-emerald-600" />}
+            {isPrivate ? <Lock className="h-5 w-5 text-highlight-foreground" /> : <Globe className="h-5 w-5 text-primary" />}
             <div>
               <h3 className="text-sm font-semibold text-slate-900">{isPrivate ? 'Evento privado' : 'Evento público'}</h3>
               <p className="text-xs text-slate-500">
@@ -153,7 +153,7 @@ export default function EventParticipantsPanel({ event, clubId }) {
         <CardContent className="space-y-4 p-4">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-emerald-600" />
+              <Users className="h-5 w-5 text-primary" />
               <h3 className="text-base font-semibold text-slate-900">Participantes do evento</h3>
             </div>
             <Button size="sm" variant="outline" onClick={() => setInviteOpen(true)}>
@@ -181,7 +181,7 @@ export default function EventParticipantsPanel({ event, clubId }) {
                       <div className="min-w-0">
                         <div className="truncate text-sm font-medium text-slate-800">
                           {inv.user_name}
-                          {inv.user_id === event.created_by && <span className="ml-1 text-xs text-emerald-700">(organizador)</span>}
+                          {inv.user_id === event.created_by && <span className="ml-1 text-xs text-primary">(organizador)</span>}
                         </div>
                         {inv.source === INVITE_SOURCE.PLATFORM && (
                           <div className="text-[11px] text-slate-400">Convidado da plataforma</div>

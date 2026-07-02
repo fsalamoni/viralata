@@ -95,7 +95,7 @@ export default function ClubAdminTab({ club }) {
         </CardHeader>
         <CardContent className="space-y-3 p-4 pt-0 sm:p-5 sm:pt-0">
           <div className="flex flex-wrap items-center gap-2">
-            <code className="rounded-md border border-emerald-950/10 bg-secondary/40 px-4 py-2 text-lg font-bold tracking-[0.25em] text-slate-900">
+            <code className="rounded-md border border-primary/10 bg-secondary/40 px-4 py-2 text-lg font-bold tracking-[0.25em] text-slate-900">
               {club.invite_code}
             </code>
             <Button variant="outline" size="sm" onClick={() => copy(club.invite_code, 'Código copiado!')}>
@@ -182,7 +182,7 @@ export default function ClubAdminTab({ club }) {
                 <Input id="admin_donation_link" value={form.donation_link} onChange={setField('donation_link')} maxLength={300} placeholder="https://..." />
               </div>
             </div>
-            <Button type="submit" disabled={updateClub.isPending} className="bg-emerald-700 hover:bg-emerald-800">
+            <Button type="submit" disabled={updateClub.isPending}>
               <Save className="mr-1.5 h-4 w-4" /> {updateClub.isPending ? 'Salvando…' : 'Salvar alterações'}
             </Button>
           </form>
@@ -378,11 +378,11 @@ function ClubAddMembers({ club }) {
                   key={a.id}
                   onClick={() => toggle(a)}
                   className={`flex w-full items-center gap-3 rounded-lg border p-2.5 text-left transition-colors ${
-                    isSel ? 'border-emerald-300 bg-emerald-50' : 'border-transparent bg-white hover:bg-slate-50'
+                    isSel ? 'border-primary/40 bg-primary/10' : 'border-transparent bg-white hover:bg-slate-50'
                   }`}
                 >
                   <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border ${
-                    isSel ? 'border-emerald-600 bg-emerald-600 text-white' : 'border-slate-300 bg-white'
+                    isSel ? 'border-primary bg-primary text-primary-foreground' : 'border-slate-300 bg-white'
                   }`}>
                     {isSel && <Check className="h-3.5 w-3.5" />}
                   </span>
@@ -404,7 +404,7 @@ function ClubAddMembers({ club }) {
         <Button
           onClick={handleInviteSelected}
           disabled={selectedCount === 0 || inviteMany.isPending}
-          className="w-full bg-emerald-700 hover:bg-emerald-800"
+          className="w-full"
         >
           <UserPlus className="mr-1.5 h-4 w-4" />
           {inviteMany.isPending

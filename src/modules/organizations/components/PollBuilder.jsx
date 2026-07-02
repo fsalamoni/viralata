@@ -33,9 +33,9 @@ export default function PollBuilder({ value, onChange }) {
   };
 
   return (
-    <div className="space-y-3 rounded-xl border border-emerald-950/10 bg-secondary/30 p-4">
+    <div className="space-y-3 rounded-xl border border-primary/10 bg-secondary/30 p-4">
       <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
-        <BarChart3 className="h-4 w-4 text-emerald-700" /> Enquete
+        <BarChart3 className="h-4 w-4 text-primary" /> Enquete
       </div>
 
       <div className="space-y-1.5">
@@ -79,7 +79,7 @@ export default function PollBuilder({ value, onChange }) {
         )}
       </div>
 
-      <div className="flex items-center justify-between gap-3 rounded-lg border border-emerald-950/10 bg-white/60 px-3 py-2">
+      <div className="flex items-center justify-between gap-3 rounded-lg border border-primary/10 bg-white/60 px-3 py-2">
         <div>
           <div className="text-sm font-medium text-slate-800">Permitir múltiplas escolhas</div>
           <div className="text-xs text-slate-500">Cada participante pode marcar mais de uma opção.</div>

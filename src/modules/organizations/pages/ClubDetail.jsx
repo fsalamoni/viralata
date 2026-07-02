@@ -163,7 +163,7 @@ export default function ClubDetail() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-4">
-      <Button asChild variant="ghost" size="sm" className="text-emerald-50 hover:bg-white/10 hover:text-white">
+      <Button asChild variant="ghost" size="sm" className="text-orange-50 hover:bg-white/10 hover:text-white">
         <Link to="/organizacoes"><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para clubes</Link>
       </Button>
 
@@ -173,13 +173,13 @@ export default function ClubDetail() {
             {club.logo_url ? (
               <img src={club.logo_url} alt="" className="h-16 w-16 shrink-0 rounded-2xl border border-white/15 object-cover" />
             ) : (
-              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white/10 text-emerald-50">
+              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white/10 text-orange-50">
                 <Building2 className="h-7 w-7" />
               </div>
             )}
             <div className="min-w-0">
               <h1 className="text-2xl font-bold text-white sm:text-3xl">{club.name}</h1>
-              <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-emerald-50/80">
+              <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-orange-50/80">
                 {location && <span className="inline-flex items-center gap-1"><MapPin className="h-4 w-4" /> {location}</span>}
                 <span className="inline-flex items-center gap-1"><Users className="h-4 w-4" /> {club.member_count || 0} membro(s)</span>
                 <RatingBadge uid={club.id} className="text-amber-200" />
@@ -205,10 +205,10 @@ export default function ClubDetail() {
         </div>
 
         {club.description && (
-          <p className="mt-5 max-w-2xl whitespace-pre-wrap text-sm leading-7 text-emerald-50/85">{club.description}</p>
+          <p className="mt-5 max-w-2xl whitespace-pre-wrap text-sm leading-7 text-orange-50/85">{club.description}</p>
         )}
 
-        <div className="mt-5 flex flex-wrap gap-2 text-xs text-emerald-50/80">
+        <div className="mt-5 flex flex-wrap gap-2 text-xs text-orange-50/80">
           {club.home_venue && <InfoChip icon={Building2}>{club.home_venue}</InfoChip>}
           {club.contact_email && <InfoChip icon={Mail}>{club.contact_email}</InfoChip>}
           {club.contact_phone && <InfoChip icon={Phone}>{club.contact_phone}</InfoChip>}
@@ -221,7 +221,7 @@ export default function ClubDetail() {
             <QrCode value={club.donation_link} size={104} className="rounded-lg bg-white p-1.5" />
             <div>
               <p className="text-sm font-semibold text-white">Apoie este clube com uma doação</p>
-              <p className="mt-1 text-xs text-emerald-50/80">Aponte a câmera para o QR Code ou toque no link.</p>
+              <p className="mt-1 text-xs text-orange-50/80">Aponte a câmera para o QR Code ou toque no link.</p>
               <a
                 href={club.donation_link}
                 target="_blank"
@@ -255,7 +255,7 @@ export default function ClubDetail() {
       )}
 
       {!isMember && !myInvite && (
-        <Card className="rounded-[1.5rem] border-emerald-200 bg-emerald-50/70">
+        <Card className="rounded-[1.5rem] border-primary/20 bg-primary/5">
           <CardContent className="p-5">
             <h3 className="text-base font-semibold text-slate-900">Participe deste clube</h3>
             {myRequest?.status === JOIN_REQUEST_STATUS.PENDING ? (
@@ -274,7 +274,7 @@ export default function ClubDetail() {
                 </Button>
               </>
             )}
-            <form onSubmit={handleJoin} className="mt-4 flex flex-col gap-3 border-t border-emerald-900/10 pt-4 sm:flex-row">
+            <form onSubmit={handleJoin} className="mt-4 flex flex-col gap-3 border-t border-primary/10 pt-4 sm:flex-row">
               <div className="relative flex-1">
                 <Hash className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                 <Input

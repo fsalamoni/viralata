@@ -54,7 +54,7 @@ export default function ClubPetsDataGrid({ clubId }) {
         title="Nenhum pet cadastrado por esta organização"
         description="Cadastre o primeiro pet em nome desta organização."
         action={(
-          <Button asChild className="bg-orange-500 hover:bg-orange-600 text-white">
+          <Button asChild>
             <Link to="/pets/new"><PlusCircle className="w-4 h-4 mr-2" /> Cadastrar Pet</Link>
           </Button>
         )}
@@ -65,7 +65,7 @@ export default function ClubPetsDataGrid({ clubId }) {
   return (
     <div className="space-y-3">
       <div className="flex justify-end">
-        <Button asChild size="sm" className="bg-orange-500 hover:bg-orange-600 text-white">
+        <Button asChild size="sm">
           <Link to="/pets/new"><PlusCircle className="w-4 h-4 mr-1.5" /> Novo pet</Link>
         </Button>
       </div>
@@ -83,7 +83,7 @@ export default function ClubPetsDataGrid({ clubId }) {
             {pets.map((pet) => (
               <TableRow key={pet.id}>
                 <TableCell className="font-medium">
-                  <Link to={`/pets/${pet.id}`} className="hover:text-orange-600 hover:underline">
+                  <Link to={`/pets/${pet.id}`} className="hover:text-primary hover:underline">
                     {pet.title || pet.name || 'Sem título'}
                   </Link>
                 </TableCell>

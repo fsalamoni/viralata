@@ -100,7 +100,7 @@ export default function EventDetail() {
               )}
             </div>
             <h1 className="mt-2 text-2xl font-bold text-white sm:text-3xl">{event.title}</h1>
-            <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-emerald-50/85">
+            <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-orange-50/85">
               {when && <span className="inline-flex items-center gap-1"><CalendarDays className="h-4 w-4" /> {when}</span>}
               {event.location && <span className="inline-flex items-center gap-1"><MapPin className="h-4 w-4" /> {event.location}</span>}
             </div>
@@ -115,7 +115,7 @@ export default function EventDetail() {
           </Button>
         </div>
         {event.description && (
-          <p className="mt-4 max-w-2xl whitespace-pre-wrap text-sm leading-7 text-emerald-50/85">{event.description}</p>
+          <p className="mt-4 max-w-2xl whitespace-pre-wrap text-sm leading-7 text-orange-50/85">{event.description}</p>
         )}
       </section>
 

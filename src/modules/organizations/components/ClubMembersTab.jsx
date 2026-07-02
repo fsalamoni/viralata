@@ -85,9 +85,9 @@ export default function ClubMembersTab({ clubId, isAdmin }) {
           <Card key={member.id} className="rounded-xl">
             <CardContent className="flex items-center gap-3 p-3 sm:p-4">
               {member.photo_url ? (
-                <img src={member.photo_url} alt="" className="h-11 w-11 shrink-0 rounded-full border border-emerald-900/10 object-cover" />
+                <img src={member.photo_url} alt="" className="h-11 w-11 shrink-0 rounded-full border border-primary/10 object-cover" />
               ) : (
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-emerald-900 font-semibold text-emerald-50">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary font-semibold text-primary-foreground">
                   {initials(member.user_name)}
                 </div>
               )}

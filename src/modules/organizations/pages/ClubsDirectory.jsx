@@ -98,18 +98,18 @@ export default function ClubsDirectory() {
         <Card className="arena-panel-strong overflow-hidden rounded-[1.25rem] border-0 sm:rounded-[2rem]">
           <CardContent className="relative p-5 sm:p-8 lg:p-10">
             <div className="relative max-w-2xl">
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-50/80">
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-orange-50/80">
                 <Sparkles className="h-3.5 w-3.5" /> Organizações parceiras
               </span>
               <h2 className="mt-5 text-2xl font-semibold leading-tight text-white sm:text-3xl lg:text-4xl">
                 Encontre uma organização ou cadastre a sua.
               </h2>
-              <p className="mt-4 max-w-xl text-sm leading-7 text-emerald-50/75 sm:text-base">
+              <p className="mt-4 max-w-xl text-sm leading-7 text-orange-50/75 sm:text-base">
                 Gerencie pets para adoção, organize mutirões e mantenha sua equipe conectada
                 em um só lugar.
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
-                <Button asChild className="bg-white text-slate-950 hover:bg-emerald-50">
+                <Button asChild className="bg-white text-slate-950 hover:bg-orange-50">
                   <Link to="/organizacoes/criar"><Plus className="mr-1.5 h-4 w-4" /> Cadastrar organização</Link>
                 </Button>
               </div>
@@ -146,7 +146,7 @@ export default function ClubsDirectory() {
       {myClubs.length > 0 && (
         <section className="space-y-4">
           <div>
-            <div className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-700/75">Meus clubes</div>
+            <div className="text-xs font-semibold uppercase tracking-[0.2em] text-primary/75">Meus clubes</div>
             <h3 className="mt-2 text-2xl font-semibold text-slate-950">Clubes em que você participa</h3>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -178,7 +178,7 @@ export default function ClubsDirectory() {
               </button>
             )}
           </div>
-          <div className="mt-4 border-t border-emerald-950/8 pt-4 text-sm text-slate-600">
+          <div className="mt-4 border-t border-foreground/10 pt-4 text-sm text-slate-600">
             <span className="font-semibold text-slate-950">{filtered.length}</span> clube(s) na plataforma.
           </div>
         </CardContent>
@@ -202,7 +202,7 @@ export default function ClubsDirectory() {
       ) : filtered.length === 0 ? (
         <Card className="rounded-[2rem] border-white/80 bg-white/82">
           <CardContent className="flex flex-col items-center px-4 py-10 text-center sm:px-10 sm:py-12">
-            <div className="flex h-16 w-16 items-center justify-center rounded-[1.5rem] bg-emerald-100 text-emerald-700">
+            <div className="flex h-16 w-16 items-center justify-center rounded-[1.5rem] bg-primary/10 text-primary">
               <Building2 className="h-8 w-8" />
             </div>
             <h3 className="mt-5 text-2xl font-semibold text-slate-950">Nenhum clube encontrado</h3>
@@ -221,7 +221,7 @@ export default function ClubsDirectory() {
       ) : (
         <section className="space-y-4">
           <div>
-            <div className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-700/75">Catálogo</div>
+            <div className="text-xs font-semibold uppercase tracking-[0.2em] text-primary/75">Catálogo</div>
             <h3 className="mt-2 text-2xl font-semibold text-slate-950">Todos os clubes</h3>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -256,9 +256,9 @@ function ClubCard({ club, myRole, joinState = null, onRequest, requesting = fals
           <div className="flex items-start justify-between gap-3">
             <h4 className="flex min-w-0 items-center gap-3 text-lg font-semibold text-slate-950">
               {club.logo_url ? (
-                <img src={club.logo_url} alt="" className="h-11 w-11 shrink-0 rounded-2xl border border-emerald-900/10 object-cover" />
+                <img src={club.logo_url} alt="" className="h-11 w-11 shrink-0 rounded-2xl border border-primary/10 object-cover" />
               ) : (
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-700">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
                   <Building2 className="h-4.5 w-4.5" />
                 </span>
               )}
@@ -273,11 +273,11 @@ function ClubCard({ club, myRole, joinState = null, onRequest, requesting = fals
 
           <div className="mt-4 space-y-2 text-sm text-slate-600">
             <div className="flex items-center gap-2">
-              <MapPin className="h-4 w-4 shrink-0 text-emerald-700" />
+              <MapPin className="h-4 w-4 shrink-0 text-primary" />
               <span className="truncate">{location || 'Cidade não informada'}</span>
             </div>
             <div className="flex items-center gap-2">
-              <Users className="h-4 w-4 shrink-0 text-emerald-700" />
+              <Users className="h-4 w-4 shrink-0 text-primary" />
               <span>{club.member_count || 0} membro(s)</span>
             </div>
           </div>
@@ -288,7 +288,7 @@ function ClubCard({ club, myRole, joinState = null, onRequest, requesting = fals
 
           <div className="mt-auto pt-6">
             {myRole || !joinState || joinState === 'none' ? (
-              <div className="flex items-center justify-between text-sm font-medium text-emerald-800">
+              <div className="flex items-center justify-between text-sm font-medium text-primary">
                 <span>Abrir clube</span>
                 <ArrowRight className="h-4 w-4" />
               </div>

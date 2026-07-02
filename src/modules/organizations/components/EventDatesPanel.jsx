@@ -79,7 +79,7 @@ export default function EventDatesPanel({ event, clubId }) {
       </div>
 
       {adding && (
-        <Card className="rounded-xl border-emerald-200">
+        <Card className="rounded-xl border-primary/30">
           <CardContent className="p-4">
             <form onSubmit={handleAdd} className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-1.5">
@@ -188,7 +188,7 @@ function DateCard({ event, date, rsvps }) {
       >
         <div className="flex min-w-0 items-center gap-2">
           {open ? <ChevronDown className="h-4 w-4 shrink-0 text-slate-400" /> : <ChevronRight className="h-4 w-4 shrink-0 text-slate-400" />}
-          <CalendarDays className="h-4 w-4 shrink-0 text-emerald-600" />
+          <CalendarDays className="h-4 w-4 shrink-0 text-primary" />
           <div className="min-w-0">
             <div className="truncate font-semibold text-slate-900">{formatDateTime(date.date_time)}</div>
             <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-slate-500">

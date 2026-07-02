@@ -54,7 +54,7 @@ export default function CreateClub() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-4">
-      <Button asChild variant="ghost" size="sm" className="text-emerald-50 hover:bg-white/10 hover:text-white">
+      <Button asChild variant="ghost" size="sm" className="text-orange-50 hover:bg-white/10 hover:text-white">
         <Link to="/organizacoes"><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para clubes</Link>
       </Button>
 
@@ -64,9 +64,9 @@ export default function CreateClub() {
             <Building2 className="h-5 w-5" />
           </div>
           <div className="max-w-2xl space-y-2">
-            <p className="text-xs font-semibold uppercase tracking-wider text-emerald-200">Nova organização</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-highlight">Nova organização</p>
             <h1 className="text-2xl font-bold text-white sm:text-3xl">Cadastrar organização</h1>
-            <p className="text-sm leading-6 text-emerald-50/85">
+            <p className="text-sm leading-6 text-orange-50/85">
               Você será o administrador da organização e poderá convidar sua equipe por meio de um código exclusivo.
             </p>
           </div>
@@ -74,7 +74,7 @@ export default function CreateClub() {
       </section>
 
       <Card className="overflow-hidden">
-        <CardHeader className="border-b border-emerald-950/10 bg-white/45 p-4 sm:p-5">
+        <CardHeader className="border-b border-primary/10 bg-white/45 p-4 sm:p-5">
           <CardTitle className="text-base text-slate-950">Dados do clube</CardTitle>
           <CardDescription>Apenas o nome é obrigatório. Quanto mais completo, melhor para a comunidade encontrar você.</CardDescription>
         </CardHeader>
@@ -159,7 +159,7 @@ export default function CreateClub() {
               </div>
             </div>
 
-            <Button type="submit" disabled={createClub.isPending || !isAuthenticated} className="bg-emerald-700 hover:bg-emerald-800">
+            <Button type="submit" disabled={createClub.isPending || !isAuthenticated}>
               {createClub.isPending ? 'Criando…' : 'Criar clube'}
             </Button>
           </form>
