@@ -56,19 +56,20 @@ services falam com Firestore; hooks expõem React Query; UI consome hooks.
 
 ```
 src/
-├── App.jsx              # Roteamento + providers (QueryClient, Auth, Feature Flags)
+├── App.jsx              # Roteamento + providers (Theme, QueryClient, Auth, Feature Flags)
 ├── main.jsx             # Bootstrap + registro PWA (atrás de flag)
-├── components/          # Layout (shell, sino, navegação) + ui/ (shadcn) + AdSlot, legal-page
+├── components/          # Layout (shell, sino, navegação, toggle de tema) + ui/ (shadcn) + AdSlot, legal-page
 ├── core/
 │   ├── config/firebase.js           # init app/auth/db/storage/functions (database 'viralata')
 │   ├── lib/FirebaseAuthContext.jsx  # AuthProvider + useAuth (user, perfil, papéis, banido)
 │   ├── lib/FeatureFlagsContext.jsx  # flags lidas de platform_settings/global
+│   ├── lib/ThemeContext.jsx         # tema claro/escuro (localStorage + preferência do sistema)
 │   ├── featureFlags.js              # catálogo de flags (hoje: AD_SLOTS)
 │   ├── lib/{logger,utils,useClipboard}.js
 │   ├── domain/types.js              # typedefs JSDoc compartilhados
 │   └── services/  # auditService, notificationService, baseService, storageService,
-│                   # observabilityService, platformSettingsService, dataExportService,
-│                   # deleteAccountService (LGPD)
+│                   # observabilityService, platformSettingsService, platformContentService,
+│                   # dataExportService, deleteAccountService (LGPD)
 ├── modules/
 │   ├── pets/          # feed, cadastro, interesse, match, radar, avaliação pós-adoção
 │   ├── organizations/ # organizações (ONGs/lojas): membros, mural, fórum, eventos
@@ -123,7 +124,7 @@ do bundle do Vite — ver seção 8.
 | `/chat` `/chat/:conversationId` | autenticado | mensagens |
 | `/denuncias/nova` | autenticado | denúncia de maus-tratos |
 | `/perfil` | autenticado | Profile (dados, LGPD, exclusão de conta) |
-| `/admin` `/admin/pets` `/admin/denuncias` `/admin/usuarios` `/admin/organizacoes` `/admin/metricas` | platform_admin | painel |
+| `/admin` `/admin/pets` `/admin/denuncias` `/admin/usuarios` `/admin/organizacoes` `/admin/metricas` `/admin/conteudo` | platform_admin | painel |
 
 Guards: `ProtectedRoute` (auth), `OnboardedRoute` (auth + perfil completo,
 não usado em todas as rotas autenticadas — várias só exigem `ProtectedRoute`
@@ -150,7 +151,8 @@ campos em `docs/DATA_MODEL.md`.
   `messages`, `participants`) · `club_event_rsvps` · `event_invites`.
 - **Chat**: `conversations` · `messages` (subcoleção).
 - **Transversal**: `notifications` · `audit_logs` · `abuse_reports` ·
-  `platform_settings/global` (feature flags).
+  `platform_settings/global` (feature flags) · `platform_content/{pageKey}`
+  (Markdown das páginas institucionais, editável em `/admin/conteudo`).
 
 Princípios: **sem joins** — desnormalização e leitura por coleção; ids
 deterministas (`clubId_uid`) evitam duplicidade e simplificam regras;

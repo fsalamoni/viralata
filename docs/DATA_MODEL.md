@@ -170,6 +170,16 @@ Doc único (não é a coleção `feature_flags`, que não existe). Campo
 `feature_flags: { [flagKey]: boolean }`, editado só pelo admin master
 (`platformSettingsService.setFeatureFlag`).
 
+### `platform_content/{pageKey}`
+CMS mínimo das páginas institucionais. `pageKey` é `termos`, `privacidade`
+ou `legislacao`. Campos: `body` (Markdown, renderizado por
+`components/ui/markdown-content.jsx`), `updated_at`. Leitura pública;
+escrita só por `platform_admin`, em `/admin/conteudo`
+(`AdminContentEditor.jsx` + `platformContentService.setPlatformContent`).
+Se o doc não existir, a página usa o texto padrão embutido em
+`DEFAULT_PLATFORM_CONTENT` (`platformContentService.js`) — nunca fica em
+branco.
+
 ## Relacionamentos (resumo)
 
 ```

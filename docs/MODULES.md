@@ -116,7 +116,9 @@ Painel exclusivo de `platform_admin` (`/admin/*`), sem sub-papéis.
   qualquer pet), `AdminReports` (ver todas as denúncias), `AdminUsers`
   (banir/desbanir), `AdminOrganizations` (excluir organização, cascata via
   `clubService.deleteClub`), `AdminMetrics` (gráficos com `recharts`:
-  adoções/mês, crescimento de usuários, pets por estado, denúncias/mês).
+  adoções/mês, crescimento de usuários, pets por estado, denúncias/mês),
+  `AdminContentEditor` (CMS em Markdown das páginas institucionais, ver
+  abaixo).
 - **services**: `adminService` (`listAllUsers`, `banUser`/`unbanUser` — geram
   `audit_logs` `user_banned`/`user_unbanned`), `metricsService`
   (`fetchMetricsData`, `groupByMonth`, `groupByField` — funções puras
@@ -128,8 +130,14 @@ Painel exclusivo de `platform_admin` (`/admin/*`), sem sub-papéis.
   `pages/Profile.jsx` — dados do usuário, LGPD (exportar/excluir dados via
   `core/services/dataExportService.js` e `deleteAccountService.js`), link
   para "meus pets"/"radar". `pages/Terms.jsx`, `PrivacyPolicy.jsx`,
-  `Legislation.jsx` — conteúdo institucional estático (JSX, não CMS),
-  compartilhando o layout de `src/components/legal-page.jsx`.
+  `Legislation.jsx` — conteúdo institucional em Markdown, editável por
+  `platform_admin` em `/admin/conteudo` (`AdminContentEditor` +
+  `core/services/platformContentService.js`, coleção `platform_content`).
+  Cada página busca o Markdown salvo e, se ainda não houver edição, usa o
+  texto padrão embutido em `DEFAULT_PLATFORM_CONTENT`. Renderização via
+  `components/ui/markdown-content.jsx`; edição via
+  `components/ui/markdown-editor.jsx`. Layout do cabeçalho compartilhado por
+  `src/components/legal-page.jsx`.
   `pages/BannedNotice.jsx` — tela de conta suspensa.
 - `components/AdSlot.jsx` — card "conteúdo patrocinado" atrás da feature
   flag `AD_SLOTS` (`core/featureFlags.js`); sem integração real de ads.

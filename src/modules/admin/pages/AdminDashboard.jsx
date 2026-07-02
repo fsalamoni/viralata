@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Shield, PawPrint, Building2, AlertTriangle, Users, BarChart3 } from 'lucide-react';
+import { Shield, PawPrint, Building2, AlertTriangle, Users, BarChart3, FileText } from 'lucide-react';
 
 export default function AdminDashboard() {
   const { isPlatformAdmin } = useAuth();
@@ -15,6 +15,7 @@ export default function AdminDashboard() {
     { icon: AlertTriangle, title: 'Denúncias', desc: 'Revisar denúncias de maus-tratos', link: '/admin/denuncias', color: 'text-destructive' },
     { icon: Users, title: 'Usuários', desc: 'Gerenciar contas, papéis e banimentos', link: '/admin/usuarios', color: 'text-highlight' },
     { icon: BarChart3, title: 'Métricas', desc: 'Adoções, crescimento e denúncias em gráficos', link: '/admin/metricas', color: 'text-primary/70' },
+    { icon: FileText, title: 'Conteúdo institucional', desc: 'Editar Termos, Privacidade e Legislação', link: '/admin/conteudo', color: 'text-accent/70' },
   ];
 
   return (

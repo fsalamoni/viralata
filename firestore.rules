@@ -197,6 +197,12 @@ service cloud.firestore {
       allow write: if isPlatformAdmin();
     }
 
+    // ─── Conteúdo institucional editável (Termos, Privacidade, Legislação) ─────
+    match /platform_content/{pageKey} {
+      allow read: if true;
+      allow write: if isPlatformAdmin();
+    }
+
     // ─── Clubes (comunidade) ────────────────────────────────────────────────────
     match /clubs/{clubId} {
       allow read: if true; // Diretório e detalhe públicos

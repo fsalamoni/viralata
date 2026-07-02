@@ -49,6 +49,7 @@ const AdminReports = lazy(() => import('@/modules/admin/pages/AdminReports'));
 const AdminUsers = lazy(() => import('@/modules/admin/pages/AdminUsers'));
 const AdminOrganizations = lazy(() => import('@/modules/admin/pages/AdminOrganizations'));
 const AdminMetrics = lazy(() => import('@/modules/admin/pages/AdminMetrics'));
+const AdminContentEditor = lazy(() => import('@/modules/admin/pages/AdminContentEditor'));
 
 // ─── QueryClient ─────────────────────────────────────────────────────────────
 const queryClient = new QueryClient({
@@ -235,6 +236,10 @@ export default function App() {
                 <Route
                   path="/admin/metricas"
                   element={<AdminRoute>{withLayout('AdminMetrics', AdminMetrics)}</AdminRoute>}
+                />
+                <Route
+                  path="/admin/conteudo"
+                  element={<AdminRoute>{withLayout('AdminContentEditor', AdminContentEditor)}</AdminRoute>}
                 />
 
                 {/* ── Redirects legados ─────────────────────────────────── */}

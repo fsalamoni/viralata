@@ -21,6 +21,7 @@ export const AUDIT_ACTION_LABELS = {
   club_event_deleted: 'Evento excluído',
   club_post_deleted: 'Publicação do mural removida',
   platform_feature_flag_changed: 'Feature flag alterada (admin)',
+  platform_content_updated: 'Conteúdo institucional atualizado (admin)',
 };
 
 export async function createAuditLog({
