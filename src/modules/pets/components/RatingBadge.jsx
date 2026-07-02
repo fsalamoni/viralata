@@ -18,7 +18,7 @@ export default function RatingBadge({ uid, className = '' }) {
   return (
     <span className={`inline-flex items-center gap-1 text-xs font-medium text-amber-700 ${className}`}>
       <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-      {avg.toFixed(1)} <span className="text-gray-400 font-normal">({count})</span>
+      {avg.toFixed(1)} <span className="text-muted-foreground font-normal">({count})</span>
     </span>
   );
 }

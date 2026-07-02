@@ -13,12 +13,12 @@ export default function AdSlot({ className = '' }) {
   if (!enabled) return null;
 
   return (
-    <Card className={`border-dashed bg-gray-50 ${className}`}>
-      <CardContent className="flex items-center gap-3 py-4 text-gray-500">
+    <Card className={`border-dashed border-border bg-secondary/40 ${className}`}>
+      <CardContent className="flex items-center gap-3 py-4 text-muted-foreground">
         <Megaphone className="w-5 h-5 flex-shrink-0" />
         <div className="text-sm">
-          <p className="font-medium">Conteúdo patrocinado</p>
-          <p className="text-xs text-gray-400">Este espaço é reservado para parceiros do Viralata.</p>
+          <p className="font-medium text-foreground">Conteúdo patrocinado</p>
+          <p className="text-xs text-muted-foreground">Este espaço é reservado para parceiros do Viralata.</p>
         </div>
       </CardContent>
     </Card>

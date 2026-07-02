@@ -129,16 +129,16 @@ export default function CreatePet() {
   }
 
   if (isEditing && loadingPet) {
-    return <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500" /></div>;
+    return <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>;
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
+    <div className="arena-page max-w-2xl mx-auto px-4 py-6 space-y-6">
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
           <ArrowLeft className="w-4 h-4" />
         </Button>
-        <h1 className="text-2xl font-bold text-gray-900">
+        <h1 className="text-2xl font-bold text-foreground">
           {isEditing ? 'Editar Pet' : 'Cadastrar Pet para Adoção'}
         </h1>
       </div>
@@ -161,38 +161,38 @@ export default function CreatePet() {
 
         {/* Fotos */}
         <div className="space-y-2">
-          <Label>Fotos <span className="text-red-500">*</span></Label>
+          <Label>Fotos <span className="text-destructive">*</span></Label>
           <div className="flex flex-wrap gap-2">
             {photos.map((url, i) => (
-              <div key={i} className="relative w-20 h-20 rounded-lg overflow-hidden border">
+              <div key={i} className="relative w-20 h-20 rounded-lg overflow-hidden border border-border">
                 <img src={url} alt="" className="w-full h-full object-cover" />
                 <button type="button" onClick={() => setPhotos((p) => p.filter((_, j) => j !== i))}
-                  className="absolute top-0.5 right-0.5 bg-red-500 text-white rounded-full w-4 h-4 text-xs flex items-center justify-center">×</button>
+                  className="absolute top-0.5 right-0.5 bg-destructive text-destructive-foreground rounded-full w-4 h-4 text-xs flex items-center justify-center">×</button>
               </div>
             ))}
             {photos.length < 6 && (
-              <label className="w-20 h-20 rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center cursor-pointer hover:border-orange-400 transition-colors">
-                <Upload className="w-5 h-5 text-gray-400" />
-                <span className="text-xs text-gray-400 mt-1">Foto</span>
+              <label className="w-20 h-20 rounded-lg border-2 border-dashed border-border flex flex-col items-center justify-center cursor-pointer hover:border-primary/60 transition-colors">
+                <Upload className="w-5 h-5 text-muted-foreground" />
+                <span className="text-xs text-muted-foreground mt-1">Foto</span>
                 <input type="file" accept="image/*" multiple className="hidden" onChange={handlePhotoUpload} disabled={uploading} />
               </label>
             )}
           </div>
-          {uploading && <p className="text-sm text-gray-400">Enviando fotos...</p>}
+          {uploading && <p className="text-sm text-muted-foreground">Enviando fotos...</p>}
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="sm:col-span-2 space-y-1">
-            <Label htmlFor="title">Título do anúncio <span className="text-red-500">*</span></Label>
+            <Label htmlFor="title">Título do anúncio <span className="text-destructive">*</span></Label>
             <Input id="title" {...register('title')} placeholder="Ex: Labrador dócil para adoção" />
-            {errors.title && <p className="text-xs text-red-500">{errors.title.message}</p>}
+            {errors.title && <p className="text-xs text-destructive">{errors.title.message}</p>}
           </div>
           <div className="space-y-1">
             <Label htmlFor="name">Nome do animal</Label>
             <Input id="name" {...register('name')} placeholder="Opcional" />
           </div>
           <div className="space-y-1">
-            <Label>Espécie <span className="text-red-500">*</span></Label>
+            <Label>Espécie <span className="text-destructive">*</span></Label>
             <Select value={watch('species')} onValueChange={(v) => setValue('species', v, { shouldValidate: true })}>
               <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
               <SelectContent>
@@ -203,10 +203,10 @@ export default function CreatePet() {
                 <SelectItem value="other">Outro</SelectItem>
               </SelectContent>
             </Select>
-            {errors.species && <p className="text-xs text-red-500">{errors.species.message}</p>}
+            {errors.species && <p className="text-xs text-destructive">{errors.species.message}</p>}
           </div>
           <div className="space-y-1">
-            <Label>Porte <span className="text-red-500">*</span></Label>
+            <Label>Porte <span className="text-destructive">*</span></Label>
             <Select value={watch('size')} onValueChange={(v) => setValue('size', v, { shouldValidate: true })}>
               <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
               <SelectContent>
@@ -217,10 +217,10 @@ export default function CreatePet() {
                 <SelectItem value="giant">Gigante</SelectItem>
               </SelectContent>
             </Select>
-            {errors.size && <p className="text-xs text-red-500">{errors.size.message}</p>}
+            {errors.size && <p className="text-xs text-destructive">{errors.size.message}</p>}
           </div>
           <div className="space-y-1">
-            <Label>Faixa etária <span className="text-red-500">*</span></Label>
+            <Label>Faixa etária <span className="text-destructive">*</span></Label>
             <Select value={watch('age_group')} onValueChange={(v) => setValue('age_group', v, { shouldValidate: true })}>
               <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
               <SelectContent>
@@ -231,7 +231,7 @@ export default function CreatePet() {
             </Select>
           </div>
           <div className="space-y-1">
-            <Label>Sexo <span className="text-red-500">*</span></Label>
+            <Label>Sexo <span className="text-destructive">*</span></Label>
             <Select value={watch('gender')} onValueChange={(v) => setValue('gender', v, { shouldValidate: true })}>
               <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
               <SelectContent>
@@ -241,7 +241,7 @@ export default function CreatePet() {
             </Select>
           </div>
           <div className="space-y-1">
-            <Label>Vacinação <span className="text-red-500">*</span></Label>
+            <Label>Vacinação <span className="text-destructive">*</span></Label>
             <Select value={watch('vaccinated')} onValueChange={(v) => setValue('vaccinated', v, { shouldValidate: true })}>
               <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
               <SelectContent>
@@ -252,14 +252,14 @@ export default function CreatePet() {
             </Select>
           </div>
           <div className="space-y-1">
-            <Label htmlFor="city">Cidade <span className="text-red-500">*</span></Label>
+            <Label htmlFor="city">Cidade <span className="text-destructive">*</span></Label>
             <Input id="city" {...register('city')} />
-            {errors.city && <p className="text-xs text-red-500">{errors.city.message}</p>}
+            {errors.city && <p className="text-xs text-destructive">{errors.city.message}</p>}
           </div>
           <div className="space-y-1">
-            <Label htmlFor="state">Estado <span className="text-red-500">*</span></Label>
+            <Label htmlFor="state">Estado <span className="text-destructive">*</span></Label>
             <Input id="state" {...register('state')} maxLength={2} placeholder="SP" />
-            {errors.state && <p className="text-xs text-red-500">{errors.state.message}</p>}
+            {errors.state && <p className="text-xs text-destructive">{errors.state.message}</p>}
           </div>
         </div>
 
@@ -290,8 +290,10 @@ export default function CreatePet() {
           <Textarea id="adoption_requirements" {...register('adoption_requirements')} placeholder="O que você espera do adotante..." rows={3} />
         </div>
 
-        <Button type="submit" disabled={createPet.isPending || uploading} className="w-full bg-orange-500 hover:bg-orange-600 text-white" size="lg">
-          {createPet.isPending ? 'Cadastrando...' : 'Cadastrar Pet'}
+        <Button type="submit" disabled={createPet.isPending || updatePet.isPending || uploading} className="w-full" size="lg">
+          {isEditing
+            ? (updatePet.isPending ? 'Salvando...' : 'Salvar alterações')
+            : (createPet.isPending ? 'Cadastrando...' : 'Cadastrar Pet')}
         </Button>
       </form>
     </div>

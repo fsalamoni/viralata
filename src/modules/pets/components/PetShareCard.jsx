@@ -19,7 +19,7 @@ const PetShareCard = forwardRef(({ pet, shareUrl }, ref) => {
         height: 1920,
         position: 'relative',
         fontFamily: 'system-ui, sans-serif',
-        background: 'linear-gradient(160deg, #fb923c 0%, #f97316 45%, #ea580c 100%)',
+        background: 'linear-gradient(160deg, #a8431f 0%, #c1522a 45%, #e0a83a 100%)',
         display: 'flex',
         flexDirection: 'column',
         color: '#fff',

@@ -43,7 +43,7 @@ export default function RatingForm({ ratedUid, ratedLabel, onSubmit, submitting 
               >
                 <Star
                   className={`w-6 h-6 ${
-                    n <= (hoverStars || stars) ? 'fill-orange-400 text-orange-400' : 'text-gray-300'
+                    n <= (hoverStars || stars) ? 'fill-highlight text-highlight' : 'text-muted-foreground/40'
                   }`}
                 />
               </button>
@@ -55,7 +55,7 @@ export default function RatingForm({ ratedUid, ratedLabel, onSubmit, submitting 
             placeholder="Conte como foi a experiência (opcional)"
             rows={3}
           />
-          <Button type="submit" disabled={submitting} className="w-full bg-orange-500 hover:bg-orange-600 text-white">
+          <Button type="submit" disabled={submitting} className="w-full">
             {submitting ? 'Enviando...' : 'Enviar avaliação'}
           </Button>
         </form>
