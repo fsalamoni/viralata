@@ -91,7 +91,7 @@ export default function CreateReport() {
     <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="sm" onClick={() => navigate(-1)}><ArrowLeft className="w-4 h-4" /></Button>
-        <h1 className="text-2xl font-bold text-gray-900">Registrar Denúncia</h1>
+        <h1 className="text-2xl font-bold text-foreground">Registrar Denúncia</h1>
       </div>
       <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-800">
         <strong>Importante:</strong> Esta denúncia ficará registrada na plataforma. Ao concluir, você poderá baixar um PDF formatado para entregar à Delegacia de Crimes Ambientais ou à Polícia Civil.
@@ -100,7 +100,7 @@ export default function CreateReport() {
       {!reportId ? (
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-1">
-            <Label htmlFor="description">Descreva o ocorrido <span className="text-red-500">*</span></Label>
+            <Label htmlFor="description">Descreva o ocorrido <span className="text-destructive">*</span></Label>
             <Textarea
               id="description"
               value={description}
@@ -125,7 +125,7 @@ export default function CreateReport() {
               </Button>
             </div>
             {coords && (
-              <p className="text-xs text-green-600">
+              <p className="text-xs text-primary">
                 📍 Coordenadas: {coords.lat.toFixed(6)}, {coords.lng.toFixed(6)}
               </p>
             )}
@@ -138,34 +138,34 @@ export default function CreateReport() {
                 <div key={i} className="relative w-20 h-20 rounded-lg overflow-hidden border">
                   <img src={src} alt="" className="w-full h-full object-cover" />
                   <button type="button" onClick={() => { setPhotos((p) => p.filter((_, j) => j !== i)); setPhotoFiles((p) => p.filter((_, j) => j !== i)); }}
-                    className="absolute top-0.5 right-0.5 bg-red-500 text-white rounded-full w-4 h-4 text-xs flex items-center justify-center">×</button>
+                    className="absolute top-0.5 right-0.5 bg-destructive text-white rounded-full w-4 h-4 text-xs flex items-center justify-center">×</button>
                 </div>
               ))}
               {photos.length < 5 && (
-                <label className="w-20 h-20 rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center cursor-pointer hover:border-orange-400">
-                  <Upload className="w-5 h-5 text-gray-400" />
+                <label className="w-20 h-20 rounded-lg border-2 border-dashed border-border flex flex-col items-center justify-center cursor-pointer hover:border-primary/50">
+                  <Upload className="w-5 h-5 text-muted-foreground" />
                   <input type="file" accept="image/*" multiple className="hidden" onChange={handlePhotoChange} />
                 </label>
               )}
             </div>
           </div>
 
-          <Button type="submit" disabled={saving} className="w-full bg-red-500 hover:bg-red-600 text-white" size="lg">
+          <Button type="submit" disabled={saving} className="w-full bg-destructive hover:bg-destructive text-white" size="lg">
             {saving ? 'Registrando...' : 'Registrar Denúncia'}
           </Button>
         </form>
       ) : (
         <div className="space-y-4">
-          <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-green-800">
+          <div className="bg-primary/10 border border-primary/20 rounded-xl p-4 text-primary">
             ✅ Denúncia registrada! Protocolo: <strong>{reportId}</strong>
           </div>
 
           {/* Preview do PDF */}
-          <div ref={pdfRef} className="bg-white border border-gray-200 rounded-xl p-6 space-y-4 text-sm">
+          <div ref={pdfRef} className="bg-white border border-border rounded-xl p-6 space-y-4 text-sm">
             <div className="text-center space-y-1 border-b pb-4">
-              <div className="text-2xl font-bold text-orange-500">🐾 Viralata</div>
-              <div className="text-lg font-semibold text-gray-900">DENÚNCIA DE MAUS-TRATOS A ANIMAIS</div>
-              <div className="text-gray-500 text-xs">Plataforma Viralata — viralata.web.app</div>
+              <div className="text-2xl font-bold text-primary">🐾 Viralata</div>
+              <div className="text-lg font-semibold text-foreground">DENÚNCIA DE MAUS-TRATOS A ANIMAIS</div>
+              <div className="text-muted-foreground text-xs">Plataforma Viralata — viralata.web.app</div>
             </div>
             <div className="grid grid-cols-2 gap-3 text-xs">
               <div><strong>Data/Hora:</strong> {dateStr}</div>
@@ -176,12 +176,12 @@ export default function CreateReport() {
             {(address || coords) && (
               <div className="text-xs">
                 <strong>Local:</strong> {address}
-                {coords && <span className="ml-2 text-gray-500">(GPS: {coords.lat.toFixed(5)}, {coords.lng.toFixed(5)})</span>}
+                {coords && <span className="ml-2 text-muted-foreground">(GPS: {coords.lat.toFixed(5)}, {coords.lng.toFixed(5)})</span>}
               </div>
             )}
             <div>
               <strong className="text-xs">Descrição do ocorrido:</strong>
-              <p className="mt-1 text-xs text-gray-700 whitespace-pre-wrap">{description}</p>
+              <p className="mt-1 text-xs text-foreground whitespace-pre-wrap">{description}</p>
             </div>
             {photos.length > 0 && (
               <div>
@@ -193,7 +193,7 @@ export default function CreateReport() {
                 </div>
               </div>
             )}
-            <div className="border-t pt-3 text-xs text-gray-400 text-center">
+            <div className="border-t pt-3 text-xs text-muted-foreground text-center">
               Este documento foi gerado automaticamente pela plataforma Viralata e pode ser apresentado às autoridades competentes.
             </div>
           </div>

@@ -25,14 +25,14 @@ export function initialsFor(name) {
  */
 export function UserAvatar({ name, photoUrl, size = 'sm', className, title }) {
   const dim = SIZES[size] || SIZES.sm;
-  const base = 'shrink-0 rounded-full border border-emerald-900/10 object-cover';
+  const base = 'shrink-0 rounded-full border border-primary/10 object-cover';
   if (photoUrl) {
     return <img src={photoUrl} alt="" title={title || name || ''} className={cn(dim, base, className)} />;
   }
   return (
     <div
       title={title || name || ''}
-      className={cn(dim, 'flex shrink-0 items-center justify-center rounded-full bg-emerald-900 font-semibold text-emerald-50', className)}
+      className={cn(dim, 'flex shrink-0 items-center justify-center rounded-full bg-primary font-semibold text-primary-foreground', className)}
     >
       {initialsFor(name)}
     </div>

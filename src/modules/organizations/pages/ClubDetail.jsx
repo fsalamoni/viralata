@@ -238,8 +238,8 @@ export default function ClubDetail() {
       {!isMember && myInvite && (
         <Card className="rounded-[1.5rem] border-amber-300 bg-amber-50/80">
           <CardContent className="p-5">
-            <h3 className="text-base font-semibold text-slate-900">Você foi convidado para este clube</h3>
-            <p className="mt-1 text-sm text-slate-600">
+            <h3 className="text-base font-semibold text-foreground">Você foi convidado para este clube</h3>
+            <p className="mt-1 text-sm text-muted-foreground">
               {myInvite.inviter_name || 'Um administrador'} convidou você a participar. Aceite para entrar e acessar eventos, mural e fórum.
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
@@ -257,14 +257,14 @@ export default function ClubDetail() {
       {!isMember && !myInvite && (
         <Card className="rounded-[1.5rem] border-primary/20 bg-primary/5">
           <CardContent className="p-5">
-            <h3 className="text-base font-semibold text-slate-900">Participe deste clube</h3>
+            <h3 className="text-base font-semibold text-foreground">Participe deste clube</h3>
             {myRequest?.status === JOIN_REQUEST_STATUS.PENDING ? (
               <p className="mt-2 inline-flex items-center gap-2 rounded-full bg-amber-100 px-3 py-1.5 text-sm font-medium text-amber-800">
                 Pedido enviado — aguardando aprovação de um administrador.
               </p>
             ) : (
               <>
-                <p className="mt-1 text-sm text-slate-600">
+                <p className="mt-1 text-sm text-muted-foreground">
                   {myRequest?.status === JOIN_REQUEST_STATUS.REJECTED
                     ? 'Seu pedido anterior não foi aprovado. Você pode pedir novamente.'
                     : 'Peça para ingressar e um administrador irá aprovar, ou entre direto com o código de convite.'}
@@ -276,7 +276,7 @@ export default function ClubDetail() {
             )}
             <form onSubmit={handleJoin} className="mt-4 flex flex-col gap-3 border-t border-primary/10 pt-4 sm:flex-row">
               <div className="relative flex-1">
-                <Hash className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <Hash className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   value={code}
                   onChange={(e) => setCode(e.target.value.toUpperCase())}

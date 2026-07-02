@@ -72,10 +72,10 @@ export default function ForumPoll({ thread }) {
       <div className="mb-3 flex items-start justify-between gap-3">
         <div className="flex items-center gap-2">
           <BarChart3 className="h-4 w-4 text-primary" />
-          <h4 className="font-semibold text-slate-900">{poll.question}</h4>
+          <h4 className="font-semibold text-foreground">{poll.question}</h4>
         </div>
         {closed ? (
-          <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-slate-200 px-2 py-0.5 text-[11px] font-medium text-slate-600">
+          <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-secondary px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
             <Lock className="h-3 w-3" /> Encerrada
           </span>
         ) : poll.closes_at_ms ? (
@@ -85,7 +85,7 @@ export default function ForumPoll({ thread }) {
         ) : null}
       </div>
 
-      <p className="mb-3 text-xs text-slate-500">
+      <p className="mb-3 text-xs text-muted-foreground">
         {poll.multiple ? 'Você pode escolher várias opções.' : 'Escolha uma opção.'}
       </p>
 
@@ -113,11 +113,11 @@ export default function ForumPoll({ thread }) {
                 />
               )}
               <span className="relative flex items-center justify-between gap-2">
-                <span className="flex items-center gap-2 text-sm text-slate-800">
+                <span className="flex items-center gap-2 text-sm text-foreground">
                   <span className={cn(
                     'flex h-4 w-4 shrink-0 items-center justify-center border',
                     poll.multiple ? 'rounded' : 'rounded-full',
-                    isSelected ? 'border-primary bg-primary text-white' : 'border-slate-300',
+                    isSelected ? 'border-primary bg-primary text-white' : 'border-border',
                   )}>
                     {isSelected && <Check className="h-3 w-3" />}
                   </span>
@@ -125,7 +125,7 @@ export default function ForumPoll({ thread }) {
                   {isMine && <span className="text-[11px] font-medium text-primary">· seu voto</span>}
                 </span>
                 {revealResults && (
-                  <span className="relative shrink-0 text-xs font-semibold text-slate-600">
+                  <span className="relative shrink-0 text-xs font-semibold text-muted-foreground">
                     {option.percentage}% ({option.count})
                   </span>
                 )}
@@ -136,7 +136,7 @@ export default function ForumPoll({ thread }) {
       </div>
 
       <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
-        <span className="text-xs text-slate-500">
+        <span className="text-xs text-muted-foreground">
           {totalVoters} participante(s) · {totalVotes} voto(s)
         </span>
         <div className="flex gap-2">
@@ -146,7 +146,7 @@ export default function ForumPoll({ thread }) {
             </Button>
           )}
           {!closed && hasVoted && (
-            <Button variant="ghost" size="sm" className="h-8 text-slate-500" onClick={handleClear} disabled={setVote.isPending}>
+            <Button variant="ghost" size="sm" className="h-8 text-muted-foreground" onClick={handleClear} disabled={setVote.isPending}>
               Remover voto
             </Button>
           )}

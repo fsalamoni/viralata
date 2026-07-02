@@ -93,10 +93,10 @@ export default function ClubMembersTab({ clubId, isAdmin }) {
               )}
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <span className="truncate font-medium text-slate-900">{member.user_name}</span>
-                  {isSelf && <span className="text-xs text-slate-400">(você)</span>}
+                  <span className="truncate font-medium text-foreground">{member.user_name}</span>
+                  {isSelf && <span className="text-xs text-muted-foreground">(você)</span>}
                 </div>
-                <div className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-slate-500">
+                <div className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
                   {member.user_email && (
                     <span className="inline-flex items-center gap-1"><Mail className="h-3 w-3" /> {member.user_email}</span>
                   )}
@@ -107,7 +107,7 @@ export default function ClubMembersTab({ clubId, isAdmin }) {
               </Badge>
 
               {isAdmin && member.role !== CLUB_ROLE.ADMIN && (
-                <label className="flex shrink-0 items-center gap-1.5 text-xs text-slate-500">
+                <label className="flex shrink-0 items-center gap-1.5 text-xs text-muted-foreground">
                   Editar pets
                   <Switch
                     checked={member.permissions?.edit_pets === true}
@@ -134,7 +134,7 @@ export default function ClubMembersTab({ clubId, isAdmin }) {
                         <ShieldCheck className="mr-2 h-4 w-4" /> Tornar administrador
                       </DropdownMenuItem>
                     )}
-                    <DropdownMenuItem className="text-red-600 focus:text-red-600" onClick={() => setConfirmRemove(member)}>
+                    <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => setConfirmRemove(member)}>
                       <UserMinus className="mr-2 h-4 w-4" /> Remover do clube
                     </DropdownMenuItem>
                   </DropdownMenuContent>

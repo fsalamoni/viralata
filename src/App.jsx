@@ -97,7 +97,7 @@ function FullScreenSpinner() {
     <div className="fixed inset-0 flex items-center justify-center bg-white">
       <div className="flex flex-col items-center gap-3">
         <div className="text-3xl">🐾</div>
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-orange-500 border-t-transparent" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
       </div>
     </div>
   );

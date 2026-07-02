@@ -23,30 +23,54 @@ Perfil privado/operacional. `email`, `platform_name`, `full_name`, `phone`,
 `photo_url`, `city`, `state`, `profile_completed` (gate de onboarding),
 `housing_type`, `has_yard`, `daily_walks`, `has_children`, `children_ages`,
 `has_elderly`, `other_pets[]`, `budget_level`, `phone_public`, `email_public`,
-`role` (`platform_admin | user`). Escrito por `FirebaseAuthContext`.
+`lgpd_consent_at` (consentimento do onboarding), `role`
+(`platform_admin | user`), `banned`, `banned_at`, `banned_reason` (só
+alteráveis por `platform_admin`, ver `firestore.rules`). Escrito por
+`FirebaseAuthContext`/`OnboardingQuestionnaire`; `banned*` por
+`adminService.banUser`/`unbanUser`.
 
-### `athlete_profiles/{uid}`
-Projeção **pública** e privacy-filtrada de `users/{uid}` para o diretório de
-adotantes (nome legado do fork/PickleTour, coleção ativa). `directory_listed`
-controla visibilidade; telefone/e-mail/endereço só aparecem se marcados como
-públicos. Sincronizado por `athleteService.syncAthleteProfile` (best-effort,
-nunca lança erro).
+> Não existe diretório público de perfis (a coleção `athlete_profiles`, do
+> fork anterior, foi removida junto com o módulo de atletas — ver
+> `docs/ROADMAP.md` Fase 2). Nome/foto do usuário aparecem publicamente de
+> forma pontual e desnormalizada (anúncios de pets, avaliações, membros de
+> organização), não como um perfil público agregado.
 
 ## Pets e adoção
 
 ### `pets/{id}`
-`title`, `species`, `size` (`small|medium|large|giant`), `age_group`, `city`,
-`state`, `owner_id` (uid ou id de clube), `status` (`available → adopted`),
-`adopted_by`, `adopted_at`, `priority_score` (0–3, calculado por idade do
-anúncio: 90/180/365 dias). Flags de matching: `needs_yard`,
-`needs_screened_apt`, `good_with_kids`, `good_with_dogs`, `good_with_cats`,
-`health_notes`. Feed filtra `status == 'available'`, ordena por
-`priority_score desc, created_at asc`.
+`title`, `species` (`dog|cat|rabbit|bird|other`), `size`
+(`small|medium|large|giant`), `age_group`, `city`, `state`, `owner_id` (uid
+ou id de organização), `owner_type` (`user | organization`), `status`
+(`available → in_process → adopted`), `adopted_by`, `adopted_at`,
+`priority_score` (0–3, calculado por idade do anúncio: 90/180/365 dias).
+Flags de matching: `needs_yard`, `needs_screened_apt`, `good_with_kids`,
+`good_with_dogs`, `good_with_cats`, `health_notes`. Feed filtra
+`status == 'available'`, ordena por `priority_score desc, created_at asc`.
+`status = 'in_process'` é setado quando o doador aprova um interessado
+(`updateInterestStatus`); ao concluir a adoção (`completePetAdoption`), os
+demais `adoption_interests` pendentes daquele pet são notificados como
+`adoption_rejected`.
 
 ### `adoption_interests/{petId_userId}`
 `pet_id`, `user_id`, `user_name`, `user_photo`, `status`
 (`pending → approved/rejected`). Gera notificações
 `adoption_interest`/`adoption_match`/`adoption_rejected`.
+
+### `adoption_ratings/{petId_raterUid}`
+Avaliação pós-adoção, mútua entre doador e adotante. `pet_id`, `rated_uid`,
+`rater_uid`, `stars` (1–5), `comment`, `created_at`. Leitura pública
+(reputação); criação só pelo próprio `rater_uid`, nunca autoavaliação
+(`rated_uid != rater_uid`). Sem contador denormalizado — a média
+(`ratingService.summarizeRatings`) é calculada no client a partir de
+`getRatingsForUser`.
+
+### `pet_radars/{uid}`
+"Radar de Pets": alerta quando um pet compatível com o perfil do usuário é
+cadastrado. `user_id`, `active` (liga/desliga em `RadarSettings`). Os
+critérios de compatibilidade são os mesmos campos do perfil em
+`users/{uid}` — não há duplicação de critérios aqui. Só leitura/escrita pelo
+dono (regra) **e** pela Cloud Function via `firebase-admin` (ignora
+`firestore.rules`) — ver `docs/AI_CONTEXT.md` seção 8.
 
 ## Comunidade — clubes (rota `/organizacoes`)
 
@@ -55,14 +79,18 @@ anúncio: 90/180/365 dias). Flags de matching: `needs_yard`,
 > ainda usam "Club" (herança do fork), mas a UI chama isso de "Organizações".
 
 ### `clubs/{id}`
-`name`, `description`, `city`, `state`, `logo_url`, `invite_code`,
-`member_count` (cosmético, nunca fonte de verdade), `created_by`,
-`creator_name`.
+`name`, `description`, `city`, `state`, `logo_url`, `invite_code`, `cnpj`
+(opcional, ONG formalizada), `donation_link` (opcional, Pix/vaquinha —
+renderizado como QR code em `ClubDetail`), `member_count` (cosmético, nunca
+fonte de verdade), `created_by`, `creator_name`.
 
 ### `club_members/{clubId_uid}`
 `club_id`, `user_id`, `user_name`, `user_email`, `photo_url`, `role`
-(`admin | member`), `joined_at`. Fonte de verdade de "quem é membro/admin"
-(usada pelas regras via `isClubMember`/`isClubAdmin`).
+(`admin | member`), `permissions` (opcional: `{ edit_pets, view_reports,
+manage_team, reply_chat }` — concede a um `member` uma permissão pontual sem
+promovê-lo a `admin`; admins já têm tudo implicitamente), `joined_at`.
+Fonte de verdade de "quem é membro/admin" (usada pelas regras via
+`isClubMember`/`isClubAdmin`/`canEditClubPets`).
 
 ### `club_join_requests/{clubId_uid}`
 Pedido de ingresso ("Pedir para ingressar"). `status`
@@ -78,8 +106,7 @@ aceitar cria `club_members` e notifica o convidante.
 - `dates/{id}` — datas do evento (`date_time`, `location`, `note`).
 - `date_rsvps/{dateId_uid}` — resposta por data.
 - `messages/{id}` — chat cronológico do evento (`sender_id`, `text`).
-- `participants/{id}` — participantes do "dia de jogo".
-- `games/{id}` — jogos organizados/sorteados do dia de jogo.
+- `participants/{id}` — participantes confirmados do evento.
 
 ### `club_event_rsvps/{eventId_uid}`
 Presença em evento (coleção de nível superior, legado/paralelo às
@@ -100,10 +127,11 @@ Mural do clube. `club_id`, `author_id`, `author_name`, `content`, `images[]`.
 - `poll_votes/{uid}` — 1 doc por usuário (id = uid), `option_ids[]`.
 
 > `organizations`/`organization_members`/`organization_reports`
-> (`organizationService.js`) existem no código com um modelo parecido (ONGs,
-> `org_id`/`user_id`/`role`), mas **não estão conectados a nenhuma
-> rota/UI** — parecem substituídos pelas coleções `club_*` acima. Antes de
-> excluir, confirmar que nada os referencia.
+> (`organizationService.js`) existem no código e em `firestore.rules` com um
+> modelo parecido (ONGs, `org_id`/`user_id`/`role`), mas **confirmado sem
+> nenhum import de rota/UI** — código órfão de uma tentativa anterior,
+> substituído pelas coleções `club_*` acima. Não estender; candidato a
+> remoção numa limpeza futura.
 
 ## Chat
 
@@ -122,8 +150,10 @@ com esse nome exato.
 
 ### `notifications/{id}`
 `user_id`, `title`, `message`, `type` (`chat_message`, `adoption_interest`,
-`club_join_request`, `forum_reply`, etc. — ver `NOTIFICATION_TYPE` em
-`core/services/notificationService.js`), `link`, `read`, `actor_id`.
+`adoption_match`, `adoption_rejected`, `pet_radar_match` (só criada pela
+Cloud Function), `club_join_request`, `forum_reply`, etc. — ver
+`NOTIFICATION_TYPE` em `core/services/notificationService.js`), `link`,
+`read`, `actor_id`.
 
 ### `abuse_reports/{id}`
 `reporter_uid`, `reporter_name`, `description`, `latitude`, `longitude`,
@@ -143,12 +173,13 @@ Doc único (não é a coleção `feature_flags`, que não existe). Campo
 ## Relacionamentos (resumo)
 
 ```
-users (1) ──< athlete_profiles (perfil público, directory_listed)
+users (1) ──< pet_radars (1:1, radar de compatibilidade)
 users (1) ──< pets (owner_id) ──< adoption_interests
+                                ├──< adoption_ratings
 clubs (1) ──< club_members ──> users
       ├──< club_join_requests / club_member_invites (ingresso)
       ├──< club_posts (mural) · club_forum_threads ──< comments / poll_votes
-      └──< club_events ──< dates ──< date_rsvps · messages · participants · games
+      └──< club_events ──< dates ──< date_rsvps · messages · participants
                        └──< event_invites / club_event_rsvps
 conversations ──< messages
 (qualquer ação) ──> audit_logs ; (qualquer usuário) ──> notifications
@@ -170,7 +201,10 @@ avatar em `users/{uid}/avatar`).
 - **Aditividade**: ao adicionar coleção, adicione regra sem afetar as demais
   — regra ausente = acesso negado por padrão, não "acesso liberado".
 - Acesso por **papel-de-recurso**: membros/admins de clube via
-  `club_members` (`isClubMember`/`isClubAdmin`); admin global via
-  `users/{uid}.role == 'platform_admin'` (`isPlatformAdmin`).
+  `club_members` (`isClubMember`/`isClubAdmin`/`canEditClubPets`); admin
+  global via `users/{uid}.role == 'platform_admin'` (`isPlatformAdmin`), com
+  um bootstrap fixo por e-mail (`isPlatformOwnerAuth`) para o primeiro admin.
+- Campos sensíveis de `users/{uid}` (`role`, `banned*`) são **imutáveis pelo
+  próprio dono** na regra de `update` — só um `platform_admin` os altera.
 - Ids deterministas permitem regras simples do tipo "dono do par
   recurso+uid".
