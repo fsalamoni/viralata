@@ -11,6 +11,7 @@ import { UserAvatar } from '@/components/ui/user-avatar';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { ImageUpload } from '@/components/ui/image-upload';
 import { useClipboard } from '@/core/lib/useClipboard';
+import { useChatUserDirectory } from '@/modules/chat/hooks/useChat';
 import {
   useUpdateClub,
   useRegenerateInviteCode,
@@ -24,7 +25,7 @@ import {
   useClubMembers,
 } from '@/modules/organizations/hooks/useClubs';
 
-export default function ClubAdminTab({ club }) {
+export default function ClubAdminTab({ club, isAdmin, canManageTeam }) {
   const navigate = useNavigate();
   const { copy, copied } = useClipboard();
   const updateClub = useUpdateClub(club.id);
@@ -85,9 +86,22 @@ export default function ClubAdminTab({ club }) {
 
   return (
     <div className="space-y-4">
-      <ClubJoinRequests club={club} />
-      <ClubAddMembers club={club} />
+      {canManageTeam && (
+        <>
+          <ClubJoinRequests club={club} />
+          <ClubAddMembers club={club} />
+        </>
+      )}
 
+      {!isAdmin && (
+        <p className="text-sm text-muted-foreground">
+          Você tem acesso a esta aba pela permissão de gerenciar equipe. Configurações da organização e o código
+          de convite continuam exclusivos de administradores.
+        </p>
+      )}
+
+      {isAdmin && (
+      <>
       <Card className="rounded-xl">
         <CardHeader className="p-4 sm:p-5">
           <CardTitle className="text-base">Código de convite</CardTitle>
@@ -200,6 +214,8 @@ export default function ClubAdminTab({ club }) {
           </Button>
         </CardContent>
       </Card>
+      </>
+      )}
 
       <ConfirmDialog
         open={confirmRegen}
@@ -285,7 +301,7 @@ function ClubJoinRequests({ club }) {
 function ClubAddMembers({ club }) {
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState({}); // { uid: athlete }
-  const { data: athletes = [], isLoading } = { data: [] };
+  const { data: athletes = [], isLoading } = useChatUserDirectory();
   const { data: members = [] } = useClubMembers(club.id);
   const { data: invites = [] } = useClubInvites(club.id);
   const inviteMany = useInviteMembersToClub(club);

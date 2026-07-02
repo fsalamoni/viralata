@@ -28,17 +28,23 @@ service cloud.firestore {
     function eventClubId(eventId) {
       return get(/databases/$(database)/documents/club_events/$(eventId)).data.club_id;
     }
-    // Permissão granular de um membro comum para editar os pets do clube
-    // (admins já podem via isClubAdmin, independente desta flag).
-    function canEditClubPets(clubId) {
+    // Permissões granulares de um membro comum do clube (admins já podem
+    // tudo via isClubAdmin, independente destas flags).
+    function hasClubPermission(clubId, key) {
       return isAuth() && exists(/databases/$(database)/documents/club_members/$(clubId + '_' + request.auth.uid))
-        && get(/databases/$(database)/documents/club_members/$(clubId + '_' + request.auth.uid)).data.get('permissions', {}).get('edit_pets', false) == true;
+        && get(/databases/$(database)/documents/club_members/$(clubId + '_' + request.auth.uid)).data.get('permissions', {}).get(key, false) == true;
     }
-    // Quem pode gerenciar um pet (dono pessoa física, ou clube dono via admin/permissão).
+    function canEditClubPets(clubId) { return hasClubPermission(clubId, 'edit_pets'); }
+    function canManageClubTeam(clubId) { return hasClubPermission(clubId, 'manage_team'); }
+    function canReplyClubChat(clubId) { return hasClubPermission(clubId, 'reply_chat'); }
+    // Quem pode gerenciar um pet (dono pessoa física, ou clube dono via
+    // admin, permissão de editar pets, ou permissão de responder o chat —
+    // esta última precisa também mover o pet para "em processo" ao abrir
+    // uma conversa com um interessado).
     function canManagePet(petData) {
       return petData.owner_id == request.auth.uid ||
         (petData.get('owner_type', '') == 'organization' && (
-          isClubAdmin(petData.owner_id) || canEditClubPets(petData.owner_id)
+          isClubAdmin(petData.owner_id) || canEditClubPets(petData.owner_id) || canReplyClubChat(petData.owner_id)
         ));
     }
     // Dono fixo da plataforma (bootstrap do primeiro platform_admin) — espelha
@@ -80,13 +86,7 @@ service cloud.firestore {
         request.resource.data.owner_id == request.auth.uid ||
         (request.resource.data.owner_type == 'organization' && isClubAdmin(request.resource.data.owner_id))
       );
-      allow update: if isAuth() && (
-        resource.data.owner_id == request.auth.uid ||
-        (resource.data.owner_type == 'organization' && (
-          isClubAdmin(resource.data.owner_id) || canEditClubPets(resource.data.owner_id)
-        )) ||
-        isPlatformAdmin()
-      );
+      allow update: if isAuth() && (canManagePet(resource.data) || isPlatformAdmin());
       allow delete: if isAuth() && (
         resource.data.owner_id == request.auth.uid ||
         (resource.data.owner_type == 'organization' && isClubAdmin(resource.data.owner_id)) ||
@@ -217,12 +217,16 @@ service cloud.firestore {
       allow create: if isAuth() && (
         request.resource.data.user_id == request.auth.uid ||
         isClubAdmin(request.resource.data.club_id) ||
+        canManageClubTeam(request.resource.data.club_id) ||
         isPlatformAdmin()
       );
+      // Papel e permissões só mudam pela mão de um admin — escalação de
+      // privilégio não é delegável via canManageClubTeam.
       allow update: if isClubAdmin(resource.data.club_id) || isPlatformAdmin();
       allow delete: if isAuth() && (
         resource.data.user_id == request.auth.uid ||
         isClubAdmin(resource.data.club_id) ||
+        canManageClubTeam(resource.data.club_id) ||
         isPlatformAdmin()
       );
     }
@@ -231,21 +235,25 @@ service cloud.firestore {
       allow read: if isAuth() && (
         resource.data.user_id == request.auth.uid ||
         isClubAdmin(resource.data.club_id) ||
+        canManageClubTeam(resource.data.club_id) ||
         isPlatformAdmin()
       );
       allow create: if isAuth() && request.resource.data.user_id == request.auth.uid;
-      allow update, delete: if isClubAdmin(resource.data.club_id) || isPlatformAdmin();
+      allow update, delete: if isClubAdmin(resource.data.club_id) || canManageClubTeam(resource.data.club_id) || isPlatformAdmin();
     }
 
     match /club_member_invites/{inviteId} {
       allow read: if isAuth() && (
         resource.data.user_id == request.auth.uid ||
         isClubAdmin(resource.data.club_id) ||
+        canManageClubTeam(resource.data.club_id) ||
         isPlatformAdmin()
       );
-      allow create: if isAuth() && isClubAdmin(request.resource.data.club_id) && request.resource.data.invited_by == request.auth.uid;
+      allow create: if isAuth()
+        && (isClubAdmin(request.resource.data.club_id) || canManageClubTeam(request.resource.data.club_id))
+        && request.resource.data.invited_by == request.auth.uid;
       allow update: if isAuth() && resource.data.user_id == request.auth.uid;
-      allow delete: if isClubAdmin(resource.data.club_id) || isPlatformAdmin();
+      allow delete: if isClubAdmin(resource.data.club_id) || canManageClubTeam(resource.data.club_id) || isPlatformAdmin();
     }
 
     match /club_events/{eventId} {

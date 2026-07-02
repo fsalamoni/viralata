@@ -67,10 +67,26 @@ chama isso de "Organização".
 Ingresso (3 caminhos): **pedir para ingressar** (`club_join_requests` →
 notifica admins → aprovação cria `club_members`), **convite do admin**
 (`club_member_invites` → notifica convidado → aceite cria membro), **código
-de convite**. Permissões granulares (`club_members.permissions.edit_pets`
-etc.) deixam um membro comum editar pets da organização sem virar admin
-(`canEditClubPets` em `firestore.rules`). Eventos públicos publicados
-notificam membros; cada evento tem datas com RSVP e um chat próprio.
+de convite**. Eventos públicos publicados notificam membros; cada evento
+tem datas com RSVP e um chat próprio.
+
+**Permissões granulares** (`club_members.permissions`) deixam um membro
+comum assumir uma fatia da administração sem virar `admin` pleno — role e
+permissões só mudam pela mão de um admin (`ClubMembersTab.jsx`, toggles por
+membro):
+- `edit_pets` — cadastrar/editar/concluir adoção dos pets da organização
+  (`canEditClubPets` em `firestore.rules`; controla também a aba "Pets" em
+  `ClubDetail.jsx` e as ações de editar/excluir em `PetDetail.jsx`).
+- `manage_team` — aprovar pedidos de ingresso, convidar e remover membros
+  comuns (`canManageClubTeam`), sem poder promover a admin nem editar as
+  configurações da própria organização — essas telas ficam dentro da mesma
+  aba "Administração" de `ClubAdminTab.jsx`, mas segregadas por essa flag.
+- `view_reports` — vê a aba "Relatórios" (`ClubReportsPanel.jsx`, contagem
+  de pets por status), sem acesso a mais nada de admin.
+- `reply_chat` — em `PetDetail.jsx`, permite ver a aba "Interessados" e
+  conversar/rejeitar candidatos para pets da organização mesmo sem
+  `edit_pets` (`canReplyClubChat`, incluída em `canManagePet` porque abrir
+  uma conversa move o pet para "em processo" — exige escrita em `pets`).
 
 ## onboarding/ — questionário de perfil (gate pós-login)
 

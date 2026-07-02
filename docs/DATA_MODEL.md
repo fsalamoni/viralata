@@ -90,7 +90,10 @@ fonte de verdade), `created_by`, `creator_name`.
 manage_team, reply_chat }` — concede a um `member` uma permissão pontual sem
 promovê-lo a `admin`; admins já têm tudo implicitamente), `joined_at`.
 Fonte de verdade de "quem é membro/admin" (usada pelas regras via
-`isClubMember`/`isClubAdmin`/`canEditClubPets`).
+`isClubMember`/`isClubAdmin`/`canEditClubPets`/`canManageClubTeam`/
+`canReplyClubChat`). Só um `platform_admin` ou um `admin` do próprio clube
+altera `role`/`permissions` — escalação de privilégio não é delegável via
+`manage_team`.
 
 ### `club_join_requests/{clubId_uid}`
 Pedido de ingresso ("Pedir para ingressar"). `status`

@@ -2,6 +2,8 @@ import React, { useRef, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
+import { useMyMembership } from '@/modules/organizations/hooks/useClubs';
+import { CLUB_ROLE } from '@/modules/organizations/domain/constants';
 import {
   usePet, useCreateInterest, useHasInterest, useCompleteAdoption, useDeletePet,
   useMyRatingForPet, useCreateRating,
@@ -31,10 +33,18 @@ export default function PetDetail() {
   const deletePet = useDeletePet();
   const [currentPhoto, setCurrentPhoto] = useState(0);
 
-  const isOwner = user?.uid === pet?.owner_id;
+  const isOrgOwned = pet?.owner_type === 'organization';
+  const { data: orgMembership } = useMyMembership(isOrgOwned ? pet.owner_id : null);
+  const isDirectOwner = user?.uid === pet?.owner_id;
+  const isOrgAdmin = isOrgOwned && orgMembership?.role === CLUB_ROLE.ADMIN;
+  // Quem pode editar/excluir o anúncio e avaliar em nome da organização.
+  const canEditPet = isDirectOwner || isPlatformAdmin || isOrgAdmin || (isOrgOwned && orgMembership?.permissions?.edit_pets === true);
+  // Quem pode ver/gerenciar interessados e conversar (inclui quem só tem a
+  // permissão de responder o chat, sem poder editar o anúncio).
+  const canManageInterests = canEditPet || (isOrgOwned && orgMembership?.permissions?.reply_chat === true);
   const isAdopter = user?.uid === pet?.adopted_by;
   const ratedUid = isAdopter ? pet?.owner_id : pet?.adopted_by;
-  const canRate = pet?.status === 'adopted' && (isOwner || isAdopter) && Boolean(ratedUid);
+  const canRate = pet?.status === 'adopted' && (canEditPet || isAdopter) && Boolean(ratedUid);
   const { data: myRating } = useMyRatingForPet(canRate ? petId : null, user?.uid);
   const createRating = useCreateRating();
   const shareCardRef = useRef(null);
@@ -42,8 +52,6 @@ export default function PetDetail() {
 
   if (isLoading) return <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>;
   if (!pet) return <div className="text-center py-16 text-muted-foreground">Pet não encontrado.</div>;
-
-  const canManage = isOwner || isPlatformAdmin;
 
   async function handleRate({ ratedUid: target, stars, comment }) {
     try {
@@ -166,7 +174,7 @@ export default function PetDetail() {
 
           {/* Ações */}
           <div className="flex flex-col gap-2 pt-2">
-            {!canManage && pet.status === 'available' && (
+            {!canManageInterests && pet.status === 'available' && (
               <Button
                 onClick={handleInterest}
                 disabled={alreadyInterested || createInterest.isPending}
@@ -177,7 +185,7 @@ export default function PetDetail() {
                 {alreadyInterested ? 'Interesse já registrado' : 'Tenho Interesse em Adotar'}
               </Button>
             )}
-            {canManage && (
+            {canEditPet && (
               <div className="flex gap-2">
                 <Button asChild variant="outline" className="flex-1">
                   <Link to={`/pets/${petId}/edit`}>Editar</Link>
@@ -200,8 +208,8 @@ export default function PetDetail() {
         </div>
       </motion.div>
 
-      {/* Painel de interessados (apenas para donos) */}
-      {canManage && (
+      {/* Painel de interessados (donos, admins da organização ou permissão de responder o chat) */}
+      {canManageInterests && (
         <Tabs defaultValue="interests" className="mt-6">
           <TabsList>
             <TabsTrigger value="interests">Interessados</TabsTrigger>

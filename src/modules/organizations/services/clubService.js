@@ -267,21 +267,31 @@ export async function setMemberRole(clubId, member, role, actor) {
 }
 
 /**
- * Permissão granular de um membro comum (admins já têm tudo implicitamente).
- * Hoje só existe `edit_pets` — as demais capacidades de gestão (excluir
+ * Permissões granulares de um membro comum (admins já têm tudo
+ * implicitamente). Capacidades de gestão da própria organização (excluir
  * clube, regenerar código, editar dados do clube) continuam exclusivas do
- * admin, sem equivalente granular ainda.
+ * admin, sem equivalente granular.
+ *
+ * `permissions` pode conter só as chaves que estão mudando (ex.:
+ * `{ manage_team: true }`) — o restante é preservado a partir de
+ * `member.permissions` (o objeto já carregado na lista de membros).
  */
 export async function setMemberPermissions(clubId, member, permissions, actor) {
   if (!member?.user_id) throw new Error('Membro inválido.');
+  const merged = {
+    edit_pets: !!(permissions.edit_pets ?? member.permissions?.edit_pets),
+    manage_team: !!(permissions.manage_team ?? member.permissions?.manage_team),
+    view_reports: !!(permissions.view_reports ?? member.permissions?.view_reports),
+    reply_chat: !!(permissions.reply_chat ?? member.permissions?.reply_chat),
+  };
   await updateDoc(doc(db, COL.members, memberDocId(clubId, member.user_id)), {
-    permissions: { edit_pets: !!permissions.edit_pets },
+    permissions: merged,
     updated_at: serverTimestamp(),
   });
   await createAuditLog({
     action: 'club_member_permissions_updated',
     actor,
-    details: { club_id: clubId, user_id: member.user_id, permissions },
+    details: { club_id: clubId, user_id: member.user_id, permissions: merged },
   });
 }
 

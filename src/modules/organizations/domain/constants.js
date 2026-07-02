@@ -67,6 +67,31 @@ export const CLUB_ROLE_LABELS = Object.freeze({
   [CLUB_ROLE.MEMBER]: 'Membro',
 });
 
+/**
+ * Permissões granulares que um admin pode conceder a um membro comum, sem
+ * torná-lo administrador pleno. Um admin já tem todas implicitamente.
+ */
+export const CLUB_PERMISSION = Object.freeze({
+  EDIT_PETS: 'edit_pets',
+  MANAGE_TEAM: 'manage_team',
+  VIEW_REPORTS: 'view_reports',
+  REPLY_CHAT: 'reply_chat',
+});
+
+export const CLUB_PERMISSION_LABELS = Object.freeze({
+  [CLUB_PERMISSION.EDIT_PETS]: 'Editar pets',
+  [CLUB_PERMISSION.MANAGE_TEAM]: 'Gerenciar equipe',
+  [CLUB_PERMISSION.VIEW_REPORTS]: 'Ver relatórios',
+  [CLUB_PERMISSION.REPLY_CHAT]: 'Responder chat de adoção',
+});
+
+export const CLUB_PERMISSION_DESCRIPTIONS = Object.freeze({
+  [CLUB_PERMISSION.EDIT_PETS]: 'Cadastrar, editar e concluir adoções dos pets da organização.',
+  [CLUB_PERMISSION.MANAGE_TEAM]: 'Aprovar pedidos de ingresso, convidar e remover membros comuns.',
+  [CLUB_PERMISSION.VIEW_REPORTS]: 'Ver o relatório de pets e adoções da organização.',
+  [CLUB_PERMISSION.REPLY_CHAT]: 'Conversar com interessados e responder pelo chat de adoção dos pets da organização.',
+});
+
 /** Estado de um pedido de ingresso (não-membro pede para entrar na organização). */
 export const JOIN_REQUEST_STATUS = Object.freeze({
   PENDING: 'pending',

@@ -3,6 +3,7 @@ import { Link, useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner';
 import {
   ArrowLeft,
+  BarChart3,
   Building2,
   CalendarDays,
   Hash,
@@ -43,6 +44,7 @@ import ClubEventsTab from '@/modules/organizations/components/ClubEventsTab';
 import ClubFeedTab from '@/modules/organizations/components/ClubFeedTab';
 import ClubForumsTab from '@/modules/organizations/components/ClubForumsTab';
 import ClubAdminTab from '@/modules/organizations/components/ClubAdminTab';
+import ClubReportsPanel from '@/modules/organizations/components/ClubReportsPanel';
 import ClubPetsDataGrid from '@/modules/organizations/components/ClubPetsDataGrid';
 import RatingBadge from '@/modules/pets/components/RatingBadge';
 import { QrCode } from '@/components/ui/qr-code';
@@ -85,6 +87,9 @@ export default function ClubDetail() {
   const isMember = !!membership;
   const isAdmin = membership?.role === CLUB_ROLE.ADMIN;
   const canEditPets = isAdmin || membership?.permissions?.edit_pets === true;
+  const canManageTeam = isAdmin || membership?.permissions?.manage_team === true;
+  const canViewReports = isAdmin || membership?.permissions?.view_reports === true;
+  const canSeeAdminTab = isAdmin || canManageTeam;
 
   const handleJoin = async (e) => {
     e.preventDefault();
@@ -295,18 +300,28 @@ export default function ClubDetail() {
       )}
 
       {isMember && (
-        <Tabs value={(activeTab === 'admin' || (activeTab === 'pets' && !canEditPets)) && !isAdmin ? 'members' : activeTab} onValueChange={setActiveTab} className="w-full">
+        <Tabs
+          value={
+            (activeTab === 'admin' && !canSeeAdminTab)
+            || (activeTab === 'pets' && !canEditPets)
+            || (activeTab === 'reports' && !canViewReports)
+              ? 'members' : activeTab
+          }
+          onValueChange={setActiveTab}
+          className="w-full"
+        >
           <TabsList className="flex h-auto w-full flex-wrap justify-start gap-1 bg-muted/60 p-1">
             <TabsTrigger value="members"><Users className="mr-1.5 h-4 w-4" /> Membros</TabsTrigger>
             <TabsTrigger value="events"><CalendarDays className="mr-1.5 h-4 w-4" /> Eventos</TabsTrigger>
             <TabsTrigger value="feed"><MessageSquare className="mr-1.5 h-4 w-4" /> Mural</TabsTrigger>
             <TabsTrigger value="forums"><MessagesSquare className="mr-1.5 h-4 w-4" /> Fóruns</TabsTrigger>
             {canEditPets && <TabsTrigger value="pets"><PawPrint className="mr-1.5 h-4 w-4" /> Pets</TabsTrigger>}
-            {isAdmin && <TabsTrigger value="admin"><Settings className="mr-1.5 h-4 w-4" /> Administração</TabsTrigger>}
+            {canViewReports && <TabsTrigger value="reports"><BarChart3 className="mr-1.5 h-4 w-4" /> Relatórios</TabsTrigger>}
+            {canSeeAdminTab && <TabsTrigger value="admin"><Settings className="mr-1.5 h-4 w-4" /> Administração</TabsTrigger>}
           </TabsList>
 
           <TabsContent value="members" className="mt-4">
-            <ClubMembersTab clubId={clubId} isAdmin={isAdmin} />
+            <ClubMembersTab clubId={clubId} isAdmin={isAdmin} canManageTeam={canManageTeam} />
           </TabsContent>
 
           <TabsContent value="events" className="mt-4">
@@ -333,9 +348,15 @@ export default function ClubDetail() {
             </TabsContent>
           )}
 
-          {isAdmin && (
+          {canViewReports && (
+            <TabsContent value="reports" className="mt-4">
+              <ClubReportsPanel clubId={clubId} />
+            </TabsContent>
+          )}
+
+          {canSeeAdminTab && (
             <TabsContent value="admin" className="mt-4">
-              <ClubAdminTab club={club} />
+              <ClubAdminTab club={club} isAdmin={isAdmin} canManageTeam={canManageTeam} />
             </TabsContent>
           )}
         </Tabs>
