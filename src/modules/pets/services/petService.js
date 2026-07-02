@@ -8,9 +8,11 @@ import {
 import { db } from '@/core/config/firebase';
 import { logger } from '@/core/lib/logger';
 import { createAuditLog } from '@/core/services/auditService';
+import { notifyUsers, NOTIFICATION_TYPE } from '@/core/services/notificationService';
 import { calculatePriorityScore } from '@/modules/pets/domain/priority';
 
 const PETS_COLLECTION = 'pets';
+const INTERESTS_COLLECTION = 'adoption_interests';
 
 /** Busca um pet por ID. */
 export async function getPetById(petId) {
@@ -64,9 +66,11 @@ export async function updatePet(petId, updates, actor) {
   await createAuditLog({ action: 'pet_updated', actor, details: { pet_id: petId, changed_fields: Object.keys(updates) } });
 }
 
-/** Marca um pet como adotado. */
+/** Marca um pet como adotado e avisa os demais interessados que não foram escolhidos. */
 export async function completePetAdoption(petId, adoptedByUid, actor) {
   if (!db || !petId) throw new Error('Dados inválidos');
+  const pet = await getPetById(petId);
+
   const batch = writeBatch(db);
   batch.update(doc(db, PETS_COLLECTION, petId), {
     status: 'adopted',
@@ -74,8 +78,26 @@ export async function completePetAdoption(petId, adoptedByUid, actor) {
     adopted_at: serverTimestamp(),
     updated_at: serverTimestamp(),
   });
+
+  const otherInterestsSnap = await getDocs(
+    query(collection(db, INTERESTS_COLLECTION), where('pet_id', '==', petId), where('status', 'in', ['pending', 'chat_opened']))
+  );
+  const otherInterests = otherInterestsSnap.docs.filter((d) => d.data().user_id !== adoptedByUid);
+  otherInterests.forEach((d) => batch.update(d.ref, { status: 'rejected', updated_at: serverTimestamp() }));
+
   await batch.commit();
   await createAuditLog({ action: 'adoption_completed', actor, details: { pet_id: petId, adopted_by: adoptedByUid } });
+
+  const otherUserIds = otherInterests.map((d) => d.data().user_id);
+  if (otherUserIds.length > 0) {
+    await notifyUsers(otherUserIds, {
+      title: 'Interesse não selecionado',
+      message: `${pet?.title || pet?.name || 'O pet'} foi adotado por outra pessoa. Continue procurando no feed!`,
+      type: NOTIFICATION_TYPE.ADOPTION_REJECTED,
+      link: '/feed',
+      actor,
+    });
+  }
 }
 
 /** Remove um pet (apenas se ainda disponível). */

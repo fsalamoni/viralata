@@ -71,7 +71,7 @@ export default function ClubForumsTab({ clubId, isAdmin, initialThreadId, onThre
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-3">
         <p className="text-sm text-slate-600">
-          Discussões do clube: combine jogos, faça enquetes e compartilhe avisos com formatação rica.
+          Discussões da organização: combine mutirões, faça enquetes e compartilhe avisos com formatação rica.
         </p>
         <Button size="sm" onClick={() => setCreateOpen(true)}>
           <Plus className="mr-1.5 h-4 w-4" /> Novo tópico
@@ -94,7 +94,7 @@ export default function ClubForumsTab({ clubId, isAdmin, initialThreadId, onThre
             return (
               <Card
                 key={thread.id}
-                className="cursor-pointer rounded-xl transition-colors hover:border-emerald-300"
+                className="cursor-pointer rounded-xl transition-colors hover:border-primary/40"
                 onClick={() => select(thread.id)}
               >
                 <CardContent className="p-4">
@@ -111,7 +111,7 @@ export default function ClubForumsTab({ clubId, isAdmin, initialThreadId, onThre
                       {thread.body && <p className="mt-2 line-clamp-2 text-sm text-slate-600">{snippet(thread.body)}</p>}
                       <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-slate-500">
                         <span className="inline-flex items-center gap-1"><MessageSquare className="h-3.5 w-3.5" /> {thread.comment_count || 0}</span>
-                        {thread.poll && <span className="inline-flex items-center gap-1 text-emerald-700"><BarChart3 className="h-3.5 w-3.5" /> Enquete</span>}
+                        {thread.poll && <span className="inline-flex items-center gap-1 text-primary"><BarChart3 className="h-3.5 w-3.5" /> Enquete</span>}
                         {attachmentsCount > 0 && <span className="inline-flex items-center gap-1"><Paperclip className="h-3.5 w-3.5" /> {attachmentsCount}</span>}
                       </div>
                     </div>

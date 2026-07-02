@@ -34,7 +34,7 @@ export default function ConversationList({ conversations, isLoading, selectedId,
       <EmptyState
         icon={Users}
         title="Nenhuma conversa"
-        description="Inicie uma conversa com atletas da comunidade."
+        description="Inicie uma conversa com adotantes e responsáveis da comunidade."
         className="py-10"
       />
     );
@@ -55,11 +55,11 @@ export default function ConversationList({ conversations, isLoading, selectedId,
             onClick={() => onSelect?.(conversation.id)}
             className={cn(
               'flex w-full items-center gap-3 rounded-xl px-2.5 py-2.5 text-left transition-colors',
-              isSelected ? 'bg-emerald-100/80' : 'hover:bg-secondary/60',
+              isSelected ? 'bg-primary/10' : 'hover:bg-secondary/60',
             )}
           >
             {isGroup ? (
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-emerald-700 text-emerald-50">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
                 <Users className="h-5 w-5" />
               </span>
             ) : (
@@ -67,11 +67,11 @@ export default function ConversationList({ conversations, isLoading, selectedId,
             )}
             <span className="min-w-0 flex-1">
               <span className="flex items-center justify-between gap-2">
-                <span className="truncate text-sm font-semibold text-slate-900">{title}</span>
-                <span className="shrink-0 text-[11px] text-slate-400">{timeLabel(conversation.last_message_at_ms)}</span>
+                <span className="truncate text-sm font-semibold text-foreground">{title}</span>
+                <span className="shrink-0 text-[11px] text-muted-foreground">{timeLabel(conversation.last_message_at_ms)}</span>
               </span>
-              <span className="mt-0.5 flex items-center gap-1 text-xs text-slate-500">
-                {last?.sender_id === currentUserId && <span className="text-slate-400">Você:</span>}
+              <span className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
+                {last?.sender_id === currentUserId && <span className="text-muted-foreground">Você:</span>}
                 <span className="truncate">{lastMessagePreview(conversation)}</span>
               </span>
             </span>

@@ -10,6 +10,8 @@ import {
 import {
   createInterest, getInterestsByPet, getInterestsByUser, hasInterest, updateInterestStatus,
 } from '../services/interestService';
+import { getMyRadar, setRadarActive } from '../services/petRadarService';
+import { createRating, getMyRatingForPet } from '../services/ratingService';
 import { filterCompatiblePets, sortByRelevance } from '../domain/matching';
 
 // ─── Pets ────────────────────────────────────────────────────────────────────
@@ -135,5 +137,48 @@ export function useUpdateInterestStatus() {
   return useMutation({
     mutationFn: ({ petId, userId, status }) => updateInterestStatus(petId, userId, status, user),
     onSuccess: (_, { petId }) => qc.invalidateQueries({ queryKey: ['interests', 'pet', petId] }),
+  });
+}
+
+// ─── Radar de Pets ───────────────────────────────────────────────────────────
+
+export function useMyRadar(uid) {
+  return useQuery({
+    queryKey: ['pet_radar', uid],
+    queryFn: () => getMyRadar(uid),
+    enabled: Boolean(uid),
+    staleTime: 1000 * 60,
+  });
+}
+
+export function useSetRadarActive() {
+  const { user } = useAuth();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (active) => setRadarActive(user.uid, active),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['pet_radar', user?.uid] }),
+  });
+}
+
+// ─── Avaliações pós-adoção ───────────────────────────────────────────────────
+
+export function useMyRatingForPet(petId, raterUid) {
+  return useQuery({
+    queryKey: ['adoption_ratings', 'mine', petId, raterUid],
+    queryFn: () => getMyRatingForPet(petId, raterUid),
+    enabled: Boolean(petId && raterUid),
+    staleTime: 1000 * 60,
+  });
+}
+
+export function useCreateRating() {
+  const { user } = useAuth();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (input) => createRating(input, user),
+    onSuccess: (_, { petId, ratedUid }) => {
+      qc.invalidateQueries({ queryKey: ['adoption_ratings', 'mine', petId, user?.uid] });
+      qc.invalidateQueries({ queryKey: ['adoption_ratings', 'user', ratedUid] });
+    },
   });
 }

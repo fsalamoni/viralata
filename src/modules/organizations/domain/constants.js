@@ -1,18 +1,17 @@
 /**
- * Constantes do domínio de Clubes.
+ * Constantes do domínio de Clubes (organizações de adoção — ONGs e lojas).
  *
  * Coleções Firestore:
- *  - clubs                   (dados do clube)
- *  - club_members            (vínculo usuário↔clube, id = `${clubId}_${uid}`)
- *  - club_events             (eventos: confraternização, torneio interno, dia de jogo…)
+ *  - clubs                   (dados da organização)
+ *  - club_members            (vínculo usuário↔organização, id = `${clubId}_${uid}`)
+ *  - club_events             (eventos: mutirão de adoção, confraternização, reunião…)
  *  - club_event_rsvps        (presença em evento, id = `${eventId}_${uid}`)
  *  - club_events/{id}/dates        (datas do evento: data, local, horário)
  *  - club_events/{id}/date_rsvps   (resposta por data, id = `${dateId}_${uid}`)
  *  - club_events/{id}/messages     (chat cronológico do evento)
- *  - club_events/{id}/participants (participantes do dia de jogo)
- *  - club_events/{id}/games        (jogos organizados/sorteados do dia de jogo)
+ *  - club_events/{id}/participants (participantes do evento)
  *  - club_posts              (mural de avisos/interação)
- *  - club_forum_threads      (tópicos de fórum do clube)
+ *  - club_forum_threads      (tópicos de fórum da organização)
  *  - club_forum_threads/{id}/comments    (subcoleção de comentários do tópico)
  *  - club_forum_threads/{id}/poll_votes  (subcoleção de votos; id do doc = uid)
  */
@@ -34,7 +33,6 @@ export const CLUB_COLLECTIONS = Object.freeze({
   eventDateRsvps: 'date_rsvps',
   eventMessages: 'messages',
   eventParticipants: 'participants',
-  eventGames: 'games',
 });
 
 /** Limites e regras das enquetes do fórum. */
@@ -45,6 +43,11 @@ export const FORUM_POLL = Object.freeze({
   QUESTION_MAX_CHARS: 200,
 });
 
+/** Limites do chat de um evento. */
+export const EVENT_CHAT_LIMITS = Object.freeze({
+  MESSAGE_MAX: 4000,
+});
+
 /** Limites gerais do fórum. */
 export const FORUM_LIMITS = Object.freeze({
   TITLE_MAX: 140,
@@ -53,7 +56,7 @@ export const FORUM_LIMITS = Object.freeze({
   MAX_ATTACHMENTS: 10,
 });
 
-/** Papel do membro dentro do clube. */
+/** Papel do membro dentro da organização. */
 export const CLUB_ROLE = Object.freeze({
   ADMIN: 'admin',
   MEMBER: 'member',
@@ -64,49 +67,45 @@ export const CLUB_ROLE_LABELS = Object.freeze({
   [CLUB_ROLE.MEMBER]: 'Membro',
 });
 
-/** Estado de um pedido de ingresso (não-membro pede para entrar no clube). */
+/** Estado de um pedido de ingresso (não-membro pede para entrar na organização). */
 export const JOIN_REQUEST_STATUS = Object.freeze({
   PENDING: 'pending',
   APPROVED: 'approved',
   REJECTED: 'rejected',
 });
 
-/** Estado de um convite de associação (admin convida atleta para o clube). */
+/** Estado de um convite de associação (admin convida um usuário para a organização). */
 export const MEMBER_INVITE_STATUS = Object.freeze({
   PENDING: 'pending',
   ACCEPTED: 'accepted',
   DECLINED: 'declined',
 });
 
-/** Tipos de evento do clube. */
+/** Tipos de evento da organização. */
 export const CLUB_EVENT_TYPE = Object.freeze({
-  GAME_DAY: 'game_day',
+  ADOPTION_FAIR: 'adoption_fair',
   SOCIAL: 'social',
-  TOURNAMENT: 'tournament',
   MEETING: 'meeting',
   OTHER: 'other',
 });
 
 export const CLUB_EVENT_TYPE_LABELS = Object.freeze({
-  [CLUB_EVENT_TYPE.GAME_DAY]: 'Dia de jogo',
+  [CLUB_EVENT_TYPE.ADOPTION_FAIR]: 'Mutirão de adoção',
   [CLUB_EVENT_TYPE.SOCIAL]: 'Confraternização',
-  [CLUB_EVENT_TYPE.TOURNAMENT]: 'Torneio interno',
   [CLUB_EVENT_TYPE.MEETING]: 'Reunião',
   [CLUB_EVENT_TYPE.OTHER]: 'Outro',
 });
 
 /**
- * Rótulo do tipo do evento, tolerante a dados legados (ex.: o antigo tipo
- * `training` passa a ser apresentado como "Dia de jogo").
+ * Rótulo do tipo do evento, tolerante a dados legados (tipos antigos do
+ * produto anterior — `game_day`/`training`/`tournament` — viram "Mutirão
+ * de adoção").
  */
 export function eventTypeLabel(type) {
-  if (type === 'training') return CLUB_EVENT_TYPE_LABELS[CLUB_EVENT_TYPE.GAME_DAY];
+  if (type === 'game_day' || type === 'training' || type === 'tournament') {
+    return CLUB_EVENT_TYPE_LABELS[CLUB_EVENT_TYPE.ADOPTION_FAIR];
+  }
   return CLUB_EVENT_TYPE_LABELS[type] || 'Evento';
-}
-
-/** Indica se o evento é um "Dia de jogo" (inclui o tipo legado `training`). */
-export function isGameDayEvent(type) {
-  return type === CLUB_EVENT_TYPE.GAME_DAY || type === 'training';
 }
 
 /** Resposta de presença em um evento. */
@@ -129,7 +128,7 @@ export const EVENT_VISIBILITY = Object.freeze({
 });
 
 export const EVENT_VISIBILITY_LABELS = Object.freeze({
-  [EVENT_VISIBILITY.PUBLIC]: 'Público (todo o clube)',
+  [EVENT_VISIBILITY.PUBLIC]: 'Público (toda a organização)',
   [EVENT_VISIBILITY.PRIVATE]: 'Privado (somente convidados)',
 });
 
@@ -139,7 +138,7 @@ export function isPrivateEvent(event) {
 }
 
 /**
- * Estado do convite/participação de um atleta em um evento.
+ * Estado do convite/participação de um usuário em um evento.
  * `invited` = convidado e ainda sem resposta; demais reaproveitam o RSVP.
  */
 export const INVITE_STATUS = Object.freeze({
@@ -158,20 +157,6 @@ export const INVITE_STATUS_LABELS = Object.freeze({
 
 /** Origem do participante do evento. */
 export const INVITE_SOURCE = Object.freeze({
-  CLUB: 'club', // atleta do clube
-  PLATFORM: 'platform', // outro atleta da plataforma (convidado em evento privado)
-});
-
-/** Origem de um participante do dia de jogo. */
-export const PARTICIPANT_SOURCE = Object.freeze({
-  CONFIRMED: 'confirmed', // confirmou presença no evento
-  PLATFORM: 'platform', // atleta da plataforma (membro/atleta)
-  GUEST: 'guest', // convidado avulso (somente nome)
-});
-
-/** Limites do dia de jogo. */
-export const GAME_DAY_LIMITS = Object.freeze({
-  MAX_PARTICIPANTS: 64,
-  MAX_ROUNDS: 30,
-  MESSAGE_MAX: 4000,
+  CLUB: 'club', // membro da organização
+  PLATFORM: 'platform', // outro usuário da plataforma (convidado em evento privado)
 });

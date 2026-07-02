@@ -20,7 +20,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { EmptyState } from '@/components/ui/empty-state';
 import { useMyMembership, useClubEvent } from '@/modules/organizations/hooks/useClubs';
-import { CLUB_EVENT_TYPE, eventTypeLabel, isGameDayEvent, isPrivateEvent } from '@/modules/organizations/domain/constants';
+import { eventTypeLabel, isPrivateEvent } from '@/modules/organizations/domain/constants';
 import { EventFormDialog } from '@/modules/organizations/components/ClubEventsTab';
 import EventDatesPanel from '@/modules/organizations/components/EventDatesPanel';
 import EventParticipantsPanel from '@/modules/organizations/components/EventParticipantsPanel';
@@ -34,7 +34,7 @@ function formatDateTime(value) {
 }
 
 export default function EventDetail() {
-  const { clubId, eventId } = useParams();
+  const { orgId: clubId, eventId } = useParams();
   const { data: membership } = useMyMembership(clubId);
   const { data: event, isLoading, isError } = useClubEvent(eventId);
   const [editOpen, setEditOpen] = useState(false);
@@ -61,11 +61,11 @@ export default function EventDetail() {
           description={
             membership
               ? 'O evento que você procura não existe ou foi removido.'
-              : 'Este evento é privado ou foi removido. Você precisa de um convite ou de ser membro do clube para acessá-lo.'
+              : 'Este evento é privado ou foi removido. Você precisa de um convite ou de ser membro da organização para acessá-lo.'
           }
           action={
             <Button asChild>
-              <Link to={membership ? `/clubes/${clubId}?tab=events` : `/clubes/${clubId}`}>
+              <Link to={membership ? `/organizacoes/${clubId}?tab=events` : `/organizacoes/${clubId}`}>
                 {membership ? 'Voltar para eventos' : 'Ir para o clube'}
               </Link>
             </Button>
@@ -75,17 +75,13 @@ export default function EventDetail() {
     );
   }
 
-  const gameDay = isGameDayEvent(event.type);
-  // A organização de jogos (sorteio/partidas/resultados) é útil no Dia de jogo
-  // e também no Torneio interno do clube.
-  const showGames = gameDay || event.type === CLUB_EVENT_TYPE.TOURNAMENT;
   const isPrivate = isPrivateEvent(event);
   const when = formatDateTime(event.starts_at);
 
   return (
     <div className="mx-auto max-w-4xl space-y-4">
       <Button asChild variant="ghost" size="sm">
-        <Link to={`/clubes/${clubId}?tab=events`}><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para eventos</Link>
+        <Link to={`/organizacoes/${clubId}?tab=events`}><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para eventos</Link>
       </Button>
 
       <section className="arena-panel-strong overflow-hidden rounded-[1.25rem] p-5 sm:rounded-[2rem] sm:p-8">
@@ -104,7 +100,7 @@ export default function EventDetail() {
               )}
             </div>
             <h1 className="mt-2 text-2xl font-bold text-white sm:text-3xl">{event.title}</h1>
-            <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-emerald-50/85">
+            <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-orange-50/85">
               {when && <span className="inline-flex items-center gap-1"><CalendarDays className="h-4 w-4" /> {when}</span>}
               {event.location && <span className="inline-flex items-center gap-1"><MapPin className="h-4 w-4" /> {event.location}</span>}
             </div>
@@ -119,14 +115,14 @@ export default function EventDetail() {
           </Button>
         </div>
         {event.description && (
-          <p className="mt-4 max-w-2xl whitespace-pre-wrap text-sm leading-7 text-emerald-50/85">{event.description}</p>
+          <p className="mt-4 max-w-2xl whitespace-pre-wrap text-sm leading-7 text-orange-50/85">{event.description}</p>
         )}
       </section>
 
       <Tabs value={tab} onValueChange={setTab} className="w-full">
         <TabsList className="flex h-auto w-full flex-wrap justify-start gap-1 bg-muted/60 p-1">
           <TabsTrigger value="detalhes">
-            <Info className="mr-1.5 h-4 w-4" /> {showGames ? 'Detalhes e dias de jogo' : 'Detalhes e datas'}
+            <Info className="mr-1.5 h-4 w-4" /> Detalhes e datas
           </TabsTrigger>
           <TabsTrigger value="participantes"><Users className="mr-1.5 h-4 w-4" /> Participantes</TabsTrigger>
           <TabsTrigger value="conversa"><MessageSquare className="mr-1.5 h-4 w-4" /> Conversa</TabsTrigger>
@@ -141,7 +137,7 @@ export default function EventDetail() {
               </CardContent>
             </Card>
           )}
-          <EventDatesPanel event={event} clubId={clubId} showGames={showGames} />
+          <EventDatesPanel event={event} clubId={clubId} />
         </TabsContent>
 
         <TabsContent value="participantes" className="mt-4">

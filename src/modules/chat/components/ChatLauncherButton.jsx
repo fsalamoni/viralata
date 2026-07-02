@@ -7,8 +7,8 @@ import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { useChatActions } from '@/modules/chat/hooks/useChat';
 
 /**
- * Botão que inicia (ou reabre) uma conversa direta com um atleta e navega para
- * a página de chat. Reutilizável no diretório de atletas.
+ * Botão que inicia (ou reabre) uma conversa direta com uma pessoa e navega para
+ * a página de chat. Reutilizável no diretório de adotantes.
  */
 export default function ChatLauncherButton({
   athlete,
@@ -30,7 +30,7 @@ export default function ChatLauncherButton({
 
   const handleClick = async () => {
     if (!isAuthenticated) {
-      toast.error('Entre na plataforma para conversar com atletas.');
+      toast.error('Entre na plataforma para conversar com outras pessoas.');
       return;
     }
     setBusy(true);

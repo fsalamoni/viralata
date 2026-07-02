@@ -15,6 +15,15 @@ de tokens/leitura**, sem precisar varrer o código.
    relacionamentos e princípios das regras de segurança.
 4. **[`MODULES.md`](./MODULES.md)** — o que cada módulo faz, arquivos-chave,
    fluxos e o mapa rota → módulo.
+5. **[`DESIGN_SYSTEM.md`](./DESIGN_SYSTEM.md)** — identidade visual: paleta,
+   tipografia, padrões de layout e efeitos de movimento/scroll.
+6. **[`ROADMAP.md`](./ROADMAP.md)** — plano de execução por fases para
+   aplicar o design system e os follow-ups funcionais pendentes.
+
+> Nota: `AI_CONTEXT.md`, `ARCHITECTURE.md`, `MODULES.md` e este `README.md`
+> ainda descrevem o produto anterior deste fork (PickleTour, torneios de
+> pickleball) — a atualização desses documentos para refletir a Viralata
+> está listada na Fase 2 do `ROADMAP.md`.
 
 > O `README.md` da raiz cobre funcionalidades para o usuário final, como rodar
 > e publicar. Estes docs cobrem **estrutura e funcionamento interno**.

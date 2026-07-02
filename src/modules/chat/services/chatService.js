@@ -136,7 +136,7 @@ export async function createGroupConversation(user, profile, people, title) {
   if (!user?.uid) throw new Error('Usuário não autenticado.');
   const me = toMember({ uid: user.uid, name: profile?.platform_name || user.displayName || user.email, photo_url: profile?.photo_url || user.photoURL });
   const members = dedupeMembers([me, ...(people || [])]);
-  if (members.length < 2) throw new Error('Selecione pelo menos um atleta.');
+  if (members.length < 2) throw new Error('Selecione pelo menos uma pessoa.');
   if (members.length > CHAT_LIMITS.MAX_GROUP_MEMBERS) {
     throw new Error(`Um grupo pode ter no máximo ${CHAT_LIMITS.MAX_GROUP_MEMBERS} participantes.`);
   }
@@ -168,8 +168,8 @@ export async function createGroupConversation(user, profile, people, title) {
 
 /**
  * A partir de uma conversa aberta, inicia uma NOVA conversa em grupo reunindo
- * os participantes atuais e os atletas recém-selecionados (requisito: "chamar
- * outros atletas inicia um novo chat com todos os selecionados").
+ * os participantes atuais e as pessoas recém-selecionadas (requisito: "chamar
+ * outras pessoas inicia um novo chat com todos os selecionados").
  * Retorna o id existente caso o grupo resultante seja idêntico.
  */
 export async function startGroupFromConversation(conversation, newPeople, user, profile) {
@@ -290,7 +290,7 @@ export async function sendMessage(conversation, { text, attachments } = {}, user
   if (!cleanText && cleanAttachments.length === 0) return null;
 
   const memberIds = conversation.member_ids || [];
-  const senderName = profile?.platform_name || user.displayName || user.email || 'Atleta';
+  const senderName = profile?.platform_name || user.displayName || user.email || 'Usuário';
   const senderPhoto = profile?.photo_url || user.photoURL || '';
   const nowMs = Date.now();
 
@@ -355,10 +355,6 @@ export async function deleteMessage(message, user) {
   (message.attachments || []).forEach((a) => a.path && deleteAttachment(a.path));
 }
 
-/**
- * Carrega membros de um clube como candidatos a iniciar conversas (não usado
- * diretamente, mas exportado para reuso futuro).
- */
 export async function listConversationsOnce(userId) {
   if (!db || !userId) return [];
   const snap = await getDocs(query(collection(db, COL.conversations), where('member_ids', 'array-contains', userId)));
@@ -366,4 +362,13 @@ export async function listConversationsOnce(userId) {
     .map((d) => ({ id: d.id, ...d.data() }))
     .filter((c) => !(c.hidden_for || []).includes(userId))
     .sort((a, b) => (b.last_message_at_ms || 0) - (a.last_message_at_ms || 0));
+}
+
+/** Lista usuários da plataforma para iniciar uma nova conversa (exclui contas excluídas). */
+export async function listUsersForChat() {
+  if (!db) return [];
+  const snap = await getDocs(collection(db, 'users'));
+  return snap.docs
+    .map((d) => ({ id: d.id, ...d.data() }))
+    .filter((u) => !u.deleted && !u.banned);
 }

@@ -11,7 +11,10 @@ import { recordPageView } from '@/core/services/observabilityService';
 const Home = lazy(() => import('@/pages/Home'));
 const Login = lazy(() => import('@/pages/Login'));
 const PrivacyPolicy = lazy(() => import('@/pages/PrivacyPolicy'));
+const Terms = lazy(() => import('@/pages/Terms'));
+const Legislation = lazy(() => import('@/pages/Legislation'));
 const PageNotFound = lazy(() => import('@/pages/PageNotFound'));
+const BannedNotice = lazy(() => import('@/pages/BannedNotice'));
 
 // ─── Onboarding ───────────────────────────────────────────────────────────────
 const OnboardingQuestionnaire = lazy(() => import('@/modules/onboarding/pages/OnboardingQuestionnaire'));
@@ -21,11 +24,13 @@ const PetFeed = lazy(() => import('@/modules/pets/pages/PetFeed'));
 const PetDetail = lazy(() => import('@/modules/pets/pages/PetDetail'));
 const CreatePet = lazy(() => import('@/modules/pets/pages/CreatePet'));
 const MyPets = lazy(() => import('@/modules/pets/pages/MyPets'));
+const RadarSettings = lazy(() => import('@/modules/pets/pages/RadarSettings'));
 
 // ─── Organizações ─────────────────────────────────────────────────────────────
 const OrganizationsDirectory = lazy(() => import('@/modules/organizations/pages/ClubsDirectory'));
 const CreateOrganization = lazy(() => import('@/modules/organizations/pages/CreateClub'));
 const OrganizationDetail = lazy(() => import('@/modules/organizations/pages/ClubDetail'));
+const OrganizationEventDetail = lazy(() => import('@/modules/organizations/pages/EventDetail'));
 
 // ─── Chat ─────────────────────────────────────────────────────────────────────
 const ChatPage = lazy(() => import('@/modules/chat/pages/ChatPage'));
@@ -40,6 +45,9 @@ const Profile = lazy(() => import('@/pages/Profile'));
 const AdminDashboard = lazy(() => import('@/modules/admin/pages/AdminDashboard'));
 const AdminPets = lazy(() => import('@/modules/admin/pages/AdminPets'));
 const AdminReports = lazy(() => import('@/modules/admin/pages/AdminReports'));
+const AdminUsers = lazy(() => import('@/modules/admin/pages/AdminUsers'));
+const AdminOrganizations = lazy(() => import('@/modules/admin/pages/AdminOrganizations'));
+const AdminMetrics = lazy(() => import('@/modules/admin/pages/AdminMetrics'));
 
 // ─── QueryClient ─────────────────────────────────────────────────────────────
 const queryClient = new QueryClient({
@@ -75,6 +83,12 @@ function AdminRoute({ children }) {
   if (isLoadingAuth) return <FullScreenSpinner />;
   if (!isAuthenticated) return <Navigate to="/login" replace />;
   if (!isPlatformAdmin) return <Navigate to="/feed" replace />;
+  return children;
+}
+
+function BannedGate({ children }) {
+  const { isAuthenticated, isBanned } = useAuth();
+  if (isAuthenticated && isBanned) return <BannedNotice />;
   return children;
 }
 
@@ -117,11 +131,14 @@ export default function App() {
           <BrowserRouter basename={import.meta.env.BASE_URL}>
             <RouteTelemetry />
             <Suspense fallback={<FullScreenSpinner />}>
+              <BannedGate>
               <Routes>
                 {/* ── Públicas ─────────────────────────────────────────── */}
                 <Route path="/" element={withLayout('Home', Home)} />
                 <Route path="/login" element={withLayout('Login', Login)} />
                 <Route path="/politica-privacidade" element={withLayout('PrivacyPolicy', PrivacyPolicy)} />
+                <Route path="/termos" element={withLayout('Terms', Terms)} />
+                <Route path="/legislacao" element={withLayout('Legislation', Legislation)} />
 
                 {/* ── Onboarding (auth obrigatória, perfil ainda não completo) ── */}
                 <Route
@@ -150,12 +167,20 @@ export default function App() {
                   path="/meus-pets"
                   element={<ProtectedRoute>{withLayout('MyPets', MyPets)}</ProtectedRoute>}
                 />
+                <Route
+                  path="/radar"
+                  element={<ProtectedRoute>{withLayout('RadarSettings', RadarSettings)}</ProtectedRoute>}
+                />
 
                 {/* ── Organizações ─────────────────────────────────────── */}
                 <Route path="/organizacoes" element={withLayout('OrganizationsDirectory', OrganizationsDirectory)} />
                 <Route
                   path="/organizacoes/criar"
                   element={<ProtectedRoute>{withLayout('CreateOrganization', CreateOrganization)}</ProtectedRoute>}
+                />
+                <Route
+                  path="/organizacoes/:orgId/eventos/:eventId"
+                  element={<ProtectedRoute>{withLayout('OrganizationEventDetail', OrganizationEventDetail)}</ProtectedRoute>}
                 />
                 <Route
                   path="/organizacoes/:orgId"
@@ -197,6 +222,18 @@ export default function App() {
                   path="/admin/denuncias"
                   element={<AdminRoute>{withLayout('AdminReports', AdminReports)}</AdminRoute>}
                 />
+                <Route
+                  path="/admin/usuarios"
+                  element={<AdminRoute>{withLayout('AdminUsers', AdminUsers)}</AdminRoute>}
+                />
+                <Route
+                  path="/admin/organizacoes"
+                  element={<AdminRoute>{withLayout('AdminOrganizations', AdminOrganizations)}</AdminRoute>}
+                />
+                <Route
+                  path="/admin/metricas"
+                  element={<AdminRoute>{withLayout('AdminMetrics', AdminMetrics)}</AdminRoute>}
+                />
 
                 {/* ── Redirects legados ─────────────────────────────────── */}
                 <Route path="/inicio" element={<Navigate to="/feed" replace />} />
@@ -206,6 +243,7 @@ export default function App() {
                 {/* ── 404 ───────────────────────────────────────────────── */}
                 <Route path="*" element={<PageNotFound />} />
               </Routes>
+              </BannedGate>
             </Suspense>
           </BrowserRouter>
           <Toaster />

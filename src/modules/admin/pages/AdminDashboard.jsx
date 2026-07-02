@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Shield, PawPrint, Building2, AlertTriangle, Users } from 'lucide-react';
+import { Shield, PawPrint, Building2, AlertTriangle, Users, BarChart3 } from 'lucide-react';
 
 export default function AdminDashboard() {
   const { isPlatformAdmin } = useAuth();
@@ -11,9 +11,10 @@ export default function AdminDashboard() {
 
   const sections = [
     { icon: PawPrint, title: 'Gerenciar Pets', desc: 'Moderar anúncios, aprovar ou remover pets', link: '/admin/pets', color: 'text-orange-500' },
-    { icon: Building2, title: 'Organizações', desc: 'Verificar e gerenciar ONGs e lojas', link: '/admin/organizations', color: 'text-blue-500' },
-    { icon: AlertTriangle, title: 'Denúncias', desc: 'Revisar denúncias de maus-tratos', link: '/admin/reports', color: 'text-red-500' },
-    { icon: Users, title: 'Usuários', desc: 'Gerenciar contas e papéis', link: '/admin/users', color: 'text-purple-500' },
+    { icon: Building2, title: 'Organizações', desc: 'Verificar, gerenciar e excluir ONGs e lojas', link: '/admin/organizacoes', color: 'text-blue-500' },
+    { icon: AlertTriangle, title: 'Denúncias', desc: 'Revisar denúncias de maus-tratos', link: '/admin/denuncias', color: 'text-red-500' },
+    { icon: Users, title: 'Usuários', desc: 'Gerenciar contas, papéis e banimentos', link: '/admin/usuarios', color: 'text-purple-500' },
+    { icon: BarChart3, title: 'Métricas', desc: 'Adoções, crescimento e denúncias em gráficos', link: '/admin/metricas', color: 'text-green-500' },
   ];
 
   return (

@@ -68,10 +68,10 @@ export default function ForumPoll({ thread }) {
   };
 
   return (
-    <div className="rounded-xl border border-emerald-950/10 bg-secondary/30 p-4">
+    <div className="rounded-xl border border-primary/10 bg-secondary/30 p-4">
       <div className="mb-3 flex items-start justify-between gap-3">
         <div className="flex items-center gap-2">
-          <BarChart3 className="h-4 w-4 text-emerald-700" />
+          <BarChart3 className="h-4 w-4 text-primary" />
           <h4 className="font-semibold text-slate-900">{poll.question}</h4>
         </div>
         {closed ? (
@@ -101,13 +101,13 @@ export default function ForumPoll({ thread }) {
               disabled={closed}
               className={cn(
                 'relative w-full overflow-hidden rounded-lg border px-3 py-2 text-left transition-colors',
-                isSelected ? 'border-emerald-500 bg-white' : 'border-emerald-950/10 bg-white/70 hover:border-emerald-300',
+                isSelected ? 'border-primary bg-white' : 'border-primary/10 bg-white/70 hover:border-primary/40',
                 closed && 'cursor-default',
               )}
             >
               {revealResults && (
                 <span
-                  className="absolute inset-y-0 left-0 bg-emerald-100/80"
+                  className="absolute inset-y-0 left-0 bg-primary/15"
                   style={{ width: `${option.percentage}%` }}
                   aria-hidden
                 />
@@ -117,12 +117,12 @@ export default function ForumPoll({ thread }) {
                   <span className={cn(
                     'flex h-4 w-4 shrink-0 items-center justify-center border',
                     poll.multiple ? 'rounded' : 'rounded-full',
-                    isSelected ? 'border-emerald-600 bg-emerald-600 text-white' : 'border-slate-300',
+                    isSelected ? 'border-primary bg-primary text-white' : 'border-slate-300',
                   )}>
                     {isSelected && <Check className="h-3 w-3" />}
                   </span>
                   {option.text}
-                  {isMine && <span className="text-[11px] font-medium text-emerald-700">· seu voto</span>}
+                  {isMine && <span className="text-[11px] font-medium text-primary">· seu voto</span>}
                 </span>
                 {revealResults && (
                   <span className="relative shrink-0 text-xs font-semibold text-slate-600">

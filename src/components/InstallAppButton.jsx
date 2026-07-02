@@ -77,7 +77,7 @@ export default function InstallAppButton({
             </li>
             <li className="flex items-start gap-3">
               <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-xs font-semibold text-emerald-700">3</span>
-              <span>Confirme em <strong>Adicionar</strong>. O ícone do Pickleball aparece na tela inicial.</span>
+              <span>Confirme em <strong>Adicionar</strong>. O ícone do Viralata aparece na tela inicial.</span>
             </li>
           </ol>
         </DialogContent>
@@ -91,7 +91,7 @@ export default function InstallAppButton({
               Instalar o app
             </DialogTitle>
             <DialogDescription>
-              Você pode instalar o Pickleball direto do navegador, sem loja de apps:
+              Você pode instalar o Viralata direto do navegador, sem loja de apps:
             </DialogDescription>
           </DialogHeader>
           <ul className="mt-2 space-y-3 text-sm text-slate-700">

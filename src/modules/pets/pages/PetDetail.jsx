@@ -1,17 +1,24 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
-import { usePet, useCreateInterest, useHasInterest, useCompleteAdoption, useDeletePet } from '../hooks/usePets';
+import {
+  usePet, useCreateInterest, useHasInterest, useCompleteAdoption, useDeletePet,
+  useMyRatingForPet, useCreateRating,
+} from '../hooks/usePets';
 import InterestPanel from '../components/InterestPanel';
+import RatingForm from '../components/RatingForm';
+import PetShareCard from '../components/PetShareCard';
+import { usePetShareImage } from '../hooks/usePetShareImage';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Heart, MapPin, CheckCircle, Trash2 } from 'lucide-react';
+import { ArrowLeft, Heart, MapPin, Trash2, Share2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 const SIZE_LABEL = { mini: 'Mini', small: 'Pequeno', medium: 'Médio', large: 'Grande', giant: 'Gigante' };
 const AGE_LABEL = { puppy: 'Filhote', adult: 'Adulto', senior: 'Idoso' };
-const SPECIES_LABEL = { dog: 'Cachorro', cat: 'Gato', other: 'Outro' };
+const SPECIES_LABEL = { dog: 'Cachorro', cat: 'Gato', rabbit: 'Coelho', bird: 'Pássaro', other: 'Outro' };
 
 export default function PetDetail() {
   const { petId } = useParams();
@@ -24,11 +31,28 @@ export default function PetDetail() {
   const deletePet = useDeletePet();
   const [currentPhoto, setCurrentPhoto] = useState(0);
 
-  if (isLoading) return <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500" /></div>;
-  if (!pet) return <div className="text-center py-16 text-gray-500">Pet não encontrado.</div>;
+  const isOwner = user?.uid === pet?.owner_id;
+  const isAdopter = user?.uid === pet?.adopted_by;
+  const ratedUid = isAdopter ? pet?.owner_id : pet?.adopted_by;
+  const canRate = pet?.status === 'adopted' && (isOwner || isAdopter) && Boolean(ratedUid);
+  const { data: myRating } = useMyRatingForPet(canRate ? petId : null, user?.uid);
+  const createRating = useCreateRating();
+  const shareCardRef = useRef(null);
+  const { shareFromNode, generating: sharing } = usePetShareImage();
 
-  const isOwner = user?.uid === pet.owner_id;
+  if (isLoading) return <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>;
+  if (!pet) return <div className="text-center py-16 text-muted-foreground">Pet não encontrado.</div>;
+
   const canManage = isOwner || isPlatformAdmin;
+
+  async function handleRate({ ratedUid: target, stars, comment }) {
+    try {
+      await createRating.mutateAsync({ petId, ratedUid: target, stars, comment });
+      toast.success('Avaliação enviada. Obrigado!');
+    } catch (e) {
+      toast.error(e?.message || 'Erro ao enviar avaliação.');
+    }
+  }
 
   async function handleInterest() {
     if (!user) { navigate('/login'); return; }
@@ -38,6 +62,15 @@ export default function PetDetail() {
     } catch (e) {
       toast.error('Erro ao registrar interesse. Tente novamente.');
     }
+  }
+
+  async function handleShare() {
+    const shareUrl = `${window.location.origin}/pets/${petId}`;
+    await shareFromNode(shareCardRef.current, {
+      fileName: `${(pet.name || pet.title || 'pet').toLowerCase().replace(/\s+/g, '-')}.png`,
+      title: pet.title || pet.name,
+      text: `Conheça ${pet.name || pet.title} no Viralata! ${shareUrl}`,
+    });
   }
 
   async function handleDelete() {
@@ -52,15 +85,20 @@ export default function PetDetail() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
+    <div className="arena-page max-w-4xl mx-auto px-4 py-6 space-y-6">
       <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
         <ArrowLeft className="w-4 h-4 mr-1" /> Voltar
       </Button>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: 'easeOut' }}
+        className="grid grid-cols-1 md:grid-cols-2 gap-8"
+      >
         {/* Galeria de fotos */}
         <div className="space-y-3">
-          <div className="aspect-square rounded-2xl overflow-hidden bg-gray-100">
+          <div className="arena-panel aspect-square rounded-[1.25rem] overflow-hidden">
             <img
               src={pet.photos?.[currentPhoto] || '/placeholder-pet.svg'}
               alt={pet.title}
@@ -73,7 +111,7 @@ export default function PetDetail() {
                 <button
                   key={i}
                   onClick={() => setCurrentPhoto(i)}
-                  className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-colors ${i === currentPhoto ? 'border-orange-500' : 'border-transparent'}`}
+                  className={`flex-shrink-0 w-16 h-16 rounded-xl overflow-hidden border-2 transition-colors ${i === currentPhoto ? 'border-primary' : 'border-transparent'}`}
                 >
                   <img src={url} alt="" className="w-full h-full object-cover" />
                 </button>
@@ -86,15 +124,15 @@ export default function PetDetail() {
         <div className="space-y-4">
           <div>
             <div className="flex items-start justify-between gap-2">
-              <h1 className="text-2xl font-bold text-gray-900">{pet.title || pet.name}</h1>
+              <h1 className="text-2xl font-bold text-foreground">{pet.title || pet.name}</h1>
               {pet.status === 'adopted' && (
-                <Badge className="bg-green-500 text-white">Adotado ✓</Badge>
+                <Badge variant="success">Adotado ✓</Badge>
               )}
               {pet.status === 'in_process' && (
-                <Badge className="bg-yellow-500 text-white">Em processo</Badge>
+                <Badge className="bg-highlight text-highlight-foreground">Em processo</Badge>
               )}
             </div>
-            {pet.name && pet.title && <p className="text-gray-500 text-sm">Nome: {pet.name}</p>}
+            {pet.name && pet.title && <p className="text-muted-foreground text-sm">Nome: {pet.name}</p>}
           </div>
 
           <div className="flex flex-wrap gap-2">
@@ -102,26 +140,26 @@ export default function PetDetail() {
             {pet.size && <Badge variant="secondary">{SIZE_LABEL[pet.size]}</Badge>}
             {pet.age_group && <Badge variant="secondary">{AGE_LABEL[pet.age_group]}</Badge>}
             {pet.gender && <Badge variant="secondary">{pet.gender === 'male' ? 'Macho' : 'Fêmea'}</Badge>}
-            {pet.neutered && <Badge className="bg-green-100 text-green-800">Castrado</Badge>}
-            {pet.vaccinated === 'yes' && <Badge className="bg-blue-100 text-blue-800">Vacinado</Badge>}
-            {pet.dewormed && <Badge className="bg-purple-100 text-purple-800">Vermifugado</Badge>}
+            {pet.neutered && <Badge variant="success">Castrado</Badge>}
+            {pet.vaccinated === 'yes' && <Badge variant="outline">Vacinado</Badge>}
+            {pet.dewormed && <Badge variant="outline">Vermifugado</Badge>}
           </div>
 
           {(pet.city || pet.state) && (
-            <div className="flex items-center gap-1 text-sm text-gray-500">
+            <div className="flex items-center gap-1 text-sm text-muted-foreground">
               <MapPin className="w-4 h-4" />
               {[pet.city, pet.state].filter(Boolean).join(', ')}
             </div>
           )}
 
           {pet.health_notes && (
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-800">
+            <div className="bg-highlight/15 border border-highlight/40 rounded-xl p-3 text-sm text-[hsl(30,55%,26%)]">
               <strong>Observações de saúde:</strong> {pet.health_notes}
             </div>
           )}
 
           {pet.adoption_requirements && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-800">
+            <div className="bg-accent/10 border border-accent/30 rounded-xl p-3 text-sm text-[hsl(84,35%,22%)]">
               <strong>Requisitos para adoção:</strong> {pet.adoption_requirements}
             </div>
           )}
@@ -132,7 +170,7 @@ export default function PetDetail() {
               <Button
                 onClick={handleInterest}
                 disabled={alreadyInterested || createInterest.isPending}
-                className="w-full bg-orange-500 hover:bg-orange-600 text-white"
+                className="w-full"
                 size="lg"
               >
                 <Heart className="w-4 h-4 mr-2" />
@@ -154,9 +192,13 @@ export default function PetDetail() {
                 </Button>
               </div>
             )}
+            <Button variant="outline" onClick={handleShare} disabled={sharing || !pet.photos?.[0]} className="w-full">
+              <Share2 className="w-4 h-4 mr-2" />
+              {sharing ? 'Gerando imagem...' : 'Compartilhar'}
+            </Button>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Painel de interessados (apenas para donos) */}
       {canManage && (
@@ -169,7 +211,7 @@ export default function PetDetail() {
             <InterestPanel petId={petId} pet={pet} />
           </TabsContent>
           <TabsContent value="info">
-            <div className="prose prose-sm max-w-none text-gray-600 mt-4">
+            <div className="prose prose-sm max-w-none text-muted-foreground mt-4">
               {pet.breed && <p><strong>Raça:</strong> {pet.breed}</p>}
               {pet.age_months && <p><strong>Idade:</strong> {pet.age_months} meses</p>}
               {pet.gov_registration && <p><strong>Registro/Chip:</strong> {pet.gov_registration}</p>}
@@ -177,6 +219,21 @@ export default function PetDetail() {
           </TabsContent>
         </Tabs>
       )}
+
+      {/* Avaliação pós-adoção */}
+      {canRate && !myRating && (
+        <RatingForm
+          ratedUid={ratedUid}
+          ratedLabel={isAdopter ? 'o responsável pelo pet' : 'o adotante'}
+          onSubmit={handleRate}
+          submitting={createRating.isPending}
+        />
+      )}
+
+      {/* Nó oculto usado apenas para gerar a imagem de compartilhamento */}
+      <div style={{ position: 'fixed', top: 0, left: '-99999px', pointerEvents: 'none' }} aria-hidden="true">
+        <PetShareCard ref={shareCardRef} pet={pet} shareUrl={`${window.location.origin}/pets/${petId}`} />
+      </div>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { User, MapPin, Phone, Mail, Eye, EyeOff } from 'lucide-react';
+import { User, MapPin, Phone, Mail, Eye, EyeOff, Download, ShieldAlert } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,6 +9,10 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ImageUpload } from '@/components/ui/image-upload';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import RatingBadge from '@/modules/pets/components/RatingBadge';
+import { exportMyData, downloadDataExport } from '@/core/services/dataExportService';
+import { deleteMyAccount } from '@/core/services/deleteAccountService';
 
 const GENDER_OPTIONS = [
   { value: 'male', label: 'Masculino' },
@@ -16,16 +21,41 @@ const GENDER_OPTIONS = [
   { value: 'prefer_not_to_say', label: 'Prefiro não informar' },
 ];
 
+// Mesmos valores usados em modules/onboarding/pages/OnboardingQuestionnaire.jsx
+// e checados por modules/pets/domain/matching.js — não renomear sem atualizar os dois.
 const HOUSING_OPTIONS = [
-  { value: 'apartment_no_yard', label: 'Apartamento sem área externa' },
-  { value: 'apartment_balcony', label: 'Apartamento com varanda/sacada' },
-  { value: 'house_small_yard', label: 'Casa com quintal pequeno' },
-  { value: 'house_large_yard', label: 'Casa com quintal grande' },
-  { value: 'farm', label: 'Sítio / Chácara / Fazenda' },
+  { value: 'house_with_yard', label: '🏡 Casa com pátio' },
+  { value: 'house_no_yard', label: '🏠 Casa sem pátio' },
+  { value: 'apartment_screened', label: '🏢 Apartamento com tela de proteção' },
+  { value: 'apartment_unscreened', label: '🏢 Apartamento sem tela' },
+  { value: 'farm', label: '🌾 Sítio / Fazenda' },
+];
+
+const WALKS_OPTIONS = [
+  { value: 'none', label: 'Não costumo passear' },
+  { value: 'short', label: 'Passeios curtos (menos de 30 min)' },
+  { value: 'long', label: 'Passeios longos (mais de 30 min)' },
+];
+
+const BUDGET_OPTIONS = [
+  { value: 'basic', label: 'Básico — até R$200/mês' },
+  { value: 'moderate', label: 'Moderado — R$200 a R$500/mês' },
+  { value: 'high', label: 'Alto — acima de R$500/mês' },
+];
+
+const OTHER_PET_OPTIONS = [
+  { value: 'dog', label: '🐶 Cachorro' },
+  { value: 'cat', label: '🐱 Gato' },
+  { value: 'bird', label: '🐦 Pássaro' },
+  { value: 'other', label: '🐾 Outro' },
 ];
 
 export default function Profile() {
-  const { user, userProfile, updateUserProfile } = useAuth();
+  const navigate = useNavigate();
+  const { user, userProfile, updateUserProfile, signOut } = useAuth();
+  const [exporting, setExporting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   const [fullName, setFullName] = useState(userProfile?.full_name || user?.displayName || '');
   const [phone, setPhone] = useState(userProfile?.phone || '');
@@ -33,15 +63,19 @@ export default function Profile() {
   const [stateUf, setStateUf] = useState(userProfile?.state || '');
   const [gender, setGender] = useState(userProfile?.gender || '');
   const [housing, setHousing] = useState(userProfile?.housing_type || '');
-  const [hasYard, setHasYard] = useState(userProfile?.has_yard === true);
-  const [hasScreens, setHasScreens] = useState(userProfile?.has_screens === true);
+  const [dailyWalks, setDailyWalks] = useState(userProfile?.daily_walks || '');
   const [hasChildren, setHasChildren] = useState(userProfile?.has_children === true);
+  const [childrenAges, setChildrenAges] = useState(userProfile?.children_ages || '');
   const [hasElderly, setHasElderly] = useState(userProfile?.has_elderly === true);
-  const [hasOtherPets, setHasOtherPets] = useState(userProfile?.has_other_pets === true);
-  const [monthlyBudget, setMonthlyBudget] = useState(userProfile?.monthly_budget || '');
+  const [otherPets, setOtherPets] = useState(Array.isArray(userProfile?.other_pets) ? userProfile.other_pets : []);
+  const [budgetLevel, setBudgetLevel] = useState(userProfile?.budget_level || '');
   const [phonePublic, setPhonePublic] = useState(userProfile?.phone_public === true);
   const [photoUrl, setPhotoUrl] = useState(userProfile?.photo_url || user?.photoURL || '');
   const [busy, setBusy] = useState(false);
+
+  function toggleOtherPet(pet) {
+    setOtherPets((prev) => (prev.includes(pet) ? prev.filter((p) => p !== pet) : [...prev, pet]));
+  }
 
   async function handleSave(e) {
     e.preventDefault();
@@ -54,12 +88,12 @@ export default function Profile() {
         state: stateUf.trim().toUpperCase(),
         gender,
         housing_type: housing,
-        has_yard: hasYard,
-        has_screens: hasScreens,
+        daily_walks: dailyWalks,
         has_children: hasChildren,
+        children_ages: hasChildren ? childrenAges.trim() : '',
         has_elderly: hasElderly,
-        has_other_pets: hasOtherPets,
-        monthly_budget: monthlyBudget,
+        other_pets: otherPets,
+        budget_level: budgetLevel,
         phone_public: phonePublic,
         photo_url: photoUrl,
         profile_completed: Boolean(fullName.trim() && city.trim()),
@@ -72,15 +106,50 @@ export default function Profile() {
     }
   }
 
+  async function handleExportData() {
+    setExporting(true);
+    try {
+      const data = await exportMyData(user.uid);
+      downloadDataExport(data, user.uid);
+      toast.success('Seus dados foram baixados.');
+    } catch (err) {
+      toast.error('Erro ao exportar dados. Tente novamente.');
+    } finally {
+      setExporting(false);
+    }
+  }
+
+  async function handleDeleteAccount() {
+    setDeleting(true);
+    try {
+      await deleteMyAccount(user);
+      toast.success('Sua conta foi excluída.');
+      await signOut();
+      navigate('/');
+    } catch (err) {
+      if (err?.code === 'auth/requires-recent-login') {
+        toast.error('Por segurança, saia e entre novamente antes de excluir sua conta.');
+      } else {
+        toast.error('Erro ao excluir conta. Tente novamente.');
+      }
+    } finally {
+      setDeleting(false);
+      setConfirmDelete(false);
+    }
+  }
+
   return (
-    <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
-      <h1 className="text-xl font-bold text-gray-900">Meu Perfil</h1>
+    <div className="arena-page max-w-2xl mx-auto px-4 py-6 space-y-6">
+      <div className="flex items-center gap-3">
+        <h1 className="text-xl font-bold text-foreground">Meu Perfil</h1>
+        <RatingBadge uid={user?.uid} />
+      </div>
 
       {/* Dados pessoais */}
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-base">
-            <User className="w-4 h-4 text-orange-500" /> Dados pessoais
+            <User className="w-4 h-4 text-primary" /> Dados pessoais
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -93,8 +162,8 @@ export default function Profile() {
                 storagePath={`users/${user?.uid}/avatar`}
                 className="w-20 h-20 rounded-full"
               />
-              <div className="text-sm text-gray-500">
-                <p className="font-medium text-gray-700">{user?.email}</p>
+              <div className="text-sm text-muted-foreground">
+                <p className="font-medium text-foreground">{user?.email}</p>
                 <p>Clique na foto para alterar</p>
               </div>
             </div>
@@ -140,12 +209,12 @@ export default function Profile() {
             <div className="flex items-center justify-between rounded-lg border p-3">
               <div>
                 <p className="text-sm font-medium">Exibir telefone publicamente</p>
-                <p className="text-xs text-gray-500">Visível para responsáveis de pets que você demonstrar interesse</p>
+                <p className="text-xs text-muted-foreground">Visível para responsáveis de pets que você demonstrar interesse</p>
               </div>
               <Switch checked={phonePublic} onCheckedChange={setPhonePublic} />
             </div>
 
-            <Button type="submit" disabled={busy} className="w-full bg-orange-500 hover:bg-orange-600 text-white">
+            <Button type="submit" disabled={busy} className="w-full">
               {busy ? 'Salvando...' : 'Salvar perfil'}
             </Button>
           </form>
@@ -179,37 +248,112 @@ export default function Profile() {
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="budget">Orçamento mensal estimado para o pet (R$)</Label>
-            <Input
+            <Label htmlFor="dailyWalks">Rotina de passeios</Label>
+            <select
+              id="dailyWalks"
+              value={dailyWalks}
+              onChange={(e) => setDailyWalks(e.target.value)}
+              className="h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <option value="">Selecione...</option>
+              {WALKS_OPTIONS.map(({ value, label }) => (
+                <option key={value} value={value}>{label}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="budget">Orçamento para cuidados do pet</Label>
+            <select
               id="budget"
-              type="number"
-              min="0"
-              value={monthlyBudget}
-              onChange={(e) => setMonthlyBudget(e.target.value)}
-              placeholder="Ex: 300"
+              value={budgetLevel}
+              onChange={(e) => setBudgetLevel(e.target.value)}
+              className="h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <option value="">Selecione...</option>
+              {BUDGET_OPTIONS.map(({ value, label }) => (
+                <option key={value} value={value}>{label}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex items-center justify-between rounded-lg border p-3">
+            <p className="text-sm">Tem crianças em casa</p>
+            <Switch checked={hasChildren} onCheckedChange={setHasChildren} />
+          </div>
+          {hasChildren && (
+            <Input
+              value={childrenAges}
+              onChange={(e) => setChildrenAges(e.target.value)}
+              placeholder="Idades das crianças (ex: 3, 7 anos)"
             />
+          )}
+          <div className="flex items-center justify-between rounded-lg border p-3">
+            <p className="text-sm">Tem idosos em casa</p>
+            <Switch checked={hasElderly} onCheckedChange={setHasElderly} />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            {[
-              { label: 'Tem quintal / área externa', value: hasYard, set: setHasYard },
-              { label: 'Tem tela de proteção', value: hasScreens, set: setHasScreens },
-              { label: 'Tem crianças em casa', value: hasChildren, set: setHasChildren },
-              { label: 'Tem idosos em casa', value: hasElderly, set: setHasElderly },
-              { label: 'Já tem outros pets', value: hasOtherPets, set: setHasOtherPets },
-            ].map(({ label, value, set }) => (
-              <div key={label} className="flex items-center justify-between rounded-lg border p-3">
-                <p className="text-sm">{label}</p>
-                <Switch checked={value} onCheckedChange={set} />
-              </div>
-            ))}
+          <div className="space-y-1.5">
+            <Label>Já tem outros animais?</Label>
+            <div className="grid grid-cols-2 gap-2">
+              {OTHER_PET_OPTIONS.map(({ value, label }) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => toggleOtherPet(value)}
+                  className={`text-left px-3 py-2 rounded-lg border-2 text-sm transition-colors ${
+                    otherPets.includes(value)
+                      ? 'border-primary bg-primary/10 text-foreground font-medium'
+                      : 'border-border hover:border-primary/40 text-muted-foreground'
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
           </div>
 
-          <Button onClick={handleSave} disabled={busy} className="w-full bg-orange-500 hover:bg-orange-600 text-white">
+          <Button onClick={handleSave} disabled={busy} className="w-full">
             {busy ? 'Salvando...' : 'Salvar perfil de adotante'}
           </Button>
         </CardContent>
       </Card>
+
+      {/* Privacidade e dados (LGPD) */}
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base">Privacidade e dados</CardTitle>
+          <CardDescription>
+            Em conformidade com a LGPD, você pode baixar uma cópia dos seus dados ou excluir sua
+            conta permanentemente a qualquer momento.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <Button variant="outline" onClick={handleExportData} disabled={exporting} className="w-full">
+            <Download className="w-4 h-4 mr-2" />
+            {exporting ? 'Preparando arquivo...' : 'Baixar meus dados'}
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => setConfirmDelete(true)}
+            className="w-full text-destructive border-destructive/30 hover:bg-destructive/10 hover:text-destructive"
+          >
+            <ShieldAlert className="w-4 h-4 mr-2" />
+            Excluir minha conta
+          </Button>
+        </CardContent>
+      </Card>
+
+      <ConfirmDialog
+        open={confirmDelete}
+        onOpenChange={setConfirmDelete}
+        title="Excluir sua conta"
+        description="Seu perfil será anonimizado e sua conta de acesso removida. Pets, posts e mensagens já publicados permanecem para não quebrar o histórico de outros usuários. Esta ação não pode ser desfeita."
+        confirmLabel="Excluir definitivamente"
+        destructive
+        loading={deleting}
+        onConfirm={handleDeleteAccount}
+      />
     </div>
   );
 }

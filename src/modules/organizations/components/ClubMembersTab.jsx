@@ -13,8 +13,11 @@ import {
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
+import { Switch } from '@/components/ui/switch';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
-import { useClubMembers, useSetMemberRole, useRemoveMember } from '@/modules/organizations/hooks/useClubs';
+import {
+  useClubMembers, useSetMemberRole, useSetMemberPermissions, useRemoveMember,
+} from '@/modules/organizations/hooks/useClubs';
 import { CLUB_ROLE, CLUB_ROLE_LABELS } from '@/modules/organizations/domain/constants';
 
 function initials(name) {
@@ -25,6 +28,7 @@ export default function ClubMembersTab({ clubId, isAdmin }) {
   const { user } = useAuth();
   const { data: members = [], isLoading } = useClubMembers(clubId);
   const setRole = useSetMemberRole(clubId);
+  const setPermissions = useSetMemberPermissions(clubId);
   const removeMember = useRemoveMember(clubId);
   const [confirmRemove, setConfirmRemove] = useState(null);
 
@@ -39,6 +43,14 @@ export default function ClubMembersTab({ clubId, isAdmin }) {
       toast.success(role === CLUB_ROLE.ADMIN ? 'Membro promovido a administrador.' : 'Administrador rebaixado a membro.');
     } catch (err) {
       toast.error(err.message || 'Não foi possível alterar a função.');
+    }
+  };
+
+  const handleToggleEditPets = async (member, checked) => {
+    try {
+      await setPermissions.mutateAsync({ member, permissions: { edit_pets: checked } });
+    } catch (err) {
+      toast.error(err.message || 'Não foi possível alterar a permissão.');
     }
   };
 
@@ -62,7 +74,7 @@ export default function ClubMembersTab({ clubId, isAdmin }) {
   }
 
   if (members.length === 0) {
-    return <EmptyState icon={Shield} title="Sem membros" description="Convide atletas com o código do clube." />;
+    return <EmptyState icon={Shield} title="Sem membros" description="Convide pessoas com o código do clube." />;
   }
 
   return (
@@ -73,9 +85,9 @@ export default function ClubMembersTab({ clubId, isAdmin }) {
           <Card key={member.id} className="rounded-xl">
             <CardContent className="flex items-center gap-3 p-3 sm:p-4">
               {member.photo_url ? (
-                <img src={member.photo_url} alt="" className="h-11 w-11 shrink-0 rounded-full border border-emerald-900/10 object-cover" />
+                <img src={member.photo_url} alt="" className="h-11 w-11 shrink-0 rounded-full border border-primary/10 object-cover" />
               ) : (
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-emerald-900 font-semibold text-emerald-50">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary font-semibold text-primary-foreground">
                   {initials(member.user_name)}
                 </div>
               )}
@@ -93,6 +105,17 @@ export default function ClubMembersTab({ clubId, isAdmin }) {
               <Badge variant={member.role === CLUB_ROLE.ADMIN ? 'warning' : 'secondary'} className="shrink-0 rounded-full">
                 {CLUB_ROLE_LABELS[member.role] || member.role}
               </Badge>
+
+              {isAdmin && member.role !== CLUB_ROLE.ADMIN && (
+                <label className="flex shrink-0 items-center gap-1.5 text-xs text-slate-500">
+                  Editar pets
+                  <Switch
+                    checked={member.permissions?.edit_pets === true}
+                    onCheckedChange={(v) => handleToggleEditPets(member, v)}
+                    disabled={setPermissions.isPending}
+                  />
+                </label>
+              )}
 
               {isAdmin && !isSelf && (
                 <DropdownMenu>

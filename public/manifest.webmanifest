@@ -1,16 +1,16 @@
 {
-  "name": "Pickleball — Torneios",
-  "short_name": "Pickleball",
-  "description": "Plataforma de criação e gestão de torneios de pickleball: single, duplas e americana, com sorteio automatizado e ranking ao vivo.",
+  "name": "Viralata — Adoção Responsável de Pets",
+  "short_name": "Viralata",
+  "description": "Plataforma gratuita que conecta pets que precisam de um lar com famílias que têm amor para dar. Adoção responsável, gratuita e segura.",
   "id": "/",
   "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#02121c",
-  "theme_color": "#065f46",
+  "background_color": "#fdf6ec",
+  "theme_color": "#c1522a",
   "lang": "pt-BR",
-  "categories": ["sports"],
+  "categories": ["lifestyle", "social"],
   "icons": [
     {
       "src": "/pwa-192.png",

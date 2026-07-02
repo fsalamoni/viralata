@@ -5,59 +5,66 @@ export default function PrivacyPolicy() {
   return (
     <LegalPage
       eyebrow="Termos de uso e privacidade"
-      title="Política de Uso e Privacidade"
-      description="Condições de uso da plataforma Pickleball, natureza esportiva da ferramenta e diretrizes de tratamento de dados pessoais."
+      title="Política de Privacidade"
+      description="Como o Viralata coleta, usa e protege os dados de adotantes, doadores e organizações na plataforma de adoção responsável de pets."
       meta={`Versão 1.0 — ${new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}. Ao usar a plataforma, você declara ciência e aceitação destas condições.`}
     >
-      <LegalSection icon={FileText} title="Natureza da Plataforma" description="Ferramenta esportiva para criação e gestão de torneios amadores.">
+      <LegalSection icon={FileText} title="Natureza da plataforma" description="Marketplace de adoção responsável de pets — não há venda de animais.">
         <p>
-          A plataforma <strong>Pickleball</strong> é uma ferramenta tecnológica para criação e administração de torneios
-          do esporte pickleball. Permite que organizadores criem torneios, definam regras, abram inscrições, sorteiem
-          chaves, lancem resultados e calculem rankings.
+          O <strong>Viralata</strong> é uma plataforma que conecta pessoas físicas e ONGs/lojas parceiras que têm
+          animais para doação com adotantes interessados. Um questionário de perfilamento comportamental (moradia,
+          rotina, família, orçamento) é obrigatório antes do acesso ao catálogo, para reduzir devoluções e frustrações.
         </p>
         <p>
-          A plataforma não organiza eventos, não fornece quadras, não administra premiações nem intermedia pagamentos.
-          A taxa de inscrição informada em uma modalidade serve apenas como referência para os participantes; a
-          cobrança e o controle financeiro são responsabilidade do(s) admin(s) do torneio.
-        </p>
-      </LegalSection>
-
-      <LegalSection icon={ShieldCheck} title="Conduta e Responsabilidade" description="Cada usuário responde pelos próprios atos.">
-        <p>
-          O uso deve respeitar a legislação aplicável, as regras do esporte (CBP / USAP) e os princípios de fair play.
-          Casos de fraude no lançamento de resultados, identidade falsa ou ofensa a outros usuários podem levar à
-          suspensão da conta e do torneio.
+          A plataforma não vende animais, não intermedia pagamentos entre as partes e não garante a veracidade das
+          informações fornecidas por quem cadastra um pet. Recomendamos que o adotante faça suas próprias verificações
+          antes de concluir uma adoção.
         </p>
       </LegalSection>
 
-      <LegalSection icon={Database} title="Dados coletados" description="Coletamos o mínimo necessário para a operação esportiva.">
+      <LegalSection icon={ShieldCheck} title="Conduta e responsabilidade" description="Cada usuário responde pelos próprios atos.">
+        <p>
+          O uso deve respeitar a legislação de proteção animal e a boa-fé entre as partes. Cadastros falsos, maus-tratos,
+          discriminação ou assédio no chat podem levar à suspensão da conta. Denúncias de maus-tratos podem ser
+          registradas a qualquer momento pelo botão de denúncia — a plataforma gera um relatório para você mesmo
+          encaminhar às autoridades competentes, sem assumir a investigação.
+        </p>
+      </LegalSection>
+
+      <LegalSection icon={Database} title="Dados coletados" description="Coletamos o necessário para viabilizar o match e a adoção responsável.">
         <LegalList>
-          <LegalListItem>Nome e e-mail do usuário (via login Google).</LegalListItem>
-          <LegalListItem>Nome de exibição, telefone e data de nascimento (quando preenchidos no perfil).</LegalListItem>
-          <LegalListItem>Inscrições em torneios, resultados de jogos, ranking e nivelamento informado.</LegalListItem>
-          <LegalListItem>Eventos de auditoria de ações administrativas (com data, autor e descrição).</LegalListItem>
+          <LegalListItem>Nome e e-mail (via login Google), foto de perfil, telefone e localização (cidade/estado).</LegalListItem>
+          <LegalListItem>Perfil de adotante: tipo de moradia, rotina de passeios, presença de crianças/idosos, outros animais e orçamento — usado pelo algoritmo de compatibilidade.</LegalListItem>
+          <LegalListItem>Pets cadastrados (fotos, saúde, comportamento) e interesses de adoção demonstrados.</LegalListItem>
+          <LegalListItem>Mensagens trocadas no chat entre adotante e responsável pelo pet, incluindo anexos.</LegalListItem>
+          <LegalListItem>Avaliações mútuas registradas após uma adoção concluída.</LegalListItem>
+          <LegalListItem>Denúncias de maus-tratos, quando registradas por você.</LegalListItem>
+          <LegalListItem>Logs de auditoria de ações administrativas (data, autor, descrição) — mantidos mesmo após a exclusão de uma conta, por exigência legal.</LegalListItem>
         </LegalList>
       </LegalSection>
 
       <LegalSection icon={UserCheck} title="Visibilidade dos dados">
         <p>
-          Nomes, inscrições, resultados e ranking são visíveis para outros participantes do mesmo torneio. Dados como
-          telefone e e-mail não são exibidos publicamente. Admins de torneio têm acesso à lista completa de inscritos
-          do seu próprio torneio para fins de gestão.
+          Nome de exibição e foto aparecem publicamente nos anúncios de pets, avaliações e diretório de organizações.
+          Telefone e e-mail só ficam visíveis para a outra parte de uma conversa em andamento, e apenas se você optar
+          por publicá-los. Administradores de organizações (ONGs/lojas) veem os dados de quem demonstrou interesse nos
+          pets sob sua responsabilidade.
         </p>
       </LegalSection>
 
-      <LegalSection icon={Eye} title="Direitos do titular">
+      <LegalSection icon={Eye} title="Seus direitos (LGPD)">
         <p>
-          Conforme a LGPD, você pode solicitar acesso, correção, portabilidade ou exclusão dos seus dados pessoais.
-          Para isso, entre em contato pelo e-mail informado na página de contato.
+          Você pode baixar uma cópia dos seus dados ou excluir sua conta a qualquer momento na página{' '}
+          <strong>Meu Perfil</strong>. Ao excluir a conta, seu perfil é anonimizado e o acesso é removido; pets, posts
+          e mensagens já publicados permanecem visíveis para não quebrar o histórico de terceiros, e os logs de
+          auditoria são preservados conforme exigido em lei.
         </p>
       </LegalSection>
 
       <LegalSection icon={RefreshCw} title="Alterações">
         <p>
-          Esta política pode ser atualizada para refletir mudanças de funcionalidade, requisitos legais ou de
-          segurança. A versão vigente será sempre a publicada nesta página.
+          Esta política pode ser atualizada para refletir mudanças de funcionalidade ou requisitos legais. A versão
+          vigente é sempre a publicada nesta página.
         </p>
       </LegalSection>
     </LegalPage>

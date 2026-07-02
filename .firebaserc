@@ -1,9 +1,9 @@
 {
   "projects": {
-    "default": "viralata"
+    "default": "viralata-4cf0b"
   },
   "targets": {
-    "viralata": {
+    "viralata-4cf0b": {
       "hosting": {
         "viralata": ["viralata"]
       }

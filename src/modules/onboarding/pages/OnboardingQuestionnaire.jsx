@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -65,6 +65,12 @@ const STEPS = [
     description: 'Para mostrar pets próximos a você.',
     type: 'location',
   },
+  {
+    id: 'consent',
+    title: 'Privacidade dos seus dados',
+    description: 'Última etapa antes de ver os pets disponíveis.',
+    type: 'consent',
+  },
 ];
 
 export default function OnboardingQuestionnaire() {
@@ -81,6 +87,7 @@ export default function OnboardingQuestionnaire() {
     budget_level: '',
     city: userProfile?.city || '',
     state: userProfile?.state || '',
+    lgpd_consent: false,
   });
   const [saving, setSaving] = useState(false);
   const current = STEPS[step];
@@ -102,13 +109,18 @@ export default function OnboardingQuestionnaire() {
   function canAdvance() {
     if (current.type === 'radio') return Boolean(answers[current.field]);
     if (current.type === 'location') return answers.city.length >= 2 && answers.state.length === 2;
+    if (current.type === 'consent') return answers.lgpd_consent === true;
     return true;
   }
 
   async function handleFinish() {
     setSaving(true);
     try {
-      await updateUserProfile({ ...answers, profile_completed: true });
+      await updateUserProfile({
+        ...answers,
+        profile_completed: true,
+        lgpd_consent_at: new Date().toISOString(),
+      });
       toast.success('Perfil concluído! Bem-vindo ao Viralata 🐾');
       navigate('/feed');
     } catch {
@@ -119,19 +131,19 @@ export default function OnboardingQuestionnaire() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-orange-50 to-white flex items-center justify-center p-4">
+    <div className="arena-page min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-lg space-y-6">
         <div className="text-center space-y-2">
           <div className="text-4xl">🐾</div>
-          <h1 className="text-2xl font-bold text-gray-900">Vamos montar seu perfil</h1>
-          <p className="text-gray-500 text-sm">Passo {step + 1} de {STEPS.length}</p>
+          <h1 className="text-2xl font-bold text-foreground">Vamos montar seu perfil</h1>
+          <p className="text-muted-foreground text-sm">Passo {step + 1} de {STEPS.length}</p>
           <Progress value={progress} className="h-2" />
         </div>
 
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
+        <div className="arena-panel rounded-2xl p-6 space-y-4">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">{current.title}</h2>
-            <p className="text-sm text-gray-500 mt-1">{current.description}</p>
+            <h2 className="text-lg font-semibold text-foreground">{current.title}</h2>
+            <p className="text-sm text-muted-foreground mt-1">{current.description}</p>
           </div>
 
           {current.type === 'radio' && (
@@ -143,8 +155,8 @@ export default function OnboardingQuestionnaire() {
                   onClick={() => setField(current.field, opt.value)}
                   className={`w-full text-left px-4 py-3 rounded-xl border-2 transition-colors text-sm ${
                     answers[current.field] === opt.value
-                      ? 'border-orange-500 bg-orange-50 text-orange-900 font-medium'
-                      : 'border-gray-200 hover:border-gray-300 text-gray-700'
+                      ? 'border-primary bg-primary/10 text-foreground font-medium'
+                      : 'border-border hover:border-primary/40 text-muted-foreground'
                   }`}
                 >
                   {opt.label}
@@ -183,8 +195,8 @@ export default function OnboardingQuestionnaire() {
                   onClick={() => togglePet(opt.value)}
                   className={`w-full text-left px-4 py-3 rounded-xl border-2 transition-colors text-sm ${
                     answers.other_pets.includes(opt.value)
-                      ? 'border-orange-500 bg-orange-50 text-orange-900 font-medium'
-                      : 'border-gray-200 hover:border-gray-300 text-gray-700'
+                      ? 'border-primary bg-primary/10 text-foreground font-medium'
+                      : 'border-border hover:border-primary/40 text-muted-foreground'
                   }`}
                 >
                   {opt.label}
@@ -195,8 +207,8 @@ export default function OnboardingQuestionnaire() {
                 onClick={() => setAnswers((prev) => ({ ...prev, other_pets: [] }))}
                 className={`w-full text-left px-4 py-3 rounded-xl border-2 transition-colors text-sm ${
                   answers.other_pets.length === 0
-                    ? 'border-orange-500 bg-orange-50 text-orange-900 font-medium'
-                    : 'border-gray-200 hover:border-gray-300 text-gray-700'
+                    ? 'border-primary bg-primary/10 text-foreground font-medium'
+                    : 'border-border hover:border-primary/40 text-muted-foreground'
                 }`}
               >
                 🚫 Não tenho outros animais
@@ -216,6 +228,35 @@ export default function OnboardingQuestionnaire() {
               </div>
             </div>
           )}
+
+          {current.type === 'consent' && (
+            <div className="space-y-3">
+              <p className="text-sm text-muted-foreground">
+                Usamos os dados deste questionário para sugerir pets compatíveis com a sua
+                realidade. Você pode revisar nossa{' '}
+                <Link to="/politica-privacidade" target="_blank" className="text-primary underline">
+                  Política de Privacidade
+                </Link>{' '}
+                e nossos{' '}
+                <Link to="/termos" target="_blank" className="text-primary underline">
+                  Termos de Uso
+                </Link>. A qualquer momento você pode baixar ou excluir seus dados na página de
+                perfil.
+              </p>
+              <div className="flex items-start gap-3 rounded-xl border-2 border-border p-4">
+                <Checkbox
+                  id="lgpd_consent"
+                  checked={answers.lgpd_consent}
+                  onCheckedChange={(v) => setField('lgpd_consent', v)}
+                  className="mt-0.5"
+                />
+                <Label htmlFor="lgpd_consent" className="cursor-pointer text-sm font-normal">
+                  Li e concordo com o uso dos meus dados conforme descrito acima, em conformidade
+                  com a LGPD.
+                </Label>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="flex gap-3">
@@ -228,7 +269,7 @@ export default function OnboardingQuestionnaire() {
             <Button
               onClick={() => setStep((s) => s + 1)}
               disabled={!canAdvance()}
-              className="flex-1 bg-orange-500 hover:bg-orange-600 text-white"
+              className="flex-1"
             >
               Continuar
             </Button>
@@ -236,7 +277,7 @@ export default function OnboardingQuestionnaire() {
             <Button
               onClick={handleFinish}
               disabled={!canAdvance() || saving}
-              className="flex-1 bg-orange-500 hover:bg-orange-600 text-white"
+              className="flex-1"
             >
               {saving ? 'Salvando...' : 'Concluir e ver pets 🐾'}
             </Button>

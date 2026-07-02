@@ -78,16 +78,16 @@ export default function ChatPage() {
 
       <Card className="grid h-[calc(100dvh-11rem)] min-h-[30rem] grid-cols-1 overflow-hidden rounded-2xl border-white/80 bg-white/85 lg:grid-cols-[20rem,1fr] xl:grid-cols-[22rem,1fr]">
         {/* Lista de conversas */}
-        <aside className={cn('flex min-h-0 flex-col border-r border-emerald-950/10', selectedConversation && 'hidden lg:flex')}>
-          <div className="space-y-3 border-b border-emerald-950/10 p-3">
+        <aside className={cn('flex min-h-0 flex-col border-r border-primary/10', selectedConversation && 'hidden lg:flex')}>
+          <div className="space-y-3 border-b border-primary/10 p-3">
             <div className="flex items-center justify-between gap-2">
-              <h2 className="text-base font-semibold text-slate-900">Conversas</h2>
+              <h2 className="text-base font-semibold text-foreground">Conversas</h2>
               <Button size="sm" onClick={() => setNewOpen(true)}>
                 <Plus className="mr-1.5 h-4 w-4" /> Nova
               </Button>
             </div>
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -118,13 +118,13 @@ export default function ChatPage() {
               onOpenConversation={selectConversation}
             />
           ) : (
-            <div className="flex h-full flex-col items-center justify-center px-6 text-center text-slate-500">
-              <span className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-700">
+            <div className="flex h-full flex-col items-center justify-center px-6 text-center text-muted-foreground">
+              <span className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary">
                 <MessageCircle className="h-8 w-8" />
               </span>
-              <h3 className="text-lg font-semibold text-slate-900">Suas conversas</h3>
+              <h3 className="text-lg font-semibold text-foreground">Suas conversas</h3>
               <p className="mt-2 max-w-sm text-sm leading-6">
-                Selecione uma conversa à esquerda ou inicie uma nova para falar com atletas e grupos da comunidade.
+                Selecione uma conversa à esquerda ou inicie uma nova para falar com pessoas e grupos da comunidade.
               </p>
               <Button className="mt-5" onClick={() => setNewOpen(true)}>
                 <Plus className="mr-1.5 h-4 w-4" /> Nova conversa

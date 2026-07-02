@@ -6,7 +6,7 @@
 /** @typedef {'house_with_yard' | 'house_no_yard' | 'apartment_screened' | 'apartment_unscreened' | 'farm'} HousingType */
 /** @typedef {'none' | 'short' | 'long'} DailyWalks */
 /** @typedef {'basic' | 'moderate' | 'high'} BudgetLevel */
-/** @typedef {'dog' | 'cat' | 'other'} PetSpecies */
+/** @typedef {'dog' | 'cat' | 'rabbit' | 'bird' | 'other'} PetSpecies */
 /** @typedef {'mini' | 'small' | 'medium' | 'large' | 'giant'} PetSize */
 /** @typedef {'puppy' | 'adult' | 'senior'} PetAgeGroup */
 /** @typedef {'male' | 'female'} PetGender */
@@ -18,7 +18,7 @@
 /** @typedef {'pending' | 'investigating' | 'resolved'} ReportStatus */
 
 export const PLATFORM_ROLES = ['user', 'platform_admin'];
-export const PET_SPECIES = ['dog', 'cat', 'other'];
+export const PET_SPECIES = ['dog', 'cat', 'rabbit', 'bird', 'other'];
 export const PET_SIZES = ['mini', 'small', 'medium', 'large', 'giant'];
 export const PET_AGE_GROUPS = ['puppy', 'adult', 'senior'];
 export const PET_STATUSES = ['available', 'in_process', 'adopted'];

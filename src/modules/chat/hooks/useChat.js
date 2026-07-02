@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import {
   subscribeToConversations,
@@ -12,7 +13,17 @@ import {
   sendMessage,
   editMessage,
   deleteMessage,
+  listUsersForChat,
 } from '../services/chatService';
+
+/** Lista de usuários da plataforma, para iniciar uma nova conversa. */
+export function useChatUserDirectory() {
+  return useQuery({
+    queryKey: ['chat-user-directory'],
+    queryFn: listUsersForChat,
+    staleTime: 1000 * 60 * 2,
+  });
+}
 
 /** Assina, em tempo real, as conversas do usuário autenticado. */
 export function useConversations() {

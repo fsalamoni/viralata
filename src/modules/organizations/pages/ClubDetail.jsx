@@ -12,6 +12,7 @@ import {
   MapPin,
   MessageSquare,
   MessagesSquare,
+  PawPrint,
   Phone,
   Settings,
   Users,
@@ -42,6 +43,10 @@ import ClubEventsTab from '@/modules/organizations/components/ClubEventsTab';
 import ClubFeedTab from '@/modules/organizations/components/ClubFeedTab';
 import ClubForumsTab from '@/modules/organizations/components/ClubForumsTab';
 import ClubAdminTab from '@/modules/organizations/components/ClubAdminTab';
+import ClubPetsDataGrid from '@/modules/organizations/components/ClubPetsDataGrid';
+import RatingBadge from '@/modules/pets/components/RatingBadge';
+import { QrCode } from '@/components/ui/qr-code';
+import AdSlot from '@/components/AdSlot';
 
 export default function ClubDetail() {
   const { clubId } = useParams();
@@ -79,6 +84,7 @@ export default function ClubDetail() {
 
   const isMember = !!membership;
   const isAdmin = membership?.role === CLUB_ROLE.ADMIN;
+  const canEditPets = isAdmin || membership?.permissions?.edit_pets === true;
 
   const handleJoin = async (e) => {
     e.preventDefault();
@@ -97,7 +103,7 @@ export default function ClubDetail() {
       await leaveClub.mutateAsync();
       toast.success('Você saiu do clube.');
       setConfirmLeave(false);
-      navigate('/clubes');
+      navigate('/organizacoes');
     } catch (err) {
       toast.error(err.message || 'Não foi possível sair do clube.');
     }
@@ -147,7 +153,7 @@ export default function ClubDetail() {
           icon={Building2}
           title="Clube não encontrado"
           description="O clube que você procura não existe ou foi removido."
-          action={<Button asChild><Link to="/clubes">Voltar para clubes</Link></Button>}
+          action={<Button asChild><Link to="/organizacoes">Voltar para clubes</Link></Button>}
         />
       </div>
     );
@@ -157,8 +163,8 @@ export default function ClubDetail() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-4">
-      <Button asChild variant="ghost" size="sm" className="text-emerald-50 hover:bg-white/10 hover:text-white">
-        <Link to="/clubes"><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para clubes</Link>
+      <Button asChild variant="ghost" size="sm" className="text-orange-50 hover:bg-white/10 hover:text-white">
+        <Link to="/organizacoes"><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para clubes</Link>
       </Button>
 
       <section className="arena-panel-strong overflow-hidden rounded-[1.25rem] p-5 sm:rounded-[2rem] sm:p-8">
@@ -167,15 +173,16 @@ export default function ClubDetail() {
             {club.logo_url ? (
               <img src={club.logo_url} alt="" className="h-16 w-16 shrink-0 rounded-2xl border border-white/15 object-cover" />
             ) : (
-              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white/10 text-emerald-50">
+              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white/10 text-orange-50">
                 <Building2 className="h-7 w-7" />
               </div>
             )}
             <div className="min-w-0">
               <h1 className="text-2xl font-bold text-white sm:text-3xl">{club.name}</h1>
-              <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-emerald-50/80">
+              <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-orange-50/80">
                 {location && <span className="inline-flex items-center gap-1"><MapPin className="h-4 w-4" /> {location}</span>}
                 <span className="inline-flex items-center gap-1"><Users className="h-4 w-4" /> {club.member_count || 0} membro(s)</span>
+                <RatingBadge uid={club.id} className="text-amber-200" />
               </div>
               {isMember && (
                 <Badge variant={isAdmin ? 'warning' : 'success'} className="mt-3 rounded-full uppercase tracking-[0.12em]">
@@ -198,15 +205,34 @@ export default function ClubDetail() {
         </div>
 
         {club.description && (
-          <p className="mt-5 max-w-2xl whitespace-pre-wrap text-sm leading-7 text-emerald-50/85">{club.description}</p>
+          <p className="mt-5 max-w-2xl whitespace-pre-wrap text-sm leading-7 text-orange-50/85">{club.description}</p>
         )}
 
-        <div className="mt-5 flex flex-wrap gap-2 text-xs text-emerald-50/80">
+        <div className="mt-5 flex flex-wrap gap-2 text-xs text-orange-50/80">
           {club.home_venue && <InfoChip icon={Building2}>{club.home_venue}</InfoChip>}
           {club.contact_email && <InfoChip icon={Mail}>{club.contact_email}</InfoChip>}
           {club.contact_phone && <InfoChip icon={Phone}>{club.contact_phone}</InfoChip>}
           {club.instagram && <InfoChip icon={Instagram}>{club.instagram}</InfoChip>}
+          {club.cnpj && <InfoChip icon={Hash}>CNPJ {club.cnpj}</InfoChip>}
         </div>
+
+        {club.donation_link && (
+          <div className="mt-5 flex flex-col items-start gap-3 rounded-2xl bg-white/10 p-4 sm:flex-row sm:items-center">
+            <QrCode value={club.donation_link} size={104} className="rounded-lg bg-white p-1.5" />
+            <div>
+              <p className="text-sm font-semibold text-white">Apoie este clube com uma doação</p>
+              <p className="mt-1 text-xs text-orange-50/80">Aponte a câmera para o QR Code ou toque no link.</p>
+              <a
+                href={club.donation_link}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-1 inline-block text-xs font-medium text-amber-200 underline"
+              >
+                {club.donation_link}
+              </a>
+            </div>
+          </div>
+        )}
       </section>
 
       {!isMember && myInvite && (
@@ -229,7 +255,7 @@ export default function ClubDetail() {
       )}
 
       {!isMember && !myInvite && (
-        <Card className="rounded-[1.5rem] border-emerald-200 bg-emerald-50/70">
+        <Card className="rounded-[1.5rem] border-primary/20 bg-primary/5">
           <CardContent className="p-5">
             <h3 className="text-base font-semibold text-slate-900">Participe deste clube</h3>
             {myRequest?.status === JOIN_REQUEST_STATUS.PENDING ? (
@@ -248,7 +274,7 @@ export default function ClubDetail() {
                 </Button>
               </>
             )}
-            <form onSubmit={handleJoin} className="mt-4 flex flex-col gap-3 border-t border-emerald-900/10 pt-4 sm:flex-row">
+            <form onSubmit={handleJoin} className="mt-4 flex flex-col gap-3 border-t border-primary/10 pt-4 sm:flex-row">
               <div className="relative flex-1">
                 <Hash className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                 <Input
@@ -269,12 +295,13 @@ export default function ClubDetail() {
       )}
 
       {isMember && (
-        <Tabs value={activeTab === 'admin' && !isAdmin ? 'members' : activeTab} onValueChange={setActiveTab} className="w-full">
+        <Tabs value={(activeTab === 'admin' || (activeTab === 'pets' && !canEditPets)) && !isAdmin ? 'members' : activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="flex h-auto w-full flex-wrap justify-start gap-1 bg-muted/60 p-1">
             <TabsTrigger value="members"><Users className="mr-1.5 h-4 w-4" /> Membros</TabsTrigger>
             <TabsTrigger value="events"><CalendarDays className="mr-1.5 h-4 w-4" /> Eventos</TabsTrigger>
             <TabsTrigger value="feed"><MessageSquare className="mr-1.5 h-4 w-4" /> Mural</TabsTrigger>
             <TabsTrigger value="forums"><MessagesSquare className="mr-1.5 h-4 w-4" /> Fóruns</TabsTrigger>
+            {canEditPets && <TabsTrigger value="pets"><PawPrint className="mr-1.5 h-4 w-4" /> Pets</TabsTrigger>}
             {isAdmin && <TabsTrigger value="admin"><Settings className="mr-1.5 h-4 w-4" /> Administração</TabsTrigger>}
           </TabsList>
 
@@ -298,6 +325,13 @@ export default function ClubDetail() {
               onThreadChange={setThreadParam}
             />
           </TabsContent>
+
+          {canEditPets && (
+            <TabsContent value="pets" className="mt-4 space-y-4">
+              <AdSlot />
+              <ClubPetsDataGrid clubId={clubId} />
+            </TabsContent>
+          )}
 
           {isAdmin && (
             <TabsContent value="admin" className="mt-4">

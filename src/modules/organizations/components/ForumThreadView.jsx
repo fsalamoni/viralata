@@ -196,7 +196,7 @@ export default function ForumThreadView({ clubId, threadId, isAdmin, onBack, onD
 
       {/* Comentários */}
       <div className="flex items-center gap-2 px-1 text-sm font-semibold text-slate-700">
-        <MessageSquare className="h-4 w-4 text-emerald-700" />
+        <MessageSquare className="h-4 w-4 text-primary" />
         {comments.length} comentário(s)
       </div>
 

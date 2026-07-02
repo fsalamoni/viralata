@@ -112,14 +112,14 @@ export default function ClubFeedTab({ clubId, isAdmin }) {
               onChange={(e) => setContent(e.target.value)}
               rows={3}
               maxLength={2000}
-              placeholder="Compartilhe um aviso, combine um jogo, comemore uma vitória…"
+              placeholder="Compartilhe um aviso, avise sobre um mutirão, comemore uma adoção…"
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             />
 
             {pendingImages.length > 0 && (
               <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
                 {pendingImages.map((image) => (
-                  <div key={image.path} className="group relative aspect-square overflow-hidden rounded-lg border border-emerald-950/10">
+                  <div key={image.path} className="group relative aspect-square overflow-hidden rounded-lg border border-primary/10">
                     <img src={image.url} alt="" className="h-full w-full object-cover" />
                     <button
                       type="button"
@@ -177,9 +177,9 @@ export default function ClubFeedTab({ clubId, isAdmin }) {
                 <CardContent className="p-4">
                   <div className="flex items-start gap-3">
                     {post.author_photo ? (
-                      <img src={post.author_photo} alt="" className="h-9 w-9 shrink-0 rounded-full border border-emerald-900/10 object-cover" />
+                      <img src={post.author_photo} alt="" className="h-9 w-9 shrink-0 rounded-full border border-primary/10 object-cover" />
                     ) : (
-                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-900 text-sm font-semibold text-emerald-50">
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">
                         {initials(post.author_name)}
                       </div>
                     )}
@@ -237,7 +237,7 @@ function PostImages({ images }) {
   return (
     <div className={`mt-3 grid gap-2 ${list.length === 1 ? 'grid-cols-1 sm:max-w-md' : 'grid-cols-2 sm:grid-cols-3'}`}>
       {list.map((image) => (
-        <div key={image.path || image.url} className="group relative overflow-hidden rounded-lg border border-emerald-950/10 bg-slate-50">
+        <div key={image.path || image.url} className="group relative overflow-hidden rounded-lg border border-primary/10 bg-slate-50">
           <a href={image.url} target="_blank" rel="noopener noreferrer" className="block">
             <img
               src={image.url}

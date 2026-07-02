@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   PawPrint, Heart, Building2, MessageCircle, Bell, User, Menu, X,
-  Plus, Shield, AlertTriangle, LogOut, Home,
+  Plus, Shield, AlertTriangle, LogOut, Radar,
 } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { useNotifications } from '@/modules/notifications/hooks/useNotifications';
@@ -47,14 +47,16 @@ export default function Layout({ children, currentPageName }) {
   const initials = displayName.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="arena-page min-h-screen flex flex-col">
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-white border-b border-gray-100 shadow-sm">
-        <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between gap-4">
+      <header className="sticky top-0 z-40 border-b border-white/60 bg-white/70 backdrop-blur-xl">
+        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-4 safe-px">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 font-bold text-lg text-orange-500 flex-shrink-0">
-            <span className="text-xl">🐾</span>
-            <span className="hidden sm:inline">Viralata</span>
+          <Link to="/" className="flex items-center gap-2 flex-shrink-0 group">
+            <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--highlight))_100%)] text-white shadow-[0_10px_24px_-12px_rgba(64,34,18,0.6)] transition-transform group-hover:-rotate-6">
+              <PawPrint className="w-5 h-5" />
+            </span>
+            <span className="hidden sm:inline arena-heading text-lg font-bold">Viralata</span>
           </Link>
 
           {/* Nav Desktop */}
@@ -64,10 +66,10 @@ export default function Layout({ children, currentPageName }) {
                 key={to}
                 to={to}
                 className={cn(
-                  'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors',
+                  'flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-medium transition-all',
                   location.pathname.startsWith(to)
-                    ? 'bg-orange-50 text-orange-600'
-                    : 'text-gray-600 hover:bg-gray-100'
+                    ? 'bg-primary text-primary-foreground shadow-[0_10px_20px_-12px_rgba(64,34,18,0.55)]'
+                    : 'text-stone-600 hover:bg-secondary/70'
                 )}
               >
                 <Icon className="w-4 h-4" />
@@ -81,7 +83,7 @@ export default function Layout({ children, currentPageName }) {
             {isAuthenticated ? (
               <>
                 {/* Cadastrar Pet */}
-                <Button asChild size="sm" className="hidden sm:flex bg-orange-500 hover:bg-orange-600 text-white">
+                <Button asChild size="sm" className="hidden sm:flex">
                   <Link to="/pets/new"><Plus className="w-3.5 h-3.5 mr-1" />Pet</Link>
                 </Button>
 
@@ -90,7 +92,7 @@ export default function Layout({ children, currentPageName }) {
                   <Link to="/perfil#notificacoes">
                     <Bell className="w-5 h-5" />
                     {unreadCount > 0 && (
-                      <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-bold">
+                      <span className="absolute -top-0.5 -right-0.5 bg-destructive text-destructive-foreground text-xs rounded-full w-4 h-4 flex items-center justify-center font-bold">
                         {unreadCount > 9 ? '9+' : unreadCount}
                       </span>
                     )}
@@ -100,17 +102,17 @@ export default function Layout({ children, currentPageName }) {
                 {/* Avatar / Menu */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <button className="flex items-center gap-2 rounded-full focus:outline-none focus:ring-2 focus:ring-orange-400">
-                      <Avatar className="w-8 h-8">
+                    <button className="flex items-center gap-2 rounded-full focus:outline-none focus:ring-2 focus:ring-ring">
+                      <Avatar className="w-8 h-8 ring-2 ring-white">
                         <AvatarImage src={photoURL} />
-                        <AvatarFallback className="bg-orange-100 text-orange-700 text-xs font-bold">{initials}</AvatarFallback>
+                        <AvatarFallback className="bg-secondary text-secondary-foreground text-xs font-bold">{initials}</AvatarFallback>
                       </Avatar>
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-52">
                     <div className="px-3 py-2">
                       <p className="text-sm font-medium truncate">{displayName}</p>
-                      <p className="text-xs text-gray-400 truncate">{user?.email}</p>
+                      <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
                     </div>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
@@ -124,7 +126,12 @@ export default function Layout({ children, currentPageName }) {
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link to="/denuncias/nova" className="flex items-center gap-2 cursor-pointer text-red-600">
+                      <Link to="/radar" className="flex items-center gap-2 cursor-pointer">
+                        <Radar className="w-4 h-4" /> Radar de Pets
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/denuncias/nova" className="flex items-center gap-2 cursor-pointer text-destructive">
                         <AlertTriangle className="w-4 h-4" /> Fazer Denúncia
                       </Link>
                     </DropdownMenuItem>
@@ -132,27 +139,27 @@ export default function Layout({ children, currentPageName }) {
                       <>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem asChild>
-                          <Link to="/admin" className="flex items-center gap-2 cursor-pointer text-purple-600">
+                          <Link to="/admin" className="flex items-center gap-2 cursor-pointer text-accent">
                             <Shield className="w-4 h-4" /> Admin
                           </Link>
                         </DropdownMenuItem>
                       </>
                     )}
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleSignOut} className="flex items-center gap-2 cursor-pointer text-red-600">
+                    <DropdownMenuItem onClick={handleSignOut} className="flex items-center gap-2 cursor-pointer text-destructive">
                       <LogOut className="w-4 h-4" /> Sair
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </>
             ) : (
-              <Button asChild size="sm" className="bg-orange-500 hover:bg-orange-600 text-white">
+              <Button asChild size="sm">
                 <Link to="/login">Entrar</Link>
               </Button>
             )}
 
             {/* Mobile menu toggle */}
-            <button className="md:hidden p-1.5 rounded-lg hover:bg-gray-100" onClick={() => setMobileOpen((v) => !v)}>
+            <button className="md:hidden p-1.5 rounded-full hover:bg-secondary/70" onClick={() => setMobileOpen((v) => !v)}>
               {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
@@ -160,17 +167,17 @@ export default function Layout({ children, currentPageName }) {
 
         {/* Mobile Nav */}
         {mobileOpen && (
-          <div className="md:hidden border-t border-gray-100 bg-white px-4 py-3 space-y-1">
+          <div className="md:hidden border-t border-white/60 bg-white/90 backdrop-blur-xl px-4 py-3 space-y-1 safe-px">
             {NAV_ITEMS.filter((item) => !item.auth || isAuthenticated).map(({ label, icon: Icon, to }) => (
               <Link
                 key={to}
                 to={to}
                 onClick={() => setMobileOpen(false)}
                 className={cn(
-                  'flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+                  'flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium transition-colors',
                   location.pathname.startsWith(to)
-                    ? 'bg-orange-50 text-orange-600'
-                    : 'text-gray-700 hover:bg-gray-100'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-stone-700 hover:bg-secondary/70'
                 )}
               >
                 <Icon className="w-4 h-4" />
@@ -181,7 +188,7 @@ export default function Layout({ children, currentPageName }) {
               <Link
                 to="/pets/new"
                 onClick={() => setMobileOpen(false)}
-                className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-orange-600 hover:bg-orange-50"
+                className="flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium text-primary hover:bg-secondary/70"
               >
                 <Plus className="w-4 h-4" /> Cadastrar Pet
               </Link>
@@ -191,7 +198,7 @@ export default function Layout({ children, currentPageName }) {
       </header>
 
       {/* Main */}
-      <main className="flex-1">
+      <main className="flex-1 relative">
         {children}
       </main>
     </div>

@@ -11,9 +11,9 @@ import { useNavigate } from 'react-router-dom';
 
 const STATUS_BADGE = {
   pending: <Badge variant="secondary">Aguardando</Badge>,
-  chat_opened: <Badge className="bg-blue-100 text-blue-800">Em conversa</Badge>,
+  chat_opened: <Badge className="bg-highlight/20 text-[hsl(30,60%,30%)]">Em conversa</Badge>,
   rejected: <Badge variant="destructive">Rejeitado</Badge>,
-  adopted: <Badge className="bg-green-100 text-green-800">Adotado</Badge>,
+  adopted: <Badge variant="success">Adotado</Badge>,
 };
 
 export default function InterestPanel({ petId, pet }) {
@@ -54,9 +54,9 @@ export default function InterestPanel({ petId, pet }) {
     }
   }
 
-  if (isLoading) return <div className="py-8 text-center text-gray-400">Carregando...</div>;
+  if (isLoading) return <div className="py-8 text-center text-muted-foreground">Carregando...</div>;
   if (interests.length === 0) return (
-    <div className="py-8 text-center text-gray-400">
+    <div className="py-8 text-center text-muted-foreground">
       Nenhum interessado ainda. Compartilhe o link do pet!
     </div>
   );
@@ -64,13 +64,13 @@ export default function InterestPanel({ petId, pet }) {
   return (
     <div className="space-y-3 mt-4">
       {interests.map((interest) => (
-        <div key={interest.id} className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 bg-white">
+        <div key={interest.id} className="arena-panel flex items-center gap-3 p-3 rounded-xl">
           <Avatar className="w-10 h-10 flex-shrink-0">
             <AvatarImage src={interest.user_photo} />
             <AvatarFallback>{interest.user_name?.[0]?.toUpperCase() || '?'}</AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
-            <p className="font-medium text-sm text-gray-900 truncate">{interest.user_name || 'Usuário'}</p>
+            <p className="font-medium text-sm text-foreground truncate">{interest.user_name || 'Usuário'}</p>
             <div className="mt-0.5">{STATUS_BADGE[interest.status]}</div>
           </div>
           <div className="flex gap-1.5 flex-shrink-0">
@@ -79,7 +79,7 @@ export default function InterestPanel({ petId, pet }) {
                 <Button size="sm" variant="outline" onClick={() => handleOpenChat(interest)}>
                   <MessageCircle className="w-3.5 h-3.5 mr-1" /> Conversar
                 </Button>
-                <Button size="sm" variant="ghost" className="text-red-500" onClick={() => handleReject(interest)}>
+                <Button size="sm" variant="ghost" className="text-destructive" onClick={() => handleReject(interest)}>
                   <X className="w-3.5 h-3.5" />
                 </Button>
               </>
@@ -89,7 +89,7 @@ export default function InterestPanel({ petId, pet }) {
                 <Button size="sm" variant="outline" onClick={() => handleOpenChat(interest)}>
                   <MessageCircle className="w-3.5 h-3.5 mr-1" /> Chat
                 </Button>
-                <Button size="sm" className="bg-green-500 hover:bg-green-600 text-white" onClick={() => handleComplete(interest)}>
+                <Button size="sm" onClick={() => handleComplete(interest)}>
                   <CheckCircle className="w-3.5 h-3.5 mr-1" /> Adotado!
                 </Button>
               </>

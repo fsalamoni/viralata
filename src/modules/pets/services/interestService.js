@@ -9,7 +9,7 @@ import {
 import { db } from '@/core/config/firebase';
 import { createAuditLog } from '@/core/services/auditService';
 import { createNotification, NOTIFICATION_TYPE } from '@/core/services/notificationService';
-import { getPetById } from './petService';
+import { getPetById, updatePet } from './petService';
 
 const COLLECTION = 'adoption_interests';
 
@@ -81,6 +81,14 @@ export async function updateInterestStatus(petId, userId, status, actor) {
   if (!db) throw new Error('Firebase não disponível');
   const id = interestId(petId, userId);
   await updateDoc(doc(db, COLLECTION, id), { status, updated_at: serverTimestamp() });
+
+  // Ao abrir uma conversa com um candidato, o pet entra em processo de adoção.
+  if (status === 'chat_opened') {
+    const pet = await getPetById(petId);
+    if (pet?.status === 'available') {
+      await updatePet(petId, { status: 'in_process' }, actor);
+    }
+  }
 
   const notifType = status === 'rejected' ? NOTIFICATION_TYPE.ADOPTION_REJECTED : NOTIFICATION_TYPE.ADOPTION_MATCH;
   const message = status === 'rejected'

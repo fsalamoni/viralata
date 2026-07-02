@@ -22,8 +22,17 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Install Functions dependencies
+        run: npm ci
+        working-directory: functions
+
       - name: Run tests
         run: npm test -- --run --reporter=verbose
+        continue-on-error: true
+
+      - name: Run Functions tests
+        run: npm test
+        working-directory: functions
         continue-on-error: true
 
       - name: Build
@@ -43,7 +52,7 @@ jobs:
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          projectId: viralata
+          projectId: viralata-4cf0b
           channelId: pr-${{ github.event.pull_request.number }}
 
       - name: Deploy to Firebase Hosting (Production — main)
@@ -52,14 +61,30 @@ jobs:
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          projectId: viralata
+          projectId: viralata-4cf0b
           channelId: live
 
       - name: Deploy Firestore rules/indexes & Storage rules (Production — main)
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: always() && github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
           echo "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/firebase-sa.json"
-          npx firebase-tools@latest deploy --only firestore:rules,firestore:indexes,storage --project viralata --non-interactive
+          npx firebase-tools@latest deploy --only firestore:rules,firestore:indexes,storage --project viralata-4cf0b --non-interactive
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/firebase-sa.json
+
+      # Requer papéis de IAM adicionais na service account (além dos já usados
+      # por Hosting/Firestore/Storage): Cloud Functions Admin, Cloud Build
+      # Editor, Artifact Registry Administrator e Service Account User — e as
+      # APIs Cloud Functions, Cloud Build, Artifact Registry e Eventarc
+      # habilitadas no projeto. Isolado com `continue-on-error` para não
+      # travar o restante do deploy caso essas permissões ainda não existam.
+      - name: Deploy Cloud Functions (Production — main)
+        if: always() && github.event_name == 'push' && github.ref == 'refs/heads/main'
+        continue-on-error: true
+        run: |
+          echo "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/firebase-sa.json"
+          npx firebase-tools@latest deploy --only functions --project viralata-4cf0b --non-interactive
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/firebase-sa.json

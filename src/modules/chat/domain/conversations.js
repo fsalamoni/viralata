@@ -13,7 +13,7 @@ export function toMember(person) {
   if (!uid) return null;
   return {
     uid,
-    name: person.name || person.platform_name || person.full_name || person.displayName || 'Atleta',
+    name: person.name || person.platform_name || person.full_name || person.displayName || 'Usuário',
     photo_url: person.photo_url || person.photoURL || '',
   };
 }
