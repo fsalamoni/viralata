@@ -139,9 +139,9 @@ export default function Profile() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
+    <div className="arena-page max-w-2xl mx-auto px-4 py-6 space-y-6">
       <div className="flex items-center gap-3">
-        <h1 className="text-xl font-bold text-gray-900">Meu Perfil</h1>
+        <h1 className="text-xl font-bold text-foreground">Meu Perfil</h1>
         <RatingBadge uid={user?.uid} />
       </div>
 
@@ -149,7 +149,7 @@ export default function Profile() {
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-base">
-            <User className="w-4 h-4 text-orange-500" /> Dados pessoais
+            <User className="w-4 h-4 text-primary" /> Dados pessoais
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -162,8 +162,8 @@ export default function Profile() {
                 storagePath={`users/${user?.uid}/avatar`}
                 className="w-20 h-20 rounded-full"
               />
-              <div className="text-sm text-gray-500">
-                <p className="font-medium text-gray-700">{user?.email}</p>
+              <div className="text-sm text-muted-foreground">
+                <p className="font-medium text-foreground">{user?.email}</p>
                 <p>Clique na foto para alterar</p>
               </div>
             </div>
@@ -209,12 +209,12 @@ export default function Profile() {
             <div className="flex items-center justify-between rounded-lg border p-3">
               <div>
                 <p className="text-sm font-medium">Exibir telefone publicamente</p>
-                <p className="text-xs text-gray-500">Visível para responsáveis de pets que você demonstrar interesse</p>
+                <p className="text-xs text-muted-foreground">Visível para responsáveis de pets que você demonstrar interesse</p>
               </div>
               <Switch checked={phonePublic} onCheckedChange={setPhonePublic} />
             </div>
 
-            <Button type="submit" disabled={busy} className="w-full bg-orange-500 hover:bg-orange-600 text-white">
+            <Button type="submit" disabled={busy} className="w-full">
               {busy ? 'Salvando...' : 'Salvar perfil'}
             </Button>
           </form>
@@ -303,8 +303,8 @@ export default function Profile() {
                   onClick={() => toggleOtherPet(value)}
                   className={`text-left px-3 py-2 rounded-lg border-2 text-sm transition-colors ${
                     otherPets.includes(value)
-                      ? 'border-orange-500 bg-orange-50 text-orange-900 font-medium'
-                      : 'border-gray-200 hover:border-gray-300 text-gray-700'
+                      ? 'border-primary bg-primary/10 text-foreground font-medium'
+                      : 'border-border hover:border-primary/40 text-muted-foreground'
                   }`}
                 >
                   {label}
@@ -313,7 +313,7 @@ export default function Profile() {
             </div>
           </div>
 
-          <Button onClick={handleSave} disabled={busy} className="w-full bg-orange-500 hover:bg-orange-600 text-white">
+          <Button onClick={handleSave} disabled={busy} className="w-full">
             {busy ? 'Salvando...' : 'Salvar perfil de adotante'}
           </Button>
         </CardContent>
@@ -336,7 +336,7 @@ export default function Profile() {
           <Button
             variant="outline"
             onClick={() => setConfirmDelete(true)}
-            className="w-full text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700"
+            className="w-full text-destructive border-destructive/30 hover:bg-destructive/10 hover:text-destructive"
           >
             <ShieldAlert className="w-4 h-4 mr-2" />
             Excluir minha conta
