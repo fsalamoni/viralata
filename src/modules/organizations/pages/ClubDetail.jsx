@@ -58,7 +58,7 @@ import { QrCode } from '@/components/ui/qr-code';
  * antigas.
  */
 export default function ClubDetail() {
-  const { clubId } = useParams();
+  const { orgId: clubId } = useParams();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const { data: club, isLoading, isError } = useClub(clubId);
@@ -156,7 +156,7 @@ export default function ClubDetail() {
 
   if (isLoading) {
     return (
-      <div className="mx-auto max-w-4xl space-y-4">
+      <div className="arena-page mx-auto max-w-4xl space-y-6 px-5 py-6 pb-12">
         <Skeleton className="h-40 rounded-[2rem]" />
         <Skeleton className="h-64 rounded-[2rem]" />
       </div>
@@ -165,7 +165,7 @@ export default function ClubDetail() {
 
   if (isError || !club) {
     return (
-      <div className="mx-auto max-w-2xl">
+      <div className="arena-page mx-auto max-w-2xl px-5 py-6 pb-12">
         <EmptyState
           icon={Building2}
           title="Organização não encontrada"
@@ -179,8 +179,8 @@ export default function ClubDetail() {
   const location = [club.city, club.state].filter(Boolean).join(' / ');
 
   return (
-    <div className="mx-auto max-w-4xl space-y-4">
-      <Button asChild variant="ghost" size="sm" className="text-orange-50 hover:bg-white/10 hover:text-white">
+    <div className="arena-page mx-auto max-w-4xl space-y-6 px-5 py-6 pb-12">
+      <Button asChild variant="ghost" size="sm">
         <Link to="/comunidade"><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para organizações</Link>
       </Button>
 
@@ -210,7 +210,7 @@ export default function ClubDetail() {
           </div>
 
           {isMember && (
-            <div className="flex shrink-0 flex-wrap gap-2">
+            <div className="flex shrink-0 flex-wrap gap-2.5">
               {isAdmin && (
                 <Button
                   asChild
@@ -272,7 +272,7 @@ export default function ClubDetail() {
             <p className="mt-1 text-sm text-muted-foreground">
               {myInvite.inviter_name || 'Um administrador'} convidou você a participar. Aceite para entrar e acessar eventos, mural e fórum.
             </p>
-            <div className="mt-4 flex flex-wrap gap-2">
+            <div className="mt-4 flex flex-wrap gap-2.5">
               <Button onClick={handleAcceptInvite} disabled={acceptInvite.isPending}>
                 {acceptInvite.isPending ? 'Entrando…' : 'Aceitar convite'}
               </Button>
@@ -326,7 +326,7 @@ export default function ClubDetail() {
 
       {isMember && (
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="flex h-auto w-full flex-wrap justify-start gap-1 bg-muted/60 p-1">
+          <TabsList className="mb-2 flex h-auto w-full flex-wrap justify-start gap-1.5 bg-muted/60 p-1.5">
             <TabsTrigger value="members"><Users className="mr-1.5 h-4 w-4" /> Membros</TabsTrigger>
             <TabsTrigger value="animals"><PawPrint className="mr-1.5 h-4 w-4" /> Animais</TabsTrigger>
             <TabsTrigger value="events"><CalendarDays className="mr-1.5 h-4 w-4" /> Eventos</TabsTrigger>
@@ -334,23 +334,23 @@ export default function ClubDetail() {
             <TabsTrigger value="forums"><MessagesSquare className="mr-1.5 h-4 w-4" /> Fóruns</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="members" className="mt-4">
+          <TabsContent value="members" className="mt-6">
             <ClubMembersTab clubId={clubId} isAdmin={isAdmin} club={club} />
           </TabsContent>
 
-          <TabsContent value="animals" className="mt-4">
+          <TabsContent value="animals" className="mt-6">
             <ClubPetsDataGrid clubId={clubId} canManage={canManageAnimals} />
           </TabsContent>
 
-          <TabsContent value="events" className="mt-4">
+          <TabsContent value="events" className="mt-6">
             <ClubEventsTab clubId={clubId} isAdmin={isAdmin} />
           </TabsContent>
 
-          <TabsContent value="feed" className="mt-4">
+          <TabsContent value="feed" className="mt-6">
             <ClubFeedTab clubId={clubId} isAdmin={isAdmin} />
           </TabsContent>
 
-          <TabsContent value="forums" className="mt-4">
+          <TabsContent value="forums" className="mt-6">
             <ClubForumsTab
               clubId={clubId}
               isAdmin={isAdmin}
