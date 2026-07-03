@@ -102,10 +102,10 @@ function SwipeCard({ pet, isTop, onSwipe, onOpenDetail }) {
           </div>
         )}
         <div className="absolute right-4 top-4 opacity-0 transition-opacity" style={{ opacity: likeOpacity, transform: 'rotate(-14deg)' }}>
-          <span className="rounded-[10px] border-[3px] border-[hsl(150,55%,55%)] px-3 py-1 font-['Sora'] text-lg font-extrabold text-[hsl(150,70%,92%)]">CURTIR</span>
+          <span className="rounded-[10px] border-[3px] border-[hsl(150,55%,55%)] px-3 py-1 font-['Sora'] text-[19px] font-extrabold text-[hsl(150,70%,92%)]">CURTIR</span>
         </div>
         <div className="absolute left-4 top-4" style={{ opacity: passOpacity, transform: 'rotate(14deg)' }}>
-          <span className="rounded-[10px] border-[3px] border-[hsl(9,62%,60%)] px-3 py-1 font-['Sora'] text-lg font-extrabold text-[hsl(9,70%,92%)]">AGORA NÃO</span>
+          <span className="rounded-[10px] border-[3px] border-[hsl(9,62%,60%)] px-3 py-1 font-['Sora'] text-[19px] font-extrabold text-[hsl(9,70%,92%)]">AGORA NÃO</span>
         </div>
         <button
           type="button"
@@ -116,8 +116,8 @@ function SwipeCard({ pet, isTop, onSwipe, onOpenDetail }) {
         </button>
         <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-5 text-white">
           <div className="mb-1.5 flex items-baseline gap-2">
-            <span className="font-['Sora'] text-xl font-extrabold">{pet.name || pet.title}</span>
-            {pet.age_group && <span className="text-xs opacity-85">· {AGE_LABEL[pet.age_group]}</span>}
+            <span className="font-['Sora'] text-[21px] font-extrabold">{pet.name || pet.title}</span>
+            {pet.age_group && <span className="text-[12.5px] opacity-85">· {AGE_LABEL[pet.age_group]}</span>}
           </div>
           <div className="mb-2 flex flex-wrap gap-1.5">
             {temperament.slice(0, 2).map((tag) => (
@@ -154,7 +154,7 @@ function SwipeDeck({ pets, onLike, onPass, onOpenDetail }) {
           <div className="absolute inset-0 flex flex-col items-center justify-center rounded-[28px] border border-border bg-card p-8 text-center">
             <CheckCircle2 className="h-10 w-10 text-accent" />
             <p className="mt-3.5 mb-1 text-sm font-bold text-foreground">Você viu todos os destaques!</p>
-            <p className="text-xs text-muted-foreground">Veja a lista completa logo abaixo.</p>
+            <p className="text-[12.5px] text-muted-foreground">Veja a lista completa logo abaixo.</p>
           </div>
         ) : (
           visible.map((pet, i) => (
@@ -333,7 +333,7 @@ export default function PetFeed() {
 
         {!isLoading && !isError && pets.length === 0 && (
           <div className="space-y-3 py-16 text-center">
-            <p className="text-lg text-muted-foreground">Nenhum pet encontrado com esses filtros.</p>
+            <p className="text-[13.5px] text-muted-foreground">Nenhum pet encontrado com esses filtros.</p>
             <p className="text-sm text-muted-foreground/80">
               Tente ajustar os filtros ou{' '}
               <Link to="/perfil" className="text-primary underline">atualize seu perfil</Link>.
