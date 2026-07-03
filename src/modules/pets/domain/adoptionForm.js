@@ -30,6 +30,7 @@ const YES_NO_OPTIONS = ['Sim', 'Não'];
 
 /** Gera um id curto e estável para um campo novo. */
 export function makeFieldId() {
+  // slice(2, 8): remove o prefixo "0." do Math.random e pega 6 caracteres.
   const rand = Math.random().toString(36).slice(2, 8);
   return `f_${Date.now().toString(36)}_${rand}`;
 }
