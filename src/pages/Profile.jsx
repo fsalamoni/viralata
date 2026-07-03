@@ -241,7 +241,7 @@ export default function Profile() {
   return (
     <div className="arena-page mx-auto flex max-w-5xl flex-col gap-6 px-5 py-6 pb-16">
       <div>
-        <Button type="button" variant="ghost" size="sm" onClick={() => navigate(-1)}>
+        <Button type="button" variant="ghost" size="sm" onClick={() => navigate('/feed')}>
           <ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar
         </Button>
       </div>

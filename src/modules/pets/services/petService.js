@@ -17,7 +17,7 @@ const INTERESTS_COLLECTION = 'adoption_interests';
 export function normalizePetPhotoUrls(photos) {
   return Array.isArray(photos)
     ? photos
-      .map((photo) => (typeof photo === 'string' ? photo.trim() : photo?.url?.trim()))
+      .map((photo) => (typeof photo === 'string' ? photo.trim() : (typeof photo?.url === 'string' ? photo.url.trim() : null)))
       .filter(Boolean)
     : [];
 }

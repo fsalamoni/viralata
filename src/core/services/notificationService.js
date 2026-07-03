@@ -56,11 +56,13 @@ export function normalizeNotificationLink(link) {
   const raw = trimText(link, 400);
   if (!raw) return null;
   try {
-    const base = typeof window !== 'undefined' && window.location?.origin
-      ? window.location.origin
-      : 'http://localhost';
-    const parsed = new URL(raw, base);
-    if (parsed.origin !== base) return null;
+    const safeBase = 'http://localhost';
+    const parsed = new URL(raw, safeBase);
+    const isAbsolute = /^https?:\/\//i.test(raw);
+    if (isAbsolute) {
+      const currentOrigin = typeof window !== 'undefined' ? window.location?.origin : null;
+      if (!currentOrigin || parsed.origin !== currentOrigin) return null;
+    }
     return `${parsed.pathname}${parsed.search}${parsed.hash}`;
   } catch {
     return null;
