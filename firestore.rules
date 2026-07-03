@@ -156,7 +156,7 @@ service cloud.firestore {
 
     // ─── Notificações ─────────────────────────────────────────────────────────
     match /notifications/{notificationId} {
-      allow read: if isOwner(resource.data.user_id);
+      allow read: if isOwner(resource.data.user_id) || isPlatformAdmin();
       allow create: if isAuth();
       allow update: if isOwner(resource.data.user_id);
       allow delete: if isOwner(resource.data.user_id) || isPlatformAdmin();
