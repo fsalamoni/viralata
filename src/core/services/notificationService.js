@@ -65,6 +65,7 @@ export function normalizeNotificationLink(link) {
     }
     return `${parsed.pathname}${parsed.search}${parsed.hash}`;
   } catch {
+    logger.warn('Link de notificação inválido ignorado:', raw);
     return null;
   }
 }
