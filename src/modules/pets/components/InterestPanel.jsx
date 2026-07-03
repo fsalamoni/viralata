@@ -8,6 +8,7 @@ import { MessageCircle, X, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { getOrCreateDirectConversation } from '@/modules/chat/services/chatService';
 import { useNavigate } from 'react-router-dom';
+import { hasQuestions, summarizeAnswers } from '../domain/adoptionForm';
 
 const STATUS_BADGE = {
   pending: <Badge variant="secondary">Aguardando</Badge>,
@@ -61,40 +62,55 @@ export default function InterestPanel({ petId, pet }) {
     </div>
   );
 
+  const petHasForm = hasQuestions(pet?.adoption_form);
+
   return (
     <div className="space-y-3 mt-4">
       {interests.map((interest) => (
-        <div key={interest.id} className="arena-panel flex items-center gap-3 p-3 rounded-xl">
-          <Avatar className="w-10 h-10 flex-shrink-0">
-            <AvatarImage src={interest.user_photo} />
-            <AvatarFallback>{interest.user_name?.[0]?.toUpperCase() || '?'}</AvatarFallback>
-          </Avatar>
-          <div className="flex-1 min-w-0">
-            <p className="font-medium text-sm text-foreground truncate">{interest.user_name || 'Usuário'}</p>
-            <div className="mt-0.5">{STATUS_BADGE[interest.status]}</div>
+        <div key={interest.id} className="arena-panel rounded-xl p-3">
+          <div className="flex items-center gap-3">
+            <Avatar className="w-10 h-10 flex-shrink-0">
+              <AvatarImage src={interest.user_photo} />
+              <AvatarFallback>{interest.user_name?.[0]?.toUpperCase() || '?'}</AvatarFallback>
+            </Avatar>
+            <div className="flex-1 min-w-0">
+              <p className="font-medium text-sm text-foreground truncate">{interest.user_name || 'Usuário'}</p>
+              <div className="mt-0.5">{STATUS_BADGE[interest.status]}</div>
+            </div>
+            <div className="flex gap-1.5 flex-shrink-0">
+              {interest.status === 'pending' && (
+                <>
+                  <Button size="sm" variant="outline" onClick={() => handleOpenChat(interest)}>
+                    <MessageCircle className="w-3.5 h-3.5 mr-1" /> Conversar
+                  </Button>
+                  <Button size="sm" variant="ghost" className="text-destructive" onClick={() => handleReject(interest)}>
+                    <X className="w-3.5 h-3.5" />
+                  </Button>
+                </>
+              )}
+              {interest.status === 'chat_opened' && (
+                <>
+                  <Button size="sm" variant="outline" onClick={() => handleOpenChat(interest)}>
+                    <MessageCircle className="w-3.5 h-3.5 mr-1" /> Chat
+                  </Button>
+                  <Button size="sm" onClick={() => handleComplete(interest)}>
+                    <CheckCircle className="w-3.5 h-3.5 mr-1" /> Adotado!
+                  </Button>
+                </>
+              )}
+            </div>
           </div>
-          <div className="flex gap-1.5 flex-shrink-0">
-            {interest.status === 'pending' && (
-              <>
-                <Button size="sm" variant="outline" onClick={() => handleOpenChat(interest)}>
-                  <MessageCircle className="w-3.5 h-3.5 mr-1" /> Conversar
-                </Button>
-                <Button size="sm" variant="ghost" className="text-destructive" onClick={() => handleReject(interest)}>
-                  <X className="w-3.5 h-3.5" />
-                </Button>
-              </>
-            )}
-            {interest.status === 'chat_opened' && (
-              <>
-                <Button size="sm" variant="outline" onClick={() => handleOpenChat(interest)}>
-                  <MessageCircle className="w-3.5 h-3.5 mr-1" /> Chat
-                </Button>
-                <Button size="sm" onClick={() => handleComplete(interest)}>
-                  <CheckCircle className="w-3.5 h-3.5 mr-1" /> Adotado!
-                </Button>
-              </>
-            )}
-          </div>
+
+          {petHasForm && interest.form_answers && (
+            <dl className="mt-3 space-y-1.5 border-t border-border pt-2.5">
+              {summarizeAnswers(pet.adoption_form, interest.form_answers).map((row) => (
+                <div key={row.id} className="text-[12.5px] leading-snug">
+                  <dt className="font-semibold text-foreground/80">{row.label}</dt>
+                  <dd className="text-muted-foreground">{row.value}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
         </div>
       ))}
     </div>

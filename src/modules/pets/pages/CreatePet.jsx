@@ -16,6 +16,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import { Upload, ArrowLeft, PawPrint } from 'lucide-react';
 import { cn } from '@/core/lib/utils';
+import AdoptionFormBuilder from '../components/AdoptionFormBuilder';
+import { normalizeForm } from '../domain/adoptionForm';
 
 const schema = z.object({
   title: z.string().min(5, 'Título muito curto').max(100),
@@ -35,6 +37,7 @@ const schema = z.object({
   good_with_cats: z.boolean().default(true),
   health_notes: z.string().optional(),
   adoption_requirements: z.string().optional(),
+  adoption_form_url: z.string().trim().url('Informe um link válido (começando com http).').optional().or(z.literal('')),
   city: z.string().min(2, 'Informe a cidade'),
   state: z.string().min(2, 'Informe o estado'),
 });
@@ -70,6 +73,17 @@ const AGE_LABEL = Object.fromEntries(AGE_OPTIONS.map((o) => [o.value, o.label]))
 const GENDER_LABEL = Object.fromEntries(GENDER_OPTIONS.map((o) => [o.value, o.label]));
 const VACCINATED_LABEL = Object.fromEntries(VACCINATED_OPTIONS.map((o) => [o.value, o.label]));
 
+// Sugestões de raça mais comuns por espécie — atalhos rápidos no mesmo formato
+// (chips) de espécie/porte/idade/sexo. O campo de texto continua livre para
+// qualquer outra raça. "SRD" = sem raça definida (vira-lata).
+const BREED_SUGGESTIONS = {
+  dog: ['SRD', 'Labrador', 'Poodle', 'Pinscher', 'Shih Tzu', 'Golden Retriever', 'Bulldog', 'Pastor Alemão'],
+  cat: ['SRD', 'Siamês', 'Persa', 'Angorá', 'Maine Coon'],
+  rabbit: ['SRD', 'Mini Lop', 'Angorá', 'Rex'],
+  bird: ['Calopsita', 'Periquito', 'Canário'],
+  other: [],
+};
+
 function OptionChip({ active, onClick, children }) {
   return (
     <button
@@ -97,6 +111,7 @@ export default function CreatePet() {
   const adminClubs = myClubs.filter((c) => c.my_role === 'admin');
   const [ownerId, setOwnerId] = useState('me');
   const [photos, setPhotos] = useState([]);
+  const [adoptionForm, setAdoptionForm] = useState({ fields: [] });
   const [uploading, setUploading] = useState(false);
   const [step, setStep] = useState(0);
 
@@ -132,10 +147,12 @@ export default function CreatePet() {
       good_with_cats: existingPet.good_with_cats !== false,
       health_notes: existingPet.health_notes || '',
       adoption_requirements: existingPet.adoption_requirements || '',
+      adoption_form_url: existingPet.adoption_form_url || '',
       city: existingPet.city || '',
       state: existingPet.state || '',
     });
     setPhotos(existingPet.photos || []);
+    setAdoptionForm(normalizeForm(existingPet.adoption_form));
     setOwnerId(existingPet.owner_type === 'organization' ? existingPet.owner_id : 'me');
   }, [existingPet, reset]);
 
@@ -171,9 +188,10 @@ export default function CreatePet() {
 
   async function onSubmit(data) {
     if (photos.length === 0) { toast.error('Adicione pelo menos uma foto.'); return; }
+    const cleanForm = normalizeForm(adoptionForm);
     try {
       if (isEditing) {
-        await updatePet.mutateAsync({ petId, updates: { ...data, photos } });
+        await updatePet.mutateAsync({ petId, updates: { ...data, photos, adoption_form: cleanForm } });
         toast.success('Pet atualizado com sucesso!');
         navigate(`/pets/${petId}`);
         return;
@@ -182,6 +200,7 @@ export default function CreatePet() {
       const newPetId = await createPet.mutateAsync({
         ...data,
         photos,
+        adoption_form: cleanForm,
         owner_id: isOrg ? ownerId : user.uid,
         owner_type: isOrg ? 'organization' : 'user',
       });
@@ -199,6 +218,13 @@ export default function CreatePet() {
   const isLastStep = step === STEPS.length - 1;
   const submitting = createPet.isPending || updatePet.isPending || uploading;
   const activeChecks = CHECKS.filter((c) => form[c.field]);
+
+  // Item 5: se o pet está vinculado a uma organização (ou o responsável é admin
+  // de alguma), o formulário de doação/adoção pode ser herdado do link padrão
+  // dessa organização.
+  const selectedClub = ownerId !== 'me' ? myClubs.find((c) => c.id === ownerId) : null;
+  const inheritableFormUrl = selectedClub?.donation_link
+    || (adminClubs.find((c) => c.donation_link)?.donation_link ?? '');
 
   return (
     <div className="arena-page mx-auto max-w-2xl px-5 pb-24 pt-6">
@@ -310,9 +336,22 @@ export default function CreatePet() {
                     ))}
                   </div>
                 </div>
-                <div className="space-y-1.5">
+                <div className="space-y-2">
                   <Label htmlFor="breed">Raça (opcional)</Label>
-                  <Input id="breed" {...register('breed')} placeholder="Ex: SRD, Labrador..." />
+                  {(BREED_SUGGESTIONS[form.species] || []).length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {BREED_SUGGESTIONS[form.species].map((b) => (
+                        <OptionChip
+                          key={b}
+                          active={form.breed === b}
+                          onClick={() => setValue('breed', form.breed === b ? '' : b, { shouldValidate: true })}
+                        >
+                          {b}
+                        </OptionChip>
+                      ))}
+                    </div>
+                  )}
+                  <Input id="breed" {...register('breed')} placeholder="Ex: SRD, Labrador ou outra raça..." />
                 </div>
                 <div className="grid grid-cols-[2fr,1fr] gap-2.5">
                   <div className="space-y-1.5">
@@ -363,6 +402,40 @@ export default function CreatePet() {
                 <div className="space-y-1.5">
                   <Label htmlFor="adoption_requirements">Requisitos para adoção</Label>
                   <Textarea id="adoption_requirements" {...register('adoption_requirements')} placeholder="O que você espera do adotante..." rows={3} />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="adoption_form_url">Formulário de doação/adoção (opcional)</Label>
+                  <Input
+                    id="adoption_form_url"
+                    type="url"
+                    inputMode="url"
+                    {...register('adoption_form_url')}
+                    placeholder="https://... (Google Forms, PDF, etc.)"
+                  />
+                  {errors.adoption_form_url && <p className="text-xs text-destructive">{errors.adoption_form_url.message}</p>}
+                  {inheritableFormUrl && form.adoption_form_url !== inheritableFormUrl && (
+                    <button
+                      type="button"
+                      onClick={() => setValue('adoption_form_url', inheritableFormUrl, { shouldValidate: true })}
+                      className="text-xs font-semibold text-primary underline"
+                    >
+                      Usar o formulário padrão da organização
+                    </button>
+                  )}
+                  <p className="text-[11px] text-muted-foreground">
+                    Cole o link de um formulário externo. Interessados poderão abri-lo a partir do perfil do pet.
+                  </p>
+                </div>
+
+                <div className="space-y-2.5 rounded-2xl border border-border bg-secondary/20 p-3.5">
+                  <div>
+                    <Label>Formulário de adoção na plataforma (opcional)</Label>
+                    <p className="mt-1 text-[11px] text-muted-foreground">
+                      Monte um formulário aqui mesmo. Quando alguém demonstrar interesse,
+                      responderá estas perguntas — as respostas aparecem no painel de interessados.
+                    </p>
+                  </div>
+                  <AdoptionFormBuilder value={adoptionForm} onChange={setAdoptionForm} />
                 </div>
               </div>
             </>

@@ -29,7 +29,7 @@ export default function OrganizationsHub() {
   );
 
   return (
-    <div className="mx-auto max-w-5xl space-y-10">
+    <div className="arena-page mx-auto max-w-5xl space-y-10 px-5 py-6 pb-12">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-[22px] font-extrabold">Organizações</h1>

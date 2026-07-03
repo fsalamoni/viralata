@@ -1,6 +1,7 @@
 /**
  * @fileoverview Hooks React Query para o módulo de Pets
  */
+import { useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import {
@@ -24,13 +25,26 @@ export function useAvailablePets(filters = {}) {
   });
 }
 
+/**
+ * Feed de pets. Mostra TODOS os pets disponíveis que passam pelos filtros do
+ * usuário (espécie, porte, cidade/raio), sem esconder nenhum animal. O perfil
+ * comportamental do adotante é usado apenas como ordenação suave: os pets
+ * compatíveis aparecem primeiro, e os demais logo em seguida — nunca ocultos.
+ * (Item 4: "todos os animais inseridos na plataforma devem aparecer no feed,
+ * respeitados os filtros e definições aplicadas pelo usuário".)
+ */
 export function usePetFeed(filters = {}) {
   const { userProfile } = useAuth();
   const query = useAvailablePets(filters);
-  const compatible = query.data && userProfile
-    ? sortByRelevance(filterCompatiblePets(query.data, userProfile))
-    : [];
-  return { ...query, data: compatible };
+  const data = useMemo(() => {
+    const all = Array.isArray(query.data) ? query.data : [];
+    if (!userProfile) return sortByRelevance(all);
+    const compatible = filterCompatiblePets(all, userProfile);
+    const compatibleIds = new Set(compatible.map((p) => p.id));
+    const rest = all.filter((p) => !compatibleIds.has(p.id));
+    return [...sortByRelevance(compatible), ...sortByRelevance(rest)];
+  }, [query.data, userProfile]);
+  return { ...query, data };
 }
 
 export function usePet(petId) {
@@ -123,8 +137,16 @@ export function useCreateInterest() {
   const { user } = useAuth();
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (petId) => createInterest(petId, user.uid, user),
-    onSuccess: (_, petId) => {
+    // Aceita tanto `petId` (string) quanto `{ petId, formAnswers }` — o feed
+    // registra interesse rápido sem respostas; a página do pet envia o
+    // formulário de adoção preenchido.
+    mutationFn: (input) => {
+      const petId = typeof input === 'string' ? input : input?.petId;
+      const formAnswers = typeof input === 'string' ? null : input?.formAnswers ?? null;
+      return createInterest(petId, user.uid, user, formAnswers);
+    },
+    onSuccess: (_, input) => {
+      const petId = typeof input === 'string' ? input : input?.petId;
       qc.invalidateQueries({ queryKey: ['interests', 'pet', petId] });
       qc.invalidateQueries({ queryKey: ['interests', 'has', petId, user?.uid] });
     },

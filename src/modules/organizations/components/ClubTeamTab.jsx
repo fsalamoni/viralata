@@ -18,7 +18,7 @@ import { isClubOwner, effectiveClubPermissions } from '@/modules/organizations/d
  * Aba "Equipe" do painel de administração: crescimento (código de convite,
  * pedidos de ingresso, convite de novos membros) + a grade de permissões
  * granulares dos administradores. Membros comuns com permissão avulsa
- * (ex.: `animals`) continuam geridos na aba "Membros" pública do clube
+ * (ex.: `animals`) continuam geridos na aba "Membros" pública da organização
  * (`ClubMembersTab`) — aqui é só quem já é administrador.
  */
 export default function ClubTeamTab({ club }) {

@@ -68,7 +68,7 @@ export default function OrganizationAdminPanel() {
 
   if (isLoading) {
     return (
-      <div className="mx-auto max-w-5xl space-y-4">
+      <div className="arena-page mx-auto max-w-5xl space-y-6 px-5 py-6 pb-12">
         <Skeleton className="h-28 rounded-[2rem]" />
         <Skeleton className="h-96 rounded-[2rem]" />
       </div>
@@ -77,7 +77,7 @@ export default function OrganizationAdminPanel() {
 
   if (!club) {
     return (
-      <div className="mx-auto max-w-2xl">
+      <div className="arena-page mx-auto max-w-2xl px-5 py-6 pb-12">
         <EmptyState
           icon={Building2}
           title="Organização não encontrada"
@@ -94,7 +94,7 @@ export default function OrganizationAdminPanel() {
   const location = [club.city, club.state].filter(Boolean).join(', ');
 
   return (
-    <div className="mx-auto max-w-5xl space-y-4 pb-10">
+    <div className="arena-page mx-auto max-w-5xl space-y-6 px-5 py-6 pb-12">
       <Button asChild variant="ghost" size="sm">
         <Link to="/organizacoes"><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar às minhas organizações</Link>
       </Button>

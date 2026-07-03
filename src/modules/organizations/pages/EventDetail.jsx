@@ -42,7 +42,7 @@ export default function EventDetail() {
 
   if (isLoading) {
     return (
-      <div className="mx-auto max-w-4xl space-y-4">
+      <div className="arena-page mx-auto max-w-4xl space-y-6 px-5 py-6 pb-12">
         <Skeleton className="h-28 rounded-[2rem]" />
         <Skeleton className="h-64 rounded-[2rem]" />
       </div>
@@ -54,7 +54,7 @@ export default function EventDetail() {
   // Se não carregou, é porque não existe ou o usuário não tem acesso.
   if (isError || !event) {
     return (
-      <div className="mx-auto max-w-2xl">
+      <div className="arena-page mx-auto max-w-2xl px-5 py-6 pb-12">
         <EmptyState
           icon={membership ? CalendarDays : Building2}
           title={membership ? 'Evento não encontrado' : 'Evento indisponível'}
@@ -66,7 +66,7 @@ export default function EventDetail() {
           action={
             <Button asChild>
               <Link to={membership ? `/comunidade/${clubId}?tab=events` : `/comunidade/${clubId}`}>
-                {membership ? 'Voltar para eventos' : 'Ir para o clube'}
+                {membership ? 'Voltar para eventos' : 'Ir para a organização'}
               </Link>
             </Button>
           }
@@ -79,7 +79,7 @@ export default function EventDetail() {
   const when = formatDateTime(event.starts_at);
 
   return (
-    <div className="mx-auto max-w-4xl space-y-4">
+    <div className="arena-page mx-auto max-w-4xl space-y-6 px-5 py-6 pb-12">
       <Button asChild variant="ghost" size="sm">
         <Link to={`/comunidade/${clubId}?tab=events`}><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para eventos</Link>
       </Button>
@@ -120,7 +120,7 @@ export default function EventDetail() {
       </section>
 
       <Tabs value={tab} onValueChange={setTab} className="w-full">
-        <TabsList className="flex h-auto w-full flex-wrap justify-start gap-1 bg-muted/60 p-1">
+        <TabsList className="mb-2 flex h-auto w-full flex-wrap justify-start gap-1.5 bg-muted/60 p-1.5">
           <TabsTrigger value="detalhes">
             <Info className="mr-1.5 h-4 w-4" /> Detalhes e datas
           </TabsTrigger>
@@ -128,7 +128,7 @@ export default function EventDetail() {
           <TabsTrigger value="conversa"><MessageSquare className="mr-1.5 h-4 w-4" /> Conversa</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="detalhes" className="mt-4">
+        <TabsContent value="detalhes" className="mt-6">
           {event.description && (
             <Card className="mb-4 rounded-xl">
               <CardContent className="p-4">
@@ -140,11 +140,11 @@ export default function EventDetail() {
           <EventDatesPanel event={event} clubId={clubId} />
         </TabsContent>
 
-        <TabsContent value="participantes" className="mt-4">
+        <TabsContent value="participantes" className="mt-6">
           <EventParticipantsPanel event={event} clubId={clubId} />
         </TabsContent>
 
-        <TabsContent value="conversa" className="mt-4">
+        <TabsContent value="conversa" className="mt-6">
           <EventChat eventId={eventId} />
         </TabsContent>
       </Tabs>

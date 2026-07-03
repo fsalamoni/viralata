@@ -70,7 +70,7 @@ export default function ClubEventsTab({ clubId, isAdmin }) {
         <EmptyState
           icon={CalendarDays}
           title="Nenhum evento planejado"
-          description="Crie o primeiro evento do clube e convide os membros."
+          description="Crie o primeiro evento da organização e convide os membros."
           action={<Button size="sm" onClick={() => setCreateOpen(true)}><Plus className="mr-1.5 h-4 w-4" /> Criar evento</Button>}
         />
       ) : (

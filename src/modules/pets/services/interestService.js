@@ -18,7 +18,7 @@ function interestId(petId, userId) {
 }
 
 /** Registra o interesse de um adotante em um pet. */
-export async function createInterest(petId, userId, actor) {
+export async function createInterest(petId, userId, actor, formAnswers = null) {
   if (!db || !petId || !userId) throw new Error('Dados inválidos');
   const id = interestId(petId, userId);
   const ref = doc(db, COLLECTION, id);
@@ -28,14 +28,21 @@ export async function createInterest(petId, userId, actor) {
   const pet = await getPetById(petId);
   if (!pet) throw new Error('Pet não encontrado');
 
-  await setDoc(ref, {
+  const payload = {
     pet_id: petId,
     user_id: userId,
     user_name: actor?.displayName || '',
     user_photo: actor?.photoURL || '',
     status: 'pending',
     created_at: serverTimestamp(),
-  });
+  };
+  // Respostas do formulário de adoção montado na plataforma (item 5). Só grava
+  // quando há de fato respostas — mantém o documento enxuto para pets sem form.
+  if (formAnswers && typeof formAnswers === 'object' && Object.keys(formAnswers).length > 0) {
+    payload.form_answers = formAnswers;
+  }
+
+  await setDoc(ref, payload);
 
   // Notifica o dono do pet
   await createNotification({

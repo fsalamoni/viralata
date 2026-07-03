@@ -13,11 +13,13 @@ import { getOrCreateDirectConversation } from '@/modules/chat/services/chatServi
 import InterestPanel from '../components/InterestPanel';
 import RatingForm from '../components/RatingForm';
 import PetShareCard from '../components/PetShareCard';
+import AdoptionFormFill from '../components/AdoptionFormFill';
+import { hasQuestions } from '../domain/adoptionForm';
 import { usePetShareImage } from '../hooks/usePetShareImage';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Heart, MapPin, Trash2, Share2, MessageCircle } from 'lucide-react';
+import { ArrowLeft, Heart, MapPin, Trash2, Share2, MessageCircle, FileText } from 'lucide-react';
 import { toast } from 'sonner';
 
 function useOwnerProfile(ownerId, enabled) {
@@ -54,6 +56,7 @@ export default function PetDetail() {
   const deletePet = useDeletePet();
   const [currentPhoto, setCurrentPhoto] = useState(0);
   const [openingChat, setOpeningChat] = useState(false);
+  const [formOpen, setFormOpen] = useState(false);
   const { data: owner } = useOwnerProfile(pet?.owner_id, Boolean(user));
 
   const isOwner = user?.uid === pet?.owner_id;
@@ -81,8 +84,19 @@ export default function PetDetail() {
 
   async function handleInterest() {
     if (!user) { navigate('/login'); return; }
+    // Se o pet tem formulário de adoção montado na plataforma, o adotante
+    // precisa respondê-lo antes de registrar o interesse (item 5).
+    if (hasQuestions(pet?.adoption_form)) {
+      setFormOpen(true);
+      return;
+    }
+    await submitInterest();
+  }
+
+  async function submitInterest(formAnswers = null) {
     try {
-      await createInterest.mutateAsync(petId);
+      await createInterest.mutateAsync({ petId, formAnswers });
+      setFormOpen(false);
       toast.success('Interesse registrado! O responsável será notificado.');
     } catch (e) {
       toast.error('Erro ao registrar interesse. Tente novamente.');
@@ -183,6 +197,7 @@ export default function PetDetail() {
             {pet.size && <Badge variant="secondary" className="text-[11.5px]">{SIZE_LABEL[pet.size]}</Badge>}
             {pet.age_group && <Badge variant="secondary" className="text-[11.5px]">{AGE_LABEL[pet.age_group]}</Badge>}
             {pet.gender && <Badge variant="secondary" className="text-[11.5px]">{pet.gender === 'male' ? 'Macho' : 'Fêmea'}</Badge>}
+            {pet.breed && <Badge variant="secondary" className="text-[11.5px]">{pet.breed}</Badge>}
             {pet.neutered && <Badge variant="success" className="text-[11.5px]">Castrado</Badge>}
             {pet.vaccinated === 'yes' && <Badge variant="outline" className="text-[11.5px]">Vacinado</Badge>}
             {pet.dewormed && <Badge variant="outline" className="text-[11.5px]">Vermifugado</Badge>}
@@ -205,6 +220,17 @@ export default function PetDetail() {
             <div className="bg-accent/10 border border-accent/30 rounded-2xl p-3.5 text-[13px] leading-[1.6] text-[hsl(86,40%,20%)]">
               <strong>Requisitos para adoção:</strong> {pet.adoption_requirements}
             </div>
+          )}
+
+          {pet.adoption_form_url && (
+            <a
+              href={pet.adoption_form_url}
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center justify-center gap-2 rounded-2xl border border-primary/30 bg-primary/[0.06] px-3.5 py-3 text-[13px] font-bold text-primary transition-colors hover:bg-primary/10"
+            >
+              <FileText className="h-4 w-4" /> Preencher formulário de doação/adoção
+            </a>
           )}
 
           {!canManage && pet.owner_id && (
@@ -297,6 +323,16 @@ export default function PetDetail() {
           submitting={createRating.isPending}
         />
       )}
+
+      {/* Formulário de adoção montado na plataforma (item 5) */}
+      <AdoptionFormFill
+        open={formOpen}
+        onOpenChange={setFormOpen}
+        form={pet.adoption_form}
+        petTitle={pet.title || pet.name}
+        submitting={createInterest.isPending}
+        onSubmit={submitInterest}
+      />
 
       {/* Nó oculto usado apenas para gerar a imagem de compartilhamento */}
       <div style={{ position: 'fixed', top: 0, left: '-99999px', pointerEvents: 'none' }} aria-hidden="true">

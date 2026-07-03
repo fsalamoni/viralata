@@ -97,7 +97,7 @@ function memberPayload(clubId, user, profile, role) {
 
 export async function createClub(creator, profile, data) {
   if (!creator?.uid) throw new Error('Usuário não autenticado.');
-  if (!trimmed(data.name)) throw new Error('Informe o nome do clube.');
+  if (!trimmed(data.name)) throw new Error('Informe o nome da organização.');
 
   const id = doc(collection(db, COL.clubs)).id;
   const payload = {
@@ -265,7 +265,7 @@ export async function setMemberRole(clubId, member, role, actor) {
     // Impede remover o último administrador.
     const members = await listClubMembers(clubId);
     const admins = members.filter((m) => m.role === CLUB_ROLE.ADMIN);
-    if (admins.length <= 1) throw new Error('O clube precisa ter pelo menos um administrador.');
+    if (admins.length <= 1) throw new Error('A organização precisa ter pelo menos um administrador.');
   }
   const updates = { role, updated_at: serverTimestamp() };
   // Rebaixar de admin para membro precisa limpar as permissões granulares:
@@ -336,7 +336,7 @@ async function listClubAdminIds(clubId) {
  */
 export async function requestToJoinClub(club, user, profile) {
   if (!user?.uid) throw new Error('Usuário não autenticado.');
-  if (!club?.id) throw new Error('Clube inválido.');
+  if (!club?.id) throw new Error('Organização inválida.');
   const existingMember = await getMembership(club.id, user.uid).catch(() => null);
   if (existingMember) return { alreadyMember: true };
 
@@ -359,7 +359,7 @@ export async function requestToJoinClub(club, user, profile) {
   const adminIds = await listClubAdminIds(club.id);
   notifyUsers(adminIds, {
     title: `${requesterName} pediu para entrar em "${trimmed(club.name).slice(0, 50)}"`,
-    message: 'Toque para aprovar ou recusar o pedido na administração do clube.',
+    message: 'Toque para aprovar ou recusar o pedido na administração da organização.',
     type: NOTIFICATION_TYPE.CLUB_JOIN_REQUEST,
     link: `/organizacoes/${club.id}/admin?tab=team`,
     actor: { uid: user.uid, displayName: requesterName },
@@ -410,7 +410,7 @@ export async function approveJoinRequest(request, actor) {
   await updateDoc(doc(db, COL.clubs, request.club_id), { member_count: increment(1), updated_at: serverTimestamp() }).catch(() => {});
   notifyUsers([request.user_id], {
     title: `Pedido aprovado: você agora é membro de "${trimmed(request.club_name).slice(0, 50)}"`,
-    message: 'Toque para abrir o clube e ver eventos, mural e fórum.',
+    message: 'Toque para abrir a organização e ver eventos, mural e fórum.',
     type: NOTIFICATION_TYPE.CLUB_JOIN_APPROVED,
     link: `/comunidade/${request.club_id}`,
     actor,
@@ -427,7 +427,7 @@ export async function rejectJoinRequest(request, actor) {
   });
   notifyUsers([request.user_id], {
     title: `Seu pedido para "${trimmed(request.club_name).slice(0, 50)}" não foi aprovado`,
-    message: 'Você pode falar com um administrador do clube para mais informações.',
+    message: 'Você pode falar com um administrador da organização para mais informações.',
     type: NOTIFICATION_TYPE.CLUB_JOIN_REJECTED,
     link: `/comunidade/${request.club_id}`,
     actor,
@@ -443,7 +443,7 @@ export async function inviteMemberToClub(club, target, inviter, profile) {
   if (!inviter?.uid) throw new Error('Usuário não autenticado.');
   if (!target?.user_id) throw new Error('Selecione um usuário para convidar.');
   const existingMember = await getMembership(club.id, target.user_id).catch(() => null);
-  if (existingMember) throw new Error('Este usuário já é membro do clube.');
+  if (existingMember) throw new Error('Este usuário já é membro da organização.');
 
   const id = memberDocId(club.id, target.user_id);
   const inviterName = profile?.platform_name || inviter.displayName || inviter.email || 'Um administrador';
@@ -463,7 +463,7 @@ export async function inviteMemberToClub(club, target, inviter, profile) {
     updated_at: serverTimestamp(),
   });
   notifyUsers([target.user_id], {
-    title: `${inviterName} convidou você para o clube "${trimmed(club.name).slice(0, 50)}"`,
+    title: `${inviterName} convidou você para a organização "${trimmed(club.name).slice(0, 50)}"`,
     message: 'Toque para aceitar ou recusar o convite.',
     type: NOTIFICATION_TYPE.CLUB_INVITE,
     link: `/comunidade/${club.id}`,
@@ -512,7 +512,7 @@ export async function acceptClubInvite(invite, user, profile) {
   if (invite.invited_by) {
     notifyUsers([invite.invited_by], {
       title: `${me} aceitou o convite e entrou em "${trimmed(invite.club_name).slice(0, 50)}"`,
-      message: 'O usuário agora faz parte do clube.',
+      message: 'O usuário agora faz parte da organização.',
       type: NOTIFICATION_TYPE.CLUB_INVITE_ACCEPTED,
       link: `/comunidade/${invite.club_id}?tab=members`,
       actor: { uid: user.uid, displayName: me },
@@ -656,7 +656,7 @@ export async function createClubEvent(clubId, data, user) {
       const memberIds = (await listClubMembers(clubId)).map((m) => m.user_id).filter(Boolean);
       const creatorName = data.created_by_name || user.displayName || user.email || 'Um membro';
       notifyUsers(memberIds, {
-        title: `Novo evento no clube: "${trimmed(data.title).slice(0, 60)}"`,
+        title: `Novo evento na organização: "${trimmed(data.title).slice(0, 60)}"`,
         message: `${creatorName} criou um evento. Toque para ver e responder.`,
         type: NOTIFICATION_TYPE.CLUB_EVENT_PUBLISHED,
         link: `/comunidade/${clubId}/eventos/${id}`,

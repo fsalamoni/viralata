@@ -13,6 +13,7 @@ import {
   MapPin,
   MessageSquare,
   MessagesSquare,
+  PawPrint,
   Phone,
   Settings,
   Users,
@@ -38,11 +39,13 @@ import {
   useDeclineClubInvite,
   useClubCampaigns,
 } from '@/modules/organizations/hooks/useClubs';
-import { CLUB_ROLE, JOIN_REQUEST_STATUS, CAMPAIGN_STATUS } from '@/modules/organizations/domain/constants';
+import { CLUB_ROLE, JOIN_REQUEST_STATUS, CAMPAIGN_STATUS, CLUB_PERMISSION } from '@/modules/organizations/domain/constants';
+import { hasClubPermission } from '@/modules/organizations/domain/permissions';
 import ClubMembersTab from '@/modules/organizations/components/ClubMembersTab';
 import ClubEventsTab from '@/modules/organizations/components/ClubEventsTab';
 import ClubFeedTab from '@/modules/organizations/components/ClubFeedTab';
 import ClubForumsTab from '@/modules/organizations/components/ClubForumsTab';
+import ClubPetsDataGrid from '@/modules/organizations/components/ClubPetsDataGrid';
 import RatingBadge from '@/modules/pets/components/RatingBadge';
 import { QrCode } from '@/components/ui/qr-code';
 
@@ -55,7 +58,7 @@ import { QrCode } from '@/components/ui/qr-code';
  * antigas.
  */
 export default function ClubDetail() {
-  const { clubId } = useParams();
+  const { orgId: clubId } = useParams();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const { data: club, isLoading, isError } = useClub(clubId);
@@ -96,34 +99,37 @@ export default function ClubDetail() {
 
   const isMember = !!membership;
   const isAdmin = membership?.role === CLUB_ROLE.ADMIN;
+  // Item 7: qualquer visitante vê a lista de animais da organização; só quem
+  // tem a atribuição de animais pode baixar modelo, importar ou criar linha.
+  const canManageAnimals = hasClubPermission(club, membership, CLUB_PERMISSION.ANIMALS);
 
   const handleJoin = async (e) => {
     e.preventDefault();
     if (!code.trim()) return;
     try {
       await joinClub.mutateAsync(code.trim());
-      toast.success('Você entrou no clube!');
+      toast.success('Você entrou na organização!');
       setCode('');
     } catch (err) {
-      toast.error(err.message || 'Código inválido para este clube.');
+      toast.error(err.message || 'Código inválido para esta organização.');
     }
   };
 
   const handleLeave = async () => {
     try {
       await leaveClub.mutateAsync();
-      toast.success('Você saiu do clube.');
+      toast.success('Você saiu da organização.');
       setConfirmLeave(false);
       navigate('/comunidade');
     } catch (err) {
-      toast.error(err.message || 'Não foi possível sair do clube.');
+      toast.error(err.message || 'Não foi possível sair da organização.');
     }
   };
 
   const handleRequestJoin = async () => {
     try {
       const res = await requestToJoin.mutateAsync(club);
-      if (res?.alreadyMember) toast.success('Você já é membro deste clube.');
+      if (res?.alreadyMember) toast.success('Você já é membro desta organização.');
       else toast.success('Pedido enviado! Os administradores foram avisados.');
     } catch (err) {
       toast.error(err.message || 'Não foi possível enviar o pedido.');
@@ -133,7 +139,7 @@ export default function ClubDetail() {
   const handleAcceptInvite = async () => {
     try {
       await acceptInvite.mutateAsync(myInvite);
-      toast.success('Convite aceito! Bem-vindo ao clube.');
+      toast.success('Convite aceito! Bem-vindo à organização.');
     } catch (err) {
       toast.error(err.message || 'Não foi possível aceitar o convite.');
     }
@@ -150,7 +156,7 @@ export default function ClubDetail() {
 
   if (isLoading) {
     return (
-      <div className="mx-auto max-w-4xl space-y-4">
+      <div className="arena-page mx-auto max-w-4xl space-y-6 px-5 py-6 pb-12">
         <Skeleton className="h-40 rounded-[2rem]" />
         <Skeleton className="h-64 rounded-[2rem]" />
       </div>
@@ -159,12 +165,12 @@ export default function ClubDetail() {
 
   if (isError || !club) {
     return (
-      <div className="mx-auto max-w-2xl">
+      <div className="arena-page mx-auto max-w-2xl px-5 py-6 pb-12">
         <EmptyState
           icon={Building2}
-          title="Clube não encontrado"
-          description="O clube que você procura não existe ou foi removido."
-          action={<Button asChild><Link to="/comunidade">Voltar para clubes</Link></Button>}
+          title="Organização não encontrada"
+          description="A organização que você procura não existe ou foi removida."
+          action={<Button asChild><Link to="/comunidade">Voltar para organizações</Link></Button>}
         />
       </div>
     );
@@ -173,9 +179,9 @@ export default function ClubDetail() {
   const location = [club.city, club.state].filter(Boolean).join(' / ');
 
   return (
-    <div className="mx-auto max-w-4xl space-y-4">
-      <Button asChild variant="ghost" size="sm" className="text-orange-50 hover:bg-white/10 hover:text-white">
-        <Link to="/comunidade"><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para clubes</Link>
+    <div className="arena-page mx-auto max-w-4xl space-y-6 px-5 py-6 pb-12">
+      <Button asChild variant="ghost" size="sm">
+        <Link to="/comunidade"><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para organizações</Link>
       </Button>
 
       <section className="arena-panel-strong overflow-hidden rounded-[1.25rem] p-5 sm:rounded-[2rem] sm:p-8">
@@ -204,7 +210,7 @@ export default function ClubDetail() {
           </div>
 
           {isMember && (
-            <div className="flex shrink-0 flex-wrap gap-2">
+            <div className="flex shrink-0 flex-wrap gap-2.5">
               {isAdmin && (
                 <Button
                   asChild
@@ -220,7 +226,7 @@ export default function ClubDetail() {
                 className="border-white/20 bg-white/10 text-white hover:bg-white/15 hover:text-white"
                 onClick={() => setConfirmLeave(true)}
               >
-                <LogOut className="mr-1.5 h-4 w-4" /> Sair do clube
+                <LogOut className="mr-1.5 h-4 w-4" /> Sair da organização
               </Button>
             </div>
           )}
@@ -242,7 +248,7 @@ export default function ClubDetail() {
           <div className="mt-5 flex flex-col items-start gap-3 rounded-2xl bg-white/10 p-4 sm:flex-row sm:items-center">
             <QrCode value={club.donation_link} size={104} className="rounded-lg bg-white p-1.5" />
             <div>
-              <p className="text-sm font-semibold text-white">Apoie este clube com uma doação</p>
+              <p className="text-sm font-semibold text-white">Apoie esta organização com uma doação</p>
               <p className="mt-1 text-xs text-orange-50/80">Aponte a câmera para o QR Code ou toque no link.</p>
               <a
                 href={club.donation_link}
@@ -262,11 +268,11 @@ export default function ClubDetail() {
       {!isMember && myInvite && (
         <Card className="rounded-[1.5rem] border-highlight/40 bg-highlight/[0.14]">
           <CardContent className="p-5">
-            <h3 className="text-base font-semibold text-foreground">Você foi convidado para este clube</h3>
+            <h3 className="text-base font-semibold text-foreground">Você foi convidado para esta organização</h3>
             <p className="mt-1 text-sm text-muted-foreground">
               {myInvite.inviter_name || 'Um administrador'} convidou você a participar. Aceite para entrar e acessar eventos, mural e fórum.
             </p>
-            <div className="mt-4 flex flex-wrap gap-2">
+            <div className="mt-4 flex flex-wrap gap-2.5">
               <Button onClick={handleAcceptInvite} disabled={acceptInvite.isPending}>
                 {acceptInvite.isPending ? 'Entrando…' : 'Aceitar convite'}
               </Button>
@@ -281,7 +287,7 @@ export default function ClubDetail() {
       {!isMember && !myInvite && (
         <Card className="rounded-[1.5rem] border-primary/20 bg-primary/5">
           <CardContent className="p-5">
-            <h3 className="text-base font-semibold text-foreground">Participe deste clube</h3>
+            <h3 className="text-base font-semibold text-foreground">Participe desta organização</h3>
             {myRequest?.status === JOIN_REQUEST_STATUS.PENDING ? (
               <p className="mt-2 inline-flex items-center gap-2 rounded-full bg-highlight/20 px-3 py-1.5 text-sm font-medium text-highlight-foreground">
                 Pedido enviado — aguardando aprovação de um administrador.
@@ -320,26 +326,31 @@ export default function ClubDetail() {
 
       {isMember && (
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="flex h-auto w-full flex-wrap justify-start gap-1 bg-muted/60 p-1">
+          <TabsList className="mb-2 flex h-auto w-full flex-wrap justify-start gap-1.5 bg-muted/60 p-1.5">
             <TabsTrigger value="members"><Users className="mr-1.5 h-4 w-4" /> Membros</TabsTrigger>
+            <TabsTrigger value="animals"><PawPrint className="mr-1.5 h-4 w-4" /> Animais</TabsTrigger>
             <TabsTrigger value="events"><CalendarDays className="mr-1.5 h-4 w-4" /> Eventos</TabsTrigger>
             <TabsTrigger value="feed"><MessageSquare className="mr-1.5 h-4 w-4" /> Mural</TabsTrigger>
             <TabsTrigger value="forums"><MessagesSquare className="mr-1.5 h-4 w-4" /> Fóruns</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="members" className="mt-4">
+          <TabsContent value="members" className="mt-6">
             <ClubMembersTab clubId={clubId} isAdmin={isAdmin} club={club} />
           </TabsContent>
 
-          <TabsContent value="events" className="mt-4">
+          <TabsContent value="animals" className="mt-6">
+            <ClubPetsDataGrid clubId={clubId} canManage={canManageAnimals} />
+          </TabsContent>
+
+          <TabsContent value="events" className="mt-6">
             <ClubEventsTab clubId={clubId} isAdmin={isAdmin} />
           </TabsContent>
 
-          <TabsContent value="feed" className="mt-4">
+          <TabsContent value="feed" className="mt-6">
             <ClubFeedTab clubId={clubId} isAdmin={isAdmin} />
           </TabsContent>
 
-          <TabsContent value="forums" className="mt-4">
+          <TabsContent value="forums" className="mt-6">
             <ClubForumsTab
               clubId={clubId}
               isAdmin={isAdmin}
@@ -353,7 +364,7 @@ export default function ClubDetail() {
       <ConfirmDialog
         open={confirmLeave}
         onOpenChange={setConfirmLeave}
-        title="Sair do clube"
+        title="Sair da organização"
         description={`Tem certeza que deseja sair de "${club.name}"?`}
         confirmLabel="Sair"
         destructive
