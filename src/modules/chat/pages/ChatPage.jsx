@@ -29,7 +29,11 @@ export default function ChatPage() {
   // /chat/:conversationId, usada em alguns fluxos internos antigos.
   useEffect(() => {
     const param = searchParams.get('c') || routeConversationId || null;
-    setSelectedId((prev) => (param ? (param === prev ? prev : param) : null));
+    if (!param) {
+      setSelectedId(null);
+      return;
+    }
+    setSelectedId((prev) => (param === prev ? prev : param));
   }, [routeConversationId, searchParams]);
 
   const selectConversation = (id) => {

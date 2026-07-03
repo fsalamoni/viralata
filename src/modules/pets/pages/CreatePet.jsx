@@ -164,7 +164,10 @@ export default function CreatePet() {
       const uploaded = await Promise.all(
         files.map((f) => uploadImage(f, { uid: user.uid, folder: 'pets' }))
       );
-      const urls = uploaded.map((file) => file.url).filter(Boolean);
+      const urls = uploaded
+        .map((file) => (typeof file === 'string' ? file : file?.url))
+        .filter(Boolean);
+      if (urls.length === 0) throw new Error('Nenhuma URL de imagem retornada.');
       setPhotos((prev) => [...prev, ...urls].slice(0, 6));
     } catch {
       toast.error('Erro ao fazer upload das fotos.');
