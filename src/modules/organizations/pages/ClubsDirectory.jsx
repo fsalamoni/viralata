@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
@@ -18,6 +18,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
+import { hasKnownCoords, lookupCityCoordsByName, filterPetsByRadius } from '@/modules/pets/domain/geoDistance';
 import {
   useClubs,
   useMyClubs,
@@ -27,13 +28,31 @@ import {
   useRequestToJoinClub,
 } from '@/modules/organizations/hooks/useClubs';
 import { JOIN_REQUEST_STATUS } from '@/modules/organizations/domain/constants';
+import { cn } from '@/core/lib/utils';
+
+const RADIUS_OPTIONS = [5, 10, 25, 50, 100];
+
+function RadiusChip({ active, onClick, children }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        'inline-flex h-9 shrink-0 items-center rounded-full px-3.5 text-[13px] font-bold transition-colors',
+        active ? 'bg-primary text-primary-foreground' : 'border border-border bg-card text-foreground/75 hover:border-primary/40',
+      )}
+    >
+      {children}
+    </button>
+  );
+}
 
 function locationText(club) {
   return [club.city, club.state].filter(Boolean).join(' / ') || null;
 }
 
 export default function ClubsDirectory() {
-  const { isAuthAvailable, authUnavailableReason } = useAuth();
+  const { isAuthAvailable, authUnavailableReason, userProfile } = useAuth();
   const { data: clubs = [], isLoading } = useClubs();
   const { data: myClubs = [] } = useMyClubs();
   const { data: myRequests = [] } = useMyJoinRequests();
@@ -42,7 +61,25 @@ export default function ClubsDirectory() {
   const requestToJoin = useRequestToJoinClub();
   const [search, setSearch] = useState('');
   const [code, setCode] = useState('');
+  // Item 6: filtro por cidade + distância. Por padrão usa a cidade do cadastro
+  // do usuário; sem cidade cadastrada, o raio inicial fica em 5 km. O usuário
+  // pode limpar a cidade e o raio para ver todas as organizações da plataforma.
+  const [city, setCity] = useState(() => userProfile?.city || '');
+  const [radius, setRadius] = useState(() => (userProfile?.city ? 25 : 5));
   const isPreviewMode = import.meta.env.DEV && !isAuthAvailable;
+
+  // O perfil pode não estar carregado no primeiro render (auth ainda
+  // resolvendo). Quando ele chega, aplicamos a cidade do cadastro uma única vez,
+  // sem sobrescrever ajustes que o usuário já tenha feito manualmente.
+  const appliedProfileCity = useRef(Boolean(userProfile?.city));
+  useEffect(() => {
+    if (appliedProfileCity.current) return;
+    if (userProfile?.city) {
+      appliedProfileCity.current = true;
+      setCity((prev) => (prev ? prev : userProfile.city));
+      setRadius((prev) => (prev === 5 ? 25 : prev));
+    }
+  }, [userProfile?.city]);
 
   const myClubIds = useMemo(() => new Set(myClubs.map((c) => c.id)), [myClubs]);
   const pendingRequestIds = useMemo(
@@ -61,23 +98,32 @@ export default function ClubsDirectory() {
   const handleRequest = async (club) => {
     try {
       const res = await requestToJoin.mutateAsync(club);
-      if (res?.alreadyMember) toast.success('Você já é membro deste clube.');
+      if (res?.alreadyMember) toast.success('Você já é membro desta organização.');
       else toast.success(`Pedido enviado para ${club.name}.`);
     } catch (err) {
       toast.error(err.message || 'Não foi possível enviar o pedido.');
     }
   };
 
+  const trimmedCity = city.trim();
+  const radiusActive = Boolean(radius && hasKnownCoords(trimmedCity));
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return clubs
-      .filter((c) => {
-        if (!q) return true;
-        const haystack = [c.name, c.city, c.state, c.description].filter(Boolean).join(' ').toLowerCase();
-        return haystack.includes(q);
-      })
-      .sort((a, b) => String(a.name || '').localeCompare(String(b.name || ''), 'pt-BR'));
-  }, [clubs, search]);
+    let list = clubs.filter((c) => {
+      if (!q) return true;
+      const haystack = [c.name, c.city, c.state, c.description].filter(Boolean).join(' ').toLowerCase();
+      return haystack.includes(q);
+    });
+    if (radiusActive) {
+      const origin = lookupCityCoordsByName(trimmedCity);
+      list = filterPetsByRadius(list, origin, radius) ?? list;
+    } else if (trimmedCity) {
+      const cityQ = trimmedCity.toLowerCase();
+      list = list.filter((c) => String(c.city || '').toLowerCase().includes(cityQ));
+    }
+    return list.sort((a, b) => String(a.name || '').localeCompare(String(b.name || ''), 'pt-BR'));
+  }, [clubs, search, radiusActive, trimmedCity, radius]);
 
   const handleJoin = async (e) => {
     e.preventDefault();
@@ -85,10 +131,10 @@ export default function ClubsDirectory() {
     if (!trimmed) return;
     try {
       const club = await joinClub.mutateAsync(trimmed);
-      toast.success(`Você entrou no clube ${club.name}.`);
+      toast.success(`Você entrou na organização ${club.name}.`);
       setCode('');
     } catch (err) {
-      toast.error(err.message || 'Não foi possível ingressar no clube.');
+      toast.error(err.message || 'Não foi possível ingressar na organização.');
     }
   };
 
@@ -122,7 +168,7 @@ export default function ClubsDirectory() {
             <span className="arena-chip">Ingressar com código</span>
             <h3 className="mt-4 text-2xl font-semibold text-foreground">Tem um convite?</h3>
             <p className="mt-2 text-sm leading-6 text-muted-foreground">
-              Digite o código compartilhado por um administrador para entrar no clube.
+              Digite o código compartilhado por um administrador para entrar na organização.
             </p>
             <form onSubmit={handleJoin} className="mt-5 flex flex-col gap-3 sm:flex-row">
               <div className="relative flex-1">
@@ -146,8 +192,8 @@ export default function ClubsDirectory() {
       {myClubs.length > 0 && (
         <section className="space-y-4">
           <div>
-            <div className="text-xs font-semibold uppercase tracking-[0.2em] text-primary/75">Meus clubes</div>
-            <h3 className="mt-2 text-2xl font-semibold text-foreground">Clubes em que você participa</h3>
+            <div className="text-xs font-semibold uppercase tracking-[0.2em] text-primary/75">Minhas organizações</div>
+            <h3 className="mt-2 text-2xl font-semibold text-foreground">Organizações em que você participa</h3>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {myClubs.map((club) => (
@@ -164,7 +210,7 @@ export default function ClubsDirectory() {
             <Input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar clube por nome, cidade ou descrição"
+              placeholder="Buscar organização por nome, cidade ou descrição"
               className="h-12 rounded-full border-white/80 bg-white/80 pl-11 pr-11"
             />
             {search && (
@@ -178,8 +224,48 @@ export default function ClubsDirectory() {
               </button>
             )}
           </div>
+
+          {/* Filtro por cidade + distância (Item 6) */}
+          <div className="mt-3 flex flex-wrap items-center gap-2.5">
+            <div className="relative min-w-[200px] max-w-[280px] flex-1">
+              <MapPin className="absolute left-3.5 top-1/2 h-[17px] w-[17px] -translate-y-1/2 text-muted-foreground/70" />
+              <Input
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                placeholder="Filtrar por cidade"
+                className="h-[38px] rounded-full border-white/80 bg-white/80 pl-[38px] pr-9 text-[12.5px]"
+              />
+              {city && (
+                <button
+                  type="button"
+                  onClick={() => setCity('')}
+                  aria-label="Limpar cidade"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground/70 transition-colors hover:text-foreground/80"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              )}
+            </div>
+            <div className="flex gap-1.5 overflow-x-auto">
+              {RADIUS_OPTIONS.map((km) => (
+                <RadiusChip key={km} active={radius === km} onClick={() => setRadius((prev) => (prev === km ? null : km))}>
+                  {km} km
+                </RadiusChip>
+              ))}
+            </div>
+          </div>
+          <p className="mt-2 text-[11.5px] text-muted-foreground/90">
+            {!trimmedCity
+              ? 'Sem cidade definida — mostrando todas as organizações da plataforma'
+              : radiusActive
+                ? `Organizações até ${radius} km de ${trimmedCity} (distância aproximada pelo centro da cidade)`
+                : radius
+                  ? `Não conhecemos a localização de "${trimmedCity}" para calcular distância — mostrando só organizações nessa cidade.`
+                  : `Organizações em ${trimmedCity}`}
+          </p>
+
           <div className="mt-4 border-t border-foreground/10 pt-4 text-sm text-muted-foreground">
-            <span className="font-semibold text-foreground">{filtered.length}</span> clube(s) na plataforma.
+            <span className="font-semibold text-foreground">{filtered.length}</span> organização(ões) encontrada(s).
           </div>
         </CardContent>
       </Card>
@@ -187,7 +273,7 @@ export default function ClubsDirectory() {
       {isPreviewMode && (
         <Card className="rounded-[2rem] border-amber-300/70 bg-amber-50/85">
           <CardContent className="p-5 text-sm leading-6 text-amber-950">
-            Prévia local sem Firebase: os clubes não são carregados neste ambiente.
+            Prévia local sem Firebase: as organizações não são carregadas neste ambiente.
             {authUnavailableReason ? ` ${authUnavailableReason}` : ''}
           </CardContent>
         </Card>
@@ -205,15 +291,15 @@ export default function ClubsDirectory() {
             <div className="flex h-16 w-16 items-center justify-center rounded-[1.5rem] bg-primary/10 text-primary">
               <Building2 className="h-8 w-8" />
             </div>
-            <h3 className="mt-5 text-2xl font-semibold text-foreground">Nenhum clube encontrado</h3>
+            <h3 className="mt-5 text-2xl font-semibold text-foreground">Nenhuma organização encontrada</h3>
             <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
               {clubs.length === 0
-                ? 'Ainda não há clubes na plataforma. Crie o primeiro e convide sua turma!'
-                : 'Ajuste a busca para ver mais clubes.'}
+                ? 'Ainda não há organizações na plataforma. Crie a primeira e convide sua turma!'
+                : 'Ajuste a busca para ver mais organizações.'}
             </p>
             <div className="mt-6">
               <Button asChild>
-                <Link to="/organizacoes/criar"><Plus className="mr-1.5 h-4 w-4" /> Criar clube</Link>
+                <Link to="/organizacoes/criar"><Plus className="mr-1.5 h-4 w-4" /> Criar</Link>
               </Button>
             </div>
           </CardContent>
@@ -222,7 +308,7 @@ export default function ClubsDirectory() {
         <section className="space-y-4">
           <div>
             <div className="text-xs font-semibold uppercase tracking-[0.2em] text-primary/75">Catálogo</div>
-            <h3 className="mt-2 text-2xl font-semibold text-foreground">Todos os clubes</h3>
+            <h3 className="mt-2 text-2xl font-semibold text-foreground">Todas as organizações</h3>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {filtered.map((club) => (
@@ -289,7 +375,7 @@ function ClubCard({ club, myRole, joinState = null, onRequest, requesting = fals
           <div className="mt-auto pt-6">
             {myRole || !joinState || joinState === 'none' ? (
               <div className="flex items-center justify-between text-sm font-medium text-primary">
-                <span>Abrir clube</span>
+                <span>Abrir organização</span>
                 <ArrowRight className="h-4 w-4" />
               </div>
             ) : null}
