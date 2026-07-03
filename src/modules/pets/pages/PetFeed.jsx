@@ -268,7 +268,7 @@ export default function PetFeed() {
       </div>
 
       {/* Chips de espécie */}
-      <div className="mb-3 flex gap-2 overflow-x-auto pb-0.5">
+      <div className="mb-4 flex gap-2 overflow-x-auto pb-0.5">
         {SPECIES_FILTERS.map((f) => (
           <FilterChip key={f.value} active={species === f.value} onClick={() => setSpecies(f.value)}>
             {f.label}
@@ -276,7 +276,7 @@ export default function PetFeed() {
         ))}
       </div>
       {/* Chips de porte */}
-      <div className="mb-4 flex gap-2 overflow-x-auto pb-1.5">
+      <div className="mb-5 flex gap-2 overflow-x-auto pb-1.5">
         {SIZE_FILTERS.map((f) => (
           <FilterChip key={f.value} active={size === f.value} onClick={() => setSize(f.value)}>
             {f.label}
@@ -285,7 +285,7 @@ export default function PetFeed() {
       </div>
 
       {/* Localização + raio */}
-      <div className="mb-3 flex flex-wrap items-center gap-2.5">
+      <div className="mb-4 flex flex-wrap items-center gap-2.5">
         <div className="relative max-w-[280px] flex-1 min-w-[200px]">
           <MapPin className="absolute left-3.5 top-1/2 h-[17px] w-[17px] -translate-y-1/2 text-muted-foreground/70" />
           <Input
