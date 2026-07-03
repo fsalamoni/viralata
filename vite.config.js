@@ -30,15 +30,16 @@ export default defineConfig(({ mode }) => {
           ],
         },
         workbox: {
-          // Padrões separados — evita o glob composto que causa warning/erro no Workbox
+          // Padrões separados — evita o glob composto que causa warning/erro no Workbox.
+          // `.ico`/`.webp` ficaram de fora de propósito: o projeto não gera nenhum
+          // arquivo desses tipos (ícone é `favicon.svg`) — mantê-los no padrão só
+          // produz o aviso "glob pattern doesn't match any files" no build.
           globPatterns: [
             '**/*.js',
             '**/*.css',
             '**/*.html',
-            '**/*.ico',
             '**/*.png',
             '**/*.svg',
-            '**/*.webp',
           ],
         },
       }),
