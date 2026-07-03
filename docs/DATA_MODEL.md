@@ -43,9 +43,18 @@ anúncio: 90/180/365 dias). Flags de matching: `needs_yard`,
 `health_notes`. Feed filtra `status == 'available'`, ordena por
 `priority_score desc, created_at asc`.
 
+Formulário de doação/adoção (item 5): `adoption_form_url` (link externo
+opcional) e/ou `adoption_form` (formulário montado na plataforma —
+`{ fields: [{ id, type, label, required, options? }] }`, com
+`type ∈ short_text|long_text|yes_no|single_choice`). Definição pura e
+validação em `pets/domain/adoptionForm.js` (testado). Editado pelo
+responsável em `CreatePet`; respondido pelo adotante em `PetDetail`.
+
 ### `adoption_interests/{petId_userId}`
 `pet_id`, `user_id`, `user_name`, `user_photo`, `status`
-(`pending → approved/rejected`). Gera notificações
+(`pending → approved/rejected`), `form_answers?` (respostas ao
+`pets/{id}.adoption_form`, mapa `fieldId → valor`, gravado só quando há
+formulário na plataforma). Gera notificações
 `adoption_interest`/`adoption_match`/`adoption_rejected`.
 
 ## Comunidade — clubes (rotas `/comunidade` e `/organizacoes`)

@@ -13,6 +13,8 @@ import { getOrCreateDirectConversation } from '@/modules/chat/services/chatServi
 import InterestPanel from '../components/InterestPanel';
 import RatingForm from '../components/RatingForm';
 import PetShareCard from '../components/PetShareCard';
+import AdoptionFormFill from '../components/AdoptionFormFill';
+import { hasQuestions } from '../domain/adoptionForm';
 import { usePetShareImage } from '../hooks/usePetShareImage';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -54,6 +56,7 @@ export default function PetDetail() {
   const deletePet = useDeletePet();
   const [currentPhoto, setCurrentPhoto] = useState(0);
   const [openingChat, setOpeningChat] = useState(false);
+  const [formOpen, setFormOpen] = useState(false);
   const { data: owner } = useOwnerProfile(pet?.owner_id, Boolean(user));
 
   const isOwner = user?.uid === pet?.owner_id;
@@ -81,8 +84,19 @@ export default function PetDetail() {
 
   async function handleInterest() {
     if (!user) { navigate('/login'); return; }
+    // Se o pet tem formulário de adoção montado na plataforma, o adotante
+    // precisa respondê-lo antes de registrar o interesse (item 5).
+    if (hasQuestions(pet?.adoption_form)) {
+      setFormOpen(true);
+      return;
+    }
+    await submitInterest();
+  }
+
+  async function submitInterest(formAnswers = null) {
     try {
-      await createInterest.mutateAsync(petId);
+      await createInterest.mutateAsync({ petId, formAnswers });
+      setFormOpen(false);
       toast.success('Interesse registrado! O responsável será notificado.');
     } catch (e) {
       toast.error('Erro ao registrar interesse. Tente novamente.');
@@ -309,6 +323,16 @@ export default function PetDetail() {
           submitting={createRating.isPending}
         />
       )}
+
+      {/* Formulário de adoção montado na plataforma (item 5) */}
+      <AdoptionFormFill
+        open={formOpen}
+        onOpenChange={setFormOpen}
+        form={pet.adoption_form}
+        petTitle={pet.title || pet.name}
+        submitting={createInterest.isPending}
+        onSubmit={submitInterest}
+      />
 
       {/* Nó oculto usado apenas para gerar a imagem de compartilhamento */}
       <div style={{ position: 'fixed', top: 0, left: '-99999px', pointerEvents: 'none' }} aria-hidden="true">

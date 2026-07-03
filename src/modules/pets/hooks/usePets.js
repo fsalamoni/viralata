@@ -137,8 +137,16 @@ export function useCreateInterest() {
   const { user } = useAuth();
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (petId) => createInterest(petId, user.uid, user),
-    onSuccess: (_, petId) => {
+    // Aceita tanto `petId` (string) quanto `{ petId, formAnswers }` — o feed
+    // registra interesse rápido sem respostas; a página do pet envia o
+    // formulário de adoção preenchido.
+    mutationFn: (input) => {
+      const petId = typeof input === 'string' ? input : input?.petId;
+      const formAnswers = typeof input === 'string' ? null : input?.formAnswers ?? null;
+      return createInterest(petId, user.uid, user, formAnswers);
+    },
+    onSuccess: (_, input) => {
+      const petId = typeof input === 'string' ? input : input?.petId;
       qc.invalidateQueries({ queryKey: ['interests', 'pet', petId] });
       qc.invalidateQueries({ queryKey: ['interests', 'has', petId, user?.uid] });
     },

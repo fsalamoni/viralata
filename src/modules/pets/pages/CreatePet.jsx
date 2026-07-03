@@ -16,6 +16,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import { Upload, ArrowLeft, PawPrint } from 'lucide-react';
 import { cn } from '@/core/lib/utils';
+import AdoptionFormBuilder from '../components/AdoptionFormBuilder';
+import { normalizeForm } from '../domain/adoptionForm';
 
 const schema = z.object({
   title: z.string().min(5, 'Título muito curto').max(100),
@@ -109,6 +111,7 @@ export default function CreatePet() {
   const adminClubs = myClubs.filter((c) => c.my_role === 'admin');
   const [ownerId, setOwnerId] = useState('me');
   const [photos, setPhotos] = useState([]);
+  const [adoptionForm, setAdoptionForm] = useState({ fields: [] });
   const [uploading, setUploading] = useState(false);
   const [step, setStep] = useState(0);
 
@@ -149,6 +152,7 @@ export default function CreatePet() {
       state: existingPet.state || '',
     });
     setPhotos(existingPet.photos || []);
+    setAdoptionForm(normalizeForm(existingPet.adoption_form));
     setOwnerId(existingPet.owner_type === 'organization' ? existingPet.owner_id : 'me');
   }, [existingPet, reset]);
 
@@ -184,9 +188,10 @@ export default function CreatePet() {
 
   async function onSubmit(data) {
     if (photos.length === 0) { toast.error('Adicione pelo menos uma foto.'); return; }
+    const cleanForm = normalizeForm(adoptionForm);
     try {
       if (isEditing) {
-        await updatePet.mutateAsync({ petId, updates: { ...data, photos } });
+        await updatePet.mutateAsync({ petId, updates: { ...data, photos, adoption_form: cleanForm } });
         toast.success('Pet atualizado com sucesso!');
         navigate(`/pets/${petId}`);
         return;
@@ -195,6 +200,7 @@ export default function CreatePet() {
       const newPetId = await createPet.mutateAsync({
         ...data,
         photos,
+        adoption_form: cleanForm,
         owner_id: isOrg ? ownerId : user.uid,
         owner_type: isOrg ? 'organization' : 'user',
       });
@@ -419,6 +425,17 @@ export default function CreatePet() {
                   <p className="text-[11px] text-muted-foreground">
                     Cole o link de um formulário externo. Interessados poderão abri-lo a partir do perfil do pet.
                   </p>
+                </div>
+
+                <div className="space-y-2.5 rounded-2xl border border-border bg-secondary/20 p-3.5">
+                  <div>
+                    <Label>Formulário de adoção na plataforma (opcional)</Label>
+                    <p className="mt-1 text-[11px] text-muted-foreground">
+                      Monte um formulário aqui mesmo. Quando alguém demonstrar interesse,
+                      responderá estas perguntas — as respostas aparecem no painel de interessados.
+                    </p>
+                  </div>
+                  <AdoptionFormBuilder value={adoptionForm} onChange={setAdoptionForm} />
                 </div>
               </div>
             </>
