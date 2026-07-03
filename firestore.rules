@@ -100,7 +100,9 @@ service cloud.firestore {
       );
       allow delete: if isAuth() && (
         resource.data.owner_id == request.auth.uid ||
-        (resource.data.owner_type == 'organization' && isClubAdmin(resource.data.owner_id)) ||
+        (resource.data.owner_type == 'organization' && (
+          isClubAdmin(resource.data.owner_id) || canEditClubPets(resource.data.owner_id) || hasClubPermission(resource.data.owner_id, 'animals')
+        )) ||
         isPlatformAdmin()
       );
     }

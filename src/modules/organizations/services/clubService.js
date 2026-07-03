@@ -193,6 +193,8 @@ export async function deleteClub(id, actor) {
     { col: COL.events, field: 'club_id' },
     { col: COL.rsvps, field: 'club_id' },
     { col: COL.posts, field: 'club_id' },
+    { col: COL.campaigns, field: 'club_id' },
+    { col: COL.ledger, field: 'club_id' },
     { col: COL.members, field: 'club_id' },
   ];
   for (const { col, field } of subcollections) {
@@ -265,7 +267,12 @@ export async function setMemberRole(clubId, member, role, actor) {
     const admins = members.filter((m) => m.role === CLUB_ROLE.ADMIN);
     if (admins.length <= 1) throw new Error('O clube precisa ter pelo menos um administrador.');
   }
-  await updateDoc(doc(db, COL.members, memberDocId(clubId, member.user_id)), { role, updated_at: serverTimestamp() });
+  const updates = { role, updated_at: serverTimestamp() };
+  // Rebaixar de admin para membro precisa limpar as permissões granulares:
+  // hasClubPermission() concede acesso pela permissions map independente do
+  // role, então sem isso o membro rebaixado continuaria com acesso de admin.
+  if (role !== CLUB_ROLE.ADMIN) updates.permissions = {};
+  await updateDoc(doc(db, COL.members, memberDocId(clubId, member.user_id)), updates);
   await createAuditLog({
     action: role === CLUB_ROLE.ADMIN ? 'club_admin_added' : 'club_admin_removed',
     actor,
@@ -1100,6 +1107,19 @@ export async function updateClubCampaign(campaignId, updates, actor) {
   });
   await updateDoc(doc(db, COL.campaigns, campaignId), { ...sanitized, updated_at: serverTimestamp() });
   await createAuditLog({ action: 'club_campaign_updated', actor, details: { campaign_id: campaignId, fields: Object.keys(sanitized) } });
+}
+
+/**
+ * Registra um valor recebido somando ao total já arrecadado, via `increment()`
+ * atômico do Firestore — evita lost-update quando dois admins registram
+ * valores da mesma campanha ao mesmo tempo (cada um partindo de um snapshot
+ * local desatualizado de `raised`).
+ */
+export async function addCampaignFunds(campaignId, amount, actor) {
+  const value = Number(amount) || 0;
+  if (value <= 0) throw new Error('Informe um valor maior que zero.');
+  await updateDoc(doc(db, COL.campaigns, campaignId), { raised: increment(value), updated_at: serverTimestamp() });
+  await createAuditLog({ action: 'club_campaign_funds_added', actor, details: { campaign_id: campaignId, amount: value } });
 }
 
 export async function deleteClubCampaign(campaignId, actor) {

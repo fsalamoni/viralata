@@ -61,6 +61,7 @@ import {
   listClubCampaigns,
   createClubCampaign,
   updateClubCampaign,
+  addCampaignFunds,
   deleteClubCampaign,
   listClubLedger,
   createLedgerEntry,
@@ -657,6 +658,15 @@ export function useUpdateClubCampaign(clubId) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: ({ campaignId, updates }) => updateClubCampaign(campaignId, updates, user),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['club-campaigns', clubId] }),
+  });
+}
+
+export function useAddCampaignFunds(clubId) {
+  const { user } = useAuth();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ campaignId, amount }) => addCampaignFunds(campaignId, amount, user),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['club-campaigns', clubId] }),
   });
 }

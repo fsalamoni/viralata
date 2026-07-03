@@ -18,13 +18,36 @@ import { LEDGER_TYPE, LEDGER_CATEGORY_PRESETS, FINANCE_PERIOD, FINANCE_PERIOD_LA
 
 const brl = (value) => Number(value || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
+/** Data local (não UTC) no formato YYYY-MM-DD, para comparar com `entry.date`. */
+function toLocalISODate(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+/**
+ * Soma/subtrai meses com clamp no último dia do mês de destino — evita que
+ * `Date#setMonth` role para o mês seguinte quando o dia atual (29-31) não
+ * existe no mês de destino (ex.: 31/mar -1 mês, sem clamp, vira 02-03/mar
+ * em vez de 28/fev).
+ */
+function addMonthsClamped(date, delta) {
+  const targetIndex = date.getMonth() + delta;
+  const year = date.getFullYear() + Math.floor(targetIndex / 12);
+  const month = ((targetIndex % 12) + 12) % 12;
+  const daysInTargetMonth = new Date(year, month + 1, 0).getDate();
+  const day = Math.min(date.getDate(), daysInTargetMonth);
+  return new Date(year, month, day);
+}
+
 function periodStart(period) {
   const now = new Date();
-  const start = new Date(now);
-  if (period === FINANCE_PERIOD.MONTHLY) start.setMonth(now.getMonth() - 1);
-  else if (period === FINANCE_PERIOD.SEMIANNUAL) start.setMonth(now.getMonth() - 6);
-  else start.setFullYear(now.getFullYear() - 1);
-  return start.toISOString().slice(0, 10);
+  let start;
+  if (period === FINANCE_PERIOD.MONTHLY) start = addMonthsClamped(now, -1);
+  else if (period === FINANCE_PERIOD.SEMIANNUAL) start = addMonthsClamped(now, -6);
+  else start = addMonthsClamped(now, -12);
+  return toLocalISODate(start);
 }
 
 function categoryBreakdown(entries, total) {
@@ -37,7 +60,7 @@ function categoryBreakdown(entries, total) {
     .sort((a, b) => b.value - a.value);
 }
 
-const EMPTY_FORM = { type: LEDGER_TYPE.REVENUE, category: '', value: '', date: new Date().toISOString().slice(0, 10), note: '' };
+const EMPTY_FORM = { type: LEDGER_TYPE.REVENUE, category: '', value: '', date: toLocalISODate(new Date()), note: '' };
 
 export default function ClubFinanceTab({ clubId }) {
   const { data: entries = [], isLoading } = useClubLedger(clubId);

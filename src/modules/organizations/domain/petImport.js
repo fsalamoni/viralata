@@ -125,18 +125,25 @@ export function buildPetImportWorkbook(XLSX, existingPets = []) {
  * formato binário).
  */
 function parseCsv(text) {
+  // Cada linha guarda o número da linha física em que começa no arquivo
+  // original (`line`), preservado mesmo depois do filtro de linhas em
+  // branco abaixo — sem isso, uma linha em branco entre o cabeçalho e os
+  // dados desalinha a numeração de erro ("Linha N") do arquivo real.
   const rows = [];
   let row = [];
   let field = '';
   let inQuotes = false;
+  let line = 1;
+  let rowStartLine = 1;
   const pushField = () => { row.push(field); field = ''; };
-  const pushRow = () => { rows.push(row); row = []; };
+  const pushRow = () => { rows.push({ line: rowStartLine, cells: row }); row = []; rowStartLine = line; };
   for (let i = 0; i < text.length; i++) {
     const c = text[i];
     if (inQuotes) {
       if (c === '"') {
         if (text[i + 1] === '"') { field += '"'; i += 1; } else inQuotes = false;
       } else {
+        if (c === '\n') line += 1;
         field += c;
       }
     } else if (c === '"') {
@@ -146,6 +153,7 @@ function parseCsv(text) {
     } else if (c === '\n') {
       pushField();
       pushRow();
+      line += 1;
     } else if (c !== '\r') {
       field += c;
     }
@@ -154,12 +162,12 @@ function parseCsv(text) {
     pushField();
     pushRow();
   }
-  const filtered = rows.filter((r) => r.some((v) => String(v).trim() !== ''));
+  const filtered = rows.filter((r) => r.cells.some((v) => String(v).trim() !== ''));
   if (filtered.length === 0) return [];
-  const header = filtered[0];
-  return filtered.slice(1).map((cells) => {
-    const obj = {};
-    header.forEach((h, idx) => { obj[h] = cells[idx] ?? ''; });
+  const header = filtered[0].cells;
+  return filtered.slice(1).map((r) => {
+    const obj = { __sourceLine: r.line };
+    header.forEach((h, idx) => { obj[h] = r.cells[idx] ?? ''; });
     return obj;
   });
 }
@@ -205,7 +213,10 @@ export function validateAndMapRows(rawRows, existingPets = []) {
   const errors = [];
 
   rawRows.forEach((raw, index) => {
-    const rowNum = index + 2; // +1 cabeçalho, +1 índice 1-based
+    // `__sourceLine` (só presente em linhas vindas do parser de CSV) aponta
+    // para a linha real do arquivo; sem ela (JSON/XLSX), cai para o cálculo
+    // por índice de sempre.
+    const rowNum = raw.__sourceLine ?? (index + 2); // +1 cabeçalho, +1 índice 1-based
     const id = readField(raw, 'ID', 'id');
     const title = readField(raw, 'Título', 'Titulo', 'title');
     const name = readField(raw, 'Nome', 'name');

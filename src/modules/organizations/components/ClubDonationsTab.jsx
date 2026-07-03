@@ -13,7 +13,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
 } from '@/components/ui/dialog';
 import {
-  useClubCampaigns, useCreateClubCampaign, useUpdateClubCampaign,
+  useClubCampaigns, useCreateClubCampaign, useUpdateClubCampaign, useAddCampaignFunds,
 } from '@/modules/organizations/hooks/useClubs';
 import { CAMPAIGN_STATUS } from '@/modules/organizations/domain/constants';
 
@@ -25,6 +25,7 @@ export default function ClubDonationsTab({ clubId }) {
   const { data: campaigns = [], isLoading } = useClubCampaigns(clubId);
   const createCampaign = useCreateClubCampaign(clubId);
   const updateCampaign = useUpdateClubCampaign(clubId);
+  const addFunds = useAddCampaignFunds(clubId);
   const [createOpen, setCreateOpen] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
   const [addFundsFor, setAddFundsFor] = useState(null);
@@ -48,9 +49,8 @@ export default function ClubDonationsTab({ clubId }) {
     e.preventDefault();
     const value = Number(amount);
     if (!addFundsFor || !value || value <= 0) return;
-    const nextRaised = Number(addFundsFor.raised || 0) + value;
     try {
-      await updateCampaign.mutateAsync({ campaignId: addFundsFor.id, updates: { raised: nextRaised } });
+      await addFunds.mutateAsync({ campaignId: addFundsFor.id, amount: value });
       toast.success('Arrecadação atualizada.');
       setAddFundsFor(null);
       setAmount('');
@@ -177,7 +177,7 @@ export default function ClubDonationsTab({ clubId }) {
               <Input id="camp_amount" type="number" min="0.01" step="0.01" value={amount} onChange={(e) => setAmount(e.target.value)} autoFocus required />
             </div>
             <DialogFooter>
-              <Button type="submit" disabled={updateCampaign.isPending}>Adicionar</Button>
+              <Button type="submit" disabled={addFunds.isPending}>Adicionar</Button>
             </DialogFooter>
           </form>
         </DialogContent>

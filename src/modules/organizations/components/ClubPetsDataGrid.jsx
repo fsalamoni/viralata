@@ -109,18 +109,28 @@ export default function ClubPetsDataGrid({ clubId }) {
   async function handleConfirmImport() {
     if (!preview) return;
     setImporting(true);
+    let inserted = 0;
+    let replaced = 0;
     try {
-      let inserted = 0;
-      let replaced = 0;
-      for (const item of preview.toInsert) {
+      // Remove cada item da lista local (e do preview em tela) assim que a
+      // escrita é confirmada — se uma linha mais adiante falhar, o retry só
+      // reprocessa o que ainda não foi salvo, sem duplicar animais já
+      // inseridos (que não têm ID para serem reconhecidos como duplicata).
+      const remaining = [...preview.toInsert];
+      while (remaining.length > 0) {
+        const item = remaining[0];
         await createPet.mutateAsync({ ...item.petData, photos: [], owner_id: clubId, owner_type: 'organization' });
         inserted += 1;
+        remaining.shift();
+        setPreview((prev) => (prev ? { ...prev, toInsert: [...remaining] } : prev));
       }
-      for (const dup of preview.duplicates) {
-        if (dup.action === 'replace') {
-          await updatePet.mutateAsync({ petId: dup.id, updates: dup.petData });
-          replaced += 1;
-        }
+      const toReplace = preview.duplicates.filter((d) => d.action === 'replace');
+      for (const dup of toReplace) {
+        await updatePet.mutateAsync({ petId: dup.id, updates: dup.petData });
+        replaced += 1;
+        setPreview((prev) => (prev
+          ? { ...prev, duplicates: prev.duplicates.map((d) => (d.row === dup.row ? { ...d, action: 'keep' } : d)) }
+          : prev));
       }
       toast.success(`Importação concluída: ${inserted} novo(s), ${replaced} atualizado(s).`);
       setPreview(null);

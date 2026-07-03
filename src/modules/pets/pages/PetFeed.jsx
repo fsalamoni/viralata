@@ -26,7 +26,16 @@ export default function PetFeed() {
   // cidade no Firestore e filtra por distância real no client. Sem raio, ou
   // cidade fora da tabela, mantém o filtro de texto exato de sempre.
   const radiusActive = radius && hasKnownCoords(trimmedCity);
-  const queryFilters = { ...filters, city: radiusActive ? undefined : (trimmedCity || undefined) };
+  // Sem o filtro exato de cidade, a query cai para o top-N global por
+  // prioridade — sem ampliar o limite, o filtro de raio no client acabaria
+  // vendo só os N pets mais prioritários da plataforma inteira, não
+  // necessariamente os geograficamente próximos. 500 dá margem para achar
+  // os pets certos sem buscar a coleção inteira.
+  const queryFilters = {
+    ...filters,
+    city: radiusActive ? undefined : (trimmedCity || undefined),
+    limitCount: radiusActive ? 500 : undefined,
+  };
   const { data: fetchedPets = [], isLoading, isError } = usePetFeed(queryFilters);
 
   const pets = useMemo(() => {

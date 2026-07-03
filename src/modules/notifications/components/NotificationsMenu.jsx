@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuTrigger,
+  DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuItem,
 } from '@/components/ui/dropdown-menu';
 import { useNotifications } from '@/modules/notifications/hooks/useNotifications';
 import { NOTIFICATION_TYPE } from '@/core/services/notificationService';
@@ -93,12 +93,11 @@ export default function NotificationsMenu() {
               const meta = TYPE_META[notification.type] || { icon: Bell, tone: 'bg-secondary text-secondary-foreground' };
               const Icon = meta.icon;
               return (
-                <button
+                <DropdownMenuItem
                   key={notification.id}
-                  type="button"
                   onClick={() => handleClick(notification)}
                   className={cn(
-                    'flex w-full items-start gap-3 border-b border-border/60 px-4 py-3 text-left transition-colors last:border-0 hover:bg-secondary/50',
+                    'flex w-full cursor-pointer items-start gap-3 rounded-none border-b border-border/60 px-4 py-3 text-left last:border-0',
                     !notification.read && 'bg-primary/5',
                   )}
                 >
@@ -113,7 +112,7 @@ export default function NotificationsMenu() {
                     <span className="mt-0.5 block text-[11px] text-muted-foreground/80">{timeAgo(notification)}</span>
                   </span>
                   {!notification.read && <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-primary" />}
-                </button>
+                </DropdownMenuItem>
               );
             })
           )}
