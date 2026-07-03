@@ -183,43 +183,52 @@ export default function Profile() {
   }
 
   return (
-    <div className="arena-page mx-auto flex max-w-[640px] flex-col gap-4.5 px-5 py-5.5 pb-16">
+    <div className="arena-page mx-auto flex max-w-5xl flex-col gap-6 px-5 py-6 pb-16">
 
-      {/* Cabeçalho do perfil */}
-      <Card className="flex flex-row flex-wrap items-center gap-4 rounded-[24px] p-[22px]">
-        <ImageUpload
-          value={photoUrl}
-          onChange={setPhotoUrl}
-          storagePath={`users/${user?.uid}/avatar`}
-          shape="circle"
-          className="h-16 w-16"
-        />
-        <div className="min-w-[180px] flex-1">
-          <div className="font-['Sora'] text-lg font-extrabold text-foreground">{fullName || user?.email}</div>
-          <div className="mt-0.5 text-[12.5px] text-muted-foreground">{user?.email}</div>
-          <div className="mt-2 flex flex-wrap items-center gap-2.5">
-            {ratingCount > 0 && (
-              <div className="flex items-center gap-0.5">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star
-                    key={i}
-                    className="h-[15px] w-[15px]"
-                    style={{ color: i < Math.round(ratingAvg) ? 'hsl(40 88% 54%)' : 'hsl(30 20% 85%)' }}
-                    fill={i < Math.round(ratingAvg) ? 'hsl(40 88% 54%)' : 'none'}
-                  />
-                ))}
-                <span className="ml-1 text-xs font-bold text-foreground">{ratingAvg.toFixed(1)}</span>
+      <section className="arena-panel-strong overflow-hidden rounded-[1.25rem] p-5 sm:rounded-[2rem] sm:p-8">
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+          <div className="flex items-center gap-4">
+            <ImageUpload
+              value={photoUrl}
+              onChange={setPhotoUrl}
+              folder="avatar"
+              shape="circle"
+              className="h-16 w-16"
+            />
+            <div className="min-w-[180px] flex-1">
+              <div className="text-[11px] font-bold uppercase tracking-[0.24em] text-orange-100/70">Meu perfil</div>
+              <div className="mt-1 font-['Sora'] text-2xl font-extrabold text-white">{fullName || user?.email}</div>
+              <div className="mt-1 text-[13px] text-orange-50/80">{user?.email}</div>
+              <div className="mt-3 flex flex-wrap items-center gap-2.5">
+                {ratingCount > 0 && (
+                  <div className="flex items-center gap-0.5">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star
+                        key={i}
+                        className="h-[15px] w-[15px]"
+                        style={{ color: i < Math.round(ratingAvg) ? 'hsl(40 88% 54%)' : 'rgba(255,255,255,0.35)' }}
+                        fill={i < Math.round(ratingAvg) ? 'hsl(40 88% 54%)' : 'none'}
+                      />
+                    ))}
+                    <span className="ml-1 text-xs font-bold text-white">{ratingAvg.toFixed(1)}</span>
+                  </div>
+                )}
+                {memberSinceYear && (
+                  <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-medium text-orange-50/85">
+                    Membro desde {memberSinceYear}
+                  </span>
+                )}
               </div>
-            )}
-            {memberSinceYear && (
-              <span className="text-[11px] text-muted-foreground/80">Membro desde {memberSinceYear}</span>
-            )}
+            </div>
+          </div>
+          <div className="max-w-sm text-sm leading-6 text-orange-50/82">
+            Revise seus dados, mantenha o perfil de adotante atualizado e controle a privacidade das suas informações.
           </div>
         </div>
-      </Card>
+      </section>
 
       {/* Dados pessoais */}
-      <Card className="rounded-[24px] p-6">
+      <Card className="rounded-[24px] p-6 lg:p-7">
         <CardHeader className="p-0 pb-4">
           <CardTitle className="flex items-center gap-2 text-base font-bold">
             <User className="w-[19px] h-[19px] text-primary" /> Dados pessoais
@@ -232,7 +241,7 @@ export default function Profile() {
               <ImageUpload
                 value={photoUrl}
                 onChange={setPhotoUrl}
-                storagePath={`users/${user?.uid}/avatar`}
+                folder="avatar"
                 className="w-20 h-20 rounded-full"
               />
               <div className="text-[12.5px] text-muted-foreground">
@@ -289,7 +298,7 @@ export default function Profile() {
       </Card>
 
       {/* Perfil de adotante */}
-      <Card className="rounded-[24px] p-6">
+      <Card className="rounded-[24px] p-6 lg:p-7">
         <CardHeader className="p-0 pb-1">
           <CardTitle className="flex items-center gap-2 text-base font-bold">
             <PawPrint className="w-[19px] h-[19px] text-accent" /> Perfil de adotante

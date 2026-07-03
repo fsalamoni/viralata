@@ -326,12 +326,12 @@ export default function ClubDetail() {
 
       {isMember && (
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="mb-2 flex h-auto w-full flex-wrap justify-start gap-1.5 bg-muted/60 p-1.5">
-            <TabsTrigger value="members"><Users className="mr-1.5 h-4 w-4" /> Membros</TabsTrigger>
-            <TabsTrigger value="animals"><PawPrint className="mr-1.5 h-4 w-4" /> Animais</TabsTrigger>
-            <TabsTrigger value="events"><CalendarDays className="mr-1.5 h-4 w-4" /> Eventos</TabsTrigger>
-            <TabsTrigger value="feed"><MessageSquare className="mr-1.5 h-4 w-4" /> Mural</TabsTrigger>
-            <TabsTrigger value="forums"><MessagesSquare className="mr-1.5 h-4 w-4" /> Fóruns</TabsTrigger>
+          <TabsList className="arena-tab-bar">
+            <TabsTrigger value="members" className="arena-tab-pill"><Users className="mr-1.5 h-4 w-4" /> Membros</TabsTrigger>
+            <TabsTrigger value="animals" className="arena-tab-pill"><PawPrint className="mr-1.5 h-4 w-4" /> Animais</TabsTrigger>
+            <TabsTrigger value="events" className="arena-tab-pill"><CalendarDays className="mr-1.5 h-4 w-4" /> Eventos</TabsTrigger>
+            <TabsTrigger value="feed" className="arena-tab-pill"><MessageSquare className="mr-1.5 h-4 w-4" /> Mural</TabsTrigger>
+            <TabsTrigger value="forums" className="arena-tab-pill"><MessagesSquare className="mr-1.5 h-4 w-4" /> Fóruns</TabsTrigger>
           </TabsList>
 
           <TabsContent value="members" className="mt-6">

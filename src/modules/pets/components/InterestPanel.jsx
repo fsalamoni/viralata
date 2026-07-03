@@ -30,7 +30,7 @@ export default function InterestPanel({ petId, pet }) {
         user.uid, interest.user_id, { pet_id: petId, pet_title: pet?.title || pet?.name }
       );
       await updateStatus.mutateAsync({ petId, userId: interest.user_id, status: 'chat_opened' });
-      navigate(`/chat/${conversationId}`);
+      navigate(`/chat?c=${conversationId}`);
     } catch (e) {
       toast.error('Erro ao abrir conversa.');
     }

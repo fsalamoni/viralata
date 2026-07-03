@@ -14,11 +14,23 @@ import { calculatePriorityScore } from '@/modules/pets/domain/priority';
 const PETS_COLLECTION = 'pets';
 const INTERESTS_COLLECTION = 'adoption_interests';
 
+function normalizePetRecord(id, data) {
+  return {
+    id,
+    ...data,
+    photos: Array.isArray(data?.photos)
+      ? data.photos
+        .map((photo) => (typeof photo === 'string' ? photo : photo?.url))
+        .filter(Boolean)
+      : [],
+  };
+}
+
 /** Busca um pet por ID. */
 export async function getPetById(petId) {
   if (!db || !petId) return null;
   const snap = await getDoc(doc(db, PETS_COLLECTION, petId));
-  return snap.exists() ? { id: snap.id, ...snap.data() } : null;
+  return snap.exists() ? normalizePetRecord(snap.id, snap.data()) : null;
 }
 
 /** Lista todos os pets disponíveis (para o feed). */
@@ -31,7 +43,7 @@ export async function getAvailablePets({ species, size, city, state, limitCount 
   if (state) constraints.push(where('state', '==', state));
   constraints.push(limit(limitCount));
   const snap = await getDocs(query(collection(db, PETS_COLLECTION), ...constraints));
-  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+  return snap.docs.map((d) => normalizePetRecord(d.id, d.data()));
 }
 
 /** Lista pets de um dono (usuário ou organização). */
@@ -40,7 +52,7 @@ export async function getPetsByOwner(ownerId) {
   const snap = await getDocs(
     query(collection(db, PETS_COLLECTION), where('owner_id', '==', ownerId), orderBy('created_at', 'desc'))
   );
-  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+  return snap.docs.map((d) => normalizePetRecord(d.id, d.data()));
 }
 
 /** Cria um novo pet. */

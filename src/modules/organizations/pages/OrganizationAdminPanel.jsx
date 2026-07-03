@@ -117,15 +117,17 @@ export default function OrganizationAdminPanel() {
           </div>
         </div>
 
-        <div className="flex gap-1.5 overflow-x-auto border-t border-border px-6 py-3">
+        <div className="arena-tab-bar mx-6 mb-6 mt-1">
           {visibleTabs.map((tab) => (
             <button
               key={tab.key}
               type="button"
               onClick={() => setActiveTab(tab.key)}
               className={cn(
-                'flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors',
-                activeTab === tab.key ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-secondary/70',
+                'arena-tab-pill',
+                activeTab === tab.key
+                  ? 'bg-primary text-primary-foreground shadow-[0_10px_20px_-16px_rgba(64,34,18,0.5)]'
+                  : 'text-muted-foreground hover:bg-secondary/70',
               )}
             >
               <tab.icon className="h-4 w-4" /> {tab.label}

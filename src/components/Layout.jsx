@@ -100,7 +100,7 @@ export default function Layout({ children, currentPageName }) {
               <>
                 {/* Cadastrar Pet — presente no cabeçalho em todas as páginas (item 2) */}
                 <Button asChild size="sm">
-                  <Link to="/pets/new"><Plus className="w-3.5 h-3.5 mr-1" />Pet</Link>
+                  <Link to="/pets/new"><Plus className="w-3.5 h-3.5 mr-1" />+ Cadastrar Pet</Link>
                 </Button>
 
                 {/* Notificações */}

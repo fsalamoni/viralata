@@ -194,6 +194,15 @@
     @apply overflow-x-auto rounded-[1.25rem] border border-white/80 bg-white/75 shadow-[0_20px_50px_-32px_rgba(64,34,18,0.45)] backdrop-blur-xl;
   }
 
+  .arena-tab-bar {
+    @apply mb-2 flex h-auto w-full flex-nowrap justify-start gap-1.5 overflow-x-auto rounded-[1.1rem] border border-border/70 bg-card/80 p-1.5 backdrop-blur-xl;
+    box-shadow: 0 18px 42px -30px rgba(64, 34, 18, 0.32);
+  }
+
+  .arena-tab-pill {
+    @apply shrink-0 rounded-full px-3.5 py-2 text-sm font-semibold;
+  }
+
   .match-surface {
     @apply rounded-[1.25rem] border border-white/70 bg-white/80 shadow-[0_18px_42px_-28px_rgba(64,34,18,0.32)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 hover:border-orange-400/40;
   }

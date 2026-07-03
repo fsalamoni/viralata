@@ -50,7 +50,7 @@ export async function createInterest(petId, userId, actor, formAnswers = null) {
     title: 'Novo interesse em adoção!',
     message: `${actor?.displayName || 'Alguém'} demonstrou interesse em ${pet.title || pet.name || 'seu pet'}.`,
     type: NOTIFICATION_TYPE.ADOPTION_INTEREST,
-    link: `/pets/${petId}/interests`,
+    link: `/pets/${petId}?tab=interests`,
     actor: { uid: userId, displayName: actor?.displayName },
   });
 

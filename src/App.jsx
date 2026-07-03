@@ -74,12 +74,16 @@ function ProtectedRoute({ children }) {
   return children;
 }
 
-function OnboardedRoute({ children }) {
+function OnboardingGate({ children }) {
   const location = useLocation();
   const { isAuthenticated, isLoadingAuth, userProfile } = useAuth();
-  if (isLoadingAuth) return <FullScreenSpinner />;
-  if (!isAuthenticated) return <Navigate to="/login" state={{ from: location }} replace />;
-  if (!userProfile?.profile_completed) return <Navigate to="/onboarding" replace />;
+  const onboardingAllowedPaths = ['/onboarding', '/login', '/politica-privacidade', '/termos', '/legislacao'];
+  const isAllowedPath = onboardingAllowedPaths.some((path) => location.pathname.startsWith(path));
+  if (!isAuthenticated) return children;
+  if (isLoadingAuth && !isAllowedPath) return <FullScreenSpinner />;
+  if (!userProfile?.profile_completed && !isAllowedPath) {
+    return <Navigate to="/onboarding" state={{ from: location }} replace />;
+  }
   return children;
 }
 
@@ -153,6 +157,7 @@ export default function App() {
             <RouteTelemetry />
             <Suspense fallback={<FullScreenSpinner />}>
               <BannedGate>
+              <OnboardingGate>
               <Routes>
                 {/* ── Públicas ─────────────────────────────────────────── */}
                 <Route path="/" element={withLayout('Home', Home)} />
@@ -280,6 +285,7 @@ export default function App() {
                 {/* ── 404 ───────────────────────────────────────────────── */}
                 <Route path="*" element={<PageNotFound />} />
               </Routes>
+              </OnboardingGate>
               </BannedGate>
             </Suspense>
           </BrowserRouter>

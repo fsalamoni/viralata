@@ -7,6 +7,7 @@ import { hasKnownCoords, lookupCityCoordsByName, filterPetsByRadius } from '../d
 import PetCard from '../components/PetCard';
 import AdSlot from '@/components/AdSlot';
 import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
 import { cn } from '@/core/lib/utils';
 import { toast } from 'sonner';
 
@@ -194,6 +195,7 @@ export default function PetFeed() {
   const { userProfile, user } = useAuth();
   const [species, setSpecies] = useState('all');
   const [size, setSize] = useState('all');
+  const [showOwnPets, setShowOwnPets] = useState(true);
   // Item 4: por padrão o filtro usa a cidade do cadastro do usuário. Se não há
   // cidade cadastrada, o raio inicial fica em 5 km. O usuário pode limpar a
   // cidade e o raio para ver todos os pets da plataforma.
@@ -227,10 +229,13 @@ export default function PetFeed() {
   const { data: fetchedPets = [], isLoading, isError } = usePetFeed(filters);
 
   const pets = useMemo(() => {
-    if (!radiusActive) return fetchedPets;
+    const visiblePets = !showOwnPets && user?.uid
+      ? fetchedPets.filter((pet) => pet.owner_id !== user.uid)
+      : fetchedPets;
+    if (!radiusActive) return visiblePets;
     const origin = lookupCityCoordsByName(trimmedCity);
-    return filterPetsByRadius(fetchedPets, origin, radius) ?? fetchedPets;
-  }, [fetchedPets, radiusActive, trimmedCity, radius]);
+    return filterPetsByRadius(visiblePets, origin, radius) ?? visiblePets;
+  }, [fetchedPets, radiusActive, trimmedCity, radius, showOwnPets, user?.uid]);
 
   const priorityPets = useMemo(
     () => [...pets].sort((a, b) => (b.priority_score || 0) - (a.priority_score || 0)),
@@ -303,6 +308,18 @@ export default function PetFeed() {
           ))}
         </div>
       </div>
+      {user && (
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-[1.15rem] border border-border/70 bg-card/80 px-4 py-3">
+          <div>
+            <p className="text-sm font-semibold text-foreground">Mostrar meus pets no feed</p>
+            <p className="text-xs text-muted-foreground">Use o controle para incluir ou ocultar pets cadastrados por você.</p>
+          </div>
+          <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+            <span>{showOwnPets ? 'Exibindo' : 'Ocultando'}</span>
+            <Switch checked={showOwnPets} onCheckedChange={setShowOwnPets} />
+          </div>
+        </div>
+      )}
       <p className="mb-6.5 text-[11.5px] text-muted-foreground/90">
         {!trimmedCity
           ? 'Sem cidade definida — mostrando todos os pets disponíveis na plataforma'
@@ -315,7 +332,7 @@ export default function PetFeed() {
 
       {!isLoading && !isError && (
         <SwipeDeck
-          key={`${species}-${size}-${trimmedCity}-${radius}`}
+          key={`${species}-${size}-${trimmedCity}-${radius}-${showOwnPets}`}
           pets={priorityPets}
           onLike={handleLike}
           onPass={handlePass}

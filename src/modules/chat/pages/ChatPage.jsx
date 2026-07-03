@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { MessageCircle, Plus, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -14,22 +14,24 @@ import NewChatDialog from '@/modules/chat/components/NewChatDialog';
 import { cn } from '@/core/lib/utils';
 
 export default function ChatPage() {
+  const { conversationId: routeConversationId } = useParams();
   const { user, isAuthAvailable } = useAuth();
   const { conversations, isLoading } = useConversations();
   const actions = useChatActions();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [selectedId, setSelectedId] = useState(searchParams.get('c') || null);
+  const [selectedId, setSelectedId] = useState(searchParams.get('c') || routeConversationId || null);
   const [newOpen, setNewOpen] = useState(false);
   const [creating, setCreating] = useState(false);
   const [search, setSearch] = useState('');
   const isPreviewMode = import.meta.env.DEV && !isAuthAvailable;
 
-  // Sincroniza a seleção com o parâmetro ?c= da URL (deep-link das notificações).
+  // Sincroniza a seleção com o parâmetro ?c= da URL e com a rota legada
+  // /chat/:conversationId, usada em alguns fluxos internos antigos.
   useEffect(() => {
-    const param = searchParams.get('c');
+    const param = searchParams.get('c') || routeConversationId || null;
     if (param && param !== selectedId) setSelectedId(param);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams]);
+    else if (!param && selectedId) setSelectedId(null);
+  }, [routeConversationId, searchParams, selectedId]);
 
   const selectConversation = (id) => {
     setSelectedId(id);
