@@ -2,10 +2,11 @@
 
 > Plano de organização do desenvolvimento por fases. Ver
 > `docs/DESIGN_SYSTEM.md` para o fundamento visual detalhado por trás das
-> Fases 0 e 1 abaixo. **Fases 0 e 1 (todos os lotes) e o núcleo funcional da
-> Fase 3 (módulo de Organizações completo + filtro de raio no Feed) estão
-> entregues** — ver "O que já está entregue" abaixo. O que resta é a
-> limpeza de código órfão da Fase 2 e os itens residuais da Fase 3.
+> Fases 0 e 1 abaixo. **Fases 0, 1 e 2 estão concluídas, e a maior parte da
+> Fase 3 também** — ver "O que já está entregue" abaixo. O que resta na
+> Fase 3 depende de decisão externa (conta de ads real) ou é limitação
+> estrutural documentada (cobertura de cidades do filtro de raio, CVE do
+> `xlsx` sem patch no npm).
 
 ## Contexto
 
@@ -23,9 +24,10 @@ decisões de design a cada página.
 ## O que já está entregue
 
 Núcleo do negócio: Radar de Pets (Cloud Function), avaliações pós-adoção,
-filtro de localização e raio (5/10/25/50/100 km) no Feed — o raio ajusta o
-texto de resumo, filtro real de distância ainda depende de geocoding (ver
-Fase 3).
+filtro de localização e raio (5/10/25/50/100 km) no Feed com distância
+real via haversine para as ~70 cidades da tabela de
+`pets/domain/geoDistance.js` (fora dela, cai para filtro de texto exato —
+ver Fase 3).
 
 Confiança e transparência: QR Code de doação + CNPJ na página da
 organização, compartilhamento social do pet (imagem "story" com QR),
@@ -139,8 +141,25 @@ próprio.
 ## Fase 3 — Follow-ups funcionais conhecidos
 
 Itens já identificados como reduções de escopo ou limitações explícitas em
-entregas anteriores, para retomar quando fizer sentido:
+entregas anteriores. Os quatro que dependiam só de trabalho de produto já
+foram resolvidos; o que resta depende de decisão externa (conta de ads,
+política de rede do time) ou é uma limitação estrutural documentada:
 
+- ~~Geocoding real para o filtro de raio do Feed~~ ✅ — `PetFeed` agora
+  filtra por distância de verdade (fórmula de haversine) quando a cidade
+  digitada está na tabela estática de coordenadas de
+  `domain/geoDistance.js` (70 cidades: capitais + principais regiões
+  metropolitanas). **Limitação que permanece**: cidade fora da tabela cai
+  de volta para o filtro de texto exato (aviso explícito na tela, não
+  finge precisão que não existe); cobertura completa de todos os
+  municípios do Brasil exigiria uma API de geocoding paga ou uma base
+  completa + geohash no Firestore.
+- ~~Chamados de doação sem visibilidade pública~~ ✅ — campanhas ativas
+  agora aparecem no perfil público da organização (`/comunidade/:id`),
+  não só no painel de administração.
+- ~~Bottom tab bar fixa no mobile~~ ✅ — adicionada em `Layout.jsx`,
+  aditiva ao menu hambúrguer existente (que continua cobrindo os itens
+  que não cabem nos 5 slots da barra).
 - Integração real de rede de anúncios no `AdSlot` (hoje só o placeholder
   estrutural — depende de uma conta de ads real, fora do escopo executável
   sem essa informação).
@@ -148,16 +167,10 @@ entregas anteriores, para retomar quando fizer sentido:
   `index.css`, mas não são usados hoje — despriorizado nesta rodada).
 - CMS de conteúdo institucional via Markdown, caso decidam trocar os
   componentes JSX estruturados atuais das páginas legais.
-- **Geocoding real para o filtro de raio do Feed**: hoje `PetFeed` filtra
-  por igualdade exata de cidade (`petService.getAvailablePets({ city })`);
-  os chips de raio (5–100 km) só ajustam o texto de resumo. Filtro de
-  distância de verdade precisa de lat/lng por pet (Geocoding API ou base
-  de cidades) + geohash no Firestore para query eficiente por proximidade.
 - **Parser assistido por LLM na importação de planilha de animais**: hoje
   a importação (`domain/petImport.js`) mapeia colunas por nome (com alias
   PT/EN) — cobre `.xlsx`/`.csv`/`.json` estruturados no formato do modelo,
-  mas não tenta inferir colunas livres/fora do padrão. Ver nota de
-  segurança abaixo antes de expandir o parser.
+  mas não tenta inferir colunas livres/fora do padrão.
 - **`xlsx` (SheetJS) via npm está fixo em 0.18.5**, com CVEs conhecidos
   (prototype pollution `GHSA-4r6h-8v6p-xvw6`, ReDoS `GHSA-5pgg-2g8v-p4x9`)
   não corrigidos nessa versão publicada no registry — os patches só saem
@@ -167,15 +180,6 @@ entregas anteriores, para retomar quando fizer sentido:
   sem tocar em dado de outro usuário. Revisar quando o SheetJS publicar
   uma versão corrigida no npm, ou migrar para instalação via tarball do
   CDN deles se a política de rede do time permitir.
-- **Chamados de doação sem visibilidade pública**: por ora `club_campaigns`
-  só aparece no painel de administração (fiel ao protótipo). Considerar
-  expor as campanhas ativas também no perfil público da organização
-  (`/comunidade/:id`) para viabilizar doação real, não só acompanhamento
-  interno.
-- Bottom tab bar fixa no mobile (o protótipo original pede header
-  compacto + tab bar fixa; o app hoje usa o menu mobile em dropdown já
-  existente do `Layout.jsx` — funcionalmente equivalente, mas não é o
-  mesmo padrão visual do handoff).
 
 ## Como usar este roadmap
 
