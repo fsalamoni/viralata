@@ -48,21 +48,36 @@ anúncio: 90/180/365 dias). Flags de matching: `needs_yard`,
 (`pending → approved/rejected`). Gera notificações
 `adoption_interest`/`adoption_match`/`adoption_rejected`.
 
-## Comunidade — clubes (rota `/organizacoes`)
+## Comunidade — clubes (rotas `/comunidade` e `/organizacoes`)
 
 > Feature em produção; serviços `clubService.js` (CRUD, membros, eventos,
-> mural) e `forumService.js` (tópicos/comentários/enquetes). Nomes de arquivo
-> ainda usam "Club" (herança do fork), mas a UI chama isso de "Organizações".
+> mural, campanhas, financeiro) e `forumService.js` (tópicos/comentários/
+> enquetes). Nomes de arquivo ainda usam "Club" (herança do fork), mas a UI
+> chama isso de "Organizações". `/comunidade` é o diretório/perfil público
+> (`ClubsDirectory`/`ClubDetail`); `/organizacoes` é o hub de gestão
+> (`OrganizationsHub`) com o painel de administração em
+> `/organizacoes/:id/admin` (`OrganizationAdminPanel`) — ver
+> `domain/permissions.js` para o modelo de permissões abaixo.
 
 ### `clubs/{id}`
 `name`, `description`, `city`, `state`, `logo_url`, `invite_code`,
-`member_count` (cosmético, nunca fonte de verdade), `created_by`,
-`creator_name`.
+`member_count` (cosmético, nunca fonte de verdade), `created_by` (uid do
+proprietário — sempre com as 5 permissões, imutável pela UI), `creator_name`.
 
 ### `club_members/{clubId_uid}`
 `club_id`, `user_id`, `user_name`, `user_email`, `photo_url`, `role`
-(`admin | member`), `joined_at`. Fonte de verdade de "quem é membro/admin"
-(usada pelas regras via `isClubMember`/`isClubAdmin`).
+(`admin | member`), `joined_at`, `permissions?` (opcional —
+`{ animals, finance, donations, feed, team }`, todas `boolean`). Fonte de
+verdade de "quem é membro/admin" (usada pelas regras via
+`isClubMember`/`isClubAdmin`/`hasClubPermission`).
+Semântica de `permissions` (ver `domain/permissions.js`):
+- Proprietário (`user_id == clubs.created_by`): todas as 5, implícito,
+  nunca lido do doc.
+- Admin (`role: 'admin'`) **sem** `permissions`: todas as 5, implícito
+  (compatibilidade com admins promovidos antes deste modelo existir).
+- Admin **com** `permissions` explícito, ou membro comum com `permissions`:
+  só as chaves `true`. `animals` também aceita o campo legado
+  `permissions.edit_pets` (única permissão granular antes desta mudança).
 
 ### `club_join_requests/{clubId_uid}`
 Pedido de ingresso ("Pedir para ingressar"). `status`
@@ -98,6 +113,22 @@ Mural do clube. `club_id`, `author_id`, `author_name`, `content`, `images[]`.
 (cosmético), `participant_ids[]`, `poll` (opcional). Subcoleções:
 - `comments/{id}` — `club_id`, `author_id`, `body`, `attachments[]`.
 - `poll_votes/{uid}` — 1 doc por usuário (id = uid), `option_ids[]`.
+
+### `club_campaigns/{id}` — chamados de doação
+`club_id`, `title`, `description`, `goal` (BRL, número), `raised` (BRL,
+atualizado manualmente pelo admin via "Registrar valor"), `deadline`
+(`YYYY-MM-DD` ou `null`), `status` (`active | concluded`), `created_by`.
+Leitura pública (transparência de arrecadação); escrita exige permissão
+`donations` (ou admin). Gerido na aba "Doações" do painel de administração
+(`ClubDonationsTab.jsx`).
+
+### `club_ledger/{id}` — prestação de contas
+`club_id`, `type` (`revenue | expense`), `category` (string livre, com
+sugestões em `LEDGER_CATEGORY_PRESETS`), `value` (BRL), `date`
+(`YYYY-MM-DD`), `note`, `created_by`. Leitura e escrita exigem permissão
+`finance` (ou admin) — não é público, diferente das campanhas. A aba
+"Prestação de Contas" (`ClubFinanceTab.jsx`) agrega por período (mensal/
+semestral/anual, calculado no client a partir de `date`) e por categoria.
 
 > `organizations`/`organization_members`/`organization_reports`
 > (`organizationService.js`) existem no código com um modelo parecido (ONGs,
@@ -148,6 +179,7 @@ users (1) ──< pets (owner_id) ──< adoption_interests
 clubs (1) ──< club_members ──> users
       ├──< club_join_requests / club_member_invites (ingresso)
       ├──< club_posts (mural) · club_forum_threads ──< comments / poll_votes
+      ├──< club_campaigns (doações) · club_ledger (financeiro)
       └──< club_events ──< dates ──< date_rsvps · messages · participants · games
                        └──< event_invites / club_event_rsvps
 conversations ──< messages
@@ -170,7 +202,9 @@ avatar em `users/{uid}/avatar`).
 - **Aditividade**: ao adicionar coleção, adicione regra sem afetar as demais
   — regra ausente = acesso negado por padrão, não "acesso liberado".
 - Acesso por **papel-de-recurso**: membros/admins de clube via
-  `club_members` (`isClubMember`/`isClubAdmin`); admin global via
+  `club_members` (`isClubMember`/`isClubAdmin`); permissão granular via
+  `hasClubPermission(clubId, key)` (lê `club_members.permissions.{key}`,
+  independente do papel); admin global via
   `users/{uid}.role == 'platform_admin'` (`isPlatformAdmin`).
 - Ids deterministas permitem regras simples do tipo "dono do par
   recurso+uid".
