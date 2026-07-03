@@ -209,7 +209,7 @@ export default function ClubDetail() {
                 <Button
                   asChild
                   size="sm"
-                  className="border-0 bg-white text-slate-950 hover:bg-orange-50"
+                  className="border-0 bg-white text-foreground hover:bg-secondary"
                 >
                   <Link to={`/organizacoes/${clubId}/admin`}><Settings className="mr-1.5 h-4 w-4" /> Administrar</Link>
                 </Button>
@@ -260,10 +260,10 @@ export default function ClubDetail() {
       <ActiveCampaigns clubId={clubId} />
 
       {!isMember && myInvite && (
-        <Card className="rounded-[1.5rem] border-amber-300 bg-amber-50/80">
+        <Card className="rounded-[1.5rem] border-highlight/40 bg-highlight/[0.14]">
           <CardContent className="p-5">
-            <h3 className="text-base font-semibold text-slate-900">Você foi convidado para este clube</h3>
-            <p className="mt-1 text-sm text-slate-600">
+            <h3 className="text-base font-semibold text-foreground">Você foi convidado para este clube</h3>
+            <p className="mt-1 text-sm text-muted-foreground">
               {myInvite.inviter_name || 'Um administrador'} convidou você a participar. Aceite para entrar e acessar eventos, mural e fórum.
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
@@ -281,14 +281,14 @@ export default function ClubDetail() {
       {!isMember && !myInvite && (
         <Card className="rounded-[1.5rem] border-primary/20 bg-primary/5">
           <CardContent className="p-5">
-            <h3 className="text-base font-semibold text-slate-900">Participe deste clube</h3>
+            <h3 className="text-base font-semibold text-foreground">Participe deste clube</h3>
             {myRequest?.status === JOIN_REQUEST_STATUS.PENDING ? (
-              <p className="mt-2 inline-flex items-center gap-2 rounded-full bg-amber-100 px-3 py-1.5 text-sm font-medium text-amber-800">
+              <p className="mt-2 inline-flex items-center gap-2 rounded-full bg-highlight/20 px-3 py-1.5 text-sm font-medium text-highlight-foreground">
                 Pedido enviado — aguardando aprovação de um administrador.
               </p>
             ) : (
               <>
-                <p className="mt-1 text-sm text-slate-600">
+                <p className="mt-1 text-sm text-muted-foreground">
                   {myRequest?.status === JOIN_REQUEST_STATUS.REJECTED
                     ? 'Seu pedido anterior não foi aprovado. Você pode pedir novamente.'
                     : 'Peça para ingressar e um administrador irá aprovar, ou entre direto com o código de convite.'}
@@ -300,7 +300,7 @@ export default function ClubDetail() {
             )}
             <form onSubmit={handleJoin} className="mt-4 flex flex-col gap-3 border-t border-primary/10 pt-4 sm:flex-row">
               <div className="relative flex-1">
-                <Hash className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <Hash className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/70" />
                 <Input
                   value={code}
                   onChange={(e) => setCode(e.target.value.toUpperCase())}
@@ -383,17 +383,17 @@ function ActiveCampaigns({ clubId }) {
   return (
     <Card className="rounded-[1.5rem]">
       <CardContent className="space-y-4 p-5">
-        <h3 className="flex items-center gap-2 text-base font-semibold text-slate-900">
+        <h3 className="flex items-center gap-2 text-base font-semibold text-foreground">
           <HandCoins className="h-4 w-4 text-primary" /> Chamados de doação ativos
         </h3>
         <div className="space-y-3">
           {active.map((campaign) => {
             const pct = campaign.goal > 0 ? Math.min(100, (Number(campaign.raised || 0) / campaign.goal) * 100) : 0;
             return (
-              <div key={campaign.id} className="rounded-xl border border-slate-100 p-3.5">
+              <div key={campaign.id} className="rounded-xl border border-border p-3.5">
                 <div className="mb-1.5 flex flex-wrap items-center justify-between gap-2">
-                  <span className="text-sm font-medium text-slate-900">{campaign.title}</span>
-                  {campaign.deadline && <span className="text-xs text-slate-500">Até {campaign.deadline}</span>}
+                  <span className="text-sm font-medium text-foreground">{campaign.title}</span>
+                  {campaign.deadline && <span className="text-xs text-muted-foreground">Até {campaign.deadline}</span>}
                 </div>
                 <div className="mb-1.5 h-1.5 overflow-hidden rounded-full bg-secondary">
                   <div
@@ -401,7 +401,7 @@ function ActiveCampaigns({ clubId }) {
                     style={{ width: `${pct}%` }}
                   />
                 </div>
-                <div className="text-xs text-slate-600">
+                <div className="text-xs text-muted-foreground">
                   <strong>{brl(campaign.raised)}</strong> arrecadados de {brl(campaign.goal)}
                 </div>
               </div>

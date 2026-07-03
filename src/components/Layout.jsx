@@ -17,11 +17,19 @@ import { cn } from '@/core/lib/utils';
 
 const STANDALONE_PAGES = ['Home', 'Login', 'OnboardingQuestionnaire'];
 
+// Pill nav central do header desktop — só os 4 destinos do protótipo
+// (Feed / Organizações / Comunidade / Chat). "Meus Pets" mora só no menu do
+// avatar, como especificado no handoff.
 const NAV_ITEMS = [
   { label: 'Feed', icon: PawPrint, to: '/feed' },
   { label: 'Organizações', icon: ShieldCheck, to: '/organizacoes', auth: true },
   { label: 'Comunidade', icon: Building2, to: '/comunidade' },
   { label: 'Chat', icon: MessageCircle, to: '/chat', auth: true },
+];
+
+// Menu mobile (hambúrguer) reaproveita o pill nav e soma os atalhos que no
+// desktop vivem só no menu do avatar, já que o mobile não tem esse menu.
+const MOBILE_MENU_EXTRA_ITEMS = [
   { label: 'Meus Pets', icon: Heart, to: '/meus-pets', auth: true },
 ];
 
@@ -57,7 +65,7 @@ export default function Layout({ children, currentPageName }) {
   return (
     <div className="arena-page min-h-screen flex flex-col">
       {/* Header */}
-      <header className="sticky top-0 z-40 border-b border-white/60 bg-white/70 backdrop-blur-xl">
+      <header className="sticky top-0 z-40 border-b border-border/70 bg-background/80 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-4 safe-px">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 flex-shrink-0 group">
@@ -77,7 +85,7 @@ export default function Layout({ children, currentPageName }) {
                   'flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-medium transition-all',
                   location.pathname.startsWith(to)
                     ? 'bg-primary text-primary-foreground shadow-[0_10px_20px_-12px_rgba(64,34,18,0.55)]'
-                    : 'text-stone-600 hover:bg-secondary/70'
+                    : 'text-foreground/70 hover:bg-secondary/70'
                 )}
               >
                 <Icon className="w-4 h-4" />
@@ -166,8 +174,8 @@ export default function Layout({ children, currentPageName }) {
 
         {/* Mobile Nav */}
         {mobileOpen && (
-          <div className="md:hidden border-t border-white/60 bg-white/90 backdrop-blur-xl px-4 py-3 space-y-1 safe-px">
-            {NAV_ITEMS.filter((item) => !item.auth || isAuthenticated).map(({ label, icon: Icon, to }) => (
+          <div className="md:hidden border-t border-border/70 bg-background/95 backdrop-blur-xl px-4 py-3 space-y-1 safe-px">
+            {[...NAV_ITEMS, ...MOBILE_MENU_EXTRA_ITEMS].filter((item) => !item.auth || isAuthenticated).map(({ label, icon: Icon, to }) => (
               <Link
                 key={to}
                 to={to}
@@ -176,7 +184,7 @@ export default function Layout({ children, currentPageName }) {
                   'flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium transition-colors',
                   location.pathname.startsWith(to)
                     ? 'bg-primary text-primary-foreground'
-                    : 'text-stone-700 hover:bg-secondary/70'
+                    : 'text-foreground/80 hover:bg-secondary/70'
                 )}
               >
                 <Icon className="w-4 h-4" />
@@ -203,7 +211,7 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Bottom tab bar (mobile, autenticado) */}
       {isAuthenticated && (
-        <nav className="safe-pb fixed inset-x-0 bottom-0 z-40 flex items-end justify-around border-t border-white/60 bg-white/85 px-2 pt-2 backdrop-blur-xl md:hidden">
+        <nav className="safe-pb fixed inset-x-0 bottom-0 z-40 flex items-end justify-around border-t border-border bg-card/95 px-2 pt-2 backdrop-blur-xl md:hidden">
           {BOTTOM_TAB_ITEMS.map(({ label, icon: Icon, to, center }) => {
             const active = location.pathname.startsWith(to);
             if (center) {
@@ -217,7 +225,7 @@ export default function Layout({ children, currentPageName }) {
                   <span className="-mt-6 flex h-12 w-12 items-center justify-center rounded-full bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--highlight))_100%)] text-white shadow-[0_14px_26px_-10px_rgba(64,34,18,0.6)]">
                     <Icon className="h-5 w-5" />
                   </span>
-                  <span className="text-[11px] font-medium text-stone-600">{label}</span>
+                  <span className="text-[11px] font-medium text-muted-foreground">{label}</span>
                 </Link>
               );
             }
@@ -227,7 +235,7 @@ export default function Layout({ children, currentPageName }) {
                 to={to}
                 className={cn(
                   'flex flex-1 flex-col items-center gap-1 rounded-xl px-1 py-1.5 text-[11px] font-medium transition-colors',
-                  active ? 'text-primary' : 'text-stone-500 hover:text-stone-700',
+                  active ? 'text-primary' : 'text-muted-foreground hover:text-foreground/80',
                 )}
               >
                 <Icon className="h-5 w-5" />

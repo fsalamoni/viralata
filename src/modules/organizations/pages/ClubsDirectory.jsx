@@ -109,7 +109,7 @@ export default function ClubsDirectory() {
                 em um só lugar.
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
-                <Button asChild className="bg-white text-slate-950 hover:bg-orange-50">
+                <Button asChild className="bg-white text-foreground hover:bg-secondary">
                   <Link to="/organizacoes/criar"><Plus className="mr-1.5 h-4 w-4" /> Cadastrar organização</Link>
                 </Button>
               </div>
@@ -120,13 +120,13 @@ export default function ClubsDirectory() {
         <Card className="rounded-[2rem] border-white/80 bg-white/82">
           <CardContent className="p-6 sm:p-7">
             <span className="arena-chip">Ingressar com código</span>
-            <h3 className="mt-4 text-2xl font-semibold text-slate-950">Tem um convite?</h3>
-            <p className="mt-2 text-sm leading-6 text-slate-600">
+            <h3 className="mt-4 text-2xl font-semibold text-foreground">Tem um convite?</h3>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">
               Digite o código compartilhado por um administrador para entrar no clube.
             </p>
             <form onSubmit={handleJoin} className="mt-5 flex flex-col gap-3 sm:flex-row">
               <div className="relative flex-1">
-                <Hash className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <Hash className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/70" />
                 <Input
                   value={code}
                   onChange={(e) => setCode(e.target.value.toUpperCase())}
@@ -147,7 +147,7 @@ export default function ClubsDirectory() {
         <section className="space-y-4">
           <div>
             <div className="text-xs font-semibold uppercase tracking-[0.2em] text-primary/75">Meus clubes</div>
-            <h3 className="mt-2 text-2xl font-semibold text-slate-950">Clubes em que você participa</h3>
+            <h3 className="mt-2 text-2xl font-semibold text-foreground">Clubes em que você participa</h3>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {myClubs.map((club) => (
@@ -160,7 +160,7 @@ export default function ClubsDirectory() {
       <Card className="rounded-[2rem] border-white/80 bg-white/82">
         <CardContent className="p-4 sm:p-5">
           <div className="relative">
-            <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/70" />
             <Input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -172,14 +172,14 @@ export default function ClubsDirectory() {
                 type="button"
                 onClick={() => setSearch('')}
                 aria-label="Limpar busca"
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 transition-colors hover:text-slate-700"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground/70 transition-colors hover:text-foreground/80"
               >
                 <X className="h-4 w-4" />
               </button>
             )}
           </div>
-          <div className="mt-4 border-t border-foreground/10 pt-4 text-sm text-slate-600">
-            <span className="font-semibold text-slate-950">{filtered.length}</span> clube(s) na plataforma.
+          <div className="mt-4 border-t border-foreground/10 pt-4 text-sm text-muted-foreground">
+            <span className="font-semibold text-foreground">{filtered.length}</span> clube(s) na plataforma.
           </div>
         </CardContent>
       </Card>
@@ -205,8 +205,8 @@ export default function ClubsDirectory() {
             <div className="flex h-16 w-16 items-center justify-center rounded-[1.5rem] bg-primary/10 text-primary">
               <Building2 className="h-8 w-8" />
             </div>
-            <h3 className="mt-5 text-2xl font-semibold text-slate-950">Nenhum clube encontrado</h3>
-            <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">
+            <h3 className="mt-5 text-2xl font-semibold text-foreground">Nenhum clube encontrado</h3>
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
               {clubs.length === 0
                 ? 'Ainda não há clubes na plataforma. Crie o primeiro e convide sua turma!'
                 : 'Ajuste a busca para ver mais clubes.'}
@@ -222,7 +222,7 @@ export default function ClubsDirectory() {
         <section className="space-y-4">
           <div>
             <div className="text-xs font-semibold uppercase tracking-[0.2em] text-primary/75">Catálogo</div>
-            <h3 className="mt-2 text-2xl font-semibold text-slate-950">Todos os clubes</h3>
+            <h3 className="mt-2 text-2xl font-semibold text-foreground">Todos os clubes</h3>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {filtered.map((club) => (
@@ -254,7 +254,7 @@ function ClubCard({ club, myRole, joinState = null, onRequest, requesting = fals
       <Card className="match-surface h-full rounded-[1.75rem] border-white/80 bg-white/85">
         <CardContent className="flex h-full flex-col p-5 sm:p-6">
           <div className="flex items-start justify-between gap-3">
-            <h4 className="flex min-w-0 items-center gap-3 text-lg font-semibold text-slate-950">
+            <h4 className="flex min-w-0 items-center gap-3 text-lg font-semibold text-foreground">
               {club.logo_url ? (
                 <img src={club.logo_url} alt="" className="h-11 w-11 shrink-0 rounded-2xl border border-primary/10 object-cover" />
               ) : (
@@ -271,7 +271,7 @@ function ClubCard({ club, myRole, joinState = null, onRequest, requesting = fals
             )}
           </div>
 
-          <div className="mt-4 space-y-2 text-sm text-slate-600">
+          <div className="mt-4 space-y-2 text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
               <MapPin className="h-4 w-4 shrink-0 text-primary" />
               <span className="truncate">{location || 'Cidade não informada'}</span>
@@ -283,7 +283,7 @@ function ClubCard({ club, myRole, joinState = null, onRequest, requesting = fals
           </div>
 
           {club.description && (
-            <p className="mt-4 line-clamp-3 text-sm leading-6 text-slate-600">{club.description}</p>
+            <p className="mt-4 line-clamp-3 text-sm leading-6 text-muted-foreground">{club.description}</p>
           )}
 
           <div className="mt-auto pt-6">

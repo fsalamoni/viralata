@@ -1,7 +1,9 @@
 import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { Check, Copy, RefreshCw, Save, Search, Trash2, UserPlus, Users, X } from 'lucide-react';
+import { listAllUsers } from '@/modules/admin/services/adminService';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -100,7 +102,7 @@ export default function ClubAdminTab({ club }) {
         </CardHeader>
         <CardContent className="space-y-3 p-4 pt-0 sm:p-5 sm:pt-0">
           <div className="flex flex-wrap items-center gap-2">
-            <code className="rounded-md border border-primary/10 bg-secondary/40 px-4 py-2 text-lg font-bold tracking-[0.25em] text-slate-900">
+            <code className="rounded-md border border-primary/10 bg-secondary/40 px-4 py-2 text-lg font-bold tracking-[0.25em] text-foreground">
               {club.invite_code}
             </code>
             <Button variant="outline" size="sm" onClick={() => copy(club.invite_code, 'Código copiado!')}>
@@ -110,7 +112,7 @@ export default function ClubAdminTab({ club }) {
               <RefreshCw className="mr-1.5 h-4 w-4" /> Gerar novo
             </Button>
           </div>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-muted-foreground">
             Ao gerar um novo código, o anterior deixa de funcionar imediatamente.
           </p>
         </CardContent>
@@ -194,9 +196,9 @@ export default function ClubAdminTab({ club }) {
         </CardContent>
       </Card>
 
-      <Card className="rounded-xl border-red-200">
+      <Card className="rounded-xl border-destructive/30">
         <CardHeader className="p-4 sm:p-5">
-          <CardTitle className="text-base text-red-700">Zona de risco</CardTitle>
+          <CardTitle className="text-base text-destructive">Zona de risco</CardTitle>
           <CardDescription>A exclusão do clube remove membros, eventos e mural. Não pode ser desfeita.</CardDescription>
         </CardHeader>
         <CardContent className="p-4 pt-0 sm:p-5 sm:pt-0">
@@ -255,16 +257,16 @@ export function ClubJoinRequests({ club }) {
       </CardHeader>
       <CardContent className="space-y-2 p-4 pt-0 sm:p-5 sm:pt-0">
         {isLoading ? (
-          <p className="text-sm text-slate-500">Carregando…</p>
+          <p className="text-sm text-muted-foreground">Carregando…</p>
         ) : requests.length === 0 ? (
-          <p className="text-sm text-slate-500">Nenhum pedido pendente.</p>
+          <p className="text-sm text-muted-foreground">Nenhum pedido pendente.</p>
         ) : (
           requests.map((r) => (
-            <div key={r.id} className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-3">
+            <div key={r.id} className="flex items-center gap-3 rounded-xl border border-border bg-white p-3">
               <UserAvatar name={r.user_name} photoUrl={r.photo_url} size="sm" />
               <div className="min-w-0 flex-1">
-                <div className="truncate text-sm font-medium text-slate-900">{r.user_name}</div>
-                {r.user_email && <div className="truncate text-xs text-slate-500">{r.user_email}</div>}
+                <div className="truncate text-sm font-medium text-foreground">{r.user_name}</div>
+                {r.user_email && <div className="truncate text-xs text-muted-foreground">{r.user_email}</div>}
               </div>
               <div className="flex shrink-0 gap-1.5">
                 <Button size="sm" onClick={() => handle(approve, r, 'Pedido aprovado.')} disabled={approve.isPending}>
@@ -290,7 +292,11 @@ export function ClubJoinRequests({ club }) {
 export function ClubAddMembers({ club }) {
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState({}); // { uid: athlete }
-  const { data: athletes = [], isLoading } = { data: [] };
+  const { data: athletes = [], isLoading } = useQuery({
+    queryKey: ['users', 'all'],
+    queryFn: listAllUsers,
+    staleTime: 1000 * 60,
+  });
   const { data: members = [] } = useClubMembers(club.id);
   const { data: invites = [] } = useClubInvites(club.id);
   const inviteMany = useInviteMembersToClub(club);
@@ -357,7 +363,7 @@ export function ClubAddMembers({ club }) {
       </CardHeader>
       <CardContent className="space-y-3 p-4 pt-0 sm:p-5 sm:pt-0">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -367,14 +373,14 @@ export function ClubAddMembers({ club }) {
         </div>
 
         {isLoading ? (
-          <p className="text-sm text-slate-500">Carregando usuários…</p>
+          <p className="text-sm text-muted-foreground">Carregando usuários…</p>
         ) : available.length === 0 ? (
-          <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-4 text-sm text-slate-500">
+          <div className="flex items-center gap-2 rounded-lg bg-secondary/40 px-3 py-4 text-sm text-muted-foreground">
             <Users className="h-4 w-4 shrink-0" />
             {search.trim() ? 'Nenhum usuário encontrado para esse filtro.' : 'Todos os usuários já são membros ou já foram convidados.'}
           </div>
         ) : (
-          <div className="max-h-80 space-y-1.5 overflow-y-auto rounded-lg border border-slate-100 p-1.5">
+          <div className="max-h-80 space-y-1.5 overflow-y-auto rounded-lg border border-border p-1.5">
             {available.map((a) => {
               const isSel = !!selected[a.id];
               return (
@@ -383,19 +389,19 @@ export function ClubAddMembers({ club }) {
                   key={a.id}
                   onClick={() => toggle(a)}
                   className={`flex w-full items-center gap-3 rounded-lg border p-2.5 text-left transition-colors ${
-                    isSel ? 'border-primary/40 bg-primary/10' : 'border-transparent bg-white hover:bg-slate-50'
+                    isSel ? 'border-primary/40 bg-primary/10' : 'border-transparent bg-white hover:bg-secondary/40'
                   }`}
                 >
                   <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border ${
-                    isSel ? 'border-primary bg-primary text-primary-foreground' : 'border-slate-300 bg-white'
+                    isSel ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-white'
                   }`}>
                     {isSel && <Check className="h-3.5 w-3.5" />}
                   </span>
                   <UserAvatar name={memberName(a)} photoUrl={a.photo_url} size="sm" />
                   <div className="min-w-0 flex-1">
-                    <div className="truncate text-sm font-medium text-slate-900">{memberName(a)}</div>
+                    <div className="truncate text-sm font-medium text-foreground">{memberName(a)}</div>
                     {(a.city || a.email) && (
-                      <div className="truncate text-xs text-slate-500">
+                      <div className="truncate text-xs text-muted-foreground">
                         {a.city ? `${a.city}${a.state ? ` / ${a.state}` : ''}` : a.email}
                       </div>
                     )}
@@ -418,18 +424,18 @@ export function ClubAddMembers({ club }) {
         </Button>
 
         {invites.length > 0 && (
-          <div className="border-t border-slate-100 pt-3">
-            <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">Convites pendentes ({invites.length})</div>
+          <div className="border-t border-border pt-3">
+            <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Convites pendentes ({invites.length})</div>
             <div className="space-y-1.5">
               {invites.map((i) => (
-                <div key={i.id} className="flex items-center gap-2 rounded-lg bg-slate-50 px-2.5 py-1.5">
+                <div key={i.id} className="flex items-center gap-2 rounded-lg bg-secondary/40 px-2.5 py-1.5">
                   <UserAvatar name={i.user_name} photoUrl={i.photo_url} size="sm" />
-                  <span className="min-w-0 flex-1 truncate text-sm text-slate-700">{i.user_name}</span>
+                  <span className="min-w-0 flex-1 truncate text-sm text-foreground/80">{i.user_name}</span>
                   <button
                     type="button"
                     onClick={() => handleCancel(i)}
                     disabled={cancelInvite.isPending}
-                    className="text-slate-400 transition-colors hover:text-red-600"
+                    className="text-muted-foreground transition-colors hover:text-destructive"
                     title="Cancelar convite"
                   >
                     <X className="h-4 w-4" />

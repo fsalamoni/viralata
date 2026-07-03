@@ -45,7 +45,7 @@ export default function ClubTeamTab({ club }) {
         </CardHeader>
         <CardContent className="space-y-3 p-4 pt-0 sm:p-5 sm:pt-0">
           <div className="flex flex-wrap items-center gap-2">
-            <code className="rounded-md border border-primary/10 bg-secondary/40 px-4 py-2 text-lg font-bold tracking-[0.25em] text-slate-900">
+            <code className="rounded-md border border-primary/10 bg-secondary/40 px-4 py-2 text-lg font-bold tracking-[0.25em] text-foreground">
               {club.invite_code}
             </code>
             <Button variant="outline" size="sm" onClick={() => copy(club.invite_code, 'Código copiado!')}>
@@ -96,9 +96,9 @@ function ClubAdminPermissionsCard({ club }) {
       </CardHeader>
       <CardContent className="space-y-3 p-4 pt-0 sm:p-5 sm:pt-0">
         {isLoading ? (
-          <p className="text-sm text-slate-500">Carregando…</p>
+          <p className="text-sm text-muted-foreground">Carregando…</p>
         ) : admins.length === 0 ? (
-          <p className="text-sm text-slate-500">Nenhum administrador ainda.</p>
+          <p className="text-sm text-muted-foreground">Nenhum administrador ainda.</p>
         ) : (
           admins.map((member) => <AdminPermissionsRow key={member.id} club={club} member={member} />)
         )}

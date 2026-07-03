@@ -125,7 +125,7 @@ export default function ClubFeedTab({ clubId, isAdmin }) {
                       type="button"
                       onClick={() => removePending(image)}
                       aria-label="Remover imagem"
-                      className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-slate-950/60 text-white opacity-0 transition-opacity group-hover:opacity-100"
+                      className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-black/55 text-white opacity-0 transition-opacity group-hover:opacity-100"
                     >
                       <X className="h-3.5 w-3.5" />
                     </button>
@@ -157,7 +157,7 @@ export default function ClubFeedTab({ clubId, isAdmin }) {
                 <Send className="mr-1.5 h-4 w-4" /> {createPost.isPending ? 'Publicando…' : 'Publicar'}
               </Button>
             </div>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-muted-foreground">
               Até {MAX_IMAGES_PER_POST} imagens por publicação, {maxImageMb()} MB cada. As imagens podem ser baixadas em alta qualidade pelos membros.
             </p>
           </form>
@@ -186,17 +186,17 @@ export default function ClubFeedTab({ clubId, isAdmin }) {
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center justify-between gap-2">
                         <div className="min-w-0">
-                          <span className="font-medium text-slate-900">{post.author_name}</span>
-                          <span className="ml-2 text-xs text-slate-400">{timeAgo(post.created_at_ms)}</span>
+                          <span className="font-medium text-foreground">{post.author_name}</span>
+                          <span className="ml-2 text-xs text-muted-foreground">{timeAgo(post.created_at_ms)}</span>
                         </div>
                         {canDelete && (
-                          <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0 text-red-500 hover:text-red-600" onClick={() => setConfirmDelete(post)}>
+                          <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0 text-destructive hover:text-destructive/85" onClick={() => setConfirmDelete(post)}>
                             <Trash2 className="h-3.5 w-3.5" />
                           </Button>
                         )}
                       </div>
                       {post.content && (
-                        <p className="mt-1 whitespace-pre-wrap break-words text-sm leading-6 text-slate-700">{post.content}</p>
+                        <p className="mt-1 whitespace-pre-wrap break-words text-sm leading-6 text-foreground/80">{post.content}</p>
                       )}
                       <PostImages images={post.images} />
                     </div>
@@ -237,7 +237,7 @@ function PostImages({ images }) {
   return (
     <div className={`mt-3 grid gap-2 ${list.length === 1 ? 'grid-cols-1 sm:max-w-md' : 'grid-cols-2 sm:grid-cols-3'}`}>
       {list.map((image) => (
-        <div key={image.path || image.url} className="group relative overflow-hidden rounded-lg border border-primary/10 bg-slate-50">
+        <div key={image.path || image.url} className="group relative overflow-hidden rounded-lg border border-primary/10 bg-secondary/40">
           <a href={image.url} target="_blank" rel="noopener noreferrer" className="block">
             <img
               src={image.url}
@@ -251,7 +251,7 @@ function PostImages({ images }) {
             onClick={() => handleDownload(image)}
             aria-label="Baixar imagem"
             title="Baixar em alta qualidade"
-            className="absolute bottom-2 right-2 flex h-9 w-9 items-center justify-center rounded-full bg-slate-950/60 text-white opacity-0 transition-opacity hover:bg-slate-950/80 group-hover:opacity-100"
+            className="absolute bottom-2 right-2 flex h-9 w-9 items-center justify-center rounded-full bg-black/55 text-white opacity-0 transition-opacity hover:bg-black/70 group-hover:opacity-100"
           >
             <Download className="h-4 w-4" />
           </button>
