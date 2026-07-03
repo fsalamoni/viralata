@@ -1,17 +1,24 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { MapPin } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { usePetFeed } from '../hooks/usePets';
 import PetCard from '../components/PetCard';
 import AdSlot from '@/components/AdSlot';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { cn } from '@/core/lib/utils';
 import { PlusCircle, SlidersHorizontal } from 'lucide-react';
+
+const RADIUS_OPTIONS = [5, 10, 25, 50, 100];
 
 export default function PetFeed() {
   const { userProfile } = useAuth();
   const [filters, setFilters] = useState({});
-  const { data: pets = [], isLoading, isError } = usePetFeed(filters);
+  const [city, setCity] = useState('');
+  const [radius, setRadius] = useState(null);
+  const { data: pets = [], isLoading, isError } = usePetFeed({ ...filters, city: city.trim() || undefined });
 
   function handleFilter(key, value) {
     setFilters((prev) => ({ ...prev, [key]: value === 'all' ? undefined : value }));
@@ -64,6 +71,42 @@ export default function PetFeed() {
           </SelectContent>
         </Select>
       </div>
+
+      {/* Localização */}
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="relative w-full max-w-xs">
+          <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            placeholder="Filtrar por cidade"
+            className="pl-9"
+          />
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          {RADIUS_OPTIONS.map((km) => (
+            <button
+              key={km}
+              type="button"
+              onClick={() => setRadius((prev) => (prev === km ? null : km))}
+              disabled={!city.trim()}
+              className={cn(
+                'rounded-full border px-3 py-1 text-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-40',
+                radius === km ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-background text-muted-foreground hover:bg-secondary/60',
+              )}
+            >
+              {km} km
+            </button>
+          ))}
+        </div>
+      </div>
+      {city.trim() && (
+        <p className="-mt-3 text-xs text-muted-foreground">
+          {radius
+            ? `Pets em ${city.trim()} (raio de até ${radius} km — filtro aproximado, sem geolocalização precisa)`
+            : `Pets em ${city.trim()}`}
+        </p>
+      )}
 
       {isLoading && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
