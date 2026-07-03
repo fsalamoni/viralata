@@ -101,15 +101,16 @@ export async function updateInterestStatus(petId, userId, status, actor, options
   const message = status === 'rejected'
     ? 'Infelizmente seu interesse não foi selecionado desta vez.'
     : 'Boa notícia! O responsável pelo pet quer conversar com você.';
+  const notificationLink = status === 'rejected'
+    ? '/feed'
+    : (options.conversationId ? `/chat?c=${options.conversationId}` : '/chat');
 
   await createNotification({
     userId,
     title: status === 'rejected' ? 'Interesse não selecionado' : 'Interesse aprovado!',
     message,
     type: notifType,
-    link: status !== 'rejected'
-      ? (options.conversationId ? `/chat?c=${options.conversationId}` : '/chat')
-      : '/feed',
+    link: notificationLink,
     actor: { uid: actor?.uid, displayName: actor?.displayName },
   });
 

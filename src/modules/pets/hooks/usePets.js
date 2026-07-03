@@ -88,10 +88,11 @@ export function useUpdatePet() {
   return useMutation({
     mutationFn: ({ petId, updates }) => updatePet(petId, updates, user),
     onSuccess: (_, { petId, updates }) => {
+      const hasPhotos = Object.hasOwn(updates || {}, 'photos');
       qc.setQueryData(['pets', petId], (current) => ({
         ...(current || { id: petId }),
         ...updates,
-        photos: Object.prototype.hasOwnProperty.call(updates || {}, 'photos')
+        photos: hasPhotos
           ? normalizePetPhotoUrls(updates?.photos)
           : normalizePetPhotoUrls(current?.photos),
       }));
