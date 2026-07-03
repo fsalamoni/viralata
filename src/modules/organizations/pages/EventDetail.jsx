@@ -132,8 +132,8 @@ export default function EventDetail() {
           {event.description && (
             <Card className="mb-4 rounded-xl">
               <CardContent className="p-4">
-                <h3 className="mb-1 text-sm font-semibold text-slate-900">Sobre o evento</h3>
-                <p className="whitespace-pre-wrap text-sm leading-6 text-slate-600">{event.description}</p>
+                <h3 className="mb-1 text-sm font-semibold text-foreground">Sobre o evento</h3>
+                <p className="whitespace-pre-wrap text-sm leading-6 text-muted-foreground">{event.description}</p>
               </CardContent>
             </Card>
           )}

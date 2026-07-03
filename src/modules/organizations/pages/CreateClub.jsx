@@ -60,7 +60,7 @@ export default function CreateClub() {
 
       <section className="arena-panel-strong rounded-lg p-5 sm:p-6">
         <div className="flex items-start gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-amber-300 text-slate-950">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-highlight text-highlight-foreground">
             <Building2 className="h-5 w-5" />
           </div>
           <div className="max-w-2xl space-y-2">
@@ -75,12 +75,12 @@ export default function CreateClub() {
 
       <Card className="overflow-hidden">
         <CardHeader className="border-b border-primary/10 bg-white/45 p-4 sm:p-5">
-          <CardTitle className="text-base text-slate-950">Dados do clube</CardTitle>
+          <CardTitle className="text-base text-foreground">Dados do clube</CardTitle>
           <CardDescription>Apenas o nome é obrigatório. Quanto mais completo, melhor para a comunidade encontrar você.</CardDescription>
         </CardHeader>
         <CardContent className="p-4 sm:p-5">
           {!isAuthenticated && (
-            <p className="mb-4 rounded-md border border-amber-300/70 bg-amber-50 p-3 text-sm text-amber-900">
+            <p className="mb-4 rounded-md border border-highlight/40 bg-highlight/[0.14] p-3 text-sm text-[hsl(30,60%,24%)]">
               Você precisa estar autenticado para criar um clube.
             </p>
           )}
@@ -99,7 +99,7 @@ export default function CreateClub() {
             <div className="space-y-2">
               <Label htmlFor="name">Nome do clube *</Label>
               <Input id="name" value={form.name} onChange={setField('name')} maxLength={80} required />
-              {errors.name && <p className="text-xs text-red-600">{errors.name}</p>}
+              {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
             </div>
 
             <div className="space-y-2">
@@ -135,7 +135,7 @@ export default function CreateClub() {
               <div className="space-y-2">
                 <Label htmlFor="contact_email">E-mail de contato</Label>
                 <Input id="contact_email" type="email" value={form.contact_email} onChange={setField('contact_email')} maxLength={120} />
-                {errors.contact_email && <p className="text-xs text-red-600">{errors.contact_email}</p>}
+                {errors.contact_email && <p className="text-xs text-destructive">{errors.contact_email}</p>}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="contact_phone">Telefone de contato</Label>

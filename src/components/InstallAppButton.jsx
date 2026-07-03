@@ -62,7 +62,7 @@ export default function InstallAppButton({
               No iOS, o app é instalado direto pelo Safari, sem App Store. Siga os passos:
             </DialogDescription>
           </DialogHeader>
-          <ol className="mt-2 space-y-3 text-sm text-slate-700">
+          <ol className="mt-2 space-y-3 text-sm text-foreground/80">
             <li className="flex items-start gap-3">
               <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-xs font-semibold text-emerald-700">1</span>
               <span className="flex items-center gap-1">
@@ -94,7 +94,7 @@ export default function InstallAppButton({
               Você pode instalar o Viralata direto do navegador, sem loja de apps:
             </DialogDescription>
           </DialogHeader>
-          <ul className="mt-2 space-y-3 text-sm text-slate-700">
+          <ul className="mt-2 space-y-3 text-sm text-foreground/80">
             <li className="flex items-start gap-3">
               <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
                 <MonitorDown className="h-3.5 w-3.5" />

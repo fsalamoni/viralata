@@ -107,7 +107,7 @@ export default function NewChatDialog({ open, onOpenChange, onConfirm, excludeId
 
         <div className="space-y-3">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/80" />
             <Input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -143,7 +143,7 @@ export default function NewChatDialog({ open, onOpenChange, onConfirm, excludeId
                 {[1, 2, 3].map((i) => <Skeleton key={i} className="h-12 rounded-lg" />)}
               </div>
             ) : candidates.length === 0 ? (
-              <p className="px-3 py-8 text-center text-sm text-slate-500">
+              <p className="px-3 py-8 text-center text-sm text-muted-foreground">
                 {people.length <= 1 ? 'Ainda não há outras pessoas na plataforma.' : 'Nenhuma pessoa encontrada para a busca.'}
               </p>
             ) : (
@@ -158,12 +158,12 @@ export default function NewChatDialog({ open, onOpenChange, onConfirm, excludeId
                   >
                     <UserAvatar name={personName(person)} photoUrl={person.photo_url} size="sm" />
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate text-sm font-medium text-slate-900">{personName(person)}</span>
-                      <span className="block truncate text-xs text-slate-500">
+                      <span className="block truncate text-sm font-medium text-foreground">{personName(person)}</span>
+                      <span className="block truncate text-xs text-muted-foreground">
                         {[person.city, person.state].filter(Boolean).join(' · ') || 'Usuário'}
                       </span>
                     </span>
-                    <span className={`flex h-5 w-5 items-center justify-center rounded-full border ${isChecked ? 'border-primary bg-primary text-primary-foreground' : 'border-slate-300'}`}>
+                    <span className={`flex h-5 w-5 items-center justify-center rounded-full border ${isChecked ? 'border-primary bg-primary text-primary-foreground' : 'border-border'}`}>
                       {isChecked && <Check className="h-3.5 w-3.5" />}
                     </span>
                   </button>

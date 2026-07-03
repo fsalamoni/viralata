@@ -14,10 +14,10 @@ export default function ErrorState({ message = 'Não foi possível carregar os d
   return (
     <Card>
       <CardContent className="flex flex-col items-center gap-3 p-8 text-center">
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-50 text-red-600">
+        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10 text-destructive">
           <AlertTriangle className="h-5 w-5" />
         </div>
-        <p className="text-sm text-slate-600">{message}</p>
+        <p className="text-sm text-muted-foreground">{message}</p>
         {onRetry && (
           <Button variant="outline" size="sm" onClick={onRetry}>Tentar novamente</Button>
         )}

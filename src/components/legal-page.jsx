@@ -28,12 +28,12 @@ export function LegalSection({ icon: Icon, title, description, children, classNa
             </div>
           )}
           <div className="min-w-0 space-y-1">
-            <CardTitle className="text-base text-slate-950">{title}</CardTitle>
+            <CardTitle className="text-base text-foreground">{title}</CardTitle>
             {description && <CardDescription>{description}</CardDescription>}
           </div>
         </div>
       </CardHeader>
-      <CardContent className="space-y-3 p-4 text-sm leading-6 text-slate-700 sm:p-5">
+      <CardContent className="space-y-3 p-4 text-sm leading-6 text-foreground/80 sm:p-5">
         {children}
       </CardContent>
     </Card>
@@ -41,7 +41,7 @@ export function LegalSection({ icon: Icon, title, description, children, classNa
 }
 
 export function LegalList({ children }) {
-  return <ul className="space-y-2 text-sm text-slate-700">{children}</ul>;
+  return <ul className="space-y-2 text-sm text-foreground/80">{children}</ul>;
 }
 
 export function LegalListItem({ children }) {
@@ -56,7 +56,7 @@ export function LegalListItem({ children }) {
 export function LegalStat({ label, value }) {
   return (
     <div className="rounded-md border border-primary/10 bg-white/65 p-3">
-      <div className="text-xs text-slate-500">{label}</div>
+      <div className="text-xs text-muted-foreground">{label}</div>
       <div className="mt-1 text-lg font-bold text-primary">{value}</div>
     </div>
   );

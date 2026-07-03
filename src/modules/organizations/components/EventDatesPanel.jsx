@@ -68,8 +68,8 @@ export default function EventDatesPanel({ event, clubId }) {
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h3 className="text-base font-semibold text-slate-900">Datas do evento</h3>
-          <p className="text-sm text-slate-500">Cada data tem local, horário e sua resposta de presença.</p>
+          <h3 className="text-base font-semibold text-foreground">Datas do evento</h3>
+          <p className="text-sm text-muted-foreground">Cada data tem local, horário e sua resposta de presença.</p>
         </div>
         {!adding && (
           <Button size="sm" onClick={() => setAdding(true)}>
@@ -184,14 +184,14 @@ function DateCard({ event, date, rsvps }) {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-between gap-3 p-4 text-left transition-colors hover:bg-slate-50"
+        className="flex w-full items-center justify-between gap-3 p-4 text-left transition-colors hover:bg-secondary/40"
       >
         <div className="flex min-w-0 items-center gap-2">
-          {open ? <ChevronDown className="h-4 w-4 shrink-0 text-slate-400" /> : <ChevronRight className="h-4 w-4 shrink-0 text-slate-400" />}
+          {open ? <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground/80" /> : <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground/80" />}
           <CalendarDays className="h-4 w-4 shrink-0 text-primary" />
           <div className="min-w-0">
-            <div className="truncate font-semibold text-slate-900">{formatDateTime(date.date_time)}</div>
-            <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-slate-500">
+            <div className="truncate font-semibold text-foreground">{formatDateTime(date.date_time)}</div>
+            <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
               {date.location && <span className="inline-flex items-center gap-1"><MapPin className="h-3 w-3" /> {date.location}</span>}
               <span>{grouped[RSVP_STATUS.GOING].length} confirmado(s)</span>
             </div>
@@ -203,7 +203,7 @@ function DateCard({ event, date, rsvps }) {
       </button>
 
       {open && (
-        <CardContent className="border-t border-slate-100 p-4">
+        <CardContent className="border-t border-border p-4">
           <PresenceSection
             date={date}
             editing={editing}
@@ -259,14 +259,14 @@ function PresenceSection({ date, editing, setEditing, form, setForm, onSave, sav
         </div>
       ) : (
         <div className="flex items-start justify-between gap-3">
-          <div className="text-sm text-slate-600">
-            {date.note ? <p>{date.note}</p> : <p className="text-slate-400">Sem observações.</p>}
+          <div className="text-sm text-muted-foreground">
+            {date.note ? <p>{date.note}</p> : <p className="text-muted-foreground/80">Sem observações.</p>}
           </div>
           <div className="flex shrink-0 gap-1">
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setEditing(true)} title="Editar">
               <Pencil className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="icon" className="h-8 w-8 text-red-500 hover:text-red-600" onClick={onDeleteRequest} title="Excluir">
+            <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive/85" onClick={onDeleteRequest} title="Excluir">
               <Trash2 className="h-4 w-4" />
             </Button>
           </div>
@@ -274,7 +274,7 @@ function PresenceSection({ date, editing, setEditing, form, setForm, onSave, sav
       )}
 
       <div>
-        <Label className="text-xs uppercase tracking-wide text-slate-500">Sua presença</Label>
+        <Label className="text-xs uppercase tracking-wide text-muted-foreground">Sua presença</Label>
         <div className="mt-2 flex flex-wrap gap-2">
           {Object.values(RSVP_STATUS).map((status) => (
             <Button

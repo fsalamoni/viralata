@@ -139,7 +139,7 @@ export default function ChatWindow({ conversation, currentUserId, onBack, onClos
   return (
     <div className="flex h-full min-h-0 flex-col">
       {/* Header */}
-      <div className="flex items-center gap-3 border-b border-primary/10 bg-white/85 px-3 py-2.5">
+      <div className="flex items-center gap-3 border-b border-primary/10 bg-card/90 px-3 py-2.5">
         {onBack && (
           <Button variant="ghost" size="icon" className="h-9 w-9 shrink-0 lg:hidden" onClick={onBack} aria-label="Voltar">
             <ArrowLeft className="h-5 w-5" />
@@ -153,8 +153,8 @@ export default function ChatWindow({ conversation, currentUserId, onBack, onClos
           <UserAvatar name={counterpart?.name || title} photoUrl={counterpart?.photo_url} size="md" />
         )}
         <div className="min-w-0 flex-1">
-          <div className="truncate text-sm font-semibold text-slate-900">{title}</div>
-          <div className="truncate text-xs text-slate-500">
+          <div className="truncate text-sm font-semibold text-foreground">{title}</div>
+          <div className="truncate text-xs text-muted-foreground">
             {isGroup ? `${memberCount} participantes` : 'Conversa direta'}
           </div>
         </div>
@@ -179,7 +179,7 @@ export default function ChatWindow({ conversation, currentUserId, onBack, onClos
               </DropdownMenuItem>
             )}
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-red-600 focus:text-red-600" onClick={() => setConfirmLeave(true)}>
+            <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => setConfirmLeave(true)}>
               {isGroup ? <><LogOut className="mr-2 h-4 w-4" /> Sair do grupo</> : <><Trash2 className="mr-2 h-4 w-4" /> Excluir conversa</>}
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -193,7 +193,7 @@ export default function ChatWindow({ conversation, currentUserId, onBack, onClos
             {[1, 2, 3].map((i) => <Skeleton key={i} className={`h-12 max-w-[60%] rounded-2xl ${i % 2 ? '' : 'ml-auto'}`} />)}
           </div>
         ) : rendered.length === 0 ? (
-          <div className="flex h-full flex-col items-center justify-center text-center text-slate-500">
+          <div className="flex h-full flex-col items-center justify-center text-center text-muted-foreground">
             <MessagesSquare className="mb-3 h-10 w-10 text-primary/40" />
             <p className="text-sm">Nenhuma mensagem ainda. Diga olá! 👋</p>
           </div>
@@ -201,7 +201,7 @@ export default function ChatWindow({ conversation, currentUserId, onBack, onClos
           rendered.map((item) =>
             item.type === 'day' ? (
               <div key={item.id} className="my-3 flex justify-center">
-                <span className="rounded-full bg-white/80 px-3 py-1 text-[11px] font-medium text-slate-500 shadow-sm">{item.label}</span>
+                <span className="rounded-full bg-card/85 px-3 py-1 text-[11px] font-medium text-muted-foreground shadow-sm">{item.label}</span>
               </div>
             ) : (
               <MessageBubble

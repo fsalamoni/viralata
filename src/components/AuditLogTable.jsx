@@ -134,7 +134,7 @@ export function AuditLogTable({ title, description, userId, className = '' }) {
             <Button type="button" variant="outline" size="sm" disabled={safePage <= 1} onClick={() => setPage((p) => p - 1)}>
               Anterior
             </Button>
-            <span className="text-sm text-slate-600">Página</span>
+            <span className="text-sm text-muted-foreground">Página</span>
             <Input
               type="number"
               min="1"
@@ -144,7 +144,7 @@ export function AuditLogTable({ title, description, userId, className = '' }) {
               onChange={(e) => setPage(Math.max(1, Math.min(pageCount, Number(e.target.value) || 1)))}
               className="h-9 w-20"
             />
-            <span className="text-sm text-slate-600">de {pageCount}</span>
+            <span className="text-sm text-muted-foreground">de {pageCount}</span>
             <Button type="button" variant="outline" size="sm" disabled={safePage >= pageCount} onClick={() => setPage((p) => p + 1)}>
               Próxima
             </Button>
@@ -157,10 +157,10 @@ export function AuditLogTable({ title, description, userId, className = '' }) {
 
 function FilterInput({ label, value, onChange }) {
   return (
-    <label className="space-y-1 text-xs font-medium text-slate-600">
+    <label className="space-y-1 text-xs font-medium text-muted-foreground">
       <span>{label}</span>
       <div className="relative">
-        <Search className="pointer-events-none absolute left-2 top-2.5 h-4 w-4 text-slate-400" />
+        <Search className="pointer-events-none absolute left-2 top-2.5 h-4 w-4 text-muted-foreground/80" />
         <Input value={value} onChange={(e) => onChange(e.target.value)} className="pl-8" />
       </div>
     </label>

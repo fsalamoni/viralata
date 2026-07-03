@@ -6,8 +6,8 @@ export default function PageNotFound() {
     <div className="arena-page min-h-screen flex items-center justify-center p-6">
       <div className="text-center max-w-md">
         <h1 className="text-6xl font-bold text-primary">404</h1>
-        <p className="mt-4 text-lg text-slate-700">Página não encontrada.</p>
-        <p className="mt-2 text-sm text-slate-500">Talvez você tenha digitado um endereço errado.</p>
+        <p className="mt-4 text-lg text-foreground/80">Página não encontrada.</p>
+        <p className="mt-2 text-sm text-muted-foreground">Talvez você tenha digitado um endereço errado.</p>
         <Button asChild className="mt-6">
           <Link to="/">Voltar para o início</Link>
         </Button>

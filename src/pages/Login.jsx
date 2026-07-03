@@ -95,7 +95,7 @@ export default function Login() {
           <Card className="w-full max-w-lg rounded-[2.25rem] border-white bg-card p-1.5 shadow-[0_35px_80px_-40px_rgba(15,23,42,0.55)] sm:p-2">
             <CardHeader className="px-5 pb-4 pt-6 text-center sm:px-8">
               {/* Logo mobile */}
-              <Link to="/" className="mx-auto mb-4 inline-flex items-center gap-3 text-slate-950 lg:hidden">
+              <Link to="/" className="mx-auto mb-4 inline-flex items-center gap-3 text-foreground lg:hidden">
                 <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--highlight))_100%)] shadow-[0_10px_24px_-12px_rgba(64,34,18,0.6)]">
                   <PawPrint className="h-5 w-5 text-white" />
                 </span>
@@ -132,9 +132,9 @@ export default function Login() {
                 </p>
               )}
 
-              <p className="text-center text-xs leading-6 text-slate-500">
+              <p className="text-center text-xs leading-6 text-muted-foreground">
                 Ao continuar você aceita nossa{' '}
-                <Link to="/politica-privacidade" className="font-medium text-slate-700 underline underline-offset-4">
+                <Link to="/politica-privacidade" className="font-medium text-foreground/80 underline underline-offset-4">
                   Política de Privacidade
                 </Link>
                 . O Viralata é 100% gratuito e não realiza venda de animais.

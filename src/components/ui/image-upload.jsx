@@ -66,7 +66,7 @@ export function ImageUpload({
         disabled={busy || disabled}
         aria-label={label}
         className={cn(
-          'group relative flex shrink-0 items-center justify-center overflow-hidden border border-emerald-950/10 bg-secondary/40 text-slate-400 transition-colors hover:border-emerald-400/50',
+          'group relative flex shrink-0 items-center justify-center overflow-hidden border border-accent/15 bg-secondary/40 text-muted-foreground/80 transition-colors hover:border-accent/40',
           isCircle ? 'h-20 w-20 rounded-full' : 'h-24 w-24 rounded-xl',
           (busy || disabled) && 'cursor-not-allowed opacity-80',
         )}
@@ -77,7 +77,7 @@ export function ImageUpload({
           fallback || <ImagePlus className="h-7 w-7" />
         )}
         {!disabled && (
-          <span className="absolute inset-0 flex items-center justify-center bg-slate-950/0 text-white opacity-0 transition-opacity group-hover:bg-slate-950/40 group-hover:opacity-100">
+          <span className="absolute inset-0 flex items-center justify-center bg-black/0 text-white opacity-0 transition-opacity group-hover:bg-black/40 group-hover:opacity-100">
             {busy ? <Loader2 className="h-5 w-5 animate-spin" /> : <Camera className="h-5 w-5" />}
           </span>
         )}
@@ -104,14 +104,14 @@ export function ImageUpload({
               type="button"
               variant="ghost"
               size="sm"
-              className="text-red-500 hover:text-red-600"
+              className="text-destructive hover:text-destructive/85"
               onClick={() => onChange?.('', null)}
             >
               <Trash2 className="mr-1.5 h-4 w-4" /> Remover
             </Button>
           )}
         </div>
-        <p className="text-xs text-slate-500">{hint || `JPG, PNG ou WEBP até ${maxImageMb()} MB.`}</p>
+        <p className="text-xs text-muted-foreground">{hint || `JPG, PNG ou WEBP até ${maxImageMb()} MB.`}</p>
       </div>
     </div>
   );

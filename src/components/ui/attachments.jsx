@@ -123,16 +123,16 @@ export function PendingAttachmentList({ items = [], onRemove, className }) {
       {items.map((item) => (
         <div
           key={item.path}
-          className="group relative flex items-center gap-2 overflow-hidden rounded-lg border border-emerald-950/10 bg-secondary/40"
+          className="group relative flex items-center gap-2 overflow-hidden rounded-lg border border-accent/15 bg-secondary/40"
         >
           {item.kind === 'image' ? (
             <img src={item.url} alt="" className="h-16 w-16 object-cover" />
           ) : (
             <div className="flex h-16 w-44 items-center gap-2 px-3">
-              <FileText className="h-6 w-6 shrink-0 text-emerald-700" />
+              <FileText className="h-6 w-6 shrink-0 text-accent" />
               <div className="min-w-0">
-                <div className="truncate text-xs font-medium text-slate-800">{item.name}</div>
-                <div className="text-[11px] text-slate-500">{formatBytes(item.size)}</div>
+                <div className="truncate text-xs font-medium text-foreground">{item.name}</div>
+                <div className="text-[11px] text-muted-foreground">{formatBytes(item.size)}</div>
               </div>
             </div>
           )}
@@ -140,7 +140,7 @@ export function PendingAttachmentList({ items = [], onRemove, className }) {
             type="button"
             onClick={() => onRemove?.(item.path)}
             aria-label="Remover anexo"
-            className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-slate-950/60 text-white opacity-0 transition-opacity group-hover:opacity-100"
+            className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/55 text-white opacity-0 transition-opacity group-hover:opacity-100"
           >
             <X className="h-3 w-3" />
           </button>
@@ -161,7 +161,7 @@ export function AttachmentGallery({ attachments = [], className }) {
       {images.length > 0 && (
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
           {images.map((image) => (
-            <div key={image.path || image.url} className="group relative overflow-hidden rounded-lg border border-emerald-950/10">
+            <div key={image.path || image.url} className="group relative overflow-hidden rounded-lg border border-accent/15">
               <a href={image.url} target="_blank" rel="noopener noreferrer">
                 <img src={image.url} alt={image.name || ''} loading="lazy" className="h-32 w-full object-cover transition-transform group-hover:scale-[1.02]" />
               </a>
@@ -169,7 +169,7 @@ export function AttachmentGallery({ attachments = [], className }) {
                 type="button"
                 onClick={() => downloadAttachment(image.url, image.name)}
                 aria-label="Baixar imagem"
-                className="absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-full bg-slate-950/60 text-white opacity-0 transition-opacity group-hover:opacity-100"
+                className="absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-full bg-black/55 text-white opacity-0 transition-opacity group-hover:opacity-100"
               >
                 <Download className="h-3.5 w-3.5" />
               </button>
@@ -184,14 +184,14 @@ export function AttachmentGallery({ attachments = [], className }) {
               key={file.path || file.url}
               type="button"
               onClick={() => downloadAttachment(file.url, file.name)}
-              className="flex max-w-full items-center gap-2 rounded-lg border border-emerald-950/10 bg-secondary/40 px-3 py-2 text-left transition-colors hover:border-emerald-400/50 hover:bg-emerald-50"
+              className="flex max-w-full items-center gap-2 rounded-lg border border-accent/15 bg-secondary/40 px-3 py-2 text-left transition-colors hover:border-accent/40 hover:bg-accent/10"
             >
-              <FileText className="h-5 w-5 shrink-0 text-emerald-700" />
+              <FileText className="h-5 w-5 shrink-0 text-accent" />
               <span className="min-w-0">
-                <span className="block truncate text-sm font-medium text-slate-800">{file.name || 'Arquivo'}</span>
-                {file.size ? <span className="block text-[11px] text-slate-500">{formatBytes(file.size)}</span> : null}
+                <span className="block truncate text-sm font-medium text-foreground">{file.name || 'Arquivo'}</span>
+                {file.size ? <span className="block text-[11px] text-muted-foreground">{formatBytes(file.size)}</span> : null}
               </span>
-              <Download className="ml-1 h-4 w-4 shrink-0 text-slate-400" />
+              <Download className="ml-1 h-4 w-4 shrink-0 text-muted-foreground/80" />
             </button>
           ))}
         </div>

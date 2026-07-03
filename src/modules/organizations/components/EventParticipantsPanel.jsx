@@ -96,8 +96,8 @@ export default function EventParticipantsPanel({ event, clubId }) {
           <div className="flex items-center gap-2">
             {isPrivate ? <Lock className="h-5 w-5 text-highlight-foreground" /> : <Globe className="h-5 w-5 text-primary" />}
             <div>
-              <h3 className="text-sm font-semibold text-slate-900">{isPrivate ? 'Evento privado' : 'Evento público'}</h3>
-              <p className="text-xs text-slate-500">
+              <h3 className="text-sm font-semibold text-foreground">{isPrivate ? 'Evento privado' : 'Evento público'}</h3>
+              <p className="text-xs text-muted-foreground">
                 {isPrivate
                   ? 'Visível apenas para participantes e convidados.'
                   : 'Visível para todos os membros da organização.'}
@@ -129,10 +129,10 @@ export default function EventParticipantsPanel({ event, clubId }) {
       <Card className="rounded-xl">
         <CardContent className="flex flex-wrap items-center justify-between gap-3 p-4">
           <div>
-            <h3 className="text-sm font-semibold text-slate-900">
+            <h3 className="text-sm font-semibold text-foreground">
               {amParticipant ? 'Você participa deste evento' : amInvited ? 'Você foi convidado' : 'Participe deste evento'}
             </h3>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-muted-foreground">
               Confirme sua presença em cada data na aba “Detalhes e datas”.
             </p>
           </div>
@@ -154,7 +154,7 @@ export default function EventParticipantsPanel({ event, clubId }) {
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <Users className="h-5 w-5 text-primary" />
-              <h3 className="text-base font-semibold text-slate-900">Participantes do evento</h3>
+              <h3 className="text-base font-semibold text-foreground">Participantes do evento</h3>
             </div>
             <Button size="sm" variant="outline" onClick={() => setInviteOpen(true)}>
               <UserPlus className="mr-1.5 h-4 w-4" /> Convidar pessoas
@@ -171,7 +171,7 @@ export default function EventParticipantsPanel({ event, clubId }) {
           ) : invites.length === 0 ? (
             <EmptyState icon={Users} title="Sem participantes ainda" description="Convide os membros da organização para integrarem o evento." />
           ) : (
-            <div className="divide-y divide-slate-100">
+            <div className="divide-y divide-border">
               {invites.map((inv) => {
                 const canRemove = isManager || inv.user_id === user?.uid;
                 return (
@@ -179,12 +179,12 @@ export default function EventParticipantsPanel({ event, clubId }) {
                     <div className="flex min-w-0 items-center gap-2">
                       <UserAvatar name={inv.user_name} photoUrl={inv.user_photo} size="sm" />
                       <div className="min-w-0">
-                        <div className="truncate text-sm font-medium text-slate-800">
+                        <div className="truncate text-sm font-medium text-foreground">
                           {inv.user_name}
                           {inv.user_id === event.created_by && <span className="ml-1 text-xs text-primary">(organizador)</span>}
                         </div>
                         {inv.source === INVITE_SOURCE.PLATFORM && (
-                          <div className="text-[11px] text-slate-400">Convidado da plataforma</div>
+                          <div className="text-[11px] text-muted-foreground/80">Convidado da plataforma</div>
                         )}
                       </div>
                     </div>
@@ -193,7 +193,7 @@ export default function EventParticipantsPanel({ event, clubId }) {
                         {inv.status === INVITE_STATUS.INVITED ? 'Convidado' : 'Participante'}
                       </Badge>
                       {canRemove && inv.user_id !== event.created_by && (
-                        <button onClick={() => handleRemove(inv.user_id)} className="text-slate-400 transition-colors hover:text-red-600" title="Remover">
+                        <button onClick={() => handleRemove(inv.user_id)} className="text-muted-foreground/80 transition-colors hover:text-destructive" title="Remover">
                           <Trash2 className="h-3.5 w-3.5" />
                         </button>
                       )}
@@ -269,16 +269,16 @@ function InviteDialog({ open, onClose, event, clubId, invites }) {
 function Pool({ title, people, onInvite, emptyText }) {
   return (
     <div>
-      <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">{title} ({people.length})</h4>
+      <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{title} ({people.length})</h4>
       {people.length === 0 ? (
-        <p className="text-sm text-slate-400">{emptyText}</p>
+        <p className="text-sm text-muted-foreground/80">{emptyText}</p>
       ) : (
         <div className="space-y-1.5">
           {people.map((p) => (
-            <div key={p.user_id} className="flex items-center justify-between gap-2 rounded-lg border border-slate-100 p-2">
+            <div key={p.user_id} className="flex items-center justify-between gap-2 rounded-lg border border-border p-2">
               <div className="flex min-w-0 items-center gap-2">
                 <UserAvatar name={p.user_name} photoUrl={p.user_photo} size="sm" />
-                <span className="truncate text-sm font-medium text-slate-800">{p.user_name}</span>
+                <span className="truncate text-sm font-medium text-foreground">{p.user_name}</span>
               </div>
               <Button size="sm" variant="outline" onClick={() => onInvite(p)}>
                 <Send className="mr-1 h-3.5 w-3.5" /> Convidar
