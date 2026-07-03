@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback } from 'react';
+import React, { useMemo, useState, useCallback, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { MapPin, Zap, X, Heart, Info, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
@@ -199,6 +199,19 @@ export default function PetFeed() {
   // cidade e o raio para ver todos os pets da plataforma.
   const [city, setCity] = useState(() => userProfile?.city || '');
   const [radius, setRadius] = useState(() => (userProfile?.city ? 25 : 5));
+
+  // O perfil pode não estar carregado no primeiro render (auth ainda
+  // resolvendo). Quando ele chega, aplicamos a cidade do cadastro uma única vez,
+  // sem sobrescrever ajustes que o usuário já tenha feito manualmente.
+  const appliedProfileCity = useRef(Boolean(userProfile?.city));
+  useEffect(() => {
+    if (appliedProfileCity.current) return;
+    if (userProfile?.city) {
+      appliedProfileCity.current = true;
+      setCity((prev) => (prev ? prev : userProfile.city));
+      setRadius((prev) => (prev === 5 ? 25 : prev));
+    }
+  }, [userProfile?.city]);
   const createInterest = useCreateInterest();
 
   const firstName = (userProfile?.name || user?.displayName || '').split(' ')[0];
