@@ -32,7 +32,7 @@ export default function OrganizationsHub() {
     <div className="mx-auto max-w-5xl space-y-10">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold sm:text-3xl">Organizações</h1>
+          <h1 className="text-[22px] font-extrabold">Organizações</h1>
           <p className="mt-2 max-w-xl text-sm text-muted-foreground">
             Gerencie as ONGs que você administra: animais, doações, finanças e equipe.
           </p>
@@ -43,7 +43,7 @@ export default function OrganizationsHub() {
       </div>
 
       <section className="space-y-4">
-        <h2 className="text-lg font-semibold">Minhas organizações</h2>
+        <h2 className="text-[15.5px] font-bold">Minhas organizações</h2>
         {loadingMine ? (
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {[1, 2].map((i) => <Skeleton key={i} className="h-32 rounded-[1.5rem]" />)}
@@ -88,7 +88,7 @@ export default function OrganizationsHub() {
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-lg font-semibold">Descobrir outras organizações</h2>
+        <h2 className="text-[15.5px] font-bold">Descobrir outras organizações</h2>
         {loadingAll ? (
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {[1, 2, 3].map((i) => <Skeleton key={i} className="h-20 rounded-[1.25rem]" />)}

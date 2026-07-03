@@ -102,12 +102,12 @@ export default function OrganizationAdminPanel() {
       <div className="overflow-hidden rounded-[2rem] border border-border bg-card">
         <div className="h-24 bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--highlight))_100%)]" />
         <div className="flex flex-wrap items-center gap-4 px-6 pb-6">
-          <span className="-mt-8 flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border-4 border-card bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--highlight))_100%)] font-display text-lg font-extrabold text-white">
+          <span className="-mt-8 flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border-4 border-card bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--highlight))_100%)] font-display text-[19px] font-extrabold text-white">
             {initials}
           </span>
           <div className="pb-0.5">
             <div className="flex items-center gap-1.5">
-              <h1 className="text-xl font-bold">{club.name}</h1>
+              <h1 className="text-[19px] font-extrabold">{club.name}</h1>
               <ShieldCheck className="h-4 w-4 text-primary" />
             </div>
             <p className="text-sm text-muted-foreground">
@@ -170,7 +170,7 @@ function OverviewTab({ club }) {
 function StatCard({ value, label }) {
   return (
     <div className="rounded-2xl border border-border bg-card p-4">
-      <div className="text-xl font-bold">{value}</div>
+      <div className="text-[21px] font-extrabold">{value}</div>
       <div className="mt-1 text-xs font-medium text-muted-foreground">{label}</div>
     </div>
   );
