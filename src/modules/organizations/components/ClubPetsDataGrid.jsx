@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useRef, useState } from 'react';
 import { toast } from 'sonner';
-import { PlusCircle, Download, Upload, Trash2, UploadCloud } from 'lucide-react';
+import { PlusCircle, Download, Upload, Trash2, UploadCloud, Camera } from 'lucide-react';
 import { useMyPets, useUpdatePet, useCreatePet, useDeletePet } from '@/modules/pets/hooks/usePets';
+import { useAuth } from '@/core/lib/FirebaseAuthContext';
+import { uploadImage } from '@/core/services/storageService';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Badge } from '@/components/ui/badge';
@@ -19,26 +21,61 @@ import {
   PET_IMPORT_HEADERS, buildPetImportWorkbook, readImportFile, validateAndMapRows,
 } from '@/modules/organizations/domain/petImport';
 
+const SPECIES_OPTIONS = [
+  { value: 'dog', label: 'Cachorro' }, { value: 'cat', label: 'Gato' }, { value: 'rabbit', label: 'Coelho' },
+  { value: 'bird', label: 'Pássaro' }, { value: 'other', label: 'Outro' },
+];
+const SIZE_OPTIONS = [
+  { value: 'mini', label: 'Mini' }, { value: 'small', label: 'Pequeno' }, { value: 'medium', label: 'Médio' },
+  { value: 'large', label: 'Grande' }, { value: 'giant', label: 'Gigante' },
+];
 const STATUS_OPTIONS = [
   { value: 'available', label: 'Disponível' },
   { value: 'in_process', label: 'Em processo' },
   { value: 'adopted', label: 'Adotado' },
 ];
 
-const VACCINATED_OPTIONS = [
-  { value: 'yes', label: 'Vacinado' },
-  { value: 'partial', label: 'Parcial' },
-  { value: 'no', label: 'Não vacinado' },
-];
+function PhotoCell({ pet, clubId, uid }) {
+  const inputRef = useRef(null);
+  const updatePet = useUpdatePet();
+  const [uploading, setUploading] = useState(false);
+
+  async function handleFile(e) {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    setUploading(true);
+    try {
+      const url = await uploadImage(file, { uid: uid || clubId, folder: 'pets' });
+      await updatePet.mutateAsync({ petId: pet.id, updates: { photos: [url, ...(pet.photos || []).slice(1)] } });
+    } catch {
+      toast.error('Erro ao enviar foto.');
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={() => inputRef.current?.click()}
+      disabled={uploading}
+      className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-[9px] bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--highlight))_100%)] text-white"
+    >
+      {pet.photos?.[0] ? <img src={pet.photos[0]} alt="" className="h-full w-full object-cover" /> : <Camera className="h-[15px] w-[15px]" />}
+      <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={handleFile} />
+    </button>
+  );
+}
 
 /**
- * Planilha de gestão de pets de uma organização: edição rápida inline
- * (status/vacinação/idade), exclusão em linha, e importação/exportação em
- * massa via .xlsx/.csv/.json (`domain/petImport.js`). Cadastro individual
- * completo (fotos, saúde, temperamento) continua no wizard `/pets/new` —
- * reaproveitado aqui em vez de duplicado numa "linha em branco" da tabela.
+ * Planilha de gestão de pets de uma organização: edição inline (foto, nome,
+ * espécie, porte, raça, cidade, status), "Nova linha" cria um pet em branco
+ * direto na tabela, exclusão em linha, e importação/exportação em massa via
+ * .xlsx/.csv/.json (`domain/petImport.js`).
  */
 export default function ClubPetsDataGrid({ clubId }) {
+  const { user } = useAuth();
   const { data: pets = [], isLoading } = useMyPets(clubId);
   const updatePet = useUpdatePet();
   const createPet = useCreatePet();
@@ -49,6 +86,7 @@ export default function ClubPetsDataGrid({ clubId }) {
   const [preview, setPreview] = useState(null);
   const [importing, setImporting] = useState(false);
   const [parsing, setParsing] = useState(false);
+  const [addingRow, setAddingRow] = useState(false);
 
   async function handleFieldChange(petId, field, value) {
     setSavingId(petId);
@@ -58,6 +96,20 @@ export default function ClubPetsDataGrid({ clubId }) {
       toast.error('Erro ao salvar. Tente novamente.');
     } finally {
       setSavingId(null);
+    }
+  }
+
+  async function handleAddRow() {
+    setAddingRow(true);
+    try {
+      await createPet.mutateAsync({
+        title: '', name: '', species: 'dog', size: 'mini', city: '', status: 'available', photos: [],
+        owner_id: clubId, owner_type: 'organization',
+      });
+    } catch {
+      toast.error('Não foi possível criar a linha.');
+    } finally {
+      setAddingRow(false);
     }
   }
 
@@ -151,7 +203,7 @@ export default function ClubPetsDataGrid({ clubId }) {
     <div className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="max-w-sm text-xs text-muted-foreground">
-          Edite os animais diretamente na tabela ou importe um arquivo em massa.
+          Edite os animais diretamente na planilha ou importe um arquivo em massa.
         </p>
         <div className="flex flex-wrap gap-2">
           <Button variant="outline" size="sm" onClick={handleDownloadTemplate}>
@@ -160,8 +212,8 @@ export default function ClubPetsDataGrid({ clubId }) {
           <Button variant="outline" size="sm" onClick={() => setImportOpen(true)}>
             <Upload className="mr-1.5 h-4 w-4" /> Importar planilha
           </Button>
-          <Button asChild size="sm">
-            <Link to="/pets/new"><PlusCircle className="mr-1.5 h-4 w-4" /> Novo pet</Link>
+          <Button size="sm" onClick={handleAddRow} disabled={addingRow}>
+            <PlusCircle className="mr-1.5 h-4 w-4" /> Nova linha
           </Button>
         </div>
       </div>
@@ -170,67 +222,75 @@ export default function ClubPetsDataGrid({ clubId }) {
         <div className="space-y-2">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}</div>
       ) : pets.length === 0 ? (
         <EmptyState
-          title="Nenhum pet cadastrado por esta organização"
-          description="Cadastre o primeiro pet em nome desta organização ou importe uma planilha."
+          title="Nenhum animal cadastrado"
+          description="Adicione uma linha ou importe uma planilha."
         />
       ) : (
-        <div className="rounded-lg border">
+        <div className="overflow-x-auto rounded-2xl border border-white bg-card shadow-[0_14px_34px_-28px_hsl(20_40%_20%/0.4)]">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Pet</TableHead>
+              <TableRow className="bg-secondary/60">
+                <TableHead className="w-11">Foto</TableHead>
+                <TableHead>Nome</TableHead>
+                <TableHead>Espécie</TableHead>
+                <TableHead>Porte</TableHead>
+                <TableHead>Raça</TableHead>
+                <TableHead>Cidade</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Vacinação</TableHead>
-                <TableHead>Idade (meses)</TableHead>
-                <TableHead className="w-10" />
+                <TableHead className="w-9" />
               </TableRow>
             </TableHeader>
             <TableBody>
               {pets.map((pet) => (
                 <TableRow key={pet.id}>
-                  <TableCell className="font-medium">
-                    <Link to={`/pets/${pet.id}`} className="hover:text-primary hover:underline">
-                      {pet.title || pet.name || 'Sem título'}
-                    </Link>
+                  <TableCell className="p-1.5">
+                    <PhotoCell pet={pet} clubId={clubId} uid={user?.uid} />
                   </TableCell>
-                  <TableCell>
-                    <Select
-                      value={pet.status}
-                      onValueChange={(v) => handleFieldChange(pet.id, 'status', v)}
+                  <TableCell className="p-0.5">
+                    <Input
+                      defaultValue={pet.name || ''}
+                      placeholder="Nome"
                       disabled={savingId === pet.id}
-                    >
-                      <SelectTrigger className="h-8 w-36"><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        {STATUS_OPTIONS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
-                      </SelectContent>
-                    </Select>
-                  </TableCell>
-                  <TableCell>
-                    <Select
-                      value={pet.vaccinated}
-                      onValueChange={(v) => handleFieldChange(pet.id, 'vaccinated', v)}
-                      disabled={savingId === pet.id}
-                    >
-                      <SelectTrigger className="h-8 w-32"><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        {VACCINATED_OPTIONS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
-                      </SelectContent>
-                    </Select>
-                  </TableCell>
-                  <TableCell>
-                    <input
-                      type="number"
-                      min="0"
-                      defaultValue={pet.age_months ?? ''}
-                      onBlur={(e) => {
-                        const v = e.target.value === '' ? null : Number(e.target.value);
-                        if (v !== (pet.age_months ?? null)) handleFieldChange(pet.id, 'age_months', v);
-                      }}
-                      disabled={savingId === pet.id}
-                      className="h-8 w-20 rounded-md border border-input bg-background px-2 text-sm"
+                      onBlur={(e) => { if (e.target.value !== (pet.name || '')) handleFieldChange(pet.id, 'name', e.target.value); }}
+                      className="h-8 w-32 border-transparent bg-transparent text-sm focus-visible:border-input focus-visible:bg-background"
                     />
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="p-0.5">
+                    <Select value={pet.species} onValueChange={(v) => handleFieldChange(pet.id, 'species', v)} disabled={savingId === pet.id}>
+                      <SelectTrigger className="h-8 w-28 border-transparent bg-transparent"><SelectValue /></SelectTrigger>
+                      <SelectContent>{SPECIES_OPTIONS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
+                    </Select>
+                  </TableCell>
+                  <TableCell className="p-0.5">
+                    <Select value={pet.size} onValueChange={(v) => handleFieldChange(pet.id, 'size', v)} disabled={savingId === pet.id}>
+                      <SelectTrigger className="h-8 w-24 border-transparent bg-transparent"><SelectValue /></SelectTrigger>
+                      <SelectContent>{SIZE_OPTIONS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
+                    </Select>
+                  </TableCell>
+                  <TableCell className="p-0.5">
+                    <Input
+                      defaultValue={pet.breed || ''}
+                      placeholder="Raça"
+                      disabled={savingId === pet.id}
+                      onBlur={(e) => { if (e.target.value !== (pet.breed || '')) handleFieldChange(pet.id, 'breed', e.target.value); }}
+                      className="h-8 w-28 border-transparent bg-transparent text-sm focus-visible:border-input focus-visible:bg-background"
+                    />
+                  </TableCell>
+                  <TableCell className="p-0.5">
+                    <Input
+                      defaultValue={pet.city || ''}
+                      disabled={savingId === pet.id}
+                      onBlur={(e) => { if (e.target.value !== (pet.city || '')) handleFieldChange(pet.id, 'city', e.target.value); }}
+                      className="h-8 w-28 border-transparent bg-transparent text-sm focus-visible:border-input focus-visible:bg-background"
+                    />
+                  </TableCell>
+                  <TableCell className="p-0.5">
+                    <Select value={pet.status} onValueChange={(v) => handleFieldChange(pet.id, 'status', v)} disabled={savingId === pet.id}>
+                      <SelectTrigger className="h-8 w-32 border-transparent bg-transparent"><SelectValue /></SelectTrigger>
+                      <SelectContent>{STATUS_OPTIONS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
+                    </Select>
+                  </TableCell>
+                  <TableCell className="p-1.5 text-center">
                     <button
                       type="button"
                       onClick={() => setConfirmDelete(pet)}

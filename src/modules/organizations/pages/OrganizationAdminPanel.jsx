@@ -23,8 +23,8 @@ import ClubFinanceTab from '@/modules/organizations/components/ClubFinanceTab';
 const TABS = [
   { key: 'overview', label: 'Visão Geral', icon: LayoutGrid, permission: null },
   { key: 'animals', label: 'Animais', icon: PawPrint, permission: CLUB_PERMISSION.ANIMALS },
-  { key: 'feed', label: 'Mural', icon: MessageSquare, permission: CLUB_PERMISSION.FEED },
-  { key: 'donations', label: 'Doações', icon: HandCoins, permission: CLUB_PERMISSION.DONATIONS },
+  { key: 'feed', label: 'Mural da ONG', icon: MessageSquare, permission: CLUB_PERMISSION.FEED },
+  { key: 'donations', label: 'Chamados de Doação', icon: HandCoins, permission: CLUB_PERMISSION.DONATIONS },
   { key: 'finance', label: 'Prestação de Contas', icon: Wallet, permission: CLUB_PERMISSION.FINANCE },
   { key: 'team', label: 'Equipe', icon: Users, permission: CLUB_PERMISSION.TEAM },
   { key: 'settings', label: 'Configurações', icon: ShieldCheck, permission: 'admin_only' },
