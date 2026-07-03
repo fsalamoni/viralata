@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { User, MapPin, Phone, Mail, Eye, EyeOff, Download, ShieldAlert, PawPrint } from 'lucide-react';
+import {
+  User, Download, ShieldAlert, PawPrint,
+  Home as HomeIcon, Trees, Building2, Tractor, Sofa, Footprints, Wind, Wallet, Bird,
+} from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,11 +27,11 @@ const GENDER_OPTIONS = [
 // Mesmos valores usados em modules/onboarding/pages/OnboardingQuestionnaire.jsx
 // e checados por modules/pets/domain/matching.js — não renomear sem atualizar os dois.
 const HOUSING_OPTIONS = [
-  { value: 'house_with_yard', label: '🏡 Casa com pátio' },
-  { value: 'house_no_yard', label: '🏠 Casa sem pátio' },
-  { value: 'apartment_screened', label: '🏢 Apartamento com tela de proteção' },
-  { value: 'apartment_unscreened', label: '🏢 Apartamento sem tela' },
-  { value: 'farm', label: '🌾 Sítio / Fazenda' },
+  { value: 'house_with_yard', label: 'Casa com pátio', icon: Trees },
+  { value: 'house_no_yard', label: 'Casa sem pátio', icon: HomeIcon },
+  { value: 'apartment_screened', label: 'Apartamento com tela de proteção', icon: Building2 },
+  { value: 'apartment_unscreened', label: 'Apartamento sem tela', icon: Building2 },
+  { value: 'farm', label: 'Sítio / Fazenda', icon: Tractor },
 ];
 
 const WALKS_OPTIONS = [
@@ -44,11 +47,40 @@ const BUDGET_OPTIONS = [
 ];
 
 const OTHER_PET_OPTIONS = [
-  { value: 'dog', label: '🐶 Cachorro' },
-  { value: 'cat', label: '🐱 Gato' },
-  { value: 'bird', label: '🐦 Pássaro' },
-  { value: 'other', label: '🐾 Outro' },
+  { value: 'dog', label: 'Cachorro', icon: PawPrint },
+  { value: 'cat', label: 'Gato', icon: PawPrint },
+  { value: 'bird', label: 'Pássaro', icon: Bird },
+  { value: 'other', label: 'Outro', icon: PawPrint },
 ];
+
+function ChoiceChip({ active, onClick, children, className = '' }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`rounded-full px-4 py-2 text-[13px] font-bold transition-colors ${
+        active ? 'border-2 border-primary bg-primary/[0.08] text-[hsl(14,55%,26%)]' : 'border-2 border-border bg-card text-foreground/75 hover:border-primary/40'
+      } ${className}`}
+    >
+      {children}
+    </button>
+  );
+}
+
+function ChoiceRow({ active, onClick, icon: Icon, children }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`flex w-full items-center gap-3 rounded-2xl border-2 px-4 py-3 text-left text-sm transition-colors ${
+        active ? 'border-primary bg-primary/[0.08] font-bold text-[hsl(14,55%,26%)]' : 'border-border bg-card font-semibold text-foreground/80 hover:border-primary/40'
+      }`}
+    >
+      {Icon && <Icon className="h-[19px] w-[19px] shrink-0" />}
+      {children}
+    </button>
+  );
+}
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -190,19 +222,13 @@ export default function Profile() {
               </div>
             </div>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="gender">Gênero</Label>
-              <select
-                id="gender"
-                value={gender}
-                onChange={(e) => setGender(e.target.value)}
-                className="h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              >
-                <option value="">Prefiro não informar</option>
+            <div className="space-y-2">
+              <Label>Gênero</Label>
+              <div className="flex flex-wrap gap-2">
                 {GENDER_OPTIONS.map(({ value, label }) => (
-                  <option key={value} value={value}>{label}</option>
+                  <ChoiceChip key={value} active={gender === value} onClick={() => setGender(value)}>{label}</ChoiceChip>
                 ))}
-              </select>
+              </div>
             </div>
 
             {/* Privacidade */}
@@ -232,49 +258,31 @@ export default function Profile() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="space-y-1.5">
-            <Label htmlFor="housing">Tipo de moradia</Label>
-            <select
-              id="housing"
-              value={housing}
-              onChange={(e) => setHousing(e.target.value)}
-              className="h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              <option value="">Selecione...</option>
-              {HOUSING_OPTIONS.map(({ value, label }) => (
-                <option key={value} value={value}>{label}</option>
+          <div className="space-y-2">
+            <Label>Tipo de moradia</Label>
+            <div className="flex flex-col gap-2">
+              {HOUSING_OPTIONS.map(({ value, label, icon }) => (
+                <ChoiceRow key={value} active={housing === value} icon={icon} onClick={() => setHousing(value)}>{label}</ChoiceRow>
               ))}
-            </select>
+            </div>
           </div>
 
-          <div className="space-y-1.5">
-            <Label htmlFor="dailyWalks">Rotina de passeios</Label>
-            <select
-              id="dailyWalks"
-              value={dailyWalks}
-              onChange={(e) => setDailyWalks(e.target.value)}
-              className="h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              <option value="">Selecione...</option>
+          <div className="space-y-2">
+            <Label>Rotina de passeios</Label>
+            <div className="flex flex-wrap gap-2">
               {WALKS_OPTIONS.map(({ value, label }) => (
-                <option key={value} value={value}>{label}</option>
+                <ChoiceChip key={value} active={dailyWalks === value} onClick={() => setDailyWalks(value)}>{label}</ChoiceChip>
               ))}
-            </select>
+            </div>
           </div>
 
-          <div className="space-y-1.5">
-            <Label htmlFor="budget">Orçamento para cuidados do pet</Label>
-            <select
-              id="budget"
-              value={budgetLevel}
-              onChange={(e) => setBudgetLevel(e.target.value)}
-              className="h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              <option value="">Selecione...</option>
+          <div className="space-y-2">
+            <Label>Orçamento para cuidados do pet</Label>
+            <div className="flex flex-wrap gap-2">
               {BUDGET_OPTIONS.map(({ value, label }) => (
-                <option key={value} value={value}>{label}</option>
+                <ChoiceChip key={value} active={budgetLevel === value} onClick={() => setBudgetLevel(value)}>{label}</ChoiceChip>
               ))}
-            </select>
+            </div>
           </div>
 
           <div className="flex items-center justify-between rounded-lg border border-border p-3">
@@ -293,22 +301,11 @@ export default function Profile() {
             <Switch checked={hasElderly} onCheckedChange={setHasElderly} />
           </div>
 
-          <div className="space-y-1.5">
+          <div className="space-y-2">
             <Label>Já tem outros animais?</Label>
             <div className="grid grid-cols-2 gap-2">
-              {OTHER_PET_OPTIONS.map(({ value, label }) => (
-                <button
-                  key={value}
-                  type="button"
-                  onClick={() => toggleOtherPet(value)}
-                  className={`text-left px-3 py-2 rounded-lg border-2 text-sm transition-colors ${
-                    otherPets.includes(value)
-                      ? 'border-primary bg-primary/10 text-primary font-medium'
-                      : 'border-border hover:border-primary/40 text-muted-foreground'
-                  }`}
-                >
-                  {label}
-                </button>
+              {OTHER_PET_OPTIONS.map(({ value, label, icon }) => (
+                <ChoiceRow key={value} active={otherPets.includes(value)} icon={icon} onClick={() => toggleOtherPet(value)}>{label}</ChoiceRow>
               ))}
             </div>
           </div>
