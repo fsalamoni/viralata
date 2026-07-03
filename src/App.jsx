@@ -79,8 +79,8 @@ function OnboardingGate({ children }) {
   const { isAuthenticated, isLoadingAuth, userProfile } = useAuth();
   const onboardingAllowedPaths = ['/onboarding', '/login', '/politica-privacidade', '/termos', '/legislacao'];
   const isAllowedPath = onboardingAllowedPaths.some((path) => location.pathname.startsWith(path));
+  if (isLoadingAuth) return isAllowedPath ? children : <FullScreenSpinner />;
   if (!isAuthenticated) return children;
-  if (isLoadingAuth && !isAllowedPath) return <FullScreenSpinner />;
   if (!userProfile?.profile_completed && !isAllowedPath) {
     return <Navigate to="/onboarding" state={{ from: location }} replace />;
   }

@@ -229,9 +229,9 @@ export default function PetFeed() {
   const { data: fetchedPets = [], isLoading, isError } = usePetFeed(filters);
 
   const pets = useMemo(() => {
-    const visiblePets = !showOwnPets && user?.uid
-      ? fetchedPets.filter((pet) => pet.owner_id !== user.uid)
-      : fetchedPets;
+    const visiblePets = showOwnPets || !user?.uid
+      ? fetchedPets
+      : fetchedPets.filter((pet) => pet.owner_id !== user.uid);
     if (!radiusActive) return visiblePets;
     const origin = lookupCityCoordsByName(trimmedCity);
     return filterPetsByRadius(visiblePets, origin, radius) ?? visiblePets;

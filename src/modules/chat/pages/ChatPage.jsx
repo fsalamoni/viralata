@@ -29,9 +29,8 @@ export default function ChatPage() {
   // /chat/:conversationId, usada em alguns fluxos internos antigos.
   useEffect(() => {
     const param = searchParams.get('c') || routeConversationId || null;
-    if (param && param !== selectedId) setSelectedId(param);
-    else if (!param && selectedId) setSelectedId(null);
-  }, [routeConversationId, searchParams, selectedId]);
+    setSelectedId((prev) => (param ? (param === prev ? prev : param) : null));
+  }, [routeConversationId, searchParams]);
 
   const selectConversation = (id) => {
     setSelectedId(id);
