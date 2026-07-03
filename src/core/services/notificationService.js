@@ -52,6 +52,21 @@ function trimText(value, max) {
   return max ? text.slice(0, max) : text;
 }
 
+export function normalizeNotificationLink(link) {
+  const raw = trimText(link, 400);
+  if (!raw) return null;
+  try {
+    const base = typeof window !== 'undefined' && window.location?.origin
+      ? window.location.origin
+      : 'https://viralata.local';
+    const parsed = new URL(raw, base);
+    if (parsed.origin !== base) return null;
+    return `${parsed.pathname}${parsed.search}${parsed.hash}`;
+  } catch {
+    return null;
+  }
+}
+
 /** Normaliza e remove duplicados/vazios de uma lista de uids destinatários. */
 function normalizeRecipients(userIds, actorId) {
   const set = new Set();
@@ -68,7 +83,7 @@ function buildPayload({ userId, title, message, type, link, actor }) {
     title: trimText(title, 140) || 'Nova atividade',
     message: trimText(message, 300),
     type: type || NOTIFICATION_TYPE.GENERIC,
-    link: trimText(link, 400) || null,
+    link: normalizeNotificationLink(link),
     actor_id: actor?.uid || null,
     actor_name: trimText(actor?.displayName || actor?.name, 140) || null,
     read: false,

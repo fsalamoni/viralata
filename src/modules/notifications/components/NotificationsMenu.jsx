@@ -8,7 +8,7 @@ import {
   DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuItem,
 } from '@/components/ui/dropdown-menu';
 import { useNotifications } from '@/modules/notifications/hooks/useNotifications';
-import { NOTIFICATION_TYPE } from '@/core/services/notificationService';
+import { NOTIFICATION_TYPE, normalizeNotificationLink } from '@/core/services/notificationService';
 import { cn } from '@/core/lib/utils';
 
 const TYPE_META = {
@@ -52,7 +52,8 @@ export default function NotificationsMenu() {
 
   const handleClick = async (notification) => {
     if (!notification.read) markAsRead(notification.id).catch(() => {});
-    if (notification.link) navigate(notification.link);
+    const target = normalizeNotificationLink(notification.link);
+    if (target) navigate(target);
   };
 
   const handleMarkAllRead = (e) => {

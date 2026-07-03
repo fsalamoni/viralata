@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useQuery } from '@tanstack/react-query';
 import {
-  User, Download, ShieldAlert, PawPrint, Star,
+  User, Download, ShieldAlert, PawPrint, Star, ArrowLeft,
   Home as HomeIcon, Trees, Building2, Tractor, Sofa, Footprints, Wind, Wallet, Bird,
 } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
@@ -240,6 +240,11 @@ export default function Profile() {
 
   return (
     <div className="arena-page mx-auto flex max-w-5xl flex-col gap-6 px-5 py-6 pb-16">
+      <div>
+        <Button type="button" variant="ghost" size="sm" onClick={() => navigate(-1)}>
+          <ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar
+        </Button>
+      </div>
 
       <section className="arena-panel-strong overflow-hidden rounded-[1.25rem] p-5 sm:rounded-[2rem] sm:p-8">
         <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">

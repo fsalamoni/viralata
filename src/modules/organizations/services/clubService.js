@@ -514,7 +514,7 @@ export async function acceptClubInvite(invite, user, profile) {
       title: `${me} aceitou o convite e entrou em "${trimmed(invite.club_name).slice(0, 50)}"`,
       message: 'O usuário agora faz parte da organização.',
       type: NOTIFICATION_TYPE.CLUB_INVITE_ACCEPTED,
-      link: `/comunidade/${invite.club_id}?tab=members`,
+      link: `/organizacoes/${invite.club_id}/admin?tab=team`,
       actor: { uid: user.uid, displayName: me },
     });
   }

@@ -14,15 +14,19 @@ import { calculatePriorityScore } from '@/modules/pets/domain/priority';
 const PETS_COLLECTION = 'pets';
 const INTERESTS_COLLECTION = 'adoption_interests';
 
+export function normalizePetPhotoUrls(photos) {
+  return Array.isArray(photos)
+    ? photos
+      .map((photo) => (typeof photo === 'string' ? photo.trim() : photo?.url?.trim()))
+      .filter(Boolean)
+    : [];
+}
+
 function normalizePetRecord(id, data) {
   return {
     id,
     ...data,
-    photos: Array.isArray(data?.photos)
-      ? data.photos
-        .map((photo) => (typeof photo === 'string' ? photo.trim() : photo?.url?.trim()))
-        .filter(Boolean)
-      : [],
+    photos: normalizePetPhotoUrls(data?.photos),
   };
 }
 
@@ -61,6 +65,7 @@ export async function createPet(petData, actor) {
   const priorityScore = calculatePriorityScore({ created_at: { seconds: Date.now() / 1000 } });
   const payload = {
     ...petData,
+    photos: normalizePetPhotoUrls(petData?.photos),
     status: petData.status || 'available',
     priority_score: priorityScore,
     created_at: serverTimestamp(),
@@ -74,7 +79,14 @@ export async function createPet(petData, actor) {
 /** Atualiza dados de um pet. */
 export async function updatePet(petId, updates, actor) {
   if (!db || !petId) throw new Error('Dados inválidos');
-  await updateDoc(doc(db, PETS_COLLECTION, petId), { ...updates, updated_at: serverTimestamp() });
+  const normalizedUpdates = {
+    ...updates,
+    updated_at: serverTimestamp(),
+  };
+  if (Object.prototype.hasOwnProperty.call(updates || {}, 'photos')) {
+    normalizedUpdates.photos = normalizePetPhotoUrls(updates?.photos);
+  }
+  await updateDoc(doc(db, PETS_COLLECTION, petId), normalizedUpdates);
   await createAuditLog({ action: 'pet_updated', actor, details: { pet_id: petId, changed_fields: Object.keys(updates) } });
 }
 

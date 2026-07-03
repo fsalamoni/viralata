@@ -58,6 +58,7 @@ import { QrCode } from '@/components/ui/qr-code';
  * antigas.
  */
 export default function ClubDetail() {
+  const PUBLIC_TABS = ['members', 'animals', 'events', 'feed', 'forums'];
   const { orgId: clubId } = useParams();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
@@ -74,7 +75,8 @@ export default function ClubDetail() {
   const [confirmLeave, setConfirmLeave] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const rawTab = searchParams.get('tab');
-  const activeTab = rawTab === 'admin' || rawTab === 'pets' ? 'members' : (rawTab || 'members');
+  const requestedTab = rawTab === 'admin' || rawTab === 'pets' ? 'members' : rawTab;
+  const activeTab = PUBLIC_TABS.includes(requestedTab) ? requestedTab : 'members';
   const threadParam = searchParams.get('thread') || null;
 
   useEffect(() => {
