@@ -35,6 +35,7 @@ const schema = z.object({
   good_with_cats: z.boolean().default(true),
   health_notes: z.string().optional(),
   adoption_requirements: z.string().optional(),
+  adoption_form_url: z.string().trim().url('Informe um link válido (começando com http).').optional().or(z.literal('')),
   city: z.string().min(2, 'Informe a cidade'),
   state: z.string().min(2, 'Informe o estado'),
 });
@@ -132,6 +133,7 @@ export default function CreatePet() {
       good_with_cats: existingPet.good_with_cats !== false,
       health_notes: existingPet.health_notes || '',
       adoption_requirements: existingPet.adoption_requirements || '',
+      adoption_form_url: existingPet.adoption_form_url || '',
       city: existingPet.city || '',
       state: existingPet.state || '',
     });
@@ -199,6 +201,13 @@ export default function CreatePet() {
   const isLastStep = step === STEPS.length - 1;
   const submitting = createPet.isPending || updatePet.isPending || uploading;
   const activeChecks = CHECKS.filter((c) => form[c.field]);
+
+  // Item 5: se o pet está vinculado a uma organização (ou o responsável é admin
+  // de alguma), o formulário de doação/adoção pode ser herdado do link padrão
+  // dessa organização.
+  const selectedClub = ownerId !== 'me' ? myClubs.find((c) => c.id === ownerId) : null;
+  const inheritableFormUrl = selectedClub?.donation_link
+    || (adminClubs.find((c) => c.donation_link)?.donation_link ?? '');
 
   return (
     <div className="arena-page mx-auto max-w-2xl px-5 pb-24 pt-6">
@@ -363,6 +372,29 @@ export default function CreatePet() {
                 <div className="space-y-1.5">
                   <Label htmlFor="adoption_requirements">Requisitos para adoção</Label>
                   <Textarea id="adoption_requirements" {...register('adoption_requirements')} placeholder="O que você espera do adotante..." rows={3} />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="adoption_form_url">Formulário de doação/adoção (opcional)</Label>
+                  <Input
+                    id="adoption_form_url"
+                    type="url"
+                    inputMode="url"
+                    {...register('adoption_form_url')}
+                    placeholder="https://... (Google Forms, PDF, etc.)"
+                  />
+                  {errors.adoption_form_url && <p className="text-xs text-destructive">{errors.adoption_form_url.message}</p>}
+                  {inheritableFormUrl && form.adoption_form_url !== inheritableFormUrl && (
+                    <button
+                      type="button"
+                      onClick={() => setValue('adoption_form_url', inheritableFormUrl, { shouldValidate: true })}
+                      className="text-xs font-semibold text-primary underline"
+                    >
+                      Usar o formulário padrão da organização
+                    </button>
+                  )}
+                  <p className="text-[11px] text-muted-foreground">
+                    Cole o link de um formulário externo. Interessados poderão abri-lo a partir do perfil do pet.
+                  </p>
                 </div>
               </div>
             </>

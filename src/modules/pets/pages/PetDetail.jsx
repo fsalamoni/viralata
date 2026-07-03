@@ -17,7 +17,7 @@ import { usePetShareImage } from '../hooks/usePetShareImage';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Heart, MapPin, Trash2, Share2, MessageCircle } from 'lucide-react';
+import { ArrowLeft, Heart, MapPin, Trash2, Share2, MessageCircle, FileText } from 'lucide-react';
 import { toast } from 'sonner';
 
 function useOwnerProfile(ownerId, enabled) {
@@ -206,6 +206,17 @@ export default function PetDetail() {
             <div className="bg-accent/10 border border-accent/30 rounded-2xl p-3.5 text-[13px] leading-[1.6] text-[hsl(86,40%,20%)]">
               <strong>Requisitos para adoção:</strong> {pet.adoption_requirements}
             </div>
+          )}
+
+          {pet.adoption_form_url && (
+            <a
+              href={pet.adoption_form_url}
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center justify-center gap-2 rounded-2xl border border-primary/30 bg-primary/[0.06] px-3.5 py-3 text-[13px] font-bold text-primary transition-colors hover:bg-primary/10"
+            >
+              <FileText className="h-4 w-4" /> Preencher formulário de doação/adoção
+            </a>
           )}
 
           {!canManage && pet.owner_id && (
