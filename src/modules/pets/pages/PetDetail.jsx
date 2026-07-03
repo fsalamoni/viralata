@@ -183,6 +183,7 @@ export default function PetDetail() {
             {pet.size && <Badge variant="secondary" className="text-[11.5px]">{SIZE_LABEL[pet.size]}</Badge>}
             {pet.age_group && <Badge variant="secondary" className="text-[11.5px]">{AGE_LABEL[pet.age_group]}</Badge>}
             {pet.gender && <Badge variant="secondary" className="text-[11.5px]">{pet.gender === 'male' ? 'Macho' : 'Fêmea'}</Badge>}
+            {pet.breed && <Badge variant="secondary" className="text-[11.5px]">{pet.breed}</Badge>}
             {pet.neutered && <Badge variant="success" className="text-[11.5px]">Castrado</Badge>}
             {pet.vaccinated === 'yes' && <Badge variant="outline" className="text-[11.5px]">Vacinado</Badge>}
             {pet.dewormed && <Badge variant="outline" className="text-[11.5px]">Vermifugado</Badge>}

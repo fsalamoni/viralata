@@ -36,7 +36,7 @@ export default function CreateClub() {
   const onSubmit = async (e) => {
     e.preventDefault();
     const nextErrors = {};
-    if (!form.name.trim()) nextErrors.name = 'Informe o nome do clube.';
+    if (!form.name.trim()) nextErrors.name = 'Informe o nome da organização.';
     if (form.contact_email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.contact_email.trim())) {
       nextErrors.contact_email = 'Informe um e-mail válido.';
     }
@@ -45,17 +45,17 @@ export default function CreateClub() {
 
     try {
       const id = await createClub.mutateAsync(form);
-      toast.success('Clube criado com sucesso!');
+      toast.success('Organização criada com sucesso!');
       navigate(`/organizacoes/${id}/admin`);
     } catch (err) {
-      toast.error(err.message || 'Não foi possível criar o clube.');
+      toast.error(err.message || 'Não foi possível criar a organização.');
     }
   };
 
   return (
     <div className="mx-auto max-w-3xl space-y-4">
       <Button asChild variant="ghost" size="sm" className="text-orange-50 hover:bg-white/10 hover:text-white">
-        <Link to="/organizacoes"><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para clubes</Link>
+        <Link to="/organizacoes"><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para organizações</Link>
       </Button>
 
       <section className="arena-panel-strong rounded-lg p-5 sm:p-6">
@@ -75,29 +75,29 @@ export default function CreateClub() {
 
       <Card className="overflow-hidden">
         <CardHeader className="border-b border-primary/10 bg-white/45 p-4 sm:p-5">
-          <CardTitle className="text-base text-foreground">Dados do clube</CardTitle>
+          <CardTitle className="text-base text-foreground">Dados da organização</CardTitle>
           <CardDescription>Apenas o nome é obrigatório. Quanto mais completo, melhor para a comunidade encontrar você.</CardDescription>
         </CardHeader>
         <CardContent className="p-4 sm:p-5">
           {!isAuthenticated && (
             <p className="mb-4 rounded-md border border-highlight/40 bg-highlight/[0.14] p-3 text-sm text-[hsl(30,60%,24%)]">
-              Você precisa estar autenticado para criar um clube.
+              Você precisa estar autenticado para criar uma organização.
             </p>
           )}
           <form onSubmit={onSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label>Logo / imagem do clube</Label>
+              <Label>Logo / imagem da organização</Label>
               <ImageUpload
                 value={form.logo_url}
                 onChange={(url) => setForm((prev) => ({ ...prev, logo_url: url }))}
                 folder="clubs"
                 shape="square"
                 label="Enviar logo"
-                hint="Logo ou foto do clube. Aparece no diretório e na página do clube."
+                hint="Logo ou foto da organização. Aparece no diretório e na página da organização."
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="name">Nome do clube *</Label>
+              <Label htmlFor="name">Nome da organização *</Label>
               <Input id="name" value={form.name} onChange={setField('name')} maxLength={80} required />
               {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
             </div>
@@ -145,7 +145,7 @@ export default function CreateClub() {
 
             <div className="space-y-2">
               <Label htmlFor="instagram">Instagram</Label>
-              <Input id="instagram" value={form.instagram} onChange={setField('instagram')} maxLength={60} placeholder="@seuclube" />
+              <Input id="instagram" value={form.instagram} onChange={setField('instagram')} maxLength={60} placeholder="@suaorganizacao" />
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
@@ -160,7 +160,7 @@ export default function CreateClub() {
             </div>
 
             <Button type="submit" disabled={createClub.isPending || !isAuthenticated}>
-              {createClub.isPending ? 'Criando…' : 'Criar clube'}
+              {createClub.isPending ? 'Criando…' : 'Criar'}
             </Button>
           </form>
         </CardContent>

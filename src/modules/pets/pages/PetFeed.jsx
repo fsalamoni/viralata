@@ -1,12 +1,11 @@
 import React, { useMemo, useState, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { MapPin, PlusCircle, Zap, X, Heart, Info, CheckCircle2 } from 'lucide-react';
+import { MapPin, Zap, X, Heart, Info, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { usePetFeed, useCreateInterest } from '../hooks/usePets';
 import { hasKnownCoords, lookupCityCoordsByName, filterPetsByRadius } from '../domain/geoDistance';
 import PetCard from '../components/PetCard';
 import AdSlot from '@/components/AdSlot';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/core/lib/utils';
 import { toast } from 'sonner';
@@ -195,8 +194,11 @@ export default function PetFeed() {
   const { userProfile, user } = useAuth();
   const [species, setSpecies] = useState('all');
   const [size, setSize] = useState('all');
-  const [city, setCity] = useState('');
-  const [radius, setRadius] = useState(25);
+  // Item 4: por padrão o filtro usa a cidade do cadastro do usuário. Se não há
+  // cidade cadastrada, o raio inicial fica em 5 km. O usuário pode limpar a
+  // cidade e o raio para ver todos os pets da plataforma.
+  const [city, setCity] = useState(() => userProfile?.city || '');
+  const [radius, setRadius] = useState(() => (userProfile?.city ? 25 : 5));
   const createInterest = useCreateInterest();
 
   const firstName = (userProfile?.name || user?.displayName || '').split(' ')[0];
@@ -250,12 +252,6 @@ export default function PetFeed() {
             Deslize para curtir os destaques ou explore a lista completa abaixo.
           </p>
         </div>
-        <Button asChild className="shrink-0">
-          <Link to="/pets/new">
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Cadastrar Pet
-          </Link>
-        </Button>
       </div>
 
       {/* Chips de espécie */}
@@ -296,7 +292,7 @@ export default function PetFeed() {
       </div>
       <p className="mb-6.5 text-[11.5px] text-muted-foreground/90">
         {!trimmedCity
-          ? 'Informe uma cidade para filtrar por distância'
+          ? 'Sem cidade definida — mostrando todos os pets disponíveis na plataforma'
           : radiusActive
             ? `Pets até ${radius} km de ${trimmedCity} (distância aproximada pelo centro da cidade, sem geolocalização precisa)`
             : radius
