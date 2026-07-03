@@ -93,7 +93,7 @@ export default function CreateReport() {
         <Button variant="ghost" size="sm" onClick={() => navigate(-1)}><ArrowLeft className="w-4 h-4" /></Button>
         <h1 className="text-2xl font-bold text-foreground">Registrar Denúncia</h1>
       </div>
-      <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-800">
+      <div className="rounded-xl border border-highlight/40 bg-highlight/[0.14] p-4 text-sm text-[hsl(30,60%,24%)]">
         <strong>Importante:</strong> Esta denúncia ficará registrada na plataforma. Ao concluir, você poderá baixar um PDF formatado para entregar à Delegacia de Crimes Ambientais ou à Polícia Civil.
       </div>
 
@@ -125,7 +125,7 @@ export default function CreateReport() {
               </Button>
             </div>
             {coords && (
-              <p className="text-xs text-green-600">
+              <p className="text-xs text-[hsl(150,38%,32%)]">
                 📍 Coordenadas: {coords.lat.toFixed(6)}, {coords.lng.toFixed(6)}
               </p>
             )}
@@ -138,7 +138,7 @@ export default function CreateReport() {
                 <div key={i} className="relative w-20 h-20 rounded-lg overflow-hidden border">
                   <img src={src} alt="" className="w-full h-full object-cover" />
                   <button type="button" onClick={() => { setPhotos((p) => p.filter((_, j) => j !== i)); setPhotoFiles((p) => p.filter((_, j) => j !== i)); }}
-                    className="absolute top-0.5 right-0.5 bg-red-500 text-white rounded-full w-4 h-4 text-xs flex items-center justify-center">×</button>
+                    className="absolute top-0.5 right-0.5 bg-black/50 text-white rounded-full w-4 h-4 text-xs flex items-center justify-center">×</button>
                 </div>
               ))}
               {photos.length < 5 && (
@@ -156,7 +156,7 @@ export default function CreateReport() {
         </form>
       ) : (
         <div className="space-y-4">
-          <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-green-800">
+          <div className="rounded-xl border border-[hsl(150,38%,36%,0.35)] bg-[hsl(150,38%,36%,0.12)] p-4 text-[hsl(150,38%,22%)]">
             ✅ Denúncia registrada! Protocolo: <strong>{reportId}</strong>
           </div>
 

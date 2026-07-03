@@ -87,7 +87,9 @@ export default function MessageBubble({ message, isOwn, showAuthor, onEdit, onDe
         <div
           className={cn(
             'rounded-2xl px-3 py-2 text-sm shadow-sm',
-            isOwn ? 'rounded-br-sm bg-primary text-primary-foreground' : 'rounded-bl-sm bg-white text-slate-800 border border-primary/10',
+            isOwn
+              ? 'rounded-br-sm bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--highlight))_100%)] text-primary-foreground'
+              : 'rounded-bl-sm bg-secondary text-secondary-foreground border border-border',
           )}
         >
           {editing ? (

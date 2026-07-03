@@ -177,7 +177,7 @@ export default function Home() {
                     <div className="text-xs text-muted-foreground">adotou {story.pet}</div>
                   </div>
                 </div>
-                <p className="text-sm italic leading-relaxed text-foreground/80">"{story.quote}"</p>
+                <p className="text-sm italic leading-relaxed text-foreground/80">&ldquo;{story.quote}&rdquo;</p>
               </motion.div>
             ))}
           </div>

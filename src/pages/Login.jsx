@@ -85,7 +85,7 @@ export default function Login() {
           </div>
 
           <div className="rounded-2xl border border-white/15 bg-white/[0.08] p-5">
-            <p className="text-sm italic leading-relaxed text-orange-50/85">"{LOGIN_QUOTE.quote}"</p>
+            <p className="text-sm italic leading-relaxed text-orange-50/85">&ldquo;{LOGIN_QUOTE.quote}&rdquo;</p>
             <div className="mt-2.5 text-xs font-bold text-orange-200/85">{LOGIN_QUOTE.adopter} · adotou {LOGIN_QUOTE.pet}</div>
           </div>
         </div>
