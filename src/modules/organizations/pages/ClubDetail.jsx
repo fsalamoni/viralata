@@ -102,28 +102,28 @@ export default function ClubDetail() {
     if (!code.trim()) return;
     try {
       await joinClub.mutateAsync(code.trim());
-      toast.success('Você entrou no clube!');
+      toast.success('Você entrou na organização!');
       setCode('');
     } catch (err) {
-      toast.error(err.message || 'Código inválido para este clube.');
+      toast.error(err.message || 'Código inválido para esta organização.');
     }
   };
 
   const handleLeave = async () => {
     try {
       await leaveClub.mutateAsync();
-      toast.success('Você saiu do clube.');
+      toast.success('Você saiu da organização.');
       setConfirmLeave(false);
       navigate('/comunidade');
     } catch (err) {
-      toast.error(err.message || 'Não foi possível sair do clube.');
+      toast.error(err.message || 'Não foi possível sair da organização.');
     }
   };
 
   const handleRequestJoin = async () => {
     try {
       const res = await requestToJoin.mutateAsync(club);
-      if (res?.alreadyMember) toast.success('Você já é membro deste clube.');
+      if (res?.alreadyMember) toast.success('Você já é membro desta organização.');
       else toast.success('Pedido enviado! Os administradores foram avisados.');
     } catch (err) {
       toast.error(err.message || 'Não foi possível enviar o pedido.');
@@ -133,7 +133,7 @@ export default function ClubDetail() {
   const handleAcceptInvite = async () => {
     try {
       await acceptInvite.mutateAsync(myInvite);
-      toast.success('Convite aceito! Bem-vindo ao clube.');
+      toast.success('Convite aceito! Bem-vindo à organização.');
     } catch (err) {
       toast.error(err.message || 'Não foi possível aceitar o convite.');
     }
@@ -162,9 +162,9 @@ export default function ClubDetail() {
       <div className="mx-auto max-w-2xl">
         <EmptyState
           icon={Building2}
-          title="Clube não encontrado"
-          description="O clube que você procura não existe ou foi removido."
-          action={<Button asChild><Link to="/comunidade">Voltar para clubes</Link></Button>}
+          title="Organização não encontrada"
+          description="A organização que você procura não existe ou foi removida."
+          action={<Button asChild><Link to="/comunidade">Voltar para organizações</Link></Button>}
         />
       </div>
     );
@@ -175,7 +175,7 @@ export default function ClubDetail() {
   return (
     <div className="mx-auto max-w-4xl space-y-4">
       <Button asChild variant="ghost" size="sm" className="text-orange-50 hover:bg-white/10 hover:text-white">
-        <Link to="/comunidade"><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para clubes</Link>
+        <Link to="/comunidade"><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para organizações</Link>
       </Button>
 
       <section className="arena-panel-strong overflow-hidden rounded-[1.25rem] p-5 sm:rounded-[2rem] sm:p-8">
@@ -220,7 +220,7 @@ export default function ClubDetail() {
                 className="border-white/20 bg-white/10 text-white hover:bg-white/15 hover:text-white"
                 onClick={() => setConfirmLeave(true)}
               >
-                <LogOut className="mr-1.5 h-4 w-4" /> Sair do clube
+                <LogOut className="mr-1.5 h-4 w-4" /> Sair da organização
               </Button>
             </div>
           )}
@@ -242,7 +242,7 @@ export default function ClubDetail() {
           <div className="mt-5 flex flex-col items-start gap-3 rounded-2xl bg-white/10 p-4 sm:flex-row sm:items-center">
             <QrCode value={club.donation_link} size={104} className="rounded-lg bg-white p-1.5" />
             <div>
-              <p className="text-sm font-semibold text-white">Apoie este clube com uma doação</p>
+              <p className="text-sm font-semibold text-white">Apoie esta organização com uma doação</p>
               <p className="mt-1 text-xs text-orange-50/80">Aponte a câmera para o QR Code ou toque no link.</p>
               <a
                 href={club.donation_link}
@@ -262,7 +262,7 @@ export default function ClubDetail() {
       {!isMember && myInvite && (
         <Card className="rounded-[1.5rem] border-highlight/40 bg-highlight/[0.14]">
           <CardContent className="p-5">
-            <h3 className="text-base font-semibold text-foreground">Você foi convidado para este clube</h3>
+            <h3 className="text-base font-semibold text-foreground">Você foi convidado para esta organização</h3>
             <p className="mt-1 text-sm text-muted-foreground">
               {myInvite.inviter_name || 'Um administrador'} convidou você a participar. Aceite para entrar e acessar eventos, mural e fórum.
             </p>
@@ -281,7 +281,7 @@ export default function ClubDetail() {
       {!isMember && !myInvite && (
         <Card className="rounded-[1.5rem] border-primary/20 bg-primary/5">
           <CardContent className="p-5">
-            <h3 className="text-base font-semibold text-foreground">Participe deste clube</h3>
+            <h3 className="text-base font-semibold text-foreground">Participe desta organização</h3>
             {myRequest?.status === JOIN_REQUEST_STATUS.PENDING ? (
               <p className="mt-2 inline-flex items-center gap-2 rounded-full bg-highlight/20 px-3 py-1.5 text-sm font-medium text-highlight-foreground">
                 Pedido enviado — aguardando aprovação de um administrador.
@@ -353,7 +353,7 @@ export default function ClubDetail() {
       <ConfirmDialog
         open={confirmLeave}
         onOpenChange={setConfirmLeave}
-        title="Sair do clube"
+        title="Sair da organização"
         description={`Tem certeza que deseja sair de "${club.name}"?`}
         confirmLabel="Sair"
         destructive

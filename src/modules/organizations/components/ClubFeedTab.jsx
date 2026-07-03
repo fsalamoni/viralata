@@ -167,7 +167,7 @@ export default function ClubFeedTab({ clubId, isAdmin }) {
       {isLoading ? (
         <div className="space-y-3">{[1, 2].map((i) => <Skeleton key={i} className="h-20 rounded-xl" />)}</div>
       ) : posts.length === 0 ? (
-        <EmptyState icon={MessageSquare} title="Mural vazio" description="Seja o primeiro a publicar algo para o clube." />
+        <EmptyState icon={MessageSquare} title="Mural vazio" description="Seja o primeiro a publicar algo para a organização." />
       ) : (
         <div className="space-y-3">
           {posts.map((post) => {

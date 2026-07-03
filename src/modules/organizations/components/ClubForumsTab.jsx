@@ -84,7 +84,7 @@ export default function ClubForumsTab({ clubId, isAdmin, initialThreadId, onThre
         <EmptyState
           icon={MessagesSquare}
           title="Nenhum tópico ainda"
-          description="Abra a primeira discussão do clube e convide os membros a participar."
+          description="Abra a primeira discussão da organização e convide os membros a participar."
           action={<Button size="sm" onClick={() => setCreateOpen(true)}><Plus className="mr-1.5 h-4 w-4" /> Criar tópico</Button>}
         />
       ) : (

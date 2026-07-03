@@ -59,7 +59,7 @@ export default function ClubMembersTab({ clubId, isAdmin, club }) {
     if (!confirmRemove) return;
     try {
       await removeMember.mutateAsync(confirmRemove);
-      toast.success('Membro removido do clube.');
+      toast.success('Membro removido da organização.');
       setConfirmRemove(null);
     } catch (err) {
       toast.error(err.message || 'Não foi possível remover o membro.');
@@ -75,7 +75,7 @@ export default function ClubMembersTab({ clubId, isAdmin, club }) {
   }
 
   if (members.length === 0) {
-    return <EmptyState icon={Shield} title="Sem membros" description="Convide pessoas com o código do clube." />;
+    return <EmptyState icon={Shield} title="Sem membros" description="Convide pessoas com o código da organização." />;
   }
 
   return (
@@ -137,7 +137,7 @@ export default function ClubMembersTab({ clubId, isAdmin, club }) {
                       </DropdownMenuItem>
                     )}
                     <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => setConfirmRemove(member)}>
-                      <UserMinus className="mr-2 h-4 w-4" /> Remover do clube
+                      <UserMinus className="mr-2 h-4 w-4" /> Remover da organização
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -151,7 +151,7 @@ export default function ClubMembersTab({ clubId, isAdmin, club }) {
         open={!!confirmRemove}
         onOpenChange={(v) => !v && setConfirmRemove(null)}
         title="Remover membro"
-        description={confirmRemove ? `Tem certeza que deseja remover ${confirmRemove.user_name} do clube?` : ''}
+        description={confirmRemove ? `Tem certeza que deseja remover ${confirmRemove.user_name} da organização?` : ''}
         confirmLabel="Remover"
         destructive
         loading={removeMember.isPending}

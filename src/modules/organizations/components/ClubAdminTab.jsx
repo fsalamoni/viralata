@@ -29,7 +29,7 @@ import {
 /**
  * Aba "Configurações" do painel de administração da organização: identidade
  * (nome, logo, contato, CNPJ, link de doação), código de convite e exclusão
- * do clube. Exclusiva de administradores (role `admin`) — as capacidades de
+ * da organização. Exclusiva de administradores (role `admin`) — as capacidades de
  * gestão de equipe (convites, pedidos de ingresso, permissões) ficam na aba
  * Equipe (`ClubTeamTab.jsx`), que reaproveita `ClubJoinRequests` e
  * `ClubAddMembers` exportados abaixo.
@@ -62,12 +62,12 @@ export default function ClubAdminTab({ club }) {
   const handleSave = async (e) => {
     e.preventDefault();
     if (!form.name.trim()) {
-      toast.error('O nome do clube é obrigatório.');
+      toast.error('O nome da organização é obrigatório.');
       return;
     }
     try {
       await updateClub.mutateAsync(form);
-      toast.success('Clube atualizado.');
+      toast.success('Organização atualizada.');
     } catch (err) {
       toast.error(err.message || 'Não foi possível salvar.');
     }
@@ -86,10 +86,10 @@ export default function ClubAdminTab({ club }) {
   const handleDelete = async () => {
     try {
       await deleteClub.mutateAsync();
-      toast.success('Clube excluído.');
+      toast.success('Organização excluída.');
       navigate('/organizacoes');
     } catch (err) {
-      toast.error(err.message || 'Não foi possível excluir o clube.');
+      toast.error(err.message || 'Não foi possível excluir a organização.');
     }
   };
 
@@ -120,20 +120,20 @@ export default function ClubAdminTab({ club }) {
 
       <Card className="rounded-xl">
         <CardHeader className="p-4 sm:p-5">
-          <CardTitle className="text-base">Editar clube</CardTitle>
+          <CardTitle className="text-base">Editar organização</CardTitle>
           <CardDescription>Atualize as informações exibidas para a comunidade.</CardDescription>
         </CardHeader>
         <CardContent className="p-4 pt-0 sm:p-5 sm:pt-0">
           <form onSubmit={handleSave} className="space-y-4">
             <div className="space-y-2">
-              <Label>Logo / imagem do clube</Label>
+              <Label>Logo / imagem da organização</Label>
               <ImageUpload
                 value={form.logo_url}
                 onChange={(url) => setForm((prev) => ({ ...prev, logo_url: url }))}
                 folder="clubs"
                 shape="square"
                 label="Enviar logo"
-                hint="Logo ou foto do clube exibida no diretório e na página do clube."
+                hint="Logo ou foto da organização exibida no diretório e na página da organização."
               />
             </div>
             <div className="space-y-2">
@@ -199,11 +199,11 @@ export default function ClubAdminTab({ club }) {
       <Card className="rounded-xl border-destructive/30">
         <CardHeader className="p-4 sm:p-5">
           <CardTitle className="text-base text-destructive">Zona de risco</CardTitle>
-          <CardDescription>A exclusão do clube remove membros, eventos e mural. Não pode ser desfeita.</CardDescription>
+          <CardDescription>A exclusão da organização remove membros, eventos e mural. Não pode ser desfeita.</CardDescription>
         </CardHeader>
         <CardContent className="p-4 pt-0 sm:p-5 sm:pt-0">
           <Button variant="destructive" onClick={() => setConfirmDelete(true)} disabled={deleteClub.isPending}>
-            <Trash2 className="mr-1.5 h-4 w-4" /> Excluir clube
+            <Trash2 className="mr-1.5 h-4 w-4" /> Excluir organização
           </Button>
         </CardContent>
       </Card>
@@ -220,7 +220,7 @@ export default function ClubAdminTab({ club }) {
       <ConfirmDialog
         open={confirmDelete}
         onOpenChange={setConfirmDelete}
-        title="Excluir clube"
+        title="Excluir organização"
         description={`Tem certeza que deseja excluir "${club.name}"? Esta ação não pode ser desfeita.`}
         confirmLabel="Excluir definitivamente"
         destructive
