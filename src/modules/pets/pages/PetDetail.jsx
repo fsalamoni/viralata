@@ -20,14 +20,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, Heart, MapPin, Trash2, Share2, MessageCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
-function useOwnerProfile(ownerId) {
+function useOwnerProfile(ownerId, enabled) {
   return useQuery({
     queryKey: ['users', ownerId],
     queryFn: async () => {
       const snap = await getDoc(doc(db, 'users', ownerId));
       return snap.exists() ? { uid: snap.id, ...snap.data() } : null;
     },
-    enabled: Boolean(ownerId),
+    // A leitura de `users/{uid}` exige autenticação (firestore.rules) — sem
+    // isso, todo visitante não logado gerava uma tentativa (com retries) que
+    // sempre falhava por permissão negada.
+    enabled: Boolean(ownerId) && Boolean(enabled),
     staleTime: 1000 * 60 * 5,
   });
 }
@@ -51,7 +54,7 @@ export default function PetDetail() {
   const deletePet = useDeletePet();
   const [currentPhoto, setCurrentPhoto] = useState(0);
   const [openingChat, setOpeningChat] = useState(false);
-  const { data: owner } = useOwnerProfile(pet?.owner_id);
+  const { data: owner } = useOwnerProfile(pet?.owner_id, Boolean(user));
 
   const isOwner = user?.uid === pet?.owner_id;
   const isAdopter = user?.uid === pet?.adopted_by;

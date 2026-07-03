@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useRef, useCallback } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { MapPin, PlusCircle, Zap, X, Heart, Info, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
@@ -47,7 +47,6 @@ function FilterChip({ active, onClick, children }) {
 const AGE_LABEL = { puppy: 'Filhote', adult: 'Adulto', senior: 'Idoso' };
 
 function SwipeCard({ pet, isTop, onSwipe, onOpenDetail }) {
-  const ref = useRef(null);
   const [drag, setDrag] = useState(null);
   const dx = drag?.dx || 0;
   const rotation = Math.max(-14, Math.min(14, dx / 12));
@@ -82,7 +81,6 @@ function SwipeCard({ pet, isTop, onSwipe, onOpenDetail }) {
 
   return (
     <div
-      ref={ref}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
@@ -226,6 +224,7 @@ export default function PetFeed() {
 
   function handleLike(petId) {
     if (!petId) return;
+    if (!user) { navigate('/login'); return; }
     createInterest.mutate(petId, {
       onSuccess: () => toast.success('Interesse registrado! 🐾'),
       onError: () => toast.error('Não foi possível registrar o interesse.'),
@@ -307,6 +306,7 @@ export default function PetFeed() {
 
       {!isLoading && !isError && (
         <SwipeDeck
+          key={`${species}-${size}-${trimmedCity}-${radius}`}
           pets={priorityPets}
           onLike={handleLike}
           onPass={handlePass}
