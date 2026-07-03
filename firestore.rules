@@ -8,13 +8,6 @@ service cloud.firestore {
     function isPlatformAdmin() {
       return isAuth() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'platform_admin';
     }
-    function isOrgAdmin(orgId) {
-      return isAuth() && exists(/databases/$(database)/documents/organization_members/$(orgId + '_' + request.auth.uid))
-        && get(/databases/$(database)/documents/organization_members/$(orgId + '_' + request.auth.uid)).data.role == 'admin';
-    }
-    function isOrgMember(orgId) {
-      return isAuth() && exists(/databases/$(database)/documents/organization_members/$(orgId + '_' + request.auth.uid));
-    }
     function isClubMember(clubId) {
       return isAuth() && exists(/databases/$(database)/documents/club_members/$(clubId + '_' + request.auth.uid));
     }
@@ -141,33 +134,6 @@ service cloud.firestore {
       allow read: if true; // Reputação pública do adotante/doador
       allow create: if isAuth() && request.resource.data.rater_uid == request.auth.uid
         && request.resource.data.rated_uid != request.auth.uid;
-      allow update, delete: if isPlatformAdmin();
-    }
-
-    // ─── Organizações ─────────────────────────────────────────────────────────
-    match /organizations/{orgId} {
-      allow read: if true;
-      allow create: if isAuth();
-      allow update: if isOrgAdmin(orgId) || isPlatformAdmin();
-      allow delete: if isPlatformAdmin();
-    }
-
-    // ─── Membros de Organizações ──────────────────────────────────────────────
-    match /organization_members/{memberId} {
-      allow read: if isAuth();
-      allow create: if isAuth() && request.resource.data.user_id == request.auth.uid;
-      allow update: if isOrgAdmin(resource.data.org_id) || isPlatformAdmin();
-      allow delete: if isAuth() && (
-        resource.data.user_id == request.auth.uid ||
-        isOrgAdmin(resource.data.org_id) ||
-        isPlatformAdmin()
-      );
-    }
-
-    // ─── Relatórios de Organizações ───────────────────────────────────────────
-    match /organization_reports/{reportId} {
-      allow read: if true;
-      allow create: if isOrgAdmin(request.resource.data.org_id) || isPlatformAdmin();
       allow update, delete: if isPlatformAdmin();
     }
 

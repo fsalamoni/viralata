@@ -1,16 +1,16 @@
 import { test, expect } from '@playwright/test';
 
-test('Landing page loads with Pickleball branding', async ({ page }) => {
+test('Home page loads with Viralata branding', async ({ page }) => {
   await page.goto('/');
-  await expect(page).toHaveTitle(/Pickleball/i);
+  await expect(page).toHaveTitle(/Viralata/i);
 });
 
-test('Rules page is publicly accessible', async ({ page }) => {
-  await page.goto('/regras');
-  await expect(page.getByText(/Regras do Pickleball/i)).toBeVisible();
+test('Community directory is publicly accessible', async ({ page }) => {
+  await page.goto('/comunidade');
+  await expect(page.getByText(/Encontre uma organização/i)).toBeVisible();
 });
 
-test('Leveling page is publicly accessible', async ({ page }) => {
-  await page.goto('/nivelamento');
-  await expect(page.getByText(/Nivelamento/i).first()).toBeVisible();
+test('Terms page is publicly accessible', async ({ page }) => {
+  await page.goto('/termos');
+  await expect(page.getByText(/Termos de Uso/i).first()).toBeVisible();
 });

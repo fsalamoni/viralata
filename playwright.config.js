@@ -1,6 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
 
-const baseURL = process.env.E2E_BASE_URL || 'https://superbolao.web.app';
+const baseURL = process.env.E2E_BASE_URL || 'https://viralata.web.app';
 
 export default defineConfig({
   testDir: './tests/e2e',
