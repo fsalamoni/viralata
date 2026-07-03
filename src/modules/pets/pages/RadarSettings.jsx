@@ -8,7 +8,7 @@ import { Switch } from '@/components/ui/switch';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function RadarSettings() {
-  const { user, userProfile } = useAuth();
+  const { user, isProfileComplete } = useAuth();
   const { data: radar, isLoading } = useMyRadar(user?.uid);
   const setActive = useSetRadarActive();
 
@@ -55,12 +55,12 @@ export default function RadarSettings() {
               </div>
               <Switch
                 checked={active}
-                disabled={setActive.isPending || !userProfile?.profile_completed}
+                disabled={setActive.isPending || !isProfileComplete}
                 onCheckedChange={(v) => setActive.mutate(v)}
               />
             </div>
           )}
-          {!userProfile?.profile_completed && (
+          {!isProfileComplete && (
             <p className="text-xs text-highlight-foreground bg-highlight/15 border border-highlight/40 rounded-lg px-3 py-2 mt-3">
               Complete seu perfil de adotante antes de ativar o radar.
             </p>

@@ -128,7 +128,7 @@ export default function EventDetail() {
           <TabsTrigger value="conversa" className="arena-tab-pill"><MessageSquare className="mr-1.5 h-4 w-4" /> Conversa</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="detalhes" className="mt-6">
+        <TabsContent value="detalhes" className="mt-6 px-1">
           {event.description && (
             <Card className="mb-4 rounded-xl">
               <CardContent className="p-4">
@@ -140,11 +140,11 @@ export default function EventDetail() {
           <EventDatesPanel event={event} clubId={clubId} />
         </TabsContent>
 
-        <TabsContent value="participantes" className="mt-6">
+        <TabsContent value="participantes" className="mt-6 px-1">
           <EventParticipantsPanel event={event} clubId={clubId} />
         </TabsContent>
 
-        <TabsContent value="conversa" className="mt-6">
+        <TabsContent value="conversa" className="mt-6 px-1">
           <EventChat eventId={eventId} />
         </TabsContent>
       </Tabs>

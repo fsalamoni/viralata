@@ -195,7 +195,6 @@ export default function Profile() {
         budget_level: budgetLevel,
         phone_public: phonePublic,
         photo_url: photoUrl,
-        profile_completed: Boolean(fullName.trim() && city.trim()),
       });
       dirtyFieldsRef.current.clear();
       toast.success('Perfil atualizado com sucesso!');

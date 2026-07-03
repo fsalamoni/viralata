@@ -79,11 +79,11 @@ function ProtectedRoute({ children }) {
 
 function OnboardingGate({ children }) {
   const location = useLocation();
-  const { isAuthenticated, isLoadingAuth, userProfile } = useAuth();
+  const { isAuthenticated, isLoadingAuth, isProfileComplete } = useAuth();
   const isAllowedPath = ONBOARDING_ALLOWED_PATHS.some((path) => location.pathname.startsWith(path));
   if (isLoadingAuth) return isAllowedPath ? children : <FullScreenSpinner />;
   if (!isAuthenticated) return children;
-  if (!userProfile?.profile_completed && !isAllowedPath) {
+  if (!isProfileComplete && !isAllowedPath) {
     return <Navigate to="/onboarding" state={{ from: location }} replace />;
   }
   return children;

@@ -337,23 +337,23 @@ export default function ClubDetail() {
             <TabsTrigger value="forums" className="arena-tab-pill"><MessagesSquare className="mr-1.5 h-4 w-4" /> Fóruns</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="members" className="mt-6">
+          <TabsContent value="members" className="mt-6 px-1">
             <ClubMembersTab clubId={clubId} isAdmin={isAdmin} club={club} />
           </TabsContent>
 
-          <TabsContent value="animals" className="mt-6">
+          <TabsContent value="animals" className="mt-6 px-1">
             <ClubPetsDataGrid clubId={clubId} canManage={canManageAnimals} />
           </TabsContent>
 
-          <TabsContent value="events" className="mt-6">
+          <TabsContent value="events" className="mt-6 px-1">
             <ClubEventsTab clubId={clubId} isAdmin={isAdmin} />
           </TabsContent>
 
-          <TabsContent value="feed" className="mt-6">
+          <TabsContent value="feed" className="mt-6 px-1">
             <ClubFeedTab clubId={clubId} isAdmin={isAdmin} />
           </TabsContent>
 
-          <TabsContent value="forums" className="mt-6">
+          <TabsContent value="forums" className="mt-6 px-1">
             <ClubForumsTab
               clubId={clubId}
               isAdmin={isAdmin}
