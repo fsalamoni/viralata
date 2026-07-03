@@ -75,8 +75,9 @@ export default function ClubFinanceTab({ clubId }) {
   const createEntry = useCreateLedgerEntry(clubId);
   const deleteEntry = useDeleteLedgerEntry(clubId);
   const now = new Date();
+  const currentYear = now.getFullYear();
   const [period, setPeriod] = useState(FINANCE_PERIOD.MONTHLY);
-  const [year, setYear] = useState(now.getFullYear());
+  const [year, setYear] = useState(currentYear);
   const [month, setMonth] = useState(now.getMonth());
   const [semester, setSemester] = useState(now.getMonth() < 6 ? 1 : 2);
   const [createOpen, setCreateOpen] = useState(false);
@@ -87,16 +88,15 @@ export default function ClubFinanceTab({ clubId }) {
   // Histórico desde a criação da organização: as opções de ano vão do ano do
   // lançamento mais antigo (ou do ano atual, se ainda não houver nada) até hoje.
   const yearOptions = useMemo(() => {
-    const current = now.getFullYear();
-    let earliest = current;
+    let earliest = currentYear;
     entries.forEach((entry) => {
       const y = Number(String(entry.date || '').slice(0, 4));
       if (y && y < earliest) earliest = y;
     });
     const list = [];
-    for (let y = current; y >= earliest; y -= 1) list.push(y);
+    for (let y = currentYear; y >= earliest; y -= 1) list.push(y);
     return list;
-  }, [entries, now]);
+  }, [entries, currentYear]);
 
   const { since, until } = useMemo(
     () => periodRange(period, { year, month, semester }),
