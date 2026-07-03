@@ -229,7 +229,7 @@ export default function PetFeed() {
   const { data: fetchedPets = [], isLoading, isError } = usePetFeed(filters);
 
   const pets = useMemo(() => {
-    const visiblePets = !showOwnPets && user?.uid
+    const visiblePets = user?.uid && !showOwnPets
       ? fetchedPets.filter((pet) => pet.owner_id !== user.uid)
       : fetchedPets;
     if (!radiusActive) return visiblePets;

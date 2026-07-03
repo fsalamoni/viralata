@@ -20,7 +20,7 @@ function normalizePetRecord(id, data) {
     ...data,
     photos: Array.isArray(data?.photos)
       ? data.photos
-        .map((photo) => (typeof photo === 'string' ? photo : photo?.url))
+        .map((photo) => (typeof photo === 'string' ? photo.trim() : photo?.url?.trim()))
         .filter(Boolean)
       : [],
   };

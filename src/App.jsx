@@ -65,6 +65,8 @@ const queryClient = new QueryClient({
   },
 });
 
+const ONBOARDING_ALLOWED_PATHS = ['/onboarding', '/login', '/politica-privacidade', '/termos', '/legislacao'];
+
 // ─── Guards ───────────────────────────────────────────────────────────────────
 function ProtectedRoute({ children }) {
   const location = useLocation();
@@ -77,8 +79,7 @@ function ProtectedRoute({ children }) {
 function OnboardingGate({ children }) {
   const location = useLocation();
   const { isAuthenticated, isLoadingAuth, userProfile } = useAuth();
-  const onboardingAllowedPaths = ['/onboarding', '/login', '/politica-privacidade', '/termos', '/legislacao'];
-  const isAllowedPath = onboardingAllowedPaths.some((path) => location.pathname.startsWith(path));
+  const isAllowedPath = ONBOARDING_ALLOWED_PATHS.some((path) => location.pathname.startsWith(path));
   if (isLoadingAuth) return isAllowedPath ? children : <FullScreenSpinner />;
   if (!isAuthenticated) return children;
   if (!userProfile?.profile_completed && !isAllowedPath) {
