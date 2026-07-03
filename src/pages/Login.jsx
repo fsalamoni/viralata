@@ -54,7 +54,7 @@ export default function Login() {
       <div className="relative mx-auto grid min-h-screen max-w-6xl gap-8 px-6 py-8 lg:grid-cols-[1.05fr,0.95fr] lg:items-center">
 
         {/* Painel esquerdo — desktop */}
-        <div className="hidden h-full min-h-[42rem] flex-col justify-between rounded-[2.25rem] border border-white/10 bg-white/5 p-8 backdrop-blur-sm lg:flex">
+        <div className="hidden h-full min-h-[42rem] flex-col justify-between rounded-[2.25rem] border border-white/10 bg-white/5 p-14 backdrop-blur-sm lg:flex">
           <div>
             <Link to="/" className="inline-flex items-center gap-3 text-white">
               <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--highlight))_100%)] shadow-[0_10px_24px_-12px_rgba(64,34,18,0.6)]">
@@ -68,32 +68,32 @@ export default function Login() {
           </div>
 
           <div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-orange-200/80">
-              <PawPrint className="h-3.5 w-3.5" /> Plataforma gratuita de adoção
+            <span className="inline-flex h-[30px] items-center gap-1.5 rounded-full border border-white/20 bg-white/[0.12] px-3.5 text-xs font-bold text-orange-200/85">
+              <PawPrint className="h-[15px] w-[15px]" /> Plataforma gratuita de adoção
             </span>
-            <h1 className="mt-6 text-3xl font-semibold leading-tight text-white sm:text-4xl lg:text-5xl">
+            <h1 className="mt-[22px] max-w-[440px] text-[36px] font-extrabold leading-[1.15] tracking-[-0.02em] text-white">
               Conecte-se com pets que precisam de um lar e famílias que têm amor para dar.
             </h1>
 
-            <div className="mt-8 grid gap-3">
+            <div className="mt-8 flex flex-col gap-2.5">
               {LOGIN_HIGHLIGHTS.map((item) => (
-                <div key={item} className="rounded-[1.35rem] border border-white/10 bg-white/10 p-4 text-sm leading-6 text-orange-50/80 backdrop-blur-sm">
+                <div key={item} className="rounded-2xl border border-white/[0.15] bg-white/10 p-3.5 text-[13.5px] leading-[1.55] text-orange-50/90">
                   {item}
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="rounded-2xl border border-white/15 bg-white/[0.08] p-5">
-            <p className="text-sm italic leading-relaxed text-orange-50/85">&ldquo;{LOGIN_QUOTE.quote}&rdquo;</p>
-            <div className="mt-2.5 text-xs font-bold text-orange-200/85">{LOGIN_QUOTE.adopter} · adotou {LOGIN_QUOTE.pet}</div>
+          <div className="rounded-[18px] border border-white/[0.15] bg-white/[0.08] px-5 py-4.5">
+            <p className="mb-2.5 text-[13.5px] italic leading-[1.6] text-orange-50/85">&ldquo;{LOGIN_QUOTE.quote}&rdquo;</p>
+            <div className="text-[12.5px] font-bold text-orange-200/85">{LOGIN_QUOTE.adopter} · adotou {LOGIN_QUOTE.pet}</div>
           </div>
         </div>
 
         {/* Card de login */}
         <div className="flex items-center justify-center">
-          <Card className="w-full max-w-lg rounded-[2.25rem] border-white bg-card p-1.5 shadow-[0_35px_80px_-40px_rgba(15,23,42,0.55)] sm:p-2">
-            <CardHeader className="px-5 pb-4 pt-6 text-center sm:px-8">
+          <Card className="w-full max-w-[420px] rounded-[28px] border-white bg-card p-0 text-center shadow-[0_30px_70px_-30px_hsl(20_40%_20%/0.4)]">
+            <CardHeader className="px-[30px] pb-0 pt-9">
               {/* Logo mobile */}
               <Link to="/" className="mx-auto mb-4 inline-flex items-center gap-3 text-foreground lg:hidden">
                 <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--highlight))_100%)] shadow-[0_10px_24px_-12px_rgba(64,34,18,0.6)]">
@@ -103,19 +103,19 @@ export default function Login() {
               </Link>
 
               {/* Ícone central */}
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--highlight))_100%)] text-white shadow-[0_18px_35px_-26px_rgba(64,34,18,0.6)]">
-                <PawPrint className="h-6 w-6" />
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-[18px] bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--highlight))_100%)] text-white shadow-[0_18px_32px_-16px_hsl(17_72%_30%/0.6)]">
+                <PawPrint className="h-[26px] w-[26px]" />
               </div>
 
-              <CardTitle className="mt-4.5 text-2xl font-extrabold leading-tight text-foreground">
+              <CardTitle className="mt-[18px] text-2xl font-extrabold text-foreground">
                 Bem-vindo ao Viralata
               </CardTitle>
-              <CardDescription className="mx-auto mt-2.5 max-w-md text-sm leading-7 text-muted-foreground">
+              <CardDescription className="mt-2.5 text-[13.5px] leading-[1.6] text-muted-foreground">
                 Use sua conta Google para acessar a plataforma e encontrar ou cadastrar pets para adoção responsável.
               </CardDescription>
             </CardHeader>
 
-            <CardContent className="space-y-5 px-5 pb-6 sm:px-8">
+            <CardContent className="space-y-0 px-[30px] pb-9 pt-6">
               <Button
                 onClick={onClick}
                 disabled={busy || !isAuthAvailable}
@@ -127,12 +127,12 @@ export default function Login() {
               </Button>
 
               {!isAuthAvailable && (
-                <p className="rounded-[1.15rem] border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-900">
+                <p className="mt-4 rounded-[1.15rem] border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-900">
                   {authUnavailableReason || 'Configure o Firebase para habilitar autenticação.'}
                 </p>
               )}
 
-              <p className="text-center text-xs leading-6 text-muted-foreground">
+              <p className="mt-[18px] text-[11.5px] leading-[1.6] text-muted-foreground">
                 Ao continuar você aceita nossa{' '}
                 <Link to="/politica-privacidade" className="font-medium text-foreground/80 underline underline-offset-4">
                   Política de Privacidade

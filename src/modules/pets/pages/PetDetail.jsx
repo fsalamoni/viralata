@@ -167,7 +167,7 @@ export default function PetDetail() {
         <div className="space-y-4">
           <div>
             <div className="flex items-start justify-between gap-2">
-              <h1 className="text-2xl font-bold text-foreground">{pet.title || pet.name}</h1>
+              <h1 className="text-[25px] font-extrabold tracking-[-0.01em] text-foreground">{pet.title || pet.name}</h1>
               {pet.status === 'adopted' && (
                 <Badge variant="success">Adotado ✓</Badge>
               )}
@@ -175,34 +175,34 @@ export default function PetDetail() {
                 <Badge className="bg-highlight text-highlight-foreground">Em processo</Badge>
               )}
             </div>
-            {pet.name && pet.title && <p className="text-muted-foreground text-sm">Nome: {pet.name}</p>}
+            {pet.name && pet.title && <p className="text-[13px] text-muted-foreground">Nome: {pet.name}</p>}
           </div>
 
-          <div className="flex flex-wrap gap-2">
-            {pet.species && <Badge variant="secondary">{SPECIES_LABEL[pet.species]}</Badge>}
-            {pet.size && <Badge variant="secondary">{SIZE_LABEL[pet.size]}</Badge>}
-            {pet.age_group && <Badge variant="secondary">{AGE_LABEL[pet.age_group]}</Badge>}
-            {pet.gender && <Badge variant="secondary">{pet.gender === 'male' ? 'Macho' : 'Fêmea'}</Badge>}
-            {pet.neutered && <Badge variant="success">Castrado</Badge>}
-            {pet.vaccinated === 'yes' && <Badge variant="outline">Vacinado</Badge>}
-            {pet.dewormed && <Badge variant="outline">Vermifugado</Badge>}
+          <div className="flex flex-wrap gap-1.5">
+            {pet.species && <Badge variant="secondary" className="text-[11.5px]">{SPECIES_LABEL[pet.species]}</Badge>}
+            {pet.size && <Badge variant="secondary" className="text-[11.5px]">{SIZE_LABEL[pet.size]}</Badge>}
+            {pet.age_group && <Badge variant="secondary" className="text-[11.5px]">{AGE_LABEL[pet.age_group]}</Badge>}
+            {pet.gender && <Badge variant="secondary" className="text-[11.5px]">{pet.gender === 'male' ? 'Macho' : 'Fêmea'}</Badge>}
+            {pet.neutered && <Badge variant="success" className="text-[11.5px]">Castrado</Badge>}
+            {pet.vaccinated === 'yes' && <Badge variant="outline" className="text-[11.5px]">Vacinado</Badge>}
+            {pet.dewormed && <Badge variant="outline" className="text-[11.5px]">Vermifugado</Badge>}
           </div>
 
           {(pet.city || pet.state) && (
-            <div className="flex items-center gap-1 text-sm text-muted-foreground">
+            <div className="flex items-center gap-1 text-[12.5px] text-muted-foreground">
               <MapPin className="w-4 h-4" />
               {[pet.city, pet.state].filter(Boolean).join(', ')}
             </div>
           )}
 
           {pet.health_notes && (
-            <div className="bg-highlight/15 border border-highlight/40 rounded-xl p-3 text-sm text-[hsl(30,55%,26%)]">
+            <div className="bg-highlight/[0.12] border border-highlight/35 rounded-2xl p-3.5 text-[13px] leading-[1.6] text-[hsl(30,60%,26%)]">
               <strong>Observações de saúde:</strong> {pet.health_notes}
             </div>
           )}
 
           {pet.adoption_requirements && (
-            <div className="bg-accent/10 border border-accent/30 rounded-xl p-3 text-sm text-[hsl(84,35%,22%)]">
+            <div className="bg-accent/10 border border-accent/30 rounded-2xl p-3.5 text-[13px] leading-[1.6] text-[hsl(86,40%,20%)]">
               <strong>Requisitos para adoção:</strong> {pet.adoption_requirements}
             </div>
           )}
@@ -223,19 +223,8 @@ export default function PetDetail() {
           )}
 
           {/* Ações */}
-          <div className="flex flex-col gap-2 pt-2">
-            {!canManage && pet.status === 'available' && (
-              <Button
-                onClick={handleInterest}
-                disabled={alreadyInterested || createInterest.isPending}
-                className="w-full"
-                size="lg"
-              >
-                <Heart className="w-4 h-4 mr-2" />
-                {alreadyInterested ? 'Interesse já registrado' : 'Tenho Interesse em Adotar'}
-              </Button>
-            )}
-            {canManage && (
+          {canManage ? (
+            <div className="flex flex-col gap-2 pt-2">
               <div className="flex gap-2">
                 <Button asChild variant="outline" className="flex-1">
                   <Link to={`/pets/${petId}/edit`}>Editar</Link>
@@ -249,12 +238,33 @@ export default function PetDetail() {
                   <Trash2 className="w-4 h-4" />
                 </Button>
               </div>
-            )}
-            <Button variant="outline" onClick={handleShare} disabled={sharing || !pet.photos?.[0]} className="w-full">
-              <Share2 className="w-4 h-4 mr-2" />
-              {sharing ? 'Gerando imagem...' : 'Compartilhar'}
-            </Button>
-          </div>
+              <Button variant="outline" onClick={handleShare} disabled={sharing || !pet.photos?.[0]} className="w-full">
+                <Share2 className="w-4 h-4 mr-2" />
+                {sharing ? 'Gerando imagem...' : 'Compartilhar'}
+              </Button>
+            </div>
+          ) : (
+            <div className="flex gap-2.5 pt-2">
+              <Button
+                variant="outline"
+                onClick={handleShare}
+                disabled={sharing || !pet.photos?.[0]}
+                className="h-[54px] w-[52px] shrink-0 p-0"
+              >
+                <Share2 className="h-5 w-5" />
+              </Button>
+              {pet.status === 'available' && (
+                <Button
+                  onClick={handleInterest}
+                  disabled={alreadyInterested || createInterest.isPending}
+                  className="h-[54px] flex-1 gap-2 text-[15px]"
+                >
+                  <Heart className="h-[19px] w-[19px]" />
+                  {alreadyInterested ? 'Interesse já registrado' : 'Tenho Interesse em Adotar'}
+                </Button>
+              )}
+            </div>
+          )}
         </div>
       </motion.div>
 

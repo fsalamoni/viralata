@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { useQuery } from '@tanstack/react-query';
 import {
-  User, Download, ShieldAlert, PawPrint,
+  User, Download, ShieldAlert, PawPrint, Star,
   Home as HomeIcon, Trees, Building2, Tractor, Sofa, Footprints, Wind, Wallet, Bird,
 } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
@@ -13,7 +14,7 @@ import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ImageUpload } from '@/components/ui/image-upload';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
-import RatingBadge from '@/modules/pets/components/RatingBadge';
+import { getRatingsForUser, summarizeRatings } from '@/modules/pets/services/ratingService';
 import { exportMyData, downloadDataExport } from '@/core/services/dataExportService';
 import { deleteMyAccount } from '@/core/services/deleteAccountService';
 
@@ -88,6 +89,17 @@ export default function Profile() {
   const [exporting, setExporting] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+
+  const { data: ratings = [] } = useQuery({
+    queryKey: ['adoption_ratings', 'user', user?.uid],
+    queryFn: () => getRatingsForUser(user.uid),
+    enabled: Boolean(user?.uid),
+    staleTime: 1000 * 60 * 5,
+  });
+  const { avg: ratingAvg, count: ratingCount } = summarizeRatings(ratings);
+  const memberSinceYear = user?.metadata?.creationTime
+    ? new Date(user.metadata.creationTime).getFullYear()
+    : null;
 
   const [fullName, setFullName] = useState(userProfile?.full_name || user?.displayName || '');
   const [phone, setPhone] = useState(userProfile?.phone || '');
@@ -171,21 +183,50 @@ export default function Profile() {
   }
 
   return (
-    <div className="arena-page max-w-2xl mx-auto px-4 py-6 space-y-6">
-      <div className="flex items-center gap-3">
-        <h1 className="text-2xl font-bold text-foreground">Meu Perfil</h1>
-        <RatingBadge uid={user?.uid} />
-      </div>
+    <div className="arena-page mx-auto flex max-w-[640px] flex-col gap-4.5 px-5 py-5.5 pb-16">
+
+      {/* Cabeçalho do perfil */}
+      <Card className="flex flex-row flex-wrap items-center gap-4 rounded-[24px] p-[22px]">
+        <ImageUpload
+          value={photoUrl}
+          onChange={setPhotoUrl}
+          storagePath={`users/${user?.uid}/avatar`}
+          shape="circle"
+          className="h-16 w-16"
+        />
+        <div className="min-w-[180px] flex-1">
+          <div className="font-['Sora'] text-lg font-extrabold text-foreground">{fullName || user?.email}</div>
+          <div className="mt-0.5 text-[12.5px] text-muted-foreground">{user?.email}</div>
+          <div className="mt-2 flex flex-wrap items-center gap-2.5">
+            {ratingCount > 0 && (
+              <div className="flex items-center gap-0.5">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Star
+                    key={i}
+                    className="h-[15px] w-[15px]"
+                    style={{ color: i < Math.round(ratingAvg) ? 'hsl(40 88% 54%)' : 'hsl(30 20% 85%)' }}
+                    fill={i < Math.round(ratingAvg) ? 'hsl(40 88% 54%)' : 'none'}
+                  />
+                ))}
+                <span className="ml-1 text-xs font-bold text-foreground">{ratingAvg.toFixed(1)}</span>
+              </div>
+            )}
+            {memberSinceYear && (
+              <span className="text-[11px] text-muted-foreground/80">Membro desde {memberSinceYear}</span>
+            )}
+          </div>
+        </div>
+      </Card>
 
       {/* Dados pessoais */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-base">
-            <User className="w-4 h-4 text-primary" /> Dados pessoais
+      <Card className="rounded-[24px] p-6">
+        <CardHeader className="p-0 pb-4">
+          <CardTitle className="flex items-center gap-2 text-base font-bold">
+            <User className="w-[19px] h-[19px] text-primary" /> Dados pessoais
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSave} className="space-y-4">
+        <CardContent className="p-0">
+          <form onSubmit={handleSave} className="space-y-3.5">
             {/* Foto */}
             <div className="flex items-center gap-4">
               <ImageUpload
@@ -194,7 +235,7 @@ export default function Profile() {
                 storagePath={`users/${user?.uid}/avatar`}
                 className="w-20 h-20 rounded-full"
               />
-              <div className="text-sm text-muted-foreground">
+              <div className="text-[12.5px] text-muted-foreground">
                 <p className="font-medium text-foreground">{user?.email}</p>
                 <p>Clique na foto para alterar</p>
               </div>
@@ -248,16 +289,16 @@ export default function Profile() {
       </Card>
 
       {/* Perfil de adotante */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-base">
-            <PawPrint className="w-4 h-4 text-primary" /> Perfil de adotante
+      <Card className="rounded-[24px] p-6">
+        <CardHeader className="p-0 pb-1">
+          <CardTitle className="flex items-center gap-2 text-base font-bold">
+            <PawPrint className="w-[19px] h-[19px] text-accent" /> Perfil de adotante
           </CardTitle>
-          <CardDescription>
-            Essas informações são usadas pelo algoritmo de matching para sugerir pets compatíveis com sua realidade.
+          <CardDescription className="text-[12.5px]">
+            Usado pelo algoritmo de match para sugerir pets compatíveis com sua realidade.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-3.5 p-0 pt-4">
           <div className="space-y-2">
             <Label>Tipo de moradia</Label>
             <div className="flex flex-col gap-2">
@@ -285,8 +326,8 @@ export default function Profile() {
             </div>
           </div>
 
-          <div className="flex items-center justify-between rounded-lg border border-border p-3">
-            <p className="text-sm">Tem crianças em casa</p>
+          <div className="flex items-center justify-between gap-3 rounded-2xl border border-border p-3.5">
+            <p className="text-[13px] font-bold text-foreground">Tenho crianças em casa</p>
             <Switch checked={hasChildren} onCheckedChange={setHasChildren} />
           </div>
           {hasChildren && (
@@ -296,8 +337,8 @@ export default function Profile() {
               placeholder="Idades das crianças (ex: 3, 7 anos)"
             />
           )}
-          <div className="flex items-center justify-between rounded-lg border border-border p-3">
-            <p className="text-sm">Tem idosos em casa</p>
+          <div className="flex items-center justify-between gap-3 rounded-2xl border border-border p-3.5">
+            <p className="text-[13px] font-bold text-foreground">Tenho idosos em casa</p>
             <Switch checked={hasElderly} onCheckedChange={setHasElderly} />
           </div>
 
@@ -317,25 +358,24 @@ export default function Profile() {
       </Card>
 
       {/* Privacidade e dados (LGPD) */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base">Privacidade e dados</CardTitle>
-          <CardDescription>
-            Em conformidade com a LGPD, você pode baixar uma cópia dos seus dados ou excluir sua
-            conta permanentemente a qualquer momento.
+      <Card className="rounded-[24px] p-6">
+        <CardHeader className="p-0 pb-1">
+          <CardTitle className="text-base font-bold">Privacidade e dados</CardTitle>
+          <CardDescription className="text-[12.5px] leading-[1.6]">
+            Em conformidade com a LGPD, baixe uma cópia dos seus dados ou exclua sua conta quando quiser.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-3">
-          <Button variant="outline" onClick={handleExportData} disabled={exporting} className="w-full">
-            <Download className="w-4 h-4 mr-2" />
+        <CardContent className="flex flex-col gap-2.5 p-0 pt-4">
+          <Button variant="outline" onClick={handleExportData} disabled={exporting} className="h-[46px] w-full gap-2 text-[13.5px] font-bold">
+            <Download className="w-[18px] h-[18px]" />
             {exporting ? 'Preparando arquivo...' : 'Baixar meus dados'}
           </Button>
           <Button
             variant="outline"
             onClick={() => setConfirmDelete(true)}
-            className="w-full text-destructive border-destructive/30 hover:bg-destructive/10 hover:text-destructive"
+            className="h-[46px] w-full gap-2 border-destructive/30 bg-destructive/[0.06] text-[13.5px] font-bold text-destructive hover:bg-destructive/10 hover:text-destructive"
           >
-            <ShieldAlert className="w-4 h-4 mr-2" />
+            <ShieldAlert className="w-[18px] h-[18px]" />
             Excluir minha conta
           </Button>
         </CardContent>

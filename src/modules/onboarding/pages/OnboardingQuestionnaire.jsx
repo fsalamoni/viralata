@@ -149,15 +149,15 @@ export default function OnboardingQuestionnaire() {
   const StepIcon = current.icon || PawPrint;
 
   return (
-    <div className="arena-page arena-onboarding-glow flex min-h-screen items-center justify-center p-4">
-      <div className="w-full max-w-lg space-y-6">
-        <div className="text-center space-y-2">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--highlight))_100%)] text-white shadow-[0_14px_28px_-16px_rgba(64,34,18,0.55)]">
-            <StepIcon className="h-7 w-7" />
+    <div className="arena-page arena-onboarding-glow flex min-h-screen items-center justify-center px-5 py-8">
+      <div className="w-full max-w-[480px]">
+        <div className="mb-[22px] text-center">
+          <div className="mx-auto flex h-[52px] w-[52px] items-center justify-center rounded-2xl bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--highlight))_100%)] text-white shadow-[0_16px_28px_-14px_hsl(17_72%_30%/0.6)]">
+            <StepIcon className="h-6 w-6" />
           </div>
-          <h1 className="text-2xl font-bold text-foreground">Vamos montar seu perfil</h1>
-          <p className="text-sm text-muted-foreground">Passo {step + 1} de {STEPS.length}</p>
-          <div className="flex justify-center gap-1 pt-1">
+          <h1 className="mt-3.5 mb-1 text-[22px] font-extrabold text-foreground">Vamos montar seu perfil</h1>
+          <p className="text-[13px] text-muted-foreground">Passo {step + 1} de {STEPS.length}</p>
+          <div className="mt-2.5 flex justify-center gap-[5px]">
             {STEPS.map((st, i) => (
               <PawPrint
                 key={st.id}
@@ -169,20 +169,20 @@ export default function OnboardingQuestionnaire() {
           </div>
         </div>
 
-        <div className="arena-panel space-y-4 rounded-[1.5rem] p-6">
-          <div>
-            <h2 className="text-lg font-semibold text-foreground">{current.title}</h2>
-            <p className="text-sm text-muted-foreground mt-1">{current.description}</p>
+        <div className="arena-panel rounded-[24px] px-6 py-[26px]">
+          <div className="mb-4.5">
+            <h2 className="mb-1 text-[17px] font-bold text-foreground">{current.title}</h2>
+            <p className="text-[13px] text-muted-foreground">{current.description}</p>
           </div>
 
           {current.type === 'radio' && (
-            <div className="space-y-2">
+            <div className="flex flex-col gap-[9px]">
               {current.options.map((opt) => (
                 <button
                   key={opt.value}
                   type="button"
                   onClick={() => setField(current.field, opt.value)}
-                  className={`flex w-full items-center gap-3 text-left px-4 py-3.5 rounded-2xl border-2 transition-colors text-sm ${
+                  className={`flex w-full items-center gap-3 text-left px-4 py-[14px] rounded-2xl border-2 transition-colors text-[14.5px] ${
                     answers[current.field] === opt.value
                       ? 'border-primary bg-primary/[0.08] text-[hsl(14,55%,26%)] font-bold'
                       : 'border-border bg-card text-foreground/80 font-semibold hover:border-primary/40'
@@ -196,29 +196,29 @@ export default function OnboardingQuestionnaire() {
           )}
 
           {current.type === 'family' && (
-            <div className="space-y-3">
+            <div className="flex flex-col gap-2.5">
               <div className="flex items-center gap-3">
                 <Checkbox id="has_children" checked={answers.has_children} onCheckedChange={(v) => setField('has_children', v)} />
-                <Label htmlFor="has_children" className="cursor-pointer">Tenho crianças em casa</Label>
+                <Label htmlFor="has_children" className="cursor-pointer text-[14.5px]">Tenho crianças em casa</Label>
               </div>
               {answers.has_children && (
                 <Input placeholder="Idades das crianças (ex: 3, 7 anos)" value={answers.children_ages} onChange={(e) => setField('children_ages', e.target.value)} className="ml-6" />
               )}
               <div className="flex items-center gap-3">
                 <Checkbox id="has_elderly" checked={answers.has_elderly} onCheckedChange={(v) => setField('has_elderly', v)} />
-                <Label htmlFor="has_elderly" className="cursor-pointer">Tenho idosos em casa</Label>
+                <Label htmlFor="has_elderly" className="cursor-pointer text-[14.5px]">Tenho idosos em casa</Label>
               </div>
             </div>
           )}
 
           {current.type === 'other_pets' && (
-            <div className="space-y-2">
+            <div className="flex flex-col gap-[9px]">
               {OTHER_PET_OPTIONS.map((opt) => (
                 <button
                   key={opt.value}
                   type="button"
                   onClick={() => togglePet(opt.value)}
-                  className={`flex w-full items-center gap-3 text-left px-4 py-3.5 rounded-2xl border-2 transition-colors text-sm ${
+                  className={`flex w-full items-center gap-3 text-left px-4 py-[14px] rounded-2xl border-2 transition-colors text-[14.5px] ${
                     answers.other_pets.includes(opt.value)
                       ? 'border-primary bg-primary/[0.08] text-[hsl(14,55%,26%)] font-bold'
                       : 'border-border bg-card text-foreground/80 font-semibold hover:border-primary/40'
@@ -231,7 +231,7 @@ export default function OnboardingQuestionnaire() {
               <button
                 type="button"
                 onClick={() => setAnswers((prev) => ({ ...prev, other_pets: [] }))}
-                className={`flex w-full items-center gap-3 text-left px-4 py-3.5 rounded-2xl border-2 transition-colors text-sm ${
+                className={`flex w-full items-center gap-3 text-left px-4 py-[14px] rounded-2xl border-2 transition-colors text-[14.5px] ${
                   answers.other_pets.length === 0
                     ? 'border-primary bg-primary/[0.08] text-[hsl(14,55%,26%)] font-bold'
                     : 'border-border bg-card text-foreground/80 font-semibold hover:border-primary/40'
@@ -244,21 +244,21 @@ export default function OnboardingQuestionnaire() {
           )}
 
           {current.type === 'location' && (
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <Label htmlFor="city">Cidade</Label>
+            <div className="grid grid-cols-2 gap-2.5">
+              <div className="space-y-1.5">
+                <Label htmlFor="city" className="text-xs font-bold">Cidade</Label>
                 <Input id="city" value={answers.city} onChange={(e) => setField('city', e.target.value)} placeholder="São Paulo" />
               </div>
-              <div className="space-y-1">
-                <Label htmlFor="state">Estado</Label>
+              <div className="space-y-1.5">
+                <Label htmlFor="state" className="text-xs font-bold">Estado</Label>
                 <Input id="state" value={answers.state} onChange={(e) => setField('state', e.target.value.toUpperCase())} placeholder="SP" maxLength={2} />
               </div>
             </div>
           )}
 
           {current.type === 'consent' && (
-            <div className="space-y-3">
-              <p className="text-sm text-muted-foreground">
+            <div className="flex flex-col gap-3.5">
+              <p className="text-[13px] leading-[1.6] text-muted-foreground">
                 Usamos os dados deste questionário para sugerir pets compatíveis com a sua
                 realidade. Você pode revisar nossa{' '}
                 <Link to="/politica-privacidade" target="_blank" className="text-primary underline">
@@ -270,45 +270,45 @@ export default function OnboardingQuestionnaire() {
                 </Link>. A qualquer momento você pode baixar ou excluir seus dados na página de
                 perfil.
               </p>
-              <div className="flex items-start gap-3 rounded-xl border-2 border-border p-4">
+              <div className="flex items-start gap-3 rounded-2xl border-2 border-border p-3.5">
                 <Checkbox
                   id="lgpd_consent"
                   checked={answers.lgpd_consent}
                   onCheckedChange={(v) => setField('lgpd_consent', v)}
                   className="mt-0.5"
                 />
-                <Label htmlFor="lgpd_consent" className="cursor-pointer text-sm font-normal">
+                <Label htmlFor="lgpd_consent" className="cursor-pointer text-[13px] font-normal leading-[1.55]">
                   Li e concordo com o uso dos meus dados conforme descrito acima, em conformidade
                   com a LGPD.
                 </Label>
               </div>
             </div>
           )}
-        </div>
 
-        <div className="flex gap-3">
-          {step > 0 && (
-            <Button variant="outline" onClick={() => setStep((s) => s - 1)} className="flex-1">
-              Voltar
-            </Button>
-          )}
-          {step < STEPS.length - 1 ? (
-            <Button
-              onClick={() => setStep((s) => s + 1)}
-              disabled={!canAdvance()}
-              className="flex-1"
-            >
-              Continuar
-            </Button>
-          ) : (
-            <Button
-              onClick={handleFinish}
-              disabled={!canAdvance() || saving}
-              className="flex-1"
-            >
-              {saving ? 'Salvando...' : 'Concluir e ver pets'}
-            </Button>
-          )}
+          <div className="mt-6 flex gap-2.5">
+            {step > 0 && (
+              <Button variant="outline" onClick={() => setStep((s) => s - 1)} className="h-[52px] flex-1 text-[14.5px]">
+                Voltar
+              </Button>
+            )}
+            {step < STEPS.length - 1 ? (
+              <Button
+                onClick={() => setStep((s) => s + 1)}
+                disabled={!canAdvance()}
+                className="h-[52px] flex-1 text-[15px]"
+              >
+                Continuar
+              </Button>
+            ) : (
+              <Button
+                onClick={handleFinish}
+                disabled={!canAdvance() || saving}
+                className="h-[52px] flex-1 text-[15px]"
+              >
+                {saving ? 'Salvando...' : 'Concluir e ver pets'}
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     </div>

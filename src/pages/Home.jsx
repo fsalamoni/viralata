@@ -47,29 +47,29 @@ export default function Home() {
   return (
     <div className="arena-page arena-hero-glow min-h-screen">
       {/* Hero */}
-      <section className="relative overflow-hidden px-4 pb-20 pt-16 sm:pt-24">
-        <div className="relative mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-[1.05fr,0.95fr]">
+      <section className="relative overflow-hidden px-6 pb-16 pt-14">
+        <div className="relative mx-auto grid max-w-[1180px] items-center gap-12 lg:grid-cols-[1.05fr,0.95fr]">
           <motion.div
             initial="hidden"
             animate="show"
             variants={stagger}
-            className="space-y-6 text-center lg:text-left"
+            className="space-y-5 text-center lg:text-left"
           >
-            <motion.span variants={fadeUp} className="arena-chip mx-auto lg:mx-0">
-              <PawPrint className="h-3.5 w-3.5 text-primary" /> Adoção responsável e gratuita
+            <motion.span variants={fadeUp} className="arena-chip mx-auto h-[34px] px-4 text-[12.5px] font-bold lg:mx-0">
+              <PawPrint className="h-4 w-4 text-primary" /> Adoção responsável e gratuita
             </motion.span>
-            <motion.h1 variants={fadeUp} className="text-4xl font-extrabold leading-[1.05] text-foreground sm:text-5xl lg:text-6xl">
+            <motion.h1 variants={fadeUp} className="text-[38px] font-extrabold leading-[1.04] tracking-[-0.03em] text-foreground sm:text-[46px] lg:text-[58px]">
               Encontre seu <span className="arena-heading">companheiro</span> ideal
             </motion.h1>
-            <motion.p variants={fadeUp} className="mx-auto max-w-xl text-lg leading-relaxed text-muted-foreground lg:mx-0">
+            <motion.p variants={fadeUp} className="mx-auto max-w-[480px] text-[17.5px] leading-[1.6] text-muted-foreground lg:mx-0">
               O Viralata conecta pets que precisam de um lar com famílias que têm amor para dar —
               do primeiro match até o dia da adoção.
             </motion.p>
-            <motion.div variants={fadeUp} className="flex flex-col justify-center gap-3 sm:flex-row lg:justify-start">
-              <Button asChild size="lg" className="px-8">
+            <motion.div variants={fadeUp} className="flex flex-col justify-center gap-3 pt-1 sm:flex-row lg:justify-start">
+              <Button asChild className="h-[50px] px-[26px] text-[15px]">
                 <Link to="/feed">Ver Pets para Adoção</Link>
               </Button>
-              <Button asChild size="lg" variant="outline">
+              <Button asChild variant="outline" className="h-[50px] px-[26px] text-[15px]">
                 <Link to="/login">Cadastrar meu Pet</Link>
               </Button>
             </motion.div>
@@ -80,39 +80,39 @@ export default function Home() {
             initial={{ opacity: 0, scale: 0.94 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, ease: 'easeOut', delay: 0.15 }}
-            className="relative mx-auto aspect-square w-full max-w-md"
+            className="relative mx-auto aspect-square w-full max-w-[420px]"
           >
-            <div className="absolute inset-6 rounded-[3rem] bg-[linear-gradient(135deg,hsl(var(--primary)/0.35),hsl(var(--highlight)/0.3))] blur-2xl" />
-            <div className="arena-panel relative flex h-full items-center justify-center rounded-[2.5rem]">
-              <PawPrint className="h-28 w-28 text-primary/70 sm:h-36 sm:w-36" strokeWidth={1.25} />
+            <div className="absolute inset-3.5 rounded-[44%_56%_58%_42%/46%_42%_58%_54%] bg-[linear-gradient(135deg,hsl(var(--primary)/0.35),hsl(var(--highlight)/0.3))] blur-2xl" />
+            <div className="arena-panel relative flex h-full items-center justify-center rounded-[40%_60%_55%_45%/48%_44%_56%_52%] overflow-hidden">
+              <PawPrint className="h-[150px] w-[150px] text-primary/55" strokeWidth={1.25} />
             </div>
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.5 }}
-              className="arena-chip absolute -left-4 top-8 sm:-left-8"
+              transition={{ duration: 0.5, delay: 0.4 }}
+              className="arena-chip absolute -left-1.5 top-[22px] h-9 px-3.5 text-[12.5px] font-bold"
             >
-              <Sparkles className="h-3.5 w-3.5 text-highlight" /> +500 adoções realizadas
+              <Sparkles className="h-4 w-4 text-highlight" /> +500 adoções realizadas
             </motion.div>
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.65 }}
-              className="arena-chip absolute -right-2 bottom-8 sm:-right-6"
+              transition={{ duration: 0.5, delay: 0.5 }}
+              className="arena-chip absolute -right-1 bottom-[18px] h-9 px-3.5 text-[12.5px] font-bold"
             >
-              <CheckCircle2 className="h-3.5 w-3.5 text-primary" /> 100% sem custo
+              <CheckCircle2 className="h-4 w-4 text-primary" /> 100% sem custo
             </motion.div>
           </motion.div>
         </div>
       </section>
 
       {/* Impacto */}
-      <section className="relative px-4 pb-16 sm:pb-20">
-        <div className="mx-auto grid max-w-4xl grid-cols-2 gap-4 rounded-[1.75rem] border border-white bg-card/85 p-6 shadow-[0_24px_60px_-34px_rgba(64,34,18,0.5)] backdrop-blur-md sm:grid-cols-4 sm:p-7">
+      <section className="relative mx-auto max-w-[1000px] px-6 pb-[72px]">
+        <div className="grid grid-cols-2 gap-3.5 rounded-[28px] border border-white bg-card/85 p-5 shadow-[0_24px_60px_-34px_hsl(20_40%_20%/0.35)] backdrop-blur-md sm:grid-cols-4 sm:p-7">
           {IMPACT_STATS.map((stat) => (
             <div key={stat.label} className="p-1.5 text-center">
-              <div className="arena-heading text-2xl font-extrabold sm:text-3xl">{stat.value}</div>
-              <div className="mt-1 text-xs font-semibold text-muted-foreground">{stat.label}</div>
+              <div className="arena-heading text-[28px] font-extrabold">{stat.value}</div>
+              <div className="mt-1 text-[12.5px] font-semibold text-muted-foreground">{stat.label}</div>
             </div>
           ))}
         </div>
@@ -124,23 +124,23 @@ export default function Home() {
         whileInView="show"
         viewport={{ once: true, margin: '-80px' }}
         variants={stagger}
-        className="px-4 py-16 sm:py-24"
+        className="px-6 py-[38px]"
       >
-        <div className="mx-auto max-w-4xl">
-          <motion.h2 variants={fadeUp} className="mb-12 text-center text-2xl font-bold text-foreground sm:text-3xl">
+        <div className="mx-auto max-w-[900px]">
+          <motion.h2 variants={fadeUp} className="mb-11 text-center text-[30px] font-extrabold tracking-[-0.02em] text-foreground">
             Como funciona
           </motion.h2>
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
             {STEPS.map(({ icon: Icon, title, desc }, i) => (
-              <motion.div key={title} variants={fadeUp} className="space-y-3 text-center">
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--highlight))_100%)] text-white shadow-[0_14px_28px_-16px_rgba(64,34,18,0.55)]">
-                  <Icon className="h-6 w-6" />
+              <motion.div key={title} variants={fadeUp} className="text-center">
+                <div className="mx-auto flex h-[60px] w-[60px] items-center justify-center rounded-[20px] bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--highlight))_100%)] text-white shadow-[0_16px_30px_-16px_hsl(17_72%_30%/0.6)]">
+                  <Icon className="h-[26px] w-[26px]" />
                 </div>
-                <div className="mx-auto flex h-6 w-6 items-center justify-center rounded-full bg-secondary text-xs font-bold text-secondary-foreground">
+                <div className="mx-auto mt-2.5 flex h-6 w-6 items-center justify-center rounded-full bg-secondary text-xs font-extrabold text-secondary-foreground">
                   {i + 1}
                 </div>
-                <h3 className="font-semibold text-foreground">{title}</h3>
-                <p className="text-sm text-muted-foreground">{desc}</p>
+                <h3 className="mt-2.5 mb-1.5 text-[16.5px] font-bold text-foreground">{title}</h3>
+                <p className="text-[13.5px] leading-[1.6] text-muted-foreground">{desc}</p>
               </motion.div>
             ))}
           </div>
@@ -153,31 +153,31 @@ export default function Home() {
         whileInView="show"
         viewport={{ once: true, margin: '-80px' }}
         variants={stagger}
-        className="px-4 py-16 sm:py-24"
+        className="px-6 py-[38px]"
       >
-        <div className="mx-auto max-w-5xl">
+        <div className="mx-auto max-w-[1080px]">
           <motion.div variants={fadeUp} className="mb-10 text-center">
-            <span className="arena-chip mx-auto bg-accent/10 text-accent">
-              <Heart className="h-3.5 w-3.5" /> Histórias reais
+            <span className="arena-chip mx-auto h-[30px] bg-accent/[0.12] px-3.5 text-xs font-bold text-accent">
+              <Heart className="h-[15px] w-[15px]" /> Histórias reais
             </span>
-            <h2 className="mt-3.5 text-2xl font-bold text-foreground sm:text-3xl">Vidas que mudaram de rumo</h2>
+            <h2 className="mt-3.5 text-[30px] font-extrabold tracking-[-0.02em] text-foreground">Vidas que mudaram de rumo</h2>
           </motion.div>
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
             {STORIES.map((story) => (
-              <motion.div key={story.adopter} variants={fadeUp} className="arena-panel rounded-[1.5rem] p-6">
+              <motion.div key={story.adopter} variants={fadeUp} className="arena-panel rounded-[24px] p-6">
                 <div className="mb-3.5 flex items-center gap-3">
                   <span
-                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full font-['Sora'] text-sm font-bold text-white"
+                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full font-['Sora'] text-[15px] font-bold text-white"
                     style={{ background: story.gradient }}
                   >
                     {story.adopter.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase()}
                   </span>
                   <div>
-                    <div className="text-sm font-bold text-foreground">{story.adopter}</div>
+                    <div className="text-[13.5px] font-bold text-foreground">{story.adopter}</div>
                     <div className="text-xs text-muted-foreground">adotou {story.pet}</div>
                   </div>
                 </div>
-                <p className="text-sm italic leading-relaxed text-foreground/80">&ldquo;{story.quote}&rdquo;</p>
+                <p className="text-sm italic leading-[1.65] text-foreground/85">&ldquo;{story.quote}&rdquo;</p>
               </motion.div>
             ))}
           </div>
@@ -190,20 +190,20 @@ export default function Home() {
         whileInView="show"
         viewport={{ once: true, margin: '-80px' }}
         variants={stagger}
-        className="px-4 py-16 sm:py-24"
+        className="px-6 py-[38px]"
       >
-        <div className="mx-auto max-w-4xl">
-          <motion.h2 variants={fadeUp} className="mb-12 text-center text-2xl font-bold text-foreground sm:text-3xl">
+        <div className="mx-auto max-w-[1080px]">
+          <motion.h2 variants={fadeUp} className="mb-10 text-center text-[30px] font-extrabold tracking-[-0.02em] text-foreground">
             Tudo em um só lugar
           </motion.h2>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {FEATURES.map(({ icon: Icon, title, desc, bg, color }) => (
-              <motion.div key={title} variants={fadeUp} whileHover={{ y: -4 }} className="arena-panel space-y-3 rounded-[1.5rem] p-5">
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl" style={{ background: bg, color }}>
-                  <Icon className="h-5 w-5" />
+              <motion.div key={title} variants={fadeUp} whileHover={{ y: -4 }} className="arena-panel rounded-[22px] p-[22px]">
+                <div className="mb-3.5 flex h-11 w-11 items-center justify-center rounded-[15px]" style={{ background: bg, color }}>
+                  <Icon className="h-[22px] w-[22px]" />
                 </div>
-                <h3 className="font-semibold text-foreground">{title}</h3>
-                <p className="text-sm text-muted-foreground">{desc}</p>
+                <h3 className="mb-1.5 text-[15.5px] font-bold text-foreground">{title}</h3>
+                <p className="text-[13px] leading-[1.55] text-muted-foreground">{desc}</p>
               </motion.div>
             ))}
           </div>
@@ -216,26 +216,26 @@ export default function Home() {
         whileInView="show"
         viewport={{ once: true, margin: '-80px' }}
         variants={fadeUp}
-        className="px-4 pb-20"
+        className="px-6 pb-[72px]"
       >
-        <div className="arena-panel-strong mx-auto max-w-4xl rounded-[2rem] px-8 py-14 text-center">
-          <h2 className="text-2xl font-bold text-white sm:text-3xl">Pronto para mudar uma vida?</h2>
-          <p className="mx-auto mt-3 max-w-md text-white/75">Cada adoção é uma história de amor que começa aqui.</p>
-          <Button asChild size="lg" className="mt-6 px-10">
+        <div className="arena-panel-strong mx-auto max-w-[900px] rounded-[32px] px-8 py-14 text-center">
+          <h2 className="text-[28px] font-extrabold text-white">Pronto para mudar uma vida?</h2>
+          <p className="mx-auto mt-3 max-w-[420px] text-[15px] text-white/80">Cada adoção é uma história de amor que começa aqui.</p>
+          <Button asChild className="mt-6 h-[52px] px-[30px] text-[15px]">
             <Link to="/login">
-              Criar minha conta grátis <ArrowRight className="ml-1.5 h-4 w-4" />
+              Criar minha conta grátis <ArrowRight className="ml-1.5 h-[18px] w-[18px]" />
             </Link>
           </Button>
         </div>
       </motion.section>
 
       {/* Footer */}
-      <footer className="border-t border-white/60 px-4 py-8 text-center text-sm text-muted-foreground">
-        <p>© {new Date().getFullYear()} Viralata — Adoção responsável de pets</p>
-        <div className="mt-2 flex flex-wrap justify-center gap-4">
-          <Link to="/termos" className="hover:text-foreground">Termos</Link>
-          <Link to="/politica-privacidade" className="hover:text-foreground">Privacidade</Link>
-          <Link to="/legislacao" className="hover:text-foreground">Legislação e boas práticas</Link>
+      <footer className="border-t border-border px-6 py-7 text-center">
+        <p className="text-[13px] text-muted-foreground">© {new Date().getFullYear()} Viralata — Adoção responsável de pets</p>
+        <div className="mt-2.5 flex flex-wrap justify-center gap-5">
+          <Link to="/termos" className="text-[12.5px] text-muted-foreground hover:text-foreground">Termos</Link>
+          <Link to="/politica-privacidade" className="text-[12.5px] text-muted-foreground hover:text-foreground">Privacidade</Link>
+          <Link to="/legislacao" className="text-[12.5px] text-muted-foreground hover:text-foreground">Legislação e boas práticas</Link>
         </div>
       </footer>
     </div>
