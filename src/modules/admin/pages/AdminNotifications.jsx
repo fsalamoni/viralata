@@ -20,6 +20,7 @@ const TYPE_OPTIONS = [
   { value: 'all', label: 'Todos os tipos' },
   ...Object.values(NOTIFICATION_TYPE).map((type) => ({ value: type, label: type })),
 ];
+const MAX_NOTIFICATIONS = 200;
 
 export default function AdminNotifications() {
   const { isPlatformAdmin } = useAuth();
@@ -31,7 +32,7 @@ export default function AdminNotifications() {
 
   useEffect(() => {
     if (!isPlatformAdmin) return undefined;
-    const q = query(collection(db, 'notifications'), orderBy('created_at', 'desc'), limit(500));
+    const q = query(collection(db, 'notifications'), orderBy('created_at', 'desc'), limit(MAX_NOTIFICATIONS));
     const unsubscribe = onSnapshot(
       q,
       (snap) => {
@@ -80,7 +81,7 @@ export default function AdminNotifications() {
         <CardHeader className="border-b border-border">
           <CardTitle className="text-base">Fila recente de notificações</CardTitle>
           <CardDescription>
-            Visão administrativa dos últimos 500 avisos gerados pela plataforma, com status de leitura e destino.
+            Visão administrativa das últimas {MAX_NOTIFICATIONS} notificações geradas pela plataforma, com status de leitura e destino.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4 p-4 sm:p-5">
