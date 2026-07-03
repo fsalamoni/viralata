@@ -102,18 +102,39 @@ Novas páginas introduzidas depois desta fase (`OrganizationsHub`,
 `ClubFinanceTab`) já nasceram no padrão de tokens — não precisam de lote
 próprio.
 
-## Fase 2 — Limpeza e consistência
+## Fase 2 — Limpeza e consistência ✅ concluída
 
-1. Remover o código órfão do produto anterior (ver lista completa na seção
-   10 de `docs/DESIGN_SYSTEM.md`): `Landing.jsx`, `AdminTournaments.jsx`,
-   `AthleteProfile.jsx`, `AthletesDirectory.jsx`, funções de torneio em
-   `adminService.js`.
-2. Atualizar `docs/MODULES.md` e `docs/ARCHITECTURE.md` — hoje ainda
-   descrevem o produto anterior (torneios/atletas de pickleball), não a
-   Viralata.
-3. Auditoria de sanidade: `grep` por cor hardcoded (`orange-500`,
-   `bg-gray-50` etc.) fora dos tokens, para garantir que nada ficou de fora
-   da migração.
+1. ~~Remover o código órfão do produto anterior~~ — os arquivos listados
+   originalmente aqui (`Landing.jsx`, `AdminTournaments.jsx`,
+   `AthleteProfile.jsx`, `AthletesDirectory.jsx`) já não existiam mais no
+   código (removidos em sessão anterior a esta). O que sobrava de fato
+   órfão era `organizationService.js` + as coleções `organizations`/
+   `organization_members`/`organization_reports` em `firestore.rules` (um
+   segundo modelo de organização, nunca conectado a nenhuma rota/UI,
+   substituído por `clubs`/`club_members`) — confirmado via grep e
+   removido. Também corrigidas as últimas referências reais ao produto
+   anterior fora de docs: cache do service worker (`public/sw.js`), baseURL
+   padrão do Playwright e o teste e2e `tests/e2e/public-routes.spec.js`
+   (testava título "Pickleball" e rotas que não existem mais).
+2. `docs/MODULES.md`, `docs/ARCHITECTURE.md`, `docs/AI_CONTEXT.md` e
+   `docs/README.md` reescritos para descrever a Viralata real (stack,
+   módulos, rotas, modelo de dados atuais) em vez do produto de torneios.
+3. Auditoria de sanidade (`grep` por cor hardcoded fora dos tokens):
+   encontrou e corrigiu 4 páginas que nunca tinham passado por nenhum lote
+   da Fase 1 — `Login.jsx`, `BannedNotice.jsx`, `PageNotFound.jsx` e a
+   moldura de `CreateReport.jsx` (o documento imprimível/PDF em si
+   permanece neutro de propósito — é para impressão, não é UI do app).
+   Cores `emerald-*` em componentes de UI compartilhados (`badge.jsx`
+   variant `success`, `AuditLogTable`, uploads/anexos, switch) foram
+   deixadas como estão: é uma paleta "sucesso" semântica separada da marca,
+   não um resíduo do produto anterior — mudar isso é uma decisão de design
+   à parte, não uma limpeza.
+4. **Bônus não previsto nesta fase**: a auditoria também encontrou o sino de
+   notificações completamente quebrado (contador de não lidas sempre zero
+   por um hook mal-desestruturado, tipos de notificação de organização
+   gravando `undefined` por chaves inexistentes no enum, e nenhuma UI para
+   de fato ler as notificações — só um link morto para `/perfil#notificacoes`).
+   Corrigido: `NotificationsMenu.jsx` é o painel dropdown real do sino.
 
 ## Fase 3 — Follow-ups funcionais conhecidos
 

@@ -41,9 +41,9 @@ export default function Login() {
   if (isLoadingAuth) return null;
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-orange-950 via-orange-900 to-amber-900">
+    <div className="relative min-h-screen overflow-hidden bg-[linear-gradient(150deg,hsl(14_55%_18%),hsl(20_30%_10%))]">
       {/* Gradiente decorativo */}
-      <div className="absolute inset-x-0 top-0 h-[28rem] bg-[radial-gradient(circle_at_top,rgba(251,146,60,0.25),transparent_60%)]" />
+      <div className="absolute inset-x-0 top-0 h-[28rem] bg-[radial-gradient(circle_at_top,hsl(var(--highlight)/0.22),transparent_60%)]" />
       <div className="absolute inset-0 bg-[url('/noise.svg')] opacity-[0.03]" />
 
       <div className="relative mx-auto grid min-h-screen max-w-6xl gap-8 px-6 py-8 lg:grid-cols-[1.05fr,0.95fr] lg:items-center">
@@ -52,9 +52,9 @@ export default function Login() {
         <div className="hidden h-full min-h-[42rem] flex-col justify-between rounded-[2.25rem] border border-white/10 bg-white/5 p-8 backdrop-blur-sm lg:flex">
           <div>
             <Link to="/" className="inline-flex items-center gap-3 text-white">
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/15 bg-white/10">
-                <span className="text-xl">🐾</span>
-              </div>
+              <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--highlight))_100%)] shadow-[0_10px_24px_-12px_rgba(64,34,18,0.6)]">
+                <PawPrint className="h-5 w-5 text-white" />
+              </span>
               <div>
                 <span className="block text-sm font-semibold uppercase tracking-[0.24em] text-orange-200/80">Viralata</span>
                 <span className="block text-xl font-semibold text-white">Adoção responsável de pets</span>
@@ -81,7 +81,7 @@ export default function Login() {
 
           <div className="flex flex-wrap gap-3 text-sm text-orange-50/75">
             <Link to="/politica-privacidade" className="transition-colors hover:text-white">Política de Privacidade</Link>
-            <Link to="/sobre" className="transition-colors hover:text-white">Sobre o Viralata</Link>
+            <Link to="/termos" className="transition-colors hover:text-white">Termos de Uso</Link>
           </div>
         </div>
 
@@ -91,14 +91,14 @@ export default function Login() {
             <CardHeader className="px-5 pb-4 pt-6 text-center sm:px-8">
               {/* Logo mobile */}
               <Link to="/" className="mx-auto mb-4 inline-flex items-center gap-3 text-slate-950 lg:hidden">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-orange-200/70 bg-orange-50">
-                  <span className="text-xl">🐾</span>
-                </div>
+                <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--highlight))_100%)] shadow-[0_10px_24px_-12px_rgba(64,34,18,0.6)]">
+                  <PawPrint className="h-5 w-5 text-white" />
+                </span>
                 <span className="text-lg font-semibold">Viralata</span>
               </Link>
 
               {/* Ícone central */}
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-orange-100 text-orange-600 shadow-[0_18px_35px_-26px_rgba(249,115,22,0.6)]">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--highlight))_100%)] text-white shadow-[0_18px_35px_-26px_rgba(64,34,18,0.6)]">
                 <PawPrint className="h-6 w-6" />
               </div>
 
@@ -114,7 +114,7 @@ export default function Login() {
               <Button
                 onClick={onClick}
                 disabled={busy || !isAuthAvailable}
-                className="h-12 w-full gap-3 bg-orange-500 text-[15px] hover:bg-orange-600 text-white"
+                className="h-12 w-full gap-3 text-[15px]"
                 size="lg"
               >
                 <GoogleIcon className="h-4 w-4 flex-shrink-0" />

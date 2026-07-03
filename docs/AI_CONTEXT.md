@@ -6,30 +6,45 @@
 
 ## 1. O que é
 
-**PickleTour** — plataforma web (PWA) para criar e administrar **torneios
-amadores de pickleball no Brasil**, com camada de **comunidade** (atletas,
-clubes, eventos, fórum, chat). Domínio em produção: `pickletour.web.app`.
+**Viralata** — plataforma web (PWA) de **adoção responsável de pets** no
+Brasil, gratuita, conectando pets que precisam de lar a adotantes, com uma
+camada de **comunidade** (organizações/ONGs, mural, fórum, eventos, chat).
 UI e textos em **português (pt-BR)**.
 
 Pilares:
-1. **Torneios** — formatos (single, duplas, americana), modalidades por
-   nível/categoria, sorteio, agendamento por quadra, ranking ao vivo, visão
-   pública sem login e versão para impressão.
-2. **Comunidade** — diretório de atletas, clubes (membros, mural, fórum com
-   enquetes, eventos/game-days), chat 1:1 e em grupo.
-3. **Notificações in-app** (sino) e **auditoria** de ações.
+1. **Adoção** — feed de pets com filtro por espécie/porte/localização e
+   matching por compatibilidade com o perfil do adotante (moradia, rotina,
+   orçamento, filhos/idosos em casa), cadastro/edição de pet, interesse de
+   adoção, avaliação pós-adoção, radar de pet compatível (alerta), denúncia
+   de maus-tratos.
+2. **Organizações** — ONGs e lojas parceiras: diretório e perfil público
+   (`/comunidade`), hub de gestão e painel de administração
+   (`/organizacoes`) com permissões granulares por administrador (animais,
+   financeiro, doações, mural, equipe), planilha de animais em massa
+   (edição inline + importação/exportação .xlsx/.csv/.json), chamados de
+   doação, prestação de contas, mural, fórum (com enquetes) e eventos.
+3. **Notificações in-app** (sino, painel dropdown) e **auditoria** de ações.
+4. **Painel administrativo da plataforma** (`platform_admin`): pets,
+   organizações, denúncias, usuários, métricas, trilha de auditoria.
 
 ## 2. Stack
 
 - **React 18 + Vite**, JSX (sem TypeScript; há `typecheck` via JSDoc/`types.js`).
 - **Tailwind + shadcn/ui** (Radix) — primitivos em `src/components/ui/`.
-- **Firebase**: Auth (Google), **Firestore** (database nomeada `pickleball`),
-  Hosting (site `pickletour`). Sem Cloud Functions — **toda a lógica roda no
-  client**; a segurança é garantida por `firestore.rules`.
+  Identidade visual "terracota/creme/oliva" — ver `docs/DESIGN_SYSTEM.md`.
+- **Firebase**: Auth (Google), **Firestore** (database nomeada `viralata`,
+  não a `(default)`), Hosting (site `viralata`). Sem Cloud Functions próprias
+  no client — **toda a lógica roda no client**; a segurança é garantida por
+  `firestore.rules`. Há uma única Cloud Function de apoio (Radar de Pets,
+  em `functions/`) para o alerta assíncrono de pet compatível.
 - **React Query** (`@tanstack/react-query`) para data fetching/cache.
-- **Vitest** (unit, ~213 testes) + **Playwright** (E2E).
+- **framer-motion** para microinterações sutis (scroll-reveal, hover-lift).
+- **xlsx** (SheetJS) para o modelo/importação de planilha de animais —
+  carregado sob demanda (import dinâmico), nunca no bundle inicial.
+- **Vitest** (unit, 80 testes) + **Playwright** (E2E, poucos testes de fumaça).
 - **react-router-dom** (BrowserRouter), **react-hook-form + zod**, `sonner`
-  (toasts), `date-fns`, `lucide-react`.
+  (toasts), `date-fns`, `lucide-react`, `jspdf`/`html-to-image`/`qrcode`
+  (denúncia em PDF, compartilhamento social do pet, QR de doação).
 
 ## 3. Arquitetura em uma frase
 
@@ -43,21 +58,25 @@ src/
 ├── main.jsx             # Bootstrap + registro PWA (atrás de flag)
 ├── components/          # Layout (shell, sino, navegação) + ui/ (shadcn)
 ├── core/
-│   ├── config/firebase.js        # init app/auth/db (database 'pickleball')
+│   ├── config/firebase.js        # init app/auth/db (database 'viralata')
 │   ├── lib/FirebaseAuthContext.jsx  # AuthProvider + useAuth (user, perfil, papéis)
-│   ├── lib/profileValidation.js  # perfil obrigatório, cálculo de idade
+│   ├── lib/FeatureFlagsContext.jsx  # feature flags da plataforma
 │   ├── lib/{logger,utils,useClipboard}.js
 │   ├── domain/types.js           # typedefs JSDoc compartilhados
+│   ├── featureFlags.js
+│   ├── pwa/                      # registerPwa, usePwaInstall
 │   └── services/                 # auditService, notificationService,
-│                                 # baseService, storageService, observabilityService
+│                                 # baseService, storageService, observabilityService,
+│                                 # platformSettingsService, dataExportService,
+│                                 # deleteAccountService
 └── modules/
-    ├── tournament/   # núcleo: torneios, modalidades, jogos, ranking, sorteio
-    ├── athletes/     # diretório de atletas (perfis públicos)
-    ├── clubs/        # clubes, membros, eventos, fórum, game-day
-    ├── chat/         # conversas 1:1 e grupo
-    ├── leveling/     # tabela + questionário de nível (CBPE/USAP)
-    ├── notifications/# hook do sino
-    └── admin/        # painel da plataforma (métricas, torneios)
+    ├── pets/           # feed, detalhe, cadastro/edição, radar, avaliações, matching
+    ├── organizations/  # organizações: diretório público + hub/painel de gestão
+    ├── onboarding/     # questionário de perfil de adotante
+    ├── chat/           # conversas 1:1 e grupo
+    ├── notifications/  # hook + painel dropdown do sino
+    ├── reports/        # denúncia de maus-tratos
+    └── admin/          # painel da plataforma (pets, orgs, denúncias, usuários, métricas, auditoria)
 ```
 
 Convenção de camadas por módulo (nem todo módulo tem todas):
@@ -68,84 +87,99 @@ Convenção de camadas por módulo (nem todo módulo tem todas):
 
 - Login **Google** via Firebase Auth. `AuthProvider` cria/lê `users/{uid}` e
   expõe via `useAuth()`: `user`, `userProfile`, `isAuthenticated`,
-  `isPlatformAdmin`, `canCreatePools`, `signOut`, `updateProfile`.
-- **Papéis** (campo `users/{uid}.role`):
-  - `platform_admin` — admin global (definido por e-mail "owner" no primeiro
-    login). Acessa `/admin/*`. `isPlatformAdmin === role === 'platform_admin'`.
-  - `user` — atleta comum.
-- **Admin de torneio** e **admin de clube** são papéis *por recurso* (coleções
-  `tournament_admins` / `club_members.role`), independentes do admin global.
-- Perfil obrigatório (`isRequiredProfileComplete`): nome de exibição, data de
-  nascimento, telefone, tempo de experiência. Nivelamento (`leveling_level`) é
-  recomendado, não obrigatório.
+  `isPlatformAdmin`, `isBanned`, `signOut`, `updateProfile`.
+- **Papéis de plataforma** (campo `users/{uid}.role`):
+  - `platform_admin` — admin global. O primeiro (dono fixo da plataforma) é
+    definido por e-mail hardcoded (`isPlatformOwnerAuth` em
+    `firestore.rules`); demais precisam ser promovidos por um
+    `platform_admin` existente. Acessa `/admin/*`.
+  - `user` — usuário comum (adotante e/ou cadastrante de pet).
+- **Papel em organização** é *por recurso*, não global: `club_members.role`
+  (`admin | member`) + **permissões granulares** por admin
+  (`animals`/`finance`/`donations`/`feed`/`team`) + conceito de
+  **proprietário** (`clubs.created_by`, sempre com todas, protegido contra
+  remoção/rebaixamento tanto na UI quanto em `firestore.rules`) — ver
+  `src/modules/organizations/domain/permissions.js`.
+- Perfil de adotante (preenchido no onboarding, usado pelo algoritmo de
+  match): tipo de moradia, rotina de passeios, orçamento, crianças/idosos em
+  casa, outros animais, cidade/UF, consentimento LGPD. Gate de onboarding:
+  `userProfile.profile_completed`.
 
 ## 5. Rotas (App.jsx)
 
 | Rota | Acesso | Tela |
 | --- | --- | --- |
-| `/` `/login` `/regras` `/nivelamento` `/conduta` `/politica-uso` | público | landing, login, conteúdo |
-| `/p/:tournamentId` | público (sem layout) | visão de espectador, auto-refresh |
-| `/torneios/:id/imprimir` | público | versão impressão |
-| `/inicio` | autenticado | Dashboard (meus torneios) |
-| `/perfil` | autenticado | Profile (dados + nivelamento) |
-| `/torneios/criar` `/torneios/ingressar` `/torneios/publicos` | autenticado | criar/ingressar/listar públicos |
-| `/torneios/:id` `/torneios/:id/:tab` | autenticado | Tournament (abas) |
-| `/atletas` | autenticado | diretório de atletas |
-| `/clubes` `/clubes/criar` `/clubes/:id` `/clubes/:id/eventos/:eventId` | autenticado | comunidade de clubes |
-| `/chat` | autenticado | mensagens |
-| `/admin` `/admin/torneios` `/admin/metricas` | platform_admin | painel |
+| `/` `/login` `/termos` `/legislacao` `/politica-privacidade` | público | home, login, institucionais |
+| `/feed` `/pets/:petId` | público (match usa perfil se logado) | feed de pets, detalhe |
+| `/onboarding` | autenticado, perfil incompleto | questionário de adotante |
+| `/pets/new` `/pets/:petId/edit` `/meus-pets` `/radar` | autenticado | cadastro/edição, meus pets, radar |
+| `/comunidade` `/comunidade/:orgId` `/comunidade/:orgId/eventos/:eventId` | público (diretório) / autenticado (perfil, eventos) | diretório e perfil público de organizações |
+| `/organizacoes` `/organizacoes/criar` `/organizacoes/:orgId/admin` | autenticado | hub de gestão + painel de administração |
+| `/chat` `/chat/:conversationId` | autenticado | mensagens |
+| `/denuncias/nova` | autenticado | denúncia de maus-tratos |
+| `/perfil` | autenticado | dados pessoais, perfil de adotante, LGPD |
+| `/admin` `/admin/pets` `/admin/denuncias` `/admin/usuarios` `/admin/organizacoes` `/admin/metricas` `/admin/auditoria` | `platform_admin` | painel administrativo |
 
-Guards: `ProtectedRoute` (auth) e `AdminRoute` (platform_admin). Redirects
-legados `/dashboard`,`/boloes*` → rotas novas. Páginas via `React.lazy`.
-`basename = import.meta.env.BASE_URL`. Em DEV sem Firebase há "local preview".
+Guards: `ProtectedRoute` (auth), `AdminRoute` (`platform_admin`),
+`BannedGate` (bloqueia usuário banido em qualquer rota autenticada).
+Redirects legados: `/inicio`→`/feed`, `/clubes`→`/comunidade`,
+`/atletas`→`/feed`; `/organizacoes/:orgId` (antigo destino do perfil
+público) e `/organizacoes/:orgId/eventos/:eventId` redirecionam para
+`/comunidade/...` — preserva links de notificações antigas já gravadas no
+Firestore. Páginas via `React.lazy`. `basename = import.meta.env.BASE_URL`.
 
-## 6. Modelo de dados (Firestore, database `pickleball`)
+## 6. Modelo de dados (Firestore, database `viralata`)
 
 Coleções (todas top-level; ids deterministas quando indicado). Detalhe de
 campos em `docs/DATA_MODEL.md`.
 
-- **Identidade**: `users/{uid}` (perfil + role) · `athlete_profiles/{uid}`
-  (perfil público do diretório; `directory_listed: bool` controla visibilidade).
-- **Torneios**: `tournaments` · `tournament_modalities` · `tournament_admins`
-  (id `tournamentId_uid`) · `tournament_registrations` · `tournament_matches` ·
-  `tournament_groups` · `tournament_rankings` (materializado no client) ·
-  `tournament_courts`.
-- **Clubes**: `clubs` · `club_members` (id `clubId_uid`, tem `role`) ·
-  `club_join_requests` (id `clubId_uid`) · `club_member_invites`
-  (id `clubId_uid`) · `club_posts` (mural) · `club_forum_threads` ·
-  `club_events` · `club_event_rsvps` · `event_invites` · `dates`/`date_rsvps`
-  (game-day) · `poll_votes` (enquetes de fórum) · `comments`.
+- **Identidade**: `users/{uid}` (perfil + role + perfil de adotante).
+- **Pets**: `pets` (owner pode ser usuário ou organização) ·
+  `adoption_interests` (id `petId_userId`) · `adoption_ratings` ·
+  `pet_radars/{uid}` (alerta assíncrono via Cloud Function).
+- **Organizações**: `clubs` · `club_members` (id `clubId_uid`, `role` +
+  `permissions`) · `club_join_requests`/`club_member_invites`
+  (id `clubId_uid`) · `club_posts` (mural) · `club_forum_threads`
+  (+ `comments`, `poll_votes`) · `club_events` (+ `dates`, `date_rsvps`,
+  `messages`, `participants`) · `club_event_rsvps` · `event_invites` ·
+  `club_campaigns` (chamados de doação) · `club_ledger` (prestação de
+  contas).
 - **Chat**: `conversations` · `messages`.
-- **Transversal**: `notifications` · `audit_logs`.
+- **Transversal**: `notifications` · `audit_logs` · `abuse_reports` ·
+  `platform_settings/global` (feature flags).
 
 Princípios: **sem joins** — desnormalização e leitura por coleção; ids
 deterministas (`clubId_uid`) evitam duplicidade e simplificam regras;
-escritas sempre acompanhadas de `audit_logs` via `auditService`.
+escritas relevantes acompanhadas de `audit_logs` via `auditService`.
 
 ## 7. Notificações (sino)
 
 `core/services/notificationService.js`: `createNotification(...)` e
 `notifyUsers(ids, ...)` (em lote, ≤400/batch). Coleção `notifications`.
-Hook `modules/notifications/hooks/useNotifications.js` alimenta o sino no
-`Layout`. Tipos (`NOTIFICATION_TYPE`): `chat_message`, `chat_invite`,
-`forum_reply`, `forum_mention`, `event_invite`, `club_join_request`,
-`club_join_approved`, `club_join_rejected`, `club_invite`,
-`club_invite_accepted`, `club_event_published`, `tournament_open`,
-`profile_reminder`, `leveling_reminder`, `generic`.
+Hook `modules/notifications/hooks/useNotifications.js` (sem argumento — lê
+o usuário logado via `useAuth()` internamente; retorna `{ notifications,
+unreadCount, isLoading, markAsRead }`, **não** é um hook do React Query).
+`NotificationsMenu.jsx` é o painel dropdown do sino no `Layout` — ícone por
+`type`, não lidas destacadas, clique marca como lida e navega para `link`.
 
-**Lembretes derivados** (`profile_reminder`/`leveling_reminder`) NÃO são
-gravados no banco: o `Layout` os computa do `userProfile` e mostra no sino
-enquanto a pendência existir.
+Tipos (`NOTIFICATION_TYPE`): `chat_message`, `chat_invite`,
+`adoption_interest`, `adoption_match`, `adoption_rejected`,
+`adoption_completed`, `pet_status_changed`, `pet_radar_match`,
+`club_invite`, `club_invite_accepted`, `club_join_request`,
+`club_join_approved`, `club_join_rejected`, `club_event_published`,
+`event_invite`, `forum_reply`, `forum_mention`, `profile_reminder`,
+`generic`.
 
-## 8. Domínio de torneio (lógica pura testada)
+## 8. Domínio de pets (lógica pura testada)
 
-Em `modules/tournament/domain/` — funções puras com `.test.js`:
-`scoring` (CBP/USAP, 11/15/21 pts, sets) · `draw`/`seeding` (sorteio com seed
-reproduzível) · `progression`/`doubleElimination`/`swiss` (formatos de fase) ·
-`schedule`/`scheduling` (quadras, slots, descanso) · `ranking` (por formato) ·
-`capacity`/`eligibility`/`participation` · `formatExplain`/`whistTables`.
-**Regra de ouro**: lógica de negócio mora aqui (pura, testável), nunca em
-componentes ou services.
+Em `modules/pets/domain/`: `matching` (compatibilidade pet↔perfil de
+adotante — moradia, porte vs. tipo de imóvel, crianças/idosos, orçamento) ·
+`priority` (pontuação de prioridade por tempo de espera: 0–3, 90/180/365
+dias). Em `modules/organizations/domain/`: `permissions` (proprietário +
+permissões granulares), `petImport` (validação/mapeamento de planilha de
+animais), `forumPoll` (enquetes de fórum). **Regra de ouro**: lógica de
+negócio mora em `domain/` (pura, testável), nunca em componentes ou
+services.
 
 ## 9. Build, testes e deploy
 
@@ -153,27 +187,33 @@ componentes ou services.
 npm run dev       # Vite dev (http://localhost:5173)
 npm run lint      # ESLint (--quiet no CI)
 npm run test      # Vitest unit
-npm run e2e       # Playwright
+npm run e2e       # Playwright (instalar antes: npm run e2e:install)
 npm run build     # produção → dist/  (VITE_PWA_ENABLED=true ativa PWA)
 ```
 
-- **Deploy**: push em `main` dispara `.github/workflows/deploy-firebase.yml`
-  (workflow "Deploy Firebase Hosting") → Firebase Hosting site `pickletour`.
-  Regras do Firestore (`firestore.rules`) são publicadas pelo mesmo fluxo/CLI.
+- **Deploy**: push em `main` dispara `.github/workflows/deploy.yml` → build
+  e deploy no Firebase Hosting (site `viralata`) + publicação das regras do
+  Firestore (`firestore.rules`).
 - **Env**: variáveis `VITE_FIREBASE_*` (ver `.env.example`),
-  `VITE_FIRESTORE_DATABASE_ID` (padrão `pickleball`), `VITE_PWA_ENABLED`.
-- **PWA**: aditivo, atrás de `VITE_PWA_ENABLED`; ícones via
-  `scripts/generate-pwa-icons.mjs`. Sem service worker quando desligado.
+  `VITE_FIRESTORE_DATABASE_ID` (padrão `viralata`), `VITE_PWA_ENABLED`.
+- **PWA**: aditivo, atrás de `VITE_PWA_ENABLED` (desligada por padrão);
+  service worker próprio em `public/sw.js` (não é o Workbox
+  auto-gerado do `vite-plugin-pwa` — ver `docs/ARCHITECTURE.md`).
 
 ## 10. Convenções para quem edita (humano ou IA)
 
 1. **Lógica pura → `domain/` com teste.** Service só I/O; componente só UI.
 2. Mudou Firestore? Atualize **`firestore.rules`** (aditivas, sem quebrar
    coleções existentes) e `docs/DATA_MODEL.md`.
-3. Toda escrita relevante gera **`audit_logs`** via `auditService`.
-4. Alias de import: `@/` → `src/`.
-5. Antes de commitar: `npm run lint && npm run build && npm test` verdes.
-6. Não quebrar a **visão pública** (`/p/:id`) nem o fluxo sem login.
+3. Toda escrita relevante gera **`audit_logs`** via `auditService` — e
+   precisa de rótulo em `AUDIT_ACTION_LABELS` para aparecer legível em
+   `/admin/auditoria`.
+4. Notificação nova? Adicione a chave em `NOTIFICATION_TYPE`
+   (`core/services/notificationService.js`) **antes** de referenciá-la —
+   chave inexistente vira silenciosamente `type: undefined` → `'generic'`
+   (já aconteceu uma vez, ver histórico de `NotificationsMenu.jsx`).
+5. Alias de import: `@/` → `src/`.
+6. Antes de commitar: `npm run lint && npm run build && npm test` verdes.
 7. Textos de UI em **pt-BR**.
 8. Deploy só com a tríade verde; confira o run do workflow após o push.
 
@@ -182,5 +222,5 @@ npm run build     # produção → dist/  (VITE_PWA_ENABLED=true ativa PWA)
 - `docs/ARCHITECTURE.md` — camadas, design system, PWA, testes, padrões.
 - `docs/DATA_MODEL.md` — coleções, campos, relacionamentos, resumo das regras.
 - `docs/MODULES.md` — o que cada módulo faz, arquivos-chave e fluxos.
-</content>
-</invoke>
+- `docs/DESIGN_SYSTEM.md` — identidade visual: paleta, tipografia, motion.
+- `docs/ROADMAP.md` — histórico de fases e follow-ups funcionais pendentes.

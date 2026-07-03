@@ -3,108 +3,154 @@
 > O que cada módulo faz, arquivos-chave e fluxos principais. Panorama em
 > `docs/AI_CONTEXT.md`; dados em `docs/DATA_MODEL.md`.
 
-## tournament/ — núcleo
+## pets/ — adoção
 
-Torneios de ponta a ponta: criação, modalidades, inscrições, sorteio,
-agendamento por quadra, jogos, ranking ao vivo, admins compartilhados, visão
-pública e impressão.
+Feed com matching por compatibilidade, cadastro/edição, interesse de
+adoção, avaliação pós-adoção, radar de pet compatível.
 
-- **pages**: `Dashboard` (meus torneios), `CreateTournament`, `JoinTournament`
-  (código de convite), `PublicTournamentsList`, `Tournament` (abas via
-  `:tab`).
-- **components (abas)**: `TournamentOverviewTab`, `TournamentModalitiesTab`,
-  `TournamentRegistrationsTab`, `TournamentDrawTab`, `TournamentMatchesTab`,
-  `TournamentRankingTab`, `TournamentAdminTab`/`TournamentAdminPanel`,
-  + dialogs (`ModalityRegistrationDialog`, `ModalityInfoModal`),
-  `StageExplanation`, `ParticipationHistoryCard`.
-- **services**: `tournamentService` (CRUD + `setTournamentStatus` → notifica
-  comunidade quando torneio **público** abre inscrições), `modalityService`,
-  `registrationService`, `participationService`, `matchService`, `drawService`,
-  `rankingService`, `courtService`.
-- **domain (puro, testado)**: `scoring`, `draw`/`seeding`, `progression`,
-  `doubleElimination`, `swiss`, `schedule`/`scheduling`, `ranking`, `capacity`,
-  `eligibility`, `participation`, `formatExplain`, `whistTables`, `constants`.
-- **hooks**: `useTournament` (queries/mutations + invalidações
-  `['tournaments-public']` etc.).
+- **pages**: `PetFeed` (`/feed` — filtros espécie/porte/localização + raio,
+  seção "Descobrir" e grid completo), `PetDetail` (`/pets/:id`),
+  `CreatePet` (`/pets/new`, `/pets/:id/edit` — wizard, dono pode ser o
+  próprio usuário ou uma organização em que ele é admin), `MyPets`
+  (`/meus-pets`), `RadarSettings` (`/radar`).
+- **components**: `PetCard` (card padrão de pet, usado em feed/grid/meus
+  pets), `InterestPanel` (lista de interessados no pet), `RatingBadge`/
+  `RatingForm` (avaliação pós-adoção), `PetShareCard` (imagem "story" para
+  compartilhamento social, via `usePetShareImage` + `html-to-image`).
+- **services**: `petService` (CRUD, `getAvailablePets` com filtros
+  espécie/porte/cidade/estado), `interestService`, `ratingService`,
+  `petRadarService` (liga/desliga o alerta; o envio em si é uma Cloud
+  Function em `functions/`).
+- **domain (puro, testado)**: `matching` (compatibilidade pet↔perfil de
+  adotante), `priority` (pontuação de prioridade por tempo de espera).
+- **hooks**: `usePets` (`usePetFeed`, `useMyPets`, `useCreatePet`,
+  `useUpdatePet`, `useDeletePet`, `useCompleteAdoption`, hooks de interesse
+  e avaliação).
 
-Fluxo típico: criar torneio → adicionar modalidades → abrir inscrições
-(notifica) → inscrições/check-in → sortear (`drawService`+`domain/draw`) →
-agendar quadras → registrar resultados (`matchService`) → ranking recalculado
-(`rankingService`+`domain/ranking`).
+Fluxo típico: cadastrar pet (wizard: fotos → sobre → saúde → revisão) →
+aparece no feed ordenado por `priority_score desc, created_at asc` →
+adotante demonstra interesse → dono conversa via chat → marca como
+adotado (`completePetAdoption`, notifica os demais interessados) →
+avaliação pós-adoção opcional.
 
-## athletes/ — diretório de atletas
+## organizations/ — organizações (ONGs e lojas parceiras)
 
-Perfis públicos pesquisáveis (`athlete_profiles`, `directory_listed`).
-- `pages/AthletesDirectory`, `hooks/useAthletes`, `services/athleteService`
-  (`syncAthleteProfile`, `listAthletes`, `getAthlete`, `removeAthleteProfile`).
-- `domain/publicProfile` (montagem do perfil público, testado).
-- Reusado na busca de atletas para **convidar membros de clube** e como
-  audiência do aviso de "torneio aberto".
+Maior módulo do app. Nomes de arquivo ainda usam "Club" (herança de um
+fork anterior), mas a UI chama isso de "Organizações". Duas áreas de
+navegação distintas sobre o mesmo domínio:
+- **Comunidade** (`/comunidade`, `/comunidade/:id`) — diretório e perfil
+  público, aberto a todos: busca, ingressar por código/pedido, abas
+  Membros/Eventos/Mural/Fóruns.
+- **Organizações** (`/organizacoes`, `/organizacoes/:id/admin`) — hub de
+  gestão (só quem administra alguma organização) e painel de
+  administração, com abas condicionadas por permissão granular.
 
-## clubs/ — clubes e comunidade
+- **pages**: `ClubsDirectory` (`/comunidade`), `ClubDetail`
+  (`/comunidade/:id`), `CreateClub` (`/organizacoes/criar`),
+  `EventDetail` (`/comunidade/:id/eventos/:eventId`), `OrganizationsHub`
+  (`/organizacoes` — "Minhas organizações" + "Descobrir outras"),
+  `OrganizationAdminPanel` (`/organizacoes/:id/admin` — abas Visão Geral,
+  Animais, Mural, Doações, Prestação de Contas, Equipe, Configurações).
+- **components**:
+  - Perfil público: `ClubMembersTab`, `ClubFeedTab` (mural), `ClubEventsTab`
+    + `EventChat`/`EventParticipantsPanel`/`EventDatesPanel`,
+    `ClubForumsTab` + `ForumThreadView`/`CreateThreadDialog`/`ForumPoll`/
+    `PollBuilder`.
+  - Painel de administração: `ClubAdminTab` (aba Configurações — identidade
+    do clube, código de convite, exclusão), `ClubTeamTab` (aba Equipe —
+    convites, pedidos de ingresso, grade de permissões dos admins),
+    `ClubPetsDataGrid` (aba Animais — planilha inline + importação/
+    exportação em massa), `ClubDonationsTab` (aba Doações — chamados de
+    doação com meta/arrecadado/prazo), `ClubFinanceTab` (aba Prestação de
+    Contas — lançamentos por período/categoria).
+- **services**: `clubService` (clube, membros, permissões, eventos, mural,
+  campanhas de doação, financeiro — ids deterministas `clubId_uid`),
+  `forumService`.
+- **domain (puro, testado)**: `permissions` (proprietário + permissões
+  granulares — `isClubOwner`, `hasClubPermission`, `effectiveClubPermissions`),
+  `petImport` (parsing/validação/dedup da planilha de animais),
+  `forumPoll` (enquetes de fórum), `constants` (coleções, enums, rótulos).
+- **hooks**: `useClubs` (a maior parte das queries/mutations do módulo),
+  `useClubForum`.
 
-Clubes com associação por papel, mural, fórum (com enquetes), eventos e
-game-day. Acesso por papel: não-membro vê só o card+descrição; membros acessam
-abas; só admin acessa Administração.
+Ingresso (3 caminhos): **pedir para ingressar** (`club_join_requests` →
+notifica admins → aprovação cria `club_members`), **convite do admin**
+(`club_member_invites` → notifica convidado → aceite cria membro), **código
+de convite**. Eventos públicos publicados notificam membros.
 
-- **pages**: `ClubsDirectory`, `CreateClub`, `ClubDetail` (abas), `EventDetail`.
-- **components**: `ClubMembersTab`, `ClubFeedTab` (mural), `ClubForumsTab` +
-  `ForumThreadView`/`CreateThreadDialog`/`ForumPoll`/`PollBuilder`,
-  `ClubEventsTab` + `EventChat`/`EventParticipantsPanel`/`EventDatesPanel`,
-  `GameDayOrganizer`, `ClubAdminTab` (pedidos de ingresso, convites, membros).
-- **services**: `clubService` (clube, membros, pedidos, convites — ids
-  deterministas `clubId_uid`), `forumService`.
-- **domain (puro, testado)**: `forumPoll`, `gameDayDraw`, `constants`.
-- **hooks**: `useClubs`, `useClubForum`.
+Permissões granulares (`animals`, `finance`, `donations`, `feed`, `team`):
+o proprietário (`clubs.created_by`) sempre tem as 5, travado na UI e em
+`firestore.rules`; um admin sem `permissions` explícito também é tratado
+como tendo todas (compatibilidade); um admin com `permissions` explícito ou
+um membro comum só tem as chaves `true`. Ver `domain/permissions.js` e a
+seção de permissões em `docs/DATA_MODEL.md`.
 
-Ingresso (3 caminhos): **pedir para ingressar** (`club_join_requests` → notifica
-admins → aprovação cria `club_members`), **convite do admin**
-(`club_member_invites` → notifica convidado → aceite cria membro), **código de
-convite**. Eventos públicos publicados notificam membros.
+Importação de planilha de animais (`domain/petImport.js`): aceita
+`.xlsx`/`.csv`/`.json`, mapeia colunas com alias PT/EN, valida contra o
+schema de `pets`, deduplica pelo campo `ID` contra os animais já
+cadastrados pela organização — usuário decide manter ou substituir cada
+duplicata antes de confirmar.
+
+## onboarding/ — perfil de adotante
+
+- `pages/OnboardingQuestionnaire` (`/onboarding`) — 7 passos: moradia,
+  rotina de passeios, composição familiar, outros animais, orçamento,
+  cidade/UF, consentimento LGPD. Grava em `users/{uid}` e marca
+  `profile_completed`, usado como gate por `OnboardedRoute`/redirect em
+  `App.jsx` e como entrada do algoritmo de matching (`pets/domain/matching`).
 
 ## chat/ — mensagens
 
-Conversas 1:1 e em grupo.
-- `pages/ChatPage`, `hooks/useChat`, `services/chatService`.
+Conversas 1:1 e em grupo, com contexto opcional de pet/adoção.
+- `pages/ChatPage` (`/chat`, `/chat/:conversationId`), `hooks/useChat`,
+  `services/chatService`.
 - **components**: `ConversationList`, `ChatWindow`, `MessageBubble`,
   `ChatComposer`, `NewChatDialog`, `ChatLauncherButton`.
 - **domain**: `conversations` (resolução/ordenação, testado).
-- Gera notificações `chat_message` / `chat_invite`.
-
-## leveling/ — nivelamento (CBPE/USAP)
-
-Tabela de níveis + questionário auto-avaliativo.
-- **components**: `LevelTable`, `LevelingQuestionnaire`, `LevelingResultCard`.
-- `data/levels.js` (catálogo), `domain/questionnaire.js` (cálculo do nível).
-- Resultado salvo em `users.leveling_*`. Página pública `/nivelamento` e
-  integração no `Profile`.
+- Gera notificações `chat_message`/`chat_invite`.
 
 ## notifications/ — sino
 
-- `hooks/useNotifications` — lê `notifications` do usuário, expõe `unreadCount`
-  e `markAsRead`. Renderizado pelo `NotificationsMenu` no `Layout`.
-- Serviço de escrita é compartilhado: `core/services/notificationService.js`.
-- Lembretes de perfil/nivelamento são **derivados no Layout** (não persistidos).
+- `hooks/useNotifications` — hook próprio (não React Query) com
+  `onSnapshot` em `notifications` filtrado por `user_id`; retorna
+  `{ notifications, unreadCount, isLoading, markAsRead }`.
+- `components/NotificationsMenu` — painel dropdown do sino no `Layout`:
+  ícone por `type` (mapa `TYPE_META`), não lidas destacadas, clique marca
+  como lida e navega para `link`, atalho "marcar todas como lidas".
+- Serviço de escrita é compartilhado: `core/services/notificationService.js`
+  (`NOTIFICATION_TYPE`, `createNotification`, `notifyUsers`).
+
+## reports/ — denúncia de maus-tratos
+
+- `pages/CreateReport` (`/denuncias/nova`) — descrição, endereço + GPS, até
+  5 fotos; ao enviar gera protocolo e documento formatado para
+  impressão/PDF (`jspdf`) com os dados do denunciante e da ocorrência.
+- `services/reportService` — grava em `abuse_reports`.
 
 ## admin/ — plataforma
 
 Painel exclusivo de `platform_admin` (`/admin/*`).
-- **pages**: `AdminTournaments` (arquivar/excluir/desarquivar torneios),
-  `AdminMetrics` (métricas).
-- **services**: `adminService`. Ações geram `audit_logs`
-  (`platform_archive_tournament`, `platform_delete_tournament`…).
+- **pages**: `AdminDashboard` (grid de seções), `AdminPets` (moderar
+  anúncios), `AdminOrganizations` (verificar/excluir organizações),
+  `AdminReports` (revisar denúncias), `AdminUsers` (papéis, banimento),
+  `AdminMetrics` (gráficos de adoções/crescimento/denúncias, via
+  `recharts`), `AdminAuditLog` (trilha de auditoria completa, via
+  `AuditLogTable` compartilhado em `src/components/`).
+- **services**: `adminService`, `metricsService`. Ações geram `audit_logs`
+  (`user_banned`, `user_unbanned`, `user_account_deleted`,
+  `platform_feature_flag_changed`…).
 
 ## Mapa rota → módulo
 
 | Rota | Módulo / arquivo |
 | --- | --- |
-| `/inicio` | tournament/pages/Dashboard |
-| `/torneios/*` | tournament/pages/* |
-| `/p/:id`, `/torneios/:id/imprimir` | pages/PublicTournament, pages/PrintTournament |
-| `/atletas` | athletes/pages/AthletesDirectory |
-| `/clubes/*` | clubs/pages/* |
-| `/chat` | chat/pages/ChatPage |
-| `/nivelamento` | pages/Leveling (+ leveling/*) |
-| `/perfil` | pages/Profile |
-| `/admin/*` | admin/pages/* |
-</content>
+| `/`, `/termos`, `/legislacao`, `/politica-privacidade` | `pages/Home`, `pages/Terms`, `pages/Legislation`, `pages/PrivacyPolicy` |
+| `/login` | `pages/Login` |
+| `/onboarding` | `onboarding/pages/OnboardingQuestionnaire` |
+| `/feed`, `/pets/:id`, `/pets/new`, `/pets/:id/edit`, `/meus-pets`, `/radar` | `pets/pages/*` |
+| `/comunidade*` | `organizations/pages/ClubsDirectory`, `ClubDetail`, `EventDetail` |
+| `/organizacoes*` | `organizations/pages/OrganizationsHub`, `CreateClub`, `OrganizationAdminPanel` |
+| `/chat*` | `chat/pages/ChatPage` |
+| `/denuncias/nova` | `reports/pages/CreateReport` |
+| `/perfil` | `pages/Profile` |
+| `/admin/*` | `admin/pages/*` |
