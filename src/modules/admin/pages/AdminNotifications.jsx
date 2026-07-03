@@ -175,7 +175,7 @@ export default function AdminNotifications() {
                       <td className="px-3 py-3 text-xs">
                         {normalizedLink ? (
                           <Button asChild variant="link" className="h-auto p-0 text-xs">
-                            <a href={normalizedLink} target="_blank" rel="noreferrer">{normalizedLink}</a>
+                            <a href={normalizedLink} target="_blank" rel="noopener noreferrer">{normalizedLink}</a>
                           </Button>
                         ) : (
                           <span className="text-muted-foreground">{notification.link ? 'Link inválido' : 'Sem link'}</span>
