@@ -49,6 +49,8 @@ import ClubPetsDataGrid from '@/modules/organizations/components/ClubPetsDataGri
 import RatingBadge from '@/modules/pets/components/RatingBadge';
 import { QrCode } from '@/components/ui/qr-code';
 
+const PUBLIC_TABS = ['members', 'animals', 'events', 'feed', 'forums'];
+
 /**
  * Perfil público da organização (diretório "Comunidade"): Membros, Eventos,
  * Mural, Fóruns. Gestão administrativa (animais em massa, doações,
@@ -58,7 +60,6 @@ import { QrCode } from '@/components/ui/qr-code';
  * antigas.
  */
 export default function ClubDetail() {
-  const PUBLIC_TABS = ['members', 'animals', 'events', 'feed', 'forums'];
   const { orgId: clubId } = useParams();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();

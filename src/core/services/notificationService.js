@@ -58,7 +58,7 @@ export function normalizeNotificationLink(link) {
   try {
     const base = typeof window !== 'undefined' && window.location?.origin
       ? window.location.origin
-      : 'https://viralata.local';
+      : 'http://localhost';
     const parsed = new URL(raw, base);
     if (parsed.origin !== base) return null;
     return `${parsed.pathname}${parsed.search}${parsed.hash}`;
