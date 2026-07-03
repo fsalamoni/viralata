@@ -84,7 +84,7 @@ export async function hasInterest(petId, userId) {
 }
 
 /** Atualiza o status de um interesse (aprovado, rejeitado, chat aberto). */
-export async function updateInterestStatus(petId, userId, status, actor) {
+export async function updateInterestStatus(petId, userId, status, actor, options = {}) {
   if (!db) throw new Error('Firebase não disponível');
   const id = interestId(petId, userId);
   await updateDoc(doc(db, COLLECTION, id), { status, updated_at: serverTimestamp() });
@@ -107,7 +107,9 @@ export async function updateInterestStatus(petId, userId, status, actor) {
     title: status === 'rejected' ? 'Interesse não selecionado' : 'Interesse aprovado!',
     message,
     type: notifType,
-    link: status !== 'rejected' ? '/chat' : '/feed',
+    link: status !== 'rejected'
+      ? (options.conversationId ? `/chat?c=${options.conversationId}` : '/chat')
+      : '/feed',
     actor: { uid: actor?.uid, displayName: actor?.displayName },
   });
 
