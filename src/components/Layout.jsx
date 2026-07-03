@@ -25,6 +25,16 @@ const NAV_ITEMS = [
   { label: 'Meus Pets', icon: Heart, to: '/meus-pets', auth: true },
 ];
 
+// Barra fixa inferior (só mobile, só autenticado) — os 5 destinos mais
+// usados no bolso, com "Cadastrar" em destaque central elevado.
+const BOTTOM_TAB_ITEMS = [
+  { label: 'Feed', icon: PawPrint, to: '/feed' },
+  { label: 'ONGs', icon: Building2, to: '/comunidade' },
+  { label: 'Cadastrar', icon: Plus, to: '/pets/new', center: true },
+  { label: 'Chat', icon: MessageCircle, to: '/chat' },
+  { label: 'Perfil', icon: User, to: '/perfil' },
+];
+
 export default function Layout({ children, currentPageName }) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -187,9 +197,46 @@ export default function Layout({ children, currentPageName }) {
       </header>
 
       {/* Main */}
-      <main className="flex-1 relative">
+      <main className={cn('flex-1 relative', isAuthenticated && 'pb-20 md:pb-0')}>
         {children}
       </main>
+
+      {/* Bottom tab bar (mobile, autenticado) */}
+      {isAuthenticated && (
+        <nav className="safe-pb fixed inset-x-0 bottom-0 z-40 flex items-end justify-around border-t border-white/60 bg-white/85 px-2 pt-2 backdrop-blur-xl md:hidden">
+          {BOTTOM_TAB_ITEMS.map(({ label, icon: Icon, to, center }) => {
+            const active = location.pathname.startsWith(to);
+            if (center) {
+              return (
+                <Link
+                  key={to}
+                  to={to}
+                  className="flex flex-1 flex-col items-center gap-1 pb-1.5"
+                  aria-label={label}
+                >
+                  <span className="-mt-6 flex h-12 w-12 items-center justify-center rounded-full bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--highlight))_100%)] text-white shadow-[0_14px_26px_-10px_rgba(64,34,18,0.6)]">
+                    <Icon className="h-5 w-5" />
+                  </span>
+                  <span className="text-[11px] font-medium text-stone-600">{label}</span>
+                </Link>
+              );
+            }
+            return (
+              <Link
+                key={to}
+                to={to}
+                className={cn(
+                  'flex flex-1 flex-col items-center gap-1 rounded-xl px-1 py-1.5 text-[11px] font-medium transition-colors',
+                  active ? 'text-primary' : 'text-stone-500 hover:text-stone-700',
+                )}
+              >
+                <Icon className="h-5 w-5" />
+                {label}
+              </Link>
+            );
+          })}
+        </nav>
+      )}
     </div>
   );
 }
