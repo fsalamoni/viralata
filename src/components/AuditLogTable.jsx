@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 
 const PAGE_SIZES = [10, 50, 100];
 
-export function AuditLogTable({ title, description, tournamentId, userId, className = '' }) {
+export function AuditLogTable({ title, description, userId, className = '' }) {
   const [logs, setLogs] = useState([]);
   const [filters, setFilters] = useState({
     log_number: '',
@@ -24,7 +24,6 @@ export function AuditLogTable({ title, description, tournamentId, userId, classN
 
   useEffect(() => {
     const constraints = [];
-    if (tournamentId) constraints.push(where('tournament_id', '==', tournamentId));
     if (userId) constraints.push(where('user_id', '==', userId));
     const q = query(collection(db, 'audit_logs'), ...constraints);
 
@@ -42,7 +41,7 @@ export function AuditLogTable({ title, description, tournamentId, userId, classN
     );
 
     return () => unsubscribe();
-  }, [tournamentId, userId]);
+  }, [userId]);
 
   const filteredLogs = useMemo(() => {
     return logs.filter((log) => {
@@ -69,12 +68,12 @@ export function AuditLogTable({ title, description, tournamentId, userId, classN
 
   return (
     <Card className={`overflow-hidden ${className}`}>
-      <CardHeader className="border-b border-emerald-950/10 bg-white/45 p-4 sm:p-5">
-        <CardTitle className="text-base text-slate-950">{title}</CardTitle>
+      <CardHeader className="border-b border-border bg-card p-4 sm:p-5">
+        <CardTitle className="text-base text-foreground">{title}</CardTitle>
         {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>
       <CardContent className="space-y-4 p-4 sm:p-5">
-        {error && <p className="text-sm text-red-600">{error}</p>}
+        {error && <p className="text-sm text-destructive">{error}</p>}
         <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
           <FilterInput label="Nº" value={filters.log_number} onChange={(value) => updateFilter(setFilters, 'log_number', value)} />
           <FilterInput label="Usuário" value={filters.user_name} onChange={(value) => updateFilter(setFilters, 'user_name', value)} />
@@ -86,7 +85,7 @@ export function AuditLogTable({ title, description, tournamentId, userId, classN
         <div className="arena-table-wrap">
           <table className="min-w-[980px] w-full text-sm">
             <thead>
-              <tr className="border-b border-emerald-900/40 bg-emerald-950 text-left text-emerald-50">
+              <tr className="border-b border-border bg-secondary text-left text-secondary-foreground">
                 <th className="py-3 pl-4 pr-3 font-semibold">Nº</th>
                 <th className="py-3 px-3 font-semibold">Usuário</th>
                 <th className="py-3 px-3 font-semibold">Data e horário</th>
@@ -94,24 +93,24 @@ export function AuditLogTable({ title, description, tournamentId, userId, classN
                 <th className="py-3 px-3 font-semibold">Informações</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-emerald-950/10 bg-white/65">
+            <tbody className="divide-y divide-border bg-card">
               {visibleLogs.map((log) => (
-                <tr key={log.id} className="transition-colors hover:bg-emerald-50/70">
-                  <td className="py-3 pl-4 pr-3 font-mono text-xs text-slate-600">{log.log_number || '—'}</td>
+                <tr key={log.id} className="transition-colors hover:bg-secondary/50">
+                  <td className="py-3 pl-4 pr-3 font-mono text-xs text-muted-foreground">{log.log_number || '—'}</td>
                   <td className="py-3 px-3">
-                    <div className="font-medium text-slate-900">{log.user_name || log.actor_name || '—'}</div>
-                    <div className="text-xs text-slate-500">{log.user_email || log.actor_email || ''}</div>
+                    <div className="font-medium text-foreground">{log.user_name || log.actor_name || '—'}</div>
+                    <div className="text-xs text-muted-foreground">{log.user_email || log.actor_email || ''}</div>
                   </td>
-                  <td className="py-3 px-3 text-slate-700">{formatAuditDate(log.created_at, log.created_at_ms)}</td>
-                  <td className="py-3 px-3 font-medium text-slate-900">
+                  <td className="py-3 px-3 text-foreground/80">{formatAuditDate(log.created_at, log.created_at_ms)}</td>
+                  <td className="py-3 px-3 font-medium text-foreground">
                     {log.action_label || AUDIT_ACTION_LABELS[log.action] || log.action}
                   </td>
-                  <td className="py-3 px-3 text-xs text-slate-600">{stringifyDetails(log.details)}</td>
+                  <td className="py-3 px-3 text-xs text-muted-foreground">{stringifyDetails(log.details)}</td>
                 </tr>
               ))}
               {!visibleLogs.length && (
                 <tr>
-                  <td colSpan={5} className="py-8 text-center text-slate-500">Nenhum log encontrado.</td>
+                  <td colSpan={5} className="py-8 text-center text-muted-foreground">Nenhum log encontrado.</td>
                 </tr>
               )}
             </tbody>
@@ -119,7 +118,7 @@ export function AuditLogTable({ title, description, tournamentId, userId, classN
         </div>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-2 text-sm text-slate-600">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <span>Registros por página</span>
             <select
               className="h-9 rounded-md border border-input bg-background px-2 text-sm"

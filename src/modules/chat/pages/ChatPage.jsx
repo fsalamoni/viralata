@@ -78,8 +78,8 @@ export default function ChatPage() {
 
       <Card className="grid h-[calc(100dvh-11rem)] min-h-[30rem] grid-cols-1 overflow-hidden rounded-2xl border-white/80 bg-white/85 lg:grid-cols-[20rem,1fr] xl:grid-cols-[22rem,1fr]">
         {/* Lista de conversas */}
-        <aside className={cn('flex min-h-0 flex-col border-r border-emerald-950/10', selectedConversation && 'hidden lg:flex')}>
-          <div className="space-y-3 border-b border-emerald-950/10 p-3">
+        <aside className={cn('flex min-h-0 flex-col border-r border-primary/10', selectedConversation && 'hidden lg:flex')}>
+          <div className="space-y-3 border-b border-primary/10 p-3">
             <div className="flex items-center justify-between gap-2">
               <h2 className="text-base font-semibold text-slate-900">Conversas</h2>
               <Button size="sm" onClick={() => setNewOpen(true)}>
@@ -119,7 +119,7 @@ export default function ChatPage() {
             />
           ) : (
             <div className="flex h-full flex-col items-center justify-center px-6 text-center text-slate-500">
-              <span className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-700">
+              <span className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary">
                 <MessageCircle className="h-8 w-8" />
               </span>
               <h3 className="text-lg font-semibold text-slate-900">Suas conversas</h3>

@@ -139,14 +139,14 @@ export default function ChatWindow({ conversation, currentUserId, onBack, onClos
   return (
     <div className="flex h-full min-h-0 flex-col">
       {/* Header */}
-      <div className="flex items-center gap-3 border-b border-emerald-950/10 bg-white/85 px-3 py-2.5">
+      <div className="flex items-center gap-3 border-b border-primary/10 bg-white/85 px-3 py-2.5">
         {onBack && (
           <Button variant="ghost" size="icon" className="h-9 w-9 shrink-0 lg:hidden" onClick={onBack} aria-label="Voltar">
             <ArrowLeft className="h-5 w-5" />
           </Button>
         )}
         {isGroup ? (
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-700 text-emerald-50">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
             <Users className="h-5 w-5" />
           </span>
         ) : (
@@ -187,14 +187,14 @@ export default function ChatWindow({ conversation, currentUserId, onBack, onClos
       </div>
 
       {/* Messages */}
-      <div ref={scrollRef} className="min-h-0 flex-1 space-y-1.5 overflow-y-auto bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.05),transparent_45%)] px-3 py-4">
+      <div ref={scrollRef} className="min-h-0 flex-1 space-y-1.5 overflow-y-auto bg-[radial-gradient(circle_at_top,_hsl(var(--primary)/0.05),transparent_45%)] px-3 py-4">
         {isLoading ? (
           <div className="space-y-3">
             {[1, 2, 3].map((i) => <Skeleton key={i} className={`h-12 max-w-[60%] rounded-2xl ${i % 2 ? '' : 'ml-auto'}`} />)}
           </div>
         ) : rendered.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center text-center text-slate-500">
-            <MessagesSquare className="mb-3 h-10 w-10 text-emerald-300" />
+            <MessagesSquare className="mb-3 h-10 w-10 text-primary/40" />
             <p className="text-sm">Nenhuma mensagem ainda. Diga olá! 👋</p>
           </div>
         ) : (
@@ -233,7 +233,7 @@ export default function ChatWindow({ conversation, currentUserId, onBack, onClos
       <Dialog open={renameOpen} onOpenChange={setRenameOpen}>
         <DialogContent className="max-w-sm">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2"><Info className="h-5 w-5 text-emerald-700" /> Renomear grupo</DialogTitle>
+            <DialogTitle className="flex items-center gap-2"><Info className="h-5 w-5 text-primary" /> Renomear grupo</DialogTitle>
             <DialogDescription>Escolha um nome para identificar o grupo.</DialogDescription>
           </DialogHeader>
           <Input value={renameValue} onChange={(e) => setRenameValue(e.target.value)} maxLength={80} placeholder="Nome do grupo" />

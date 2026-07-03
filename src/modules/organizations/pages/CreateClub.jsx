@@ -46,7 +46,7 @@ export default function CreateClub() {
     try {
       const id = await createClub.mutateAsync(form);
       toast.success('Clube criado com sucesso!');
-      navigate(`/organizacoes/${id}`);
+      navigate(`/organizacoes/${id}/admin`);
     } catch (err) {
       toast.error(err.message || 'Não foi possível criar o clube.');
     }

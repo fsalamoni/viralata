@@ -1,5 +1,5 @@
 /*
- * Service worker do PWA Pickleball.
+ * Service worker do PWA Viralata.
  *
  * Princípios de segurança (não pode afetar nada do app/Firebase):
  *  - Só intercepta requisições GET de MESMA ORIGEM.
@@ -10,7 +10,7 @@
  *  - skipWaiting + clients.claim garantem que atualizações entram sem ficar presas.
  */
 const VERSION = 'v3';
-const CACHE = `pickleball-${VERSION}`;
+const CACHE = `viralata-${VERSION}`;
 const SHELL_URL = '/index.html';
 
 self.addEventListener('install', (event) => {

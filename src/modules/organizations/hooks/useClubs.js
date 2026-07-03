@@ -58,6 +58,14 @@ import {
   listClubPosts,
   createClubPost,
   deleteClubPost,
+  listClubCampaigns,
+  createClubCampaign,
+  updateClubCampaign,
+  addCampaignFunds,
+  deleteClubCampaign,
+  listClubLedger,
+  createLedgerEntry,
+  deleteLedgerEntry,
 } from '../services/clubService';
 
 /* --------------------------------- Clubs -------------------------------- */
@@ -623,5 +631,79 @@ export function useDeleteClubPost(clubId) {
   return useMutation({
     mutationFn: (postId) => deleteClubPost(postId, user),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['club-posts', clubId] }),
+  });
+}
+
+/* ---------------------- Chamados de doação (campanhas) ------------------- */
+
+export function useClubCampaigns(clubId) {
+  return useQuery({
+    queryKey: ['club-campaigns', clubId],
+    queryFn: () => listClubCampaigns(clubId),
+    enabled: !!clubId,
+  });
+}
+
+export function useCreateClubCampaign(clubId) {
+  const { user } = useAuth();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (data) => createClubCampaign(clubId, data, user),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['club-campaigns', clubId] }),
+  });
+}
+
+export function useUpdateClubCampaign(clubId) {
+  const { user } = useAuth();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ campaignId, updates }) => updateClubCampaign(campaignId, updates, user),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['club-campaigns', clubId] }),
+  });
+}
+
+export function useAddCampaignFunds(clubId) {
+  const { user } = useAuth();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ campaignId, amount }) => addCampaignFunds(campaignId, amount, user),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['club-campaigns', clubId] }),
+  });
+}
+
+export function useDeleteClubCampaign(clubId) {
+  const { user } = useAuth();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (campaignId) => deleteClubCampaign(campaignId, user),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['club-campaigns', clubId] }),
+  });
+}
+
+/* --------------------- Prestação de contas (financeiro) ------------------ */
+
+export function useClubLedger(clubId) {
+  return useQuery({
+    queryKey: ['club-ledger', clubId],
+    queryFn: () => listClubLedger(clubId),
+    enabled: !!clubId,
+  });
+}
+
+export function useCreateLedgerEntry(clubId) {
+  const { user } = useAuth();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (data) => createLedgerEntry(clubId, data, user),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['club-ledger', clubId] }),
+  });
+}
+
+export function useDeleteLedgerEntry(clubId) {
+  const { user } = useAuth();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (entryId) => deleteLedgerEntry(entryId, user),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['club-ledger', clubId] }),
   });
 }

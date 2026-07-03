@@ -30,15 +30,16 @@ export default defineConfig(({ mode }) => {
           ],
         },
         workbox: {
-          // Padrões separados — evita o glob composto que causa warning/erro no Workbox
+          // Padrões separados — evita o glob composto que causa warning/erro no Workbox.
+          // `.ico`/`.webp` ficaram de fora de propósito: o projeto não gera nenhum
+          // arquivo desses tipos (ícone é `favicon.svg`) — mantê-los no padrão só
+          // produz o aviso "glob pattern doesn't match any files" no build.
           globPatterns: [
             '**/*.js',
             '**/*.css',
             '**/*.html',
-            '**/*.ico',
             '**/*.png',
             '**/*.svg',
-            '**/*.webp',
           ],
         },
       }),
@@ -58,6 +59,10 @@ export default defineConfig(({ mode }) => {
               n.includes('/encode-utf8/') ||
               n.includes('/pngjs/')
             ) return 'vendor-sharing';
+            // SheetJS — só é importado dinamicamente na importação/exportação de
+            // planilhas de animais (aba Animais do painel de organização), nunca
+            // no carregamento inicial.
+            if (n.includes('/xlsx/')) return 'vendor-spreadsheet';
             // Firebase — dividido por serviço para melhor cache
             if (n.includes('@firebase/firestore') || n.includes('/firebase/firestore')) return 'vendor-firebase-firestore';
             if (n.includes('@firebase/auth')      || n.includes('/firebase/auth'))      return 'vendor-firebase-auth';

@@ -8,13 +8,6 @@ service cloud.firestore {
     function isPlatformAdmin() {
       return isAuth() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'platform_admin';
     }
-    function isOrgAdmin(orgId) {
-      return isAuth() && exists(/databases/$(database)/documents/organization_members/$(orgId + '_' + request.auth.uid))
-        && get(/databases/$(database)/documents/organization_members/$(orgId + '_' + request.auth.uid)).data.role == 'admin';
-    }
-    function isOrgMember(orgId) {
-      return isAuth() && exists(/databases/$(database)/documents/organization_members/$(orgId + '_' + request.auth.uid));
-    }
     function isClubMember(clubId) {
       return isAuth() && exists(/databases/$(database)/documents/club_members/$(clubId + '_' + request.auth.uid));
     }
@@ -34,11 +27,25 @@ service cloud.firestore {
       return isAuth() && exists(/databases/$(database)/documents/club_members/$(clubId + '_' + request.auth.uid))
         && get(/databases/$(database)/documents/club_members/$(clubId + '_' + request.auth.uid)).data.get('permissions', {}).get('edit_pets', false) == true;
     }
+    // Permissão granular do painel de administração da organização
+    // (`animals`, `finance`, `donations`, `feed`, `team` — ver
+    // src/modules/organizations/domain/permissions.js). Admins já têm tudo
+    // via isClubAdmin, independente desta flag.
+    function hasClubPermission(clubId, key) {
+      return isAuth() && exists(/databases/$(database)/documents/club_members/$(clubId + '_' + request.auth.uid))
+        && get(/databases/$(database)/documents/club_members/$(clubId + '_' + request.auth.uid)).data.get('permissions', {}).get(key, false) == true;
+    }
+    // Proprietário do clube (dono de todas as permissões, protegido contra
+    // remoção/rebaixamento por outros admins — ver domain/permissions.js).
+    function isClubOwnerUid(clubId, uid) {
+      return exists(/databases/$(database)/documents/clubs/$(clubId))
+        && get(/databases/$(database)/documents/clubs/$(clubId)).data.created_by == uid;
+    }
     // Quem pode gerenciar um pet (dono pessoa física, ou clube dono via admin/permissão).
     function canManagePet(petData) {
       return petData.owner_id == request.auth.uid ||
         (petData.get('owner_type', '') == 'organization' && (
-          isClubAdmin(petData.owner_id) || canEditClubPets(petData.owner_id)
+          isClubAdmin(petData.owner_id) || canEditClubPets(petData.owner_id) || hasClubPermission(petData.owner_id, 'animals')
         ));
     }
     // Dono fixo da plataforma (bootstrap do primeiro platform_admin) — espelha
@@ -78,18 +85,24 @@ service cloud.firestore {
       // da qual ele é admin (owner_type == 'organization') — nunca de terceiros.
       allow create: if isAuth() && (
         request.resource.data.owner_id == request.auth.uid ||
-        (request.resource.data.owner_type == 'organization' && isClubAdmin(request.resource.data.owner_id))
+        (request.resource.data.owner_type == 'organization' && (
+          isClubAdmin(request.resource.data.owner_id) ||
+          canEditClubPets(request.resource.data.owner_id) ||
+          hasClubPermission(request.resource.data.owner_id, 'animals')
+        ))
       );
       allow update: if isAuth() && (
         resource.data.owner_id == request.auth.uid ||
         (resource.data.owner_type == 'organization' && (
-          isClubAdmin(resource.data.owner_id) || canEditClubPets(resource.data.owner_id)
+          isClubAdmin(resource.data.owner_id) || canEditClubPets(resource.data.owner_id) || hasClubPermission(resource.data.owner_id, 'animals')
         )) ||
         isPlatformAdmin()
       );
       allow delete: if isAuth() && (
         resource.data.owner_id == request.auth.uid ||
-        (resource.data.owner_type == 'organization' && isClubAdmin(resource.data.owner_id)) ||
+        (resource.data.owner_type == 'organization' && (
+          isClubAdmin(resource.data.owner_id) || canEditClubPets(resource.data.owner_id) || hasClubPermission(resource.data.owner_id, 'animals')
+        )) ||
         isPlatformAdmin()
       );
     }
@@ -123,33 +136,6 @@ service cloud.firestore {
       allow read: if true; // Reputação pública do adotante/doador
       allow create: if isAuth() && request.resource.data.rater_uid == request.auth.uid
         && request.resource.data.rated_uid != request.auth.uid;
-      allow update, delete: if isPlatformAdmin();
-    }
-
-    // ─── Organizações ─────────────────────────────────────────────────────────
-    match /organizations/{orgId} {
-      allow read: if true;
-      allow create: if isAuth();
-      allow update: if isOrgAdmin(orgId) || isPlatformAdmin();
-      allow delete: if isPlatformAdmin();
-    }
-
-    // ─── Membros de Organizações ──────────────────────────────────────────────
-    match /organization_members/{memberId} {
-      allow read: if isAuth();
-      allow create: if isAuth() && request.resource.data.user_id == request.auth.uid;
-      allow update: if isOrgAdmin(resource.data.org_id) || isPlatformAdmin();
-      allow delete: if isAuth() && (
-        resource.data.user_id == request.auth.uid ||
-        isOrgAdmin(resource.data.org_id) ||
-        isPlatformAdmin()
-      );
-    }
-
-    // ─── Relatórios de Organizações ───────────────────────────────────────────
-    match /organization_reports/{reportId} {
-      allow read: if true;
-      allow create: if isOrgAdmin(request.resource.data.org_id) || isPlatformAdmin();
       allow update, delete: if isPlatformAdmin();
     }
 
@@ -201,22 +187,45 @@ service cloud.firestore {
     match /clubs/{clubId} {
       allow read: if true; // Diretório e detalhe públicos
       allow create: if isAuth() && request.resource.data.created_by == request.auth.uid;
-      allow update: if isClubAdmin(clubId) || isPlatformAdmin() ||
+      // `created_by` é o proprietário (dono de todas as permissões, protegido
+      // contra remoção/rebaixamento — ver domain/permissions.js) e não pode
+      // ser trocado por um admin comum, só por um platform_admin.
+      allow update: if isPlatformAdmin() ||
+        (isClubAdmin(clubId) && request.resource.data.get('created_by', resource.data.created_by) == resource.data.created_by) ||
         (isClubMember(clubId) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['member_count', 'updated_at']));
       allow delete: if isClubAdmin(clubId) || isPlatformAdmin();
     }
 
     match /club_members/{memberId} {
       allow read: if isAuth();
+      // Autoingresso (código de convite / aceitar convite) só pode criar a
+      // própria associação como membro comum, sem `permissions` — impede que
+      // o usuário se autopromova a admin ou se autoconceda permissões
+      // granulares (animals/finance/donations/feed/team) direto pelo SDK.
+      // Exceção: o próprio criador do clube (clubs.created_by) pode
+      // autocriar sua associação de admin — é exatamente o passo 2 do fluxo
+      // de criação de clube (createClub), sequencial e sem outro admin ainda
+      // para fazer essa criação por ele. Segue sem `permissions`.
+      // Qualquer outro papel/permissão só um admin existente pode conceder.
       allow create: if isAuth() && (
-        request.resource.data.user_id == request.auth.uid ||
+        (request.resource.data.user_id == request.auth.uid &&
+          request.resource.data.get('role', 'member') == 'member' &&
+          !('permissions' in request.resource.data)) ||
+        (request.resource.data.user_id == request.auth.uid &&
+          request.resource.data.get('role', '') == 'admin' &&
+          !('permissions' in request.resource.data) &&
+          isClubOwnerUid(request.resource.data.club_id, request.auth.uid)) ||
         isClubAdmin(request.resource.data.club_id) ||
         isPlatformAdmin()
       );
-      allow update: if isClubAdmin(resource.data.club_id) || isPlatformAdmin();
+      // Proprietário é protegido: nem outro admin pode alterar seu papel/
+      // permissões, nem removê-lo — só ele mesmo (saindo do clube) ou um
+      // platform_admin.
+      allow update: if isPlatformAdmin() ||
+        (isClubAdmin(resource.data.club_id) && !isClubOwnerUid(resource.data.club_id, resource.data.user_id));
       allow delete: if isAuth() && (
         resource.data.user_id == request.auth.uid ||
-        isClubAdmin(resource.data.club_id) ||
+        (isClubAdmin(resource.data.club_id) && !isClubOwnerUid(resource.data.club_id, resource.data.user_id)) ||
         isPlatformAdmin()
       );
     }
@@ -323,6 +332,41 @@ service cloud.firestore {
         resource.data.author_id == request.auth.uid ||
         isClubAdmin(resource.data.club_id) ||
         isPlatformAdmin()
+      );
+    }
+
+    // ─── Chamados de doação (campanhas) de uma organização ─────────────────────
+    match /club_campaigns/{campaignId} {
+      allow read: if true; // Visível publicamente (transparência de arrecadação)
+      allow create: if isAuth() && (
+        isClubAdmin(request.resource.data.club_id) || hasClubPermission(request.resource.data.club_id, 'donations')
+      );
+      // `club_id` é imutável no update — impede que quem só tem permissão
+      // `donations` na organização A "mude de dono" uma campanha para a
+      // organização B (o campo não está na allow-list de updateClubCampaign,
+      // mas a regra precisa recusar mesmo assim para quem usa o SDK direto).
+      allow update: if isAuth() && request.resource.data.club_id == resource.data.club_id && (
+        isClubAdmin(resource.data.club_id) || hasClubPermission(resource.data.club_id, 'donations') || isPlatformAdmin()
+      );
+      allow delete: if isAuth() && (
+        isClubAdmin(resource.data.club_id) || hasClubPermission(resource.data.club_id, 'donations') || isPlatformAdmin()
+      );
+    }
+
+    // ─── Prestação de contas (lançamentos financeiros) de uma organização ──────
+    match /club_ledger/{entryId} {
+      allow read: if isAuth() && (
+        isClubAdmin(resource.data.club_id) || hasClubPermission(resource.data.club_id, 'finance') || isPlatformAdmin()
+      );
+      allow create: if isAuth() && (
+        isClubAdmin(request.resource.data.club_id) || hasClubPermission(request.resource.data.club_id, 'finance')
+      );
+      // `club_id` imutável no update — mesma razão do club_campaigns acima.
+      allow update: if isAuth() && request.resource.data.club_id == resource.data.club_id && (
+        isClubAdmin(resource.data.club_id) || hasClubPermission(resource.data.club_id, 'finance') || isPlatformAdmin()
+      );
+      allow delete: if isAuth() && (
+        isClubAdmin(resource.data.club_id) || hasClubPermission(resource.data.club_id, 'finance') || isPlatformAdmin()
       );
     }
 

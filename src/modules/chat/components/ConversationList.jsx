@@ -55,11 +55,11 @@ export default function ConversationList({ conversations, isLoading, selectedId,
             onClick={() => onSelect?.(conversation.id)}
             className={cn(
               'flex w-full items-center gap-3 rounded-xl px-2.5 py-2.5 text-left transition-colors',
-              isSelected ? 'bg-emerald-100/80' : 'hover:bg-secondary/60',
+              isSelected ? 'bg-primary/10' : 'hover:bg-secondary/60',
             )}
           >
             {isGroup ? (
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-emerald-700 text-emerald-50">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
                 <Users className="h-5 w-5" />
               </span>
             ) : (

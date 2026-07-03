@@ -49,7 +49,7 @@ export async function createPet(petData, actor) {
   const priorityScore = calculatePriorityScore({ created_at: { seconds: Date.now() / 1000 } });
   const payload = {
     ...petData,
-    status: 'available',
+    status: petData.status || 'available',
     priority_score: priorityScore,
     created_at: serverTimestamp(),
     updated_at: serverTimestamp(),

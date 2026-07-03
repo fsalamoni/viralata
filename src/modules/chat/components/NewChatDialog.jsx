@@ -95,7 +95,7 @@ export default function NewChatDialog({ open, onOpenChange, onConfirm, excludeId
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5 text-emerald-700" />
+            <Users className="h-5 w-5 text-primary" />
             {mode === 'add' ? 'Chamar pessoas para um novo grupo' : 'Nova conversa'}
           </DialogTitle>
           <DialogDescription>
@@ -127,7 +127,7 @@ export default function NewChatDialog({ open, onOpenChange, onConfirm, excludeId
                     delete next[m.uid];
                     return next;
                   })}
-                  className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 py-1 pl-1 pr-2 text-xs font-medium text-emerald-900 hover:bg-emerald-200"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 py-1 pl-1 pr-2 text-xs font-medium text-primary hover:bg-primary/20"
                 >
                   <UserAvatar name={m.name} photoUrl={m.photo_url} size="xs" />
                   {m.name}
@@ -137,7 +137,7 @@ export default function NewChatDialog({ open, onOpenChange, onConfirm, excludeId
             </div>
           )}
 
-          <div className="max-h-64 space-y-1 overflow-y-auto rounded-lg border border-emerald-950/10 p-1">
+          <div className="max-h-64 space-y-1 overflow-y-auto rounded-lg border border-primary/10 p-1">
             {isLoading ? (
               <div className="space-y-2 p-2">
                 {[1, 2, 3].map((i) => <Skeleton key={i} className="h-12 rounded-lg" />)}
@@ -154,7 +154,7 @@ export default function NewChatDialog({ open, onOpenChange, onConfirm, excludeId
                     key={person.id}
                     type="button"
                     onClick={() => toggle(person)}
-                    className={`flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left transition-colors ${isChecked ? 'bg-emerald-50' : 'hover:bg-secondary/60'}`}
+                    className={`flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left transition-colors ${isChecked ? 'bg-primary/10' : 'hover:bg-secondary/60'}`}
                   >
                     <UserAvatar name={personName(person)} photoUrl={person.photo_url} size="sm" />
                     <span className="min-w-0 flex-1">
@@ -163,7 +163,7 @@ export default function NewChatDialog({ open, onOpenChange, onConfirm, excludeId
                         {[person.city, person.state].filter(Boolean).join(' · ') || 'Usuário'}
                       </span>
                     </span>
-                    <span className={`flex h-5 w-5 items-center justify-center rounded-full border ${isChecked ? 'border-emerald-600 bg-emerald-600 text-white' : 'border-slate-300'}`}>
+                    <span className={`flex h-5 w-5 items-center justify-center rounded-full border ${isChecked ? 'border-primary bg-primary text-primary-foreground' : 'border-slate-300'}`}>
                       {isChecked && <Check className="h-3.5 w-3.5" />}
                     </span>
                   </button>

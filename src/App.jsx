@@ -1,5 +1,5 @@
 import React, { Suspense, lazy, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useParams } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider, useAuth } from '@/core/lib/FirebaseAuthContext';
 import { FeatureFlagsProvider } from '@/core/lib/FeatureFlagsContext';
@@ -27,9 +27,13 @@ const MyPets = lazy(() => import('@/modules/pets/pages/MyPets'));
 const RadarSettings = lazy(() => import('@/modules/pets/pages/RadarSettings'));
 
 // ─── Organizações ─────────────────────────────────────────────────────────────
+// `/comunidade` = diretório e perfil público das organizações (aberto a todos).
+// `/organizacoes` = hub de gestão (só quem administra alguma organização).
 const OrganizationsDirectory = lazy(() => import('@/modules/organizations/pages/ClubsDirectory'));
+const OrganizationsHub = lazy(() => import('@/modules/organizations/pages/OrganizationsHub'));
 const CreateOrganization = lazy(() => import('@/modules/organizations/pages/CreateClub'));
 const OrganizationDetail = lazy(() => import('@/modules/organizations/pages/ClubDetail'));
+const OrganizationAdminPanel = lazy(() => import('@/modules/organizations/pages/OrganizationAdminPanel'));
 const OrganizationEventDetail = lazy(() => import('@/modules/organizations/pages/EventDetail'));
 
 // ─── Chat ─────────────────────────────────────────────────────────────────────
@@ -48,6 +52,7 @@ const AdminReports = lazy(() => import('@/modules/admin/pages/AdminReports'));
 const AdminUsers = lazy(() => import('@/modules/admin/pages/AdminUsers'));
 const AdminOrganizations = lazy(() => import('@/modules/admin/pages/AdminOrganizations'));
 const AdminMetrics = lazy(() => import('@/modules/admin/pages/AdminMetrics'));
+const AdminAuditLog = lazy(() => import('@/modules/admin/pages/AdminAuditLog'));
 
 // ─── QueryClient ─────────────────────────────────────────────────────────────
 const queryClient = new QueryClient({
@@ -111,6 +116,22 @@ function withLayout(pageName, Component) {
   );
 }
 
+// ─── Redirects legados (Organizações) ────────────────────────────────────────
+// `/organizacoes/:orgId` passou a ser o hub de gestão; o perfil público da
+// organização (o antigo destino desta rota) agora vive em `/comunidade/:orgId`.
+// Notificações antigas já gravadas no Firestore ainda apontam para o caminho
+// anterior — estes redirects preservam esses links.
+function LegacyOrgDetailRedirect() {
+  const { orgId } = useParams();
+  const location = useLocation();
+  return <Navigate to={`/comunidade/${orgId}${location.search}`} replace />;
+}
+
+function LegacyOrgEventRedirect() {
+  const { orgId, eventId } = useParams();
+  return <Navigate to={`/comunidade/${orgId}/eventos/${eventId}`} replace />;
+}
+
 function RouteTelemetry() {
   const location = useLocation();
   useEffect(() => {
@@ -172,20 +193,32 @@ export default function App() {
                   element={<ProtectedRoute>{withLayout('RadarSettings', RadarSettings)}</ProtectedRoute>}
                 />
 
-                {/* ── Organizações ─────────────────────────────────────── */}
-                <Route path="/organizacoes" element={withLayout('OrganizationsDirectory', OrganizationsDirectory)} />
+                {/* ── Comunidade (diretório público de organizações) ────── */}
+                <Route path="/comunidade" element={withLayout('OrganizationsDirectory', OrganizationsDirectory)} />
+                <Route
+                  path="/comunidade/:orgId/eventos/:eventId"
+                  element={<ProtectedRoute>{withLayout('OrganizationEventDetail', OrganizationEventDetail)}</ProtectedRoute>}
+                />
+                <Route
+                  path="/comunidade/:orgId"
+                  element={<ProtectedRoute>{withLayout('OrganizationDetail', OrganizationDetail)}</ProtectedRoute>}
+                />
+
+                {/* ── Organizações (hub de gestão) ──────────────────────── */}
+                <Route
+                  path="/organizacoes"
+                  element={<ProtectedRoute>{withLayout('OrganizationsHub', OrganizationsHub)}</ProtectedRoute>}
+                />
                 <Route
                   path="/organizacoes/criar"
                   element={<ProtectedRoute>{withLayout('CreateOrganization', CreateOrganization)}</ProtectedRoute>}
                 />
                 <Route
-                  path="/organizacoes/:orgId/eventos/:eventId"
-                  element={<ProtectedRoute>{withLayout('OrganizationEventDetail', OrganizationEventDetail)}</ProtectedRoute>}
+                  path="/organizacoes/:orgId/admin"
+                  element={<ProtectedRoute>{withLayout('OrganizationAdminPanel', OrganizationAdminPanel)}</ProtectedRoute>}
                 />
-                <Route
-                  path="/organizacoes/:orgId"
-                  element={<ProtectedRoute>{withLayout('OrganizationDetail', OrganizationDetail)}</ProtectedRoute>}
-                />
+                <Route path="/organizacoes/:orgId/eventos/:eventId" element={<LegacyOrgEventRedirect />} />
+                <Route path="/organizacoes/:orgId" element={<LegacyOrgDetailRedirect />} />
 
                 {/* ── Chat ─────────────────────────────────────────────── */}
                 <Route
@@ -234,10 +267,14 @@ export default function App() {
                   path="/admin/metricas"
                   element={<AdminRoute>{withLayout('AdminMetrics', AdminMetrics)}</AdminRoute>}
                 />
+                <Route
+                  path="/admin/auditoria"
+                  element={<AdminRoute>{withLayout('AdminAuditLog', AdminAuditLog)}</AdminRoute>}
+                />
 
                 {/* ── Redirects legados ─────────────────────────────────── */}
                 <Route path="/inicio" element={<Navigate to="/feed" replace />} />
-                <Route path="/clubes" element={<Navigate to="/organizacoes" replace />} />
+                <Route path="/clubes" element={<Navigate to="/comunidade" replace />} />
                 <Route path="/atletas" element={<Navigate to="/feed" replace />} />
 
                 {/* ── 404 ───────────────────────────────────────────────── */}

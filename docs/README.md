@@ -1,8 +1,9 @@
 # docs/ — Base de conhecimento (para IA e humanos)
 
-Documentação de referência da plataforma **PickleTour**, escrita para que
-qualquer pessoa — ou IA — entenda a estrutura e o funcionamento com o **mínimo
-de tokens/leitura**, sem precisar varrer o código.
+Documentação de referência da plataforma **Viralata** (adoção responsável de
+pets), escrita para que qualquer pessoa — ou IA — entenda a estrutura e o
+funcionamento com o **mínimo de tokens/leitura**, sem precisar varrer o
+código.
 
 ## Ordem de leitura
 
@@ -19,11 +20,6 @@ de tokens/leitura**, sem precisar varrer o código.
    tipografia, padrões de layout e efeitos de movimento/scroll.
 6. **[`ROADMAP.md`](./ROADMAP.md)** — plano de execução por fases para
    aplicar o design system e os follow-ups funcionais pendentes.
-
-> Nota: `AI_CONTEXT.md`, `ARCHITECTURE.md`, `MODULES.md` e este `README.md`
-> ainda descrevem o produto anterior deste fork (PickleTour, torneios de
-> pickleball) — a atualização desses documentos para refletir a Viralata
-> está listada na Fase 2 do `ROADMAP.md`.
 
 > O `README.md` da raiz cobre funcionalidades para o usuário final, como rodar
 > e publicar. Estes docs cobrem **estrutura e funcionamento interno**.

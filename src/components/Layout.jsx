@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
-  PawPrint, Heart, Building2, MessageCircle, Bell, User, Menu, X,
-  Plus, Shield, AlertTriangle, LogOut, Radar,
+  PawPrint, Heart, Building2, MessageCircle, User, Menu, X,
+  Plus, Shield, ShieldCheck, AlertTriangle, LogOut, Radar,
 } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
-import { useNotifications } from '@/modules/notifications/hooks/useNotifications';
+import NotificationsMenu from '@/modules/notifications/components/NotificationsMenu';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -19,19 +19,27 @@ const STANDALONE_PAGES = ['Home', 'Login', 'OnboardingQuestionnaire'];
 
 const NAV_ITEMS = [
   { label: 'Feed', icon: PawPrint, to: '/feed' },
-  { label: 'Organizações', icon: Building2, to: '/organizacoes' },
+  { label: 'Organizações', icon: ShieldCheck, to: '/organizacoes', auth: true },
+  { label: 'Comunidade', icon: Building2, to: '/comunidade' },
   { label: 'Chat', icon: MessageCircle, to: '/chat', auth: true },
   { label: 'Meus Pets', icon: Heart, to: '/meus-pets', auth: true },
+];
+
+// Barra fixa inferior (só mobile, só autenticado) — os 5 destinos mais
+// usados no bolso, com "Cadastrar" em destaque central elevado.
+const BOTTOM_TAB_ITEMS = [
+  { label: 'Feed', icon: PawPrint, to: '/feed' },
+  { label: 'ONGs', icon: Building2, to: '/comunidade' },
+  { label: 'Cadastrar', icon: Plus, to: '/pets/new', center: true },
+  { label: 'Chat', icon: MessageCircle, to: '/chat' },
+  { label: 'Perfil', icon: User, to: '/perfil' },
 ];
 
 export default function Layout({ children, currentPageName }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, userProfile, isAuthenticated, isPlatformAdmin, signOut } = useAuth();
-  const { data: notifications = [] } = useNotifications(user?.uid);
   const [mobileOpen, setMobileOpen] = useState(false);
-
-  const unreadCount = notifications.filter((n) => !n.read).length;
 
   if (STANDALONE_PAGES.includes(currentPageName)) {
     return <>{children}</>;
@@ -88,16 +96,7 @@ export default function Layout({ children, currentPageName }) {
                 </Button>
 
                 {/* Notificações */}
-                <Button asChild variant="ghost" size="icon" className="relative">
-                  <Link to="/perfil#notificacoes">
-                    <Bell className="w-5 h-5" />
-                    {unreadCount > 0 && (
-                      <span className="absolute -top-0.5 -right-0.5 bg-destructive text-destructive-foreground text-xs rounded-full w-4 h-4 flex items-center justify-center font-bold">
-                        {unreadCount > 9 ? '9+' : unreadCount}
-                      </span>
-                    )}
-                  </Link>
-                </Button>
+                <NotificationsMenu />
 
                 {/* Avatar / Menu */}
                 <DropdownMenu>
@@ -198,9 +197,46 @@ export default function Layout({ children, currentPageName }) {
       </header>
 
       {/* Main */}
-      <main className="flex-1 relative">
+      <main className={cn('flex-1 relative', isAuthenticated && 'pb-20 md:pb-0')}>
         {children}
       </main>
+
+      {/* Bottom tab bar (mobile, autenticado) */}
+      {isAuthenticated && (
+        <nav className="safe-pb fixed inset-x-0 bottom-0 z-40 flex items-end justify-around border-t border-white/60 bg-white/85 px-2 pt-2 backdrop-blur-xl md:hidden">
+          {BOTTOM_TAB_ITEMS.map(({ label, icon: Icon, to, center }) => {
+            const active = location.pathname.startsWith(to);
+            if (center) {
+              return (
+                <Link
+                  key={to}
+                  to={to}
+                  className="flex flex-1 flex-col items-center gap-1 pb-1.5"
+                  aria-label={label}
+                >
+                  <span className="-mt-6 flex h-12 w-12 items-center justify-center rounded-full bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--highlight))_100%)] text-white shadow-[0_14px_26px_-10px_rgba(64,34,18,0.6)]">
+                    <Icon className="h-5 w-5" />
+                  </span>
+                  <span className="text-[11px] font-medium text-stone-600">{label}</span>
+                </Link>
+              );
+            }
+            return (
+              <Link
+                key={to}
+                to={to}
+                className={cn(
+                  'flex flex-1 flex-col items-center gap-1 rounded-xl px-1 py-1.5 text-[11px] font-medium transition-colors',
+                  active ? 'text-primary' : 'text-stone-500 hover:text-stone-700',
+                )}
+              >
+                <Icon className="h-5 w-5" />
+                {label}
+              </Link>
+            );
+          })}
+        </nav>
+      )}
     </div>
   );
 }

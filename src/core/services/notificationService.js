@@ -31,12 +31,14 @@ export const NOTIFICATION_TYPE = Object.freeze({
   // Pets
   PET_STATUS_CHANGED: 'pet_status_changed',
   PET_RADAR_MATCH: 'pet_radar_match',
-  // Organizações
-  ORG_INVITE: 'org_invite',
-  ORG_INVITE_ACCEPTED: 'org_invite_accepted',
-  ORG_JOIN_REQUEST: 'org_join_request',
-  ORG_JOIN_APPROVED: 'org_join_approved',
-  ORG_JOIN_REJECTED: 'org_join_rejected',
+  // Organizações (coleções `club_*` — ver domain/constants.js do módulo)
+  CLUB_INVITE: 'club_invite',
+  CLUB_INVITE_ACCEPTED: 'club_invite_accepted',
+  CLUB_JOIN_REQUEST: 'club_join_request',
+  CLUB_JOIN_APPROVED: 'club_join_approved',
+  CLUB_JOIN_REJECTED: 'club_join_rejected',
+  CLUB_EVENT_PUBLISHED: 'club_event_published',
+  EVENT_INVITE: 'event_invite',
   // Fórum
   FORUM_REPLY: 'forum_reply',
   FORUM_MENTION: 'forum_mention',

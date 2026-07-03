@@ -199,9 +199,16 @@ performance, acessibilidade e não competir com o conteúdo (pets, adoção).
 | Já usam o sistema (só repaletar) | `ClubsDirectory.jsx`, `ClubDetail.jsx` | Usa `arena-panel`/`arena-chip`, paleta errada |
 | Demais ~28 páginas | `PetDetail`, `CreatePet`, `MyPets`, `RadarSettings`, `CreateClub`, `Profile`, `ChatPage`, onboarding, institucionais, `/admin/*` | Mistura de padrões — aplicar o mesmo receituário de tokens/cards/motion, sem novas decisões de design por página |
 
-## 10. Limpeza de código órfão (depois de extrair a referência técnica)
+## 10. Limpeza de código órfão — ✅ concluída (ver Fase 2 do `ROADMAP.md`)
 
-Remover (produto anterior, não roteado em `App.jsx`):
+> Nota histórica: os arquivos listados abaixo quando este documento foi
+> escrito já não existiam mais no código na hora de executar a Fase 2 —
+> foram removidos em sessão anterior. O órfão real encontrado foi outro
+> (`organizationService.js` + coleções `organizations`/
+> `organization_members`/`organization_reports`, um segundo modelo de
+> organização nunca conectado a rota nenhuma) — detalhes no `ROADMAP.md`.
+
+Lista original (referência, não mais aplicável):
 - `src/pages/Landing.jsx`
 - `src/modules/admin/pages/AdminTournaments.jsx`
 - `src/modules/adopters/pages/AthleteProfile.jsx`
@@ -209,9 +216,8 @@ Remover (produto anterior, não roteado em `App.jsx`):
 - Funções de torneio em `src/modules/admin/services/adminService.js`
   (`listAllTournaments`, `setTournamentArchived`, `deleteTournamentCascading`)
 
-E, à parte do design, `docs/MODULES.md` e `docs/ARCHITECTURE.md` hoje ainda
-descrevem o produto de torneios/atletas — precisam de uma atualização própria
-(fora do escopo deste documento, listado no roadmap).
+`docs/MODULES.md`, `docs/ARCHITECTURE.md` e `docs/AI_CONTEXT.md` já foram
+reescritos para descrever a Viralata real.
 
 ## 11. Dark mode
 
