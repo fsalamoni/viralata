@@ -6,27 +6,30 @@
 
 @layer base {
   :root {
-    --background: 40 38% 97%;
-    --foreground: 20 18% 15%;
-    --card: 0 0% 100%;
-    --card-foreground: 20 18% 15%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 20 18% 15%;
-    --primary: 16 68% 46%;
+    --background: 38 45% 97%;
+    --background-alt: 34 40% 94%;
+    --foreground: 20 25% 13%;
+    --card: 30 45% 99%;
+    --card-foreground: 20 25% 13%;
+    --popover: 30 45% 99%;
+    --popover-foreground: 20 25% 13%;
+    --primary: 17 72% 45%;
     --primary-foreground: 40 45% 98%;
     --secondary: 38 42% 91%;
     --secondary-foreground: 20 30% 20%;
     --muted: 32 20% 92%;
-    --muted-foreground: 20 12% 42%;
-    --accent: 84 24% 36%;
-    --accent-foreground: 40 40% 97%;
-    --highlight: 42 88% 55%;
-    --highlight-foreground: 30 40% 16%;
-    --destructive: 4 72% 52%;
+    --muted-foreground: 20 12% 40%;
+    --accent: 86 30% 32%;
+    --accent-foreground: 86 34% 24%;
+    --highlight: 40 88% 54%;
+    --highlight-foreground: 30 60% 18%;
+    --success: 150 38% 36%;
+    --success-foreground: 0 0% 100%;
+    --destructive: 9 62% 46%;
     --destructive-foreground: 0 0% 100%;
-    --border: 30 20% 85%;
-    --input: 30 20% 85%;
-    --ring: 16 68% 46%;
+    --border: 30 20% 88%;
+    --input: 30 20% 89%;
+    --ring: 17 72% 45%;
     --radius: 1.25rem;
     --sidebar-background: 20 28% 12%;
     --sidebar-foreground: 40 30% 93%;
@@ -109,10 +112,7 @@
     min-height: 100vh;
     min-height: 100dvh; /* evita o "salto" do 100vh no Safari mobile */
     font-family: 'Manrope', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background:
-      radial-gradient(circle at top left, hsl(28 85% 90% / 0.8), transparent 28%),
-      radial-gradient(circle at top right, hsl(42 90% 87% / 0.7), transparent 22%),
-      linear-gradient(180deg, hsl(40 38% 97%), hsl(38 55% 95%));
+    background: hsl(var(--background));
   }
 
   h1,
@@ -148,24 +148,24 @@
 }
 
 @layer components {
+  /* Telas internas: fundo creme chapado, sem textura — só a Home e o
+     onboarding têm o brilho radial decorativo (.arena-hero-glow). */
   .arena-page {
-    background:
-      radial-gradient(circle at top left, hsl(28 80% 88% / 0.5), transparent 18%),
-      radial-gradient(circle at top right, hsl(42 90% 85% / 0.4), transparent 22%),
-      linear-gradient(180deg, hsl(40 45% 97%), hsl(38 60% 95%));
+    background: hsl(var(--background));
     position: relative;
   }
 
-  .arena-page::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    background-image:
-      linear-gradient(hsl(20 30% 60% / 0.1) 1px, transparent 1px),
-      linear-gradient(90deg, hsl(20 30% 60% / 0.1) 1px, transparent 1px);
-    background-size: 96px 96px;
-    mask-image: linear-gradient(180deg, rgb(0 0 0 / 0.18), transparent 78%);
+  .arena-hero-glow {
+    background:
+      radial-gradient(circle at 12% 8%, hsl(17 72% 80% / 0.5), transparent 32%),
+      radial-gradient(circle at 88% 4%, hsl(40 88% 78% / 0.45), transparent 28%),
+      linear-gradient(180deg, hsl(38 45% 97%), hsl(34 42% 95%) 60%, hsl(38 45% 97%));
+  }
+
+  .arena-onboarding-glow {
+    background:
+      radial-gradient(circle at 15% 0%, hsl(17 72% 88% / 0.6), transparent 30%),
+      linear-gradient(180deg, hsl(38 45% 97%), hsl(34 40% 94%));
   }
 
   .arena-panel {

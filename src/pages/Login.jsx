@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
-import { ArrowRight, PawPrint } from 'lucide-react';
+import { PawPrint } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -11,6 +11,12 @@ const LOGIN_HIGHLIGHTS = [
   'Converse diretamente com ONGs e responsáveis pelo chat integrado.',
   'Cadastre pets para adoção e acompanhe os interessados em tempo real.',
 ];
+
+const LOGIN_QUOTE = {
+  quote: 'O Viralata me ajudou a encontrar o Bolt em uma semana. O questionário de compatibilidade fez toda diferença.',
+  adopter: 'Fernanda R.',
+  pet: 'Bolt',
+};
 
 export default function Login() {
   const { signInWithGoogle, isAuthenticated, isLoadingAuth, authError, isAuthAvailable, authUnavailableReason } = useAuth();
@@ -41,10 +47,9 @@ export default function Login() {
   if (isLoadingAuth) return null;
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[linear-gradient(150deg,hsl(14_55%_18%),hsl(20_30%_10%))]">
+    <div className="relative min-h-screen overflow-hidden bg-[linear-gradient(155deg,hsl(14,55%,30%),hsl(20,30%,15%)_65%)]">
       {/* Gradiente decorativo */}
-      <div className="absolute inset-x-0 top-0 h-[28rem] bg-[radial-gradient(circle_at_top,hsl(var(--highlight)/0.22),transparent_60%)]" />
-      <div className="absolute inset-0 bg-[url('/noise.svg')] opacity-[0.03]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_85%_10%,hsl(40,88%,54%,0.22),transparent_40%)]" />
 
       <div className="relative mx-auto grid min-h-screen max-w-6xl gap-8 px-6 py-8 lg:grid-cols-[1.05fr,0.95fr] lg:items-center">
 
@@ -79,15 +84,15 @@ export default function Login() {
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-3 text-sm text-orange-50/75">
-            <Link to="/politica-privacidade" className="transition-colors hover:text-white">Política de Privacidade</Link>
-            <Link to="/termos" className="transition-colors hover:text-white">Termos de Uso</Link>
+          <div className="rounded-2xl border border-white/15 bg-white/[0.08] p-5">
+            <p className="text-sm italic leading-relaxed text-orange-50/85">"{LOGIN_QUOTE.quote}"</p>
+            <div className="mt-2.5 text-xs font-bold text-orange-200/85">{LOGIN_QUOTE.adopter} · adotou {LOGIN_QUOTE.pet}</div>
           </div>
         </div>
 
         {/* Card de login */}
         <div className="flex items-center justify-center">
-          <Card className="w-full max-w-lg rounded-[2.25rem] border-white/80 bg-white/95 p-1.5 shadow-[0_35px_80px_-40px_rgba(15,23,42,0.55)] sm:p-2">
+          <Card className="w-full max-w-lg rounded-[2.25rem] border-white bg-card p-1.5 shadow-[0_35px_80px_-40px_rgba(15,23,42,0.55)] sm:p-2">
             <CardHeader className="px-5 pb-4 pt-6 text-center sm:px-8">
               {/* Logo mobile */}
               <Link to="/" className="mx-auto mb-4 inline-flex items-center gap-3 text-slate-950 lg:hidden">
@@ -102,10 +107,10 @@ export default function Login() {
                 <PawPrint className="h-6 w-6" />
               </div>
 
-              <CardTitle className="mt-5 text-[2rem] font-semibold leading-[1.05] text-slate-950 sm:text-3xl">
+              <CardTitle className="mt-4.5 text-2xl font-extrabold leading-tight text-foreground">
                 Bem-vindo ao Viralata
               </CardTitle>
-              <CardDescription className="mx-auto mt-3 max-w-md text-sm leading-7 text-slate-600">
+              <CardDescription className="mx-auto mt-2.5 max-w-md text-sm leading-7 text-muted-foreground">
                 Use sua conta Google para acessar a plataforma e encontrar ou cadastrar pets para adoção responsável.
               </CardDescription>
             </CardHeader>
@@ -114,21 +119,11 @@ export default function Login() {
               <Button
                 onClick={onClick}
                 disabled={busy || !isAuthAvailable}
-                className="h-12 w-full gap-3 text-[15px]"
-                size="lg"
+                variant="outline"
+                className="h-[50px] w-full gap-2.5 border-border bg-card text-[14.5px] font-bold text-foreground shadow-[0_10px_24px_-16px_hsl(20_40%_20%/0.3)]"
               >
-                <GoogleIcon className="h-4 w-4 flex-shrink-0" />
-                {busy ? (
-                  'Conectando…'
-                ) : isAuthAvailable ? (
-                  <>
-                    <span className="sm:hidden">Continuar com Google</span>
-                    <span className="hidden sm:inline">Continuar com Google</span>
-                  </>
-                ) : (
-                  'Login indisponível'
-                )}
-                {!busy && isAuthAvailable && <ArrowRight className="h-4 w-4 ml-auto" />}
+                <GoogleIcon className="h-[18px] w-[18px] flex-shrink-0" />
+                {busy ? 'Conectando…' : isAuthAvailable ? 'Continuar com Google' : 'Login indisponível'}
               </Button>
 
               {!isAuthAvailable && (

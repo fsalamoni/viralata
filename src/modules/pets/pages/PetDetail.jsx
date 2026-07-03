@@ -1,11 +1,15 @@
 import React, { useRef, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useQuery } from '@tanstack/react-query';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '@/core/config/firebase';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import {
   usePet, useCreateInterest, useHasInterest, useCompleteAdoption, useDeletePet,
   useMyRatingForPet, useCreateRating,
 } from '../hooks/usePets';
+import { getOrCreateDirectConversation } from '@/modules/chat/services/chatService';
 import InterestPanel from '../components/InterestPanel';
 import RatingForm from '../components/RatingForm';
 import PetShareCard from '../components/PetShareCard';
@@ -13,8 +17,24 @@ import { usePetShareImage } from '../hooks/usePetShareImage';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Heart, MapPin, Trash2, Share2 } from 'lucide-react';
+import { ArrowLeft, Heart, MapPin, Trash2, Share2, MessageCircle } from 'lucide-react';
 import { toast } from 'sonner';
+
+function useOwnerProfile(ownerId) {
+  return useQuery({
+    queryKey: ['users', ownerId],
+    queryFn: async () => {
+      const snap = await getDoc(doc(db, 'users', ownerId));
+      return snap.exists() ? { uid: snap.id, ...snap.data() } : null;
+    },
+    enabled: Boolean(ownerId),
+    staleTime: 1000 * 60 * 5,
+  });
+}
+
+function ownerInitials(name) {
+  return (name || '?').trim().split(/\s+/).slice(0, 2).map((w) => w[0]?.toUpperCase()).join('');
+}
 
 const SIZE_LABEL = { mini: 'Mini', small: 'Pequeno', medium: 'Médio', large: 'Grande', giant: 'Gigante' };
 const AGE_LABEL = { puppy: 'Filhote', adult: 'Adulto', senior: 'Idoso' };
@@ -30,6 +50,8 @@ export default function PetDetail() {
   const completeAdoption = useCompleteAdoption();
   const deletePet = useDeletePet();
   const [currentPhoto, setCurrentPhoto] = useState(0);
+  const [openingChat, setOpeningChat] = useState(false);
+  const { data: owner } = useOwnerProfile(pet?.owner_id);
 
   const isOwner = user?.uid === pet?.owner_id;
   const isAdopter = user?.uid === pet?.adopted_by;
@@ -64,6 +86,24 @@ export default function PetDetail() {
     }
   }
 
+  async function handleOpenChat() {
+    if (!user) { navigate('/login'); return; }
+    if (!pet?.owner_id || pet.owner_id === user.uid) return;
+    setOpeningChat(true);
+    try {
+      const other = { uid: pet.owner_id, name: owner?.platform_name || owner?.name || 'Responsável', photo_url: owner?.photo_url || '' };
+      const conversationId = await getOrCreateDirectConversation(user, userProfile, other, {
+        pet_id: petId,
+        pet_title: pet.title || pet.name,
+      });
+      navigate(`/chat/${conversationId}`);
+    } catch (e) {
+      toast.error(e?.message || 'Não foi possível abrir a conversa.');
+    } finally {
+      setOpeningChat(false);
+    }
+  }
+
   async function handleShare() {
     const shareUrl = `${window.location.origin}/pets/${petId}`;
     await shareFromNode(shareCardRef.current, {
@@ -78,7 +118,7 @@ export default function PetDetail() {
     try {
       await deletePet.mutateAsync(petId);
       toast.success('Pet removido.');
-      navigate('/pets');
+      navigate('/meus-pets');
     } catch (e) {
       toast.error('Erro ao remover pet.');
     }
@@ -161,6 +201,21 @@ export default function PetDetail() {
           {pet.adoption_requirements && (
             <div className="bg-accent/10 border border-accent/30 rounded-xl p-3 text-sm text-[hsl(84,35%,22%)]">
               <strong>Requisitos para adoção:</strong> {pet.adoption_requirements}
+            </div>
+          )}
+
+          {!canManage && pet.owner_id && (
+            <div className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3.5">
+              <span className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--highlight))_100%)] font-['Sora'] text-[13px] font-bold text-white">
+                {ownerInitials(owner?.platform_name || owner?.name)}
+              </span>
+              <div className="min-w-0 flex-1">
+                <div className="truncate text-[13px] font-bold text-foreground">{owner?.platform_name || owner?.name || 'Responsável'}</div>
+                <div className="text-[11.5px] text-muted-foreground">Responsável pelo pet</div>
+              </div>
+              <Button variant="outline" size="sm" onClick={handleOpenChat} disabled={openingChat} className="shrink-0 gap-1.5">
+                <MessageCircle className="h-4 w-4" /> Conversar
+              </Button>
             </div>
           )}
 

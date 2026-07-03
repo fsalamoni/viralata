@@ -3,9 +3,16 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import {
-  PawPrint, Heart, Shield, Building2, AlertTriangle,
-  ClipboardList, Search, Sparkles, ArrowRight,
+  PawPrint, Heart, Shield, Users, Megaphone,
+  ClipboardList, Search, Sparkles, ArrowRight, CheckCircle2,
 } from 'lucide-react';
+
+const IMPACT_STATS = [
+  { value: '500+', label: 'Adoções realizadas' },
+  { value: '1.200+', label: 'Animais resgatados' },
+  { value: '26', label: 'ONGs parceiras' },
+  { value: '14', label: 'Cidades atendidas' },
+];
 
 const STEPS = [
   { icon: ClipboardList, title: 'Monte seu perfil', desc: 'Responda algumas perguntas sobre seu espaço e rotina para encontrarmos os pets mais compatíveis.' },
@@ -13,11 +20,17 @@ const STEPS = [
   { icon: Heart, title: 'Adote com amor', desc: 'Converse com o responsável pelo chat e finalize a adoção de forma segura e responsável.' },
 ];
 
+const STORIES = [
+  { adopter: 'Fernanda R.', pet: 'Bolt', quote: 'O Viralata me ajudou a encontrar o Bolt em uma semana. O questionário de compatibilidade fez toda diferença.', gradient: 'linear-gradient(135deg,#E8875F,#C1502E)' },
+  { adopter: 'Marcos e Júlia', pet: 'Mia', quote: 'Adotamos a Mia pela ONG Refúgio Quatro Patas e o processo foi todo acompanhado e seguro, do início ao fim.', gradient: 'linear-gradient(135deg,#C9A876,#8B6F47)' },
+  { adopter: 'Diego T.', pet: 'Zeca', quote: 'Denunciei um caso de maus-tratos pelo app e a ONG parceira resgatou o animal no mesmo dia.', gradient: 'linear-gradient(135deg,#9CAA6B,#5F6B3E)' },
+];
+
 const FEATURES = [
-  { icon: Heart, title: 'Match inteligente', desc: 'Algoritmo que cruza seu perfil com as necessidades do pet.', tone: 'bg-primary/10 text-primary' },
-  { icon: Building2, title: 'ONGs e Lojas', desc: 'Parceiros verificados que cuidam dos pets com responsabilidade.', tone: 'bg-accent/10 text-accent' },
-  { icon: AlertTriangle, title: 'Denúncias', desc: 'Reporte maus-tratos com GPS e gere PDF para as autoridades.', tone: 'bg-highlight/20 text-[hsl(30,60%,32%)]' },
-  { icon: Shield, title: 'Seguro e gratuito', desc: 'Plataforma 100% gratuita, sem venda de animais.', tone: 'bg-foreground/5 text-foreground/70' },
+  { icon: Heart, title: 'Match inteligente', desc: 'Algoritmo que cruza seu perfil com as necessidades do pet.', bg: 'hsl(17 72% 45% / 0.12)', color: 'hsl(17 72% 38%)' },
+  { icon: Users, title: 'Comunidade viva', desc: 'ONGs, tutores e adotantes trocando experiências e apoio.', bg: 'hsl(86 30% 32% / 0.14)', color: 'hsl(86 34% 26%)' },
+  { icon: Megaphone, title: 'Denúncias com propósito', desc: 'Reporte maus-tratos com GPS e gere PDF para as autoridades.', bg: 'hsl(40 88% 54% / 0.18)', color: 'hsl(30 60% 32%)' },
+  { icon: Shield, title: 'Seguro e gratuito', desc: 'Plataforma 100% gratuita, sem venda de animais.', bg: 'hsl(20 20% 20% / 0.06)', color: 'hsl(20 20% 25%)' },
 ];
 
 const fadeUp = {
@@ -32,7 +45,7 @@ const stagger = {
 
 export default function Home() {
   return (
-    <div className="arena-page min-h-screen">
+    <div className="arena-page arena-hero-glow min-h-screen">
       {/* Hero */}
       <section className="relative overflow-hidden px-4 pb-20 pt-16 sm:pt-24">
         <div className="relative mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-[1.05fr,0.95fr]">
@@ -49,8 +62,8 @@ export default function Home() {
               Encontre seu <span className="arena-heading">companheiro</span> ideal
             </motion.h1>
             <motion.p variants={fadeUp} className="mx-auto max-w-xl text-lg leading-relaxed text-muted-foreground lg:mx-0">
-              O Viralata conecta pets que precisam de um lar com famílias que têm amor para dar.
-              Adoção responsável, gratuita e segura, do início ao fim.
+              O Viralata conecta pets que precisam de um lar com famílias que têm amor para dar —
+              do primeiro match até o dia da adoção.
             </motion.p>
             <motion.div variants={fadeUp} className="flex flex-col justify-center gap-3 sm:flex-row lg:justify-start">
               <Button asChild size="lg" className="px-8">
@@ -87,9 +100,21 @@ export default function Home() {
               transition={{ duration: 0.5, delay: 0.65 }}
               className="arena-chip absolute -right-2 bottom-8 sm:-right-6"
             >
-              <Heart className="h-3.5 w-3.5 text-primary" /> 100% sem custo
+              <CheckCircle2 className="h-3.5 w-3.5 text-primary" /> 100% sem custo
             </motion.div>
           </motion.div>
+        </div>
+      </section>
+
+      {/* Impacto */}
+      <section className="relative px-4 pb-16 sm:pb-20">
+        <div className="mx-auto grid max-w-4xl grid-cols-2 gap-4 rounded-[1.75rem] border border-white bg-card/85 p-6 shadow-[0_24px_60px_-34px_rgba(64,34,18,0.5)] backdrop-blur-md sm:grid-cols-4 sm:p-7">
+          {IMPACT_STATS.map((stat) => (
+            <div key={stat.label} className="p-1.5 text-center">
+              <div className="arena-heading text-2xl font-extrabold sm:text-3xl">{stat.value}</div>
+              <div className="mt-1 text-xs font-semibold text-muted-foreground">{stat.label}</div>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -122,6 +147,43 @@ export default function Home() {
         </div>
       </motion.section>
 
+      {/* Histórias de adoção */}
+      <motion.section
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, margin: '-80px' }}
+        variants={stagger}
+        className="px-4 py-16 sm:py-24"
+      >
+        <div className="mx-auto max-w-5xl">
+          <motion.div variants={fadeUp} className="mb-10 text-center">
+            <span className="arena-chip mx-auto bg-accent/10 text-accent">
+              <Heart className="h-3.5 w-3.5" /> Histórias reais
+            </span>
+            <h2 className="mt-3.5 text-2xl font-bold text-foreground sm:text-3xl">Vidas que mudaram de rumo</h2>
+          </motion.div>
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
+            {STORIES.map((story) => (
+              <motion.div key={story.adopter} variants={fadeUp} className="arena-panel rounded-[1.5rem] p-6">
+                <div className="mb-3.5 flex items-center gap-3">
+                  <span
+                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full font-['Sora'] text-sm font-bold text-white"
+                    style={{ background: story.gradient }}
+                  >
+                    {story.adopter.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase()}
+                  </span>
+                  <div>
+                    <div className="text-sm font-bold text-foreground">{story.adopter}</div>
+                    <div className="text-xs text-muted-foreground">adotou {story.pet}</div>
+                  </div>
+                </div>
+                <p className="text-sm italic leading-relaxed text-foreground/80">"{story.quote}"</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </motion.section>
+
       {/* Funcionalidades */}
       <motion.section
         initial="hidden"
@@ -132,12 +194,12 @@ export default function Home() {
       >
         <div className="mx-auto max-w-4xl">
           <motion.h2 variants={fadeUp} className="mb-12 text-center text-2xl font-bold text-foreground sm:text-3xl">
-            Tudo que você precisa
+            Tudo em um só lugar
           </motion.h2>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {FEATURES.map(({ icon: Icon, title, desc, tone }) => (
+            {FEATURES.map(({ icon: Icon, title, desc, bg, color }) => (
               <motion.div key={title} variants={fadeUp} whileHover={{ y: -4 }} className="arena-panel space-y-3 rounded-[1.5rem] p-5">
-                <div className={`flex h-11 w-11 items-center justify-center rounded-xl ${tone}`}>
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl" style={{ background: bg, color }}>
                   <Icon className="h-5 w-5" />
                 </div>
                 <h3 className="font-semibold text-foreground">{title}</h3>

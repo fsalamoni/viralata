@@ -1,42 +1,217 @@
-import React, { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { MapPin } from 'lucide-react';
+import React, { useMemo, useState, useRef, useCallback } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { MapPin, PlusCircle, Zap, X, Heart, Info, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
-import { usePetFeed } from '../hooks/usePets';
+import { usePetFeed, useCreateInterest } from '../hooks/usePets';
 import { hasKnownCoords, lookupCityCoordsByName, filterPetsByRadius } from '../domain/geoDistance';
 import PetCard from '../components/PetCard';
 import AdSlot from '@/components/AdSlot';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/core/lib/utils';
-import { PlusCircle, SlidersHorizontal } from 'lucide-react';
+import { toast } from 'sonner';
 
 const RADIUS_OPTIONS = [5, 10, 25, 50, 100];
 
+const SPECIES_FILTERS = [
+  { value: 'all', label: 'Todos' },
+  { value: 'dog', label: 'Cães' },
+  { value: 'cat', label: 'Gatos' },
+  { value: 'rabbit', label: 'Coelhos' },
+];
+
+const SIZE_FILTERS = [
+  { value: 'all', label: 'Todos os portes' },
+  { value: 'mini', label: 'Mini' },
+  { value: 'small', label: 'Pequeno' },
+  { value: 'medium', label: 'Médio' },
+  { value: 'large', label: 'Grande' },
+  { value: 'giant', label: 'Gigante' },
+];
+
+function FilterChip({ active, onClick, children }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        'inline-flex h-9 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-4 text-[13px] font-bold transition-colors',
+        active ? 'bg-primary text-primary-foreground' : 'border border-border bg-card text-foreground/75 hover:border-primary/40',
+      )}
+    >
+      {children}
+    </button>
+  );
+}
+
+const AGE_LABEL = { puppy: 'Filhote', adult: 'Adulto', senior: 'Idoso' };
+
+function SwipeCard({ pet, isTop, onSwipe, onOpenDetail }) {
+  const ref = useRef(null);
+  const [drag, setDrag] = useState(null);
+  const dx = drag?.dx || 0;
+  const rotation = Math.max(-14, Math.min(14, dx / 12));
+  const likeOpacity = Math.max(0, Math.min(1, dx / 90));
+  const passOpacity = Math.max(0, Math.min(1, -dx / 90));
+
+  const onPointerDown = useCallback((e) => {
+    if (!isTop) return;
+    try { e.currentTarget.setPointerCapture(e.pointerId); } catch { /* no-op */ }
+    setDrag({ startX: e.clientX, dx: 0 });
+  }, [isTop]);
+
+  const onPointerMove = useCallback((e) => {
+    setDrag((d) => (d ? { ...d, dx: e.clientX - d.startX } : d));
+  }, []);
+
+  const onPointerUp = useCallback(() => {
+    setDrag((d) => {
+      if (!d) return null;
+      if (Math.abs(d.dx) < 6) {
+        onOpenDetail(pet.id);
+      } else if (d.dx > 90) {
+        onSwipe(pet.id, 'like');
+      } else if (d.dx < -90) {
+        onSwipe(pet.id, 'pass');
+      }
+      return null;
+    });
+  }, [onOpenDetail, onSwipe, pet.id]);
+
+  const temperament = pet.temperament || [];
+
+  return (
+    <div
+      ref={ref}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerLeave={onPointerUp}
+      className="absolute inset-0 touch-none select-none"
+      style={{
+        transform: drag ? `translateX(${dx}px) rotate(${rotation}deg)` : 'translateX(0) rotate(0)',
+        transition: drag ? 'none' : 'transform 0.32s cubic-bezier(.2,.8,.2,1)',
+        zIndex: isTop ? 3 : 1,
+        cursor: isTop ? 'grab' : 'default',
+      }}
+    >
+      <div className="relative h-full w-full overflow-hidden rounded-[28px] border border-white shadow-[0_30px_60px_-28px_hsl(20_40%_15%/0.45)]">
+        {pet.photos?.[0] ? (
+          <img src={pet.photos[0]} alt="" className="absolute inset-0 h-full w-full object-cover" draggable={false} />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--highlight))_100%)]">
+            <Heart className="h-28 w-28 text-white/35" />
+          </div>
+        )}
+        <div className="absolute right-4 top-4 opacity-0 transition-opacity" style={{ opacity: likeOpacity, transform: 'rotate(-14deg)' }}>
+          <span className="rounded-[10px] border-[3px] border-[hsl(150,55%,55%)] px-3 py-1 font-['Sora'] text-lg font-extrabold text-[hsl(150,70%,92%)]">CURTIR</span>
+        </div>
+        <div className="absolute left-4 top-4" style={{ opacity: passOpacity, transform: 'rotate(14deg)' }}>
+          <span className="rounded-[10px] border-[3px] border-[hsl(9,62%,60%)] px-3 py-1 font-['Sora'] text-lg font-extrabold text-[hsl(9,70%,92%)]">AGORA NÃO</span>
+        </div>
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); onOpenDetail(pet.id); }}
+          className="absolute right-3.5 top-3.5 flex h-[30px] w-[30px] items-center justify-center rounded-full bg-black/30 text-white"
+        >
+          <Info className="h-4 w-4" />
+        </button>
+        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-5 text-white">
+          <div className="mb-1.5 flex items-baseline gap-2">
+            <span className="font-['Sora'] text-xl font-extrabold">{pet.name || pet.title}</span>
+            {pet.age_group && <span className="text-xs opacity-85">· {AGE_LABEL[pet.age_group]}</span>}
+          </div>
+          <div className="mb-2 flex flex-wrap gap-1.5">
+            {temperament.slice(0, 2).map((tag) => (
+              <span key={tag} className="rounded-full bg-white/20 px-2.5 py-0.5 text-[11px] font-bold">{tag}</span>
+            ))}
+          </div>
+          <div className="flex items-center gap-1 text-xs opacity-90">
+            <MapPin className="h-3.5 w-3.5" /> {pet.city}{pet.state ? `, ${pet.state}` : ''}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SwipeDeck({ pets, onLike, onPass, onOpenDetail }) {
+  const [dismissedIds, setDismissedIds] = useState([]);
+  const visible = pets.filter((p) => !dismissedIds.includes(p.id)).slice(0, 3);
+
+  function handleSwipe(id, decision) {
+    setDismissedIds((prev) => [...prev, id]);
+    if (decision === 'like') onLike(id);
+    else onPass(id);
+  }
+
+  return (
+    <div className="mb-14">
+      <div className="mb-4 flex items-center gap-2">
+        <Zap className="h-5 w-5 text-highlight" fill="currentColor" />
+        <h2 className="font-['Sora'] text-[17px] font-bold text-foreground">Descobrir</h2>
+      </div>
+      <div className="relative mx-auto h-[460px] max-w-[360px]">
+        {visible.length === 0 ? (
+          <div className="absolute inset-0 flex flex-col items-center justify-center rounded-[28px] border border-border bg-card p-8 text-center">
+            <CheckCircle2 className="h-10 w-10 text-accent" />
+            <p className="mt-3.5 mb-1 text-sm font-bold text-foreground">Você viu todos os destaques!</p>
+            <p className="text-xs text-muted-foreground">Veja a lista completa logo abaixo.</p>
+          </div>
+        ) : (
+          visible.map((pet, i) => (
+            <SwipeCard
+              key={pet.id}
+              pet={pet}
+              isTop={i === 0}
+              onSwipe={handleSwipe}
+              onOpenDetail={onOpenDetail}
+            />
+          ))
+        )}
+      </div>
+      <div className="mt-5.5 flex items-center justify-center gap-6">
+        <button
+          type="button"
+          disabled={visible.length === 0}
+          onClick={() => handleSwipe(visible[0]?.id, 'pass')}
+          className="flex h-14 w-14 items-center justify-center rounded-full border border-border bg-card text-[hsl(9,62%,46%)] shadow-[0_14px_28px_-16px_hsl(20_40%_20%/0.35)] disabled:opacity-40"
+        >
+          <X className="h-6 w-6" />
+        </button>
+        <button
+          type="button"
+          disabled={visible.length === 0}
+          onClick={() => handleSwipe(visible[0]?.id, 'like')}
+          className="flex h-16 w-16 items-center justify-center rounded-full bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--highlight))_100%)] text-white shadow-[0_18px_32px_-14px_hsl(17_72%_30%/0.6)] disabled:opacity-40"
+        >
+          <Heart className="h-7 w-7" fill="currentColor" />
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function PetFeed() {
-  const { userProfile } = useAuth();
-  const [filters, setFilters] = useState({});
+  const navigate = useNavigate();
+  const { userProfile, user } = useAuth();
+  const [species, setSpecies] = useState('all');
+  const [size, setSize] = useState('all');
   const [city, setCity] = useState('');
-  const [radius, setRadius] = useState(null);
+  const [radius, setRadius] = useState(25);
+  const createInterest = useCreateInterest();
+
+  const firstName = (userProfile?.name || user?.displayName || '').split(' ')[0];
 
   const trimmedCity = city.trim();
-  // Com raio ativo e a cidade digitada conhecida (tabela de coordenadas
-  // aproximadas — ver domain/geoDistance.js), busca sem o filtro exato de
-  // cidade no Firestore e filtra por distância real no client. Sem raio, ou
-  // cidade fora da tabela, mantém o filtro de texto exato de sempre.
-  const radiusActive = radius && hasKnownCoords(trimmedCity);
-  // Sem o filtro exato de cidade, a query cai para o top-N global por
-  // prioridade — sem ampliar o limite, o filtro de raio no client acabaria
-  // vendo só os N pets mais prioritários da plataforma inteira, não
-  // necessariamente os geograficamente próximos. 500 dá margem para achar
-  // os pets certos sem buscar a coleção inteira.
-  const queryFilters = {
-    ...filters,
+  const radiusActive = Boolean(radius && hasKnownCoords(trimmedCity));
+  const filters = {
+    species: species === 'all' ? undefined : species,
+    size: size === 'all' ? undefined : size,
     city: radiusActive ? undefined : (trimmedCity || undefined),
     limitCount: radiusActive ? 500 : undefined,
   };
-  const { data: fetchedPets = [], isLoading, isError } = usePetFeed(queryFilters);
+  const { data: fetchedPets = [], isLoading, isError } = usePetFeed(filters);
 
   const pets = useMemo(() => {
     if (!radiusActive) return fetchedPets;
@@ -44,130 +219,139 @@ export default function PetFeed() {
     return filterPetsByRadius(fetchedPets, origin, radius) ?? fetchedPets;
   }, [fetchedPets, radiusActive, trimmedCity, radius]);
 
-  function handleFilter(key, value) {
-    setFilters((prev) => ({ ...prev, [key]: value === 'all' ? undefined : value }));
+  const priorityPets = useMemo(
+    () => [...pets].sort((a, b) => (b.priority_score || 0) - (a.priority_score || 0)),
+    [pets],
+  );
+
+  function handleLike(petId) {
+    if (!petId) return;
+    createInterest.mutate(petId, {
+      onSuccess: () => toast.success('Interesse registrado! 🐾'),
+      onError: () => toast.error('Não foi possível registrar o interesse.'),
+    });
+  }
+
+  function handlePass() {
+    // Sem persistência — só remove da pilha local, como no protótipo.
+  }
+
+  function handleOpenDetail(petId) {
+    navigate(`/pets/${petId}`);
   }
 
   return (
-    <div className="arena-page max-w-6xl mx-auto px-4 py-6 space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="arena-page mx-auto max-w-6xl px-5 py-5.5 pb-12">
+      <div className="mb-4.5 flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Encontrar um Pet</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Mostrando apenas pets compatíveis com o seu perfil
+          <h1 className="font-['Sora'] text-[23px] font-extrabold text-foreground">
+            Encontre seu novo melhor amigo{firstName ? `, ${firstName}` : ''}
+          </h1>
+          <p className="mt-1.5 text-[13.5px] text-muted-foreground">
+            Deslize para curtir os destaques ou explore a lista completa abaixo.
           </p>
         </div>
-        <Button asChild>
+        <Button asChild className="shrink-0">
           <Link to="/pets/new">
-            <PlusCircle className="w-4 h-4 mr-2" />
+            <PlusCircle className="mr-2 h-4 w-4" />
             Cadastrar Pet
           </Link>
         </Button>
       </div>
 
-      {/* Filtros */}
-      <div className="flex flex-wrap gap-3 items-center">
-        <SlidersHorizontal className="w-4 h-4 text-muted-foreground" />
-        <Select onValueChange={(v) => handleFilter('species', v)}>
-          <SelectTrigger className="w-36">
-            <SelectValue placeholder="Espécie" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todas</SelectItem>
-            <SelectItem value="dog">Cachorro</SelectItem>
-            <SelectItem value="cat">Gato</SelectItem>
-            <SelectItem value="rabbit">Coelho</SelectItem>
-            <SelectItem value="bird">Pássaro</SelectItem>
-            <SelectItem value="other">Outro</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select onValueChange={(v) => handleFilter('size', v)}>
-          <SelectTrigger className="w-36">
-            <SelectValue placeholder="Porte" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos</SelectItem>
-            <SelectItem value="mini">Mini</SelectItem>
-            <SelectItem value="small">Pequeno</SelectItem>
-            <SelectItem value="medium">Médio</SelectItem>
-            <SelectItem value="large">Grande</SelectItem>
-            <SelectItem value="giant">Gigante</SelectItem>
-          </SelectContent>
-        </Select>
+      {/* Chips de espécie */}
+      <div className="mb-2 flex gap-2 overflow-x-auto pb-0.5">
+        {SPECIES_FILTERS.map((f) => (
+          <FilterChip key={f.value} active={species === f.value} onClick={() => setSpecies(f.value)}>
+            {f.label}
+          </FilterChip>
+        ))}
+      </div>
+      {/* Chips de porte */}
+      <div className="mb-3.5 flex gap-2 overflow-x-auto pb-1.5">
+        {SIZE_FILTERS.map((f) => (
+          <FilterChip key={f.value} active={size === f.value} onClick={() => setSize(f.value)}>
+            {f.label}
+          </FilterChip>
+        ))}
       </div>
 
-      {/* Localização */}
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="relative w-full max-w-xs">
-          <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+      {/* Localização + raio */}
+      <div className="mb-2 flex flex-wrap items-center gap-2.5">
+        <div className="relative max-w-[280px] flex-1 min-w-[200px]">
+          <MapPin className="absolute left-3.5 top-1/2 h-[17px] w-[17px] -translate-y-1/2 text-muted-foreground/70" />
           <Input
             value={city}
             onChange={(e) => setCity(e.target.value)}
             placeholder="Filtrar por cidade"
-            className="pl-9"
+            className="h-[38px] rounded-full border-border bg-card pl-[38px] text-[12.5px]"
           />
         </div>
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex gap-1.5 overflow-x-auto">
           {RADIUS_OPTIONS.map((km) => (
-            <button
-              key={km}
-              type="button"
-              onClick={() => setRadius((prev) => (prev === km ? null : km))}
-              disabled={!city.trim()}
-              className={cn(
-                'rounded-full border px-3 py-1 text-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-40',
-                radius === km ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-background text-muted-foreground hover:bg-secondary/60',
-              )}
-            >
+            <FilterChip key={km} active={radius === km} onClick={() => setRadius((prev) => (prev === km ? null : km))}>
               {km} km
-            </button>
+            </FilterChip>
           ))}
         </div>
       </div>
-      {trimmedCity && (
-        <p className="-mt-3 text-xs text-muted-foreground">
-          {radiusActive
+      <p className="mb-6.5 text-[11.5px] text-muted-foreground/90">
+        {!trimmedCity
+          ? 'Informe uma cidade para filtrar por distância'
+          : radiusActive
             ? `Pets até ${radius} km de ${trimmedCity} (distância aproximada pelo centro da cidade, sem geolocalização precisa)`
             : radius
               ? `Não conhecemos a localização de "${trimmedCity}" para calcular distância — mostrando só pets cadastrados exatamente nessa cidade.`
               : `Pets em ${trimmedCity}`}
-        </p>
+      </p>
+
+      {!isLoading && !isError && (
+        <SwipeDeck
+          pets={priorityPets}
+          onLike={handleLike}
+          onPass={handlePass}
+          onOpenDetail={handleOpenDetail}
+        />
       )}
 
-      {isLoading && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="h-72 bg-secondary rounded-xl animate-pulse" />
-          ))}
-        </div>
-      )}
+      <div>
+        <h2 className="mb-4 font-['Sora'] text-[17px] font-bold text-foreground">Todos os pets compatíveis</h2>
 
-      {isError && (
-        <div className="text-center py-16 text-destructive">
-          Erro ao carregar pets. Tente novamente.
-        </div>
-      )}
-
-      {!isLoading && !isError && pets.length === 0 && (
-        <div className="text-center py-16 space-y-3">
-          <p className="text-muted-foreground text-lg">Nenhum pet compatível encontrado no momento.</p>
-          <p className="text-muted-foreground/80 text-sm">
-            Tente ajustar os filtros ou{' '}
-            <Link to="/perfil" className="text-primary underline">atualize seu perfil</Link>.
-          </p>
-        </div>
-      )}
-
-      {!isLoading && pets.length > 0 && (
-        <>
-          <AdSlot className="mb-2" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {pets.map((pet) => (
-              <PetCard key={pet.id} pet={pet} />
+        {isLoading && (
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="h-72 animate-pulse rounded-xl bg-secondary" />
             ))}
           </div>
-        </>
-      )}
+        )}
+
+        {isError && (
+          <div className="py-16 text-center text-destructive">
+            Erro ao carregar pets. Tente novamente.
+          </div>
+        )}
+
+        {!isLoading && !isError && pets.length === 0 && (
+          <div className="space-y-3 py-16 text-center">
+            <p className="text-lg text-muted-foreground">Nenhum pet encontrado com esses filtros.</p>
+            <p className="text-sm text-muted-foreground/80">
+              Tente ajustar os filtros ou{' '}
+              <Link to="/perfil" className="text-primary underline">atualize seu perfil</Link>.
+            </p>
+          </div>
+        )}
+
+        {!isLoading && pets.length > 0 && (
+          <>
+            <AdSlot className="mb-2" />
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {pets.map((pet) => (
+                <PetCard key={pet.id} pet={pet} />
+              ))}
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 }

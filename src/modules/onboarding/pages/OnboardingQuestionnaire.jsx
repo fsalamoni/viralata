@@ -5,8 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Progress } from '@/components/ui/progress';
-import { PawPrint } from 'lucide-react';
+import {
+  Home as HomeIcon, Trees, Building2, Tractor, Sofa, Footprints, Wind,
+  UsersRound, PawPrint, Bird, Rabbit, Ban, Wallet, MapPin, Shield,
+} from 'lucide-react';
 import { toast } from 'sonner';
 
 const STEPS = [
@@ -16,12 +18,13 @@ const STEPS = [
     description: 'Isso nos ajuda a encontrar pets compatíveis com seu espaço.',
     field: 'housing_type',
     type: 'radio',
+    icon: HomeIcon,
     options: [
-      { value: 'house_with_yard', label: '🏡 Casa com pátio' },
-      { value: 'house_no_yard', label: '🏠 Casa sem pátio' },
-      { value: 'apartment_screened', label: '🏢 Apartamento com tela de proteção' },
-      { value: 'apartment_unscreened', label: '🏢 Apartamento sem tela' },
-      { value: 'farm', label: '🌾 Sítio / Fazenda' },
+      { value: 'house_with_yard', label: 'Casa com pátio', icon: Trees },
+      { value: 'house_no_yard', label: 'Casa sem pátio', icon: HomeIcon },
+      { value: 'apartment_screened', label: 'Apartamento com tela de proteção', icon: Building2 },
+      { value: 'apartment_unscreened', label: 'Apartamento sem tela', icon: Building2 },
+      { value: 'farm', label: 'Sítio / Fazenda', icon: Tractor },
     ],
   },
   {
@@ -30,10 +33,11 @@ const STEPS = [
     description: 'Pets energéticos precisam de exercício diário.',
     field: 'daily_walks',
     type: 'radio',
+    icon: Footprints,
     options: [
-      { value: 'none', label: '🛋️ Não costumo passear' },
-      { value: 'short', label: '🚶 Passeios curtos (menos de 30 min)' },
-      { value: 'long', label: '🏃 Passeios longos (mais de 30 min)' },
+      { value: 'none', label: 'Não costumo passear', icon: Sofa },
+      { value: 'short', label: 'Passeios curtos (menos de 30 min)', icon: Footprints },
+      { value: 'long', label: 'Passeios longos (mais de 30 min)', icon: Wind },
     ],
   },
   {
@@ -41,12 +45,14 @@ const STEPS = [
     title: 'Quem mora com você?',
     description: 'Alguns pets se adaptam melhor a diferentes composições familiares.',
     type: 'family',
+    icon: UsersRound,
   },
   {
     id: 'pets',
     title: 'Você já tem outros animais?',
     description: 'Vamos garantir que o novo pet conviva bem com os atuais.',
     type: 'other_pets',
+    icon: PawPrint,
   },
   {
     id: 'budget',
@@ -54,10 +60,11 @@ const STEPS = [
     description: 'Inclui ração, veterinário e outros cuidados mensais.',
     field: 'budget_level',
     type: 'radio',
+    icon: Wallet,
     options: [
-      { value: 'basic', label: '💰 Básico — até R$200/mês' },
-      { value: 'moderate', label: '💰💰 Moderado — R$200 a R$500/mês' },
-      { value: 'high', label: '💰💰💰 Alto — acima de R$500/mês' },
+      { value: 'basic', label: 'Básico — até R$200/mês', icon: Wallet },
+      { value: 'moderate', label: 'Moderado — R$200 a R$500/mês', icon: Wallet },
+      { value: 'high', label: 'Alto — acima de R$500/mês', icon: Wallet },
     ],
   },
   {
@@ -65,13 +72,22 @@ const STEPS = [
     title: 'Qual é a sua cidade?',
     description: 'Para mostrar pets próximos a você.',
     type: 'location',
+    icon: MapPin,
   },
   {
     id: 'consent',
     title: 'Privacidade dos seus dados',
     description: 'Última etapa antes de ver os pets disponíveis.',
     type: 'consent',
+    icon: Shield,
   },
+];
+
+const OTHER_PET_OPTIONS = [
+  { value: 'dog', label: 'Cachorro', icon: PawPrint },
+  { value: 'cat', label: 'Gato', icon: PawPrint },
+  { value: 'bird', label: 'Pássaro', icon: Bird },
+  { value: 'other', label: 'Outro animal', icon: Rabbit },
 ];
 
 export default function OnboardingQuestionnaire() {
@@ -92,7 +108,6 @@ export default function OnboardingQuestionnaire() {
   });
   const [saving, setSaving] = useState(false);
   const current = STEPS[step];
-  const progress = ((step) / STEPS.length) * 100;
 
   function setField(field, value) {
     setAnswers((prev) => ({ ...prev, [field]: value }));
@@ -131,16 +146,27 @@ export default function OnboardingQuestionnaire() {
     }
   }
 
+  const StepIcon = current.icon || PawPrint;
+
   return (
-    <div className="arena-page flex min-h-screen items-center justify-center p-4">
+    <div className="arena-page arena-onboarding-glow flex min-h-screen items-center justify-center p-4">
       <div className="w-full max-w-lg space-y-6">
         <div className="text-center space-y-2">
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--highlight))_100%)] text-white shadow-[0_14px_28px_-16px_rgba(64,34,18,0.55)]">
-            <PawPrint className="h-7 w-7" />
+            <StepIcon className="h-7 w-7" />
           </div>
           <h1 className="text-2xl font-bold text-foreground">Vamos montar seu perfil</h1>
           <p className="text-sm text-muted-foreground">Passo {step + 1} de {STEPS.length}</p>
-          <Progress value={progress} className="h-2" />
+          <div className="flex justify-center gap-1 pt-1">
+            {STEPS.map((st, i) => (
+              <PawPrint
+                key={st.id}
+                className="h-[15px] w-[15px]"
+                style={{ color: i <= step ? 'hsl(17 72% 45%)' : 'hsl(30 20% 85%)' }}
+                fill={i <= step ? 'hsl(17 72% 45%)' : 'none'}
+              />
+            ))}
+          </div>
         </div>
 
         <div className="arena-panel space-y-4 rounded-[1.5rem] p-6">
@@ -156,12 +182,13 @@ export default function OnboardingQuestionnaire() {
                   key={opt.value}
                   type="button"
                   onClick={() => setField(current.field, opt.value)}
-                  className={`w-full text-left px-4 py-3 rounded-xl border-2 transition-colors text-sm ${
+                  className={`flex w-full items-center gap-3 text-left px-4 py-3.5 rounded-2xl border-2 transition-colors text-sm ${
                     answers[current.field] === opt.value
-                      ? 'border-primary bg-primary/10 text-primary font-medium'
-                      : 'border-border hover:border-primary/40 text-muted-foreground'
+                      ? 'border-primary bg-primary/[0.08] text-[hsl(14,55%,26%)] font-bold'
+                      : 'border-border bg-card text-foreground/80 font-semibold hover:border-primary/40'
                   }`}
                 >
+                  <opt.icon className="h-[19px] w-[19px] shrink-0" />
                   {opt.label}
                 </button>
               ))}
@@ -172,49 +199,46 @@ export default function OnboardingQuestionnaire() {
             <div className="space-y-3">
               <div className="flex items-center gap-3">
                 <Checkbox id="has_children" checked={answers.has_children} onCheckedChange={(v) => setField('has_children', v)} />
-                <Label htmlFor="has_children" className="cursor-pointer">👶 Tenho crianças em casa</Label>
+                <Label htmlFor="has_children" className="cursor-pointer">Tenho crianças em casa</Label>
               </div>
               {answers.has_children && (
                 <Input placeholder="Idades das crianças (ex: 3, 7 anos)" value={answers.children_ages} onChange={(e) => setField('children_ages', e.target.value)} className="ml-6" />
               )}
               <div className="flex items-center gap-3">
                 <Checkbox id="has_elderly" checked={answers.has_elderly} onCheckedChange={(v) => setField('has_elderly', v)} />
-                <Label htmlFor="has_elderly" className="cursor-pointer">👴 Tenho idosos em casa</Label>
+                <Label htmlFor="has_elderly" className="cursor-pointer">Tenho idosos em casa</Label>
               </div>
             </div>
           )}
 
           {current.type === 'other_pets' && (
             <div className="space-y-2">
-              {[
-                { value: 'dog', label: '🐶 Cachorro' },
-                { value: 'cat', label: '🐱 Gato' },
-                { value: 'bird', label: '🐦 Pássaro' },
-                { value: 'other', label: '🐾 Outro' },
-              ].map((opt) => (
+              {OTHER_PET_OPTIONS.map((opt) => (
                 <button
                   key={opt.value}
                   type="button"
                   onClick={() => togglePet(opt.value)}
-                  className={`w-full text-left px-4 py-3 rounded-xl border-2 transition-colors text-sm ${
+                  className={`flex w-full items-center gap-3 text-left px-4 py-3.5 rounded-2xl border-2 transition-colors text-sm ${
                     answers.other_pets.includes(opt.value)
-                      ? 'border-primary bg-primary/10 text-primary font-medium'
-                      : 'border-border hover:border-primary/40 text-muted-foreground'
+                      ? 'border-primary bg-primary/[0.08] text-[hsl(14,55%,26%)] font-bold'
+                      : 'border-border bg-card text-foreground/80 font-semibold hover:border-primary/40'
                   }`}
                 >
+                  <opt.icon className="h-[19px] w-[19px] shrink-0" />
                   {opt.label}
                 </button>
               ))}
               <button
                 type="button"
                 onClick={() => setAnswers((prev) => ({ ...prev, other_pets: [] }))}
-                className={`w-full text-left px-4 py-3 rounded-xl border-2 transition-colors text-sm ${
+                className={`flex w-full items-center gap-3 text-left px-4 py-3.5 rounded-2xl border-2 transition-colors text-sm ${
                   answers.other_pets.length === 0
-                    ? 'border-primary bg-primary/10 text-primary font-medium'
-                    : 'border-border hover:border-primary/40 text-muted-foreground'
+                    ? 'border-primary bg-primary/[0.08] text-[hsl(14,55%,26%)] font-bold'
+                    : 'border-border bg-card text-foreground/80 font-semibold hover:border-primary/40'
                 }`}
               >
-                🚫 Não tenho outros animais
+                <Ban className="h-[19px] w-[19px] shrink-0" />
+                Não tenho outros animais
               </button>
             </div>
           )}
@@ -282,7 +306,7 @@ export default function OnboardingQuestionnaire() {
               disabled={!canAdvance() || saving}
               className="flex-1"
             >
-              {saving ? 'Salvando...' : 'Concluir e ver pets 🐾'}
+              {saving ? 'Salvando...' : 'Concluir e ver pets'}
             </Button>
           )}
         </div>
