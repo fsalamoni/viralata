@@ -18,7 +18,7 @@ export default function AdminMetrics() {
   }, [isPlatformAdmin]);
 
   if (!isPlatformAdmin) return null;
-  if (loading) return <div className="max-w-5xl mx-auto px-4 py-16 text-center text-gray-400">Carregando métricas...</div>;
+  if (loading) return <div className="max-w-5xl mx-auto px-4 py-16 text-center text-muted-foreground">Carregando métricas...</div>;
 
   const adoptionsByMonth = groupByMonth(data.pets.filter((p) => p.status === 'adopted'), 'adopted_at');
   const usersByMonth = groupByMonth(data.users, 'created_at');
@@ -26,8 +26,8 @@ export default function AdminMetrics() {
   const petsByState = groupByField(data.pets, 'state');
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-6 space-y-6">
-      <h1 className="text-xl font-bold text-gray-900">Métricas da Plataforma</h1>
+    <div className="arena-page max-w-5xl mx-auto px-4 py-6 space-y-6">
+      <h1 className="text-2xl font-bold text-foreground">Métricas da Plataforma</h1>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <SummaryCard label="Pets cadastrados" value={data.pets.length} />
@@ -45,7 +45,7 @@ export default function AdminMetrics() {
               <XAxis dataKey="label" tick={{ fontSize: 12 }} />
               <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
               <Tooltip />
-              <Bar dataKey="count" name="Adoções" fill="#f97316" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="count" name="Adoções" fill="#c55026" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
@@ -60,7 +60,7 @@ export default function AdminMetrics() {
               <XAxis dataKey="label" tick={{ fontSize: 12 }} />
               <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
               <Tooltip />
-              <Line type="monotone" dataKey="count" name="Novos usuários" stroke="#3b82f6" strokeWidth={2} dot={false} />
+              <Line type="monotone" dataKey="count" name="Novos usuários" stroke="#607246" strokeWidth={2} dot={false} />
             </LineChart>
           </ResponsiveContainer>
         </CardContent>
@@ -75,7 +75,7 @@ export default function AdminMetrics() {
               <XAxis type="number" allowDecimals={false} tick={{ fontSize: 12 }} />
               <YAxis type="category" dataKey="name" tick={{ fontSize: 12 }} width={60} />
               <Tooltip />
-              <Bar dataKey="count" name="Pets" fill="#22c55e" radius={[0, 4, 4, 0]} />
+              <Bar dataKey="count" name="Pets" fill="#f1b527" radius={[0, 4, 4, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
@@ -90,7 +90,7 @@ export default function AdminMetrics() {
               <XAxis dataKey="label" tick={{ fontSize: 12 }} />
               <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
               <Tooltip />
-              <Bar dataKey="count" name="Denúncias" fill="#ef4444" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="count" name="Denúncias" fill="#dd382c" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
@@ -103,8 +103,8 @@ function SummaryCard({ label, value }) {
   return (
     <Card>
       <CardContent className="pt-6 text-center">
-        <p className="text-2xl font-bold text-gray-900">{value}</p>
-        <p className="text-xs text-gray-500 mt-1">{label}</p>
+        <p className="text-2xl font-bold text-foreground">{value}</p>
+        <p className="text-xs text-muted-foreground mt-1">{label}</p>
       </CardContent>
     </Card>
   );

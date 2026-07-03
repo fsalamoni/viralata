@@ -6,10 +6,10 @@ export function LegalPage({ eyebrow, title, description, meta, children }) {
     <div className="mx-auto max-w-6xl space-y-5">
       <section className="arena-panel-strong rounded-lg p-5 sm:p-6">
         <div className="max-w-3xl space-y-3">
-          {eyebrow && <p className="text-xs font-semibold uppercase tracking-wider text-emerald-200">{eyebrow}</p>}
+          {eyebrow && <p className="text-xs font-semibold uppercase tracking-wider text-orange-200/80">{eyebrow}</p>}
           <h1 className="text-2xl font-bold text-white sm:text-3xl">{title}</h1>
-          {description && <p className="text-sm leading-6 text-emerald-50/90 sm:text-base">{description}</p>}
-          {meta && <p className="text-xs text-emerald-100/75">{meta}</p>}
+          {description && <p className="text-sm leading-6 text-orange-50/90 sm:text-base">{description}</p>}
+          {meta && <p className="text-xs text-orange-50/70">{meta}</p>}
         </div>
       </section>
       <div className="min-w-0 space-y-4">{children}</div>
@@ -20,10 +20,10 @@ export function LegalPage({ eyebrow, title, description, meta, children }) {
 export function LegalSection({ icon: Icon, title, description, children, className }) {
   return (
     <Card className={cn('overflow-hidden', className)}>
-      <CardHeader className="border-b border-emerald-950/10 bg-white/45 p-4 sm:p-5">
+      <CardHeader className="border-b border-primary/10 bg-white/45 p-4 sm:p-5">
         <div className="flex items-start gap-3">
           {Icon && (
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-emerald-900 text-emerald-50 shadow-sm">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground shadow-sm">
               <Icon className="h-4 w-4" />
             </div>
           )}
@@ -47,7 +47,7 @@ export function LegalList({ children }) {
 export function LegalListItem({ children }) {
   return (
     <li className="flex gap-2">
-      <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-600" />
+      <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
       <span>{children}</span>
     </li>
   );
@@ -55,9 +55,9 @@ export function LegalListItem({ children }) {
 
 export function LegalStat({ label, value }) {
   return (
-    <div className="rounded-md border border-emerald-950/10 bg-white/65 p-3">
+    <div className="rounded-md border border-primary/10 bg-white/65 p-3">
       <div className="text-xs text-slate-500">{label}</div>
-      <div className="mt-1 text-lg font-bold text-emerald-800">{value}</div>
+      <div className="mt-1 text-lg font-bold text-primary">{value}</div>
     </div>
   );
 }
