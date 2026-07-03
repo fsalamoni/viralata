@@ -5,6 +5,7 @@ import {
   ArrowLeft,
   Building2,
   CalendarDays,
+  HandCoins,
   Hash,
   Instagram,
   LogOut,
@@ -35,8 +36,9 @@ import {
   useMyClubInvite,
   useAcceptClubInvite,
   useDeclineClubInvite,
+  useClubCampaigns,
 } from '@/modules/organizations/hooks/useClubs';
-import { CLUB_ROLE, JOIN_REQUEST_STATUS } from '@/modules/organizations/domain/constants';
+import { CLUB_ROLE, JOIN_REQUEST_STATUS, CAMPAIGN_STATUS } from '@/modules/organizations/domain/constants';
 import ClubMembersTab from '@/modules/organizations/components/ClubMembersTab';
 import ClubEventsTab from '@/modules/organizations/components/ClubEventsTab';
 import ClubFeedTab from '@/modules/organizations/components/ClubFeedTab';
@@ -255,6 +257,8 @@ export default function ClubDetail() {
         )}
       </section>
 
+      <ActiveCampaigns clubId={clubId} />
+
       {!isMember && myInvite && (
         <Card className="rounded-[1.5rem] border-amber-300 bg-amber-50/80">
           <CardContent className="p-5">
@@ -365,5 +369,46 @@ function InfoChip({ icon: Icon, children }) {
     <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1">
       <Icon className="h-3.5 w-3.5" /> {children}
     </span>
+  );
+}
+
+const brl = (value) => Number(value || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+/** Chamados de doação ativos — visíveis a todos, não só a quem administra a organização. */
+function ActiveCampaigns({ clubId }) {
+  const { data: campaigns = [] } = useClubCampaigns(clubId);
+  const active = campaigns.filter((c) => c.status !== CAMPAIGN_STATUS.CONCLUDED);
+  if (active.length === 0) return null;
+
+  return (
+    <Card className="rounded-[1.5rem]">
+      <CardContent className="space-y-4 p-5">
+        <h3 className="flex items-center gap-2 text-base font-semibold text-slate-900">
+          <HandCoins className="h-4 w-4 text-primary" /> Chamados de doação ativos
+        </h3>
+        <div className="space-y-3">
+          {active.map((campaign) => {
+            const pct = campaign.goal > 0 ? Math.min(100, (Number(campaign.raised || 0) / campaign.goal) * 100) : 0;
+            return (
+              <div key={campaign.id} className="rounded-xl border border-slate-100 p-3.5">
+                <div className="mb-1.5 flex flex-wrap items-center justify-between gap-2">
+                  <span className="text-sm font-medium text-slate-900">{campaign.title}</span>
+                  {campaign.deadline && <span className="text-xs text-slate-500">Até {campaign.deadline}</span>}
+                </div>
+                <div className="mb-1.5 h-1.5 overflow-hidden rounded-full bg-secondary">
+                  <div
+                    className="h-full rounded-full bg-[linear-gradient(90deg,hsl(var(--primary)),hsl(var(--highlight)))]"
+                    style={{ width: `${pct}%` }}
+                  />
+                </div>
+                <div className="text-xs text-slate-600">
+                  <strong>{brl(campaign.raised)}</strong> arrecadados de {brl(campaign.goal)}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </CardContent>
+    </Card>
   );
 }
