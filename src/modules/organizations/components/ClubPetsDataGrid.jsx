@@ -35,7 +35,7 @@ const STATUS_OPTIONS = [
   { value: 'adopted', label: 'Adotado' },
 ];
 
-function PhotoCell({ pet, clubId, uid }) {
+function PhotoCell({ pet, clubId, uid, canManage }) {
   const inputRef = useRef(null);
   const updatePet = useUpdatePet();
   const [uploading, setUploading] = useState(false);
@@ -53,6 +53,14 @@ function PhotoCell({ pet, clubId, uid }) {
     } finally {
       setUploading(false);
     }
+  }
+
+  if (!canManage) {
+    return (
+      <span className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-[9px] bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--highlight))_100%)] text-white">
+        {pet.photos?.[0] ? <img src={pet.photos[0]} alt="" className="h-full w-full object-cover" /> : <Camera className="h-[15px] w-[15px]" />}
+      </span>
+    );
   }
 
   return (
@@ -73,8 +81,13 @@ function PhotoCell({ pet, clubId, uid }) {
  * espécie, porte, raça, cidade, status), "Nova linha" cria um pet em branco
  * direto na tabela, exclusão em linha, e importação/exportação em massa via
  * .xlsx/.csv/.json (`domain/petImport.js`).
+ *
+ * `canManage` controla a gestão: quando `false` (ex.: visitante do perfil
+ * público da organização), a lista de animais fica visível em modo somente
+ * leitura — sem baixar modelo, importar, criar linha, editar ou excluir.
+ * Só usuários com a atribuição de animais na organização podem gerir.
  */
-export default function ClubPetsDataGrid({ clubId }) {
+export default function ClubPetsDataGrid({ clubId, canManage = true }) {
   const { user } = useAuth();
   const { data: pets = [], isLoading } = useMyPets(clubId);
   const updatePet = useUpdatePet();
@@ -203,19 +216,23 @@ export default function ClubPetsDataGrid({ clubId }) {
     <div className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="max-w-sm text-xs text-muted-foreground">
-          Edite os animais diretamente na planilha ou importe um arquivo em massa.
+          {canManage
+            ? 'Edite os animais diretamente na planilha ou importe um arquivo em massa.'
+            : 'Animais cadastrados por esta organização.'}
         </p>
-        <div className="flex flex-wrap gap-2">
-          <Button variant="outline" size="sm" onClick={handleDownloadTemplate}>
-            <Download className="mr-1.5 h-4 w-4" /> Baixar planilha modelo
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => setImportOpen(true)}>
-            <Upload className="mr-1.5 h-4 w-4" /> Importar planilha
-          </Button>
-          <Button size="sm" onClick={handleAddRow} disabled={addingRow}>
-            <PlusCircle className="mr-1.5 h-4 w-4" /> Nova linha
-          </Button>
-        </div>
+        {canManage && (
+          <div className="flex flex-wrap gap-2">
+            <Button variant="outline" size="sm" onClick={handleDownloadTemplate}>
+              <Download className="mr-1.5 h-4 w-4" /> Baixar planilha modelo
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => setImportOpen(true)}>
+              <Upload className="mr-1.5 h-4 w-4" /> Importar planilha
+            </Button>
+            <Button size="sm" onClick={handleAddRow} disabled={addingRow}>
+              <PlusCircle className="mr-1.5 h-4 w-4" /> Nova linha
+            </Button>
+          </div>
+        )}
       </div>
 
       {isLoading ? (
@@ -223,7 +240,7 @@ export default function ClubPetsDataGrid({ clubId }) {
       ) : pets.length === 0 ? (
         <EmptyState
           title="Nenhum animal cadastrado"
-          description="Adicione uma linha ou importe uma planilha."
+          description={canManage ? 'Adicione uma linha ou importe uma planilha.' : 'Esta organização ainda não cadastrou animais.'}
         />
       ) : (
         <div className="overflow-x-auto rounded-2xl border border-white bg-card shadow-[0_14px_34px_-28px_hsl(20_40%_20%/0.4)]">
@@ -237,32 +254,33 @@ export default function ClubPetsDataGrid({ clubId }) {
                 <TableHead>Raça</TableHead>
                 <TableHead>Cidade</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead className="w-9" />
+                {canManage && <TableHead className="w-9" />}
               </TableRow>
             </TableHeader>
             <TableBody>
               {pets.map((pet) => (
                 <TableRow key={pet.id}>
                   <TableCell className="p-1.5">
-                    <PhotoCell pet={pet} clubId={clubId} uid={user?.uid} />
+                    <PhotoCell pet={pet} clubId={clubId} uid={user?.uid} canManage={canManage} />
                   </TableCell>
                   <TableCell className="p-0.5">
                     <Input
                       defaultValue={pet.name || ''}
                       placeholder="Nome"
+                      readOnly={!canManage}
                       disabled={savingId === pet.id}
-                      onBlur={(e) => { if (e.target.value !== (pet.name || '')) handleFieldChange(pet.id, 'name', e.target.value); }}
+                      onBlur={canManage ? (e) => { if (e.target.value !== (pet.name || '')) handleFieldChange(pet.id, 'name', e.target.value); } : undefined}
                       className="h-8 w-32 border-transparent bg-transparent text-sm focus-visible:border-input focus-visible:bg-background"
                     />
                   </TableCell>
                   <TableCell className="p-0.5">
-                    <Select value={pet.species} onValueChange={(v) => handleFieldChange(pet.id, 'species', v)} disabled={savingId === pet.id}>
+                    <Select value={pet.species} onValueChange={(v) => handleFieldChange(pet.id, 'species', v)} disabled={!canManage || savingId === pet.id}>
                       <SelectTrigger className="h-8 w-28 border-transparent bg-transparent"><SelectValue /></SelectTrigger>
                       <SelectContent>{SPECIES_OPTIONS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
                     </Select>
                   </TableCell>
                   <TableCell className="p-0.5">
-                    <Select value={pet.size} onValueChange={(v) => handleFieldChange(pet.id, 'size', v)} disabled={savingId === pet.id}>
+                    <Select value={pet.size} onValueChange={(v) => handleFieldChange(pet.id, 'size', v)} disabled={!canManage || savingId === pet.id}>
                       <SelectTrigger className="h-8 w-24 border-transparent bg-transparent"><SelectValue /></SelectTrigger>
                       <SelectContent>{SIZE_OPTIONS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
                     </Select>
@@ -271,35 +289,39 @@ export default function ClubPetsDataGrid({ clubId }) {
                     <Input
                       defaultValue={pet.breed || ''}
                       placeholder="Raça"
+                      readOnly={!canManage}
                       disabled={savingId === pet.id}
-                      onBlur={(e) => { if (e.target.value !== (pet.breed || '')) handleFieldChange(pet.id, 'breed', e.target.value); }}
+                      onBlur={canManage ? (e) => { if (e.target.value !== (pet.breed || '')) handleFieldChange(pet.id, 'breed', e.target.value); } : undefined}
                       className="h-8 w-28 border-transparent bg-transparent text-sm focus-visible:border-input focus-visible:bg-background"
                     />
                   </TableCell>
                   <TableCell className="p-0.5">
                     <Input
                       defaultValue={pet.city || ''}
+                      readOnly={!canManage}
                       disabled={savingId === pet.id}
-                      onBlur={(e) => { if (e.target.value !== (pet.city || '')) handleFieldChange(pet.id, 'city', e.target.value); }}
+                      onBlur={canManage ? (e) => { if (e.target.value !== (pet.city || '')) handleFieldChange(pet.id, 'city', e.target.value); } : undefined}
                       className="h-8 w-28 border-transparent bg-transparent text-sm focus-visible:border-input focus-visible:bg-background"
                     />
                   </TableCell>
                   <TableCell className="p-0.5">
-                    <Select value={pet.status} onValueChange={(v) => handleFieldChange(pet.id, 'status', v)} disabled={savingId === pet.id}>
+                    <Select value={pet.status} onValueChange={(v) => handleFieldChange(pet.id, 'status', v)} disabled={!canManage || savingId === pet.id}>
                       <SelectTrigger className="h-8 w-32 border-transparent bg-transparent"><SelectValue /></SelectTrigger>
                       <SelectContent>{STATUS_OPTIONS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
                     </Select>
                   </TableCell>
-                  <TableCell className="p-1.5 text-center">
-                    <button
-                      type="button"
-                      onClick={() => setConfirmDelete(pet)}
-                      className="text-muted-foreground transition-colors hover:text-destructive"
-                      title="Excluir animal"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </TableCell>
+                  {canManage && (
+                    <TableCell className="p-1.5 text-center">
+                      <button
+                        type="button"
+                        onClick={() => setConfirmDelete(pet)}
+                        className="text-muted-foreground transition-colors hover:text-destructive"
+                        title="Excluir animal"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </TableCell>
+                  )}
                 </TableRow>
               ))}
             </TableBody>

@@ -15,7 +15,7 @@ export default function AdminAuditLog() {
       </div>
       <AuditLogTable
         title="Trilha de auditoria da plataforma"
-        description="Todas as ações relevantes registradas no sistema — clubes, pets, adoções, denúncias e moderação."
+        description="Todas as ações relevantes registradas no sistema — organizações, pets, adoções, denúncias e moderação."
       />
     </div>
   );

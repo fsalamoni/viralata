@@ -13,6 +13,7 @@ import {
   MapPin,
   MessageSquare,
   MessagesSquare,
+  PawPrint,
   Phone,
   Settings,
   Users,
@@ -38,11 +39,13 @@ import {
   useDeclineClubInvite,
   useClubCampaigns,
 } from '@/modules/organizations/hooks/useClubs';
-import { CLUB_ROLE, JOIN_REQUEST_STATUS, CAMPAIGN_STATUS } from '@/modules/organizations/domain/constants';
+import { CLUB_ROLE, JOIN_REQUEST_STATUS, CAMPAIGN_STATUS, CLUB_PERMISSION } from '@/modules/organizations/domain/constants';
+import { hasClubPermission } from '@/modules/organizations/domain/permissions';
 import ClubMembersTab from '@/modules/organizations/components/ClubMembersTab';
 import ClubEventsTab from '@/modules/organizations/components/ClubEventsTab';
 import ClubFeedTab from '@/modules/organizations/components/ClubFeedTab';
 import ClubForumsTab from '@/modules/organizations/components/ClubForumsTab';
+import ClubPetsDataGrid from '@/modules/organizations/components/ClubPetsDataGrid';
 import RatingBadge from '@/modules/pets/components/RatingBadge';
 import { QrCode } from '@/components/ui/qr-code';
 
@@ -96,6 +99,9 @@ export default function ClubDetail() {
 
   const isMember = !!membership;
   const isAdmin = membership?.role === CLUB_ROLE.ADMIN;
+  // Item 7: qualquer visitante vê a lista de animais da organização; só quem
+  // tem a atribuição de animais pode baixar modelo, importar ou criar linha.
+  const canManageAnimals = hasClubPermission(club, membership, CLUB_PERMISSION.ANIMALS);
 
   const handleJoin = async (e) => {
     e.preventDefault();
@@ -322,6 +328,7 @@ export default function ClubDetail() {
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="flex h-auto w-full flex-wrap justify-start gap-1 bg-muted/60 p-1">
             <TabsTrigger value="members"><Users className="mr-1.5 h-4 w-4" /> Membros</TabsTrigger>
+            <TabsTrigger value="animals"><PawPrint className="mr-1.5 h-4 w-4" /> Animais</TabsTrigger>
             <TabsTrigger value="events"><CalendarDays className="mr-1.5 h-4 w-4" /> Eventos</TabsTrigger>
             <TabsTrigger value="feed"><MessageSquare className="mr-1.5 h-4 w-4" /> Mural</TabsTrigger>
             <TabsTrigger value="forums"><MessagesSquare className="mr-1.5 h-4 w-4" /> Fóruns</TabsTrigger>
@@ -329,6 +336,10 @@ export default function ClubDetail() {
 
           <TabsContent value="members" className="mt-4">
             <ClubMembersTab clubId={clubId} isAdmin={isAdmin} club={club} />
+          </TabsContent>
+
+          <TabsContent value="animals" className="mt-4">
+            <ClubPetsDataGrid clubId={clubId} canManage={canManageAnimals} />
           </TabsContent>
 
           <TabsContent value="events" className="mt-4">
