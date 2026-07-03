@@ -71,6 +71,17 @@ const AGE_LABEL = Object.fromEntries(AGE_OPTIONS.map((o) => [o.value, o.label]))
 const GENDER_LABEL = Object.fromEntries(GENDER_OPTIONS.map((o) => [o.value, o.label]));
 const VACCINATED_LABEL = Object.fromEntries(VACCINATED_OPTIONS.map((o) => [o.value, o.label]));
 
+// Sugestões de raça mais comuns por espécie — atalhos rápidos no mesmo formato
+// (chips) de espécie/porte/idade/sexo. O campo de texto continua livre para
+// qualquer outra raça. "SRD" = sem raça definida (vira-lata).
+const BREED_SUGGESTIONS = {
+  dog: ['SRD', 'Labrador', 'Poodle', 'Pinscher', 'Shih Tzu', 'Golden Retriever', 'Bulldog', 'Pastor Alemão'],
+  cat: ['SRD', 'Siamês', 'Persa', 'Angorá', 'Maine Coon'],
+  rabbit: ['SRD', 'Mini Lop', 'Angorá', 'Rex'],
+  bird: ['Calopsita', 'Periquito', 'Canário'],
+  other: [],
+};
+
 function OptionChip({ active, onClick, children }) {
   return (
     <button
@@ -319,9 +330,22 @@ export default function CreatePet() {
                     ))}
                   </div>
                 </div>
-                <div className="space-y-1.5">
+                <div className="space-y-2">
                   <Label htmlFor="breed">Raça (opcional)</Label>
-                  <Input id="breed" {...register('breed')} placeholder="Ex: SRD, Labrador..." />
+                  {(BREED_SUGGESTIONS[form.species] || []).length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {BREED_SUGGESTIONS[form.species].map((b) => (
+                        <OptionChip
+                          key={b}
+                          active={form.breed === b}
+                          onClick={() => setValue('breed', form.breed === b ? '' : b, { shouldValidate: true })}
+                        >
+                          {b}
+                        </OptionChip>
+                      ))}
+                    </div>
+                  )}
+                  <Input id="breed" {...register('breed')} placeholder="Ex: SRD, Labrador ou outra raça..." />
                 </div>
                 <div className="grid grid-cols-[2fr,1fr] gap-2.5">
                   <div className="space-y-1.5">

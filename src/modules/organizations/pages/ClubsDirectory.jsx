@@ -226,7 +226,7 @@ export default function ClubsDirectory() {
           </div>
 
           {/* Filtro por cidade + distância (Item 6) */}
-          <div className="mt-3 flex flex-wrap items-center gap-2.5">
+          <div className="mt-4 flex flex-wrap items-center gap-2.5">
             <div className="relative min-w-[200px] max-w-[280px] flex-1">
               <MapPin className="absolute left-3.5 top-1/2 h-[17px] w-[17px] -translate-y-1/2 text-muted-foreground/70" />
               <Input
