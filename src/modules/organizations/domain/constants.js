@@ -28,11 +28,43 @@ export const CLUB_COLLECTIONS = Object.freeze({
   forumThreads: 'club_forum_threads',
   forumComments: 'comments',
   forumPollVotes: 'poll_votes',
+  campaigns: 'club_campaigns',
+  ledger: 'club_ledger',
   // Subcoleções de um evento (club_events/{eventId}/...).
   eventDates: 'dates',
   eventDateRsvps: 'date_rsvps',
   eventMessages: 'messages',
   eventParticipants: 'participants',
+});
+
+/** Chamados de doação (campanhas de arrecadação) de uma organização. */
+export const CAMPAIGN_STATUS = Object.freeze({
+  ACTIVE: 'active',
+  CONCLUDED: 'concluded',
+});
+
+/** Lançamentos da prestação de contas de uma organização. */
+export const LEDGER_TYPE = Object.freeze({
+  REVENUE: 'revenue',
+  EXPENSE: 'expense',
+});
+
+export const LEDGER_CATEGORY_PRESETS = Object.freeze({
+  [LEDGER_TYPE.REVENUE]: Object.freeze(['Doações', 'Eventos', 'Parcerias', 'Outros']),
+  [LEDGER_TYPE.EXPENSE]: Object.freeze(['Alimentação', 'Veterinário e saúde', 'Medicamentos', 'Transporte', 'Estrutura', 'Marketing', 'Outros']),
+});
+
+/** Janela de agregação exibida na aba de Prestação de Contas. */
+export const FINANCE_PERIOD = Object.freeze({
+  MONTHLY: 'monthly',
+  SEMIANNUAL: 'semiannual',
+  ANNUAL: 'annual',
+});
+
+export const FINANCE_PERIOD_LABELS = Object.freeze({
+  [FINANCE_PERIOD.MONTHLY]: 'Mensal',
+  [FINANCE_PERIOD.SEMIANNUAL]: 'Semestral',
+  [FINANCE_PERIOD.ANNUAL]: 'Anual',
 });
 
 /** Limites e regras das enquetes do fórum. */
@@ -65,6 +97,31 @@ export const CLUB_ROLE = Object.freeze({
 export const CLUB_ROLE_LABELS = Object.freeze({
   [CLUB_ROLE.ADMIN]: 'Administrador',
   [CLUB_ROLE.MEMBER]: 'Membro',
+});
+
+/**
+ * Permissões granulares do painel de administração da organização.
+ * O proprietário (`clubs.created_by`) sempre tem as 5, de forma implícita e
+ * não editável pela UI. Um administrador comum sem `permissions` explícito
+ * também é tratado como tendo todas (compatibilidade com admins criados
+ * antes desta granularidade existir) — ver `domain/permissions.js`.
+ */
+export const CLUB_PERMISSION = Object.freeze({
+  ANIMALS: 'animals',
+  FINANCE: 'finance',
+  DONATIONS: 'donations',
+  FEED: 'feed',
+  TEAM: 'team',
+});
+
+export const CLUB_PERMISSION_KEYS = Object.freeze(Object.values(CLUB_PERMISSION));
+
+export const CLUB_PERMISSION_LABELS = Object.freeze({
+  [CLUB_PERMISSION.ANIMALS]: 'Gerenciar animais',
+  [CLUB_PERMISSION.FINANCE]: 'Prestação de contas',
+  [CLUB_PERMISSION.DONATIONS]: 'Chamados de doação',
+  [CLUB_PERMISSION.FEED]: 'Publicar no mural',
+  [CLUB_PERMISSION.TEAM]: 'Gerenciar equipe',
 });
 
 /** Estado de um pedido de ingresso (não-membro pede para entrar na organização). */

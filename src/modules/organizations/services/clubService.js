@@ -30,6 +30,7 @@ import { notifyUsers, NOTIFICATION_TYPE } from '@/core/services/notificationServ
 import {
   CLUB_COLLECTIONS,
   CLUB_ROLE,
+  CLUB_PERMISSION_KEYS,
   CLUB_EVENT_TYPE,
   EVENT_CHAT_LIMITS,
   EVENT_VISIBILITY,
@@ -37,6 +38,8 @@ import {
   INVITE_SOURCE,
   JOIN_REQUEST_STATUS,
   MEMBER_INVITE_STATUS,
+  CAMPAIGN_STATUS,
+  LEDGER_TYPE,
 } from '../domain/constants.js';
 
 const COL = CLUB_COLLECTIONS;
@@ -252,6 +255,10 @@ export async function leaveClub(clubId, user, profile) {
 
 export async function setMemberRole(clubId, member, role, actor) {
   if (!member?.user_id) throw new Error('Membro inválido.');
+  const club = await getClub(clubId);
+  if (club?.created_by === member.user_id) {
+    throw new Error('O proprietário da organização não pode ter o papel alterado.');
+  }
   if (role !== CLUB_ROLE.ADMIN && member.role === CLUB_ROLE.ADMIN) {
     // Impede remover o último administrador.
     const members = await listClubMembers(clubId);
@@ -267,26 +274,37 @@ export async function setMemberRole(clubId, member, role, actor) {
 }
 
 /**
- * Permissão granular de um membro comum (admins já têm tudo implicitamente).
- * Hoje só existe `edit_pets` — as demais capacidades de gestão (excluir
- * clube, regenerar código, editar dados do clube) continuam exclusivas do
- * admin, sem equivalente granular ainda.
+ * Permissões granulares do painel de administração de um membro:
+ * `animals`, `finance`, `donations`, `feed`, `team`. O proprietário tem
+ * todas implicitamente e não pode ser editado (ver `domain/permissions.js`).
  */
 export async function setMemberPermissions(clubId, member, permissions, actor) {
   if (!member?.user_id) throw new Error('Membro inválido.');
+  const club = await getClub(clubId);
+  if (club?.created_by === member.user_id) {
+    throw new Error('O proprietário da organização já tem todas as permissões.');
+  }
+  const sanitized = {};
+  CLUB_PERMISSION_KEYS.forEach((key) => {
+    sanitized[key] = !!permissions[key];
+  });
   await updateDoc(doc(db, COL.members, memberDocId(clubId, member.user_id)), {
-    permissions: { edit_pets: !!permissions.edit_pets },
+    permissions: sanitized,
     updated_at: serverTimestamp(),
   });
   await createAuditLog({
     action: 'club_member_permissions_updated',
     actor,
-    details: { club_id: clubId, user_id: member.user_id, permissions },
+    details: { club_id: clubId, user_id: member.user_id, permissions: sanitized },
   });
 }
 
 export async function removeMember(clubId, member, actor) {
   if (!member?.user_id) throw new Error('Membro inválido.');
+  const club = await getClub(clubId);
+  if (club?.created_by === member.user_id) {
+    throw new Error('O proprietário da organização não pode ser removido.');
+  }
   if (member.role === CLUB_ROLE.ADMIN) {
     const members = await listClubMembers(clubId);
     const admins = members.filter((m) => m.role === CLUB_ROLE.ADMIN);
@@ -336,7 +354,7 @@ export async function requestToJoinClub(club, user, profile) {
     title: `${requesterName} pediu para entrar em "${trimmed(club.name).slice(0, 50)}"`,
     message: 'Toque para aprovar ou recusar o pedido na administração do clube.',
     type: NOTIFICATION_TYPE.CLUB_JOIN_REQUEST,
-    link: `/organizacoes/${club.id}?tab=admin`,
+    link: `/organizacoes/${club.id}/admin?tab=team`,
     actor: { uid: user.uid, displayName: requesterName },
   });
   await createAuditLog({ action: 'club_join_requested', actor: user, details: { club_id: club.id } });
@@ -387,7 +405,7 @@ export async function approveJoinRequest(request, actor) {
     title: `Pedido aprovado: você agora é membro de "${trimmed(request.club_name).slice(0, 50)}"`,
     message: 'Toque para abrir o clube e ver eventos, mural e fórum.',
     type: NOTIFICATION_TYPE.CLUB_JOIN_APPROVED,
-    link: `/organizacoes/${request.club_id}`,
+    link: `/comunidade/${request.club_id}`,
     actor,
   });
   await createAuditLog({ action: 'club_join_approved', actor, details: { club_id: request.club_id, user_id: request.user_id } });
@@ -404,7 +422,7 @@ export async function rejectJoinRequest(request, actor) {
     title: `Seu pedido para "${trimmed(request.club_name).slice(0, 50)}" não foi aprovado`,
     message: 'Você pode falar com um administrador do clube para mais informações.',
     type: NOTIFICATION_TYPE.CLUB_JOIN_REJECTED,
-    link: `/organizacoes/${request.club_id}`,
+    link: `/comunidade/${request.club_id}`,
     actor,
   });
   await createAuditLog({ action: 'club_join_rejected', actor, details: { club_id: request.club_id, user_id: request.user_id } });
@@ -441,7 +459,7 @@ export async function inviteMemberToClub(club, target, inviter, profile) {
     title: `${inviterName} convidou você para o clube "${trimmed(club.name).slice(0, 50)}"`,
     message: 'Toque para aceitar ou recusar o convite.',
     type: NOTIFICATION_TYPE.CLUB_INVITE,
-    link: `/organizacoes/${club.id}`,
+    link: `/comunidade/${club.id}`,
     actor: { uid: inviter.uid, displayName: inviterName },
   });
   await createAuditLog({ action: 'club_member_invited', actor: inviter, details: { club_id: club.id, user_id: target.user_id } });
@@ -489,7 +507,7 @@ export async function acceptClubInvite(invite, user, profile) {
       title: `${me} aceitou o convite e entrou em "${trimmed(invite.club_name).slice(0, 50)}"`,
       message: 'O usuário agora faz parte do clube.',
       type: NOTIFICATION_TYPE.CLUB_INVITE_ACCEPTED,
-      link: `/organizacoes/${invite.club_id}?tab=members`,
+      link: `/comunidade/${invite.club_id}?tab=members`,
       actor: { uid: user.uid, displayName: me },
     });
   }
@@ -634,7 +652,7 @@ export async function createClubEvent(clubId, data, user) {
         title: `Novo evento no clube: "${trimmed(data.title).slice(0, 60)}"`,
         message: `${creatorName} criou um evento. Toque para ver e responder.`,
         type: NOTIFICATION_TYPE.CLUB_EVENT_PUBLISHED,
-        link: `/organizacoes/${clubId}/eventos/${id}`,
+        link: `/comunidade/${clubId}/eventos/${id}`,
         actor: { uid: user.uid, displayName: creatorName },
       });
     } catch (err) {
@@ -754,7 +772,7 @@ export async function inviteToEvent(event, target, inviter, profile) {
     title: `${inviterName} convidou você para "${trimmed(event.title).slice(0, 60)}"`,
     message: 'Toque para ver o evento e responder: Vou, Talvez ou Não vou.',
     type: NOTIFICATION_TYPE.EVENT_INVITE,
-    link: `/organizacoes/${event.club_id}/eventos/${event.id}`,
+    link: `/comunidade/${event.club_id}/eventos/${event.id}`,
     actor: { uid: inviter.uid, displayName: inviterName },
   });
   return payload;
@@ -1032,4 +1050,98 @@ export async function createClubPost(clubId, input, user, profile) {
 export async function deleteClubPost(postId, actor) {
   await deleteDoc(doc(db, COL.posts, postId));
   await createAuditLog({ action: 'club_post_deleted', actor, details: { post_id: postId } });
+}
+
+/* ---------------------- Chamados de doação (campanhas) ------------------- */
+
+function sortByCreatedDesc(list) {
+  return list.sort((a, b) => (b.created_at_ms || 0) - (a.created_at_ms || 0));
+}
+
+export async function listClubCampaigns(clubId) {
+  if (!db || !clubId) return [];
+  const snap = await getDocs(query(collection(db, COL.campaigns), where('club_id', '==', clubId)));
+  return sortByCreatedDesc(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+}
+
+export async function createClubCampaign(clubId, data, user) {
+  if (!user?.uid) throw new Error('Usuário não autenticado.');
+  if (!trimmed(data.title)) throw new Error('Informe o título do chamado.');
+  const goal = Number(data.goal) || 0;
+  if (goal <= 0) throw new Error('Informe uma meta de arrecadação maior que zero.');
+  const id = doc(collection(db, COL.campaigns)).id;
+  await setDoc(doc(db, COL.campaigns, id), {
+    id,
+    club_id: clubId,
+    title: trimmed(data.title),
+    description: trimmed(data.description),
+    goal,
+    raised: Number(data.raised) || 0,
+    deadline: trimmed(data.deadline) || null,
+    status: CAMPAIGN_STATUS.ACTIVE,
+    created_by: user.uid,
+    created_at_ms: Date.now(),
+    created_at: serverTimestamp(),
+    updated_at: serverTimestamp(),
+  });
+  await createAuditLog({ action: 'club_campaign_created', actor: user, details: { club_id: clubId, campaign_id: id } });
+  return id;
+}
+
+export async function updateClubCampaign(campaignId, updates, actor) {
+  const allowed = ['title', 'description', 'goal', 'raised', 'deadline', 'status'];
+  const sanitized = {};
+  allowed.forEach((key) => {
+    if (updates[key] === undefined) return;
+    if (key === 'goal' || key === 'raised') sanitized[key] = Number(updates[key]) || 0;
+    else if (key === 'deadline') sanitized[key] = trimmed(updates[key]) || null;
+    else if (key === 'status') sanitized[key] = updates[key] === CAMPAIGN_STATUS.CONCLUDED ? CAMPAIGN_STATUS.CONCLUDED : CAMPAIGN_STATUS.ACTIVE;
+    else sanitized[key] = trimmed(updates[key]);
+  });
+  await updateDoc(doc(db, COL.campaigns, campaignId), { ...sanitized, updated_at: serverTimestamp() });
+  await createAuditLog({ action: 'club_campaign_updated', actor, details: { campaign_id: campaignId, fields: Object.keys(sanitized) } });
+}
+
+export async function deleteClubCampaign(campaignId, actor) {
+  await deleteDoc(doc(db, COL.campaigns, campaignId));
+  await createAuditLog({ action: 'club_campaign_deleted', actor, details: { campaign_id: campaignId } });
+}
+
+/* --------------------- Prestação de contas (financeiro) ------------------ */
+
+export async function listClubLedger(clubId) {
+  if (!db || !clubId) return [];
+  const snap = await getDocs(query(collection(db, COL.ledger), where('club_id', '==', clubId)));
+  return snap.docs
+    .map((d) => ({ id: d.id, ...d.data() }))
+    .sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')));
+}
+
+export async function createLedgerEntry(clubId, data, user) {
+  if (!user?.uid) throw new Error('Usuário não autenticado.');
+  const type = data.type === LEDGER_TYPE.EXPENSE ? LEDGER_TYPE.EXPENSE : LEDGER_TYPE.REVENUE;
+  const value = Number(data.value) || 0;
+  if (value <= 0) throw new Error('Informe um valor maior que zero.');
+  if (!trimmed(data.category)) throw new Error('Selecione uma categoria.');
+  if (!trimmed(data.date)) throw new Error('Informe a data do lançamento.');
+  const id = doc(collection(db, COL.ledger)).id;
+  await setDoc(doc(db, COL.ledger, id), {
+    id,
+    club_id: clubId,
+    type,
+    category: trimmed(data.category),
+    value,
+    date: trimmed(data.date),
+    note: trimmed(data.note),
+    created_by: user.uid,
+    created_at_ms: Date.now(),
+    created_at: serverTimestamp(),
+  });
+  await createAuditLog({ action: 'club_ledger_entry_created', actor: user, details: { club_id: clubId, entry_id: id, type, value } });
+  return id;
+}
+
+export async function deleteLedgerEntry(entryId, actor) {
+  await deleteDoc(doc(db, COL.ledger, entryId));
+  await createAuditLog({ action: 'club_ledger_entry_deleted', actor, details: { entry_id: entryId } });
 }

@@ -51,7 +51,7 @@ export default function AdminOrganizations() {
               </div>
               <div className="flex gap-1.5">
                 <Button asChild size="sm" variant="outline">
-                  <Link to={`/organizacoes/${club.id}`}><Eye className="w-3.5 h-3.5" /></Link>
+                  <Link to={`/comunidade/${club.id}`}><Eye className="w-3.5 h-3.5" /></Link>
                 </Button>
                 <Button size="sm" variant="ghost" className="text-red-500" onClick={() => handleDelete(club)}>
                   <Trash2 className="w-3.5 h-3.5" />

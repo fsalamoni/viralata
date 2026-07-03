@@ -57,7 +57,7 @@ function sanitizeAttachments(attachments) {
 }
 
 function threadLink(clubId, threadId) {
-  return `/organizacoes/${clubId}?tab=forums&thread=${threadId}`;
+  return `/comunidade/${clubId}?tab=forums&thread=${threadId}`;
 }
 
 /* -------------------------------- Threads ------------------------------- */

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
@@ -12,7 +12,6 @@ import {
   MapPin,
   MessageSquare,
   MessagesSquare,
-  PawPrint,
   Phone,
   Settings,
   Users,
@@ -42,12 +41,17 @@ import ClubMembersTab from '@/modules/organizations/components/ClubMembersTab';
 import ClubEventsTab from '@/modules/organizations/components/ClubEventsTab';
 import ClubFeedTab from '@/modules/organizations/components/ClubFeedTab';
 import ClubForumsTab from '@/modules/organizations/components/ClubForumsTab';
-import ClubAdminTab from '@/modules/organizations/components/ClubAdminTab';
-import ClubPetsDataGrid from '@/modules/organizations/components/ClubPetsDataGrid';
 import RatingBadge from '@/modules/pets/components/RatingBadge';
 import { QrCode } from '@/components/ui/qr-code';
-import AdSlot from '@/components/AdSlot';
 
+/**
+ * Perfil público da organização (diretório "Comunidade"): Membros, Eventos,
+ * Mural, Fóruns. Gestão administrativa (animais em massa, doações,
+ * financeiro, equipe, configurações) vive em `/organizacoes/:orgId/admin`
+ * (`OrganizationAdminPanel`) — os antigos parâmetros `?tab=admin`/`?tab=pets`
+ * desta página redirecionam para lá, preservando links de notificações
+ * antigas.
+ */
 export default function ClubDetail() {
   const { clubId } = useParams();
   const navigate = useNavigate();
@@ -64,8 +68,14 @@ export default function ClubDetail() {
   const [code, setCode] = useState('');
   const [confirmLeave, setConfirmLeave] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
-  const activeTab = searchParams.get('tab') || 'members';
+  const rawTab = searchParams.get('tab');
+  const activeTab = rawTab === 'admin' || rawTab === 'pets' ? 'members' : (rawTab || 'members');
   const threadParam = searchParams.get('thread') || null;
+
+  useEffect(() => {
+    if (rawTab === 'pets') navigate(`/organizacoes/${clubId}/admin?tab=animals`, { replace: true });
+    else if (rawTab === 'admin') navigate(`/organizacoes/${clubId}/admin`, { replace: true });
+  }, [rawTab, clubId, navigate]);
 
   const setActiveTab = (tab) => {
     const next = new URLSearchParams(searchParams);
@@ -84,7 +94,6 @@ export default function ClubDetail() {
 
   const isMember = !!membership;
   const isAdmin = membership?.role === CLUB_ROLE.ADMIN;
-  const canEditPets = isAdmin || membership?.permissions?.edit_pets === true;
 
   const handleJoin = async (e) => {
     e.preventDefault();
@@ -103,7 +112,7 @@ export default function ClubDetail() {
       await leaveClub.mutateAsync();
       toast.success('Você saiu do clube.');
       setConfirmLeave(false);
-      navigate('/organizacoes');
+      navigate('/comunidade');
     } catch (err) {
       toast.error(err.message || 'Não foi possível sair do clube.');
     }
@@ -153,7 +162,7 @@ export default function ClubDetail() {
           icon={Building2}
           title="Clube não encontrado"
           description="O clube que você procura não existe ou foi removido."
-          action={<Button asChild><Link to="/organizacoes">Voltar para clubes</Link></Button>}
+          action={<Button asChild><Link to="/comunidade">Voltar para clubes</Link></Button>}
         />
       </div>
     );
@@ -164,7 +173,7 @@ export default function ClubDetail() {
   return (
     <div className="mx-auto max-w-4xl space-y-4">
       <Button asChild variant="ghost" size="sm" className="text-orange-50 hover:bg-white/10 hover:text-white">
-        <Link to="/organizacoes"><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para clubes</Link>
+        <Link to="/comunidade"><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para clubes</Link>
       </Button>
 
       <section className="arena-panel-strong overflow-hidden rounded-[1.25rem] p-5 sm:rounded-[2rem] sm:p-8">
@@ -193,14 +202,25 @@ export default function ClubDetail() {
           </div>
 
           {isMember && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="shrink-0 border-white/20 bg-white/10 text-white hover:bg-white/15 hover:text-white"
-              onClick={() => setConfirmLeave(true)}
-            >
-              <LogOut className="mr-1.5 h-4 w-4" /> Sair do clube
-            </Button>
+            <div className="flex shrink-0 flex-wrap gap-2">
+              {isAdmin && (
+                <Button
+                  asChild
+                  size="sm"
+                  className="border-0 bg-white text-slate-950 hover:bg-orange-50"
+                >
+                  <Link to={`/organizacoes/${clubId}/admin`}><Settings className="mr-1.5 h-4 w-4" /> Administrar</Link>
+                </Button>
+              )}
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-white/20 bg-white/10 text-white hover:bg-white/15 hover:text-white"
+                onClick={() => setConfirmLeave(true)}
+              >
+                <LogOut className="mr-1.5 h-4 w-4" /> Sair do clube
+              </Button>
+            </div>
           )}
         </div>
 
@@ -295,18 +315,16 @@ export default function ClubDetail() {
       )}
 
       {isMember && (
-        <Tabs value={(activeTab === 'admin' || (activeTab === 'pets' && !canEditPets)) && !isAdmin ? 'members' : activeTab} onValueChange={setActiveTab} className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="flex h-auto w-full flex-wrap justify-start gap-1 bg-muted/60 p-1">
             <TabsTrigger value="members"><Users className="mr-1.5 h-4 w-4" /> Membros</TabsTrigger>
             <TabsTrigger value="events"><CalendarDays className="mr-1.5 h-4 w-4" /> Eventos</TabsTrigger>
             <TabsTrigger value="feed"><MessageSquare className="mr-1.5 h-4 w-4" /> Mural</TabsTrigger>
             <TabsTrigger value="forums"><MessagesSquare className="mr-1.5 h-4 w-4" /> Fóruns</TabsTrigger>
-            {canEditPets && <TabsTrigger value="pets"><PawPrint className="mr-1.5 h-4 w-4" /> Pets</TabsTrigger>}
-            {isAdmin && <TabsTrigger value="admin"><Settings className="mr-1.5 h-4 w-4" /> Administração</TabsTrigger>}
           </TabsList>
 
           <TabsContent value="members" className="mt-4">
-            <ClubMembersTab clubId={clubId} isAdmin={isAdmin} />
+            <ClubMembersTab clubId={clubId} isAdmin={isAdmin} club={club} />
           </TabsContent>
 
           <TabsContent value="events" className="mt-4">
@@ -325,19 +343,6 @@ export default function ClubDetail() {
               onThreadChange={setThreadParam}
             />
           </TabsContent>
-
-          {canEditPets && (
-            <TabsContent value="pets" className="mt-4 space-y-4">
-              <AdSlot />
-              <ClubPetsDataGrid clubId={clubId} />
-            </TabsContent>
-          )}
-
-          {isAdmin && (
-            <TabsContent value="admin" className="mt-4">
-              <ClubAdminTab club={club} />
-            </TabsContent>
-          )}
         </Tabs>
       )}
 

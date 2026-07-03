@@ -250,7 +250,7 @@ function ClubCard({ club, myRole, joinState = null, onRequest, requesting = fals
     onRequest?.(club);
   };
   return (
-    <Link to={`/organizacoes/${club.id}`} className="block h-full">
+    <Link to={`/comunidade/${club.id}`} className="block h-full">
       <Card className="match-surface h-full rounded-[1.75rem] border-white/80 bg-white/85">
         <CardContent className="flex h-full flex-col p-5 sm:p-6">
           <div className="flex items-start justify-between gap-3">

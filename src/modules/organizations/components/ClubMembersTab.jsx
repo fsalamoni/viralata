@@ -18,13 +18,14 @@ import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import {
   useClubMembers, useSetMemberRole, useSetMemberPermissions, useRemoveMember,
 } from '@/modules/organizations/hooks/useClubs';
-import { CLUB_ROLE, CLUB_ROLE_LABELS } from '@/modules/organizations/domain/constants';
+import { CLUB_ROLE, CLUB_ROLE_LABELS, CLUB_PERMISSION } from '@/modules/organizations/domain/constants';
+import { isClubOwner } from '@/modules/organizations/domain/permissions';
 
 function initials(name) {
   return String(name || 'A').split(' ').filter(Boolean).slice(0, 2).map((p) => p[0]?.toUpperCase()).join('') || 'A';
 }
 
-export default function ClubMembersTab({ clubId, isAdmin }) {
+export default function ClubMembersTab({ clubId, isAdmin, club }) {
   const { user } = useAuth();
   const { data: members = [], isLoading } = useClubMembers(clubId);
   const setRole = useSetMemberRole(clubId);
@@ -48,7 +49,7 @@ export default function ClubMembersTab({ clubId, isAdmin }) {
 
   const handleToggleEditPets = async (member, checked) => {
     try {
-      await setPermissions.mutateAsync({ member, permissions: { edit_pets: checked } });
+      await setPermissions.mutateAsync({ member, permissions: { ...member.permissions, [CLUB_PERMISSION.ANIMALS]: checked } });
     } catch (err) {
       toast.error(err.message || 'Não foi possível alterar a permissão.');
     }
@@ -81,6 +82,7 @@ export default function ClubMembersTab({ clubId, isAdmin }) {
     <div className="space-y-3">
       {sorted.map((member) => {
         const isSelf = member.user_id === user?.uid;
+        const isOwner = isClubOwner(club, member);
         return (
           <Card key={member.id} className="rounded-xl">
             <CardContent className="flex items-center gap-3 p-3 sm:p-4">
@@ -103,21 +105,21 @@ export default function ClubMembersTab({ clubId, isAdmin }) {
                 </div>
               </div>
               <Badge variant={member.role === CLUB_ROLE.ADMIN ? 'warning' : 'secondary'} className="shrink-0 rounded-full">
-                {CLUB_ROLE_LABELS[member.role] || member.role}
+                {isOwner ? 'Proprietário' : (CLUB_ROLE_LABELS[member.role] || member.role)}
               </Badge>
 
               {isAdmin && member.role !== CLUB_ROLE.ADMIN && (
                 <label className="flex shrink-0 items-center gap-1.5 text-xs text-slate-500">
                   Editar pets
                   <Switch
-                    checked={member.permissions?.edit_pets === true}
+                    checked={member.permissions?.animals === true || member.permissions?.edit_pets === true}
                     onCheckedChange={(v) => handleToggleEditPets(member, v)}
                     disabled={setPermissions.isPending}
                   />
                 </label>
               )}
 
-              {isAdmin && !isSelf && (
+              {isAdmin && !isSelf && !isOwner && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0">

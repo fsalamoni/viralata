@@ -34,11 +34,19 @@ service cloud.firestore {
       return isAuth() && exists(/databases/$(database)/documents/club_members/$(clubId + '_' + request.auth.uid))
         && get(/databases/$(database)/documents/club_members/$(clubId + '_' + request.auth.uid)).data.get('permissions', {}).get('edit_pets', false) == true;
     }
+    // Permissão granular do painel de administração da organização
+    // (`animals`, `finance`, `donations`, `feed`, `team` — ver
+    // src/modules/organizations/domain/permissions.js). Admins já têm tudo
+    // via isClubAdmin, independente desta flag.
+    function hasClubPermission(clubId, key) {
+      return isAuth() && exists(/databases/$(database)/documents/club_members/$(clubId + '_' + request.auth.uid))
+        && get(/databases/$(database)/documents/club_members/$(clubId + '_' + request.auth.uid)).data.get('permissions', {}).get(key, false) == true;
+    }
     // Quem pode gerenciar um pet (dono pessoa física, ou clube dono via admin/permissão).
     function canManagePet(petData) {
       return petData.owner_id == request.auth.uid ||
         (petData.get('owner_type', '') == 'organization' && (
-          isClubAdmin(petData.owner_id) || canEditClubPets(petData.owner_id)
+          isClubAdmin(petData.owner_id) || canEditClubPets(petData.owner_id) || hasClubPermission(petData.owner_id, 'animals')
         ));
     }
     // Dono fixo da plataforma (bootstrap do primeiro platform_admin) — espelha
@@ -78,12 +86,16 @@ service cloud.firestore {
       // da qual ele é admin (owner_type == 'organization') — nunca de terceiros.
       allow create: if isAuth() && (
         request.resource.data.owner_id == request.auth.uid ||
-        (request.resource.data.owner_type == 'organization' && isClubAdmin(request.resource.data.owner_id))
+        (request.resource.data.owner_type == 'organization' && (
+          isClubAdmin(request.resource.data.owner_id) ||
+          canEditClubPets(request.resource.data.owner_id) ||
+          hasClubPermission(request.resource.data.owner_id, 'animals')
+        ))
       );
       allow update: if isAuth() && (
         resource.data.owner_id == request.auth.uid ||
         (resource.data.owner_type == 'organization' && (
-          isClubAdmin(resource.data.owner_id) || canEditClubPets(resource.data.owner_id)
+          isClubAdmin(resource.data.owner_id) || canEditClubPets(resource.data.owner_id) || hasClubPermission(resource.data.owner_id, 'animals')
         )) ||
         isPlatformAdmin()
       );
@@ -323,6 +335,30 @@ service cloud.firestore {
         resource.data.author_id == request.auth.uid ||
         isClubAdmin(resource.data.club_id) ||
         isPlatformAdmin()
+      );
+    }
+
+    // ─── Chamados de doação (campanhas) de uma organização ─────────────────────
+    match /club_campaigns/{campaignId} {
+      allow read: if true; // Visível publicamente (transparência de arrecadação)
+      allow create: if isAuth() && (
+        isClubAdmin(request.resource.data.club_id) || hasClubPermission(request.resource.data.club_id, 'donations')
+      );
+      allow update, delete: if isAuth() && (
+        isClubAdmin(resource.data.club_id) || hasClubPermission(resource.data.club_id, 'donations') || isPlatformAdmin()
+      );
+    }
+
+    // ─── Prestação de contas (lançamentos financeiros) de uma organização ──────
+    match /club_ledger/{entryId} {
+      allow read: if isAuth() && (
+        isClubAdmin(resource.data.club_id) || hasClubPermission(resource.data.club_id, 'finance') || isPlatformAdmin()
+      );
+      allow create: if isAuth() && (
+        isClubAdmin(request.resource.data.club_id) || hasClubPermission(request.resource.data.club_id, 'finance')
+      );
+      allow update, delete: if isAuth() && (
+        isClubAdmin(resource.data.club_id) || hasClubPermission(resource.data.club_id, 'finance') || isPlatformAdmin()
       );
     }
 

@@ -24,6 +24,14 @@ import {
   useClubMembers,
 } from '@/modules/organizations/hooks/useClubs';
 
+/**
+ * Aba "Configurações" do painel de administração da organização: identidade
+ * (nome, logo, contato, CNPJ, link de doação), código de convite e exclusão
+ * do clube. Exclusiva de administradores (role `admin`) — as capacidades de
+ * gestão de equipe (convites, pedidos de ingresso, permissões) ficam na aba
+ * Equipe (`ClubTeamTab.jsx`), que reaproveita `ClubJoinRequests` e
+ * `ClubAddMembers` exportados abaixo.
+ */
 export default function ClubAdminTab({ club }) {
   const navigate = useNavigate();
   const { copy, copied } = useClipboard();
@@ -85,9 +93,6 @@ export default function ClubAdminTab({ club }) {
 
   return (
     <div className="space-y-4">
-      <ClubJoinRequests club={club} />
-      <ClubAddMembers club={club} />
-
       <Card className="rounded-xl">
         <CardHeader className="p-4 sm:p-5">
           <CardTitle className="text-base">Código de convite</CardTitle>
@@ -225,7 +230,7 @@ export default function ClubAdminTab({ club }) {
 }
 
 /** Pedidos de ingresso pendentes — o admin aprova ou recusa. */
-function ClubJoinRequests({ club }) {
+export function ClubJoinRequests({ club }) {
   const { data: requests = [], isLoading } = useJoinRequests(club.id);
   const approve = useApproveJoinRequest(club.id);
   const reject = useRejectJoinRequest(club.id);
@@ -282,7 +287,7 @@ function ClubJoinRequests({ club }) {
  * plataforma, com busca, seleção múltipla e convite em lote. Os convidados
  * recebem um aviso no sino e decidem aceitar ou recusar.
  */
-function ClubAddMembers({ club }) {
+export function ClubAddMembers({ club }) {
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState({}); // { uid: athlete }
   const { data: athletes = [], isLoading } = { data: [] };
