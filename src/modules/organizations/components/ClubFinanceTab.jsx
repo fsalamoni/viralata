@@ -26,28 +26,36 @@ function toLocalISODate(date) {
   return `${y}-${m}-${d}`;
 }
 
+const MONTH_LABELS = [
+  'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+  'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro',
+];
+
 /**
- * Soma/subtrai meses com clamp no último dia do mês de destino — evita que
- * `Date#setMonth` role para o mês seguinte quando o dia atual (29-31) não
- * existe no mês de destino (ex.: 31/mar -1 mês, sem clamp, vira 02-03/mar
- * em vez de 28/fev).
+ * Intervalo [início, fim) de datas locais (YYYY-MM-DD) para o período
+ * selecionado. `end` é exclusivo (primeiro dia após o período).
  */
-function addMonthsClamped(date, delta) {
-  const targetIndex = date.getMonth() + delta;
-  const year = date.getFullYear() + Math.floor(targetIndex / 12);
-  const month = ((targetIndex % 12) + 12) % 12;
-  const daysInTargetMonth = new Date(year, month + 1, 0).getDate();
-  const day = Math.min(date.getDate(), daysInTargetMonth);
-  return new Date(year, month, day);
+function periodRange(period, { year, month, semester }) {
+  let start;
+  let end;
+  if (period === FINANCE_PERIOD.MONTHLY) {
+    start = new Date(year, month, 1);
+    end = new Date(year, month + 1, 1);
+  } else if (period === FINANCE_PERIOD.SEMIANNUAL) {
+    const startMonth = semester === 2 ? 6 : 0;
+    start = new Date(year, startMonth, 1);
+    end = new Date(year, startMonth + 6, 1);
+  } else {
+    start = new Date(year, 0, 1);
+    end = new Date(year + 1, 0, 1);
+  }
+  return { since: toLocalISODate(start), until: toLocalISODate(end) };
 }
 
-function periodStart(period) {
-  const now = new Date();
-  let start;
-  if (period === FINANCE_PERIOD.MONTHLY) start = addMonthsClamped(now, -1);
-  else if (period === FINANCE_PERIOD.SEMIANNUAL) start = addMonthsClamped(now, -6);
-  else start = addMonthsClamped(now, -12);
-  return toLocalISODate(start);
+function periodLabel(period, { year, month, semester }) {
+  if (period === FINANCE_PERIOD.MONTHLY) return `${MONTH_LABELS[month]} de ${year}`;
+  if (period === FINANCE_PERIOD.SEMIANNUAL) return `${semester}º semestre de ${year}`;
+  return `Ano de ${year}`;
 }
 
 function categoryBreakdown(entries, total) {
@@ -66,16 +74,41 @@ export default function ClubFinanceTab({ clubId }) {
   const { data: entries = [], isLoading } = useClubLedger(clubId);
   const createEntry = useCreateLedgerEntry(clubId);
   const deleteEntry = useDeleteLedgerEntry(clubId);
+  const now = new Date();
   const [period, setPeriod] = useState(FINANCE_PERIOD.MONTHLY);
+  const [year, setYear] = useState(now.getFullYear());
+  const [month, setMonth] = useState(now.getMonth());
+  const [semester, setSemester] = useState(now.getMonth() < 6 ? 1 : 2);
   const [createOpen, setCreateOpen] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
 
   const setField = (key) => (e) => setForm((prev) => ({ ...prev, [key]: e.target.value }));
 
+  // Histórico desde a criação da organização: as opções de ano vão do ano do
+  // lançamento mais antigo (ou do ano atual, se ainda não houver nada) até hoje.
+  const yearOptions = useMemo(() => {
+    const current = now.getFullYear();
+    let earliest = current;
+    entries.forEach((entry) => {
+      const y = Number(String(entry.date || '').slice(0, 4));
+      if (y && y < earliest) earliest = y;
+    });
+    const list = [];
+    for (let y = current; y >= earliest; y -= 1) list.push(y);
+    return list;
+  }, [entries, now]);
+
+  const { since, until } = useMemo(
+    () => periodRange(period, { year, month, semester }),
+    [period, year, month, semester],
+  );
+
   const filtered = useMemo(() => {
-    const since = periodStart(period);
-    return entries.filter((entry) => String(entry.date || '') >= since);
-  }, [entries, period]);
+    return entries.filter((entry) => {
+      const d = String(entry.date || '');
+      return d >= since && d < until;
+    });
+  }, [entries, since, until]);
 
   const revenueEntries = filtered.filter((e) => e.type === LEDGER_TYPE.REVENUE);
   const expenseEntries = filtered.filter((e) => e.type === LEDGER_TYPE.EXPENSE);
@@ -115,7 +148,7 @@ export default function ClubFinanceTab({ clubId }) {
   return (
     <div className="space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {Object.values(FINANCE_PERIOD).map((p) => (
             <button
               key={p}
@@ -133,6 +166,36 @@ export default function ClubFinanceTab({ clubId }) {
         <Button size="sm" onClick={() => setCreateOpen(true)}>
           <Plus className="mr-1.5 h-4 w-4" /> Novo lançamento
         </Button>
+      </div>
+
+      {/* Seleção de mês/semestre/ano — histórico desde a criação da organização */}
+      <div className="flex flex-wrap items-center gap-2">
+        {period === FINANCE_PERIOD.MONTHLY && (
+          <Select value={String(month)} onValueChange={(v) => setMonth(Number(v))}>
+            <SelectTrigger className="h-9 w-36"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {MONTH_LABELS.map((label, i) => <SelectItem key={label} value={String(i)}>{label}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        )}
+        {period === FINANCE_PERIOD.SEMIANNUAL && (
+          <Select value={String(semester)} onValueChange={(v) => setSemester(Number(v))}>
+            <SelectTrigger className="h-9 w-40"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="1">1º semestre</SelectItem>
+              <SelectItem value="2">2º semestre</SelectItem>
+            </SelectContent>
+          </Select>
+        )}
+        <Select value={String(year)} onValueChange={(v) => setYear(Number(v))}>
+          <SelectTrigger className="h-9 w-28"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            {yearOptions.map((y) => <SelectItem key={y} value={String(y)}>{y}</SelectItem>)}
+          </SelectContent>
+        </Select>
+        <span className="text-xs font-medium text-muted-foreground">
+          {periodLabel(period, { year, month, semester })}
+        </span>
       </div>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">

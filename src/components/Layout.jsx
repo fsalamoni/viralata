@@ -98,8 +98,8 @@ export default function Layout({ children, currentPageName }) {
           <div className="flex items-center gap-2">
             {isAuthenticated ? (
               <>
-                {/* Cadastrar Pet */}
-                <Button asChild size="sm" className="hidden sm:flex">
+                {/* Cadastrar Pet — presente no cabeçalho em todas as páginas (item 2) */}
+                <Button asChild size="sm">
                   <Link to="/pets/new"><Plus className="w-3.5 h-3.5 mr-1" />Pet</Link>
                 </Button>
 
@@ -191,15 +191,6 @@ export default function Layout({ children, currentPageName }) {
                 {label}
               </Link>
             ))}
-            {isAuthenticated && (
-              <Link
-                to="/pets/new"
-                onClick={() => setMobileOpen(false)}
-                className="flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium text-primary hover:bg-secondary/70"
-              >
-                <Plus className="w-4 h-4" /> Cadastrar Pet
-              </Link>
-            )}
           </div>
         )}
       </header>
