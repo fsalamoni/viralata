@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { usePetFeed } from '../hooks/usePets';
+import { hasKnownCoords, lookupCityCoordsByName, filterPetsByRadius } from '../domain/geoDistance';
 import PetCard from '../components/PetCard';
 import AdSlot from '@/components/AdSlot';
 import { Button } from '@/components/ui/button';
@@ -18,7 +19,21 @@ export default function PetFeed() {
   const [filters, setFilters] = useState({});
   const [city, setCity] = useState('');
   const [radius, setRadius] = useState(null);
-  const { data: pets = [], isLoading, isError } = usePetFeed({ ...filters, city: city.trim() || undefined });
+
+  const trimmedCity = city.trim();
+  // Com raio ativo e a cidade digitada conhecida (tabela de coordenadas
+  // aproximadas — ver domain/geoDistance.js), busca sem o filtro exato de
+  // cidade no Firestore e filtra por distância real no client. Sem raio, ou
+  // cidade fora da tabela, mantém o filtro de texto exato de sempre.
+  const radiusActive = radius && hasKnownCoords(trimmedCity);
+  const queryFilters = { ...filters, city: radiusActive ? undefined : (trimmedCity || undefined) };
+  const { data: fetchedPets = [], isLoading, isError } = usePetFeed(queryFilters);
+
+  const pets = useMemo(() => {
+    if (!radiusActive) return fetchedPets;
+    const origin = lookupCityCoordsByName(trimmedCity);
+    return filterPetsByRadius(fetchedPets, origin, radius) ?? fetchedPets;
+  }, [fetchedPets, radiusActive, trimmedCity, radius]);
 
   function handleFilter(key, value) {
     setFilters((prev) => ({ ...prev, [key]: value === 'all' ? undefined : value }));
@@ -100,11 +115,13 @@ export default function PetFeed() {
           ))}
         </div>
       </div>
-      {city.trim() && (
+      {trimmedCity && (
         <p className="-mt-3 text-xs text-muted-foreground">
-          {radius
-            ? `Pets em ${city.trim()} (raio de até ${radius} km — filtro aproximado, sem geolocalização precisa)`
-            : `Pets em ${city.trim()}`}
+          {radiusActive
+            ? `Pets até ${radius} km de ${trimmedCity} (distância aproximada pelo centro da cidade, sem geolocalização precisa)`
+            : radius
+              ? `Não conhecemos a localização de "${trimmedCity}" para calcular distância — mostrando só pets cadastrados exatamente nessa cidade.`
+              : `Pets em ${trimmedCity}`}
         </p>
       )}
 
