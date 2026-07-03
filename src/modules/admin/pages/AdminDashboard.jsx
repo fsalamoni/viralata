@@ -4,6 +4,7 @@ import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Shield, PawPrint, Building2, AlertTriangle, Users, BarChart3, ScrollText, Bell } from 'lucide-react';
+import PageHero from '@/components/PageHero';
 
 export default function AdminDashboard() {
   const { isPlatformAdmin } = useAuth();
@@ -21,10 +22,16 @@ export default function AdminDashboard() {
 
   return (
     <div className="arena-page max-w-4xl mx-auto px-4 py-6 space-y-6">
-      <div className="flex items-center gap-3">
-        <Shield className="w-6 h-6 text-primary" />
-        <h1 className="text-2xl font-bold text-foreground">Painel Administrativo</h1>
-      </div>
+      <PageHero
+        eyebrow="Admin"
+        title="Painel Administrativo"
+        description="Centralize moderação, auditoria, notificações e indicadores da plataforma em um fluxo visual consistente com as demais áreas."
+        actions={(
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold text-orange-50/85">
+            <Shield className="h-3.5 w-3.5" /> Acesso restrito
+          </span>
+        )}
+      />
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {sections.map(({ icon: Icon, title, desc, link, tone }) => (
           <Card key={link} className="transition-shadow hover:shadow-[0_18px_40px_-28px_rgba(64,34,18,0.35)]">

@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { cn } from '@/core/lib/utils';
 import { toast } from 'sonner';
+import PageHero from '@/components/PageHero';
 
 const RADIUS_OPTIONS = [5, 10, 25, 50, 100];
 
@@ -261,19 +262,14 @@ export default function PetFeed() {
 
   return (
     <div className="arena-page mx-auto max-w-6xl px-5 py-5.5 pb-12">
-      <div className="mb-4.5 flex items-start justify-between gap-4">
-        <div>
-          <h1 className="font-['Sora'] text-[23px] font-extrabold text-foreground">
-            Encontre seu novo melhor amigo{firstName ? `, ${firstName}` : ''}
-          </h1>
-          <p className="mt-1.5 text-[13.5px] text-muted-foreground">
-            Deslize para curtir os destaques ou explore a lista completa abaixo.
-          </p>
-        </div>
-      </div>
+      <PageHero
+        eyebrow="Feed"
+        title={`Encontre seu novo melhor amigo${firstName ? `, ${firstName}` : ''}`}
+        description="Deslize para curtir os destaques ou explore a lista completa abaixo com o mesmo padrão visual das demais áreas da plataforma."
+      />
 
       {/* Chips de espécie */}
-      <div className="mb-4 flex gap-2 overflow-x-auto pb-0.5">
+      <div className="mb-4 mt-6 flex gap-2 overflow-x-auto pb-0.5">
         {SPECIES_FILTERS.map((f) => (
           <FilterChip key={f.value} active={species === f.value} onClick={() => setSpecies(f.value)}>
             {f.label}

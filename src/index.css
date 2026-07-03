@@ -195,7 +195,7 @@
   }
 
   .arena-tab-bar {
-    @apply mb-2 flex h-auto w-full flex-wrap justify-start gap-1.5 rounded-[1.1rem] border border-border/70 bg-card/80 p-1.5 backdrop-blur-xl sm:flex-nowrap sm:overflow-x-auto;
+    @apply mb-2 flex h-auto w-full flex-nowrap justify-start gap-1.5 overflow-x-auto rounded-[1.1rem] border border-border/70 bg-card/80 p-1.5 backdrop-blur-xl;
     box-shadow: 0 18px 42px -30px rgba(64, 34, 18, 0.32);
   }
 

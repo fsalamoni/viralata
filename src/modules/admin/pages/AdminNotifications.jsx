@@ -4,11 +4,12 @@ import { Bell, Search } from 'lucide-react';
 import { db } from '@/core/config/firebase';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { formatAuditDate } from '@/core/services/auditService';
-import { NOTIFICATION_TYPE, normalizeNotificationLink } from '@/core/services/notificationService';
+import { NOTIFICATION_TYPE, normalizeNotificationLink, resolveNotificationTarget } from '@/core/services/notificationService';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import PageHero from '@/components/PageHero';
 
 const READ_FILTERS = [
   { value: 'all', label: 'Todas' },
@@ -72,17 +73,21 @@ export default function AdminNotifications() {
 
   return (
     <div className="arena-page mx-auto max-w-6xl px-4 py-6 space-y-6">
-      <div className="flex items-center gap-3">
-        <Bell className="h-6 w-6 text-primary" />
-        <h1 className="text-2xl font-bold text-foreground">Notificações</h1>
-      </div>
+      <PageHero
+        eyebrow="Admin"
+        title="Notificações"
+        description={`Visão administrativa das últimas ${MAX_NOTIFICATIONS} notificações geradas pela plataforma, com status de leitura e destino.`}
+        actions={(
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold text-orange-50/85">
+            <Bell className="h-3.5 w-3.5" /> Operação e auditoria
+          </span>
+        )}
+      />
 
       <Card>
         <CardHeader className="border-b border-border">
           <CardTitle className="text-base">Fila recente de notificações</CardTitle>
-          <CardDescription>
-            Visão administrativa das últimas {MAX_NOTIFICATIONS} notificações geradas pela plataforma, com status de leitura e destino.
-          </CardDescription>
+          <CardDescription>Confira links originais, destinos normalizados e status de leitura.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4 p-4 sm:p-5">
           {error && <p className="text-sm text-destructive">{error}</p>}
@@ -149,6 +154,7 @@ export default function AdminNotifications() {
               <tbody className="divide-y divide-border bg-card">
                 {filtered.map((notification) => {
                   const normalizedLink = normalizeNotificationLink(notification.link);
+                  const resolvedLink = resolveNotificationTarget(notification);
                   return (
                     <tr key={notification.id} className="align-top transition-colors hover:bg-secondary/40">
                       <td className="py-3 pl-4 pr-3">
@@ -173,9 +179,11 @@ export default function AdminNotifications() {
                         </Badge>
                       </td>
                       <td className="px-3 py-3 text-xs">
-                        {normalizedLink ? (
+                        {resolvedLink ? (
                           <Button asChild variant="link" className="h-auto p-0 text-xs">
-                            <a href={normalizedLink} target="_blank" rel="noopener noreferrer">{normalizedLink}</a>
+                            <a href={resolvedLink} target="_blank" rel="noopener noreferrer">
+                              {normalizedLink || `${resolvedLink} (fallback)`}
+                            </a>
                           </Button>
                         ) : (
                           <span className="text-muted-foreground">{notification.link ? 'Link inválido' : 'Sem link'}</span>

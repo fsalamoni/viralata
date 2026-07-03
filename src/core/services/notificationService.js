@@ -69,6 +69,40 @@ export function normalizeNotificationLink(link) {
   }
 }
 
+export function getNotificationFallbackLink(type) {
+  switch (type) {
+    case NOTIFICATION_TYPE.CHAT_MESSAGE:
+    case NOTIFICATION_TYPE.CHAT_INVITE:
+      return '/chat';
+    case NOTIFICATION_TYPE.ADOPTION_INTEREST:
+    case NOTIFICATION_TYPE.PET_STATUS_CHANGED:
+      return '/meus-pets';
+    case NOTIFICATION_TYPE.ADOPTION_MATCH:
+    case NOTIFICATION_TYPE.ADOPTION_REJECTED:
+    case NOTIFICATION_TYPE.ADOPTION_COMPLETED:
+    case NOTIFICATION_TYPE.PET_RADAR_MATCH:
+      return '/feed';
+    case NOTIFICATION_TYPE.CLUB_INVITE:
+    case NOTIFICATION_TYPE.CLUB_INVITE_ACCEPTED:
+    case NOTIFICATION_TYPE.CLUB_JOIN_REQUEST:
+    case NOTIFICATION_TYPE.CLUB_JOIN_APPROVED:
+    case NOTIFICATION_TYPE.CLUB_JOIN_REJECTED:
+    case NOTIFICATION_TYPE.CLUB_EVENT_PUBLISHED:
+    case NOTIFICATION_TYPE.EVENT_INVITE:
+    case NOTIFICATION_TYPE.FORUM_REPLY:
+    case NOTIFICATION_TYPE.FORUM_MENTION:
+      return '/comunidade';
+    case NOTIFICATION_TYPE.PROFILE_REMINDER:
+      return '/onboarding';
+    default:
+      return '/feed';
+  }
+}
+
+export function resolveNotificationTarget(notification) {
+  return normalizeNotificationLink(notification?.link) || getNotificationFallbackLink(notification?.type);
+}
+
 /** Normaliza e remove duplicados/vazios de uma lista de uids destinatários. */
 function normalizeRecipients(userIds, actorId) {
   const set = new Set();

@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useClubs, useMyClubs } from '@/modules/organizations/hooks/useClubs';
 import { CLUB_ROLE, CLUB_ROLE_LABELS } from '@/modules/organizations/domain/constants';
+import PageHero from '@/components/PageHero';
 
 /**
  * Hub de gestão de organizações (`/organizacoes`): "Minhas organizações"
@@ -30,22 +31,16 @@ export default function OrganizationsHub() {
 
   return (
     <div className="arena-page mx-auto max-w-5xl space-y-8 px-5 py-6 pb-12">
-      <section className="arena-panel-strong overflow-hidden rounded-[1.25rem] p-5 sm:rounded-[2rem] sm:p-8">
-        <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
-          <div className="max-w-2xl">
-            <div className="text-[11px] font-bold uppercase tracking-[0.24em] text-orange-100/70">Organizações</div>
-            <h1 className="mt-2 text-2xl font-bold text-white sm:text-3xl">Administre suas organizações em um só lugar</h1>
-            <p className="mt-3 text-sm leading-7 text-orange-50/82">
-              Acesse animais, equipe, mural, doações e finanças com o mesmo padrão visual das páginas públicas da plataforma.
-            </p>
-          </div>
-          <div className="flex shrink-0 flex-wrap gap-2.5">
-            <Button asChild size="sm" className="border-0 bg-white text-foreground hover:bg-secondary">
-              <Link to="/organizacoes/criar"><Plus className="mr-1.5 h-4 w-4" /> Cadastrar organização</Link>
-            </Button>
-          </div>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="Organizações"
+        title="Administre suas organizações em um só lugar"
+        description="Acesse animais, equipe, mural, doações e finanças com o mesmo padrão visual das páginas públicas da plataforma."
+        actions={(
+          <Button asChild size="sm" className="border-0 bg-white text-foreground hover:bg-secondary">
+            <Link to="/organizacoes/criar"><Plus className="mr-1.5 h-4 w-4" /> Cadastrar organização</Link>
+          </Button>
+        )}
+      />
 
       <section className="space-y-4">
         <div>

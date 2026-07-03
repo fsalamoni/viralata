@@ -17,6 +17,7 @@ import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { getRatingsForUser, summarizeRatings } from '@/modules/pets/services/ratingService';
 import { exportMyData, downloadDataExport } from '@/core/services/dataExportService';
 import { deleteMyAccount } from '@/core/services/deleteAccountService';
+import PageHero from '@/components/PageHero';
 
 const GENDER_OPTIONS = [
   { value: 'male', label: 'Masculino' },
@@ -239,13 +240,16 @@ export default function Profile() {
 
   return (
     <div className="arena-page mx-auto flex max-w-5xl flex-col gap-6 px-5 py-6 pb-16">
-      <div>
-        <Button type="button" variant="ghost" size="sm" onClick={() => navigate('/feed')}>
-          <ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar
-        </Button>
-      </div>
-
-      <section className="arena-panel-strong overflow-hidden rounded-[1.25rem] p-5 sm:rounded-[2rem] sm:p-8">
+      <PageHero
+        eyebrow="Meu perfil"
+        title={fullName || user?.email || 'Seu perfil'}
+        description="Atualize seus dados, preferências de adoção e privacidade no mesmo padrão visual das demais áreas autenticadas."
+        actions={(
+          <Button type="button" variant="outline" size="sm" className="border-white/20 bg-white/10 text-white hover:bg-white/15 hover:text-white" onClick={() => navigate('/feed')}>
+            <ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar ao feed
+          </Button>
+        )}
+      >
         <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex items-center gap-4">
             <ImageUpload
@@ -256,7 +260,7 @@ export default function Profile() {
               className="h-16 w-16"
             />
             <div className="min-w-[180px] flex-1">
-              <div className="text-[11px] font-bold uppercase tracking-[0.24em] text-orange-100/70">Meu perfil</div>
+              <div className="text-[11px] font-bold uppercase tracking-[0.24em] text-orange-100/70">Dados da conta</div>
               <div className="mt-1 font-['Sora'] text-2xl font-extrabold text-white">{fullName || user?.email}</div>
               <div className="mt-1 text-[13px] text-orange-50/80">{user?.email}</div>
               <div className="mt-3 flex flex-wrap items-center gap-2.5">
@@ -285,7 +289,7 @@ export default function Profile() {
             Revise seus dados, mantenha o perfil de adotante atualizado e controle a privacidade das suas informações.
           </div>
         </div>
-      </section>
+      </PageHero>
 
       {/* Dados pessoais */}
       <Card className="rounded-[24px] p-6 lg:p-7">
