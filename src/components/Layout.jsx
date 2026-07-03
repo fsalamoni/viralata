@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
-  PawPrint, Heart, Building2, MessageCircle, Bell, User, Menu, X,
+  PawPrint, Heart, Building2, MessageCircle, User, Menu, X,
   Plus, Shield, ShieldCheck, AlertTriangle, LogOut, Radar,
 } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
-import { useNotifications } from '@/modules/notifications/hooks/useNotifications';
+import NotificationsMenu from '@/modules/notifications/components/NotificationsMenu';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -29,10 +29,7 @@ export default function Layout({ children, currentPageName }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, userProfile, isAuthenticated, isPlatformAdmin, signOut } = useAuth();
-  const { data: notifications = [] } = useNotifications(user?.uid);
   const [mobileOpen, setMobileOpen] = useState(false);
-
-  const unreadCount = notifications.filter((n) => !n.read).length;
 
   if (STANDALONE_PAGES.includes(currentPageName)) {
     return <>{children}</>;
@@ -89,16 +86,7 @@ export default function Layout({ children, currentPageName }) {
                 </Button>
 
                 {/* Notificações */}
-                <Button asChild variant="ghost" size="icon" className="relative">
-                  <Link to="/perfil#notificacoes">
-                    <Bell className="w-5 h-5" />
-                    {unreadCount > 0 && (
-                      <span className="absolute -top-0.5 -right-0.5 bg-destructive text-destructive-foreground text-xs rounded-full w-4 h-4 flex items-center justify-center font-bold">
-                        {unreadCount > 9 ? '9+' : unreadCount}
-                      </span>
-                    )}
-                  </Link>
-                </Button>
+                <NotificationsMenu />
 
                 {/* Avatar / Menu */}
                 <DropdownMenu>
