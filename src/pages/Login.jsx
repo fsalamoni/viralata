@@ -19,15 +19,23 @@ const LOGIN_QUOTE = {
 };
 
 export default function Login() {
-  const { signInWithGoogle, isAuthenticated, isLoadingAuth, authError, isAuthAvailable, authUnavailableReason } = useAuth();
+  const {
+    signInWithGoogle,
+    isAuthenticated,
+    isLoadingAuth,
+    authError,
+    isAuthAvailable,
+    authUnavailableReason,
+    isProfileComplete,
+  } = useAuth();
   const [busy, setBusy] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || '/feed';
 
   useEffect(() => {
-    if (isAuthenticated) navigate(from, { replace: true });
-  }, [isAuthenticated, navigate, from]);
+    if (isAuthenticated) navigate(isProfileComplete ? from : '/onboarding', { replace: true });
+  }, [isAuthenticated, isProfileComplete, navigate, from]);
 
   useEffect(() => {
     if (authError?.message) toast.error(authError.message);

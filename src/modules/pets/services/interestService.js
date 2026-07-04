@@ -50,7 +50,7 @@ export async function createInterest(petId, userId, actor, formAnswers = null) {
     title: 'Novo interesse em adoção!',
     message: `${actor?.displayName || 'Alguém'} demonstrou interesse em ${pet.title || pet.name || 'seu pet'}.`,
     type: NOTIFICATION_TYPE.ADOPTION_INTEREST,
-    link: `/pets/${petId}/interests`,
+    link: `/pets/${petId}?tab=interests`,
     actor: { uid: userId, displayName: actor?.displayName },
   });
 
@@ -84,7 +84,7 @@ export async function hasInterest(petId, userId) {
 }
 
 /** Atualiza o status de um interesse (aprovado, rejeitado, chat aberto). */
-export async function updateInterestStatus(petId, userId, status, actor) {
+export async function updateInterestStatus(petId, userId, status, actor, options = {}) {
   if (!db) throw new Error('Firebase não disponível');
   const id = interestId(petId, userId);
   await updateDoc(doc(db, COLLECTION, id), { status, updated_at: serverTimestamp() });
@@ -101,13 +101,16 @@ export async function updateInterestStatus(petId, userId, status, actor) {
   const message = status === 'rejected'
     ? 'Infelizmente seu interesse não foi selecionado desta vez.'
     : 'Boa notícia! O responsável pelo pet quer conversar com você.';
+  const notificationLink = status === 'rejected'
+    ? '/feed'
+    : (options.conversationId ? `/chat?c=${options.conversationId}` : '/chat');
 
   await createNotification({
     userId,
     title: status === 'rejected' ? 'Interesse não selecionado' : 'Interesse aprovado!',
     message,
     type: notifType,
-    link: status !== 'rejected' ? '/chat' : '/feed',
+    link: notificationLink,
     actor: { uid: actor?.uid, displayName: actor?.displayName },
   });
 

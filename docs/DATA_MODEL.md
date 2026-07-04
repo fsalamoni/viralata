@@ -71,7 +71,15 @@ formulário na plataforma). Gera notificações
 ### `clubs/{id}`
 `name`, `description`, `city`, `state`, `logo_url`, `invite_code`,
 `member_count` (cosmético, nunca fonte de verdade), `created_by` (uid do
-proprietário — sempre com as 5 permissões, imutável pela UI), `creator_name`.
+proprietário — sempre com as 5 permissões, imutável pela UI), `creator_name`,
+`directory_status` (`active | review | suspended`), `featured` (boolean) e
+`community_id`/`community_name` (vínculo editorial opcional para o diretório).
+
+### `communities/{id}`
+Entidade própria de curadoria/global para agrupar organizações no diretório:
+`name`, `description`, `city`, `state`, `cover_url`, `featured`, `priority`,
+`visibility` (`public | hidden`). Escrita exclusiva de `platform_admin`;
+leitura pública.
 
 ### `club_members/{clubId_uid}`
 `club_id`, `user_id`, `user_name`, `user_email`, `photo_url`, `role`

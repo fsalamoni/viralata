@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import { doc, getDoc } from 'firebase/firestore';
@@ -48,6 +48,7 @@ const SPECIES_LABEL = { dog: 'Cachorro', cat: 'Gato', rabbit: 'Coelho', bird: 'P
 export default function PetDetail() {
   const { petId } = useParams();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { user, userProfile, isPlatformAdmin } = useAuth();
   const { data: pet, isLoading } = usePet(petId);
   const { data: alreadyInterested } = useHasInterest(petId, user?.uid);
@@ -72,6 +73,13 @@ export default function PetDetail() {
   if (!pet) return <div className="text-center py-16 text-muted-foreground">Pet não encontrado.</div>;
 
   const canManage = isOwner || isPlatformAdmin;
+  const managementTab = searchParams.get('tab') === 'info' ? 'info' : 'interests';
+
+  function setManagementTab(value) {
+    const next = new URLSearchParams(searchParams);
+    next.set('tab', value);
+    setSearchParams(next, { replace: true });
+  }
 
   async function handleRate({ ratedUid: target, stars, comment }) {
     try {
@@ -113,7 +121,7 @@ export default function PetDetail() {
         pet_id: petId,
         pet_title: pet.title || pet.name,
       });
-      navigate(`/chat/${conversationId}`);
+      navigate(`/chat?c=${conversationId}`);
     } catch (e) {
       toast.error(e?.message || 'Não foi possível abrir a conversa.');
     } finally {
@@ -296,10 +304,10 @@ export default function PetDetail() {
 
       {/* Painel de interessados (apenas para donos) */}
       {canManage && (
-        <Tabs defaultValue="interests" className="mt-6">
-          <TabsList>
-            <TabsTrigger value="interests">Interessados</TabsTrigger>
-            <TabsTrigger value="info">Informações</TabsTrigger>
+        <Tabs value={managementTab} onValueChange={setManagementTab} className="mt-6">
+          <TabsList className="arena-tab-bar">
+            <TabsTrigger value="interests" className="arena-tab-pill">Interessados</TabsTrigger>
+            <TabsTrigger value="info" className="arena-tab-pill">Informações</TabsTrigger>
           </TabsList>
           <TabsContent value="interests">
             <InterestPanel petId={petId} pet={pet} />

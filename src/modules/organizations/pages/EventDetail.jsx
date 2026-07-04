@@ -120,15 +120,15 @@ export default function EventDetail() {
       </section>
 
       <Tabs value={tab} onValueChange={setTab} className="w-full">
-        <TabsList className="mb-2 flex h-auto w-full flex-wrap justify-start gap-1.5 bg-muted/60 p-1.5">
-          <TabsTrigger value="detalhes">
+        <TabsList className="arena-tab-bar">
+          <TabsTrigger value="detalhes" className="arena-tab-pill">
             <Info className="mr-1.5 h-4 w-4" /> Detalhes e datas
           </TabsTrigger>
-          <TabsTrigger value="participantes"><Users className="mr-1.5 h-4 w-4" /> Participantes</TabsTrigger>
-          <TabsTrigger value="conversa"><MessageSquare className="mr-1.5 h-4 w-4" /> Conversa</TabsTrigger>
+          <TabsTrigger value="participantes" className="arena-tab-pill"><Users className="mr-1.5 h-4 w-4" /> Participantes</TabsTrigger>
+          <TabsTrigger value="conversa" className="arena-tab-pill"><MessageSquare className="mr-1.5 h-4 w-4" /> Conversa</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="detalhes" className="mt-6">
+        <TabsContent value="detalhes" className="mt-6 px-1">
           {event.description && (
             <Card className="mb-4 rounded-xl">
               <CardContent className="p-4">
@@ -140,11 +140,11 @@ export default function EventDetail() {
           <EventDatesPanel event={event} clubId={clubId} />
         </TabsContent>
 
-        <TabsContent value="participantes" className="mt-6">
+        <TabsContent value="participantes" className="mt-6 px-1">
           <EventParticipantsPanel event={event} clubId={clubId} />
         </TabsContent>
 
-        <TabsContent value="conversa" className="mt-6">
+        <TabsContent value="conversa" className="mt-6 px-1">
           <EventChat eventId={eventId} />
         </TabsContent>
       </Tabs>

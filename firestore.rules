@@ -156,7 +156,7 @@ service cloud.firestore {
 
     // ─── Notificações ─────────────────────────────────────────────────────────
     match /notifications/{notificationId} {
-      allow read: if isOwner(resource.data.user_id);
+      allow read: if isOwner(resource.data.user_id) || isPlatformAdmin();
       allow create: if isAuth();
       allow update: if isOwner(resource.data.user_id);
       allow delete: if isOwner(resource.data.user_id) || isPlatformAdmin();
@@ -179,6 +179,12 @@ service cloud.firestore {
 
     // ─── Configurações da plataforma (feature flags, doc único `global`) ───────
     match /platform_settings/{docId} {
+      allow read: if true;
+      allow write: if isPlatformAdmin();
+    }
+
+    // ─── Comunidades (entidade editorial/global) ───────────────────────────────
+    match /communities/{communityId} {
       allow read: if true;
       allow write: if isPlatformAdmin();
     }

@@ -10,6 +10,7 @@ export const AUDIT_ACTION_LABELS = {
   club_created: 'Organização criada',
   club_updated: 'Organização atualizada',
   club_deleted: 'Organização excluída',
+  admin_club_directory_updated: 'Organização moderada no diretório',
   club_invite_regenerated: 'Código de convite da organização renovado',
   club_member_joined: 'Ingressou na organização',
   club_member_left: 'Saiu da organização',
@@ -45,6 +46,10 @@ export const AUDIT_ACTION_LABELS = {
   adoption_rating_created: 'Avaliação pós-adoção registrada',
   abuse_report_created: 'Denúncia de maus-tratos registrada',
   platform_feature_flag_changed: 'Feature flag alterada (admin)',
+  platform_settings_updated: 'Configurações globais alteradas',
+  community_created: 'Comunidade criada',
+  community_updated: 'Comunidade atualizada',
+  community_deleted: 'Comunidade excluída',
 };
 
 export async function createAuditLog({

@@ -1,18 +1,19 @@
 /**
  * Configurações globais da plataforma (documento único `platform_settings/global`).
  *
- * Hoje guarda apenas o mapa de feature flags, ligado/desligado pelo admin
- * master na página de Métricas. Mantido propositadamente enxuto e isolado para
- * não interferir em nenhum outro dado.
+ * Guarda feature flags, textos, rótulos e limites operacionais auditáveis,
+ * sempre com fallback seguro para os padrões locais.
  */
 
 import { doc, getDoc, onSnapshot, setDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/core/config/firebase';
 import { createAuditLog } from '@/core/services/auditService';
 import {
-  DEFAULT_FEATURE_FLAGS,
+  PLATFORM_SETTINGS_DEFAULTS,
+  normalizePlatformSettings,
+} from '@/core/platformSettings';
+import {
   FEATURE_FLAG,
-  normalizeFeatureFlags,
 } from '@/core/featureFlags';
 
 const COL = 'platform_settings';
@@ -25,41 +26,39 @@ function settingsRef() {
 /**
  * Lê (uma vez) as configurações da plataforma. Nunca lança: na ausência do
  * documento ou em erro de permissão, devolve os padrões (todas as flags off).
- * @returns {Promise<{ feature_flags: Record<string, boolean> }>}
+ * @returns {Promise<ReturnType<typeof normalizePlatformSettings>>}
  */
 export async function getPlatformSettings() {
   try {
-    if (!db) return { feature_flags: { ...DEFAULT_FEATURE_FLAGS } };
+    if (!db) return normalizePlatformSettings(PLATFORM_SETTINGS_DEFAULTS);
     const snap = await getDoc(settingsRef());
-    const data = snap.exists() ? snap.data() : null;
-    return { feature_flags: normalizeFeatureFlags(data?.feature_flags) };
+    return normalizePlatformSettings(snap.exists() ? snap.data() : null);
   } catch {
-    return { feature_flags: { ...DEFAULT_FEATURE_FLAGS } };
+    return normalizePlatformSettings(PLATFORM_SETTINGS_DEFAULTS);
   }
 }
 
 /**
  * Observa as configurações em tempo real. Retorna a função de unsubscribe.
  * Em qualquer erro, entrega os padrões e segue (sem quebrar a aplicação).
- * @param {(settings: { feature_flags: Record<string, boolean> }) => void} cb
+ * @param {(settings: ReturnType<typeof normalizePlatformSettings>) => void} cb
  * @returns {() => void}
  */
 export function subscribePlatformSettings(cb) {
   if (!db) {
-    cb({ feature_flags: { ...DEFAULT_FEATURE_FLAGS } });
+    cb(normalizePlatformSettings(PLATFORM_SETTINGS_DEFAULTS));
     return () => {};
   }
   try {
     return onSnapshot(
       settingsRef(),
       (snap) => {
-        const data = snap.exists() ? snap.data() : null;
-        cb({ feature_flags: normalizeFeatureFlags(data?.feature_flags) });
+        cb(normalizePlatformSettings(snap.exists() ? snap.data() : null));
       },
-      () => cb({ feature_flags: { ...DEFAULT_FEATURE_FLAGS } }),
+      () => cb(normalizePlatformSettings(PLATFORM_SETTINGS_DEFAULTS)),
     );
   } catch {
-    cb({ feature_flags: { ...DEFAULT_FEATURE_FLAGS } });
+    cb(normalizePlatformSettings(PLATFORM_SETTINGS_DEFAULTS));
     return () => {};
   }
 }
@@ -88,4 +87,30 @@ export async function setFeatureFlag(flagKey, enabled, actor) {
     actor,
     details: { flag: flagKey, enabled: Boolean(enabled) },
   });
+}
+
+const SETTINGS_SECTIONS = ['ui_labels', 'ui_text', 'operational_limits'];
+
+export async function updatePlatformSettingsSection(section, value, actor) {
+  if (!SETTINGS_SECTIONS.includes(section)) {
+    throw new Error(`Seção de configuração desconhecida: ${section}`);
+  }
+  const normalized = normalizePlatformSettings({ [section]: value });
+  await setDoc(
+    settingsRef(),
+    {
+      [section]: normalized[section],
+      updated_at: serverTimestamp(),
+    },
+    { merge: true },
+  );
+  await createAuditLog({
+    action: 'platform_settings_updated',
+    actor,
+    details: {
+      section,
+      keys: Object.keys(normalized[section]),
+    },
+  });
+  return normalized[section];
 }

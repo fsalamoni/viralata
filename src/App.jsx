@@ -53,6 +53,8 @@ const AdminUsers = lazy(() => import('@/modules/admin/pages/AdminUsers'));
 const AdminOrganizations = lazy(() => import('@/modules/admin/pages/AdminOrganizations'));
 const AdminMetrics = lazy(() => import('@/modules/admin/pages/AdminMetrics'));
 const AdminAuditLog = lazy(() => import('@/modules/admin/pages/AdminAuditLog'));
+const AdminNotifications = lazy(() => import('@/modules/admin/pages/AdminNotifications'));
+const AdminPlatformSettings = lazy(() => import('@/modules/admin/pages/AdminPlatformSettings'));
 
 // ─── QueryClient ─────────────────────────────────────────────────────────────
 const queryClient = new QueryClient({
@@ -65,6 +67,8 @@ const queryClient = new QueryClient({
   },
 });
 
+const ONBOARDING_ALLOWED_PATHS = ['/onboarding', '/login', '/politica-privacidade', '/termos', '/legislacao'];
+
 // ─── Guards ───────────────────────────────────────────────────────────────────
 function ProtectedRoute({ children }) {
   const location = useLocation();
@@ -74,12 +78,15 @@ function ProtectedRoute({ children }) {
   return children;
 }
 
-function OnboardedRoute({ children }) {
+function OnboardingGate({ children }) {
   const location = useLocation();
-  const { isAuthenticated, isLoadingAuth, userProfile } = useAuth();
-  if (isLoadingAuth) return <FullScreenSpinner />;
-  if (!isAuthenticated) return <Navigate to="/login" state={{ from: location }} replace />;
-  if (!userProfile?.profile_completed) return <Navigate to="/onboarding" replace />;
+  const { isAuthenticated, isLoadingAuth, isProfileComplete } = useAuth();
+  const isAllowedPath = ONBOARDING_ALLOWED_PATHS.some((path) => location.pathname.startsWith(path));
+  if (isLoadingAuth) return isAllowedPath ? children : <FullScreenSpinner />;
+  if (!isAuthenticated) return children;
+  if (!isProfileComplete && !isAllowedPath) {
+    return <Navigate to="/onboarding" state={{ from: location }} replace />;
+  }
   return children;
 }
 
@@ -153,6 +160,7 @@ export default function App() {
             <RouteTelemetry />
             <Suspense fallback={<FullScreenSpinner />}>
               <BannedGate>
+              <OnboardingGate>
               <Routes>
                 {/* ── Públicas ─────────────────────────────────────────── */}
                 <Route path="/" element={withLayout('Home', Home)} />
@@ -271,6 +279,14 @@ export default function App() {
                   path="/admin/auditoria"
                   element={<AdminRoute>{withLayout('AdminAuditLog', AdminAuditLog)}</AdminRoute>}
                 />
+                <Route
+                  path="/admin/notificacoes"
+                  element={<AdminRoute>{withLayout('AdminNotifications', AdminNotifications)}</AdminRoute>}
+                />
+                <Route
+                  path="/admin/configuracoes"
+                  element={<AdminRoute>{withLayout('AdminPlatformSettings', AdminPlatformSettings)}</AdminRoute>}
+                />
 
                 {/* ── Redirects legados ─────────────────────────────────── */}
                 <Route path="/inicio" element={<Navigate to="/feed" replace />} />
@@ -280,6 +296,7 @@ export default function App() {
                 {/* ── 404 ───────────────────────────────────────────────── */}
                 <Route path="*" element={<PageNotFound />} />
               </Routes>
+              </OnboardingGate>
               </BannedGate>
             </Suspense>
           </BrowserRouter>

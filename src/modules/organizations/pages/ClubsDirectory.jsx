@@ -29,6 +29,8 @@ import {
 } from '@/modules/organizations/hooks/useClubs';
 import { JOIN_REQUEST_STATUS } from '@/modules/organizations/domain/constants';
 import { cn } from '@/core/lib/utils';
+import { useCommunities } from '@/modules/communities/hooks/useCommunities';
+import { getVisibleCommunityMap } from '@/modules/communities/domain/directory';
 
 const RADIUS_OPTIONS = [5, 10, 25, 50, 100];
 
@@ -54,6 +56,7 @@ function locationText(club) {
 export default function ClubsDirectory() {
   const { isAuthAvailable, authUnavailableReason, userProfile } = useAuth();
   const { data: clubs = [], isLoading } = useClubs();
+  const { data: communities = [] } = useCommunities();
   const { data: myClubs = [] } = useMyClubs();
   const { data: myRequests = [] } = useMyJoinRequests();
   const { data: myInvites = [] } = useMyClubInvites();
@@ -61,6 +64,7 @@ export default function ClubsDirectory() {
   const requestToJoin = useRequestToJoinClub();
   const [search, setSearch] = useState('');
   const [code, setCode] = useState('');
+  const [communityId, setCommunityId] = useState('all');
   // Item 6: filtro por cidade + distância. Por padrão usa a cidade do cadastro
   // do usuário; sem cidade cadastrada, o raio inicial fica em 5 km. O usuário
   // pode limpar a cidade e o raio para ver todas as organizações da plataforma.
@@ -82,6 +86,8 @@ export default function ClubsDirectory() {
   }, [userProfile?.city]);
 
   const myClubIds = useMemo(() => new Set(myClubs.map((c) => c.id)), [myClubs]);
+  const visibleCommunityMap = useMemo(() => getVisibleCommunityMap(communities), [communities]);
+  const visibleCommunities = useMemo(() => Object.values(visibleCommunityMap), [visibleCommunityMap]);
   const pendingRequestIds = useMemo(
     () => new Set(myRequests.filter((r) => r.status === JOIN_REQUEST_STATUS.PENDING).map((r) => r.club_id)),
     [myRequests],
@@ -115,6 +121,11 @@ export default function ClubsDirectory() {
       const haystack = [c.name, c.city, c.state, c.description].filter(Boolean).join(' ').toLowerCase();
       return haystack.includes(q);
     });
+    if (communityId === 'none') {
+      list = list.filter((c) => !c.community_id || !visibleCommunityMap[c.community_id]);
+    } else if (communityId !== 'all') {
+      list = list.filter((c) => c.community_id === communityId);
+    }
     if (radiusActive) {
       const origin = lookupCityCoordsByName(trimmedCity);
       list = filterPetsByRadius(list, origin, radius) ?? list;
@@ -122,8 +133,12 @@ export default function ClubsDirectory() {
       const cityQ = trimmedCity.toLowerCase();
       list = list.filter((c) => String(c.city || '').toLowerCase().includes(cityQ));
     }
-    return list.sort((a, b) => String(a.name || '').localeCompare(String(b.name || ''), 'pt-BR'));
-  }, [clubs, search, radiusActive, trimmedCity, radius]);
+    return list.sort((a, b) => {
+      const featuredDiff = Number(Boolean(b.featured)) - Number(Boolean(a.featured));
+      if (featuredDiff !== 0) return featuredDiff;
+      return String(a.name || '').localeCompare(String(b.name || ''), 'pt-BR');
+    });
+  }, [clubs, communityId, radiusActive, radius, search, trimmedCity, visibleCommunityMap]);
 
   const handleJoin = async (e) => {
     e.preventDefault();
@@ -203,6 +218,43 @@ export default function ClubsDirectory() {
         </section>
       )}
 
+      {visibleCommunities.length > 0 && (
+        <section className="space-y-4">
+          <div>
+            <div className="text-xs font-semibold uppercase tracking-[0.2em] text-primary/75">Comunidades</div>
+            <h3 className="mt-2 text-2xl font-semibold text-foreground">Frentes e redes em destaque</h3>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {visibleCommunities.slice(0, 6).map((community) => (
+              <Card key={community.id} className="overflow-hidden rounded-[1.75rem] border-white/80 bg-white/88">
+                {community.cover_url && (
+                  <img src={community.cover_url} alt="" className="h-32 w-full object-cover" />
+                )}
+                <CardContent className="space-y-3 p-5">
+                  <div className="flex items-center gap-2">
+                    <Badge variant={community.featured ? 'warning' : 'secondary'}>
+                      {community.featured ? 'Destaque' : 'Comunidade'}
+                    </Badge>
+                    {[community.city, community.state].filter(Boolean).join(' / ') && (
+                      <Badge variant="outline">{[community.city, community.state].filter(Boolean).join(' / ')}</Badge>
+                    )}
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-semibold text-foreground">{community.name}</h4>
+                    {community.description && (
+                      <p className="mt-2 line-clamp-3 text-sm leading-6 text-muted-foreground">{community.description}</p>
+                    )}
+                  </div>
+                  <Button type="button" variant="outline" size="sm" onClick={() => setCommunityId(community.id)}>
+                    Ver organizações desta comunidade
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+      )}
+
       <Card className="rounded-[2rem] border-white/80 bg-white/82">
         <CardContent className="p-4 sm:p-5">
           <div className="relative">
@@ -227,6 +279,15 @@ export default function ClubsDirectory() {
 
           {/* Filtro por cidade + distância (Item 6) */}
           <div className="mt-4 flex flex-wrap items-center gap-2.5">
+            <div className="flex gap-1.5 overflow-x-auto">
+              <RadiusChip active={communityId === 'all'} onClick={() => setCommunityId('all')}>Todas</RadiusChip>
+              {visibleCommunities.map((community) => (
+                <RadiusChip key={community.id} active={communityId === community.id} onClick={() => setCommunityId(community.id)}>
+                  {community.name}
+                </RadiusChip>
+              ))}
+              <RadiusChip active={communityId === 'none'} onClick={() => setCommunityId('none')}>Sem comunidade</RadiusChip>
+            </div>
             <div className="relative min-w-[200px] max-w-[280px] flex-1">
               <MapPin className="absolute left-3.5 top-1/2 h-[17px] w-[17px] -translate-y-1/2 text-muted-foreground/70" />
               <Input
@@ -262,6 +323,14 @@ export default function ClubsDirectory() {
                 : radius
                   ? `Não conhecemos a localização de "${trimmedCity}" para calcular distância — mostrando só organizações nessa cidade.`
                   : `Organizações em ${trimmedCity}`}
+            {communityId !== 'all' && (
+              <>
+                {' · '}
+                {communityId === 'none'
+                  ? 'apenas organizações sem comunidade'
+                  : `comunidade ${visibleCommunityMap[communityId]?.name || 'selecionada'}`}
+              </>
+            )}
           </p>
 
           <div className="mt-4 border-t border-foreground/10 pt-4 text-sm text-muted-foreground">
@@ -315,6 +384,7 @@ export default function ClubsDirectory() {
               <ClubCard
                 key={club.id}
                 club={club}
+                community={club.community_id ? visibleCommunityMap[club.community_id] : null}
                 myRole={myClubIds.has(club.id) ? (club.my_role || 'member') : null}
                 joinState={joinStateFor(club.id)}
                 onRequest={handleRequest}
@@ -328,7 +398,7 @@ export default function ClubsDirectory() {
   );
 }
 
-function ClubCard({ club, myRole, joinState = null, onRequest, requesting = false }) {
+function ClubCard({ club, community, myRole, joinState = null, onRequest, requesting = false }) {
   const location = locationText(club);
   const handleRequestClick = (e) => {
     e.preventDefault();
@@ -358,6 +428,11 @@ function ClubCard({ club, myRole, joinState = null, onRequest, requesting = fals
           </div>
 
           <div className="mt-4 space-y-2 text-sm text-muted-foreground">
+            {community && (
+              <div className="flex items-center gap-2">
+                <Badge variant="outline">{community.name}</Badge>
+              </div>
+            )}
             <div className="flex items-center gap-2">
               <MapPin className="h-4 w-4 shrink-0 text-primary" />
               <span className="truncate">{location || 'Cidade não informada'}</span>

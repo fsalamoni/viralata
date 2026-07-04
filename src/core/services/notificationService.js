@@ -52,6 +52,61 @@ function trimText(value, max) {
   return max ? text.slice(0, max) : text;
 }
 
+export function normalizeNotificationLink(link) {
+  const raw = trimText(link, 400);
+  if (!raw) return null;
+  try {
+    const safeBase = 'http://localhost';
+    const parsed = new URL(raw, safeBase);
+    const isAbsolute = /^https?:\/\//i.test(raw);
+    if (isAbsolute) {
+      const currentOrigin = typeof window !== 'undefined' ? window.location?.origin : null;
+      if (!currentOrigin || parsed.origin !== currentOrigin) return null;
+    }
+    const pathname = decodeURIComponent(parsed.pathname);
+    if (!pathname.startsWith('/')) return null;
+    if (pathname.split('/').some((segment) => segment === '..')) return null;
+    return `${parsed.pathname}${parsed.search}${parsed.hash}`;
+  } catch {
+    logger.warn('Link de notificação inválido ignorado:', raw);
+    return null;
+  }
+}
+
+export function getNotificationFallbackLink(type) {
+  switch (type) {
+    case NOTIFICATION_TYPE.CHAT_MESSAGE:
+    case NOTIFICATION_TYPE.CHAT_INVITE:
+      return '/chat';
+    case NOTIFICATION_TYPE.ADOPTION_INTEREST:
+    case NOTIFICATION_TYPE.PET_STATUS_CHANGED:
+      return '/meus-pets';
+    case NOTIFICATION_TYPE.ADOPTION_MATCH:
+    case NOTIFICATION_TYPE.ADOPTION_REJECTED:
+    case NOTIFICATION_TYPE.ADOPTION_COMPLETED:
+    case NOTIFICATION_TYPE.PET_RADAR_MATCH:
+      return '/feed';
+    case NOTIFICATION_TYPE.CLUB_INVITE:
+    case NOTIFICATION_TYPE.CLUB_INVITE_ACCEPTED:
+    case NOTIFICATION_TYPE.CLUB_JOIN_REQUEST:
+    case NOTIFICATION_TYPE.CLUB_JOIN_APPROVED:
+    case NOTIFICATION_TYPE.CLUB_JOIN_REJECTED:
+    case NOTIFICATION_TYPE.CLUB_EVENT_PUBLISHED:
+    case NOTIFICATION_TYPE.EVENT_INVITE:
+    case NOTIFICATION_TYPE.FORUM_REPLY:
+    case NOTIFICATION_TYPE.FORUM_MENTION:
+      return '/comunidade';
+    case NOTIFICATION_TYPE.PROFILE_REMINDER:
+      return '/onboarding';
+    default:
+      return '/feed';
+  }
+}
+
+export function resolveNotificationTarget(notification) {
+  return normalizeNotificationLink(notification?.link) || getNotificationFallbackLink(notification?.type);
+}
+
 /** Normaliza e remove duplicados/vazios de uma lista de uids destinatários. */
 function normalizeRecipients(userIds, actorId) {
   const set = new Set();
@@ -68,7 +123,7 @@ function buildPayload({ userId, title, message, type, link, actor }) {
     title: trimText(title, 140) || 'Nova atividade',
     message: trimText(message, 300),
     type: type || NOTIFICATION_TYPE.GENERIC,
-    link: trimText(link, 400) || null,
+    link: normalizeNotificationLink(link),
     actor_id: actor?.uid || null,
     actor_name: trimText(actor?.displayName || actor?.name, 140) || null,
     read: false,

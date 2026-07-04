@@ -8,6 +8,7 @@ import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, googleProvider, db, firebaseDisabledReason } from '@/core/config/firebase';
 import { logger } from '@/core/lib/logger';
 import { createAuditLog } from '@/core/services/auditService';
+import { isAdopterProfileComplete } from '@/modules/onboarding/domain/profileCompletion';
 
 const AuthContext = createContext(null);
 const PLATFORM_OWNER_EMAIL = 'fsalamoni@gmail.com';
@@ -52,6 +53,7 @@ export const AuthProvider = ({ children }) => {
               { merge: true },
             );
             const mergedProfile = { uid: firebaseUser.uid, ...existingProfile, ...autoAdminUpdates };
+            mergedProfile.profile_completed = isAdopterProfileComplete(mergedProfile);
             setUserProfile(mergedProfile);
           } else {
             const isOwner = isPlatformOwnerEmail(firebaseUser.email);
@@ -137,19 +139,23 @@ export const AuthProvider = ({ children }) => {
 
   const updateUserProfile = async (updates) => {
     if (!user) throw new Error('Nenhum usuário logado');
+    const nextProfile = { ...userProfile, ...updates };
+    const normalizedUpdates = {
+      ...updates,
+      profile_completed: isAdopterProfileComplete(nextProfile),
+    };
     const userDocRef = doc(db, 'users', user.uid);
     await setDoc(
       userDocRef,
-      { ...updates, updated_at: serverTimestamp() },
+      { ...normalizedUpdates, updated_at: serverTimestamp() },
       { merge: true },
     );
     await createAuditLog({
       action: 'user_profile_updated',
       actor: user,
-      details: { changed_fields: Object.keys(updates) },
+      details: { changed_fields: Object.keys(normalizedUpdates) },
     });
-    const nextProfile = { ...userProfile, ...updates };
-    setUserProfile(nextProfile);
+    setUserProfile({ ...nextProfile, profile_completed: normalizedUpdates.profile_completed });
   };
 
   const value = {
@@ -164,7 +170,7 @@ export const AuthProvider = ({ children }) => {
     signOut,
     updateUserProfile,
     isPlatformAdmin: userProfile?.role === 'platform_admin',
-    isProfileComplete: userProfile?.profile_completed === true,
+    isProfileComplete: isAdopterProfileComplete(userProfile),
     isBanned: userProfile?.banned === true,
   };
 

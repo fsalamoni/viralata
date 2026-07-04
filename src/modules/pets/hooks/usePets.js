@@ -6,7 +6,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import {
   getAvailablePets, getPetById, getPetsByOwner,
-  createPet, updatePet, deletePet, completePetAdoption,
+  createPet, updatePet, deletePet, completePetAdoption, normalizePetPhotoUrls,
 } from '../services/petService';
 import {
   createInterest, getInterestsByPet, getInterestsByUser, hasInterest, updateInterestStatus,
@@ -70,7 +70,15 @@ export function useCreatePet() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (petData) => createPet(petData, user),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['pets'] }),
+    onSuccess: (petId, petData) => {
+      qc.setQueryData(['pets', petId], {
+        id: petId,
+        ...petData,
+        photos: normalizePetPhotoUrls(petData?.photos),
+        status: petData?.status || 'available',
+      });
+      qc.invalidateQueries({ queryKey: ['pets'] });
+    },
   });
 }
 
@@ -79,7 +87,15 @@ export function useUpdatePet() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: ({ petId, updates }) => updatePet(petId, updates, user),
-    onSuccess: (_, { petId }) => {
+    onSuccess: (_, { petId, updates }) => {
+      const hasPhotos = Object.hasOwn(updates || {}, 'photos');
+      qc.setQueryData(['pets', petId], (current) => ({
+        ...(current || { id: petId }),
+        ...updates,
+        photos: hasPhotos
+          ? normalizePetPhotoUrls(updates?.photos)
+          : normalizePetPhotoUrls(current?.photos),
+      }));
       qc.invalidateQueries({ queryKey: ['pets', petId] });
       qc.invalidateQueries({ queryKey: ['pets', 'available'] });
     },
@@ -157,7 +173,13 @@ export function useUpdateInterestStatus() {
   const { user } = useAuth();
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ petId, userId, status }) => updateInterestStatus(petId, userId, status, user),
+    mutationFn: ({ petId, userId, status, conversationId }) => updateInterestStatus(
+      petId,
+      userId,
+      status,
+      user,
+      { conversationId },
+    ),
     onSuccess: (_, { petId }) => qc.invalidateQueries({ queryKey: ['interests', 'pet', petId] }),
   });
 }

@@ -134,7 +134,6 @@ export default function OnboardingQuestionnaire() {
     try {
       await updateUserProfile({
         ...answers,
-        profile_completed: true,
         lgpd_consent_at: new Date().toISOString(),
       });
       toast.success('Perfil concluído! Bem-vindo ao Viralata 🐾');

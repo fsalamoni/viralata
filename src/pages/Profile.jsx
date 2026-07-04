@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useQuery } from '@tanstack/react-query';
 import {
-  User, Download, ShieldAlert, PawPrint, Star,
+  User, Download, ShieldAlert, PawPrint, Star, ArrowLeft,
   Home as HomeIcon, Trees, Building2, Tractor, Sofa, Footprints, Wind, Wallet, Bird,
 } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
@@ -17,6 +17,7 @@ import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { getRatingsForUser, summarizeRatings } from '@/modules/pets/services/ratingService';
 import { exportMyData, downloadDataExport } from '@/core/services/dataExportService';
 import { deleteMyAccount } from '@/core/services/deleteAccountService';
+import PageHero from '@/components/PageHero';
 
 const GENDER_OPTIONS = [
   { value: 'male', label: 'Masculino' },
@@ -83,6 +84,25 @@ function ChoiceRow({ active, onClick, icon: Icon, children }) {
   );
 }
 
+function buildProfileForm(userProfile, user) {
+  return {
+    fullName: userProfile?.full_name || user?.displayName || '',
+    phone: userProfile?.phone || '',
+    city: userProfile?.city || '',
+    stateUf: userProfile?.state || '',
+    gender: userProfile?.gender || '',
+    housing: userProfile?.housing_type || '',
+    dailyWalks: userProfile?.daily_walks || '',
+    hasChildren: userProfile?.has_children === true,
+    childrenAges: userProfile?.children_ages || '',
+    hasElderly: userProfile?.has_elderly === true,
+    otherPets: Array.isArray(userProfile?.other_pets) ? userProfile.other_pets : [],
+    budgetLevel: userProfile?.budget_level || '',
+    phonePublic: userProfile?.phone_public === true,
+    photoUrl: userProfile?.photo_url || user?.photoURL || '',
+  };
+}
+
 export default function Profile() {
   const navigate = useNavigate();
   const { user, userProfile, updateUserProfile, signOut } = useAuth();
@@ -101,24 +121,60 @@ export default function Profile() {
     ? new Date(user.metadata.creationTime).getFullYear()
     : null;
 
-  const [fullName, setFullName] = useState(userProfile?.full_name || user?.displayName || '');
-  const [phone, setPhone] = useState(userProfile?.phone || '');
-  const [city, setCity] = useState(userProfile?.city || '');
-  const [stateUf, setStateUf] = useState(userProfile?.state || '');
-  const [gender, setGender] = useState(userProfile?.gender || '');
-  const [housing, setHousing] = useState(userProfile?.housing_type || '');
-  const [dailyWalks, setDailyWalks] = useState(userProfile?.daily_walks || '');
-  const [hasChildren, setHasChildren] = useState(userProfile?.has_children === true);
-  const [childrenAges, setChildrenAges] = useState(userProfile?.children_ages || '');
-  const [hasElderly, setHasElderly] = useState(userProfile?.has_elderly === true);
-  const [otherPets, setOtherPets] = useState(Array.isArray(userProfile?.other_pets) ? userProfile.other_pets : []);
-  const [budgetLevel, setBudgetLevel] = useState(userProfile?.budget_level || '');
-  const [phonePublic, setPhonePublic] = useState(userProfile?.phone_public === true);
-  const [photoUrl, setPhotoUrl] = useState(userProfile?.photo_url || user?.photoURL || '');
+  const [form, setForm] = useState(() => buildProfileForm(userProfile, user));
   const [busy, setBusy] = useState(false);
+  const dirtyFieldsRef = useRef(new Set());
+  const lastUserIdRef = useRef(user?.uid || null);
+
+  const updateField = useCallback((field, valueOrUpdater) => {
+    dirtyFieldsRef.current.add(field);
+    setForm((prev) => ({
+      ...prev,
+      [field]: typeof valueOrUpdater === 'function' ? valueOrUpdater(prev[field]) : valueOrUpdater,
+    }));
+  }, []);
+
+  useEffect(() => {
+    const nextForm = buildProfileForm(userProfile, user);
+    const currentUserId = user?.uid || null;
+    if (lastUserIdRef.current !== currentUserId) {
+      lastUserIdRef.current = currentUserId;
+      dirtyFieldsRef.current.clear();
+      setForm(nextForm);
+      return;
+    }
+    setForm((prev) => {
+      let changed = false;
+      const merged = { ...prev };
+      for (const [field, value] of Object.entries(nextForm)) {
+        if (!dirtyFieldsRef.current.has(field) && merged[field] !== value) {
+          merged[field] = value;
+          changed = true;
+        }
+      }
+      return changed ? merged : prev;
+    });
+  }, [user?.uid, user?.displayName, user?.photoURL, userProfile]);
+
+  const {
+    fullName,
+    phone,
+    city,
+    stateUf,
+    gender,
+    housing,
+    dailyWalks,
+    hasChildren,
+    childrenAges,
+    hasElderly,
+    otherPets,
+    budgetLevel,
+    phonePublic,
+    photoUrl,
+  } = form;
 
   function toggleOtherPet(pet) {
-    setOtherPets((prev) => (prev.includes(pet) ? prev.filter((p) => p !== pet) : [...prev, pet]));
+    updateField('otherPets', (prev) => (prev.includes(pet) ? prev.filter((p) => p !== pet) : [...prev, pet]));
   }
 
   async function handleSave(e) {
@@ -140,8 +196,8 @@ export default function Profile() {
         budget_level: budgetLevel,
         phone_public: phonePublic,
         photo_url: photoUrl,
-        profile_completed: Boolean(fullName.trim() && city.trim()),
       });
+      dirtyFieldsRef.current.clear();
       toast.success('Perfil atualizado com sucesso!');
     } catch (err) {
       toast.error('Erro ao salvar. Tente novamente.');
@@ -183,43 +239,60 @@ export default function Profile() {
   }
 
   return (
-    <div className="arena-page mx-auto flex max-w-[640px] flex-col gap-4.5 px-5 py-5.5 pb-16">
-
-      {/* Cabeçalho do perfil */}
-      <Card className="flex flex-row flex-wrap items-center gap-4 rounded-[24px] p-[22px]">
-        <ImageUpload
-          value={photoUrl}
-          onChange={setPhotoUrl}
-          storagePath={`users/${user?.uid}/avatar`}
-          shape="circle"
-          className="h-16 w-16"
-        />
-        <div className="min-w-[180px] flex-1">
-          <div className="font-['Sora'] text-lg font-extrabold text-foreground">{fullName || user?.email}</div>
-          <div className="mt-0.5 text-[12.5px] text-muted-foreground">{user?.email}</div>
-          <div className="mt-2 flex flex-wrap items-center gap-2.5">
-            {ratingCount > 0 && (
-              <div className="flex items-center gap-0.5">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star
-                    key={i}
-                    className="h-[15px] w-[15px]"
-                    style={{ color: i < Math.round(ratingAvg) ? 'hsl(40 88% 54%)' : 'hsl(30 20% 85%)' }}
-                    fill={i < Math.round(ratingAvg) ? 'hsl(40 88% 54%)' : 'none'}
-                  />
-                ))}
-                <span className="ml-1 text-xs font-bold text-foreground">{ratingAvg.toFixed(1)}</span>
+    <div className="arena-page mx-auto flex max-w-5xl flex-col gap-6 px-5 py-6 pb-16">
+      <PageHero
+        eyebrow="Meu perfil"
+        title={fullName || user?.email || 'Seu perfil'}
+        description="Atualize seus dados, preferências de adoção e privacidade no mesmo padrão visual das demais áreas autenticadas."
+        actions={(
+          <Button type="button" variant="outline" size="sm" className="border-white/20 bg-white/10 text-white hover:bg-white/15 hover:text-white" onClick={() => navigate('/feed')}>
+            <ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar ao feed
+          </Button>
+        )}
+      >
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+          <div className="flex items-center gap-4">
+            <ImageUpload
+              value={photoUrl}
+              onChange={(value) => updateField('photoUrl', value)}
+              folder="avatar"
+              shape="circle"
+              className="h-16 w-16"
+            />
+            <div className="min-w-[180px] flex-1">
+              <div className="text-[11px] font-bold uppercase tracking-[0.24em] text-orange-100/70">Dados da conta</div>
+              <div className="mt-1 font-['Sora'] text-2xl font-extrabold text-white">{fullName || user?.email}</div>
+              <div className="mt-1 text-[13px] text-orange-50/80">{user?.email}</div>
+              <div className="mt-3 flex flex-wrap items-center gap-2.5">
+                {ratingCount > 0 && (
+                  <div className="flex items-center gap-0.5">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star
+                        key={i}
+                        className="h-[15px] w-[15px]"
+                        style={{ color: i < Math.round(ratingAvg) ? 'hsl(40 88% 54%)' : 'rgba(255,255,255,0.35)' }}
+                        fill={i < Math.round(ratingAvg) ? 'hsl(40 88% 54%)' : 'none'}
+                      />
+                    ))}
+                    <span className="ml-1 text-xs font-bold text-white">{ratingAvg.toFixed(1)}</span>
+                  </div>
+                )}
+                {memberSinceYear && (
+                  <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-medium text-orange-50/85">
+                    Membro desde {memberSinceYear}
+                  </span>
+                )}
               </div>
-            )}
-            {memberSinceYear && (
-              <span className="text-[11px] text-muted-foreground/80">Membro desde {memberSinceYear}</span>
-            )}
+            </div>
+          </div>
+          <div className="max-w-sm text-sm leading-6 text-orange-50/82">
+            Revise seus dados, mantenha o perfil de adotante atualizado e controle a privacidade das suas informações.
           </div>
         </div>
-      </Card>
+      </PageHero>
 
       {/* Dados pessoais */}
-      <Card className="rounded-[24px] p-6">
+      <Card className="rounded-[24px] p-6 lg:p-7">
         <CardHeader className="p-0 pb-4">
           <CardTitle className="flex items-center gap-2 text-base font-bold">
             <User className="w-[19px] h-[19px] text-primary" /> Dados pessoais
@@ -231,8 +304,8 @@ export default function Profile() {
             <div className="flex items-center gap-4">
               <ImageUpload
                 value={photoUrl}
-                onChange={setPhotoUrl}
-                storagePath={`users/${user?.uid}/avatar`}
+                onChange={(value) => updateField('photoUrl', value)}
+                folder="avatar"
                 className="w-20 h-20 rounded-full"
               />
               <div className="text-[12.5px] text-muted-foreground">
@@ -244,22 +317,22 @@ export default function Profile() {
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <Label htmlFor="fullName">Nome completo *</Label>
-                <Input id="fullName" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Seu nome" required />
+                <Input id="fullName" value={fullName} onChange={(e) => updateField('fullName', e.target.value)} placeholder="Seu nome" required />
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="phone">Telefone / WhatsApp</Label>
-                <Input id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="(11) 99999-9999" />
+                <Input id="phone" value={phone} onChange={(e) => updateField('phone', e.target.value)} placeholder="(11) 99999-9999" />
               </div>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-3">
               <div className="sm:col-span-2 space-y-1.5">
                 <Label htmlFor="city">Cidade *</Label>
-                <Input id="city" value={city} onChange={(e) => setCity(e.target.value)} placeholder="Sua cidade" required />
+                <Input id="city" value={city} onChange={(e) => updateField('city', e.target.value)} placeholder="Sua cidade" required />
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="state">UF *</Label>
-                <Input id="state" value={stateUf} onChange={(e) => setStateUf(e.target.value)} maxLength={2} placeholder="SP" required />
+                <Input id="state" value={stateUf} onChange={(e) => updateField('stateUf', e.target.value)} maxLength={2} placeholder="SP" required />
               </div>
             </div>
 
@@ -267,7 +340,7 @@ export default function Profile() {
               <Label>Gênero</Label>
               <div className="flex flex-wrap gap-2">
                 {GENDER_OPTIONS.map(({ value, label }) => (
-                  <ChoiceChip key={value} active={gender === value} onClick={() => setGender(value)}>{label}</ChoiceChip>
+                  <ChoiceChip key={value} active={gender === value} onClick={() => updateField('gender', value)}>{label}</ChoiceChip>
                 ))}
               </div>
             </div>
@@ -278,7 +351,7 @@ export default function Profile() {
                 <p className="text-sm font-medium">Exibir telefone publicamente</p>
                 <p className="text-xs text-muted-foreground">Visível para responsáveis de pets que você demonstrar interesse</p>
               </div>
-              <Switch checked={phonePublic} onCheckedChange={setPhonePublic} />
+              <Switch checked={phonePublic} onCheckedChange={(value) => updateField('phonePublic', value === true)} />
             </div>
 
             <Button type="submit" disabled={busy} className="w-full">
@@ -289,7 +362,7 @@ export default function Profile() {
       </Card>
 
       {/* Perfil de adotante */}
-      <Card className="rounded-[24px] p-6">
+      <Card className="rounded-[24px] p-6 lg:p-7">
         <CardHeader className="p-0 pb-1">
           <CardTitle className="flex items-center gap-2 text-base font-bold">
             <PawPrint className="w-[19px] h-[19px] text-accent" /> Perfil de adotante
@@ -303,7 +376,7 @@ export default function Profile() {
             <Label>Tipo de moradia</Label>
             <div className="flex flex-col gap-2">
               {HOUSING_OPTIONS.map(({ value, label, icon }) => (
-                <ChoiceRow key={value} active={housing === value} icon={icon} onClick={() => setHousing(value)}>{label}</ChoiceRow>
+                <ChoiceRow key={value} active={housing === value} icon={icon} onClick={() => updateField('housing', value)}>{label}</ChoiceRow>
               ))}
             </div>
           </div>
@@ -312,7 +385,7 @@ export default function Profile() {
             <Label>Rotina de passeios</Label>
             <div className="flex flex-wrap gap-2">
               {WALKS_OPTIONS.map(({ value, label }) => (
-                <ChoiceChip key={value} active={dailyWalks === value} onClick={() => setDailyWalks(value)}>{label}</ChoiceChip>
+                <ChoiceChip key={value} active={dailyWalks === value} onClick={() => updateField('dailyWalks', value)}>{label}</ChoiceChip>
               ))}
             </div>
           </div>
@@ -321,25 +394,25 @@ export default function Profile() {
             <Label>Orçamento para cuidados do pet</Label>
             <div className="flex flex-wrap gap-2">
               {BUDGET_OPTIONS.map(({ value, label }) => (
-                <ChoiceChip key={value} active={budgetLevel === value} onClick={() => setBudgetLevel(value)}>{label}</ChoiceChip>
+                <ChoiceChip key={value} active={budgetLevel === value} onClick={() => updateField('budgetLevel', value)}>{label}</ChoiceChip>
               ))}
             </div>
           </div>
 
           <div className="flex items-center justify-between gap-3 rounded-2xl border border-border p-3.5">
             <p className="text-[13px] font-bold text-foreground">Tenho crianças em casa</p>
-            <Switch checked={hasChildren} onCheckedChange={setHasChildren} />
+            <Switch checked={hasChildren} onCheckedChange={(value) => updateField('hasChildren', value === true)} />
           </div>
           {hasChildren && (
             <Input
               value={childrenAges}
-              onChange={(e) => setChildrenAges(e.target.value)}
+              onChange={(e) => updateField('childrenAges', e.target.value)}
               placeholder="Idades das crianças (ex: 3, 7 anos)"
             />
           )}
           <div className="flex items-center justify-between gap-3 rounded-2xl border border-border p-3.5">
             <p className="text-[13px] font-bold text-foreground">Tenho idosos em casa</p>
-            <Switch checked={hasElderly} onCheckedChange={setHasElderly} />
+            <Switch checked={hasElderly} onCheckedChange={(value) => updateField('hasElderly', value === true)} />
           </div>
 
           <div className="space-y-2">

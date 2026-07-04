@@ -14,11 +14,27 @@ import { calculatePriorityScore } from '@/modules/pets/domain/priority';
 const PETS_COLLECTION = 'pets';
 const INTERESTS_COLLECTION = 'adoption_interests';
 
+export function normalizePetPhotoUrls(photos) {
+  return Array.isArray(photos)
+    ? photos
+      .map((photo) => (typeof photo === 'string' ? photo.trim() : (typeof photo?.url === 'string' ? photo.url.trim() : null)))
+      .filter(Boolean)
+    : [];
+}
+
+function normalizePetRecord(id, data) {
+  return {
+    id,
+    ...data,
+    photos: normalizePetPhotoUrls(data?.photos),
+  };
+}
+
 /** Busca um pet por ID. */
 export async function getPetById(petId) {
   if (!db || !petId) return null;
   const snap = await getDoc(doc(db, PETS_COLLECTION, petId));
-  return snap.exists() ? { id: snap.id, ...snap.data() } : null;
+  return snap.exists() ? normalizePetRecord(snap.id, snap.data()) : null;
 }
 
 /** Lista todos os pets disponíveis (para o feed). */
@@ -31,7 +47,7 @@ export async function getAvailablePets({ species, size, city, state, limitCount 
   if (state) constraints.push(where('state', '==', state));
   constraints.push(limit(limitCount));
   const snap = await getDocs(query(collection(db, PETS_COLLECTION), ...constraints));
-  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+  return snap.docs.map((d) => normalizePetRecord(d.id, d.data()));
 }
 
 /** Lista pets de um dono (usuário ou organização). */
@@ -40,7 +56,7 @@ export async function getPetsByOwner(ownerId) {
   const snap = await getDocs(
     query(collection(db, PETS_COLLECTION), where('owner_id', '==', ownerId), orderBy('created_at', 'desc'))
   );
-  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+  return snap.docs.map((d) => normalizePetRecord(d.id, d.data()));
 }
 
 /** Cria um novo pet. */
@@ -49,6 +65,7 @@ export async function createPet(petData, actor) {
   const priorityScore = calculatePriorityScore({ created_at: { seconds: Date.now() / 1000 } });
   const payload = {
     ...petData,
+    photos: normalizePetPhotoUrls(petData?.photos),
     status: petData.status || 'available',
     priority_score: priorityScore,
     created_at: serverTimestamp(),
@@ -62,7 +79,14 @@ export async function createPet(petData, actor) {
 /** Atualiza dados de um pet. */
 export async function updatePet(petId, updates, actor) {
   if (!db || !petId) throw new Error('Dados inválidos');
-  await updateDoc(doc(db, PETS_COLLECTION, petId), { ...updates, updated_at: serverTimestamp() });
+  const normalizedUpdates = {
+    ...updates,
+    updated_at: serverTimestamp(),
+  };
+  if (Object.prototype.hasOwnProperty.call(updates || {}, 'photos')) {
+    normalizedUpdates.photos = normalizePetPhotoUrls(updates?.photos);
+  }
+  await updateDoc(doc(db, PETS_COLLECTION, petId), normalizedUpdates);
   await createAuditLog({ action: 'pet_updated', actor, details: { pet_id: petId, changed_fields: Object.keys(updates) } });
 }
 

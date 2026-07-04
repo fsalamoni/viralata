@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useClubs, useMyClubs } from '@/modules/organizations/hooks/useClubs';
 import { CLUB_ROLE, CLUB_ROLE_LABELS } from '@/modules/organizations/domain/constants';
+import PageHero from '@/components/PageHero';
 
 /**
  * Hub de gestão de organizações (`/organizacoes`): "Minhas organizações"
@@ -29,21 +30,23 @@ export default function OrganizationsHub() {
   );
 
   return (
-    <div className="arena-page mx-auto max-w-5xl space-y-10 px-5 py-6 pb-12">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="text-[22px] font-extrabold">Organizações</h1>
-          <p className="mt-2 max-w-xl text-sm text-muted-foreground">
-            Gerencie as ONGs que você administra: animais, doações, finanças e equipe.
-          </p>
-        </div>
-        <Button asChild>
-          <Link to="/organizacoes/criar"><Plus className="mr-1.5 h-4 w-4" /> Cadastrar organização</Link>
-        </Button>
-      </div>
+    <div className="arena-page mx-auto max-w-5xl space-y-8 px-5 py-6 pb-12">
+      <PageHero
+        eyebrow="Organizações"
+        title="Administre suas organizações em um só lugar"
+        description="Acesse animais, equipe, mural, doações e finanças com o mesmo padrão visual das páginas públicas da plataforma."
+        actions={(
+          <Button asChild size="sm" className="border-0 bg-white text-foreground hover:bg-secondary">
+            <Link to="/organizacoes/criar"><Plus className="mr-1.5 h-4 w-4" /> Cadastrar organização</Link>
+          </Button>
+        )}
+      />
 
       <section className="space-y-4">
-        <h2 className="text-[15.5px] font-bold">Minhas organizações</h2>
+        <div>
+          <div className="text-xs font-semibold uppercase tracking-[0.2em] text-primary/75">Minha gestão</div>
+          <h2 className="mt-2 text-[22px] font-semibold text-foreground">Minhas organizações</h2>
+        </div>
         {loadingMine ? (
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {[1, 2].map((i) => <Skeleton key={i} className="h-32 rounded-[1.5rem]" />)}
@@ -88,7 +91,10 @@ export default function OrganizationsHub() {
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-[15.5px] font-bold">Descobrir outras organizações</h2>
+        <div>
+          <div className="text-xs font-semibold uppercase tracking-[0.2em] text-primary/75">Comunidade</div>
+          <h2 className="mt-2 text-[22px] font-semibold text-foreground">Descobrir outras organizações</h2>
+        </div>
         {loadingAll ? (
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {[1, 2, 3].map((i) => <Skeleton key={i} className="h-20 rounded-[1.25rem]" />)}

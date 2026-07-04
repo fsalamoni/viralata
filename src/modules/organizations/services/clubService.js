@@ -27,6 +27,7 @@ import { db } from '@/core/config/firebase';
 import { logger } from '@/core/lib/logger';
 import { createAuditLog } from '@/core/services/auditService';
 import { notifyUsers, NOTIFICATION_TYPE } from '@/core/services/notificationService';
+import { CLUB_DIRECTORY_STATUS, isClubPubliclyVisible } from '@/modules/communities/domain/directory';
 import {
   CLUB_COLLECTIONS,
   CLUB_ROLE,
@@ -115,6 +116,10 @@ export async function createClub(creator, profile, data) {
     donation_link: trimmed(data.donation_link),
     invite_code: inviteCode(),
     member_count: 1,
+    directory_status: CLUB_DIRECTORY_STATUS.ACTIVE,
+    featured: false,
+    community_id: '',
+    community_name: '',
     created_by: creator.uid,
     creator_name: profile?.platform_name || creator.displayName || creator.email || '',
     created_at: serverTimestamp(),
@@ -153,7 +158,7 @@ export async function getClubByInviteCode(code) {
 export async function listClubs() {
   if (!db) return [];
   const snap = await getDocs(collection(db, COL.clubs));
-  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() })).filter(isClubPubliclyVisible);
 }
 
 export async function listMyClubs(userId) {
@@ -514,7 +519,7 @@ export async function acceptClubInvite(invite, user, profile) {
       title: `${me} aceitou o convite e entrou em "${trimmed(invite.club_name).slice(0, 50)}"`,
       message: 'O usuário agora faz parte da organização.',
       type: NOTIFICATION_TYPE.CLUB_INVITE_ACCEPTED,
-      link: `/comunidade/${invite.club_id}?tab=members`,
+      link: `/organizacoes/${invite.club_id}/admin?tab=team`,
       actor: { uid: user.uid, displayName: me },
     });
   }

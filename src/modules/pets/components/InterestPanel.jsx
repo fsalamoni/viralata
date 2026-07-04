@@ -18,7 +18,7 @@ const STATUS_BADGE = {
 };
 
 export default function InterestPanel({ petId, pet }) {
-  const { user } = useAuth();
+  const { user, userProfile } = useAuth();
   const navigate = useNavigate();
   const { data: interests = [], isLoading } = useInterestsByPet(petId);
   const updateStatus = useUpdateInterestStatus();
@@ -27,10 +27,22 @@ export default function InterestPanel({ petId, pet }) {
   async function handleOpenChat(interest) {
     try {
       const conversationId = await getOrCreateDirectConversation(
-        user.uid, interest.user_id, { pet_id: petId, pet_title: pet?.title || pet?.name }
+        user,
+        userProfile,
+        {
+          uid: interest.user_id,
+          name: interest.user_name,
+          photo_url: interest.user_photo,
+        },
+        { pet_id: petId, pet_title: pet?.title || pet?.name },
       );
-      await updateStatus.mutateAsync({ petId, userId: interest.user_id, status: 'chat_opened' });
-      navigate(`/chat/${conversationId}`);
+      await updateStatus.mutateAsync({
+        petId,
+        userId: interest.user_id,
+        status: 'chat_opened',
+        conversationId,
+      });
+      navigate(`/chat?c=${conversationId}`);
     } catch (e) {
       toast.error('Erro ao abrir conversa.');
     }

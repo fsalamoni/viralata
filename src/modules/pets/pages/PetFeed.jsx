@@ -7,8 +7,11 @@ import { hasKnownCoords, lookupCityCoordsByName, filterPetsByRadius } from '../d
 import PetCard from '../components/PetCard';
 import AdSlot from '@/components/AdSlot';
 import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
 import { cn } from '@/core/lib/utils';
 import { toast } from 'sonner';
+import PageHero from '@/components/PageHero';
+import { usePlatformSettings } from '@/core/lib/FeatureFlagsContext';
 
 const RADIUS_OPTIONS = [5, 10, 25, 50, 100];
 
@@ -192,8 +195,10 @@ function SwipeDeck({ pets, onLike, onPass, onOpenDetail }) {
 export default function PetFeed() {
   const navigate = useNavigate();
   const { userProfile, user } = useAuth();
+  const { settings } = usePlatformSettings();
   const [species, setSpecies] = useState('all');
   const [size, setSize] = useState('all');
+  const [showOwnPets, setShowOwnPets] = useState(true);
   // Item 4: por padrão o filtro usa a cidade do cadastro do usuário. Se não há
   // cidade cadastrada, o raio inicial fica em 5 km. O usuário pode limpar a
   // cidade e o raio para ver todos os pets da plataforma.
@@ -227,10 +232,13 @@ export default function PetFeed() {
   const { data: fetchedPets = [], isLoading, isError } = usePetFeed(filters);
 
   const pets = useMemo(() => {
-    if (!radiusActive) return fetchedPets;
+    const visiblePets = user?.uid && !showOwnPets
+      ? fetchedPets.filter((pet) => pet.owner_id !== user.uid)
+      : fetchedPets;
+    if (!radiusActive) return visiblePets;
     const origin = lookupCityCoordsByName(trimmedCity);
-    return filterPetsByRadius(fetchedPets, origin, radius) ?? fetchedPets;
-  }, [fetchedPets, radiusActive, trimmedCity, radius]);
+    return filterPetsByRadius(visiblePets, origin, radius) ?? visiblePets;
+  }, [fetchedPets, radiusActive, trimmedCity, radius, showOwnPets, user?.uid]);
 
   const priorityPets = useMemo(
     () => [...pets].sort((a, b) => (b.priority_score || 0) - (a.priority_score || 0)),
@@ -256,19 +264,14 @@ export default function PetFeed() {
 
   return (
     <div className="arena-page mx-auto max-w-6xl px-5 py-5.5 pb-12">
-      <div className="mb-4.5 flex items-start justify-between gap-4">
-        <div>
-          <h1 className="font-['Sora'] text-[23px] font-extrabold text-foreground">
-            Encontre seu novo melhor amigo{firstName ? `, ${firstName}` : ''}
-          </h1>
-          <p className="mt-1.5 text-[13.5px] text-muted-foreground">
-            Deslize para curtir os destaques ou explore a lista completa abaixo.
-          </p>
-        </div>
-      </div>
+      <PageHero
+        eyebrow="Feed"
+        title={`Encontre seu novo melhor amigo${firstName ? `, ${firstName}` : ''}`}
+        description={settings.ui_text.feed_hero_description}
+      />
 
       {/* Chips de espécie */}
-      <div className="mb-4 flex gap-2 overflow-x-auto pb-0.5">
+      <div className="mb-4 mt-6 flex gap-2 overflow-x-auto pb-0.5">
         {SPECIES_FILTERS.map((f) => (
           <FilterChip key={f.value} active={species === f.value} onClick={() => setSpecies(f.value)}>
             {f.label}
@@ -303,6 +306,18 @@ export default function PetFeed() {
           ))}
         </div>
       </div>
+      {user && (
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-[1.15rem] border border-border/70 bg-card/80 px-4 py-3">
+          <div>
+            <p className="text-sm font-semibold text-foreground">Mostrar meus pets no feed</p>
+            <p className="text-xs text-muted-foreground">Use o controle para incluir ou ocultar pets cadastrados por você.</p>
+          </div>
+          <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+            <span>{showOwnPets ? 'Exibindo' : 'Ocultando'}</span>
+            <Switch checked={showOwnPets} onCheckedChange={setShowOwnPets} />
+          </div>
+        </div>
+      )}
       <p className="mb-6.5 text-[11.5px] text-muted-foreground/90">
         {!trimmedCity
           ? 'Sem cidade definida — mostrando todos os pets disponíveis na plataforma'
@@ -315,7 +330,7 @@ export default function PetFeed() {
 
       {!isLoading && !isError && (
         <SwipeDeck
-          key={`${species}-${size}-${trimmedCity}-${radius}`}
+          key={`${species}-${size}-${trimmedCity}-${radius}-${showOwnPets}`}
           pets={priorityPets}
           onLike={handleLike}
           onPass={handlePass}

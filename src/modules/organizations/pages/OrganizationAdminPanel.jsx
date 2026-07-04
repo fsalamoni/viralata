@@ -7,8 +7,11 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/core/lib/utils';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
+import { CLUB_DIRECTORY_STATUS, CLUB_DIRECTORY_STATUS_LABELS } from '@/modules/communities/domain/directory';
 import { useMyPets } from '@/modules/pets/hooks/usePets';
 import { useClub, useMyMembership } from '@/modules/organizations/hooks/useClubs';
 import { CLUB_ROLE, CLUB_PERMISSION } from '@/modules/organizations/domain/constants';
@@ -99,50 +102,67 @@ export default function OrganizationAdminPanel() {
         <Link to="/organizacoes"><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar às minhas organizações</Link>
       </Button>
 
-      <div className="overflow-hidden rounded-[2rem] border border-border bg-card">
-        <div className="h-24 bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--highlight))_100%)]" />
-        <div className="flex flex-wrap items-center gap-4 px-6 pb-6">
-          <span className="-mt-8 flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border-4 border-card bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--highlight))_100%)] font-display text-[19px] font-extrabold text-white">
+      <section className="arena-panel-strong overflow-hidden rounded-[1.25rem] p-5 sm:rounded-[2rem] sm:p-8">
+        <div className="flex flex-wrap items-start gap-4">
+          <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-white/15 bg-white/10 text-[19px] font-extrabold text-white">
             {initials}
           </span>
-          <div className="pb-0.5">
-            <div className="flex items-center gap-1.5">
-              <h1 className="text-[19px] font-extrabold">{club.name}</h1>
-              <ShieldCheck className="h-4 w-4 text-primary" />
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <h1 className="text-2xl font-bold text-white sm:text-3xl">{club.name}</h1>
+              <Badge className="rounded-full border-0 bg-white/10 text-white hover:bg-white/10">
+                <ShieldCheck className="mr-1.5 h-3.5 w-3.5" /> Administração
+              </Badge>
+              {club.community_name && (
+                <Badge className="rounded-full border-0 bg-white/10 text-white hover:bg-white/10">
+                  Comunidade · {club.community_name}
+                </Badge>
+              )}
+              {(club.directory_status || CLUB_DIRECTORY_STATUS.ACTIVE) !== CLUB_DIRECTORY_STATUS.ACTIVE && (
+                <Badge className="rounded-full border-0 bg-white/10 text-white hover:bg-white/10">
+                  {CLUB_DIRECTORY_STATUS_LABELS[club.directory_status || CLUB_DIRECTORY_STATUS.ACTIVE]}
+                </Badge>
+              )}
             </div>
-            <p className="text-sm text-muted-foreground">
+            <p className="mt-2 text-sm text-orange-50/80">
               Painel de administração{location ? ` · ${location}` : ''}
               {owner && ' · Você é o proprietário'}
             </p>
           </div>
         </div>
+      </section>
 
-        <div className="flex gap-1.5 overflow-x-auto border-t border-border px-6 py-3">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="arena-tab-bar">
           {visibleTabs.map((tab) => (
-            <button
-              key={tab.key}
-              type="button"
-              onClick={() => setActiveTab(tab.key)}
-              className={cn(
-                'flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors',
-                activeTab === tab.key ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-secondary/70',
-              )}
-            >
+            <TabsTrigger key={tab.key} value={tab.key} className={cn('arena-tab-pill', 'gap-1.5')}>
               <tab.icon className="h-4 w-4" /> {tab.label}
-            </button>
+            </TabsTrigger>
           ))}
-        </div>
-      </div>
+        </TabsList>
 
-      <div className="px-1">
-        {activeTab === 'overview' && <OverviewTab club={club} />}
-        {activeTab === 'animals' && <ClubPetsDataGrid clubId={orgId} />}
-        {activeTab === 'feed' && <ClubFeedTab clubId={orgId} isAdmin={isAdmin} />}
-        {activeTab === 'donations' && <ClubDonationsTab clubId={orgId} />}
-        {activeTab === 'finance' && <ClubFinanceTab clubId={orgId} />}
-        {activeTab === 'team' && <ClubTeamTab club={club} />}
-        {activeTab === 'settings' && <ClubAdminTab club={club} />}
-      </div>
+        <TabsContent value="overview" className="mt-6 px-1">
+          <OverviewTab club={club} />
+        </TabsContent>
+        <TabsContent value="animals" className="mt-6 px-1">
+          <ClubPetsDataGrid clubId={orgId} />
+        </TabsContent>
+        <TabsContent value="feed" className="mt-6 px-1">
+          <ClubFeedTab clubId={orgId} isAdmin={isAdmin} />
+        </TabsContent>
+        <TabsContent value="donations" className="mt-6 px-1">
+          <ClubDonationsTab clubId={orgId} />
+        </TabsContent>
+        <TabsContent value="finance" className="mt-6 px-1">
+          <ClubFinanceTab clubId={orgId} />
+        </TabsContent>
+        <TabsContent value="team" className="mt-6 px-1">
+          <ClubTeamTab club={club} />
+        </TabsContent>
+        <TabsContent value="settings" className="mt-6 px-1">
+          <ClubAdminTab club={club} />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

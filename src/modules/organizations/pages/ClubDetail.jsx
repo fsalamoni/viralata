@@ -27,6 +27,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { EmptyState } from '@/components/ui/empty-state';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
+import { CLUB_DIRECTORY_STATUS, isClubPubliclyVisible } from '@/modules/communities/domain/directory';
 import {
   useClub,
   useMyMembership,
@@ -49,6 +50,8 @@ import ClubPetsDataGrid from '@/modules/organizations/components/ClubPetsDataGri
 import RatingBadge from '@/modules/pets/components/RatingBadge';
 import { QrCode } from '@/components/ui/qr-code';
 
+const PUBLIC_TABS = ['members', 'animals', 'events', 'feed', 'forums'];
+
 /**
  * Perfil público da organização (diretório "Comunidade"): Membros, Eventos,
  * Mural, Fóruns. Gestão administrativa (animais em massa, doações,
@@ -62,7 +65,7 @@ export default function ClubDetail() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const { data: club, isLoading, isError } = useClub(clubId);
-  const { data: membership } = useMyMembership(clubId);
+  const { data: membership, isLoading: loadingMembership } = useMyMembership(clubId);
   const { data: myRequest } = useMyJoinRequest(clubId);
   const { data: myInvite } = useMyClubInvite(clubId);
   const joinClub = useJoinClub();
@@ -74,7 +77,8 @@ export default function ClubDetail() {
   const [confirmLeave, setConfirmLeave] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const rawTab = searchParams.get('tab');
-  const activeTab = rawTab === 'admin' || rawTab === 'pets' ? 'members' : (rawTab || 'members');
+  const requestedTab = rawTab === 'admin' || rawTab === 'pets' ? 'members' : rawTab;
+  const activeTab = PUBLIC_TABS.includes(requestedTab) ? requestedTab : 'members';
   const threadParam = searchParams.get('thread') || null;
 
   useEffect(() => {
@@ -154,7 +158,7 @@ export default function ClubDetail() {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || (isAuthenticated && loadingMembership)) {
     return (
       <div className="arena-page mx-auto max-w-4xl space-y-6 px-5 py-6 pb-12">
         <Skeleton className="h-40 rounded-[2rem]" />
@@ -170,6 +174,19 @@ export default function ClubDetail() {
           icon={Building2}
           title="Organização não encontrada"
           description="A organização que você procura não existe ou foi removida."
+          action={<Button asChild><Link to="/comunidade">Voltar para organizações</Link></Button>}
+        />
+      </div>
+    );
+  }
+
+  if (!isClubPubliclyVisible(club) && !membership) {
+    return (
+      <div className="arena-page mx-auto max-w-2xl px-5 py-6 pb-12">
+        <EmptyState
+          icon={Building2}
+          title="Organização indisponível"
+          description="Esta organização foi removida temporariamente do diretório público."
           action={<Button asChild><Link to="/comunidade">Voltar para organizações</Link></Button>}
         />
       </div>
@@ -200,6 +217,16 @@ export default function ClubDetail() {
                 {location && <span className="inline-flex items-center gap-1"><MapPin className="h-4 w-4" /> {location}</span>}
                 <span className="inline-flex items-center gap-1"><Users className="h-4 w-4" /> {club.member_count || 0} membro(s)</span>
                 <RatingBadge uid={club.id} className="text-amber-200" />
+              </div>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {club.community_name && (
+                  <Badge variant="secondary" className="rounded-full">Comunidade · {club.community_name}</Badge>
+                )}
+                {(club.directory_status || CLUB_DIRECTORY_STATUS.ACTIVE) !== CLUB_DIRECTORY_STATUS.ACTIVE && membership && (
+                  <Badge variant="warning" className="rounded-full">
+                    {(club.directory_status || CLUB_DIRECTORY_STATUS.ACTIVE) === CLUB_DIRECTORY_STATUS.REVIEW ? 'Em revisão' : 'Suspensa no diretório'}
+                  </Badge>
+                )}
               </div>
               {isMember && (
                 <Badge variant={isAdmin ? 'warning' : 'success'} className="mt-3 rounded-full uppercase tracking-[0.12em]">
@@ -326,31 +353,31 @@ export default function ClubDetail() {
 
       {isMember && (
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="mb-2 flex h-auto w-full flex-wrap justify-start gap-1.5 bg-muted/60 p-1.5">
-            <TabsTrigger value="members"><Users className="mr-1.5 h-4 w-4" /> Membros</TabsTrigger>
-            <TabsTrigger value="animals"><PawPrint className="mr-1.5 h-4 w-4" /> Animais</TabsTrigger>
-            <TabsTrigger value="events"><CalendarDays className="mr-1.5 h-4 w-4" /> Eventos</TabsTrigger>
-            <TabsTrigger value="feed"><MessageSquare className="mr-1.5 h-4 w-4" /> Mural</TabsTrigger>
-            <TabsTrigger value="forums"><MessagesSquare className="mr-1.5 h-4 w-4" /> Fóruns</TabsTrigger>
+          <TabsList className="arena-tab-bar">
+            <TabsTrigger value="members" className="arena-tab-pill"><Users className="mr-1.5 h-4 w-4" /> Membros</TabsTrigger>
+            <TabsTrigger value="animals" className="arena-tab-pill"><PawPrint className="mr-1.5 h-4 w-4" /> Animais</TabsTrigger>
+            <TabsTrigger value="events" className="arena-tab-pill"><CalendarDays className="mr-1.5 h-4 w-4" /> Eventos</TabsTrigger>
+            <TabsTrigger value="feed" className="arena-tab-pill"><MessageSquare className="mr-1.5 h-4 w-4" /> Mural</TabsTrigger>
+            <TabsTrigger value="forums" className="arena-tab-pill"><MessagesSquare className="mr-1.5 h-4 w-4" /> Fóruns</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="members" className="mt-6">
+          <TabsContent value="members" className="mt-6 px-1">
             <ClubMembersTab clubId={clubId} isAdmin={isAdmin} club={club} />
           </TabsContent>
 
-          <TabsContent value="animals" className="mt-6">
+          <TabsContent value="animals" className="mt-6 px-1">
             <ClubPetsDataGrid clubId={clubId} canManage={canManageAnimals} />
           </TabsContent>
 
-          <TabsContent value="events" className="mt-6">
+          <TabsContent value="events" className="mt-6 px-1">
             <ClubEventsTab clubId={clubId} isAdmin={isAdmin} />
           </TabsContent>
 
-          <TabsContent value="feed" className="mt-6">
+          <TabsContent value="feed" className="mt-6 px-1">
             <ClubFeedTab clubId={clubId} isAdmin={isAdmin} />
           </TabsContent>
 
-          <TabsContent value="forums" className="mt-6">
+          <TabsContent value="forums" className="mt-6 px-1">
             <ClubForumsTab
               clubId={clubId}
               isAdmin={isAdmin}
