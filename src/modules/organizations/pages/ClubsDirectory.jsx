@@ -136,8 +136,6 @@ export default function ClubsDirectory() {
     return list.sort((a, b) => {
       const featuredDiff = Number(Boolean(b.featured)) - Number(Boolean(a.featured));
       if (featuredDiff !== 0) return featuredDiff;
-      const priorityDiff = Number(b.feature_priority || 0) - Number(a.feature_priority || 0);
-      if (priorityDiff !== 0) return priorityDiff;
       return String(a.name || '').localeCompare(String(b.name || ''), 'pt-BR');
     });
   }, [clubs, communityId, radiusActive, radius, search, trimmedCity, visibleCommunityMap]);

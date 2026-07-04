@@ -38,6 +38,25 @@ function sanitizeCommunity(data = {}) {
   };
 }
 
+async function updateLinkedClubs(communityId, payload) {
+  const clubsSnap = await getDocs(query(collection(db, 'clubs'), where('community_id', '==', communityId)));
+  const docs = clubsSnap.docs;
+  const chunkSize = 450;
+
+  for (let start = 0; start < docs.length; start += chunkSize) {
+    const batch = writeBatch(db);
+    docs.slice(start, start + chunkSize).forEach((item) => {
+      batch.update(item.ref, {
+        ...payload,
+        updated_at: serverTimestamp(),
+      });
+    });
+    await batch.commit();
+  }
+
+  return clubsSnap.size;
+}
+
 export async function listCommunities({ includeHidden = false } = {}) {
   if (!db) return [];
   const snap = await getDocs(collection(db, COMMUNITY_COLLECTION));
@@ -78,34 +97,14 @@ export async function updateCommunity(id, updates, actor) {
     ...payload,
     updated_at: serverTimestamp(),
   });
-  const clubsSnap = await getDocs(query(collection(db, 'clubs'), where('community_id', '==', id)));
-  if (!clubsSnap.empty) {
-    const batch = writeBatch(db);
-    clubsSnap.docs.forEach((item) => {
-      batch.update(item.ref, {
-        community_name: payload.name,
-        updated_at: serverTimestamp(),
-      });
-    });
-    await batch.commit();
-  }
+  const linkedClubs = await updateLinkedClubs(id, { community_name: payload.name });
   await createAuditLog({ action: 'community_updated', actor, details: { community_id: id, fields: Object.keys(payload) } });
+  return linkedClubs;
 }
 
 export async function deleteCommunity(id, actor) {
   if (!db || !id) throw new Error('Comunidade inválida.');
-  const clubsSnap = await getDocs(query(collection(db, 'clubs'), where('community_id', '==', id)));
-  if (!clubsSnap.empty) {
-    const batch = writeBatch(db);
-    clubsSnap.docs.forEach((item) => {
-      batch.update(item.ref, {
-        community_id: '',
-        community_name: '',
-        updated_at: serverTimestamp(),
-      });
-    });
-    await batch.commit();
-  }
+  const detachedClubs = await updateLinkedClubs(id, { community_id: '', community_name: '' });
   await deleteDoc(doc(db, COMMUNITY_COLLECTION, id));
-  await createAuditLog({ action: 'community_deleted', actor, details: { community_id: id, detached_clubs: clubsSnap.size } });
+  await createAuditLog({ action: 'community_deleted', actor, details: { community_id: id, detached_clubs: detachedClubs } });
 }

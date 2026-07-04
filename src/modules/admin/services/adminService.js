@@ -54,10 +54,6 @@ export async function updateAdminClub(id, updates, actor) {
   if (updates.featured !== undefined) {
     payload.featured = Boolean(updates.featured);
   }
-  if (updates.feature_priority !== undefined) {
-    const parsed = Number.parseInt(updates.feature_priority, 10);
-    payload.feature_priority = Number.isNaN(parsed) ? 0 : parsed;
-  }
   if (updates.community_id !== undefined) {
     payload.community_id = String(updates.community_id || '').trim();
   }

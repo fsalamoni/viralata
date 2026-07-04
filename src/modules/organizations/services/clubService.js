@@ -118,7 +118,6 @@ export async function createClub(creator, profile, data) {
     member_count: 1,
     directory_status: CLUB_DIRECTORY_STATUS.ACTIVE,
     featured: false,
-    feature_priority: 0,
     community_id: '',
     community_name: '',
     created_by: creator.uid,
