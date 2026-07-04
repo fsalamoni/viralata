@@ -1,9 +1,11 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { DEFAULT_FEATURE_FLAGS } from '@/core/featureFlags';
+import { PLATFORM_SETTINGS_DEFAULTS } from '@/core/platformSettings';
 import { subscribePlatformSettings } from '@/core/services/platformSettingsService';
 
 const FeatureFlagsContext = createContext({
   flags: DEFAULT_FEATURE_FLAGS,
+  settings: PLATFORM_SETTINGS_DEFAULTS,
   isLoading: true,
 });
 
@@ -14,10 +16,12 @@ const FeatureFlagsContext = createContext({
  */
 export function FeatureFlagsProvider({ children }) {
   const [flags, setFlags] = useState(DEFAULT_FEATURE_FLAGS);
+  const [settings, setSettings] = useState(PLATFORM_SETTINGS_DEFAULTS);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const unsubscribe = subscribePlatformSettings((settings) => {
+      setSettings(settings);
       setFlags(settings.feature_flags);
       setIsLoading(false);
     });
@@ -26,7 +30,11 @@ export function FeatureFlagsProvider({ children }) {
     };
   }, []);
 
-  const value = useMemo(() => ({ flags, isLoading }), [flags, isLoading]);
+  const value = useMemo(() => ({
+    flags,
+    settings,
+    isLoading,
+  }), [flags, settings, isLoading]);
 
   return (
     <FeatureFlagsContext.Provider value={value}>
@@ -48,4 +56,9 @@ export function useFeatureFlags() {
 export function useFeatureFlag(flagKey) {
   const { flags } = useContext(FeatureFlagsContext);
   return Boolean(flags?.[flagKey]);
+}
+
+export function usePlatformSettings() {
+  const { settings, isLoading } = useContext(FeatureFlagsContext);
+  return { settings, isLoading };
 }

@@ -45,6 +45,7 @@ export const AUDIT_ACTION_LABELS = {
   adoption_rating_created: 'Avaliação pós-adoção registrada',
   abuse_report_created: 'Denúncia de maus-tratos registrada',
   platform_feature_flag_changed: 'Feature flag alterada (admin)',
+  platform_settings_updated: 'Configurações globais alteradas',
 };
 
 export async function createAuditLog({

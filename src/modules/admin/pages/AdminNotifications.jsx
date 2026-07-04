@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import PageHero from '@/components/PageHero';
+import { usePlatformSettings } from '@/core/lib/FeatureFlagsContext';
 
 const READ_FILTERS = [
   { value: 'all', label: 'Todas' },
@@ -21,19 +22,19 @@ const TYPE_OPTIONS = [
   { value: 'all', label: 'Todos os tipos' },
   ...Object.values(NOTIFICATION_TYPE).map((type) => ({ value: type, label: type })),
 ];
-const MAX_NOTIFICATIONS = 200;
-
 export default function AdminNotifications() {
   const { isPlatformAdmin } = useAuth();
+  const { settings } = usePlatformSettings();
   const [notifications, setNotifications] = useState([]);
   const [error, setError] = useState(null);
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
   const [readFilter, setReadFilter] = useState('all');
+  const maxNotifications = settings.operational_limits.admin_notifications_limit;
 
   useEffect(() => {
     if (!isPlatformAdmin) return undefined;
-    const q = query(collection(db, 'notifications'), orderBy('created_at', 'desc'), limit(MAX_NOTIFICATIONS));
+    const q = query(collection(db, 'notifications'), orderBy('created_at', 'desc'), limit(maxNotifications));
     const unsubscribe = onSnapshot(
       q,
       (snap) => {
@@ -43,7 +44,7 @@ export default function AdminNotifications() {
       (err) => setError(err.message || 'Erro ao carregar notificações.'),
     );
     return () => unsubscribe();
-  }, [isPlatformAdmin]);
+  }, [isPlatformAdmin, maxNotifications]);
 
   const filtered = useMemo(() => {
     const term = search.trim().toLowerCase();
@@ -76,7 +77,7 @@ export default function AdminNotifications() {
       <PageHero
         eyebrow="Admin"
         title="Notificações"
-        description={`Visão administrativa das últimas ${MAX_NOTIFICATIONS} notificações geradas pela plataforma, com status de leitura e destino.`}
+        description={`Visão administrativa das últimas ${maxNotifications} notificações geradas pela plataforma, com status de leitura e destino.`}
         actions={(
           <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold text-orange-50/85">
             <Bell className="h-3.5 w-3.5" /> Operação e auditoria

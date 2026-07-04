@@ -7,13 +7,13 @@ import {
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import NotificationsMenu from '@/modules/notifications/components/NotificationsMenu';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
   DropdownMenuTrigger, DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/core/lib/utils';
+import { usePlatformSettings } from '@/core/lib/FeatureFlagsContext';
 
 const STANDALONE_PAGES = ['Home', 'Login', 'OnboardingQuestionnaire'];
 
@@ -33,20 +33,11 @@ const MOBILE_MENU_EXTRA_ITEMS = [
   { label: 'Meus Pets', icon: Heart, to: '/meus-pets', auth: true },
 ];
 
-// Barra fixa inferior (só mobile, só autenticado) — os 5 destinos mais
-// usados no bolso, com "Cadastrar" em destaque central elevado.
-const BOTTOM_TAB_ITEMS = [
-  { label: 'Feed', icon: PawPrint, to: '/feed' },
-  { label: 'ONGs', icon: Building2, to: '/comunidade' },
-  { label: 'Cadastrar', icon: Plus, to: '/pets/new', center: true },
-  { label: 'Chat', icon: MessageCircle, to: '/chat' },
-  { label: 'Perfil', icon: User, to: '/perfil' },
-];
-
 export default function Layout({ children, currentPageName }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, userProfile, isAuthenticated, isPlatformAdmin, signOut } = useAuth();
+  const { settings } = usePlatformSettings();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   if (STANDALONE_PAGES.includes(currentPageName)) {
@@ -61,6 +52,13 @@ export default function Layout({ children, currentPageName }) {
   const displayName = userProfile?.full_name || user?.displayName || user?.email || 'Usuário';
   const photoURL = userProfile?.photo_url || user?.photoURL;
   const initials = displayName.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
+  const bottomTabItems = [
+    { label: 'Feed', icon: PawPrint, to: '/feed' },
+    { label: 'ONGs', icon: Building2, to: '/comunidade' },
+    { label: settings.ui_labels.mobile_create_pet_cta, icon: Plus, to: '/pets/new', center: true },
+    { label: 'Chat', icon: MessageCircle, to: '/chat' },
+    { label: 'Perfil', icon: User, to: '/perfil' },
+  ];
 
   return (
     <div className="arena-page min-h-screen flex flex-col">
@@ -100,7 +98,7 @@ export default function Layout({ children, currentPageName }) {
               <>
                 {/* Cadastrar Pet — presente no cabeçalho em todas as páginas (item 2) */}
                 <Button asChild size="sm">
-                  <Link to="/pets/new">+ Cadastrar Pet</Link>
+                  <Link to="/pets/new">{settings.ui_labels.header_create_pet_cta}</Link>
                 </Button>
 
                 {/* Notificações */}
@@ -203,7 +201,7 @@ export default function Layout({ children, currentPageName }) {
       {/* Bottom tab bar (mobile, autenticado) */}
       {isAuthenticated && (
         <nav className="safe-pb fixed inset-x-0 bottom-0 z-40 flex items-end justify-around border-t border-border bg-card/95 px-2 pt-2 backdrop-blur-xl md:hidden">
-          {BOTTOM_TAB_ITEMS.map(({ label, icon: Icon, to, center }) => {
+          {bottomTabItems.map(({ label, icon: Icon, to, center }) => {
             const active = location.pathname.startsWith(to);
             if (center) {
               return (

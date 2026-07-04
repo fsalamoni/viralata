@@ -12,11 +12,12 @@ const PAGE_SIZES = [10, 50, 100];
 export function AuditLogTable({ title, description, userId, className = '' }) {
   const [logs, setLogs] = useState([]);
   const [filters, setFilters] = useState({
-    log_number: '',
-    user_name: '',
-    created_at: '',
-    action_label: '',
-    details: '',
+    actor: '',
+    target: '',
+    action: 'all',
+    startDate: '',
+    endDate: '',
+    search: '',
   });
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
@@ -44,19 +45,55 @@ export function AuditLogTable({ title, description, userId, className = '' }) {
   }, [userId]);
 
   const filteredLogs = useMemo(() => {
+    const startMs = filters.startDate ? new Date(`${filters.startDate}T00:00:00`).getTime() : null;
+    const endMs = filters.endDate ? new Date(`${filters.endDate}T23:59:59.999`).getTime() : null;
+    const term = filters.search.trim().toLowerCase();
+    const actorTerm = filters.actor.trim().toLowerCase();
+    const targetTerm = filters.target.trim().toLowerCase();
     return logs.filter((log) => {
-      const values = {
-        log_number: String(log.log_number || ''),
-        user_name: `${log.user_name || ''} ${log.user_email || ''}`,
-        created_at: formatAuditDate(log.created_at, log.created_at_ms),
-        action_label: `${log.action_label || AUDIT_ACTION_LABELS[log.action] || log.action || ''}`,
-        details: stringifyDetails(log.details),
-      };
-      return Object.entries(filters).every(([key, filter]) => (
-        !filter || values[key].toLowerCase().includes(filter.toLowerCase())
-      ));
+      const createdAtMs = Number(log.created_at_ms || 0);
+      const action = log.action || '';
+      const actorText = [
+        log.actor_name,
+        log.actor_email,
+        log.actor_id,
+      ].filter(Boolean).join(' ').toLowerCase();
+      const targetText = [
+        log.user_name,
+        log.user_email,
+        log.user_id,
+      ].filter(Boolean).join(' ').toLowerCase();
+      const genericText = [
+        log.log_number,
+        log.action_label,
+        AUDIT_ACTION_LABELS[action],
+        action,
+        stringifyDetails(log.details),
+      ].filter(Boolean).join(' ').toLowerCase();
+
+      const matchesActor = !actorTerm || actorText.includes(actorTerm);
+      const matchesTarget = !targetTerm || targetText.includes(targetTerm);
+      const matchesAction = filters.action === 'all' || action === filters.action;
+      const matchesStart = startMs == null || createdAtMs >= startMs;
+      const matchesEnd = endMs == null || createdAtMs <= endMs;
+      const matchesSearch = !term || genericText.includes(term);
+
+      return matchesActor && matchesTarget && matchesAction && matchesStart && matchesEnd && matchesSearch;
     });
   }, [logs, filters]);
+
+  const actionOptions = useMemo(() => {
+    const seen = new Set();
+    return logs
+      .map((log) => log.action)
+      .filter(Boolean)
+      .filter((action) => {
+        if (seen.has(action)) return false;
+        seen.add(action);
+        return true;
+      })
+      .sort((a, b) => a.localeCompare(b, 'pt-BR'));
+  }, [logs]);
 
   const pageCount = Math.max(1, Math.ceil(filteredLogs.length / pageSize));
   const safePage = Math.min(page, pageCount);
@@ -74,12 +111,52 @@ export function AuditLogTable({ title, description, userId, className = '' }) {
       </CardHeader>
       <CardContent className="space-y-4 p-4 sm:p-5">
         {error && <p className="text-sm text-destructive">{error}</p>}
-        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
-          <FilterInput label="Nº" value={filters.log_number} onChange={(value) => updateFilter(setFilters, 'log_number', value)} />
-          <FilterInput label="Usuário" value={filters.user_name} onChange={(value) => updateFilter(setFilters, 'user_name', value)} />
-          <FilterInput label="Data/hora" value={filters.created_at} onChange={(value) => updateFilter(setFilters, 'created_at', value)} />
-          <FilterInput label="Ação" value={filters.action_label} onChange={(value) => updateFilter(setFilters, 'action_label', value)} />
-          <FilterInput label="Detalhes" value={filters.details} onChange={(value) => updateFilter(setFilters, 'details', value)} />
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
+          <FilterInput label="Ator" value={filters.actor} onChange={(value) => updateFilter(setFilters, 'actor', value)} placeholder="Nome, e-mail ou UID" />
+          <FilterInput label="Alvo" value={filters.target} onChange={(value) => updateFilter(setFilters, 'target', value)} placeholder="Usuário afetado" />
+          <label className="space-y-1 text-xs font-medium text-muted-foreground">
+            <span>Tipo de ação</span>
+            <select
+              className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+              value={filters.action}
+              onChange={(e) => updateFilter(setFilters, 'action', e.target.value)}
+            >
+              <option value="all">Todas</option>
+              {actionOptions.map((action) => (
+                <option key={action} value={action}>
+                  {AUDIT_ACTION_LABELS[action] || action}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="space-y-1 text-xs font-medium text-muted-foreground">
+            <span>Período inicial</span>
+            <Input type="date" value={filters.startDate} onChange={(e) => updateFilter(setFilters, 'startDate', e.target.value)} />
+          </label>
+          <label className="space-y-1 text-xs font-medium text-muted-foreground">
+            <span>Período final</span>
+            <Input type="date" value={filters.endDate} onChange={(e) => updateFilter(setFilters, 'endDate', e.target.value)} />
+          </label>
+        </div>
+        <div className="grid gap-2 md:grid-cols-[minmax(0,1fr)_auto]">
+          <FilterInput label="Busca geral" value={filters.search} onChange={(value) => updateFilter(setFilters, 'search', value)} placeholder="Nº do log, ação ou detalhes" />
+          <div className="flex items-end">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full md:w-auto"
+              onClick={() => setFilters({
+                actor: '',
+                target: '',
+                action: 'all',
+                startDate: '',
+                endDate: '',
+                search: '',
+              })}
+            >
+              Limpar filtros
+            </Button>
+          </div>
         </div>
 
         <div className="arena-table-wrap">
@@ -155,13 +232,13 @@ export function AuditLogTable({ title, description, userId, className = '' }) {
   );
 }
 
-function FilterInput({ label, value, onChange }) {
+function FilterInput({ label, value, onChange, placeholder = '' }) {
   return (
     <label className="space-y-1 text-xs font-medium text-muted-foreground">
       <span>{label}</span>
       <div className="relative">
         <Search className="pointer-events-none absolute left-2 top-2.5 h-4 w-4 text-muted-foreground/80" />
-        <Input value={value} onChange={(e) => onChange(e.target.value)} className="pl-8" />
+        <Input value={value} onChange={(e) => onChange(e.target.value)} className="pl-8" placeholder={placeholder} />
       </div>
     </label>
   );

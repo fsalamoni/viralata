@@ -11,6 +11,7 @@ import { Switch } from '@/components/ui/switch';
 import { cn } from '@/core/lib/utils';
 import { toast } from 'sonner';
 import PageHero from '@/components/PageHero';
+import { usePlatformSettings } from '@/core/lib/FeatureFlagsContext';
 
 const RADIUS_OPTIONS = [5, 10, 25, 50, 100];
 
@@ -194,6 +195,7 @@ function SwipeDeck({ pets, onLike, onPass, onOpenDetail }) {
 export default function PetFeed() {
   const navigate = useNavigate();
   const { userProfile, user } = useAuth();
+  const { settings } = usePlatformSettings();
   const [species, setSpecies] = useState('all');
   const [size, setSize] = useState('all');
   const [showOwnPets, setShowOwnPets] = useState(true);
@@ -265,7 +267,7 @@ export default function PetFeed() {
       <PageHero
         eyebrow="Feed"
         title={`Encontre seu novo melhor amigo${firstName ? `, ${firstName}` : ''}`}
-        description="Deslize para curtir os destaques ou explore a lista completa abaixo com o mesmo padrão visual das demais áreas da plataforma."
+        description={settings.ui_text.feed_hero_description}
       />
 
       {/* Chips de espécie */}

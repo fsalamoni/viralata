@@ -54,6 +54,7 @@ const AdminOrganizations = lazy(() => import('@/modules/admin/pages/AdminOrganiz
 const AdminMetrics = lazy(() => import('@/modules/admin/pages/AdminMetrics'));
 const AdminAuditLog = lazy(() => import('@/modules/admin/pages/AdminAuditLog'));
 const AdminNotifications = lazy(() => import('@/modules/admin/pages/AdminNotifications'));
+const AdminPlatformSettings = lazy(() => import('@/modules/admin/pages/AdminPlatformSettings'));
 
 // ─── QueryClient ─────────────────────────────────────────────────────────────
 const queryClient = new QueryClient({
@@ -281,6 +282,10 @@ export default function App() {
                 <Route
                   path="/admin/notificacoes"
                   element={<AdminRoute>{withLayout('AdminNotifications', AdminNotifications)}</AdminRoute>}
+                />
+                <Route
+                  path="/admin/configuracoes"
+                  element={<AdminRoute>{withLayout('AdminPlatformSettings', AdminPlatformSettings)}</AdminRoute>}
                 />
 
                 {/* ── Redirects legados ─────────────────────────────────── */}

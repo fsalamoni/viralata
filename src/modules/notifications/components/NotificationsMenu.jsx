@@ -10,6 +10,7 @@ import {
 import { useNotifications } from '@/modules/notifications/hooks/useNotifications';
 import { NOTIFICATION_TYPE, resolveNotificationTarget } from '@/core/services/notificationService';
 import { cn } from '@/core/lib/utils';
+import { usePlatformSettings } from '@/core/lib/FeatureFlagsContext';
 
 const TYPE_META = {
   [NOTIFICATION_TYPE.CHAT_MESSAGE]: { icon: MessageCircle, tone: 'bg-primary/15 text-primary' },
@@ -49,6 +50,8 @@ function timeAgo(notification) {
 export default function NotificationsMenu() {
   const navigate = useNavigate();
   const { notifications, unreadCount, markAsRead } = useNotifications();
+  const { settings } = usePlatformSettings();
+  const dropdownLimit = settings.operational_limits.notifications_dropdown_limit;
 
   const handleClick = async (notification) => {
     if (!notification.read) markAsRead(notification.id).catch(() => {});
@@ -90,7 +93,7 @@ export default function NotificationsMenu() {
           {notifications.length === 0 ? (
             <p className="px-4 py-8 text-center text-sm text-muted-foreground">Nenhuma notificação ainda.</p>
           ) : (
-            notifications.slice(0, 30).map((notification) => {
+            notifications.slice(0, dropdownLimit).map((notification) => {
               const meta = TYPE_META[notification.type] || { icon: Bell, tone: 'bg-secondary text-secondary-foreground' };
               const Icon = meta.icon;
               return (

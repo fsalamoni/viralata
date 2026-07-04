@@ -6,6 +6,7 @@ import {
   PawPrint, Heart, Shield, Users, Megaphone,
   ClipboardList, Search, Sparkles, ArrowRight, CheckCircle2,
 } from 'lucide-react';
+import { usePlatformSettings } from '@/core/lib/FeatureFlagsContext';
 
 const IMPACT_STATS = [
   { value: '500+', label: 'Adoções realizadas' },
@@ -44,6 +45,8 @@ const stagger = {
 };
 
 export default function Home() {
+  const { settings } = usePlatformSettings();
+
   return (
     <div className="arena-page arena-hero-glow min-h-screen">
       {/* Hero */}
@@ -56,21 +59,24 @@ export default function Home() {
             className="space-y-5 text-center lg:text-left"
           >
             <motion.span variants={fadeUp} className="arena-chip mx-auto h-[34px] px-4 text-[12.5px] font-bold lg:mx-0">
-              <PawPrint className="h-4 w-4 text-primary" /> Adoção responsável e gratuita
+              <PawPrint className="h-4 w-4 text-primary" /> {settings.ui_text.home_hero_badge}
             </motion.span>
             <motion.h1 variants={fadeUp} className="text-[38px] font-extrabold leading-[1.04] tracking-[-0.03em] text-foreground sm:text-[46px] lg:text-[58px]">
-              Encontre seu <span className="arena-heading">companheiro</span> ideal
+              {settings.ui_text.home_hero_title_prefix}
+              {' '}
+              <span className="arena-heading">{settings.ui_text.home_hero_title_highlight}</span>
+              {' '}
+              {settings.ui_text.home_hero_title_suffix}
             </motion.h1>
             <motion.p variants={fadeUp} className="mx-auto max-w-[480px] text-[17.5px] leading-[1.6] text-muted-foreground lg:mx-0">
-              O Viralata conecta pets que precisam de um lar com famílias que têm amor para dar —
-              do primeiro match até o dia da adoção.
+              {settings.ui_text.home_hero_description}
             </motion.p>
             <motion.div variants={fadeUp} className="flex flex-col justify-center gap-3 pt-1 sm:flex-row lg:justify-start">
               <Button asChild className="h-[50px] px-[26px] text-[15px]">
-                <Link to="/feed">Ver Pets para Adoção</Link>
+                <Link to="/feed">{settings.ui_labels.home_primary_cta}</Link>
               </Button>
               <Button asChild variant="outline" className="h-[50px] px-[26px] text-[15px]">
-                <Link to="/login">Cadastrar meu Pet</Link>
+                <Link to="/login">{settings.ui_labels.home_secondary_cta}</Link>
               </Button>
             </motion.div>
           </motion.div>
@@ -219,11 +225,11 @@ export default function Home() {
         className="px-6 pb-[72px]"
       >
         <div className="arena-panel-strong mx-auto max-w-[900px] rounded-[32px] px-8 py-14 text-center">
-          <h2 className="text-[28px] font-extrabold text-white">Pronto para mudar uma vida?</h2>
-          <p className="mx-auto mt-3 max-w-[420px] text-[15px] text-white/80">Cada adoção é uma história de amor que começa aqui.</p>
+          <h2 className="text-[28px] font-extrabold text-white">{settings.ui_text.home_final_cta_title}</h2>
+          <p className="mx-auto mt-3 max-w-[420px] text-[15px] text-white/80">{settings.ui_text.home_final_cta_description}</p>
           <Button asChild className="mt-6 h-[52px] px-[30px] text-[15px]">
             <Link to="/login">
-              Criar minha conta grátis <ArrowRight className="ml-1.5 h-[18px] w-[18px]" />
+              {settings.ui_labels.home_final_cta} <ArrowRight className="ml-1.5 h-[18px] w-[18px]" />
             </Link>
           </Button>
         </div>
