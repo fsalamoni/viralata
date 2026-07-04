@@ -183,6 +183,12 @@ service cloud.firestore {
       allow write: if isPlatformAdmin();
     }
 
+    // ─── Comunidades (entidade editorial/global) ───────────────────────────────
+    match /communities/{communityId} {
+      allow read: if true;
+      allow write: if isPlatformAdmin();
+    }
+
     // ─── Clubes (comunidade) ────────────────────────────────────────────────────
     match /clubs/{clubId} {
       allow read: if true; // Diretório e detalhe públicos

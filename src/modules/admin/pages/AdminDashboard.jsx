@@ -12,7 +12,7 @@ export default function AdminDashboard() {
 
   const sections = [
     { icon: PawPrint, title: 'Gerenciar Pets', desc: 'Moderar anúncios, aprovar ou remover pets', link: '/admin/pets', tone: 'bg-primary/10 text-primary' },
-    { icon: Building2, title: 'Organizações', desc: 'Verificar, gerenciar e excluir ONGs e lojas', link: '/admin/organizacoes', tone: 'bg-accent/10 text-accent' },
+    { icon: Building2, title: 'Comunidades e organizações', desc: 'Moderar diretório, destaques, vínculos e publicação global', link: '/admin/organizacoes', tone: 'bg-accent/10 text-accent' },
     { icon: AlertTriangle, title: 'Denúncias', desc: 'Revisar denúncias de maus-tratos', link: '/admin/denuncias', tone: 'bg-destructive/10 text-destructive' },
     { icon: Users, title: 'Usuários', desc: 'Gerenciar contas, papéis e banimentos', link: '/admin/usuarios', tone: 'bg-highlight/20 text-[hsl(30,60%,32%)]' },
     { icon: BarChart3, title: 'Métricas', desc: 'Adoções, crescimento e denúncias em gráficos', link: '/admin/metricas', tone: 'bg-secondary text-secondary-foreground' },

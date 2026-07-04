@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/core/lib/utils';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
+import { CLUB_DIRECTORY_STATUS, CLUB_DIRECTORY_STATUS_LABELS } from '@/modules/communities/domain/directory';
 import { useMyPets } from '@/modules/pets/hooks/usePets';
 import { useClub, useMyMembership } from '@/modules/organizations/hooks/useClubs';
 import { CLUB_ROLE, CLUB_PERMISSION } from '@/modules/organizations/domain/constants';
@@ -112,6 +113,16 @@ export default function OrganizationAdminPanel() {
               <Badge className="rounded-full border-0 bg-white/10 text-white hover:bg-white/10">
                 <ShieldCheck className="mr-1.5 h-3.5 w-3.5" /> Administração
               </Badge>
+              {club.community_name && (
+                <Badge className="rounded-full border-0 bg-white/10 text-white hover:bg-white/10">
+                  Comunidade · {club.community_name}
+                </Badge>
+              )}
+              {(club.directory_status || CLUB_DIRECTORY_STATUS.ACTIVE) !== CLUB_DIRECTORY_STATUS.ACTIVE && (
+                <Badge className="rounded-full border-0 bg-white/10 text-white hover:bg-white/10">
+                  {CLUB_DIRECTORY_STATUS_LABELS[club.directory_status || CLUB_DIRECTORY_STATUS.ACTIVE]}
+                </Badge>
+              )}
             </div>
             <p className="mt-2 text-sm text-orange-50/80">
               Painel de administração{location ? ` · ${location}` : ''}

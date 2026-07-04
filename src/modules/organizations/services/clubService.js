@@ -27,6 +27,7 @@ import { db } from '@/core/config/firebase';
 import { logger } from '@/core/lib/logger';
 import { createAuditLog } from '@/core/services/auditService';
 import { notifyUsers, NOTIFICATION_TYPE } from '@/core/services/notificationService';
+import { CLUB_DIRECTORY_STATUS, isClubPubliclyVisible } from '@/modules/communities/domain/directory';
 import {
   CLUB_COLLECTIONS,
   CLUB_ROLE,
@@ -115,6 +116,11 @@ export async function createClub(creator, profile, data) {
     donation_link: trimmed(data.donation_link),
     invite_code: inviteCode(),
     member_count: 1,
+    directory_status: CLUB_DIRECTORY_STATUS.ACTIVE,
+    featured: false,
+    feature_priority: 0,
+    community_id: '',
+    community_name: '',
     created_by: creator.uid,
     creator_name: profile?.platform_name || creator.displayName || creator.email || '',
     created_at: serverTimestamp(),
@@ -153,7 +159,7 @@ export async function getClubByInviteCode(code) {
 export async function listClubs() {
   if (!db) return [];
   const snap = await getDocs(collection(db, COL.clubs));
-  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() })).filter(isClubPubliclyVisible);
 }
 
 export async function listMyClubs(userId) {

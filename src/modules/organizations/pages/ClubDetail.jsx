@@ -27,6 +27,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { EmptyState } from '@/components/ui/empty-state';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
+import { CLUB_DIRECTORY_STATUS, isClubPubliclyVisible } from '@/modules/communities/domain/directory';
 import {
   useClub,
   useMyMembership,
@@ -64,7 +65,7 @@ export default function ClubDetail() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const { data: club, isLoading, isError } = useClub(clubId);
-  const { data: membership } = useMyMembership(clubId);
+  const { data: membership, isLoading: loadingMembership } = useMyMembership(clubId);
   const { data: myRequest } = useMyJoinRequest(clubId);
   const { data: myInvite } = useMyClubInvite(clubId);
   const joinClub = useJoinClub();
@@ -157,7 +158,7 @@ export default function ClubDetail() {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || (isAuthenticated && loadingMembership)) {
     return (
       <div className="arena-page mx-auto max-w-4xl space-y-6 px-5 py-6 pb-12">
         <Skeleton className="h-40 rounded-[2rem]" />
@@ -173,6 +174,19 @@ export default function ClubDetail() {
           icon={Building2}
           title="Organização não encontrada"
           description="A organização que você procura não existe ou foi removida."
+          action={<Button asChild><Link to="/comunidade">Voltar para organizações</Link></Button>}
+        />
+      </div>
+    );
+  }
+
+  if (!isClubPubliclyVisible(club) && !membership) {
+    return (
+      <div className="arena-page mx-auto max-w-2xl px-5 py-6 pb-12">
+        <EmptyState
+          icon={Building2}
+          title="Organização indisponível"
+          description="Esta organização foi removida temporariamente do diretório público."
           action={<Button asChild><Link to="/comunidade">Voltar para organizações</Link></Button>}
         />
       </div>
@@ -203,6 +217,16 @@ export default function ClubDetail() {
                 {location && <span className="inline-flex items-center gap-1"><MapPin className="h-4 w-4" /> {location}</span>}
                 <span className="inline-flex items-center gap-1"><Users className="h-4 w-4" /> {club.member_count || 0} membro(s)</span>
                 <RatingBadge uid={club.id} className="text-amber-200" />
+              </div>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {club.community_name && (
+                  <Badge variant="secondary" className="rounded-full">Comunidade · {club.community_name}</Badge>
+                )}
+                {(club.directory_status || CLUB_DIRECTORY_STATUS.ACTIVE) !== CLUB_DIRECTORY_STATUS.ACTIVE && membership && (
+                  <Badge variant="warning" className="rounded-full">
+                    {(club.directory_status || CLUB_DIRECTORY_STATUS.ACTIVE) === CLUB_DIRECTORY_STATUS.REVIEW ? 'Em revisão' : 'Suspensa no diretório'}
+                  </Badge>
+                )}
               </div>
               {isMember && (
                 <Badge variant={isAdmin ? 'warning' : 'success'} className="mt-3 rounded-full uppercase tracking-[0.12em]">

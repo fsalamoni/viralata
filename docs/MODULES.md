@@ -131,7 +131,8 @@ Conversas 1:1 e em grupo, com contexto opcional de pet/adoção.
 
 Painel exclusivo de `platform_admin` (`/admin/*`).
 - **pages**: `AdminDashboard` (grid de seções), `AdminPets` (moderar
-  anúncios), `AdminOrganizations` (verificar/excluir organizações),
+  anúncios), `AdminOrganizations` (moderar comunidades e organizações,
+  incluindo status de diretório, destaque e vínculos),
   `AdminReports` (revisar denúncias), `AdminUsers` (papéis, banimento),
   `AdminMetrics` (gráficos de adoções/crescimento/denúncias, via
   `recharts`), `AdminAuditLog` (trilha de auditoria completa, via
@@ -139,6 +140,14 @@ Painel exclusivo de `platform_admin` (`/admin/*`).
 - **services**: `adminService`, `metricsService`. Ações geram `audit_logs`
   (`user_banned`, `user_unbanned`, `user_account_deleted`,
   `platform_feature_flag_changed`…).
+
+## communities/ — curadoria global
+
+- Entidade editorial própria para agrupar organizações no diretório público.
+- **domain**: `constants` (coleção + visibilidade), `directory` (status do
+  diretório, ordenação e filtros públicos).
+- **services/hooks**: CRUD em `communities`, usado no admin e no diretório
+  `/comunidade`.
 
 ## Mapa rota → módulo
 
