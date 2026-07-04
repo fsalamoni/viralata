@@ -53,7 +53,7 @@ export default function CreateClub() {
   };
 
   return (
-    <div className="arena-page mx-auto max-w-3xl space-y-6 px-5 py-6 pb-12">
+    <div className="arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8 space-y-6">
       <Button asChild variant="ghost" size="sm">
         <Link to="/organizacoes"><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para organizações</Link>
       </Button>

@@ -3,7 +3,7 @@ import { cn } from '@/core/lib/utils';
 
 export function LegalPage({ eyebrow, title, description, meta, children }) {
   return (
-    <div className="mx-auto max-w-6xl space-y-5">
+    <div className="arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8 space-y-5">
       <section className="arena-panel-strong rounded-lg p-5 sm:p-6">
         <div className="max-w-3xl space-y-3">
           {eyebrow && <p className="text-xs font-semibold uppercase tracking-wider text-orange-200/80">{eyebrow}</p>}
