@@ -45,8 +45,8 @@ export function AuditLogTable({ title, description, userId, className = '' }) {
   }, [userId]);
 
   const filteredLogs = useMemo(() => {
-    const startMs = filters.startDate ? new Date(`${filters.startDate}T00:00:00`).getTime() : null;
-    const endMs = filters.endDate ? new Date(`${filters.endDate}T23:59:59.999`).getTime() : null;
+    const startMs = toDateBoundaryMs(filters.startDate, 'start');
+    const endMs = toDateBoundaryMs(filters.endDate, 'end');
     const term = filters.search.trim().toLowerCase();
     const actorTerm = filters.actor.trim().toLowerCase();
     const targetTerm = filters.target.trim().toLowerCase();
@@ -261,4 +261,13 @@ function formatDetailValue(value) {
   if (Array.isArray(value)) return value.join(', ');
   if (typeof value === 'object') return JSON.stringify(value);
   return String(value);
+}
+
+function toDateBoundaryMs(raw, boundary) {
+  if (!raw) return null;
+  const date = new Date(raw);
+  if (Number.isNaN(date.getTime())) return null;
+  if (boundary === 'start') date.setHours(0, 0, 0, 0);
+  else date.setHours(23, 59, 59, 999);
+  return date.getTime();
 }

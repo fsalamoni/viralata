@@ -203,7 +203,16 @@ function NumberField({ label, value, onChange, min, max }) {
   return (
     <div className="space-y-1.5">
       <Label>{label}</Label>
-      <Input type="number" min={min} max={max} value={value} onChange={(e) => onChange(e.target.value)} />
+      <Input
+        type="number"
+        min={min}
+        max={max}
+        value={value}
+        onChange={(e) => {
+          const parsed = Number.parseInt(e.target.value, 10);
+          onChange(Number.isNaN(parsed) ? '' : parsed);
+        }}
+      />
     </div>
   );
 }

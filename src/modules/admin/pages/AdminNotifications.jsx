@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { collection, limit, onSnapshot, orderBy, query } from 'firebase/firestore';
-import { Bell, Search } from 'lucide-react';
+import { Bell, Search, ExternalLink } from 'lucide-react';
 import { db } from '@/core/config/firebase';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { formatAuditDate } from '@/core/services/auditService';
@@ -184,6 +184,8 @@ export default function AdminNotifications() {
                           <Button asChild variant="link" className="h-auto p-0 text-xs">
                             <a href={resolvedLink} target="_blank" rel="noopener noreferrer">
                               {normalizedLink || `${resolvedLink} (fallback)`}
+                              <span className="sr-only"> (abre em nova guia)</span>
+                              <ExternalLink className="ml-1 inline h-3 w-3" aria-hidden="true" />
                             </a>
                           </Button>
                         ) : (
