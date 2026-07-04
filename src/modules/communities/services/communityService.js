@@ -41,6 +41,8 @@ function sanitizeCommunity(data = {}) {
 async function updateLinkedClubs(communityId, payload) {
   const clubsSnap = await getDocs(query(collection(db, 'clubs'), where('community_id', '==', communityId)));
   const docs = clubsSnap.docs;
+  // Firestore aceita no máximo 500 operações por batch; usamos 450 para manter
+  // margem segura caso este fluxo cresça com metadados adicionais.
   const chunkSize = 450;
 
   for (let start = 0; start < docs.length; start += chunkSize) {

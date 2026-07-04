@@ -237,10 +237,13 @@ export default function AdminOrganizations() {
                               className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
                               value={club.community_id || ''}
                               onChange={(e) => {
-                                const selected = sortedCommunities.find((item) => item.id === e.target.value);
+                                const nextCommunityId = e.target.value;
+                                const selected = nextCommunityId
+                                  ? sortedCommunities.find((item) => item.id === nextCommunityId)
+                                  : null;
                                 handleClubUpdate(
                                   club,
-                                  { community_id: e.target.value, community_name: selected?.name || '' },
+                                  { community_id: nextCommunityId, community_name: selected?.name || '' },
                                   'Comunidade da organização atualizada.',
                                 );
                               }}
