@@ -15,7 +15,7 @@ export default function RadarSettings() {
   const active = radar?.active === true;
 
   return (
-    <div className="arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8 space-y-6">
+    <div className="arena-page max-w-2xl mx-auto px-4 py-6 space-y-6">
       <Link to="/perfil" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
         <ArrowLeft className="w-4 h-4" /> Voltar ao perfil
       </Link>

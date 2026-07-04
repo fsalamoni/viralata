@@ -239,7 +239,7 @@ export default function Profile() {
   }
 
   return (
-    <div className="arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8 flex flex-col gap-6">
+    <div className="arena-page mx-auto flex max-w-5xl flex-col gap-6 px-5 py-6 pb-16">
       <PageHero
         eyebrow="Meu perfil"
         title={fullName || user?.email || 'Seu perfil'}

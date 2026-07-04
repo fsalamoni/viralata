@@ -72,7 +72,7 @@ export default function MyPets() {
   }
 
   return (
-    <div className="arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8">
+    <div className="arena-page mx-auto max-w-3xl px-5 pb-16 pt-5.5">
       <div className="mb-5 flex items-center justify-between">
         <h1 className="font-['Sora'] text-[22px] font-extrabold text-foreground">Meus Pets</h1>
         <Button asChild>

@@ -64,7 +64,7 @@ export default function Layout({ children, currentPageName }) {
     <div className="arena-page min-h-screen flex flex-col">
       {/* Header */}
       <header className="sticky top-0 z-40 border-b border-border/70 bg-background/80 backdrop-blur-xl">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4 safe-px">
+        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-4 safe-px">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 flex-shrink-0 group">
             <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--highlight))_100%)] text-white shadow-[0_10px_24px_-12px_rgba(64,34,18,0.6)] transition-transform group-hover:-rotate-6">

@@ -42,7 +42,7 @@ export default function EventDetail() {
 
   if (isLoading) {
     return (
-      <div className="arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8 space-y-6">
+      <div className="arena-page mx-auto max-w-4xl space-y-6 px-5 py-6 pb-12">
         <Skeleton className="h-28 rounded-[2rem]" />
         <Skeleton className="h-64 rounded-[2rem]" />
       </div>
@@ -54,7 +54,7 @@ export default function EventDetail() {
   // Se não carregou, é porque não existe ou o usuário não tem acesso.
   if (isError || !event) {
     return (
-      <div className="arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8">
+      <div className="arena-page mx-auto max-w-2xl px-5 py-6 pb-12">
         <EmptyState
           icon={membership ? CalendarDays : Building2}
           title={membership ? 'Evento não encontrado' : 'Evento indisponível'}
@@ -79,7 +79,7 @@ export default function EventDetail() {
   const when = formatDateTime(event.starts_at);
 
   return (
-    <div className="arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8 space-y-6">
+    <div className="arena-page mx-auto max-w-4xl space-y-6 px-5 py-6 pb-12">
       <Button asChild variant="ghost" size="sm">
         <Link to={`/comunidade/${clubId}?tab=events`}><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para eventos</Link>
       </Button>

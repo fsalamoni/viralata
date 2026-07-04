@@ -22,7 +22,7 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div className="arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8 space-y-6">
+    <div className="arena-page max-w-4xl mx-auto px-4 py-6 space-y-6">
       <PageHero
         eyebrow="Admin"
         title="Painel Administrativo"

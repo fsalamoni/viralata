@@ -55,7 +55,7 @@ export default function AdminUsers() {
   if (!isPlatformAdmin) return null;
 
   return (
-    <div className="arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8 space-y-4">
+    <div className="arena-page max-w-5xl mx-auto px-4 py-6 space-y-4">
       <h1 className="text-2xl font-bold text-foreground">Gerenciar Usuários</h1>
       <Input
         placeholder="Buscar por nome ou e-mail..."

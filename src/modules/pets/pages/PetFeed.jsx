@@ -263,7 +263,7 @@ export default function PetFeed() {
   }
 
   return (
-    <div className="arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8">
+    <div className="arena-page mx-auto max-w-6xl px-5 py-5.5 pb-12">
       <PageHero
         eyebrow="Feed"
         title={`Encontre seu novo melhor amigo${firstName ? `, ${firstName}` : ''}`}

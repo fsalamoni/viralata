@@ -26,7 +26,7 @@ export default function AdminMetrics() {
   const petsByState = groupByField(data.pets, 'state');
 
   return (
-    <div className="arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8 space-y-6">
+    <div className="arena-page max-w-5xl mx-auto px-4 py-6 space-y-6">
       <h1 className="text-2xl font-bold text-foreground">Métricas da Plataforma</h1>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">

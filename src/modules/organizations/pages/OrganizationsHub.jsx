@@ -30,7 +30,7 @@ export default function OrganizationsHub() {
   );
 
   return (
-    <div className="arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8 space-y-8">
+    <div className="arena-page mx-auto max-w-5xl space-y-8 px-5 py-6 pb-12">
       <PageHero
         eyebrow="Organizações"
         title="Administre suas organizações em um só lugar"

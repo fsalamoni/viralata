@@ -160,7 +160,7 @@ export default function ClubDetail() {
 
   if (isLoading || (isAuthenticated && loadingMembership)) {
     return (
-      <div className="arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8 space-y-6">
+      <div className="arena-page mx-auto max-w-4xl space-y-6 px-5 py-6 pb-12">
         <Skeleton className="h-40 rounded-[2rem]" />
         <Skeleton className="h-64 rounded-[2rem]" />
       </div>
@@ -169,7 +169,7 @@ export default function ClubDetail() {
 
   if (isError || !club) {
     return (
-      <div className="arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8">
+      <div className="arena-page mx-auto max-w-2xl px-5 py-6 pb-12">
         <EmptyState
           icon={Building2}
           title="Organização não encontrada"
@@ -182,7 +182,7 @@ export default function ClubDetail() {
 
   if (!isClubPubliclyVisible(club) && !membership) {
     return (
-      <div className="arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8">
+      <div className="arena-page mx-auto max-w-2xl px-5 py-6 pb-12">
         <EmptyState
           icon={Building2}
           title="Organização indisponível"
@@ -196,7 +196,7 @@ export default function ClubDetail() {
   const location = [club.city, club.state].filter(Boolean).join(' / ');
 
   return (
-    <div className="arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8 space-y-6">
+    <div className="arena-page mx-auto max-w-4xl space-y-6 px-5 py-6 pb-12">
       <Button asChild variant="ghost" size="sm">
         <Link to="/comunidade"><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para organizações</Link>
       </Button>

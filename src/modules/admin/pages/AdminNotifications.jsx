@@ -73,7 +73,7 @@ export default function AdminNotifications() {
   if (!isPlatformAdmin) return <div className="text-center py-16 text-muted-foreground">Acesso restrito.</div>;
 
   return (
-    <div className="arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8 space-y-6">
+    <div className="arena-page mx-auto max-w-6xl px-4 py-6 space-y-6">
       <PageHero
         eyebrow="Admin"
         title="Notificações"

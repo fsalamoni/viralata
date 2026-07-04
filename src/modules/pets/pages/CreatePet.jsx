@@ -231,13 +231,12 @@ export default function CreatePet() {
     || (adminClubs.find((c) => c.donation_link)?.donation_link ?? '');
 
   return (
-    <div className="arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8">
-      <div className="max-w-3xl">
-        <div className="mb-1.5 flex items-center gap-3">
-          <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-        </div>
+    <div className="arena-page mx-auto max-w-2xl px-5 pb-24 pt-6">
+      <div className="mb-1.5 flex items-center gap-3">
+        <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
+      </div>
       <h1 className="font-['Sora'] text-[22px] font-extrabold text-foreground">
         {isEditing ? 'Editar Pet' : 'Cadastrar Pet para Adoção'}
       </h1>
@@ -500,7 +499,6 @@ export default function CreatePet() {
           </div>
         </div>
       </form>
-      </div>
     </div>
   );
 }
