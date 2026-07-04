@@ -24,6 +24,7 @@ export const PLATFORM_SETTINGS_DEFAULTS = Object.freeze({
     admin_notifications_limit: 200,
   },
 });
+const DEFAULT_TEXT_LIMIT = 240;
 
 const UI_LABEL_LIMITS = Object.freeze({
   header_create_pet_cta: 48,
@@ -56,7 +57,7 @@ function normalizeTextMap(raw, defaults, limits) {
   return Object.fromEntries(
     Object.entries(defaults).map(([key, fallback]) => [
       key,
-      normalizeTextField(source[key], fallback, limits[key] || 240),
+      normalizeTextField(source[key], fallback, limits[key] || DEFAULT_TEXT_LIMIT),
     ]),
   );
 }

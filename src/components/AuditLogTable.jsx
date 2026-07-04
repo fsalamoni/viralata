@@ -8,6 +8,10 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
 const PAGE_SIZES = [10, 50, 100];
+const DATE_BOUNDARY = Object.freeze({
+  START: 'start',
+  END: 'end',
+});
 
 export function AuditLogTable({ title, description, userId, className = '' }) {
   const [logs, setLogs] = useState([]);
@@ -45,8 +49,8 @@ export function AuditLogTable({ title, description, userId, className = '' }) {
   }, [userId]);
 
   const filteredLogs = useMemo(() => {
-    const startMs = toDateBoundaryMs(filters.startDate, 'start');
-    const endMs = toDateBoundaryMs(filters.endDate, 'end');
+    const startMs = toDateBoundaryMs(filters.startDate, DATE_BOUNDARY.START);
+    const endMs = toDateBoundaryMs(filters.endDate, DATE_BOUNDARY.END);
     const term = filters.search.trim().toLowerCase();
     const actorTerm = filters.actor.trim().toLowerCase();
     const targetTerm = filters.target.trim().toLowerCase();
@@ -161,6 +165,7 @@ export function AuditLogTable({ title, description, userId, className = '' }) {
 
         <div className="arena-table-wrap">
           <table className="min-w-[980px] w-full text-sm">
+            <caption className="sr-only">Lista de registros de auditoria da plataforma</caption>
             <thead>
               <tr className="border-b border-border bg-secondary text-left text-secondary-foreground">
                 <th className="py-3 pl-4 pr-3 font-semibold">Nº</th>
@@ -267,7 +272,7 @@ function toDateBoundaryMs(raw, boundary) {
   if (!raw) return null;
   const date = new Date(raw);
   if (Number.isNaN(date.getTime())) return null;
-  if (boundary === 'start') date.setHours(0, 0, 0, 0);
+  if (boundary === DATE_BOUNDARY.START) date.setHours(0, 0, 0, 0);
   else date.setHours(23, 59, 59, 999);
   return date.getTime();
 }
