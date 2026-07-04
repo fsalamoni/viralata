@@ -63,8 +63,9 @@ export function normalizeNotificationLink(link) {
       const currentOrigin = typeof window !== 'undefined' ? window.location?.origin : null;
       if (!currentOrigin || parsed.origin !== currentOrigin) return null;
     }
-    if (!parsed.pathname.startsWith('/')) return null;
-    if (parsed.pathname.split('/').some((segment) => segment === '..')) return null;
+    const pathname = decodeURIComponent(parsed.pathname);
+    if (!pathname.startsWith('/')) return null;
+    if (pathname.split('/').some((segment) => segment === '..')) return null;
     return `${parsed.pathname}${parsed.search}${parsed.hash}`;
   } catch {
     logger.warn('Link de notificação inválido ignorado:', raw);

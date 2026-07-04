@@ -78,8 +78,8 @@ export function AuditLogTable({ title, description, userId, className = '' }) {
       const matchesActor = !actorTerm || actorText.includes(actorTerm);
       const matchesTarget = !targetTerm || targetText.includes(targetTerm);
       const matchesAction = filters.action === 'all' || action === filters.action;
-      const matchesStart = startMs == null || createdAtMs >= startMs;
-      const matchesEnd = endMs == null || createdAtMs <= endMs;
+      const matchesStart = startMs === null || createdAtMs >= startMs;
+      const matchesEnd = endMs === null || createdAtMs <= endMs;
       const matchesSearch = !term || genericText.includes(term);
 
       return matchesActor && matchesTarget && matchesAction && matchesStart && matchesEnd && matchesSearch;

@@ -182,7 +182,12 @@ export default function AdminNotifications() {
                       <td className="px-3 py-3 text-xs">
                         {resolvedLink ? (
                           <Button asChild variant="link" className="h-auto p-0 text-xs">
-                            <a href={resolvedLink} target="_blank" rel="noopener noreferrer">
+                            <a
+                              href={resolvedLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              title={normalizedLink ? 'Abrir destino da notificação' : 'Abrir destino alternativo da notificação'}
+                            >
                               {normalizedLink || `${resolvedLink} (fallback)`}
                               <span className="sr-only"> (abre em nova guia)</span>
                               <ExternalLink className="ml-1 inline h-3 w-3" aria-hidden="true" />
