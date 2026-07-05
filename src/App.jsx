@@ -27,14 +27,17 @@ const MyPets = lazy(() => import('@/modules/pets/pages/MyPets'));
 const RadarSettings = lazy(() => import('@/modules/pets/pages/RadarSettings'));
 
 // ─── Organizações ─────────────────────────────────────────────────────────────
-// `/comunidade` = diretório e perfil público das organizações (aberto a todos).
-// `/organizacoes` = hub de gestão (só quem administra alguma organização).
+// `/organizacoes` = diretório de ONGs e hub de gestão.
 const OrganizationsDirectory = lazy(() => import('@/modules/organizations/pages/ClubsDirectory'));
 const OrganizationsHub = lazy(() => import('@/modules/organizations/pages/OrganizationsHub'));
 const CreateOrganization = lazy(() => import('@/modules/organizations/pages/CreateClub'));
 const OrganizationDetail = lazy(() => import('@/modules/organizations/pages/ClubDetail'));
 const OrganizationAdminPanel = lazy(() => import('@/modules/organizations/pages/OrganizationAdminPanel'));
-const OrganizationEventDetail = lazy(() => import('@/modules/organizations/pages/EventDetail'));
+
+// ─── Comunidades ──────────────────────────────────────────────────────────────
+const CommunitiesDirectory = lazy(() => import('@/modules/communities/pages/CommunitiesDirectory'));
+const CommunityDetail = lazy(() => import('@/modules/communities/pages/CommunityDetail'));
+const CreateCommunity = lazy(() => import('@/modules/communities/pages/CreateCommunity'));
 
 // ─── Chat ─────────────────────────────────────────────────────────────────────
 const ChatPage = lazy(() => import('@/modules/chat/pages/ChatPage'));
@@ -201,20 +204,21 @@ export default function App() {
                   element={<ProtectedRoute>{withLayout('RadarSettings', RadarSettings)}</ProtectedRoute>}
                 />
 
-                {/* ── Comunidade (diretório público de organizações) ────── */}
-                <Route path="/comunidade" element={withLayout('OrganizationsDirectory', OrganizationsDirectory)} />
+                {/* ── Comunidade (grupos de usuários, fóruns) ─────────────── */}
+                <Route path="/comunidade" element={withLayout('CommunitiesDirectory', CommunitiesDirectory)} />
                 <Route
-                  path="/comunidade/:orgId/eventos/:eventId"
-                  element={<ProtectedRoute>{withLayout('OrganizationEventDetail', OrganizationEventDetail)}</ProtectedRoute>}
+                  path="/comunidade/criar"
+                  element={<ProtectedRoute>{withLayout('CreateCommunity', CreateCommunity)}</ProtectedRoute>}
                 />
                 <Route
-                  path="/comunidade/:orgId"
-                  element={<ProtectedRoute>{withLayout('OrganizationDetail', OrganizationDetail)}</ProtectedRoute>}
+                  path="/comunidade/:communityId"
+                  element={<ProtectedRoute>{withLayout('CommunityDetail', CommunityDetail)}</ProtectedRoute>}
                 />
 
-                {/* ── Organizações (hub de gestão) ──────────────────────── */}
+                {/* ── Organizações (ONGs) ───────────────────────────────── */}
+                <Route path="/organizacoes" element={withLayout('OrganizationsDirectory', OrganizationsDirectory)} />
                 <Route
-                  path="/organizacoes"
+                  path="/organizacoes/hub"
                   element={<ProtectedRoute>{withLayout('OrganizationsHub', OrganizationsHub)}</ProtectedRoute>}
                 />
                 <Route
@@ -225,8 +229,7 @@ export default function App() {
                   path="/organizacoes/:orgId/admin"
                   element={<ProtectedRoute>{withLayout('OrganizationAdminPanel', OrganizationAdminPanel)}</ProtectedRoute>}
                 />
-                <Route path="/organizacoes/:orgId/eventos/:eventId" element={<LegacyOrgEventRedirect />} />
-                <Route path="/organizacoes/:orgId" element={<LegacyOrgDetailRedirect />} />
+                <Route path="/organizacoes/:orgId" element={<ProtectedRoute>{withLayout('OrganizationDetail', OrganizationDetail)}</ProtectedRoute>} />
 
                 {/* ── Chat ─────────────────────────────────────────────── */}
                 <Route

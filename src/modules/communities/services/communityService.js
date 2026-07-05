@@ -7,8 +7,10 @@ import {
   query,
   serverTimestamp,
   setDoc,
+  addDoc,
   updateDoc,
   where,
+  orderBy,
   writeBatch,
 } from 'firebase/firestore';
 import { db } from '@/core/config/firebase';
@@ -84,9 +86,21 @@ export async function createCommunity(data, actor) {
   await setDoc(doc(db, COMMUNITY_COLLECTION, id), {
     id,
     ...payload,
+    owner_id: actor?.uid || null,
+    member_count: 1,
     created_at: serverTimestamp(),
     updated_at: serverTimestamp(),
   });
+  
+  if (actor?.uid) {
+    await setDoc(doc(db, 'community_members', `${id}_${actor.uid}`), {
+      community_id: id,
+      user_id: actor.uid,
+      role: 'admin',
+      joined_at: serverTimestamp()
+    });
+  }
+
   await createAuditLog({ action: 'community_created', actor, details: { community_id: id, name: payload.name } });
   return id;
 }
@@ -110,3 +124,52 @@ export async function deleteCommunity(id, actor) {
   await deleteDoc(doc(db, COMMUNITY_COLLECTION, id));
   await createAuditLog({ action: 'community_deleted', actor, details: { community_id: id, detached_clubs: detachedClubs } });
 }
+
+export async function joinCommunity(communityId, userId) {
+  const memberRef = doc(db, 'community_members', `${communityId}_${userId}`);
+  await setDoc(memberRef, {
+    community_id: communityId,
+    user_id: userId,
+    role: 'member',
+    joined_at: serverTimestamp()
+  });
+}
+
+export async function getCommunityPosts(communityId) {
+  const q = query(collection(db, 'community_posts'), where('community_id', '==', communityId), orderBy('created_at', 'desc'));
+  const snap = await getDocs(q);
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+
+export async function createPost(communityId, authorId, text, attachments = []) {
+  const postRef = await addDoc(collection(db, 'community_posts'), {
+    community_id: communityId,
+    author_id: authorId,
+    text,
+    attachments,
+    likes_count: 0,
+    comments_count: 0,
+    created_at: serverTimestamp()
+  });
+
+  await createAuditLog({
+    action: 'community_post_created',
+    actor: { uid: authorId },
+    details: { community_id: communityId, post_id: postRef.id }
+  });
+
+  return postRef;
+}
+
+export async function deletePost(postId, userId) {
+  await deleteDoc(doc(db, 'community_posts', postId));
+  
+  if (userId) {
+    await createAuditLog({
+      action: 'community_post_deleted',
+      actor: { uid: userId },
+      details: { post_id: postId }
+    });
+  }
+}
+

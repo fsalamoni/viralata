@@ -406,5 +406,55 @@ service cloud.firestore {
         allow delete: if isAuth() && voteUid == request.auth.uid;
       }
     }
+
+    // =========================================================================
+    // COMUNIDADES E FÓRUNS
+    // =========================================================================
+    
+    match /communities/{communityId} {
+      allow read: if true;
+      allow create: if isAuth();
+      allow update, delete: if isAuth() && (isPlatformAdmin() || request.auth.uid == resource.data.owner_id);
+    }
+    
+    match /community_members/{memberId} {
+      allow read: if true;
+      allow create, update, delete: if isAuth();
+    }
+    
+    match /community_posts/{postId} {
+      allow read: if true;
+      allow create: if isAuth();
+      allow update: if isAuth() && request.auth.uid == resource.data.author_id;
+      allow delete: if isAuth() && (isPlatformAdmin() || request.auth.uid == resource.data.author_id);
+    }
+    
+    match /community_post_likes/{likeId} {
+      allow read: if true;
+      allow write: if isAuth();
+    }
+    
+    match /community_post_comments/{commentId} {
+      allow read: if true;
+      allow create: if isAuth();
+      allow update, delete: if isAuth() && (isPlatformAdmin() || request.auth.uid == resource.data.author_id);
+    }
+    
+    match /community_events/{eventId} {
+      allow read: if true;
+      allow create, update, delete: if isAuth();
+    }
+    
+    match /community_forum_threads/{threadId} {
+      allow read: if true;
+      allow create: if isAuth();
+      allow update, delete: if isAuth() && (isPlatformAdmin() || request.auth.uid == resource.data.author_id);
+    }
+    
+    match /community_forum_messages/{messageId} {
+      allow read: if true;
+      allow create: if isAuth();
+      allow update, delete: if isAuth() && (isPlatformAdmin() || request.auth.uid == resource.data.author_id);
+    }
   }
 }
