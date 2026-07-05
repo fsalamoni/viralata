@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Users, Search, Plus, Sparkles, Hash, ArrowRight, MapPin } from 'lucide-react';
+import { Search, Hash, Plus, Users, Sparkles, MapPin, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import { listCommunities as getCommunities } from '../services/communityService';
 import { toast } from 'sonner';
 
@@ -38,21 +38,19 @@ export default function CommunitiesDirectory() {
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-[1.08fr,0.92fr]">
         <Card className="arena-panel-strong overflow-hidden rounded-[1.25rem] border-0 sm:rounded-[2rem]">
           <CardContent className="relative p-5 sm:p-8 lg:p-10">
-            <div className="absolute -right-6 -top-6 h-32 w-32 rounded-full bg-highlight/20 blur-2xl" />
-            <div className="absolute -bottom-10 left-10 h-40 w-40 rounded-full bg-primary/20 blur-3xl" />
-            <div className="relative z-10 max-w-xl space-y-4">
+            <div className="relative max-w-2xl">
               <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-orange-50/80">
                 <Users className="h-3.5 w-3.5" /> Comunidade
               </span>
-              <h2 className="text-[28px] font-extrabold leading-[1.15] text-white sm:text-[36px]">
+              <h2 className="mt-5 text-2xl font-semibold leading-tight text-white sm:text-3xl lg:text-4xl">
                 Junte-se à maior rede de apoio animal
               </h2>
-              <p className="max-w-xl text-[15px] leading-7 text-orange-50/75 sm:text-base">
+              <p className="mt-4 max-w-xl text-sm leading-7 text-orange-50/75 sm:text-base">
                 Conecte-se com ONGs, protetores e voluntários. Participe de eventos, tire dúvidas e ajude a transformar a vida de milhares de pets.
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
                 <Button asChild className="bg-white text-foreground hover:bg-secondary">
-                  <Link to="/comunidade/criar"><Plus className="mr-1.5 h-4 w-4" /> Criar Comunidade</Link>
+                  <Link to="/comunidade/criar"><Plus className="mr-1.5 h-4 w-4" /> Nova Comunidade</Link>
                 </Button>
               </div>
             </div>
@@ -87,25 +85,43 @@ export default function CommunitiesDirectory() {
 
       <section className="space-y-4">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="text-xs font-semibold uppercase tracking-[0.2em] text-primary/75">Explorar Comunidades</div>
-          <div className="relative max-w-xs flex-1">
+          <div>
+            <div className="text-xs font-semibold uppercase tracking-[0.2em] text-primary/75">Catálogo</div>
+            <h3 className="mt-2 text-2xl font-semibold text-foreground">Todas as Comunidades</h3>
+          </div>
+          <div className="relative max-w-xs flex-1 sm:ml-auto sm:max-w-[360px]">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/70" />
             <Input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Buscar comunidade ou local..."
-              className="h-10 rounded-full border-border bg-card pl-9 text-[13px]"
+              className="h-[38px] rounded-full border-border bg-card pl-[38px] text-[12.5px]"
             />
           </div>
         </div>
 
         {filteredCommunities.length === 0 ? (
-          <div className="py-12 text-center text-muted-foreground">Nenhuma comunidade encontrada.</div>
+          <Card className="rounded-[2rem] border-white/80 bg-white/82">
+            <CardContent className="flex flex-col items-center px-4 py-10 text-center sm:px-10 sm:py-12">
+              <div className="flex h-16 w-16 items-center justify-center rounded-[1.5rem] bg-primary/10 text-primary">
+                <Users className="h-8 w-8" />
+              </div>
+              <h3 className="mt-5 text-2xl font-semibold text-foreground">Nenhuma comunidade encontrada</h3>
+              <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
+                Ajuste a busca para ver mais comunidades.
+              </p>
+              <div className="mt-6">
+                <Button asChild>
+                  <Link to="/comunidade/criar"><Plus className="mr-1.5 h-4 w-4" /> Criar</Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         ) : (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {filteredCommunities.map((c) => (
               <Link key={c.id} to={`/comunidade/${c.id}`} className="block h-full">
-                <Card className="match-surface h-full rounded-[1.75rem] border-white/80 bg-white/85 transition-shadow hover:shadow-[0_18px_40px_-28px_rgba(64,34,18,0.35)]">
+                <Card className="match-surface h-full rounded-[1.75rem] border-white/80 bg-white/85">
                   <CardContent className="flex h-full flex-col p-5 sm:p-6">
                     <div className="flex items-start justify-between gap-3">
                       <h4 className="flex min-w-0 items-center gap-3 text-lg font-semibold text-foreground">
@@ -135,9 +151,11 @@ export default function CommunitiesDirectory() {
                       <p className="mt-4 line-clamp-3 text-sm leading-6 text-muted-foreground">{c.description}</p>
                     )}
 
-                    <div className="mt-auto pt-6 flex items-center justify-between text-sm font-medium text-primary">
-                      <span>Abrir comunidade</span>
-                      <ArrowRight className="h-4 w-4" />
+                    <div className="mt-auto pt-6">
+                      <div className="flex items-center justify-between text-sm font-medium text-primary">
+                        <span>Abrir comunidade</span>
+                        <ArrowRight className="h-4 w-4" />
+                      </div>
                     </div>
                   </CardContent>
                 </Card>

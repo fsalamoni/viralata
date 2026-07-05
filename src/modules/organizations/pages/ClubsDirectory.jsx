@@ -160,7 +160,7 @@ export default function ClubsDirectory() {
           <CardContent className="relative p-5 sm:p-8 lg:p-10">
             <div className="relative max-w-2xl">
               <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-orange-50/80">
-                <Sparkles className="h-3.5 w-3.5" /> Organizações parceiras
+                <Building2 className="h-3.5 w-3.5" /> ONGs Parceiras
               </span>
               <h2 className="mt-5 text-2xl font-semibold leading-tight text-white sm:text-3xl lg:text-4xl">
                 Encontre uma organização ou cadastre a sua.
