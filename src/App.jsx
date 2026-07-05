@@ -54,6 +54,7 @@ const AdminPets = lazy(() => import('@/modules/admin/pages/AdminPets'));
 const AdminReports = lazy(() => import('@/modules/admin/pages/AdminReports'));
 const AdminUsers = lazy(() => import('@/modules/admin/pages/AdminUsers'));
 const AdminOrganizations = lazy(() => import('@/modules/admin/pages/AdminOrganizations'));
+const AdminCommunities = lazy(() => import('@/modules/admin/pages/AdminCommunities'));
 const AdminMetrics = lazy(() => import('@/modules/admin/pages/AdminMetrics'));
 const AdminAuditLog = lazy(() => import('@/modules/admin/pages/AdminAuditLog'));
 const AdminNotifications = lazy(() => import('@/modules/admin/pages/AdminNotifications'));
@@ -273,6 +274,10 @@ export default function App() {
                 <Route
                   path="/admin/organizacoes"
                   element={<AdminRoute>{withLayout('AdminOrganizations', AdminOrganizations)}</AdminRoute>}
+                />
+                <Route
+                  path="/admin/comunidades"
+                  element={<AdminRoute>{withLayout('AdminCommunities', AdminCommunities)}</AdminRoute>}
                 />
                 <Route
                   path="/admin/metricas"

@@ -13,7 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ImageUpload } from '@/components/ui/image-upload';
 import PageHero from '@/components/PageHero';
 import { listAdminClubs, updateAdminClub } from '@/modules/admin/services/adminService';
-import { useAdminCommunities, useCreateCommunity, useDeleteCommunity, useUpdateCommunity } from '@/modules/communities/hooks/useCommunities';
+
 import { COMMUNITY_VISIBILITY, COMMUNITY_VISIBILITY_LABELS } from '@/modules/communities/domain/constants';
 import { CLUB_DIRECTORY_STATUS, CLUB_DIRECTORY_STATUS_LABELS, sortCommunities } from '@/modules/communities/domain/directory';
 
