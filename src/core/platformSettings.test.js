@@ -18,6 +18,12 @@ describe('normalizeOperationalLimits', () => {
 });
 
 describe('normalizePlatformSettings', () => {
+  it('retorna os valores padrão quando a entrada é vazia, nula ou indefinida', () => {
+    expect(normalizePlatformSettings()).toEqual(PLATFORM_SETTINGS_DEFAULTS);
+    expect(normalizePlatformSettings(null)).toEqual(PLATFORM_SETTINGS_DEFAULTS);
+    expect(normalizePlatformSettings({})).toEqual(PLATFORM_SETTINGS_DEFAULTS);
+  });
+
   it('mescla valores válidos com os padrões e ignora flags desconhecidas', () => {
     const settings = normalizePlatformSettings({
       feature_flags: {
