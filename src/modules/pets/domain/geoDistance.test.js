@@ -38,6 +38,21 @@ describe('pets/geoDistance domain', () => {
       expect(dist).toBeGreaterThan(340);
       expect(dist).toBeLessThan(380);
     });
+    it('calculates the distance between the North and South poles (~20015km)', () => {
+      expect(haversineKm([90, 0], [-90, 0])).toBeCloseTo(20015, 0);
+    });
+    it('calculates distance accurately when crossing the equator', () => {
+      expect(haversineKm([1, 1], [-1, -1])).toBeCloseTo(314.5, 1);
+    });
+    it('calculates distance accurately when crossing the antimeridian', () => {
+      expect(haversineKm([10, 179], [10, -179])).toBeCloseTo(219, 0);
+    });
+    it('calculates 1 degree of latitude to be ~111km', () => {
+      expect(haversineKm([0, 0], [1, 0])).toBeCloseTo(111.19, 1);
+    });
+    it('calculates 1 degree of longitude at the equator to be ~111km', () => {
+      expect(haversineKm([0, 0], [0, 1])).toBeCloseTo(111.19, 1);
+    });
   });
 
   describe('hasKnownCoords', () => {
