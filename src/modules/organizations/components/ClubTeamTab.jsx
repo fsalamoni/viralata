@@ -10,7 +10,8 @@ import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import {
   useRegenerateInviteCode, useClubMembers, useSetMemberPermissions,
 } from '@/modules/organizations/hooks/useClubs';
-import { ClubJoinRequests, ClubAddMembers } from './ClubAdminTab';
+import { ClubJoinRequests } from './ClubJoinRequests';
+import { ClubAddMembers } from './ClubAddMembers';
 import { CLUB_ROLE, CLUB_PERMISSION_KEYS, CLUB_PERMISSION_LABELS } from '@/modules/organizations/domain/constants';
 import { isClubOwner, effectiveClubPermissions } from '@/modules/organizations/domain/permissions';
 
