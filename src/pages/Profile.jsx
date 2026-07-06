@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { UserAvatar } from '@/components/ui/user-avatar';
 import { ImageUpload } from '@/components/ui/image-upload';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { getRatingsForUser, summarizeRatings } from '@/modules/pets/services/ratingService';
@@ -252,12 +253,10 @@ export default function Profile() {
       >
         <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex items-center gap-4">
-            <ImageUpload
-              value={photoUrl}
-              onChange={(value) => updateField('photoUrl', value)}
-              folder="avatar"
-              shape="circle"
-              className="h-16 w-16"
+            <UserAvatar
+              name={fullName || user?.email}
+              photoUrl={photoUrl}
+              size="lg"
             />
             <div className="min-w-[180px] flex-1">
               <div className="text-[11px] font-bold uppercase tracking-[0.24em] text-orange-100/70">Dados da conta</div>
@@ -306,7 +305,7 @@ export default function Profile() {
                 value={photoUrl}
                 onChange={(value) => updateField('photoUrl', value)}
                 folder="avatar"
-                className="w-20 h-20 rounded-full"
+                shape="circle"
               />
               <div className="text-[12.5px] text-muted-foreground">
                 <p className="font-medium text-foreground">{user?.email}</p>
