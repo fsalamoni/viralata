@@ -40,11 +40,18 @@ export async function getPetById(petId) {
 /** Lista todos os pets disponíveis (para o feed). */
 export async function getAvailablePets({ species, size, city, state, limitCount = 100 } = {}) {
   if (!db) return [];
-  const constraints = [where('status', '==', 'available'), orderBy('priority_score', 'desc'), orderBy('created_at', 'asc')];
+  const constraints = [where('status', '==', 'available')];
   if (species) constraints.push(where('species', '==', species));
   if (size) constraints.push(where('size', '==', size));
   if (city) constraints.push(where('city', '==', city));
   if (state) constraints.push(where('state', '==', state));
+
+  // Apenas usamos os índices compostos de status (+ species) e created_at
+  // se não houver outros filtros que quebrem os índices disponíveis no firestore.indexes.json
+  if (!size && !city && !state) {
+    constraints.push(orderBy('created_at', 'desc'));
+  }
+
   constraints.push(limit(limitCount));
   const snap = await getDocs(query(collection(db, PETS_COLLECTION), ...constraints));
   return snap.docs.map((d) => normalizePetRecord(d.id, d.data()));
