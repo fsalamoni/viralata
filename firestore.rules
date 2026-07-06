@@ -431,7 +431,8 @@ service cloud.firestore {
     
     match /community_post_likes/{likeId} {
       allow read: if true;
-      allow write: if isAuth();
+      allow create: if isAuth() && request.resource.data.user_id == request.auth.uid;
+      allow delete: if isAuth() && resource.data.user_id == request.auth.uid;
     }
     
     match /community_post_comments/{commentId} {
