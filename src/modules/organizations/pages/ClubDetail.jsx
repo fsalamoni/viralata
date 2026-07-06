@@ -7,10 +7,12 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { toast } from 'sonner';
 import { EmptyState } from '@/components/ui/empty-state';
 import { getClub } from '../services/clubService';
 import { isClubPubliclyVisible, CLUB_DIRECTORY_STATUS } from '@/modules/communities/domain/directory';
-import { useMyMembership } from '../hooks/useClubs';
+import { useMyMembership, useRequestToJoinClub, useMyJoinRequests, useMyClubInvites } from '../hooks/useClubs';
+import { JOIN_REQUEST_STATUS } from '@/modules/organizations/domain/constants';
 import ClubPetsDataGrid from '../components/ClubPetsDataGrid';
 
 function RatingBadge({ uid, className }) {
@@ -31,6 +33,27 @@ export default function ClubDetail() {
   const { membership, isLoading: loadingMembership } = useMyMembership(orgId, user?.uid);
   const isMember = Boolean(membership);
   const isAdmin = membership?.role === 'admin';
+
+  const { data: myRequests = [] } = useMyJoinRequests();
+  const { data: myInvites = [] } = useMyClubInvites();
+  const requestToJoin = useRequestToJoinClub();
+
+  const isPending = myRequests.some((r) => r.club_id === orgId && r.status === JOIN_REQUEST_STATUS.PENDING);
+  const isInvited = myInvites.some((i) => i.club_id === orgId);
+
+  const handleRequest = async () => {
+    if (!isAuthenticated) {
+      toast.error('Você precisa estar logado para ingressar.');
+      return;
+    }
+    try {
+      const res = await requestToJoin.mutateAsync(club);
+      if (res?.alreadyMember) toast.success('Você já é membro desta organização.');
+      else toast.success(`Pedido enviado para ${club.name}.`);
+    } catch (err) {
+      toast.error(err.message || 'Não foi possível enviar o pedido.');
+    }
+  };
 
   if (isLoading || (isAuthenticated && loadingMembership)) {
     return (
@@ -108,6 +131,23 @@ export default function ClubDetail() {
               >
                 <Link to={`/organizacoes/${orgId}/admin`}><Settings className="mr-1.5 h-4 w-4" /> Administrar</Link>
               </Button>
+            )}
+            {!isMember && (
+              <>
+                {isInvited ? (
+                  <Button size="sm" variant="outline" className="border-warning text-warning hover:bg-warning/10" disabled>
+                    Você foi convidado — abrir
+                  </Button>
+                ) : isPending ? (
+                  <Button size="sm" variant="outline" disabled>
+                    Pedido enviado
+                  </Button>
+                ) : (
+                  <Button size="sm" variant="outline" onClick={handleRequest} disabled={requestToJoin.isPending}>
+                    {requestToJoin.isPending ? 'Enviando...' : 'Pedir para ingressar'}
+                  </Button>
+                )}
+              </>
             )}
             {club.donation_link && (
               <Button asChild size="sm" className="bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--highlight))_100%)] text-white hover:opacity-90">
