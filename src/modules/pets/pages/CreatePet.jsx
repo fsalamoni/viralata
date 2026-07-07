@@ -88,7 +88,7 @@ function OptionChip({ active, onClick, children }) {
   return (
     <button
       type="button"
-      onClick={onClick}
+      onClick={(e) => { e.preventDefault(); onClick(e); }}
       className={cn(
         'rounded-full px-4 py-2 text-[13px] font-bold transition-colors',
         active ? 'border-2 border-primary bg-primary/[0.08] text-[hsl(14,55%,26%)]' : 'border-2 border-border bg-card text-foreground/75 hover:border-primary/40',
@@ -233,7 +233,7 @@ export default function CreatePet() {
   return (
     <div className="arena-page mx-auto max-w-2xl px-5 pb-24 pt-6">
       <div className="mb-1.5 flex items-center gap-3">
-        <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
+        <Button type="button" variant="ghost" size="sm" onClick={() => navigate(-1)}>
           <ArrowLeft className="h-4 w-4" />
         </Button>
       </div>
@@ -388,15 +388,16 @@ export default function CreatePet() {
                 </div>
                 <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                   {CHECKS.map(({ field, label }) => (
-                    <button
-                      type="button"
+                    <label
                       key={field}
-                      onClick={() => setValue(field, !form[field])}
-                      className="flex items-center gap-2.5 rounded-2xl border-2 border-border bg-card px-3 py-2.5 text-left text-[12.5px] font-semibold text-foreground/85"
+                      className="flex cursor-pointer items-center gap-2.5 rounded-2xl border-2 border-border bg-card px-3 py-2.5 text-left text-[12.5px] font-semibold text-foreground/85"
                     >
-                      <Checkbox checked={Boolean(form[field])} className="pointer-events-none" />
+                      <Checkbox
+                        checked={Boolean(form[field])}
+                        onCheckedChange={(checked) => setValue(field, checked)}
+                      />
                       {label}
-                    </button>
+                    </label>
                   ))}
                 </div>
                 <div className="space-y-1.5">
