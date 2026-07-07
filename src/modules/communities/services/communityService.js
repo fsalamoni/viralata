@@ -175,6 +175,72 @@ export async function deletePost(postId, userId) {
   }
 }
 
+export async function toggleThreadLike(threadId, userId) {
+  const likeRef = doc(db, 'community_forum_threads', threadId, 'likes', userId);
+  const snap = await getDoc(likeRef);
+
+  if (snap.exists()) {
+    await deleteDoc(likeRef);
+    await updateDoc(doc(db, 'community_forum_threads', threadId), { likes_count: increment(-1) });
+    return false; // unliked
+  } else {
+    await setDoc(likeRef, { created_at: serverTimestamp() });
+    await updateDoc(doc(db, 'community_forum_threads', threadId), { likes_count: increment(1) });
+    return true; // liked
+  }
+}
+
+export async function getThreadLikes(threadId) {
+  const q = query(collection(db, 'community_forum_threads', threadId, 'likes'));
+  const snap = await getDocs(q);
+  return snap.docs.map(d => d.id);
+}
+
+export async function toggleMessageLike(messageId, userId) {
+  const likeRef = doc(db, 'community_forum_messages', messageId, 'likes', userId);
+  const snap = await getDoc(likeRef);
+
+  if (snap.exists()) {
+    await deleteDoc(likeRef);
+    await updateDoc(doc(db, 'community_forum_messages', messageId), { likes_count: increment(-1) });
+    return false; // unliked
+  } else {
+    await setDoc(likeRef, { created_at: serverTimestamp() });
+    await updateDoc(doc(db, 'community_forum_messages', messageId), { likes_count: increment(1) });
+    return true; // liked
+  }
+}
+
+export async function getMessageLikes(messageId) {
+  const q = query(collection(db, 'community_forum_messages', messageId, 'likes'));
+  const snap = await getDocs(q);
+  return snap.docs.map(d => d.id);
+}
+
+export async function votePoll(entityType, entityId, optionIndex, userId) {
+  // entityType: 'thread' | 'message'
+  const collectionName = entityType === 'thread' ? 'community_forum_threads' : 'community_forum_messages';
+  const voteRef = doc(db, collectionName, entityId, 'poll_votes', userId);
+  const entityRef = doc(db, collectionName, entityId);
+
+  const voteSnap = await getDoc(voteRef);
+  const isUpdate = voteSnap.exists();
+  const oldOption = isUpdate ? voteSnap.data().optionIndex : null;
+
+  await setDoc(voteRef, { optionIndex, updated_at: serverTimestamp() });
+
+  // We don't increment a counter here to avoid transaction complexity if multiple vote,
+  // typically poll voting recalculates from reading all votes, or we can use transactions.
+  // For simplicity we just record the vote. The UI will fetch all votes to calculate %.
+}
+
+export async function getPollVotes(entityType, entityId) {
+  const collectionName = entityType === 'thread' ? 'community_forum_threads' : 'community_forum_messages';
+  const q = query(collection(db, collectionName, entityId, 'poll_votes'));
+  const snap = await getDocs(q);
+  return snap.docs.map(d => ({ userId: d.id, ...d.data() }));
+}
+
 
 
 export async function togglePostLike(postId, userId) {
@@ -233,16 +299,19 @@ export async function getForumThreads(communityId) {
   return snap.docs.map(d => ({ id: d.id, ...d.data() }));
 }
 
-export async function createForumThread(communityId, title, text, user, profile) {
+export async function createForumThread(communityId, title, text, user, profile, attachments = [], poll = null) {
    const ref = doc(collection(db, 'community_forum_threads'));
    await setDoc(ref, {
      community_id: communityId,
      title,
      text,
+     attachments,
+     poll,
      author_id: user.uid,
      author_name: profile?.platform_name || user.displayName || user.email || 'Usuário',
      author_photo: profile?.photo_url || user.photoURL || '',
      messages_count: 0,
+     likes_count: 0,
      created_at: serverTimestamp(),
      updated_at: serverTimestamp()
    });
@@ -259,14 +328,17 @@ export async function getThreadMessages(threadId) {
   return snap.docs.map(d => ({ id: d.id, ...d.data() }));
 }
 
-export async function addThreadMessage(threadId, text, user, profile) {
+export async function addThreadMessage(threadId, text, user, profile, attachments = [], poll = null) {
    const ref = doc(collection(db, 'community_forum_messages'));
    await setDoc(ref, {
      thread_id: threadId,
      text,
+     attachments,
+     poll,
      author_id: user.uid,
      author_name: profile?.platform_name || user.displayName || user.email || 'Usuário',
      author_photo: profile?.photo_url || user.photoURL || '',
+     likes_count: 0,
      created_at: serverTimestamp()
    });
    await updateDoc(doc(db, 'community_forum_threads', threadId), { 
