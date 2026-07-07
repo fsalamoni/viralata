@@ -5,7 +5,10 @@ import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getCommunity, joinCommunity, getCommunityMembership } from '../services/communityService';
+import { getCommunity, joinCommunity } from '../services/communityService';
+import { hasAnyCommunityPermission } from '../domain/permissions';
+import { useMyCommunityMembership } from '../hooks/useCommunities';
+
 import { Settings } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -30,14 +33,17 @@ export default function CommunityDetail() {
       .finally(() => setLoading(false));
   }, [communityId]);
 
+  const { data: membership } = useMyCommunityMembership(communityId);
+  const canAdmin = hasAnyCommunityPermission(community, membership);
   useEffect(() => {
-    if (user && communityId) {
-      getCommunityMembership(communityId, user.uid).then(membership => {
-        setIsMember(!!membership);
-        setIsAdmin(membership?.role === 'admin');
-      });
+    if (membership) {
+        setIsMember(true);
+        setIsAdmin(membership.role === 'admin');
+    } else {
+        setIsMember(false);
+        setIsAdmin(false);
     }
-  }, [user, communityId]);
+  }, [membership]);
 
   const handleJoin = async () => {
     if (!user) return toast.error('Faça login para participar');
@@ -71,8 +77,8 @@ export default function CommunityDetail() {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            {isAdmin && (
-               <Button variant="secondary" onClick={() => setActiveTab('sobre')}><Settings className="w-4 h-4 mr-2" /> Editar</Button>
+            {canAdmin && (
+               <Button variant="secondary" asChild><Link to={`/comunidade/${communityId}/admin`}><Settings className="w-4 h-4 mr-2" /> Editar</Link></Button>
             )}
             {!isMember && (
               <Button onClick={handleJoin} variant="default">Participar</Button>
@@ -97,10 +103,10 @@ export default function CommunityDetail() {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="mural"><MuralTab communityId={communityId} isMember={isMember} isAdmin={isAdmin} /></TabsContent>
+        <TabsContent value="mural"><MuralTab communityId={communityId} isMember={isMember} isAdmin={isAdmin} membership={membership} community={community} /></TabsContent>
         <TabsContent value="forum"><ForumTab communityId={communityId} /></TabsContent>
-        <TabsContent value="eventos"><EventsTab communityId={communityId} isAdmin={isAdmin} /></TabsContent>
-        <TabsContent value="sobre"><AboutTab community={community} isAdmin={isAdmin} onUpdate={(updates) => setCommunity({...community, ...updates})} /></TabsContent>
+        <TabsContent value="eventos"><EventsTab communityId={communityId} isAdmin={isAdmin} membership={membership} community={community} /></TabsContent>
+        <TabsContent value="sobre"><AboutTab community={community} /></TabsContent>
       </Tabs>
     </div>
   );

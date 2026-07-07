@@ -395,3 +395,29 @@ export async function deleteThreadMessage(messageId, threadId) {
     });
   }
 }
+
+// Admin Panel specific functions
+
+export async function listCommunityMembers(communityId) {
+  const q = query(collection(db, 'community_members'), where('community_id', '==', communityId));
+  const snap = await getDocs(q);
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+
+export async function setCommunityMemberRole(communityId, targetUserId, newRole, actor) {
+  const memberRef = doc(db, 'community_members', `${communityId}_${targetUserId}`);
+  await updateDoc(memberRef, { role: newRole });
+  await createAuditLog({ action: 'community_member_role_updated', actor, details: { community_id: communityId, target_user: targetUserId, role: newRole } });
+}
+
+export async function setCommunityMemberPermissions(communityId, targetUserId, permissions, actor) {
+  const memberRef = doc(db, 'community_members', `${communityId}_${targetUserId}`);
+  await updateDoc(memberRef, { permissions });
+  await createAuditLog({ action: 'community_member_permissions_updated', actor, details: { community_id: communityId, target_user: targetUserId, permissions } });
+}
+
+export async function removeCommunityMember(communityId, targetUserId, actor) {
+  const memberRef = doc(db, 'community_members', `${communityId}_${targetUserId}`);
+  await deleteDoc(memberRef);
+  await createAuditLog({ action: 'community_member_removed', actor, details: { community_id: communityId, target_user: targetUserId } });
+}

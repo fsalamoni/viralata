@@ -6,9 +6,12 @@ import { Heart, MessageCircle, Trash2, Send } from 'lucide-react';
 import { toast } from 'sonner';
 import { getCommunityPosts, createPost, deletePost } from '../services/communityService';
 import { formatDistanceToNow } from 'date-fns';
+import { hasCommunityPermission } from '../domain/permissions';
+import { COMMUNITY_PERMISSION } from '../domain/constants';
+
 import { ptBR } from 'date-fns/locale';
 
-export default function MuralTab({ communityId, isMember, isAdmin }) {
+export default function MuralTab({ communityId, isMember, isAdmin, membership, community }) {
   const { user } = useAuth();
   const [posts, setPosts] = useState([]);
   const [newPostText, setNewPostText] = useState('');
@@ -53,9 +56,12 @@ export default function MuralTab({ communityId, isMember, isAdmin }) {
     }
   };
 
+    const canPost = hasCommunityPermission(community, membership, COMMUNITY_PERMISSION.FEED);
+  const canDelete = (postId, authorId) => user?.uid === authorId || isAdmin;
+
   return (
     <div className="space-y-6">
-      {isMember && (
+      {canPost && (
         <div className="bg-card border border-border p-4 rounded-2xl flex flex-col gap-3 shadow-sm">
           <Textarea 
             placeholder="O que você quer compartilhar com a comunidade?"
@@ -91,7 +97,7 @@ export default function MuralTab({ communityId, isMember, isAdmin }) {
                     </p>
                   </div>
                 </div>
-                {(user?.uid === post.author_id || isAdmin) && (
+                {canDelete(post.id, post.author_id) && (
                   <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10" onClick={() => handleDelete(post.id)}>
                     <Trash2 className="w-4 h-4" />
                   </Button>

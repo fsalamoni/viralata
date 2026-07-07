@@ -63,3 +63,61 @@ export function useDeleteCommunity() {
     },
   });
 }
+
+import {
+  getCommunityMembership,
+  listCommunityMembers,
+  setCommunityMemberRole,
+  setCommunityMemberPermissions,
+  removeCommunityMember,
+} from '../services/communityService';
+
+export function useMyCommunityMembership(communityId) {
+  const { user } = useAuth();
+  return useQuery({
+    queryKey: ['communityMembership', communityId, user?.uid],
+    queryFn: () => getCommunityMembership(communityId, user?.uid),
+    enabled: !!communityId && !!user?.uid,
+  });
+}
+
+export function useCommunityMembers(communityId) {
+  return useQuery({
+    queryKey: ['communityMembers', communityId],
+    queryFn: () => listCommunityMembers(communityId),
+    enabled: !!communityId,
+  });
+}
+
+export function useSetCommunityMemberRole(communityId) {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+  return useMutation({
+    mutationFn: ({ targetUserId, role }) => setCommunityMemberRole(communityId, targetUserId, role, user),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['communityMembers', communityId] });
+    },
+  });
+}
+
+export function useSetCommunityMemberPermissions(communityId) {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+  return useMutation({
+    mutationFn: ({ targetUserId, permissions }) => setCommunityMemberPermissions(communityId, targetUserId, permissions, user),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['communityMembers', communityId] });
+    },
+  });
+}
+
+export function useRemoveCommunityMember(communityId) {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+  return useMutation({
+    mutationFn: (targetUserId) => removeCommunityMember(communityId, targetUserId, user),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['communityMembers', communityId] });
+    },
+  });
+}

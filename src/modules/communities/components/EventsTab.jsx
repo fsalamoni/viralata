@@ -9,9 +9,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { format } from 'date-fns';
+import { hasCommunityPermission } from '../domain/permissions';
+import { COMMUNITY_PERMISSION } from '../domain/constants';
+
 import { ptBR } from 'date-fns/locale';
 
-export default function EventsTab({ communityId, isAdmin }) {
+export default function EventsTab({ communityId, isAdmin, membership, community }) {
   const { user } = useAuth();
   const [events, setEvents] = useState([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -23,6 +26,8 @@ export default function EventsTab({ communityId, isAdmin }) {
   useEffect(() => {
     fetchEvents();
   }, [communityId]);
+
+  const canManageEvents = hasCommunityPermission(community, membership, COMMUNITY_PERMISSION.EVENTS);
 
   const handleDelete = async (eventId, e) => {
     e.stopPropagation();
@@ -40,7 +45,7 @@ export default function EventsTab({ communityId, isAdmin }) {
     <div className="space-y-4">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold">Próximos Eventos</h2>
-        {isAdmin && (
+        {canManageEvents && (
           <Button variant="outline" size="sm" onClick={() => setIsDialogOpen(true)}>
             <Plus className="w-4 h-4 mr-2" /> Novo Evento
           </Button>
@@ -58,7 +63,7 @@ export default function EventsTab({ communityId, isAdmin }) {
             <Card key={ev.id} className="p-4 flex flex-col gap-3 hover:bg-secondary/10 transition-colors">
               <div className="flex justify-between items-start">
                 <h3 className="font-bold text-base">{ev.title}</h3>
-                {isAdmin && (
+                {canManageEvents && (
                   <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive hover:bg-destructive/10" onClick={(e) => handleDelete(ev.id, e)}>
                     <Trash2 className="w-4 h-4" />
                   </Button>

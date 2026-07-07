@@ -37,6 +37,8 @@ const OrganizationAdminPanel = lazy(() => import('@/modules/organizations/pages/
 // ─── Comunidades ──────────────────────────────────────────────────────────────
 const CommunitiesDirectory = lazy(() => import('@/modules/communities/pages/CommunitiesDirectory'));
 const CommunityDetail = lazy(() => import('@/modules/communities/pages/CommunityDetail'));
+const CommunityAdminPanel = lazy(() => import('@/modules/communities/pages/CommunityAdminPanel'));
+
 const CreateCommunity = lazy(() => import('@/modules/communities/pages/CreateCommunity'));
 
 // ─── Chat ─────────────────────────────────────────────────────────────────────
@@ -215,6 +217,8 @@ export default function App() {
                   path="/comunidade/:communityId"
                   element={<ProtectedRoute>{withLayout('CommunityDetail', CommunityDetail)}</ProtectedRoute>}
                 />
+                <Route path="/comunidade/:communityId/admin" element={<ProtectedRoute>{withLayout('CommunityAdminPanel', CommunityAdminPanel)}</ProtectedRoute>} />
+
 
                 {/* ── Organizações (ONGs) ───────────────────────────────── */}
                 <Route path="/organizacoes" element={withLayout('OrganizationsDirectory', OrganizationsDirectory)} />
