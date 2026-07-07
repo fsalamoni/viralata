@@ -8,7 +8,7 @@ import { getCommunityPosts, createPost, deletePost } from '../services/community
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
-export default function MuralTab({ communityId, isMember }) {
+export default function MuralTab({ communityId, isMember, isAdmin }) {
   const { user } = useAuth();
   const [posts, setPosts] = useState([]);
   const [newPostText, setNewPostText] = useState('');
@@ -91,7 +91,7 @@ export default function MuralTab({ communityId, isMember }) {
                     </p>
                   </div>
                 </div>
-                {user?.uid === post.author_id && (
+                {(user?.uid === post.author_id || isAdmin) && (
                   <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10" onClick={() => handleDelete(post.id)}>
                     <Trash2 className="w-4 h-4" />
                   </Button>

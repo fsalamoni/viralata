@@ -137,6 +137,45 @@ export async function joinCommunity(communityId, userId) {
   });
 }
 
+
+export async function getCommunityMembership(communityId, userId) {
+  if (!db || !communityId || !userId) return null;
+  const snap = await getDoc(doc(db, 'community_members', `${communityId}_${userId}`));
+  return snap.exists() ? { id: snap.id, ...snap.data() } : null;
+}
+
+export async function isCommunityAdmin(communityId, userId) {
+  const membership = await getCommunityMembership(communityId, userId);
+  return membership?.role === 'admin';
+}
+
+export async function listCommunityEvents(communityId) {
+  const q = query(collection(db, 'community_events'), where('community_id', '==', communityId), orderBy('starts_at', 'asc'));
+  const snap = await getDocs(q);
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+
+export async function createCommunityEvent(communityId, data, user) {
+  if (!user?.uid) throw new Error('Usuário não autenticado.');
+  if (!data.title) throw new Error('Informe o título do evento.');
+
+  const ref = doc(collection(db, 'community_events'));
+  await setDoc(ref, {
+    community_id: communityId,
+    title: data.title,
+    description: data.description || '',
+    location: data.location || '',
+    starts_at: data.starts_at || null,
+    created_by: user.uid,
+    created_at: serverTimestamp()
+  });
+  return ref.id;
+}
+
+export async function deleteCommunityEvent(eventId) {
+  await deleteDoc(doc(db, 'community_events', eventId));
+}
+
 export async function getCommunityPosts(communityId) {
   const q = query(collection(db, 'community_posts'), where('community_id', '==', communityId), orderBy('created_at', 'desc'));
   const snap = await getDocs(q);
