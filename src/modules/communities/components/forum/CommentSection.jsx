@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
-import { useProfile } from '@/core/hooks/useProfile';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
@@ -12,7 +11,7 @@ import { getThreadMessages, addThreadMessage, deleteThreadMessage, toggleMessage
 import { toast } from 'sonner';
 import PollComponent from './PollComponent';
 import AttachmentRenderer from './AttachmentRenderer';
-import { uploadFile } from '@/core/lib/firebaseStorage';
+import { uploadAttachment } from '@/core/services/storageService';
 import MarkdownContent from '@/components/ui/markdown-content';
 
 function MessageItem({ message, threadId, onDeleted }) {
@@ -94,8 +93,7 @@ function MessageItem({ message, threadId, onDeleted }) {
 }
 
 export default function CommentSection({ threadId }) {
-  const { user } = useAuth();
-  const { profile } = useProfile();
+  const { user, userProfile } = useAuth();
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -117,8 +115,7 @@ export default function CommentSection({ threadId }) {
     setUploadingFiles(true);
     try {
       const uploadedFiles = await Promise.all(selectedFiles.map(async (file) => {
-        const path = `uploads/${user.uid}/forum/${Date.now()}_${file.name}`;
-        const url = await uploadFile(path, file);
+        const url = await uploadAttachment(file, { uid: user.uid, folder: 'forum' });
         return { name: file.name, url, type: file.type };
       }));
       setFiles(prev => [...prev, ...uploadedFiles]);
@@ -173,7 +170,7 @@ export default function CommentSection({ threadId }) {
 
     setSubmitting(true);
     try {
-      await addThreadMessage(threadId, newMessage, user, profile, files, pollData);
+      await addThreadMessage(threadId, newMessage, user, userProfile, files, pollData);
       setNewMessage('');
       setFiles([]);
       setShowPoll(false);

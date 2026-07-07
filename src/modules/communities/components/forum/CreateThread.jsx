@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
-import { useProfile } from '@/core/hooks/useProfile';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -8,11 +7,10 @@ import { Label } from '@/components/ui/label';
 import { createForumThread } from '../../services/communityService';
 import { toast } from 'sonner';
 import { ArrowLeft, Paperclip, Loader2, ListPlus } from 'lucide-react';
-import { uploadFile } from '@/core/lib/firebaseStorage';
+import { uploadAttachment } from '@/core/services/storageService';
 
 export default function CreateThread({ communityId, onBack, onCreated }) {
-  const { user } = useAuth();
-  const { profile } = useProfile();
+  const { user, userProfile } = useAuth();
 
   const [title, setTitle] = useState('');
   const [text, setText] = useState('');
@@ -32,9 +30,7 @@ export default function CreateThread({ communityId, onBack, onCreated }) {
     setUploadingFiles(true);
     try {
       const uploadedFiles = await Promise.all(selectedFiles.map(async (file) => {
-        // use uploads/forum to conform to standard rules
-        const path = `uploads/${user.uid}/forum/${Date.now()}_${file.name}`;
-        const url = await uploadFile(path, file);
+        const url = await uploadAttachment(file, { uid: user.uid, folder: 'forum' });
         return { name: file.name, url, type: file.type };
       }));
       setFiles(prev => [...prev, ...uploadedFiles]);
@@ -77,7 +73,7 @@ export default function CreateThread({ communityId, onBack, onCreated }) {
 
     setSubmitting(true);
     try {
-      await createForumThread(communityId, title, text, user, profile, files, pollData);
+      await createForumThread(communityId, title, text, user, userProfile, files, pollData);
       toast.success('Tópico criado com sucesso!');
       onCreated();
     } catch (error) {
