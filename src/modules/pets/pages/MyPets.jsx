@@ -74,7 +74,18 @@ export default function MyPets() {
   return (
     <div className="arena-page mx-auto max-w-3xl px-5 pb-16 pt-5.5">
       <div className="mb-5 flex items-center justify-between">
-        <h1 className="font-['Sora'] text-[22px] font-extrabold text-foreground">Meus Pets</h1>
+        <div>
+          <h1 className="font-['Sora'] text-[22px] font-extrabold text-foreground">Meus Pets</h1>
+          <p className="text-[12.5px] text-muted-foreground mt-0.5">
+            Pets que você cadastrou.{' '}
+            <Link
+              to="/meus-interesses"
+              className="font-semibold text-primary hover:underline"
+            >
+              Ver pets que despertaram seu interesse →
+            </Link>
+          </p>
+        </div>
         <Button asChild>
           <Link to="/pets/new"><PlusCircle className="mr-2 h-4 w-4" /> Novo</Link>
         </Button>

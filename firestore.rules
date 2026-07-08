@@ -128,7 +128,12 @@ service cloud.firestore {
         canManagePet(get(/databases/$(database)/documents/pets/$(resource.data.pet_id)).data) ||
         isPlatformAdmin()
       );
-      allow delete: if isPlatformAdmin();
+      // O próprio adotante pode remover seu interesse ("Meus Interesses").
+      // O dono do pet cancela via update de status (rejected), não deletando.
+      allow delete: if isAuth() && (
+        resource.data.user_id == request.auth.uid ||
+        isPlatformAdmin()
+      );
     }
 
     // ─── Avaliações pós-adoção ──────────────────────────────────────────────────
