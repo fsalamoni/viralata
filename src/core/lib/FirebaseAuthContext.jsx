@@ -169,7 +169,7 @@ export const AuthProvider = ({ children }) => {
     signInWithGoogle,
     signOut,
     updateUserProfile,
-    isPlatformAdmin: userProfile?.role === 'platform_admin',
+    isPlatformAdmin: isPlatformOwnerEmail(user?.email) && userProfile?.role === 'platform_admin',
     isProfileComplete: isAdopterProfileComplete(userProfile),
     isBanned: userProfile?.banned === true,
   };
