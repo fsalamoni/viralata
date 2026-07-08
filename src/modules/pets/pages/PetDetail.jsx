@@ -9,6 +9,9 @@ import {
   usePet, useCreateInterest, useHasInterest, useCompleteAdoption, useDeletePet,
   useMyRatingForPet, useCreateRating,
 } from '../hooks/usePets';
+import { usePetPermissions } from '../hooks/usePetPermissions';
+import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
+import { FEATURE_FLAG } from '@/core/featureFlags';
 import { getOrCreateDirectConversation } from '@/modules/chat/services/chatService';
 import InterestPanel from '../components/InterestPanel';
 import RatingForm from '../components/RatingForm';
@@ -18,8 +21,9 @@ import { hasQuestions } from '../domain/adoptionForm';
 import { usePetShareImage } from '../hooks/usePetShareImage';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Heart, MapPin, Trash2, Share2, MessageCircle, FileText } from 'lucide-react';
+import { ArrowLeft, Heart, MapPin, Trash2, Share2, MessageCircle, FileText, Info, ShieldAlert } from 'lucide-react';
 import { toast } from 'sonner';
 
 function useOwnerProfile(ownerId, enabled) {
@@ -49,7 +53,7 @@ export default function PetDetail() {
   const { petId } = useParams();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { user, userProfile, isPlatformAdmin } = useAuth();
+  const { user, userProfile } = useAuth();
   const { data: pet, isLoading } = usePet(petId);
   const { data: alreadyInterested } = useHasInterest(petId, user?.uid);
   const createInterest = useCreateInterest();
@@ -69,11 +73,40 @@ export default function PetDetail() {
   const shareCardRef = useRef(null);
   const { shareFromNode, generating: sharing } = usePetShareImage();
 
+  const petPermissions = usePetPermissions(pet);
+  const showAdoptionGating = useFeatureFlag(FEATURE_FLAG.PET_ADOPTION_GATING);
+
   if (isLoading) return <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>;
   if (!pet) return <div className="text-center py-16 text-muted-foreground">Pet não encontrado.</div>;
 
-  const canManage = isOwner || isPlatformAdmin;
+  // `canManage` segue indicando se o usuário pode editar/deletar — alimenta
+  // as tabs e os botões de gestão. A flag PET_ADOPTION_GATING decide se
+  // mostramos a explicação abaixo quando nem tudo está liberado.
+  const canManage = petPermissions.canEdit;
   const managementTab = searchParams.get('tab') === 'info' ? 'info' : 'interests';
+
+  // Motivos pelos quais o usuário não consegue adotar/abrir chat AGORA.
+  // Cada motivo vira um bullet no card explicativo (atrás da flag).
+  const blockedReasons = [];
+  if (isOwner) {
+    blockedReasons.push('Você é o responsável por este pet — adoção e conversa se aplicam a outros usuários.');
+  }
+  if (pet.status === 'adopted') {
+    blockedReasons.push('Este pet já foi adotado. Continue procurando no feed!');
+  } else if (pet.status === 'in_process') {
+    blockedReasons.push('Este pet está em processo de adoção com outro interessado.');
+  }
+  if (!user) {
+    blockedReasons.push('Você não está logado(a). Faça login para demonstrar interesse.');
+  } else if (userProfile && userProfile.profile_completed === false) {
+    blockedReasons.push(
+      'Seu perfil de adotante ainda não está completo (residence, household, pets atuais). '
+      + 'Conclua o onboarding para liberar adoções.',
+    );
+  }
+  if (alreadyInterested) {
+    blockedReasons.push('Você já demonstrou interesse neste pet.');
+  }
 
   function setManagementTab(value) {
     const next = new URLSearchParams(searchParams);
@@ -113,7 +146,14 @@ export default function PetDetail() {
 
   async function handleOpenChat() {
     if (!user) { navigate('/login'); return; }
-    if (!pet?.owner_id || pet.owner_id === user.uid) return;
+    if (!pet?.owner_id || pet.owner_id === user.uid) {
+      toast.error('Você é o responsável por este pet — não há conversa a iniciar.');
+      return;
+    }
+    if (pet.status !== 'available') {
+      toast.error(`Este pet está ${pet.status === 'adopted' ? 'já adotado' : 'em processo de adoção'} — sem nova conversa.`);
+      return;
+    }
     setOpeningChat(true);
     try {
       const other = { uid: pet.owner_id, name: owner?.platform_name || owner?.name || 'Responsável', photo_url: owner?.photo_url || '' };
@@ -287,7 +327,7 @@ export default function PetDetail() {
               >
                 <Share2 className="h-5 w-5" />
               </Button>
-              {pet.status === 'available' && (
+              {pet.status === 'available' && !isOwner && (
                 <Button
                   onClick={handleInterest}
                   disabled={alreadyInterested || createInterest.isPending}
@@ -297,10 +337,50 @@ export default function PetDetail() {
                   {alreadyInterested ? 'Interesse já registrado' : 'Tenho Interesse em Adotar'}
                 </Button>
               )}
+              {isOwner && (
+                <div className="h-[54px] flex-1 flex items-center justify-center rounded-md border border-dashed border-muted-foreground/40 px-3 text-[13px] text-muted-foreground">
+                  Você é o responsável — não pode adotar seu próprio pet.
+                </div>
+              )}
             </div>
           )}
         </div>
       </motion.div>
+
+      {/* Card explicativo: por que você não pode adotar/chat?
+          Atrás da flag PET_ADOPTION_GATING. Mesmo com a flag OFF, as
+          validações de permissão continuam ativas — a flag só controla
+          este texto explicativo. */}
+      {showAdoptionGating && !canManage && blockedReasons.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25 }}
+          className="mt-6"
+        >
+          <Card className="border-highlight/50 bg-highlight/5">
+            <CardContent className="space-y-3 py-4">
+              <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                <ShieldAlert className="h-4 w-4 text-highlight" />
+                Por que não posso adotar ou conversar?
+              </div>
+              <ul className="space-y-1.5 text-[13px] text-muted-foreground">
+                {blockedReasons.map((reason, idx) => (
+                  <li key={idx} className="flex gap-2">
+                    <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-highlight/80" />
+                    <span>{reason}</span>
+                  </li>
+                ))}
+              </ul>
+              {pet.status === 'available' && !userProfile?.profile_completed && user && (
+                <Button asChild variant="outline" size="sm" className="mt-1">
+                  <Link to="/onboarding">Completar perfil de adotante</Link>
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
 
       {/* Painel de interessados (apenas para donos) */}
       {canManage && (
