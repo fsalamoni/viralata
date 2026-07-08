@@ -55,8 +55,8 @@ function MemberItem({ member, community, myMembership }) {
   const [confirmRemove, setConfirmRemove] = useState(false);
 
   const isMe = member.user_id === user?.uid;
-  const targetIsOwner = isCommunityOwner(community, member);
-  const amIOwner = isCommunityOwner(community, myMembership);
+  const targetIsOwner = isCommunityOwner(community, member, user?.uid);
+  const amIOwner = isCommunityOwner(community, myMembership, user?.uid);
   const amIAdmin = myMembership?.role === COMMUNITY_ROLE.ADMIN;
 
   const targetIsAdmin = member.role === COMMUNITY_ROLE.ADMIN;

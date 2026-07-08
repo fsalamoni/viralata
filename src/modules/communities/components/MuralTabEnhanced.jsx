@@ -147,7 +147,7 @@ export default function MuralTabEnhanced({ communityId, isAdmin, membership, com
     }
   };
 
-  const canPost = hasCommunityPermission(community, membership, COMMUNITY_PERMISSION.FEED);
+  const canPost = hasCommunityPermission(community, membership, COMMUNITY_PERMISSION.FEED, user?.uid);
 
   return (
     <div className="space-y-6">

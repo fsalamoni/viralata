@@ -61,14 +61,17 @@ export function useCanEditContent(content, opts = {}) {
       }
     }
     // owner / admin / permissão granular da comunidade
-    if (isCommunityOwner(content, { user_id: user.uid }) || isCommunityOwner({ owner_id: content.community_owner_id }, { user_id: user.uid })) {
+    if (
+      isCommunityOwner(content, null, user.uid)
+      || isCommunityOwner({ owner_id: content.community_owner_id }, null, user.uid)
+    ) {
       return { canEdit: true, canDelete: true, reason: null };
     }
     if (membership) {
       // CommunityDetail page sets membership; admin/moderator with
       // relevant permission key.
       const permKey = type === 'community_event' ? 'manage_events' : 'feed';
-      if (hasCommunityPermission(content, membership, permKey)) {
+      if (hasCommunityPermission(content, membership, permKey, user.uid)) {
         return { canEdit: true, canDelete: true, reason: null };
       }
     }

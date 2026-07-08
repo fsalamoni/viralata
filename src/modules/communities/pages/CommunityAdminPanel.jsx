@@ -27,21 +27,21 @@ const TABS = [
 export default function CommunityAdminPanel() {
   const { communityId } = useParams();
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const { data: community, isLoading: loadingCommunity } = useCommunity(communityId);
   const { data: membership, isLoading: loadingMembership } = useMyCommunityMembership(communityId);
   const [searchParams, setSearchParams] = useSearchParams();
 
   const isLoading = loadingCommunity || loadingMembership;
   const isAdmin = membership?.role === COMMUNITY_ROLE.ADMIN;
-  const owner = isCommunityOwner(community, membership);
-  const canAccess = hasAnyCommunityPermission(community, membership);
+  const owner = isCommunityOwner(community, membership, user?.uid);
+  const canAccess = hasAnyCommunityPermission(community, membership, user?.uid);
 
   const visibleTabs = useMemo(() => TABS.filter((tab) => {
     if (tab.permission === null) return true;
     if (tab.permission === 'admin_only') return isAdmin;
-    return hasCommunityPermission(community, membership, tab.permission);
-  }), [community, membership, isAdmin]);
+    return hasCommunityPermission(community, membership, tab.permission, user?.uid);
+  }), [community, membership, isAdmin, user?.uid]);
 
   const requestedTab = searchParams.get('tab') || 'overview';
   const activeTab = visibleTabs.some((t) => t.key === requestedTab) ? requestedTab : (visibleTabs[0]?.key || 'overview');

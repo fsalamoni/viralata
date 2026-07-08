@@ -35,7 +35,7 @@ export default function CommunityDetail() {
   }, [communityId]);
 
   const { data: membership } = useMyCommunityMembership(communityId);
-  const canAdmin = hasAnyCommunityPermission(community, membership);
+  const canAdmin = hasAnyCommunityPermission(community, membership, user?.uid);
   useEffect(() => {
     if (membership) {
         setIsMember(true);
