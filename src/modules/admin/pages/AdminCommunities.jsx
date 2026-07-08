@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import PageHero from '@/components/PageHero';
 import { useAdminCommunities, useDeleteCommunity, useUpdateCommunity } from '@/modules/communities/hooks/useCommunities';
 import { COMMUNITY_VISIBILITY_LABELS } from '@/modules/communities/domain/constants';
+import PageContainer from '@/components/PageContainer';
 
 export default function AdminCommunities() {
   const { isPlatformAdmin } = useAuth();
@@ -38,7 +39,7 @@ export default function AdminCommunities() {
   };
 
   return (
-    <div className="arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8 flex flex-col gap-6">
+    <PageContainer className="flex flex-col gap-6">
       <div className="mb-1.5 flex items-center gap-3">
         <Button variant="ghost" size="sm" asChild>
           <Link to="/admin"><ArrowLeft className="mr-2 w-4 h-4" /> Voltar ao Painel</Link>
@@ -103,6 +104,6 @@ export default function AdminCommunities() {
           ))
         )}
       </div>
-    </div>
+    </PageContainer>
   );
 }

@@ -6,6 +6,7 @@ import {
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { fetchMetricsData, groupByMonth, groupByField } from '../services/metricsService';
+import PageContainer from '@/components/PageContainer';
 
 export default function AdminMetrics() {
   const { isPlatformAdmin } = useAuth();
@@ -18,7 +19,7 @@ export default function AdminMetrics() {
   }, [isPlatformAdmin]);
 
   if (!isPlatformAdmin) return null;
-  if (loading) return <div className="max-w-5xl mx-auto px-4 py-16 text-center text-muted-foreground">Carregando métricas...</div>;
+  if (loading) return <PageContainer className="py-16 text-center text-muted-foreground">Carregando métricas...</PageContainer>;
 
   const adoptionsByMonth = groupByMonth(data.pets.filter((p) => p.status === 'adopted'), 'adopted_at');
   const usersByMonth = groupByMonth(data.users, 'created_at');
@@ -26,7 +27,7 @@ export default function AdminMetrics() {
   const petsByState = groupByField(data.pets, 'state');
 
   return (
-    <div className="arena-page max-w-5xl mx-auto px-4 py-6 space-y-6">
+    <PageContainer className="space-y-6">
       <h1 className="text-2xl font-bold text-foreground">Métricas da Plataforma</h1>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -95,7 +96,7 @@ export default function AdminMetrics() {
           </ResponsiveContainer>
         </CardContent>
       </Card>
-    </div>
+    </PageContainer>
   );
 }
 

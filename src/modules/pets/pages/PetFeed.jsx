@@ -13,6 +13,7 @@ import { cn } from '@/core/lib/utils';
 import { toast } from 'sonner';
 import PageHero from '@/components/PageHero';
 import { usePlatformSettings } from '@/core/lib/FeatureFlagsContext';
+import PageContainer from '@/components/PageContainer';
 
 const RADIUS_OPTIONS = [5, 10, 25, 50, 100];
 
@@ -261,7 +262,7 @@ export default function PetFeed() {
   }
 
   return (
-    <div className="arena-page mx-auto max-w-6xl px-5 py-5.5 pb-12">
+    <PageContainer className="pb-12">
       <PageHero
         eyebrow="Feed"
         title={`Encontre seu novo melhor amigo${firstName ? `, ${firstName}` : ''}`}
@@ -393,6 +394,6 @@ export default function PetFeed() {
           </>
         )}
       </div>
-    </div>
+    </PageContainer>
   );
 }

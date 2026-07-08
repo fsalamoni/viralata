@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import PageHero from '@/components/PageHero';
+import PageContainer from '@/components/PageContainer';
 
 export default function AdminPlatformSettings() {
   const { isPlatformAdmin, user } = useAuth();
@@ -68,7 +69,7 @@ export default function AdminPlatformSettings() {
   }
 
   return (
-    <div className="arena-page mx-auto flex max-w-6xl flex-col gap-6 px-4 py-6">
+    <PageContainer className="flex flex-col gap-6">
       <PageHero
         eyebrow="Admin"
         title="Configurações globais"
@@ -177,7 +178,7 @@ export default function AdminPlatformSettings() {
           </Card>
         </div>
       </div>
-    </div>
+    </PageContainer>
   );
 }
 

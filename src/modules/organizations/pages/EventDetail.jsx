@@ -25,6 +25,7 @@ import { EventFormDialog } from '@/modules/organizations/components/ClubEventsTa
 import EventDatesPanel from '@/modules/organizations/components/EventDatesPanel';
 import EventParticipantsPanel from '@/modules/organizations/components/EventParticipantsPanel';
 import EventChat from '@/modules/organizations/components/EventChat';
+import PageContainer from '@/components/PageContainer';
 
 function formatDateTime(value) {
   if (!value) return null;
@@ -42,10 +43,10 @@ export default function EventDetail() {
 
   if (isLoading) {
     return (
-      <div className="arena-page mx-auto max-w-4xl space-y-6 px-5 py-6 pb-12">
+      <PageContainer className="space-y-6 pb-12">
         <Skeleton className="h-28 rounded-[2rem]" />
         <Skeleton className="h-64 rounded-[2rem]" />
-      </div>
+      </PageContainer>
     );
   }
 
@@ -54,7 +55,7 @@ export default function EventDetail() {
   // Se não carregou, é porque não existe ou o usuário não tem acesso.
   if (isError || !event) {
     return (
-      <div className="arena-page mx-auto max-w-2xl px-5 py-6 pb-12">
+      <PageContainer className="pb-12">
         <EmptyState
           icon={membership ? CalendarDays : Building2}
           title={membership ? 'Evento não encontrado' : 'Evento indisponível'}
@@ -71,7 +72,7 @@ export default function EventDetail() {
             </Button>
           }
         />
-      </div>
+      </PageContainer>
     );
   }
 
@@ -79,7 +80,7 @@ export default function EventDetail() {
   const when = formatDateTime(event.starts_at);
 
   return (
-    <div className="arena-page mx-auto max-w-4xl space-y-6 px-5 py-6 pb-12">
+    <PageContainer className="space-y-6 pb-12">
       <Button asChild variant="ghost" size="sm">
         <Link to={`/organizacoes/${clubId}?tab=events`}><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para eventos</Link>
       </Button>
@@ -150,6 +151,6 @@ export default function EventDetail() {
       </Tabs>
 
       <EventFormDialog clubId={clubId} event={event} open={editOpen} onClose={() => setEditOpen(false)} />
-    </div>
+    </PageContainer>
   );
 }

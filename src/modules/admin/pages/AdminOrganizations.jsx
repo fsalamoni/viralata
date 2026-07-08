@@ -16,6 +16,13 @@ import { listAdminClubs, updateAdminClub } from '@/modules/admin/services/adminS
 
 import { COMMUNITY_VISIBILITY, COMMUNITY_VISIBILITY_LABELS } from '@/modules/communities/domain/constants';
 import { CLUB_DIRECTORY_STATUS, CLUB_DIRECTORY_STATUS_LABELS, sortCommunities } from '@/modules/communities/domain/directory';
+import {
+  useAdminCommunities,
+  useCreateCommunity,
+  useDeleteCommunity,
+  useUpdateCommunity,
+} from '@/modules/communities/hooks/useCommunities';
+import PageContainer from '@/components/PageContainer';
 
 const COMMUNITY_INITIAL = {
   name: '',
@@ -119,7 +126,7 @@ export default function AdminOrganizations() {
   const featuredClubs = clubs.filter((club) => club.featured).length;
 
   return (
-    <div className="arena-page mx-auto flex max-w-6xl flex-col gap-6 px-4 py-6">
+    <PageContainer className="flex flex-col gap-6">
       <PageHero
         eyebrow="Admin"
         title="Comunidades e organizações"
@@ -383,7 +390,7 @@ export default function AdminOrganizations() {
           </div>
         </TabsContent>
       </Tabs>
-    </div>
+    </PageContainer>
   );
 }
 

@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { Trash2, Eye, CheckCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import PageContainer from '@/components/PageContainer';
 
 export default function AdminPets() {
   const { isPlatformAdmin } = useAuth();
@@ -30,7 +31,7 @@ export default function AdminPets() {
   if (!isPlatformAdmin) return null;
 
   return (
-    <div className="arena-page max-w-5xl mx-auto px-4 py-6 space-y-4">
+    <PageContainer className="space-y-4">
       <h1 className="text-2xl font-bold text-foreground">Gerenciar Pets</h1>
       {loading ? <p className="text-muted-foreground">Carregando...</p> : (
         <div className="space-y-2">
@@ -56,6 +57,6 @@ export default function AdminPets() {
           ))}
         </div>
       )}
-    </div>
+    </PageContainer>
   );
 }

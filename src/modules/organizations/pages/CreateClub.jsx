@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { ImageUpload } from '@/components/ui/image-upload';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { useCreateClub } from '@/modules/organizations/hooks/useClubs';
+import PageContainer from '@/components/PageContainer';
 
 const INITIAL = {
   name: '',
@@ -53,7 +54,8 @@ export default function CreateClub() {
   };
 
   return (
-    <div className="arena-page mx-auto max-w-3xl space-y-6 px-5 py-6 pb-12">
+    <PageContainer className="pb-12">
+      <div className="mx-auto w-full max-w-3xl space-y-6">
       <Button asChild variant="ghost" size="sm">
         <Link to="/organizacoes"><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para organizações</Link>
       </Button>
@@ -166,5 +168,6 @@ export default function CreateClub() {
         </CardContent>
       </Card>
     </div>
+    </PageContainer>
   );
 }

@@ -18,6 +18,7 @@ import { Upload, ArrowLeft, PawPrint } from 'lucide-react';
 import { cn } from '@/core/lib/utils';
 import AdoptionFormBuilder from '../components/AdoptionFormBuilder';
 import { normalizeForm } from '../domain/adoptionForm';
+import PageContainer from '@/components/PageContainer';
 
 const schema = z.object({
   title: z.string().min(5, 'Título muito curto').max(100),
@@ -231,7 +232,8 @@ export default function CreatePet() {
     || (adminClubs.find((c) => c.donation_link)?.donation_link ?? '');
 
   return (
-    <div className="arena-page mx-auto max-w-2xl px-5 pb-24 pt-6">
+    <PageContainer className="pb-24">
+      <div className="mx-auto w-full max-w-2xl">
       <div className="mb-1.5 flex items-center gap-3">
         <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
           <ArrowLeft className="h-4 w-4" />
@@ -500,5 +502,6 @@ export default function CreatePet() {
         </div>
       </form>
     </div>
+    </PageContainer>
   );
 }

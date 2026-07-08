@@ -49,6 +49,7 @@ import ClubForumsTab from '@/modules/organizations/components/ClubForumsTab';
 import ClubPetsDataGrid from '@/modules/organizations/components/ClubPetsDataGrid';
 import RatingBadge from '@/modules/pets/components/RatingBadge';
 import { QrCode } from '@/components/ui/qr-code';
+import PageContainer from '@/components/PageContainer';
 
 // "pets" é público (regras liberam leitura da coleção `pets` a todos); as
 // demais abas exigem associação — as regras do Firestore só permitem ler
@@ -166,43 +167,43 @@ export default function ClubDetail() {
 
   if (isLoading || (isAuthenticated && loadingMembership)) {
     return (
-      <div className="arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8 space-y-6">
+      <PageContainer className="space-y-6">
         <Skeleton className="h-40 rounded-[2rem]" />
         <Skeleton className="h-64 rounded-[2rem]" />
-      </div>
+      </PageContainer>
     );
   }
 
   if (isError || !club) {
     return (
-      <div className="arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8">
+      <PageContainer>
         <EmptyState
           icon={Building2}
           title="ONG não encontrada"
           description="A organização que você procura não existe ou foi removida."
           action={<Button asChild><Link to="/organizacoes">Voltar</Link></Button>}
         />
-      </div>
+      </PageContainer>
     );
   }
 
   if (!isClubPubliclyVisible(club) && !membership) {
     return (
-      <div className="arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8">
+      <PageContainer>
         <EmptyState
           icon={Building2}
           title="Organização indisponível"
           description="Esta organização foi removida temporariamente do diretório público."
           action={<Button asChild><Link to="/organizacoes">Voltar</Link></Button>}
         />
-      </div>
+      </PageContainer>
     );
   }
 
   const location = [club.city, club.state].filter(Boolean).join(' / ');
 
   return (
-    <div className="arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8 space-y-6">
+    <PageContainer className="space-y-6">
       <Button asChild variant="ghost" size="sm">
         <Link to="/organizacoes"><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para organizações</Link>
       </Button>
@@ -410,7 +411,7 @@ export default function ClubDetail() {
         loading={leaveClub.isPending}
         onConfirm={handleLeave}
       />
-    </div>
+    </PageContainer>
   );
 }
 

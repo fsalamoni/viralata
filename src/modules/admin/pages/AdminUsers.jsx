@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toast } from 'sonner';
 import { ShieldOff, ShieldCheck } from 'lucide-react';
+import PageContainer from '@/components/PageContainer';
 
 export default function AdminUsers() {
   const { user, isPlatformAdmin } = useAuth();
@@ -55,7 +56,7 @@ export default function AdminUsers() {
   if (!isPlatformAdmin) return null;
 
   return (
-    <div className="arena-page max-w-5xl mx-auto px-4 py-6 space-y-4">
+    <PageContainer className="space-y-4">
       <h1 className="text-2xl font-bold text-foreground">Gerenciar Usuários</h1>
       <Input
         placeholder="Buscar por nome ou e-mail..."
@@ -95,6 +96,6 @@ export default function AdminUsers() {
           {filtered.length === 0 && <p className="text-center text-muted-foreground py-8">Nenhum usuário encontrado.</p>}
         </div>
       )}
-    </div>
+    </PageContainer>
   );
 }

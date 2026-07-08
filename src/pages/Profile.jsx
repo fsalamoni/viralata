@@ -18,6 +18,7 @@ import { getRatingsForUser, summarizeRatings } from '@/modules/pets/services/rat
 import { exportMyData, downloadDataExport } from '@/core/services/dataExportService';
 import { deleteMyAccount } from '@/core/services/deleteAccountService';
 import PageHero from '@/components/PageHero';
+import PageContainer from '@/components/PageContainer';
 
 const GENDER_OPTIONS = [
   { value: 'male', label: 'Masculino' },
@@ -239,7 +240,7 @@ export default function Profile() {
   }
 
   return (
-    <div className="arena-page mx-auto flex max-w-5xl flex-col gap-6 px-5 py-6 pb-16">
+    <PageContainer className="flex flex-col gap-6 pb-16">
       <PageHero
         eyebrow="Meu perfil"
         title={fullName || user?.email || 'Seu perfil'}
@@ -464,6 +465,6 @@ export default function Profile() {
         loading={deleting}
         onConfirm={handleDeleteAccount}
       />
-    </div>
+    </PageContainer>
   );
 }

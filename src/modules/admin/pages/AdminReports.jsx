@@ -4,6 +4,7 @@ import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import PageContainer from '@/components/PageContainer';
 
 export default function AdminReports() {
   const { isPlatformAdmin } = useAuth();
@@ -18,7 +19,7 @@ export default function AdminReports() {
   if (!isPlatformAdmin) return null;
 
   return (
-    <div className="arena-page max-w-4xl mx-auto px-4 py-6 space-y-4">
+    <PageContainer className="space-y-4">
       <h1 className="text-2xl font-bold text-foreground">Denúncias de Maus-Tratos</h1>
       {loading ? <p className="text-muted-foreground">Carregando...</p> : (
         <div className="space-y-3">
@@ -45,6 +46,6 @@ export default function AdminReports() {
           ))}
         </div>
       )}
-    </div>
+    </PageContainer>
   );
 }

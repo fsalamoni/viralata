@@ -21,6 +21,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, Heart, MapPin, Trash2, Share2, MessageCircle, FileText } from 'lucide-react';
 import { toast } from 'sonner';
+import PageContainer from '@/components/PageContainer';
 
 function useOwnerProfile(ownerId, enabled) {
   return useQuery({
@@ -150,7 +151,7 @@ export default function PetDetail() {
   }
 
   return (
-    <div className="arena-page max-w-4xl mx-auto px-4 py-6 space-y-6">
+    <PageContainer className="space-y-6">
       <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
         <ArrowLeft className="w-4 h-4 mr-1" /> Voltar
       </Button>
@@ -346,6 +347,6 @@ export default function PetDetail() {
       <div style={{ position: 'fixed', top: 0, left: '-99999px', pointerEvents: 'none' }} aria-hidden="true">
         <PetShareCard ref={shareCardRef} pet={pet} shareUrl={`${window.location.origin}/pets/${petId}`} />
       </div>
-    </div>
+    </PageContainer>
   );
 }

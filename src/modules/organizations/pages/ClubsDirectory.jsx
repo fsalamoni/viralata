@@ -31,6 +31,7 @@ import { JOIN_REQUEST_STATUS } from '@/modules/organizations/domain/constants';
 import { cn } from '@/core/lib/utils';
 import { useCommunities } from '@/modules/communities/hooks/useCommunities';
 import { getVisibleCommunityMap } from '@/modules/communities/domain/directory';
+import PageContainer from '@/components/PageContainer';
 
 const RADIUS_OPTIONS = [5, 10, 25, 50, 100];
 
@@ -154,7 +155,7 @@ export default function ClubsDirectory() {
   };
 
   return (
-    <div className="arena-page mx-auto max-w-6xl space-y-8 px-5 py-6 pb-12">
+    <PageContainer className="space-y-8 pb-12">
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-[1.08fr,0.92fr]">
         <Card className="arena-panel-strong overflow-hidden rounded-[1.25rem] border-0 sm:rounded-[2rem]">
           <CardContent className="relative p-5 sm:p-8 lg:p-10">
@@ -394,7 +395,7 @@ export default function ClubsDirectory() {
           </div>
         </section>
       )}
-    </div>
+    </PageContainer>
   );
 }
 

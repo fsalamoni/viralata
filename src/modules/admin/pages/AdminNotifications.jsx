@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import PageHero from '@/components/PageHero';
 import { usePlatformSettings } from '@/core/lib/FeatureFlagsContext';
+import PageContainer from '@/components/PageContainer';
 
 const READ_FILTERS = [
   { value: 'all', label: 'Todas' },
@@ -73,7 +74,7 @@ export default function AdminNotifications() {
   if (!isPlatformAdmin) return <div className="text-center py-16 text-muted-foreground">Acesso restrito.</div>;
 
   return (
-    <div className="arena-page mx-auto max-w-6xl px-4 py-6 space-y-6">
+    <PageContainer className="space-y-6">
       <PageHero
         eyebrow="Admin"
         title="Notificações"
@@ -215,6 +216,6 @@ export default function AdminNotifications() {
           </div>
         </CardContent>
       </Card>
-    </div>
+    </PageContainer>
   );
 }

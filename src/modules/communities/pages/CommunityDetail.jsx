@@ -21,6 +21,7 @@ import MuralTab from '../components/MuralTab';
 import ForumTab from '../components/ForumTab';
 import EventsTab from '../components/EventsTab';
 import AboutTab from '../components/AboutTab';
+import PageContainer from '@/components/PageContainer';
 
 export default function CommunityDetail() {
   const { communityId } = useParams();
@@ -113,26 +114,26 @@ export default function CommunityDetail() {
   if (legacyOrgRedirect) return <Navigate to={`/organizacoes/${communityId}`} replace />;
   if (loading) {
     return (
-      <div className="arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8 space-y-6">
+      <PageContainer className="space-y-6">
         <Skeleton className="h-64 rounded-3xl" />
-      </div>
+      </PageContainer>
     );
   }
   if (!community) {
     return (
-      <div className="arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8">
+      <PageContainer>
         <EmptyState
           icon={Users}
           title="Comunidade não encontrada"
           description="A comunidade que você procura não existe ou foi removida."
           action={<Button asChild><Link to="/comunidade">Voltar para comunidades</Link></Button>}
         />
-      </div>
+      </PageContainer>
     );
   }
 
   return (
-    <div className="arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8 space-y-6">
+    <PageContainer className="space-y-6">
       <Button variant="ghost" size="sm" asChild>
         <Link to="/comunidade"><ArrowLeft className="mr-2 w-4 h-4" /> Voltar</Link>
       </Button>
@@ -195,6 +196,6 @@ export default function CommunityDetail() {
         loading={leaving}
         onConfirm={handleLeave}
       />
-    </div>
+    </PageContainer>
   );
 }
