@@ -36,20 +36,20 @@ const TABS = [
 export default function OrganizationAdminPanel() {
   const { orgId } = useParams();
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const { data: club, isLoading: loadingClub } = useClub(orgId);
   const { data: membership, isLoading: loadingMembership } = useMyMembership(orgId);
   const [searchParams, setSearchParams] = useSearchParams();
 
   const isLoading = loadingClub || loadingMembership;
-  const isAdmin = membership?.role === CLUB_ROLE.ADMIN;
-  const owner = isClubOwner(club, membership);
-  const canAccess = hasAnyClubPermission(club, membership);
+  const isAdmin = isClubOwner(club, membership, user?.uid) || membership?.role === CLUB_ROLE.ADMIN;
+  const owner = isClubOwner(club, membership, user?.uid);
+  const canAccess = hasAnyClubPermission(club, membership, user?.uid);
 
   const visibleTabs = useMemo(() => TABS.filter((tab) => {
     if (tab.permission === null) return true;
     if (tab.permission === 'admin_only') return isAdmin;
-    return hasClubPermission(club, membership, tab.permission);
+    return hasClubPermission(club, membership, tab.permission, user?.uid);
   }), [club, membership, isAdmin]);
 
   const requestedTab = searchParams.get('tab') || 'overview';

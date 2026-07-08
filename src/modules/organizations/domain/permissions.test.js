@@ -1,70 +1,143 @@
+/**
+ * @fileoverview Testes para as funções de permissão de organização (ONG).
+ *
+ * Regressão crítica: organizações LEGADAS cujo criador não foi inserido em
+ * `organization_members` (criadas em versão antiga do createClub que não
+ * fazia o auto-insert). Sem fallback pelo `created_by`, o criador fica
+ * sem acesso ao painel admin.
+ */
 import { describe, it, expect } from 'vitest';
-import { isClubOwner, hasClubPermission, hasAnyClubPermission, effectiveClubPermissions } from './permissions.js';
-import { CLUB_ROLE } from './constants.js';
+import {
+  isClubOwner,
+  hasClubPermission,
+  hasAnyClubPermission,
+  effectiveClubPermissions,
+} from '@/modules/organizations/domain/permissions';
+import { CLUB_PERMISSION, CLUB_ROLE } from '@/modules/organizations/domain/constants';
 
-const club = { id: 'club1', created_by: 'owner-uid' };
+const owner = 'user_owner_321';
+const admin = 'user_admin_654';
+const member = 'user_member_987';
+const visitor = 'user_visitor_000';
 
-describe('organizations/permissions domain', () => {
-  describe('isClubOwner', () => {
-    it('is true when membership.user_id matches club.created_by', () => {
-      expect(isClubOwner(club, { user_id: 'owner-uid' })).toBe(true);
-    });
-    it('is false for any other member', () => {
-      expect(isClubOwner(club, { user_id: 'someone-else' })).toBe(false);
-    });
-    it('is false without a membership', () => {
-      expect(isClubOwner(club, null)).toBe(false);
-    });
+const legacyOrg = {
+  id: 'org_legacy_1',
+  name: 'ONG Legada',
+  created_by: owner,
+  // organization_members/<org_legacy_1>_<owner> NÃO existe
+};
+
+const modernOrg = {
+  id: 'org_modern_1',
+  name: 'ONG Moderna',
+  created_by: owner,
+};
+
+const ownerMembership = {
+  org_id: 'org_modern_1',
+  user_id: owner,
+  role: CLUB_ROLE.ADMIN,
+};
+
+const adminMembership = {
+  org_id: 'org_modern_1',
+  user_id: admin,
+  role: CLUB_ROLE.ADMIN,
+};
+
+const memberWithAnimalPerm = {
+  org_id: 'org_modern_1',
+  user_id: member,
+  role: CLUB_ROLE.MEMBER,
+  permissions: { [CLUB_PERMISSION.ANIMALS]: true },
+};
+
+describe('isClubOwner — fallback por currentUserUid', () => {
+  it('detecta owner via created_by === currentUserUid (sem membership)', () => {
+    expect(isClubOwner(legacyOrg, null, owner)).toBe(true);
   });
 
-  describe('hasClubPermission', () => {
-    it('owner always has every permission, regardless of the permissions map', () => {
-      const owner = { user_id: 'owner-uid', role: CLUB_ROLE.ADMIN, permissions: { animals: false } };
-      expect(hasClubPermission(club, owner, 'animals')).toBe(true);
-      expect(hasClubPermission(club, owner, 'finance')).toBe(true);
-    });
-    it('a legacy admin without an explicit permissions map has full access', () => {
-      const legacyAdmin = { user_id: 'admin-2', role: CLUB_ROLE.ADMIN };
-      expect(hasClubPermission(club, legacyAdmin, 'donations')).toBe(true);
-    });
-    it('an admin with an explicit permissions map is limited to the granted keys', () => {
-      const scopedAdmin = { user_id: 'admin-3', role: CLUB_ROLE.ADMIN, permissions: { finance: true, team: false } };
-      expect(hasClubPermission(club, scopedAdmin, 'finance')).toBe(true);
-      expect(hasClubPermission(club, scopedAdmin, 'team')).toBe(false);
-      expect(hasClubPermission(club, scopedAdmin, 'animals')).toBe(false);
-    });
-    it('a regular member has no permission by default', () => {
-      const member = { user_id: 'member-1', role: CLUB_ROLE.MEMBER };
-      expect(hasClubPermission(club, member, 'animals')).toBe(false);
-    });
-    it('a regular member can be granted a single permission', () => {
-      const member = { user_id: 'member-1', role: CLUB_ROLE.MEMBER, permissions: { animals: true } };
-      expect(hasClubPermission(club, member, 'animals')).toBe(true);
-      expect(hasClubPermission(club, member, 'finance')).toBe(false);
-    });
-    it('honors the legacy edit_pets field as an alias for animals', () => {
-      const member = { user_id: 'member-2', role: CLUB_ROLE.MEMBER, permissions: { edit_pets: true } };
-      expect(hasClubPermission(club, member, 'animals')).toBe(true);
-    });
+  it('mantém compat com assinatura antiga (membership only)', () => {
+    expect(isClubOwner(modernOrg, ownerMembership)).toBe(true);
+    expect(isClubOwner(modernOrg, adminMembership)).toBe(false);
   });
 
-  describe('hasAnyClubPermission', () => {
-    it('is true for the owner and for any admin', () => {
-      expect(hasAnyClubPermission(club, { user_id: 'owner-uid', role: CLUB_ROLE.ADMIN })).toBe(true);
-      expect(hasAnyClubPermission(club, { user_id: 'admin-2', role: CLUB_ROLE.ADMIN })).toBe(true);
-    });
-    it('is true for a member with at least one granted permission', () => {
-      expect(hasAnyClubPermission(club, { user_id: 'm', role: CLUB_ROLE.MEMBER, permissions: { feed: true } })).toBe(true);
-    });
-    it('is false for a member with no permissions', () => {
-      expect(hasAnyClubPermission(club, { user_id: 'm', role: CLUB_ROLE.MEMBER })).toBe(false);
-    });
+  it('visitante não é owner', () => {
+    expect(isClubOwner(legacyOrg, null, visitor)).toBe(false);
+  });
+});
+
+describe('hasClubPermission — owner tem permissão sem membership', () => {
+  it('owner (legacy org, sem membership) tem permissão de animals', () => {
+    expect(hasClubPermission(legacyOrg, null, CLUB_PERMISSION.ANIMALS, owner)).toBe(true);
   });
 
-  describe('effectiveClubPermissions', () => {
-    it('returns all 5 keys for the owner', () => {
-      const perms = effectiveClubPermissions(club, { user_id: 'owner-uid' });
-      expect(perms).toEqual({ animals: true, finance: true, donations: true, feed: true, team: true });
-    });
+  it('owner (legacy org, sem membership) tem permissão de donations', () => {
+    expect(hasClubPermission(legacyOrg, null, CLUB_PERMISSION.DONATIONS, owner)).toBe(true);
+  });
+
+  it('owner (legacy org, sem membership) tem permissão de team', () => {
+    expect(hasClubPermission(legacyOrg, null, CLUB_PERMISSION.TEAM, owner)).toBe(true);
+  });
+
+  it('admin (role=admin sem permissions explícito) tem todas as permissões', () => {
+    expect(hasClubPermission(modernOrg, adminMembership, CLUB_PERMISSION.ANIMALS, admin)).toBe(true);
+    expect(hasClubPermission(modernOrg, adminMembership, CLUB_PERMISSION.FINANCE, admin)).toBe(true);
+  });
+
+  it('membro com permissão granular específica pode', () => {
+    expect(hasClubPermission(modernOrg, memberWithAnimalPerm, CLUB_PERMISSION.ANIMALS, member)).toBe(true);
+    expect(hasClubPermission(modernOrg, memberWithAnimalPerm, CLUB_PERMISSION.FINANCE, member)).toBe(false);
+  });
+
+  it('visitante aleatório NÃO pode', () => {
+    expect(hasClubPermission(legacyOrg, null, CLUB_PERMISSION.ANIMALS, visitor)).toBe(false);
+  });
+
+  it('suporta campo legado edit_pets na chave animals', () => {
+    const legacyPerm = { edit_pets: true };
+    const legacyPermMember = { ...memberWithAnimalPerm, permissions: legacyPerm };
+    expect(hasClubPermission(modernOrg, legacyPermMember, CLUB_PERMISSION.ANIMALS, member)).toBe(true);
+  });
+});
+
+describe('hasAnyClubPermission — owner tem acesso sem membership', () => {
+  it('owner de ONG legacy (sem membership) tem acesso (canAccess=true)', () => {
+    expect(hasAnyClubPermission(legacyOrg, null, owner)).toBe(true);
+  });
+
+  it('visitante NÃO tem acesso', () => {
+    expect(hasAnyClubPermission(legacyOrg, null, visitor)).toBe(false);
+  });
+
+  it('admin tem acesso', () => {
+    expect(hasAnyClubPermission(modernOrg, adminMembership, admin)).toBe(true);
+  });
+
+  it('membro com permissão granular tem acesso', () => {
+    expect(hasAnyClubPermission(modernOrg, memberWithAnimalPerm, member)).toBe(true);
+  });
+});
+
+describe('effectiveClubPermissions — owner sem membership tem todas ON', () => {
+  it('owner (legacy) tem todas as permissões ON', () => {
+    const perms = effectiveClubPermissions(legacyOrg, null, owner);
+    expect(perms[CLUB_PERMISSION.ANIMALS]).toBe(true);
+    expect(perms[CLUB_PERMISSION.FINANCE]).toBe(true);
+    expect(perms[CLUB_PERMISSION.DONATIONS]).toBe(true);
+    expect(perms[CLUB_PERMISSION.FEED]).toBe(true);
+    expect(perms[CLUB_PERMISSION.TEAM]).toBe(true);
+  });
+
+  it('visitante tem todas OFF', () => {
+    const perms = effectiveClubPermissions(legacyOrg, null, visitor);
+    expect(perms[CLUB_PERMISSION.ANIMALS]).toBe(false);
+    expect(perms[CLUB_PERMISSION.FINANCE]).toBe(false);
+  });
+
+  it('membro com permissão granular tem só o que foi granted', () => {
+    const perms = effectiveClubPermissions(modernOrg, memberWithAnimalPerm, member);
+    expect(perms[CLUB_PERMISSION.ANIMALS]).toBe(true);
+    expect(perms[CLUB_PERMISSION.FINANCE]).toBe(false);
   });
 });

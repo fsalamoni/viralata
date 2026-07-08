@@ -12,6 +12,13 @@ export default defineConfig(({ mode }) => {
       react(),
       VitePWA({
         registerType: 'autoUpdate',
+        injectRegister: 'auto',
+        // skipWaiting + clientsClaim: novo Service Worker assume controle
+        // IMEDIATAMENTE ao ser instalado (em vez de esperar todas as abas
+        // fecharem). Resolve o problema clássico de "deploy novo mas o
+        // usuário ainda vê o bundle velho cacheado pelo SW antigo".
+        skipWaiting: true,
+        clientsClaim: true,
         includeAssets: ['favicon.svg', 'apple-touch-icon.png', 'pwa-192.png', 'pwa-512.png'],
         manifest: {
           name: 'Viralata - Adoção Responsável',
@@ -41,6 +48,9 @@ export default defineConfig(({ mode }) => {
             '**/*.png',
             '**/*.svg',
           ],
+          // navigateFallbackDenylist: rotas de API/SW continuam via Firebase
+          // Hosting, não caem no fallback do Workbox.
+          navigateFallbackDenylist: [/^\/api/, /^\/sw\.js$/],
         },
       }),
     ],
