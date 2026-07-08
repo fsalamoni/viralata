@@ -78,6 +78,11 @@ export default function InterestPanel({ petId, pet }) {
     </div>
   );
 
+  // Esconde o botão 'Conversar' / 'Chat' / 'Adotado!' quando o interessado é
+  // o próprio usuário atual. Defesa em profundidade — o createInterest já
+  // bloqueia self-interest novo, mas dados legados podem ter passado.
+  const isSelfInterest = (interest) => Boolean(user?.uid && interest?.user_id === user.uid);
+
   const petHasForm = hasQuestions(pet?.adoption_form);
 
   return (
@@ -94,7 +99,7 @@ export default function InterestPanel({ petId, pet }) {
               <div className="mt-0.5">{STATUS_BADGE[interest.status]}</div>
             </div>
             <div className="flex gap-1.5 flex-shrink-0">
-              {interest.status === 'pending' && (
+              {interest.status === 'pending' && !isSelfInterest(interest) && (
                 <>
                   <Button size="sm" variant="outline" onClick={() => handleOpenChat(interest)}>
                     <MessageCircle className="w-3.5 h-3.5 mr-1" /> Conversar
@@ -104,7 +109,7 @@ export default function InterestPanel({ petId, pet }) {
                   </Button>
                 </>
               )}
-              {interest.status === 'chat_opened' && (
+              {interest.status === 'chat_opened' && !isSelfInterest(interest) && (
                 <>
                   <Button size="sm" variant="outline" onClick={() => handleOpenChat(interest)}>
                     <MessageCircle className="w-3.5 h-3.5 mr-1" /> Chat
@@ -113,6 +118,9 @@ export default function InterestPanel({ petId, pet }) {
                     <CheckCircle className="w-3.5 h-3.5 mr-1" /> Adotado!
                   </Button>
                 </>
+              )}
+              {isSelfInterest(interest) && (
+                <span className="text-xs text-muted-foreground italic">Você mesmo</span>
               )}
             </div>
           </div>

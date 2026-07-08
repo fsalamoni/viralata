@@ -70,6 +70,42 @@ export function subscribePlatformSettings(cb) {
  * @param {boolean} enabled
  * @param {object} actor — usuário autenticado (para auditoria)
  */
+/**
+ * Versão da migração de flags. Mantida sincronizada com
+ * `FeatureFlagsContext.migrateLegacyFlags`. Aumentar quando a lógica de
+ * upgrade mudar.
+ */
+export const FLAGS_MIGRATION_VERSION = 2;
+
+/**
+ * Marca a migração de flags como aplicada no doc `platform_settings/global`.
+ * Chamada automaticamente pelo AdminFlags (uma vez por sessão, no mount)
+ * e por setFeatureFlag. Idempotente.
+ */
+export async function markFlagsMigrationApplied(actor = null) {
+  try {
+    await setDoc(
+      settingsRef(),
+      {
+        _migrations: { flags: FLAGS_MIGRATION_VERSION },
+        updated_at: serverTimestamp(),
+      },
+      { merge: true },
+    );
+    if (actor) {
+      await createAuditLog({
+        action: 'platform_flags_migration_acknowledged',
+        actor,
+        details: { version: FLAGS_MIGRATION_VERSION },
+      });
+    }
+  } catch (err) {
+    // Não-bloqueante: a migração client-side continua aplicando defaults
+    // a cada load até o marker conseguir ser gravado.
+    console.warn('[platform] markFlagsMigrationApplied failed:', err?.message);
+  }
+}
+
 export async function setFeatureFlag(flagKey, enabled, actor) {
   if (!Object.values(FEATURE_FLAG).includes(flagKey)) {
     throw new Error(`Feature flag desconhecida: ${flagKey}`);
@@ -78,6 +114,7 @@ export async function setFeatureFlag(flagKey, enabled, actor) {
     settingsRef(),
     {
       feature_flags: { [flagKey]: Boolean(enabled) },
+      _migrations: { flags: FLAGS_MIGRATION_VERSION },
       updated_at: serverTimestamp(),
     },
     { merge: true },
