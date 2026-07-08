@@ -75,20 +75,6 @@
       ]
     },
     {
-      "collectionGroup": "organization_members",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "org_id",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "joined_at",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
       "collectionGroup": "abuse_reports",
       "queryScope": "COLLECTION",
       "fields": [

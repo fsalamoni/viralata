@@ -16,16 +16,27 @@ Pilares:
    matching por compatibilidade com o perfil do adotante (moradia, rotina,
    orçamento, filhos/idosos em casa), cadastro/edição de pet, interesse de
    adoção, avaliação pós-adoção, radar de pet compatível (alerta), denúncia
-   de maus-tratos.
-2. **Organizações** — ONGs e lojas parceiras: diretório e perfil público
-   (`/comunidade`), hub de gestão e painel de administração
-   (`/organizacoes`) com permissões granulares por administrador (animais,
-   financeiro, doações, mural, equipe), planilha de animais em massa
-   (edição inline + importação/exportação .xlsx/.csv/.json), chamados de
-   doação, prestação de contas, mural, fórum (com enquetes) e eventos.
-3. **Notificações in-app** (sino, painel dropdown) e **auditoria** de ações.
-4. **Painel administrativo da plataforma** (`platform_admin`): pets,
-   organizações, denúncias, usuários, métricas, trilha de auditoria.
+   de maus-tratos. O feed usa UMA única query no Firestore (status +
+   created_at) e aplica espécie/porte/cidade/raio client-side
+   (`pets/domain/feedFilters.js`) — nunca adicionar `where` extra sem
+   pensar no índice composto correspondente.
+2. **Organizações** — ONGs e lojas parceiras, tudo sob `/organizacoes`:
+   diretório público (`/organizacoes`), perfil público
+   (`/organizacoes/:id`, com pets para adoção, campanhas ativas e abas de
+   membros/eventos/mural/fóruns para membros), eventos
+   (`/organizacoes/:id/eventos/:eventId`), hub de gestão
+   (`/organizacoes/hub`) e painel de administração
+   (`/organizacoes/:id/admin`) com permissões granulares por administrador
+   (animais, financeiro, doações, mural, equipe), planilha de animais em
+   massa (edição inline + importação/exportação .xlsx/.csv/.json),
+   chamados de doação e prestação de contas.
+3. **Comunidades** (`/comunidade`) — grupos de usuários independentes das
+   organizações: mural (posts com curtidas e comentários), fórum (tópicos
+   e respostas), eventos, ingresso aberto ou por código de convite.
+4. **Notificações in-app** (sino, painel dropdown) e **auditoria** de ações.
+5. **Painel administrativo da plataforma** (`platform_admin`): pets,
+   organizações, comunidades, denúncias, usuários, métricas, trilha de
+   auditoria.
 
 ## 2. Stack
 
@@ -71,7 +82,8 @@ src/
 │                                 # deleteAccountService
 └── modules/
     ├── pets/           # feed, detalhe, cadastro/edição, radar, avaliações, matching
-    ├── organizations/  # organizações: diretório público + hub/painel de gestão
+    ├── organizations/  # organizações: diretório/perfil público + hub/painel de gestão
+    ├── communities/    # comunidades de usuários: mural, fórum, eventos, convite
     ├── onboarding/     # questionário de perfil de adotante
     ├── chat/           # conversas 1:1 e grupo
     ├── notifications/  # hook + painel dropdown do sino
@@ -113,20 +125,30 @@ Convenção de camadas por módulo (nem todo módulo tem todas):
 | `/feed` `/pets/:petId` | público (match usa perfil se logado) | feed de pets, detalhe |
 | `/onboarding` | autenticado, perfil incompleto | questionário de adotante |
 | `/pets/new` `/pets/:petId/edit` `/meus-pets` `/radar` | autenticado | cadastro/edição, meus pets, radar |
-| `/comunidade` `/comunidade/:orgId` `/comunidade/:orgId/eventos/:eventId` | público (diretório) / autenticado (perfil, eventos) | diretório e perfil público de organizações |
-| `/organizacoes` `/organizacoes/criar` `/organizacoes/:orgId/admin` | autenticado | hub de gestão + painel de administração |
+| `/comunidade` | público (diretório) / autenticado (detalhe) | comunidades (grupos de usuários): mural, fórum, eventos |
+| `/comunidade/criar` `/comunidade/:communityId` | autenticado | criar comunidade, detalhe da comunidade |
+| `/organizacoes` `/organizacoes/:orgId` | público | diretório e perfil público de ONGs |
+| `/organizacoes/hub` `/organizacoes/criar` `/organizacoes/:orgId/admin` `/organizacoes/:orgId/eventos/:eventId` | autenticado | hub de gestão, criação, painel de administração, evento |
 | `/chat` `/chat/:conversationId` | autenticado | mensagens |
 | `/denuncias/nova` | autenticado | denúncia de maus-tratos |
 | `/perfil` | autenticado | dados pessoais, perfil de adotante, LGPD |
-| `/admin` `/admin/pets` `/admin/denuncias` `/admin/usuarios` `/admin/organizacoes` `/admin/metricas` `/admin/auditoria` | `platform_admin` | painel administrativo |
+| `/admin` `/admin/pets` `/admin/denuncias` `/admin/usuarios` `/admin/organizacoes` `/admin/comunidades` `/admin/metricas` `/admin/auditoria` `/admin/notificacoes` `/admin/configuracoes` | `platform_admin` | painel administrativo |
 
 Guards: `ProtectedRoute` (auth), `AdminRoute` (`platform_admin`),
 `BannedGate` (bloqueia usuário banido em qualquer rota autenticada).
 Redirects legados: `/inicio`→`/feed`, `/clubes`→`/comunidade`,
-`/atletas`→`/feed`; `/organizacoes/:orgId` (antigo destino do perfil
-público) e `/organizacoes/:orgId/eventos/:eventId` redirecionam para
-`/comunidade/...` — preserva links de notificações antigas já gravadas no
-Firestore. Páginas via `React.lazy`. `basename = import.meta.env.BASE_URL`.
+`/atletas`→`/feed`; `/comunidade/:orgId/eventos/:eventId` (antigo caminho
+dos eventos de organização) redireciona para
+`/organizacoes/:orgId/eventos/:eventId`, e links antigos
+`/comunidade/{orgId}` de notificações são resolvidos pelo fallback do
+`CommunityDetail` (detecta id de organização e redireciona) — preserva
+links já gravados no Firestore. Páginas via `React.lazy`.
+`basename = import.meta.env.BASE_URL`.
+
+Layout: todas as páginas internas usam o container canônico
+`src/components/PageContainer.jsx` (mesma largura/paddings do trilho do
+header — ver `docs/DESIGN_SYSTEM.md`, seção 7); `Home`, `Login` e
+`OnboardingQuestionnaire` são standalone (full-bleed).
 
 ## 6. Modelo de dados (Firestore, database `viralata`)
 
@@ -144,6 +166,11 @@ campos em `docs/DATA_MODEL.md`.
   `messages`, `participants`) · `club_event_rsvps` · `event_invites` ·
   `club_campaigns` (chamados de doação) · `club_ledger` (prestação de
   contas).
+- **Comunidades** (grupos de usuários): `communities` (com `owner_id` e
+  `invite_code`) · `community_members` (id `communityId_uid`) ·
+  `community_posts` · `community_post_likes` (id `postId_uid`) ·
+  `community_post_comments` · `community_forum_threads` ·
+  `community_forum_messages` · `community_events`.
 - **Chat**: `conversations` · `messages`.
 - **Transversal**: `notifications` · `audit_logs` · `abuse_reports` ·
   `platform_settings/global` (feature flags).

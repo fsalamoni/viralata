@@ -36,19 +36,21 @@ avaliação pós-adoção opcional.
 ## organizations/ — organizações (ONGs e lojas parceiras)
 
 Maior módulo do app. Nomes de arquivo ainda usam "Club" (herança de um
-fork anterior), mas a UI chama isso de "Organizações". Duas áreas de
-navegação distintas sobre o mesmo domínio:
-- **Comunidade** (`/comunidade`, `/comunidade/:id`) — diretório e perfil
-  público, aberto a todos: busca, ingressar por código/pedido, abas
-  Membros/Eventos/Mural/Fóruns.
-- **Organizações** (`/organizacoes`, `/organizacoes/:id/admin`) — hub de
+fork anterior), mas a UI chama isso de "Organizações". Tudo vive sob
+`/organizacoes` (a rota `/comunidade` pertence ao módulo standalone de
+comunidades — ver abaixo):
+- **Público** (`/organizacoes`, `/organizacoes/:id`) — diretório e perfil,
+  abertos a todos: busca, pets para adoção, campanhas ativas, ingressar
+  por código/pedido/convite; membros ganham abas
+  Membros/Eventos/Mural/Fóruns (`?tab=` + `?thread=`).
+- **Gestão** (`/organizacoes/hub`, `/organizacoes/:id/admin`) — hub de
   gestão (só quem administra alguma organização) e painel de
   administração, com abas condicionadas por permissão granular.
 
-- **pages**: `ClubsDirectory` (`/comunidade`), `ClubDetail`
-  (`/comunidade/:id`), `CreateClub` (`/organizacoes/criar`),
-  `EventDetail` (`/comunidade/:id/eventos/:eventId`), `OrganizationsHub`
-  (`/organizacoes` — "Minhas organizações" + "Descobrir outras"),
+- **pages**: `ClubsDirectory` (`/organizacoes`), `ClubDetail`
+  (`/organizacoes/:id`), `CreateClub` (`/organizacoes/criar`),
+  `EventDetail` (`/organizacoes/:id/eventos/:eventId`), `OrganizationsHub`
+  (`/organizacoes/hub` — "Minhas organizações" + "Descobrir outras"),
   `OrganizationAdminPanel` (`/organizacoes/:id/admin` — abas Visão Geral,
   Animais, Mural, Doações, Prestação de Contas, Equipe, Configurações).
 - **components**:
@@ -105,7 +107,7 @@ Conversas 1:1 e em grupo, com contexto opcional de pet/adoção.
 - `pages/ChatPage` (`/chat`, `/chat/:conversationId`), `hooks/useChat`,
   `services/chatService`.
 - **components**: `ConversationList`, `ChatWindow`, `MessageBubble`,
-  `ChatComposer`, `NewChatDialog`, `ChatLauncherButton`.
+  `ChatComposer`, `NewChatDialog`.
 - **domain**: `conversations` (resolução/ordenação, testado).
 - Gera notificações `chat_message`/`chat_invite`.
 
@@ -141,13 +143,29 @@ Painel exclusivo de `platform_admin` (`/admin/*`).
   (`user_banned`, `user_unbanned`, `user_account_deleted`,
   `platform_feature_flag_changed`…).
 
-## communities/ — curadoria global
+## communities/ — comunidades de usuários
 
-- Entidade editorial própria para agrupar organizações no diretório público.
+Grupos sociais independentes das organizações (rota `/comunidade`), com a
+mesma entidade `communities` servindo também de vínculo editorial opcional
+para agrupar organizações no diretório (`clubs.community_id`).
+
+- **pages**: `CommunitiesDirectory` (`/comunidade` — busca, ingresso por
+  código de convite), `CommunityDetail` (`/comunidade/:id` — abas Mural /
+  Fórum / Eventos / Sobre, participar/sair; resolve links legados de
+  organização redirecionando para `/organizacoes/:id`), `CreateCommunity`
+  (`/comunidade/criar`).
+- **components**: `MuralTab` (posts com curtidas — doc determinista
+  `postId_uid` — e comentários expansíveis), `ForumTab` (tópicos +
+  respostas), `EventsTab` (eventos da comunidade), `AboutTab` (descrição +
+  código de convite para o dono).
+- **services**: `communityService` (CRUD, membros — id determinista
+  `communityId_uid` —, posts/curtidas/comentários, fórum, eventos,
+  ingresso por `invite_code`, contagem de membros via
+  `getCountFromServer`).
 - **domain**: `constants` (coleção + visibilidade), `directory` (status do
-  diretório, ordenação e filtros públicos).
-- **services/hooks**: CRUD em `communities`, usado no admin e no diretório
-  `/comunidade`.
+  diretório, ordenação e filtros públicos — usado também pelo módulo de
+  organizações).
+- **hooks**: `useCommunities` (diretório/admin CRUD via React Query).
 
 ## Mapa rota → módulo
 
@@ -157,8 +175,8 @@ Painel exclusivo de `platform_admin` (`/admin/*`).
 | `/login` | `pages/Login` |
 | `/onboarding` | `onboarding/pages/OnboardingQuestionnaire` |
 | `/feed`, `/pets/:id`, `/pets/new`, `/pets/:id/edit`, `/meus-pets`, `/radar` | `pets/pages/*` |
-| `/comunidade*` | `organizations/pages/ClubsDirectory`, `ClubDetail`, `EventDetail` |
-| `/organizacoes*` | `organizations/pages/OrganizationsHub`, `CreateClub`, `OrganizationAdminPanel` |
+| `/comunidade`, `/comunidade/criar`, `/comunidade/:id` | `communities/pages/*` |
+| `/organizacoes`, `/organizacoes/:id`, `/organizacoes/hub`, `/organizacoes/criar`, `/organizacoes/:id/admin`, `/organizacoes/:id/eventos/:eventId` | `organizations/pages/*` |
 | `/chat*` | `chat/pages/ChatPage` |
 | `/denuncias/nova` | `reports/pages/CreateReport` |
 | `/perfil` | `pages/Profile` |
