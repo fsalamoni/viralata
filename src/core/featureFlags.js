@@ -20,6 +20,23 @@ export const FEATURE_FLAG = Object.freeze({
    * nenhum card aparece.
    */
   AD_SLOTS: 'ad_slots',
+
+  /**
+   * Correção de confiabilidade do Feed de pets: aplica filtros de espécie,
+   * porte, cidade e raio client-side (em cima de uma única query no Firestore),
+   * substituindo o cruzamento atual de índices compostos que falha com
+   * `failed-precondition`. Enquanto desligada, o Feed original é renderizado
+   * sem qualquer alteração de comportamento.
+   */
+  PET_FEED_RELIABILITY_FIX: 'pet_feed_reliability_fix',
+
+  /**
+   * Mural com curtidas e comentários: habilita o `MuralTabEnhanced`, que
+   * permite curtir/descurtir posts e ler/adicionar/excluir comentários
+   * diretamente na UI. Enquanto desligada, o mural original é renderizado
+   * (somente leitura, sem like/comment).
+   */
+  MURAL_LIKES_AND_COMMENTS: 'mural_likes_and_comments',
 });
 
 /** Metadados de exibição para o painel de flags (admin master). */
@@ -31,6 +48,25 @@ export const FEATURE_FLAG_META = Object.freeze({
       + 'gestão de pets da ONG. Apenas o placeholder visual — não há '
       + 'integração com uma rede de anúncios real. Desligado, nenhum card '
       + 'aparece.',
+  },
+  [FEATURE_FLAG.PET_FEED_RELIABILITY_FIX]: {
+    label: 'Feed de pets · correção de confiabilidade',
+    description:
+      'Aplica os filtros (espécie, porte, cidade, raio) no cliente, sobre '
+      + 'uma única query do Firestore. Elimina o cruzamento de índices '
+      + 'compostos que vinha derrubando o feed com `failed-precondition`. '
+      + 'Quando o filtro de localização zera a lista mas ainda há pets '
+      + 'compatíveis, exibe um banner explicando o fallback e mantém os '
+      + 'pets visíveis. Desligada, o feed original segue intacto.',
+  },
+  [FEATURE_FLAG.MURAL_LIKES_AND_COMMENTS]: {
+    label: 'Mural · curtidas e comentários',
+    description:
+      'Permite curtir/descurtir os posts do mural e ler/adicionar/excluir '
+      + 'comentários diretamente na interface. Usa `community_post_likes` '
+      + 'e `community_post_comments` (já existentes no Firestore). '
+      + 'Desligada, o mural renderiza em modo somente leitura, sem '
+      + 'qualquer alteração no comportamento atual.',
   },
 });
 

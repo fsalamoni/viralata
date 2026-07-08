@@ -106,6 +106,17 @@ const BY_NAME_ONLY = Object.fromEntries(
   Object.entries(BR_CITY_COORDS).map(([key, coords]) => [key.split('|')[0], coords]),
 );
 
+/**
+ * Normaliza texto de cidade para comparação: trim, minúsculas e sem acentos.
+ * Exportado para o filtro do Feed comparar cidades digitadas livremente com
+ * as gravadas nos pets ("São Paulo" ≡ "sao paulo " ≡ "SAO PAULO").
+ * @param {unknown} value
+ * @returns {string}
+ */
+export function normalizePlaceText(value) {
+  return norm(value);
+}
+
 /** Retorna `[lat, lng]` da cidade conhecida (cidade + UF exatos), ou `null` se fora da tabela. */
 export function lookupCityCoords(city, state) {
   return BR_CITY_COORDS[normalizeKey(city, state)] || null;
@@ -117,6 +128,17 @@ export function lookupCityCoords(city, state) {
  */
 export function lookupCityCoordsByName(cityText) {
   return BY_NAME_ONLY[norm(cityText)] || null;
+}
+
+/**
+ * Coordenadas de um pet, com tolerância a dados incompletos: tenta
+ * cidade+UF e, se a UF estiver vazia/errada, cai para a busca só por nome
+ * (segura porque nenhum nome se repete na tabela).
+ * @param {{ city?: string, state?: string }|null|undefined} pet
+ * @returns {[number, number]|null}
+ */
+export function resolvePetCoords(pet) {
+  return lookupCityCoords(pet?.city, pet?.state) || lookupCityCoordsByName(pet?.city);
 }
 
 /** Distância aproximada em km entre duas coordenadas (fórmula de haversine). */
@@ -142,6 +164,32 @@ export function filterPetsByRadius(pets, originCoords, radiusKm) {
     const petCoords = lookupCityCoords(pet.city, pet.state);
     if (!petCoords) return false;
     return haversineKm(originCoords, petCoords) <= radiusKm;
+  });
+}
+
+/**
+ * Variante "amigável" de `filterPetsByRadius`: além do cálculo de distância,
+ * mantém sempre os pets cuja cidade normalizada bate com `originCityText`
+ * (a cidade em que o usuário está buscando). Itens da própria cidade de
+ * origem nunca são descartados, mesmo que sua UF esteja ausente da tabela.
+ *
+ * Retorna `null` se `originCoords` for nulo (semântica idêntica à versão
+ * clássica).
+ *
+ * @param {Array<object>} items
+ * @param {[number, number]|null} originCoords
+ * @param {number} radiusKm
+ * @param {string} [originCityText]
+ * @returns {Array<object>|null}
+ */
+export function filterByRadius(items, originCoords, radiusKm, originCityText = '') {
+  if (!originCoords) return null;
+  const originName = norm(originCityText);
+  return items.filter((item) => {
+    if (originName && norm(item.city) === originName) return true;
+    const coords = resolvePetCoords(item);
+    if (!coords) return false;
+    return haversineKm(originCoords, coords) <= radiusKm;
   });
 }
 
