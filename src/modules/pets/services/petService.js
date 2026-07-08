@@ -83,9 +83,35 @@ export async function createPet(petData, actor) {
   return ref.id;
 }
 
+/**
+ * Verifica se o ator tem permissão direta para editar/deletar o pet.
+ * Para pets individuais, exige `owner_id === actor.uid`. Para pets de ONG e
+ * platform_admin, delega ao Firestore (já tem a regra de
+ * `isClubAdmin || canEditClubPets || hasClubPermission || isPlatformAdmin`).
+ *
+ * Defense-in-depth: chama ANTES do update/delete para dar feedback claro ao
+ * usuário em vez do erro genérico `permission-denied`.
+ *
+ * @throws Error('Você não tem permissão para modificar este pet.')
+ */
+async function ensureCanMutatePet(petId, actor) {
+  if (!db || !petId) return;
+  const snap = await getDoc(doc(db, PETS_COLLECTION, petId));
+  if (!snap.exists()) throw new Error('Pet não encontrado.');
+  const data = snap.data() || {};
+  // Pets individuais: só o dono direto.
+  if (data.owner_type !== 'organization' && data.owner_id !== actor?.uid) {
+    throw new Error('Você não tem permissão para modificar este pet.');
+  }
+  // Platform admin sempre pode (regra do Firestore confirma). Pets de ONG
+  // caem através daqui — a regra do Firestore aplica as checagens granulares
+  // (isClubAdmin / hasClubPermission / etc.) por baixo dos panos.
+}
+
 /** Atualiza dados de um pet. */
 export async function updatePet(petId, updates, actor) {
   if (!db || !petId) throw new Error('Dados inválidos');
+  await ensureCanMutatePet(petId, actor);
   const normalizedUpdates = {
     ...updates,
     updated_at: serverTimestamp(),
@@ -134,6 +160,7 @@ export async function completePetAdoption(petId, adoptedByUid, actor) {
 /** Remove um pet (apenas se ainda disponível). */
 export async function deletePet(petId, actor) {
   if (!db || !petId) throw new Error('Dados inválidos');
+  await ensureCanMutatePet(petId, actor);
   await deleteDoc(doc(db, PETS_COLLECTION, petId));
   await createAuditLog({ action: 'pet_deleted', actor, details: { pet_id: petId } });
 }

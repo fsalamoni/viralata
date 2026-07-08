@@ -37,6 +37,17 @@ export const FEATURE_FLAG = Object.freeze({
    * (somente leitura, sem like/comment).
    */
   MURAL_LIKES_AND_COMMENTS: 'mural_likes_and_comments',
+
+  /**
+   * Explicação de bloqueio de adoção/chat: na página do pet, mostra um card
+   * ("Por que não posso adotar/chat?") listando os motivos do bloqueio
+   * quando o usuário não pode registrar interesse nem abrir conversa com o
+   * responsável (perfil incompleto, pet já adotado/em processo, você é o
+   * dono, etc.). As validações de permissão ficam ativas independente da
+   * flag — ela controla apenas a UX explicativa. Desligada, o usuário
+   * recebe o botão desabilitado sem explicação.
+   */
+  PET_ADOPTION_GATING: 'pet_adoption_gating',
 });
 
 /** Metadados de exibição para o painel de flags (admin master). */
@@ -67,6 +78,16 @@ export const FEATURE_FLAG_META = Object.freeze({
       + 'e `community_post_comments` (já existentes no Firestore). '
       + 'Desligada, o mural renderiza em modo somente leitura, sem '
       + 'qualquer alteração no comportamento atual.',
+  },
+  [FEATURE_FLAG.PET_ADOPTION_GATING]: {
+    label: 'Explicação de bloqueio na adoção/chat',
+    description:
+      'Mostra um card na página do pet com o(s) motivo(s) de o usuário não '
+      + 'conseguir adotar nem abrir chat com o responsável (perfil '
+      + 'incompleto, pet já adotado/em processo, você é o dono, etc.). '
+      + 'As validações de permissão já ficam ativas mesmo com a flag '
+      + 'desligada — ela apenas controla o texto explicativo. Desligada, '
+      + 'o usuário recebe o botão desabilitado sem a explicação.',
   },
 });
 

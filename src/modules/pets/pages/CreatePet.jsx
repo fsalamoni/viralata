@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { useCreatePet, useUpdatePet, usePet } from '../hooks/usePets';
 import { useMyClubs } from '@/modules/organizations/hooks/useClubs';
+import { usePetPermissions } from '../hooks/usePetPermissions';
 import { uploadImage } from '@/core/services/storageService';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -105,6 +106,7 @@ export default function CreatePet() {
   const isEditing = Boolean(petId);
   const { user, userProfile } = useAuth();
   const { data: existingPet, isLoading: loadingPet } = usePet(petId);
+  const permissions = usePetPermissions(existingPet);
   const createPet = useCreatePet();
   const updatePet = useUpdatePet();
   const { data: myClubs = [] } = useMyClubs();
@@ -214,6 +216,23 @@ export default function CreatePet() {
       toast.error(isEditing ? 'Erro ao atualizar pet. Tente novamente.' : 'Erro ao cadastrar pet. Tente novamente.');
     }
   }
+
+  // Guard de edição: se o usuário não tem permissão, redireciona de volta
+  // para a página do pet com mensagem explicativa. Defesa na rota — as regras
+  // do Firestore e a camada de service também bloqueiam, mas aqui evitamos
+  // o usuário preencher um formulário que vai falhar no salvamento.
+  const editingPermissions = useMemo(
+    () => (isEditing && existingPet ? permissions : { canEdit: true, canDelete: true, reason: null }),
+    [isEditing, existingPet, permissions],
+  );
+  useEffect(() => {
+    if (!isEditing) return;
+    if (!existingPet) return;
+    if (!editingPermissions.canEdit) {
+      toast.error(editingPermissions.reason || 'Você não tem permissão para editar este pet.');
+      navigate(`/pets/${petId}`, { replace: true });
+    }
+  }, [isEditing, existingPet, editingPermissions, navigate, petId]);
 
   if (isEditing && loadingPet) {
     return <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>;
