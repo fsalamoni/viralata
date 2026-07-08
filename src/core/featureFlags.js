@@ -111,10 +111,21 @@ export const FEATURE_FLAG_META = Object.freeze({
   },
 });
 
-/** Valor padrão (todas as flags desligadas). */
-export const DEFAULT_FEATURE_FLAGS = Object.freeze(
-  Object.fromEntries(Object.values(FEATURE_FLAG).map((key) => [key, false])),
-);
+/**
+ * Valor padrão das flags. Flags de UX e correção de bug nascem LIGADAS
+ * (já entregam valor: mural com likes, explicação de bloqueio na adoção,
+ * mural admin para criadores de comunidade, e o fix do feed). O admin pode
+ * desligar a qualquer momento no /admin/flags — a chave continua existindo
+ * no Firestore. Flags estruturais/placeholders (ex: AD_SLOTS) nascem
+ * desligadas — não há conteúdo real por trás.
+ */
+export const DEFAULT_FEATURE_FLAGS = Object.freeze({
+  [FEATURE_FLAG.AD_SLOTS]: false,
+  [FEATURE_FLAG.PET_FEED_RELIABILITY_FIX]: true,
+  [FEATURE_FLAG.MURAL_LIKES_AND_COMMENTS]: true,
+  [FEATURE_FLAG.PET_ADOPTION_GATING]: true,
+  [FEATURE_FLAG.MURAL_RICH_POSTS]: true,
+});
 
 /**
  * Normaliza um mapa de flags vindo do Firestore, garantindo booleanos e

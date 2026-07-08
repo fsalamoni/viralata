@@ -3,7 +3,7 @@
  * ID determinístico: `{petId}_{userId}`
  */
 import {
-  doc, getDoc, setDoc, updateDoc, getDocs,
+  doc, getDoc, setDoc, updateDoc, deleteDoc, getDocs,
   collection, query, where, orderBy, serverTimestamp,
 } from 'firebase/firestore';
 import { db } from '@/core/config/firebase';
@@ -27,6 +27,13 @@ export async function createInterest(petId, userId, actor, formAnswers = null) {
 
   const pet = await getPetById(petId);
   if (!pet) throw new Error('Pet não encontrado');
+
+  // Guard: usuário não pode demonstrar interesse no próprio pet (causa
+  // loops de UI — o dono aparece na própria lista de interessados e o botão
+  // "Conversar" tenta abrir chat consigo mesmo).
+  if (pet.owner_id && pet.owner_id === userId) {
+    throw new Error('Você é o responsável por este pet. Demonstre interesse apenas em pets de outros usuários.');
+  }
 
   const payload = {
     pet_id: petId,
@@ -81,6 +88,21 @@ export async function hasInterest(petId, userId) {
   if (!db || !petId || !userId) return false;
   const snap = await getDoc(doc(db, COLLECTION, interestId(petId, userId)));
   return snap.exists();
+}
+
+/**
+ * Remove o interesse do próprio usuário em um pet. Idempotente: se o
+ * documento já não existir, retorna sem erro. Mantém o pet visível no feed
+ * (a remoção do interesse só limpa o registro na coleção `adoption_interests`).
+ */
+export async function deleteInterest(petId, userId) {
+  if (!db || !petId || !userId) throw new Error('Dados inválidos.');
+  await deleteDoc(doc(db, COLLECTION, interestId(petId, userId)));
+  await createAuditLog({
+    action: 'adoption_interest_deleted',
+    actor: { uid: userId },
+    details: { pet_id: petId },
+  });
 }
 
 /** Atualiza o status de um interesse (aprovado, rejeitado, chat aberto). */

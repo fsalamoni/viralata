@@ -20,7 +20,11 @@ const STATUS_BADGE = {
 export default function InterestPanel({ petId, pet }) {
   const { user, userProfile } = useAuth();
   const navigate = useNavigate();
-  const { data: interests = [], isLoading } = useInterestsByPet(petId);
+  const { data: allInterests = [], isLoading } = useInterestsByPet(petId);
+  // Filtra auto-interesse (não exibimos o dono na própria lista — o createInterest
+  // já bloqueia isso, mas mantém o filtro para dados legados). Falhar silencioso:
+  // se algum dado inconsistente escapar, ele só não aparece no painel.
+  const interests = allInterests.filter((it) => it.user_id !== pet?.owner_id);
   const updateStatus = useUpdateInterestStatus();
   const completeAdoption = useCompleteAdoption();
 

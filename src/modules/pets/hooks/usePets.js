@@ -10,6 +10,7 @@ import {
 } from '../services/petService';
 import {
   createInterest, getInterestsByPet, getInterestsByUser, hasInterest, updateInterestStatus,
+  deleteInterest,
 } from '../services/interestService';
 import { getMyRadar, setRadarActive } from '../services/petRadarService';
 import { createRating, getMyRatingForPet } from '../services/ratingService';
@@ -146,6 +147,24 @@ export function useHasInterest(petId, userId) {
     queryFn: () => hasInterest(petId, userId),
     enabled: Boolean(petId && userId),
     staleTime: 1000 * 60 * 5,
+  });
+}
+
+/**
+ * Hook que permite ao próprio usuário remover um interesse que registrou.
+ * Usado na página `Meus Interesses`. O backend (firestore.rules) garante que
+ * só o próprio dono do doc pode deletar.
+ */
+export function useDeleteInterest() {
+  const { user } = useAuth();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (petId) => deleteInterest(petId, user.uid),
+    onSuccess: (_, petId) => {
+      qc.invalidateQueries({ queryKey: ['interests', 'user', user?.uid] });
+      qc.invalidateQueries({ queryKey: ['interests', 'pet', petId] });
+      qc.invalidateQueries({ queryKey: ['interests', 'has', petId, user?.uid] });
+    },
   });
 }
 

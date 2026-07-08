@@ -16,6 +16,7 @@ import MuralTab from '../components/MuralTab';
 import ForumTab from '../components/ForumTab';
 import EventsTab from '../components/EventsTab';
 import AboutTab from '../components/AboutTab';
+import CommunityTeamTab from '../components/CommunityTeamTab';
 
 export default function CommunityDetail() {
   const { communityId } = useParams();
@@ -101,12 +102,22 @@ export default function CommunityDetail() {
           <TabsTrigger value="sobre" className="rounded-lg data-[state=active]:bg-primary">
             <Info className="mr-2 h-4 w-4" /> Sobre
           </TabsTrigger>
+          {canAdmin && (
+            <TabsTrigger value="equipe" className="rounded-lg data-[state=active]:bg-primary">
+              <Users className="mr-2 h-4 w-4" /> Equipe
+            </TabsTrigger>
+          )}
         </TabsList>
 
         <TabsContent value="mural"><MuralTab communityId={communityId} isMember={isMember} isAdmin={isAdmin} membership={membership} community={community} /></TabsContent>
         <TabsContent value="forum"><ForumTab communityId={communityId} /></TabsContent>
         <TabsContent value="eventos"><EventsTab communityId={communityId} isAdmin={isAdmin} membership={membership} community={community} /></TabsContent>
         <TabsContent value="sobre"><AboutTab community={community} /></TabsContent>
+        {canAdmin && (
+          <TabsContent value="equipe">
+            <CommunityTeamTab community={community} membership={membership} />
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   );
