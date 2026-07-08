@@ -1,5 +1,5 @@
 import React, { Suspense, lazy, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useLocation, useParams } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider, useAuth } from '@/core/lib/FirebaseAuthContext';
 import { FeatureFlagsProvider } from '@/core/lib/FeatureFlagsContext';
@@ -33,6 +33,7 @@ const OrganizationsHub = lazy(() => import('@/modules/organizations/pages/Organi
 const CreateOrganization = lazy(() => import('@/modules/organizations/pages/CreateClub'));
 const OrganizationDetail = lazy(() => import('@/modules/organizations/pages/ClubDetail'));
 const OrganizationAdminPanel = lazy(() => import('@/modules/organizations/pages/OrganizationAdminPanel'));
+const EventDetail = lazy(() => import('@/modules/organizations/pages/EventDetail'));
 
 // ─── Comunidades ──────────────────────────────────────────────────────────────
 const CommunitiesDirectory = lazy(() => import('@/modules/communities/pages/CommunitiesDirectory'));
@@ -130,22 +131,6 @@ function withLayout(pageName, Component) {
   );
 }
 
-// ─── Redirects legados (Organizações) ────────────────────────────────────────
-// `/organizacoes/:orgId` passou a ser o hub de gestão; o perfil público da
-// organização (o antigo destino desta rota) agora vive em `/comunidade/:orgId`.
-// Notificações antigas já gravadas no Firestore ainda apontam para o caminho
-// anterior — estes redirects preservam esses links.
-function LegacyOrgDetailRedirect() {
-  const { orgId } = useParams();
-  const location = useLocation();
-  return <Navigate to={`/comunidade/${orgId}${location.search}`} replace />;
-}
-
-function LegacyOrgEventRedirect() {
-  const { orgId, eventId } = useParams();
-  return <Navigate to={`/comunidade/${orgId}/eventos/${eventId}`} replace />;
-}
-
 function RouteTelemetry() {
   const location = useLocation();
   useEffect(() => {
@@ -218,6 +203,10 @@ export default function App() {
                   path="/comunidade/:communityId"
                   element={<ProtectedRoute>{withLayout('CommunityDetail', CommunityDetail)}</ProtectedRoute>}
                 />
+                <Route
+                  path="/comunidade/:communityId"
+                  element={<ProtectedRoute>{withLayout('CommunityDetail', CommunityDetail)}</ProtectedRoute>}
+                />
                 <Route path="/comunidade/:communityId/admin" element={<ProtectedRoute>{withLayout('CommunityAdminPanel', CommunityAdminPanel)}</ProtectedRoute>} />
 
 
@@ -236,6 +225,10 @@ export default function App() {
                   element={<ProtectedRoute>{withLayout('OrganizationAdminPanel', OrganizationAdminPanel)}</ProtectedRoute>}
                 />
                 <Route path="/organizacoes/:orgId" element={<ProtectedRoute>{withLayout('OrganizationDetail', OrganizationDetail)}</ProtectedRoute>} />
+                <Route
+                  path="/organizacoes/:orgId/eventos/:eventId"
+                  element={<ProtectedRoute>{withLayout('EventDetail', EventDetail)}</ProtectedRoute>}
+                />
 
                 {/* ── Chat ─────────────────────────────────────────────── */}
                 <Route

@@ -65,7 +65,7 @@ export default function EventDetail() {
           }
           action={
             <Button asChild>
-              <Link to={membership ? `/comunidade/${clubId}?tab=events` : `/comunidade/${clubId}`}>
+              <Link to={membership ? `/organizacoes/${clubId}?tab=events` : `/organizacoes/${clubId}`}>
                 {membership ? 'Voltar para eventos' : 'Ir para a organização'}
               </Link>
             </Button>
