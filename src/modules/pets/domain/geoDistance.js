@@ -150,3 +150,22 @@ export function haversineKm([lat1, lng1], [lat2, lng2]) {
 export function hasKnownCoords(cityText) {
   return lookupCityCoordsByName(cityText) !== null;
 }
+
+/**
+ * Filtra itens com `city`/`state` (pets, organizações) para os que estão a
+ * até `radiusKm` de `originCoords`. Itens registrados na própria cidade de
+ * origem (`originCityText`, comparação normalizada) são mantidos mesmo sem
+ * coordenadas na tabela — nunca se descarta às cegas quem está na cidade em
+ * que se busca. Itens de outras cidades fora da tabela ficam de fora do
+ * cálculo (limitação documentada no topo do arquivo).
+ */
+export function filterByRadius(items, originCoords, radiusKm, originCityText = '') {
+  if (!originCoords) return null;
+  const originName = norm(originCityText);
+  return items.filter((item) => {
+    if (originName && norm(item.city) === originName) return true;
+    const coords = resolvePetCoords(item);
+    if (!coords) return false;
+    return haversineKm(originCoords, coords) <= radiusKm;
+  });
+}

@@ -18,7 +18,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
-import { hasKnownCoords, lookupCityCoordsByName, filterPetsByRadius } from '@/modules/pets/domain/geoDistance';
+import { hasKnownCoords, lookupCityCoordsByName, filterByRadius } from '@/modules/pets/domain/geoDistance';
 import {
   useClubs,
   useMyClubs,
@@ -128,7 +128,7 @@ export default function ClubsDirectory() {
     }
     if (radiusActive) {
       const origin = lookupCityCoordsByName(trimmedCity);
-      list = filterPetsByRadius(list, origin, radius) ?? list;
+      list = filterByRadius(list, origin, radius, trimmedCity) ?? list;
     } else if (trimmedCity) {
       const cityQ = trimmedCity.toLowerCase();
       list = list.filter((c) => String(c.city || '').toLowerCase().includes(cityQ));

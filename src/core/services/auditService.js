@@ -52,6 +52,8 @@ export const AUDIT_ACTION_LABELS = {
   community_deleted: 'Comunidade excluída',
   community_post_created: 'Post publicado na comunidade',
   community_post_deleted: 'Post removido da comunidade',
+  community_event_created: 'Evento criado na comunidade',
+  community_event_deleted: 'Evento removido da comunidade',
 };
 
 export async function createAuditLog({

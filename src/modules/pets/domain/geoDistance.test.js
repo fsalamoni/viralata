@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import {
-  lookupCityCoords, lookupCityCoordsByName, haversineKm, resolvePetCoords, hasKnownCoords, normalizePlaceText,
+  lookupCityCoords, lookupCityCoordsByName, haversineKm, resolvePetCoords, hasKnownCoords, normalizePlaceText, filterByRadius,
 } from './geoDistance.js';
 
 describe('pets/geoDistance domain', () => {
@@ -65,6 +65,36 @@ describe('pets/geoDistance domain', () => {
     });
     it('returns null for a city outside the table', () => {
       expect(resolvePetCoords({ city: 'Cidade Fora Da Tabela', state: 'XX' })).toBeNull();
+    });
+  });
+
+  describe('filterByRadius', () => {
+    const items = [
+      { id: 'sp', city: 'São Paulo', state: 'SP' },
+      { id: 'campinas', city: 'Campinas', state: 'SP' }, // ~95km de SP
+      { id: 'rio', city: 'Rio de Janeiro', state: 'RJ' }, // ~360km de SP
+      { id: 'interior', city: 'Holambra', state: 'SP' }, // fora da tabela
+    ];
+    const origin = lookupCityCoordsByName('São Paulo');
+
+    it('returns null when there is no origin coordinate', () => {
+      expect(filterByRadius(items, null, 50)).toBeNull();
+    });
+
+    it('keeps items within the radius', () => {
+      expect(filterByRadius(items, origin, 100, 'São Paulo').map((i) => i.id)).toEqual(['sp', 'campinas']);
+      expect(filterByRadius(items, origin, 400, 'São Paulo').map((i) => i.id)).toEqual(['sp', 'campinas', 'rio']);
+    });
+
+    it('keeps items registered in the searched city even without known coords', () => {
+      const holambra = [{ id: 'x', city: ' HOLAMBRA ', state: 'SP' }];
+      // origem conhecida (São Paulo) + busca textual por Holambra não ocorre
+      // junto na prática, mas a regra da própria cidade é o que importa:
+      expect(filterByRadius(holambra, origin, 5, 'holambra').map((i) => i.id)).toEqual(['x']);
+    });
+
+    it('resolves coords by name alone when the state is missing', () => {
+      expect(filterByRadius([{ id: 'c', city: 'Campinas' }], origin, 100, 'São Paulo').map((i) => i.id)).toEqual(['c']);
     });
   });
 });

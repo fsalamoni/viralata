@@ -1,12 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
-import { ArrowLeft, Users, Calendar, MessageSquare, MessageCircle, Info } from 'lucide-react';
+import { ArrowLeft, Users, Calendar, MessageSquare, MessageCircle, Info, LogOut } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
-import { getCommunity, joinCommunity } from '../services/communityService';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import {
+  getCommunity,
+  joinCommunity,
+  leaveCommunity,
+  getMyCommunityMembership,
+  getCommunityMemberCount,
+} from '../services/communityService';
 import { getClub } from '@/modules/organizations/services/clubService';
 import { toast } from 'sonner';
 
@@ -22,7 +29,32 @@ export default function CommunityDetail() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('mural');
   const [isMember, setIsMember] = useState(false);
+  const [memberCount, setMemberCount] = useState(null);
+  const [confirmLeave, setConfirmLeave] = useState(false);
+  const [leaving, setLeaving] = useState(false);
   const [legacyOrgRedirect, setLegacyOrgRedirect] = useState(false);
+
+  const refreshMemberCount = useCallback(() => {
+    getCommunityMemberCount(communityId)
+      .then(setMemberCount)
+      .catch(() => {});
+  }, [communityId]);
+
+  // Associação real (doc determinista `communityId_uid`) — antes o botão
+  // "Participar" reaparecia a cada reload mesmo para quem já era membro.
+  useEffect(() => {
+    if (!user?.uid) {
+      setIsMember(false);
+      return;
+    }
+    getMyCommunityMembership(communityId, user.uid)
+      .then((membership) => setIsMember(Boolean(membership)))
+      .catch(() => {});
+  }, [communityId, user?.uid]);
+
+  useEffect(() => {
+    refreshMemberCount();
+  }, [refreshMemberCount]);
 
   useEffect(() => {
     let cancelled = false;
@@ -56,9 +88,25 @@ export default function CommunityDetail() {
     try {
       await joinCommunity(communityId, user.uid);
       setIsMember(true);
+      refreshMemberCount();
       toast.success('Você entrou na comunidade!');
     } catch (err) {
       toast.error('Erro ao entrar');
+    }
+  };
+
+  const handleLeave = async () => {
+    setLeaving(true);
+    try {
+      await leaveCommunity(communityId, user.uid);
+      setIsMember(false);
+      setConfirmLeave(false);
+      refreshMemberCount();
+      toast.success('Você saiu da comunidade.');
+    } catch {
+      toast.error('Não foi possível sair da comunidade.');
+    } finally {
+      setLeaving(false);
     }
   };
 
@@ -93,14 +141,23 @@ export default function CommunityDetail() {
         {community.cover_url && (
           <img src={community.cover_url} alt="" className="absolute inset-0 w-full h-full object-cover opacity-40" />
         )}
-        <div className="relative z-10 w-full flex justify-between items-end">
+        <div className="relative z-10 w-full flex flex-wrap justify-between items-end gap-3">
           <div>
             <h1 className="text-3xl font-extrabold text-white">{community.name}</h1>
             <p className="text-orange-50/80 mt-1 flex items-center gap-2">
-              <Users className="w-4 h-4" /> {community.member_count || 1} membros
+              <Users className="w-4 h-4" /> {memberCount ?? community.member_count ?? 1} membro(s)
             </p>
           </div>
-          {!isMember && (
+          {isMember ? (
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-white/25 bg-white/10 text-white hover:bg-white/15 hover:text-white"
+              onClick={() => setConfirmLeave(true)}
+            >
+              <LogOut className="mr-1.5 h-4 w-4" /> Sair da comunidade
+            </Button>
+          ) : (
             <Button onClick={handleJoin} variant="default">Participar</Button>
           )}
         </div>
@@ -123,10 +180,21 @@ export default function CommunityDetail() {
         </TabsList>
 
         <TabsContent value="mural"><MuralTab communityId={communityId} isMember={isMember} /></TabsContent>
-        <TabsContent value="forum"><ForumTab communityId={communityId} /></TabsContent>
-        <TabsContent value="eventos"><EventsTab communityId={communityId} /></TabsContent>
+        <TabsContent value="forum"><ForumTab communityId={communityId} isMember={isMember} /></TabsContent>
+        <TabsContent value="eventos"><EventsTab communityId={communityId} isMember={isMember} /></TabsContent>
         <TabsContent value="sobre"><AboutTab community={community} /></TabsContent>
       </Tabs>
+
+      <ConfirmDialog
+        open={confirmLeave}
+        onOpenChange={setConfirmLeave}
+        title="Sair da comunidade"
+        description={`Tem certeza que deseja sair de "${community.name}"?`}
+        confirmLabel="Sair"
+        destructive
+        loading={leaving}
+        onConfirm={handleLeave}
+      />
     </div>
   );
 }

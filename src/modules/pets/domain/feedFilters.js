@@ -9,8 +9,7 @@
  */
 import {
   lookupCityCoordsByName,
-  resolvePetCoords,
-  haversineKm,
+  filterByRadius,
   normalizePlaceText,
 } from './geoDistance';
 
@@ -57,13 +56,9 @@ export function applyFeedFilters(pets, {
   const originCoords = lookupCityCoordsByName(cityText);
   const radiusActive = Boolean(radiusKm && originCoords);
 
-  const localized = base.filter((pet) => {
-    if (normalizePlaceText(pet.city) === originName) return true;
-    if (!radiusActive) return false;
-    const petCoords = resolvePetCoords(pet);
-    if (!petCoords) return false;
-    return haversineKm(originCoords, petCoords) <= radiusKm;
-  });
+  const localized = radiusActive
+    ? (filterByRadius(base, originCoords, radiusKm, cityText) ?? [])
+    : base.filter((pet) => normalizePlaceText(pet.city) === originName);
 
   if (localized.length > 0) return { pets: localized, locationFallback: false };
   if (base.length > 0) return { pets: base, locationFallback: true };

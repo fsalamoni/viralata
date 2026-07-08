@@ -1,26 +1,54 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Link } from 'react-router-dom';
-import { Search, Hash, Plus, Users, Sparkles, MapPin, ArrowRight } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Search, Hash, Plus, Users, MapPin, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { listCommunities as getCommunities } from '../services/communityService';
+import { useAuth } from '@/core/lib/FirebaseAuthContext';
+import {
+  listCommunities as getCommunities,
+  findCommunityByInviteCode,
+  joinCommunity,
+} from '../services/communityService';
 import { toast } from 'sonner';
 
 export default function CommunitiesDirectory() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [communities, setCommunities] = useState([]);
   const [search, setSearch] = useState('');
   const [code, setCode] = useState('');
+  const [joining, setJoining] = useState(false);
 
   useEffect(() => {
     getCommunities().then(setCommunities);
   }, []);
 
-  const handleJoin = (e) => {
+  // Ingresso por código de convite — encontra a comunidade (inclusive as
+  // ocultas do diretório), entra e navega direto para ela.
+  const handleJoin = async (e) => {
     e.preventDefault();
-    toast.info('Funcionalidade de convite privado em breve.');
+    if (!code.trim()) return;
+    if (!user) {
+      toast.error('Faça login para entrar com um código.');
+      return;
+    }
+    setJoining(true);
+    try {
+      const community = await findCommunityByInviteCode(code);
+      if (!community) {
+        toast.error('Código inválido. Confira com quem convidou você.');
+        return;
+      }
+      await joinCommunity(community.id, user.uid);
+      toast.success(`Você entrou em "${community.name}"!`);
+      setCode('');
+      navigate(`/comunidade/${community.id}`);
+    } catch {
+      toast.error('Não foi possível entrar com esse código.');
+    } finally {
+      setJoining(false);
+    }
   };
 
   const filteredCommunities = useMemo(() => {
@@ -75,8 +103,8 @@ export default function CommunitiesDirectory() {
                   className="pl-9 uppercase tracking-[0.2em]"
                 />
               </div>
-              <Button type="submit" disabled={!code.trim()}>
-                Ingressar
+              <Button type="submit" disabled={joining || !code.trim()}>
+                {joining ? 'Entrando…' : 'Ingressar'}
               </Button>
             </form>
           </CardContent>
