@@ -182,7 +182,12 @@ export async function getCommunityPosts(communityId) {
   return snap.docs.map(d => ({ id: d.id, ...d.data() }));
 }
 
-export async function createPost(communityId, authorId, text, attachments = []) {
+/**
+ * Cria um post no mural da comunidade. Aceita um quinto argumento opcional
+ * `authorMeta` com `author_name` e `author_photo` para denormalizar no doc
+ * (evita 1 GET por post só pra mostrar o nome do autor).
+ */
+export async function createPost(communityId, authorId, text, attachments = [], authorMeta = {}) {
   const postRef = await addDoc(collection(db, 'community_posts'), {
     community_id: communityId,
     author_id: authorId,
@@ -190,6 +195,8 @@ export async function createPost(communityId, authorId, text, attachments = []) 
     attachments,
     likes_count: 0,
     comments_count: 0,
+    author_name: authorMeta?.author_name || null,
+    author_photo: authorMeta?.author_photo || null,
     created_at: serverTimestamp()
   });
 
