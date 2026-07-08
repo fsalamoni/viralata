@@ -307,6 +307,19 @@ export async function getPostLikes(postId) {
   return snap.docs.map(d => d.data().user_id);
 }
 
+/**
+ * Retorna os IDs de todos os posts curtidos por um usuário. Usado pelo mural
+ * para pré-marcar quais curtidas já estão ativas sem precisar buscar
+ * like-a-like em cada post.
+ * @param {string} userId
+ * @returns {Promise<string[]>}
+ */
+export async function getMyLikedPostIds(userId) {
+  if (!db || !userId) return [];
+  const snap = await getDocs(query(collection(db, 'community_post_likes'), where('user_id', '==', userId)));
+  return snap.docs.map((d) => d.data().post_id);
+}
+
 export async function getPostComments(postId) {
   const q = query(collection(db, 'community_post_comments'), where('post_id', '==', postId), orderBy('created_at', 'asc'));
   const snap = await getDocs(q);

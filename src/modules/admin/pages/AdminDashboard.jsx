@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Shield, PawPrint, Building2, AlertTriangle, Users, BarChart3, ScrollText, Bell, SlidersHorizontal } from 'lucide-react';
+import { Shield, PawPrint, Building2, AlertTriangle, Users, BarChart3, ScrollText, Bell, SlidersHorizontal, Flag } from 'lucide-react';
 import PageHero from '@/components/PageHero';
 
 export default function AdminDashboard() {
@@ -19,7 +19,8 @@ export default function AdminDashboard() {
     { icon: BarChart3, title: 'Métricas', desc: 'Adoções, crescimento e denúncias em gráficos', link: '/admin/metricas', tone: 'bg-secondary text-secondary-foreground' },
     { icon: ScrollText, title: 'Auditoria', desc: 'Trilha completa de ações registradas na plataforma', link: '/admin/auditoria', tone: 'bg-primary/10 text-primary' },
     { icon: Bell, title: 'Notificações', desc: 'Inspecionar entregas, links e leituras das notificações geradas', link: '/admin/notificacoes', tone: 'bg-accent/10 text-accent' },
-    { icon: SlidersHorizontal, title: 'Configurações', desc: 'Ajustar textos, rótulos, flags e parâmetros globais auditáveis', link: '/admin/configuracoes', tone: 'bg-highlight/20 text-[hsl(30,60%,32%)]' },
+    { icon: SlidersHorizontal, title: 'Configurações', desc: 'Ajustar textos, rótulos e parâmetros operacionais auditáveis da plataforma', link: '/admin/configuracoes', tone: 'bg-highlight/20 text-[hsl(30,60%,32%)]' },
+    { icon: Flag, title: 'Flags de atualizações', desc: 'Ligar e desligar as feature flags que liberam novidades na plataforma', link: '/admin/flags', tone: 'bg-primary/10 text-primary' },
   ];
 
   return (

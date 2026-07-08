@@ -1,17 +1,15 @@
 import { useEffect, useState } from 'react';
-import { SlidersHorizontal, Save, Sparkles } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { SlidersHorizontal, Save, Flag, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
-import { FEATURE_FLAG_META } from '@/core/featureFlags';
 import { usePlatformSettings } from '@/core/lib/FeatureFlagsContext';
 import { PLATFORM_SETTINGS_DEFAULTS } from '@/core/platformSettings';
 import {
-  setFeatureFlag,
   updatePlatformSettingsSection,
 } from '@/core/services/platformSettingsService';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -27,7 +25,6 @@ export default function AdminPlatformSettings() {
     labels: false,
     texts: false,
     limits: false,
-    flags: '',
   });
 
   useEffect(() => {
@@ -55,24 +52,12 @@ export default function AdminPlatformSettings() {
     }
   }
 
-  async function handleFlagToggle(flagKey, enabled) {
-    setSaving((prev) => ({ ...prev, flags: flagKey }));
-    try {
-      await setFeatureFlag(flagKey, enabled, user);
-      toast.success('Feature flag atualizada.');
-    } catch (err) {
-      toast.error(err.message || 'Não foi possível atualizar a flag.');
-    } finally {
-      setSaving((prev) => ({ ...prev, flags: '' }));
-    }
-  }
-
   return (
     <div className="arena-page mx-auto flex max-w-6xl flex-col gap-6 px-4 py-6">
       <PageHero
         eyebrow="Admin"
         title="Configurações globais"
-        description="Centralize textos, rótulos, feature flags e parâmetros operacionais versionáveis da plataforma."
+        description="Textos, rótulos e parâmetros operacionais versionáveis da plataforma. As feature flags vivem em página própria."
         actions={(
           <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold text-orange-50/85">
             <SlidersHorizontal className="h-3.5 w-3.5" /> Auditável
@@ -154,25 +139,20 @@ export default function AdminPlatformSettings() {
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Feature flags</CardTitle>
-              <CardDescription>Recursos aditivos que podem ser ativados sem alterar os fluxos principais.</CardDescription>
+              <CardTitle className="text-base">Flags de atualizações</CardTitle>
+              <CardDescription>
+                Recursos aditivos que podem ser ativados sem alterar os fluxos principais. Movemos
+                o toggle para uma página dedicada, mais fácil de achar.
+              </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              {Object.entries(FEATURE_FLAG_META).map(([flagKey, meta]) => (
-                <div key={flagKey} className="flex items-start justify-between gap-4 rounded-2xl border border-border p-4">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                      <Sparkles className="h-4 w-4 text-primary" /> {meta.label}
-                    </div>
-                    <p className="text-xs leading-5 text-muted-foreground">{meta.description}</p>
-                  </div>
-                  <Switch
-                    checked={Boolean(settings.feature_flags[flagKey])}
-                    disabled={saving.flags === flagKey}
-                    onCheckedChange={(checked) => handleFlagToggle(flagKey, checked === true)}
-                  />
-                </div>
-              ))}
+            <CardContent>
+              <Button asChild>
+                <Link to="/admin/flags" className="inline-flex items-center gap-2">
+                  <Flag className="h-4 w-4" />
+                  Abrir página de feature flags
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
             </CardContent>
           </Card>
         </div>
