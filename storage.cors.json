@@ -1,0 +1,18 @@
+[
+  {
+    "origin": ["https://viralata.web.app", "https://viralata--pr-*.web.app"],
+    "method": ["GET", "HEAD", "PUT", "POST", "DELETE"],
+    "maxAgeSeconds": 3600,
+    "responseHeader": [
+      "Content-Type",
+      "Content-Length",
+      "Content-Range",
+      "Authorization",
+      "x-goog-resumable",
+      "X-Goog-Api-Version",
+      "X-Goog-Content-Length-Range",
+      "X-Firebase-Storage-Version",
+      "X-Firebase-Storage-XSRF"
+    ]
+  }
+]
