@@ -18,7 +18,7 @@ export function migrateLegacyFlagsForTest(rawFlags) {
   return migrateLegacyFlags(rawFlags);
 }
 
-function migrateLegacyFlags(rawFlags) {
+export function migrateLegacyFlags(rawFlags) {
   const allFlagKeys = Object.values(FEATURE_FLAG);
   const storedAllFalse = allFlagKeys.every((k) => !rawFlags || rawFlags[k] === false);
   if (!storedAllFalse) return rawFlags;
