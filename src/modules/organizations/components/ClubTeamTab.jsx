@@ -85,7 +85,7 @@ function ClubAdminPermissionsCard({ club }) {
   const { data: members = [], isLoading } = useClubMembers(club.id);
   const admins = members
     .filter((m) => m.role === CLUB_ROLE.ADMIN)
-    .sort((a, b) => (isClubOwner(club, a) ? -1 : isClubOwner(club, b) ? 1 : 0));
+    .sort((a, b) => (isClubOwner(club, a, undefined) ? -1 : isClubOwner(club, b, undefined) ? 1 : 0));
 
   return (
     <Card className="rounded-xl">

@@ -32,7 +32,11 @@ export default function ClubDetail() {
 
   const { membership, isLoading: loadingMembership } = useMyMembership(orgId, user?.uid);
   const isMember = Boolean(membership);
-  const isAdmin = membership?.role === 'admin';
+  // Fallback: o criador da ONG tem acesso admin mesmo sem o doc em
+  // `organization_members` (legado / dados antigos). Mesma lógica aplicada
+  // em CommunityDetail para comunidades legadas.
+  const isOrgCreator = Boolean(user?.uid && club?.owner_id && club.owner_id === user.uid);
+  const isAdmin = isOrgCreator || membership?.role === 'admin';
 
   const { data: myRequests = [] } = useMyJoinRequests();
   const { data: myInvites = [] } = useMyClubInvites();
