@@ -6,11 +6,11 @@
  * não endereço exato) e a fórmula de haversine.
  *
  * Limitação conhecida (documentada em `docs/ROADMAP.md`): cidades fora
- * desta tabela não entram no cálculo de distância — o filtro de raio some
- * silenciosamente para pets nessas cidades quando um raio está ativo (sem
- * raio ativo, o filtro de texto exato continua funcionando para qualquer
- * cidade). Produção de verdade precisa de geocoding real (API ou base
- * completa de municípios) + geohash no Firestore.
+ * desta tabela não entram no cálculo de distância. Com um raio ativo, pets
+ * dessas cidades só aparecem quando estão na própria cidade de origem da
+ * busca (comparação de texto normalizada — ver `filterPetsByRadius`);
+ * cobertura completa exigiria geocoding real (API ou base completa de
+ * municípios) + geohash no Firestore.
  */
 
 // [latitude, longitude] aproximados do centro da cidade.
@@ -87,13 +87,20 @@ const BR_CITY_COORDS = {
   'palmas|to': [-10.18, -48.33],
 };
 
-function norm(value) {
+/**
+ * Normaliza texto de cidade para comparação: trim, minúsculas e sem acentos.
+ * Exportado para o filtro do Feed comparar cidades digitadas livremente com
+ * as gravadas nos pets ("São Paulo" ≡ "sao paulo " ≡ "SAO PAULO").
+ */
+export function normalizePlaceText(value) {
   return String(value ?? '')
     .trim()
     .toLowerCase()
     .normalize('NFD')
     .replace(/[̀-ͯ]/g, '');
 }
+
+const norm = normalizePlaceText;
 
 function normalizeKey(city, state) {
   return `${norm(city)}|${norm(state)}`;
@@ -109,6 +116,15 @@ const BY_NAME_ONLY = Object.fromEntries(
 /** Retorna `[lat, lng]` da cidade conhecida (cidade + UF exatos), ou `null` se fora da tabela. */
 export function lookupCityCoords(city, state) {
   return BR_CITY_COORDS[normalizeKey(city, state)] || null;
+}
+
+/**
+ * Coordenadas de um pet, com tolerância a dados incompletos: tenta
+ * cidade+UF e, se a UF estiver vazia/errada, cai para a busca só por nome
+ * (segura porque nenhum nome se repete na tabela).
+ */
+export function resolvePetCoords(pet) {
+  return lookupCityCoords(pet?.city, pet?.state) || lookupCityCoordsByName(pet?.city);
 }
 
 /**
@@ -128,21 +144,6 @@ export function haversineKm([lat1, lng1], [lat2, lng2]) {
   const a = Math.sin(dLat / 2) ** 2
     + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-}
-
-/**
- * Filtra `pets` para os que estão a até `radiusKm` de `originCoords`
- * (`[lat, lng]`, resolvido por `lookupCityCoords`/`lookupCityCoordsByName`).
- * Pets cuja cidade não está na tabela são excluídos (best effort — ver
- * limitação no topo do arquivo).
- */
-export function filterPetsByRadius(pets, originCoords, radiusKm) {
-  if (!originCoords) return null;
-  return pets.filter((pet) => {
-    const petCoords = lookupCityCoords(pet.city, pet.state);
-    if (!petCoords) return false;
-    return haversineKm(originCoords, petCoords) <= radiusKm;
-  });
 }
 
 /** true se a cidade informada (só nome, texto livre) tem coordenadas conhecidas. */

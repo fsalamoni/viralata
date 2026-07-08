@@ -17,25 +17,27 @@ import { filterCompatiblePets, sortByRelevance } from '../domain/matching';
 
 // ─── Pets ────────────────────────────────────────────────────────────────────
 
-export function useAvailablePets(filters = {}) {
+export function useAvailablePets() {
   return useQuery({
-    queryKey: ['pets', 'available', filters],
-    queryFn: () => getAvailablePets(filters),
+    queryKey: ['pets', 'available'],
+    queryFn: () => getAvailablePets(),
     staleTime: 1000 * 60 * 2,
   });
 }
 
 /**
- * Feed de pets. Mostra TODOS os pets disponíveis que passam pelos filtros do
- * usuário (espécie, porte, cidade/raio), sem esconder nenhum animal. O perfil
- * comportamental do adotante é usado apenas como ordenação suave: os pets
- * compatíveis aparecem primeiro, e os demais logo em seguida — nunca ocultos.
+ * Feed de pets. Busca ÚNICA de todos os pets disponíveis; espécie, porte e
+ * cidade/raio são aplicados client-side na página via
+ * `domain/feedFilters.applyFeedFilters` (filtros instantâneos, sem refetch e
+ * sem exigir índices compostos por combinação). O perfil comportamental do
+ * adotante é usado apenas como ordenação suave: os pets compatíveis aparecem
+ * primeiro, e os demais logo em seguida — nunca ocultos.
  * (Item 4: "todos os animais inseridos na plataforma devem aparecer no feed,
  * respeitados os filtros e definições aplicadas pelo usuário".)
  */
-export function usePetFeed(filters = {}) {
+export function usePetFeed() {
   const { userProfile } = useAuth();
-  const query = useAvailablePets(filters);
+  const query = useAvailablePets();
   const data = useMemo(() => {
     const all = Array.isArray(query.data) ? query.data : [];
     if (!userProfile) return sortByRelevance(all);

@@ -116,7 +116,7 @@ export default function ClubPetsDataGrid({ clubId, canManage = true }) {
     setAddingRow(true);
     try {
       await createPet.mutateAsync({
-        title: '', name: '', species: 'dog', size: 'mini', city: '', status: 'available', photos: [],
+        title: '', name: '', species: 'dog', size: 'mini', city: '', state: '', status: 'available', photos: [],
         owner_id: clubId, owner_type: 'organization',
       });
     } catch {
@@ -253,6 +253,7 @@ export default function ClubPetsDataGrid({ clubId, canManage = true }) {
                 <TableHead>Porte</TableHead>
                 <TableHead>Raça</TableHead>
                 <TableHead>Cidade</TableHead>
+                <TableHead>UF</TableHead>
                 <TableHead>Status</TableHead>
                 {canManage && <TableHead className="w-9" />}
               </TableRow>
@@ -302,6 +303,17 @@ export default function ClubPetsDataGrid({ clubId, canManage = true }) {
                       disabled={savingId === pet.id}
                       onBlur={canManage ? (e) => { if (e.target.value !== (pet.city || '')) handleFieldChange(pet.id, 'city', e.target.value); } : undefined}
                       className="h-8 w-28 border-transparent bg-transparent text-sm focus-visible:border-input focus-visible:bg-background"
+                    />
+                  </TableCell>
+                  <TableCell className="p-0.5">
+                    <Input
+                      defaultValue={pet.state || ''}
+                      placeholder="UF"
+                      maxLength={2}
+                      readOnly={!canManage}
+                      disabled={savingId === pet.id}
+                      onBlur={canManage ? (e) => { const v = e.target.value.toUpperCase(); if (v !== (pet.state || '')) handleFieldChange(pet.id, 'state', v); } : undefined}
+                      className="h-8 w-14 border-transparent bg-transparent text-sm uppercase focus-visible:border-input focus-visible:bg-background"
                     />
                   </TableCell>
                   <TableCell className="p-0.5">

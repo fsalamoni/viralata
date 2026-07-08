@@ -3,7 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { MapPin, Zap, X, Heart, Info, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { usePetFeed, useCreateInterest } from '../hooks/usePets';
-import { hasKnownCoords, lookupCityCoordsByName, filterPetsByRadius } from '../domain/geoDistance';
+import { hasKnownCoords } from '../domain/geoDistance';
+import { applyFeedFilters } from '../domain/feedFilters';
 import PetCard from '../components/PetCard';
 import AdSlot from '@/components/AdSlot';
 import { Input } from '@/components/ui/input';
@@ -223,22 +224,19 @@ export default function PetFeed() {
 
   const trimmedCity = city.trim();
   const radiusActive = Boolean(radius && hasKnownCoords(trimmedCity));
-  const filters = {
+  const { data: fetchedPets = [], isLoading, isError } = usePetFeed();
+
+  // Todos os filtros (espécie/porte/cidade/raio/meus pets) são client-side —
+  // uma única query no Firestore, sem matriz de índices compostos. Se a
+  // localização zerar a lista mas houver pets, `locationFallback` liga e o
+  // feed mostra todos com um aviso (nunca fica vazio havendo pets).
+  const { pets, locationFallback } = useMemo(() => applyFeedFilters(fetchedPets, {
     species: species === 'all' ? undefined : species,
     size: size === 'all' ? undefined : size,
-    city: radiusActive ? undefined : (trimmedCity || undefined),
-    limitCount: radiusActive ? 500 : undefined,
-  };
-  const { data: fetchedPets = [], isLoading, isError } = usePetFeed(filters);
-
-  const pets = useMemo(() => {
-    const visiblePets = user?.uid && !showOwnPets
-      ? fetchedPets.filter((pet) => pet.owner_id !== user.uid)
-      : fetchedPets;
-    if (!radiusActive) return visiblePets;
-    const origin = lookupCityCoordsByName(trimmedCity);
-    return filterPetsByRadius(visiblePets, origin, radius) ?? visiblePets;
-  }, [fetchedPets, radiusActive, trimmedCity, radius, showOwnPets, user?.uid]);
+    cityText: trimmedCity,
+    radiusKm: radius,
+    hideOwnerId: user?.uid && !showOwnPets ? user.uid : null,
+  }), [fetchedPets, species, size, trimmedCity, radius, showOwnPets, user?.uid]);
 
   const priorityPets = useMemo(
     () => [...pets].sort((a, b) => (b.priority_score || 0) - (a.priority_score || 0)),
@@ -318,15 +316,25 @@ export default function PetFeed() {
           </div>
         </div>
       )}
-      <p className="mb-6.5 text-[11.5px] text-muted-foreground/90">
-        {!trimmedCity
-          ? 'Sem cidade definida — mostrando todos os pets disponíveis na plataforma'
-          : radiusActive
-            ? `Pets até ${radius} km de ${trimmedCity} (distância aproximada pelo centro da cidade, sem geolocalização precisa)`
-            : radius
-              ? `Não conhecemos a localização de "${trimmedCity}" para calcular distância — mostrando só pets cadastrados exatamente nessa cidade.`
-              : `Pets em ${trimmedCity}`}
-      </p>
+      {locationFallback ? (
+        <div className="mb-6.5 flex items-start gap-2.5 rounded-[1.15rem] border border-highlight/40 bg-highlight/10 px-4 py-3 text-[12.5px] text-foreground/85">
+          <Info className="mt-0.5 h-4 w-4 shrink-0 text-highlight" />
+          <span>
+            Nenhum pet encontrado em <strong>{trimmedCity}</strong>
+            {radiusActive ? ` num raio de ${radius} km` : ''} — mostrando pets de todas as cidades da plataforma.
+          </span>
+        </div>
+      ) : (
+        <p className="mb-6.5 text-[11.5px] text-muted-foreground/90">
+          {!trimmedCity
+            ? 'Sem cidade definida — mostrando todos os pets disponíveis na plataforma'
+            : radiusActive
+              ? `Pets até ${radius} km de ${trimmedCity} (distância aproximada pelo centro da cidade, sem geolocalização precisa)`
+              : radius
+                ? `Não conhecemos a localização de "${trimmedCity}" para calcular distância — mostrando pets cadastrados nessa cidade.`
+                : `Pets em ${trimmedCity}`}
+        </p>
+      )}
 
       {!isLoading && !isError && (
         <SwipeDeck
@@ -357,10 +365,20 @@ export default function PetFeed() {
 
         {!isLoading && !isError && pets.length === 0 && (
           <div className="space-y-3 py-16 text-center">
-            <p className="text-[13.5px] text-muted-foreground">Nenhum pet encontrado com esses filtros.</p>
-            <p className="text-sm text-muted-foreground/80">
-              Tente ampliar o raio, mudar a cidade ou limpar os filtros para ver todos os pets da plataforma.
+            <p className="text-[13.5px] text-muted-foreground">
+              {fetchedPets.length === 0
+                ? 'Ainda não há pets disponíveis para adoção na plataforma.'
+                : 'Nenhum pet encontrado com esses filtros.'}
             </p>
+            {fetchedPets.length === 0 ? (
+              <p className="text-sm text-muted-foreground/80">
+                Seja o primeiro: cadastre um pet e ajude ele a encontrar um novo lar.
+              </p>
+            ) : (
+              <p className="text-sm text-muted-foreground/80">
+                Limpe os filtros de espécie e porte para ver todos os pets da plataforma.
+              </p>
+            )}
           </div>
         )}
 

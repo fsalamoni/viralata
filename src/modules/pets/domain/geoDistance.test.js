@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import {
-  lookupCityCoords, lookupCityCoordsByName, haversineKm, filterPetsByRadius, hasKnownCoords,
+  lookupCityCoords, lookupCityCoordsByName, haversineKm, resolvePetCoords, hasKnownCoords, normalizePlaceText,
 } from './geoDistance.js';
 
 describe('pets/geoDistance domain', () => {
@@ -47,28 +47,24 @@ describe('pets/geoDistance domain', () => {
     });
   });
 
-  describe('filterPetsByRadius', () => {
-    const pets = [
-      { id: '1', city: 'São Paulo', state: 'SP' },
-      { id: '2', city: 'Campinas', state: 'SP' }, // ~95km de SP
-      { id: '3', city: 'Rio de Janeiro', state: 'RJ' }, // ~360km de SP
-      { id: '4', city: 'Cidade Fora Da Tabela', state: 'XX' },
-    ];
-
-    it('returns null when there is no origin coordinate', () => {
-      expect(filterPetsByRadius(pets, null, 50)).toBeNull();
+  describe('normalizePlaceText', () => {
+    it('trims, lowercases and strips accents', () => {
+      expect(normalizePlaceText('  São Paulo ')).toBe('sao paulo');
+      expect(normalizePlaceText('CURITIBA')).toBe('curitiba');
+      expect(normalizePlaceText(null)).toBe('');
     });
+  });
 
-    it('keeps only pets within the radius, excluding ones without known coordinates', () => {
-      const origin = lookupCityCoordsByName('São Paulo');
-      const result = filterPetsByRadius(pets, origin, 100);
-      expect(result.map((p) => p.id)).toEqual(['1', '2']);
+  describe('resolvePetCoords', () => {
+    it('resolves by city + state', () => {
+      expect(resolvePetCoords({ city: 'São Paulo', state: 'SP' })).toEqual([-23.55, -46.63]);
     });
-
-    it('widens correctly with a larger radius', () => {
-      const origin = lookupCityCoordsByName('São Paulo');
-      const result = filterPetsByRadius(pets, origin, 400);
-      expect(result.map((p) => p.id)).toEqual(['1', '2', '3']);
+    it('falls back to city name alone when the state is missing or wrong', () => {
+      expect(resolvePetCoords({ city: 'Campinas' })).toEqual([-22.91, -47.06]);
+      expect(resolvePetCoords({ city: 'Campinas', state: '' })).toEqual([-22.91, -47.06]);
+    });
+    it('returns null for a city outside the table', () => {
+      expect(resolvePetCoords({ city: 'Cidade Fora Da Tabela', state: 'XX' })).toBeNull();
     });
   });
 });

@@ -37,16 +37,24 @@ export async function getPetById(petId) {
   return snap.exists() ? normalizePetRecord(snap.id, snap.data()) : null;
 }
 
-/** Lista todos os pets disponíveis (para o feed). */
-export async function getAvailablePets({ species, size, city, state, limitCount = 100 } = {}) {
+/**
+ * Lista todos os pets disponíveis (para o feed).
+ *
+ * Propositalmente UMA única forma de query (status + created_at), coberta
+ * pelo índice composto existente em `firestore.indexes.json`. Espécie,
+ * porte, cidade e raio são aplicados client-side pelo domínio puro
+ * (`domain/feedFilters.js`) — cada combinação de `where` extra exigiria um
+ * índice composto próprio e a ausência de um deles derruba o feed inteiro
+ * com `failed-precondition` em runtime.
+ */
+export async function getAvailablePets({ limitCount = 500 } = {}) {
   if (!db) return [];
-  const constraints = [where('status', '==', 'available'), orderBy('priority_score', 'desc'), orderBy('created_at', 'asc')];
-  if (species) constraints.push(where('species', '==', species));
-  if (size) constraints.push(where('size', '==', size));
-  if (city) constraints.push(where('city', '==', city));
-  if (state) constraints.push(where('state', '==', state));
-  constraints.push(limit(limitCount));
-  const snap = await getDocs(query(collection(db, PETS_COLLECTION), ...constraints));
+  const snap = await getDocs(query(
+    collection(db, PETS_COLLECTION),
+    where('status', '==', 'available'),
+    orderBy('created_at', 'desc'),
+    limit(limitCount),
+  ));
   return snap.docs.map((d) => normalizePetRecord(d.id, d.data()));
 }
 
