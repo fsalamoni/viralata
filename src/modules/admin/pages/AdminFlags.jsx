@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { FEATURE_FLAG_META } from '@/core/featureFlags';
 import { usePlatformSettings } from '@/core/lib/FeatureFlagsContext';
-import { setFeatureFlag } from '@/core/services/platformSettingsService';
+import { setFeatureFlag, markFlagsMigrationApplied } from '@/core/services/platformSettingsService';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
@@ -21,6 +21,15 @@ export default function AdminFlags() {
   const { isPlatformAdmin, user } = useAuth();
   const { settings } = usePlatformSettings();
   const [savingFlag, setSavingFlag] = useState('');
+
+  // Auto-marca a migração de flags como aplicada (idempotente, fire-and-forget).
+  // Evita que o FeatureFlagsProvider rode a migração legado a cada load e
+  // documenta que o admin já está gerenciando flags manualmente.
+  React.useEffect(() => {
+    if (isPlatformAdmin) {
+      markFlagsMigrationApplied(user);
+    }
+  }, [isPlatformAdmin, user]);
 
   if (!isPlatformAdmin) {
     return (

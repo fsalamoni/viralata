@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useMemo, useState } from '
 import { DEFAULT_FEATURE_FLAGS } from '@/core/featureFlags';
 import { PLATFORM_SETTINGS_DEFAULTS } from '@/core/platformSettings';
 import { subscribePlatformSettings } from '@/core/services/platformSettingsService';
+import { migrateLegacyFlags } from './FeatureFlagsContext.migration';
 
 const FeatureFlagsContext = createContext({
   flags: DEFAULT_FEATURE_FLAGS,
@@ -21,8 +22,9 @@ export function FeatureFlagsProvider({ children }) {
 
   useEffect(() => {
     const unsubscribe = subscribePlatformSettings((settings) => {
-      setSettings(settings);
-      setFlags(settings.feature_flags);
+      const migrated = migrateLegacyFlags(settings.feature_flags);
+      setSettings({ ...settings, feature_flags: migrated });
+      setFlags(migrated);
       setIsLoading(false);
     });
     return () => {
