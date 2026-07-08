@@ -47,7 +47,7 @@ export default function MuralTabAdmin({ communityId, isAdmin, membership, commun
   const [confirmDelete, setConfirmDelete] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
-  const canPost = hasCommunityPermission(community, membership, COMMUNITY_PERMISSION.FEED);
+  const canPost = hasCommunityPermission(community, membership, COMMUNITY_PERMISSION.FEED, user?.uid);
 
   const fetchPosts = useCallback(async () => {
     try {

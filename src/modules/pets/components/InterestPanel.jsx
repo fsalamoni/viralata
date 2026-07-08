@@ -48,7 +48,10 @@ export default function InterestPanel({ petId, pet }) {
       });
       navigate(`/chat?c=${conversationId}`);
     } catch (e) {
-      toast.error('Erro ao abrir conversa.');
+      // Loga no console para debug (o usuário pode ver no DevTools); o toast
+      // continua genérico para evitar expor detalhes de infraestrutura.
+      console.error('[InterestPanel] Falha ao abrir conversa:', e?.message || e);
+      toast.error(e?.message || 'Erro ao abrir conversa.');
     }
   }
 

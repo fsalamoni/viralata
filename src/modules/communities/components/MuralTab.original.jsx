@@ -64,7 +64,7 @@ export default function MuralTab({ communityId, isMember, isAdmin, membership, c
     }
   };
 
-  const canPost = hasCommunityPermission(community, membership, COMMUNITY_PERMISSION.FEED);
+  const canPost = hasCommunityPermission(community, membership, COMMUNITY_PERMISSION.FEED, user?.uid);
   const canDelete = (postId, authorId) => user?.uid === authorId || isAdmin;
 
   return (

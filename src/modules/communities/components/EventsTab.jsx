@@ -33,7 +33,7 @@ export default function EventsTab({ communityId, isAdmin, membership, community 
   // não aparece" em dados legados / membership ainda carregando.
   const isCommunityCreator = community?.owner_id === user?.uid;
   const canManageEvents = isCommunityCreator
-    || hasCommunityPermission(community, membership, COMMUNITY_PERMISSION.EVENTS);
+    || hasCommunityPermission(community, membership, COMMUNITY_PERMISSION.EVENTS, user?.uid);
 
   const handleDelete = async (eventId, e) => {
     e.stopPropagation();
