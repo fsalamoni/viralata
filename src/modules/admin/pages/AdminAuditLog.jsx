@@ -6,7 +6,7 @@ import PageContainer from '@/components/PageContainer';
 
 export default function AdminAuditLog() {
   const { isPlatformAdmin } = useAuth();
-  if (!isPlatformAdmin) return <div className="text-center py-16 text-muted-foreground">Acesso restrito.</div>;
+  if (!isPlatformAdmin) return <PageContainer><div className="text-center py-16 text-muted-foreground">Acesso restrito.</div></PageContainer>;
 
   return (
     <PageContainer className="space-y-6">

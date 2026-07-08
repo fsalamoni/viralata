@@ -71,7 +71,7 @@ export default function AdminNotifications() {
     });
   }, [notifications, readFilter, search, typeFilter]);
 
-  if (!isPlatformAdmin) return <div className="text-center py-16 text-muted-foreground">Acesso restrito.</div>;
+  if (!isPlatformAdmin) return <PageContainer><div className="text-center py-16 text-muted-foreground">Acesso restrito.</div></PageContainer>;
 
   return (
     <PageContainer className="space-y-6">

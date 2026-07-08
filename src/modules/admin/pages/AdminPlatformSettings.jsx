@@ -37,8 +37,8 @@ export default function AdminPlatformSettings() {
     setLimitsForm(settings.operational_limits);
   }, [settings]);
 
-  if (!isPlatformAdmin) return <div className="py-16 text-center text-muted-foreground">Acesso restrito.</div>;
-  if (isLoading) return <div className="py-16 text-center text-muted-foreground">Carregando configurações...</div>;
+  if (!isPlatformAdmin) return <PageContainer><div className="py-16 text-center text-muted-foreground">Acesso restrito.</div></PageContainer>;
+  if (isLoading) return <PageContainer><div className="py-16 text-center text-muted-foreground">Carregando configurações...</div></PageContainer>;
 
   async function saveSection(section, payload, successMessage) {
     const key = section === 'ui_labels' ? 'labels' : section === 'ui_text' ? 'texts' : 'limits';

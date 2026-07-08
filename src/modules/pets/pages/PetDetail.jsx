@@ -70,8 +70,20 @@ export default function PetDetail() {
   const shareCardRef = useRef(null);
   const { shareFromNode, generating: sharing } = usePetShareImage();
 
-  if (isLoading) return <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>;
-  if (!pet) return <div className="text-center py-16 text-muted-foreground">Pet não encontrado.</div>;
+  if (isLoading) {
+    return (
+      <PageContainer>
+        <div className="flex h-64 items-center justify-center"><div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary" /></div>
+      </PageContainer>
+    );
+  }
+  if (!pet) {
+    return (
+      <PageContainer>
+        <div className="py-16 text-center text-muted-foreground">Pet não encontrado.</div>
+      </PageContainer>
+    );
+  }
 
   const canManage = isOwner || isPlatformAdmin;
   const managementTab = searchParams.get('tab') === 'info' ? 'info' : 'interests';

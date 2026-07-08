@@ -9,7 +9,7 @@ import PageContainer from '@/components/PageContainer';
 
 export default function AdminDashboard() {
   const { isPlatformAdmin } = useAuth();
-  if (!isPlatformAdmin) return <div className="text-center py-16 text-muted-foreground">Acesso restrito.</div>;
+  if (!isPlatformAdmin) return <PageContainer><div className="text-center py-16 text-muted-foreground">Acesso restrito.</div></PageContainer>;
 
   const sections = [
     { icon: PawPrint, title: 'Gerenciar Pets', desc: 'Moderar anúncios, aprovar ou remover pets', link: '/admin/pets', tone: 'bg-primary/10 text-primary' },
