@@ -9,11 +9,11 @@ import { CLUB_ROLE, CLUB_ROLE_LABELS } from '@/modules/organizations/domain/cons
 import PageHero from '@/components/PageHero';
 
 /**
- * Hub de gestão de organizações (`/organizacoes`): "Minhas organizações"
+ * Hub de gestão de organizações (`/organizacoes/hub`): "Minhas organizações"
  * (onde o usuário é administrador — abre o painel de administração) e
  * "Descobrir outras organizações" (as demais — abre o perfil público em
- * `/comunidade/:id`). O diretório público completo, com busca, continua em
- * `ClubsDirectory` (`/comunidade`).
+ * `/organizacoes/:id`). O diretório público completo, com busca, é o
+ * `ClubsDirectory` (`/organizacoes`).
  */
 export default function OrganizationsHub() {
   const { data: allClubs = [], isLoading: loadingAll } = useClubs();
@@ -104,7 +104,7 @@ export default function OrganizationsHub() {
         ) : (
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {discoverClubs.map((club) => (
-              <Link key={club.id} to={`/comunidade/${club.id}`} className="block">
+              <Link key={club.id} to={`/organizacoes/${club.id}`} className="block">
                 <Card className="rounded-[1.25rem]">
                   <CardContent className="flex items-center gap-3 p-4">
                     {club.logo_url ? (

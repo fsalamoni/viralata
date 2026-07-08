@@ -65,7 +65,7 @@ export default function OrganizationAdminPanel() {
     if (isLoading || !isAuthenticated) return;
     if (!club || !membership || !canAccess) {
       toast.error('Você não tem permissão para administrar esta organização.');
-      navigate(`/comunidade/${orgId}`, { replace: true });
+      navigate(`/organizacoes/${orgId}`, { replace: true });
     }
   }, [isLoading, isAuthenticated, club, membership, canAccess, navigate, orgId]);
 

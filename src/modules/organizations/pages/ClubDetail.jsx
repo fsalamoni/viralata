@@ -1,36 +1,168 @@
-import React, { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { MapPin, Building2, ArrowLeft, Settings, Info, Instagram, Mail, Phone, Heart } from 'lucide-react';
-import { useAuth } from '@/core/lib/FirebaseAuthContext';
+import React, { useEffect, useState } from 'react';
+import { Link, useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { toast } from 'sonner';
+import {
+  ArrowLeft,
+  Building2,
+  CalendarDays,
+  HandCoins,
+  Hash,
+  Instagram,
+  LogOut,
+  Mail,
+  MapPin,
+  MessageSquare,
+  MessagesSquare,
+  PawPrint,
+  Phone,
+  Settings,
+  Users,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { EmptyState } from '@/components/ui/empty-state';
-import { getClub } from '../services/clubService';
-import { isClubPubliclyVisible, CLUB_DIRECTORY_STATUS } from '@/modules/communities/domain/directory';
-import { useMyMembership } from '../hooks/useClubs';
-import ClubPetsDataGrid from '../components/ClubPetsDataGrid';
+import { useAuth } from '@/core/lib/FirebaseAuthContext';
+import { CLUB_DIRECTORY_STATUS, isClubPubliclyVisible } from '@/modules/communities/domain/directory';
+import {
+  useClub,
+  useMyMembership,
+  useJoinClub,
+  useLeaveClub,
+  useMyJoinRequest,
+  useRequestToJoinClub,
+  useMyClubInvite,
+  useAcceptClubInvite,
+  useDeclineClubInvite,
+  useClubCampaigns,
+} from '@/modules/organizations/hooks/useClubs';
+import { CLUB_ROLE, JOIN_REQUEST_STATUS, CAMPAIGN_STATUS, CLUB_PERMISSION } from '@/modules/organizations/domain/constants';
+import { hasClubPermission } from '@/modules/organizations/domain/permissions';
+import ClubMembersTab from '@/modules/organizations/components/ClubMembersTab';
+import ClubEventsTab from '@/modules/organizations/components/ClubEventsTab';
+import ClubFeedTab from '@/modules/organizations/components/ClubFeedTab';
+import ClubForumsTab from '@/modules/organizations/components/ClubForumsTab';
+import ClubPetsDataGrid from '@/modules/organizations/components/ClubPetsDataGrid';
+import RatingBadge from '@/modules/pets/components/RatingBadge';
+import { QrCode } from '@/components/ui/qr-code';
 
-function RatingBadge({ uid, className }) {
-  return null;
-}
+// "pets" é público (regras liberam leitura da coleção `pets` a todos); as
+// demais abas exigem associação — as regras do Firestore só permitem ler
+// mural/eventos/fóruns/membros de quem é membro da organização.
+const PUBLIC_TABS = ['pets'];
+const MEMBER_TABS = ['members', 'events', 'feed', 'forums'];
 
+/**
+ * Perfil público da organização (rota `/organizacoes/:orgId`): pets para
+ * adoção, chamados de doação ativos e — para membros — abas de Membros,
+ * Eventos, Mural e Fóruns. Gestão administrativa (animais em massa, doações,
+ * financeiro, equipe, configurações) vive em `/organizacoes/:orgId/admin`
+ * (`OrganizationAdminPanel`); o antigo parâmetro `?tab=admin` redireciona
+ * para lá, preservando links de notificações antigas.
+ */
 export default function ClubDetail() {
-  const { orgId } = useParams();
-  const { user, isAuthenticated } = useAuth();
-  const [activeTab, setActiveTab] = useState('pets');
+  const { orgId: clubId } = useParams();
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+  const { data: club, isLoading, isError } = useClub(clubId);
+  const { data: membership, isLoading: loadingMembership } = useMyMembership(clubId);
+  const { data: myRequest } = useMyJoinRequest(clubId);
+  const { data: myInvite } = useMyClubInvite(clubId);
+  const joinClub = useJoinClub();
+  const leaveClub = useLeaveClub(clubId);
+  const requestToJoin = useRequestToJoinClub();
+  const acceptInvite = useAcceptClubInvite(clubId);
+  const declineInvite = useDeclineClubInvite(clubId);
+  const [code, setCode] = useState('');
+  const [confirmLeave, setConfirmLeave] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const { data: club, isLoading, isError } = useQuery({
-    queryKey: ['club', orgId],
-    queryFn: () => getClub(orgId),
-    enabled: Boolean(orgId),
-  });
+  const isMember = !!membership;
+  const isAdmin = membership?.role === CLUB_ROLE.ADMIN;
+  // Qualquer visitante vê a lista de animais da organização; só quem tem a
+  // atribuição de animais pode baixar modelo, importar ou criar linha.
+  const canManageAnimals = hasClubPermission(club, membership, CLUB_PERMISSION.ANIMALS);
 
-  const { membership, isLoading: loadingMembership } = useMyMembership(orgId, user?.uid);
-  const isMember = Boolean(membership);
-  const isAdmin = membership?.role === 'admin';
+  const availableTabs = isMember ? [...PUBLIC_TABS, ...MEMBER_TABS] : PUBLIC_TABS;
+  const rawTab = searchParams.get('tab');
+  // `animals` era o nome da antiga aba de grade; hoje a grade pública é `pets`.
+  const requestedTab = rawTab === 'animals' ? 'pets' : rawTab;
+  const activeTab = availableTabs.includes(requestedTab) ? requestedTab : 'pets';
+  const threadParam = searchParams.get('thread') || null;
+
+  useEffect(() => {
+    if (rawTab === 'admin') navigate(`/organizacoes/${clubId}/admin`, { replace: true });
+  }, [rawTab, clubId, navigate]);
+
+  const setActiveTab = (tab) => {
+    const next = new URLSearchParams(searchParams);
+    next.set('tab', tab);
+    if (tab !== 'forums') next.delete('thread');
+    setSearchParams(next, { replace: true });
+  };
+
+  const setThreadParam = (threadId) => {
+    const next = new URLSearchParams(searchParams);
+    next.set('tab', 'forums');
+    if (threadId) next.set('thread', threadId);
+    else next.delete('thread');
+    setSearchParams(next, { replace: true });
+  };
+
+  const handleJoin = async (e) => {
+    e.preventDefault();
+    if (!code.trim()) return;
+    try {
+      await joinClub.mutateAsync(code.trim());
+      toast.success('Você entrou na organização!');
+      setCode('');
+    } catch (err) {
+      toast.error(err.message || 'Código inválido para esta organização.');
+    }
+  };
+
+  const handleLeave = async () => {
+    try {
+      await leaveClub.mutateAsync();
+      toast.success('Você saiu da organização.');
+      setConfirmLeave(false);
+      navigate('/organizacoes');
+    } catch (err) {
+      toast.error(err.message || 'Não foi possível sair da organização.');
+    }
+  };
+
+  const handleRequestJoin = async () => {
+    try {
+      const res = await requestToJoin.mutateAsync(club);
+      if (res?.alreadyMember) toast.success('Você já é membro desta organização.');
+      else toast.success('Pedido enviado! Os administradores foram avisados.');
+    } catch (err) {
+      toast.error(err.message || 'Não foi possível enviar o pedido.');
+    }
+  };
+
+  const handleAcceptInvite = async () => {
+    try {
+      await acceptInvite.mutateAsync(myInvite);
+      toast.success('Convite aceito! Bem-vindo à organização.');
+    } catch (err) {
+      toast.error(err.message || 'Não foi possível aceitar o convite.');
+    }
+  };
+
+  const handleDeclineInvite = async () => {
+    try {
+      await declineInvite.mutateAsync(myInvite);
+      toast.success('Convite recusado.');
+    } catch (err) {
+      toast.error(err.message || 'Não foi possível recusar o convite.');
+    }
+  };
 
   if (isLoading || (isAuthenticated && loadingMembership)) {
     return (
@@ -72,7 +204,7 @@ export default function ClubDetail() {
   return (
     <div className="arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8 space-y-6">
       <Button asChild variant="ghost" size="sm">
-        <Link to="/organizacoes"><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar</Link>
+        <Link to="/organizacoes"><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para organizações</Link>
       </Button>
 
       <section className="arena-panel-strong overflow-hidden rounded-[1.25rem] p-5 sm:rounded-[2rem] sm:p-8">
@@ -89,107 +221,244 @@ export default function ClubDetail() {
               <h1 className="text-2xl font-bold text-white sm:text-3xl">{club.name}</h1>
               <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-orange-50/80">
                 {location && <span className="inline-flex items-center gap-1"><MapPin className="h-4 w-4" /> {location}</span>}
+                <span className="inline-flex items-center gap-1"><Users className="h-4 w-4" /> {club.member_count || 0} membro(s)</span>
+                <RatingBadge uid={club.id} className="text-amber-200" />
               </div>
-              
+              <div className="mt-3 flex flex-wrap gap-2">
+                {club.community_name && (
+                  <Badge variant="secondary" className="rounded-full">Comunidade · {club.community_name}</Badge>
+                )}
+                {(club.directory_status || CLUB_DIRECTORY_STATUS.ACTIVE) !== CLUB_DIRECTORY_STATUS.ACTIVE && membership && (
+                  <Badge variant="warning" className="rounded-full">
+                    {(club.directory_status || CLUB_DIRECTORY_STATUS.ACTIVE) === CLUB_DIRECTORY_STATUS.REVIEW ? 'Em revisão' : 'Suspensa no diretório'}
+                  </Badge>
+                )}
+              </div>
               {isMember && (
                 <Badge variant={isAdmin ? 'warning' : 'success'} className="mt-3 rounded-full uppercase tracking-[0.12em]">
-                  {isAdmin ? 'Você é admin' : 'Você é membro da equipe'}
+                  {isAdmin ? 'Você é admin' : 'Você é membro'}
                 </Badge>
               )}
             </div>
           </div>
 
-          <div className="flex shrink-0 flex-wrap gap-2.5">
-            {isAdmin && (
+          {isMember && (
+            <div className="flex shrink-0 flex-wrap gap-2.5">
+              {isAdmin && (
+                <Button
+                  asChild
+                  size="sm"
+                  className="border-0 bg-white text-foreground hover:bg-secondary"
+                >
+                  <Link to={`/organizacoes/${clubId}/admin`}><Settings className="mr-1.5 h-4 w-4" /> Administrar</Link>
+                </Button>
+              )}
               <Button
-                asChild
+                variant="outline"
                 size="sm"
-                className="border-0 bg-white text-foreground hover:bg-secondary"
+                className="border-white/20 bg-white/10 text-white hover:bg-white/15 hover:text-white"
+                onClick={() => setConfirmLeave(true)}
               >
-                <Link to={`/organizacoes/${orgId}/admin`}><Settings className="mr-1.5 h-4 w-4" /> Administrar</Link>
+                <LogOut className="mr-1.5 h-4 w-4" /> Sair da organização
               </Button>
-            )}
-            {club.donation_link && (
-              <Button asChild size="sm" className="bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--highlight))_100%)] text-white hover:opacity-90">
-                <a href={club.donation_link} target="_blank" rel="noreferrer">
-                  <Heart className="mr-1.5 h-4 w-4" /> Ajudar (Doar)
-                </a>
-              </Button>
-            )}
-          </div>
+            </div>
+          )}
         </div>
+
+        {club.description && (
+          <p className="mt-5 max-w-2xl whitespace-pre-wrap text-sm leading-7 text-orange-50/85">{club.description}</p>
+        )}
+
+        <div className="mt-5 flex flex-wrap gap-2 text-xs text-orange-50/80">
+          {club.home_venue && <InfoChip icon={Building2}>{club.home_venue}</InfoChip>}
+          {club.contact_email && <InfoChip icon={Mail}>{club.contact_email}</InfoChip>}
+          {club.contact_phone && <InfoChip icon={Phone}>{club.contact_phone}</InfoChip>}
+          {club.instagram && <InfoChip icon={Instagram}>{club.instagram}</InfoChip>}
+          {club.cnpj && <InfoChip icon={Hash}>CNPJ {club.cnpj}</InfoChip>}
+        </div>
+
+        {club.donation_link && (
+          <div className="mt-5 flex flex-col items-start gap-3 rounded-2xl bg-white/10 p-4 sm:flex-row sm:items-center">
+            <QrCode value={club.donation_link} size={104} className="rounded-lg bg-white p-1.5" />
+            <div>
+              <p className="text-sm font-semibold text-white">Apoie esta organização com uma doação</p>
+              <p className="mt-1 text-xs text-orange-50/80">Aponte a câmera para o QR Code ou toque no link.</p>
+              <a
+                href={club.donation_link}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-1 inline-block text-xs font-medium text-amber-200 underline"
+              >
+                {club.donation_link}
+              </a>
+            </div>
+          </div>
+        )}
       </section>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full space-y-5">
-        <div className="overflow-x-auto pb-2 scrollbar-none">
-          <TabsList className="h-auto w-full flex-wrap justify-start gap-1 rounded-xl bg-transparent p-0 sm:gap-2">
-            <TabsTrigger value="pets" className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              Pets para adoção
-            </TabsTrigger>
-            <TabsTrigger value="sobre" className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              Sobre a ONG
-            </TabsTrigger>
-          </TabsList>
-        </div>
+      <ActiveCampaigns clubId={clubId} />
 
-        <TabsContent value="pets" className="min-h-[400px] outline-none">
-          <ClubPetsDataGrid clubId={orgId} canManage={isAdmin} />
-        </TabsContent>
+      {!isMember && myInvite && (
+        <Card className="rounded-[1.5rem] border-highlight/40 bg-highlight/[0.14]">
+          <CardContent className="p-5">
+            <h3 className="text-base font-semibold text-foreground">Você foi convidado para esta organização</h3>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {myInvite.inviter_name || 'Um administrador'} convidou você a participar. Aceite para entrar e acessar eventos, mural e fórum.
+            </p>
+            <div className="mt-4 flex flex-wrap gap-2.5">
+              <Button onClick={handleAcceptInvite} disabled={acceptInvite.isPending}>
+                {acceptInvite.isPending ? 'Entrando…' : 'Aceitar convite'}
+              </Button>
+              <Button variant="outline" onClick={handleDeclineInvite} disabled={declineInvite.isPending}>
+                Recusar
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
-        <TabsContent value="sobre" className="outline-none">
-          <div className="arena-panel-strong rounded-2xl p-6 sm:p-8 space-y-6">
-            <div>
-              <h3 className="font-bold text-lg text-white mb-2 flex items-center gap-2">
-                <Info className="w-5 h-5 text-primary" /> Nossa Missão
-              </h3>
-              <p className="text-orange-50/90 leading-7 whitespace-pre-wrap">
-                {club.description || 'Esta ONG ainda não adicionou uma descrição.'}
+      {!isMember && !myInvite && (
+        <Card className="rounded-[1.5rem] border-primary/20 bg-primary/5">
+          <CardContent className="p-5">
+            <h3 className="text-base font-semibold text-foreground">Participe desta organização</h3>
+            {myRequest?.status === JOIN_REQUEST_STATUS.PENDING ? (
+              <p className="mt-2 inline-flex items-center gap-2 rounded-full bg-highlight/20 px-3 py-1.5 text-sm font-medium text-highlight-foreground">
+                Pedido enviado — aguardando aprovação de um administrador.
               </p>
-            </div>
+            ) : (
+              <>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {myRequest?.status === JOIN_REQUEST_STATUS.REJECTED
+                    ? 'Seu pedido anterior não foi aprovado. Você pode pedir novamente.'
+                    : 'Peça para ingressar e um administrador irá aprovar, ou entre direto com o código de convite.'}
+                </p>
+                <Button className="mt-4" onClick={handleRequestJoin} disabled={requestToJoin.isPending || !isAuthenticated}>
+                  {requestToJoin.isPending ? 'Enviando…' : 'Pedir para ingressar'}
+                </Button>
+              </>
+            )}
+            <form onSubmit={handleJoin} className="mt-4 flex flex-col gap-3 border-t border-primary/10 pt-4 sm:flex-row">
+              <div className="relative flex-1">
+                <Hash className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/70" />
+                <Input
+                  value={code}
+                  onChange={(e) => setCode(e.target.value.toUpperCase())}
+                  placeholder="TENHO UM CÓDIGO"
+                  maxLength={12}
+                  className="pl-9 uppercase tracking-[0.2em]"
+                  disabled={!isAuthenticated}
+                />
+              </div>
+              <Button type="submit" variant="outline" disabled={joinClub.isPending || !code.trim() || !isAuthenticated}>
+                {joinClub.isPending ? 'Entrando…' : 'Entrar com código'}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {club.contact_email && (
-                <div className="flex items-center gap-3 p-4 rounded-xl bg-black/10">
-                  <Mail className="w-5 h-5 text-primary" />
-                  <div>
-                    <p className="text-xs text-orange-50/60 uppercase font-bold tracking-wider">E-mail</p>
-                    <p className="text-sm font-medium text-white">{club.contact_email}</p>
-                  </div>
-                </div>
-              )}
-              {club.contact_phone && (
-                <div className="flex items-center gap-3 p-4 rounded-xl bg-black/10">
-                  <Phone className="w-5 h-5 text-primary" />
-                  <div>
-                    <p className="text-xs text-orange-50/60 uppercase font-bold tracking-wider">Telefone</p>
-                    <p className="text-sm font-medium text-white">{club.contact_phone}</p>
-                  </div>
-                </div>
-              )}
-              {club.instagram && (
-                <div className="flex items-center gap-3 p-4 rounded-xl bg-black/10">
-                  <Instagram className="w-5 h-5 text-primary" />
-                  <div>
-                    <p className="text-xs text-orange-50/60 uppercase font-bold tracking-wider">Instagram</p>
-                    <a href={`https://instagram.com/${club.instagram.replace('@', '')}`} target="_blank" rel="noreferrer" className="text-sm font-medium text-highlight hover:underline">
-                      {club.instagram}
-                    </a>
-                  </div>
-                </div>
-              )}
-              {club.cnpj && (
-                <div className="flex items-center gap-3 p-4 rounded-xl bg-black/10">
-                  <Building2 className="w-5 h-5 text-primary" />
-                  <div>
-                    <p className="text-xs text-orange-50/60 uppercase font-bold tracking-wider">CNPJ</p>
-                    <p className="text-sm font-medium text-white">{club.cnpj}</p>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="arena-tab-bar">
+          <TabsTrigger value="pets" className="arena-tab-pill"><PawPrint className="mr-1.5 h-4 w-4" /> Pets para adoção</TabsTrigger>
+          {isMember && (
+            <>
+              <TabsTrigger value="members" className="arena-tab-pill"><Users className="mr-1.5 h-4 w-4" /> Membros</TabsTrigger>
+              <TabsTrigger value="events" className="arena-tab-pill"><CalendarDays className="mr-1.5 h-4 w-4" /> Eventos</TabsTrigger>
+              <TabsTrigger value="feed" className="arena-tab-pill"><MessageSquare className="mr-1.5 h-4 w-4" /> Mural</TabsTrigger>
+              <TabsTrigger value="forums" className="arena-tab-pill"><MessagesSquare className="mr-1.5 h-4 w-4" /> Fóruns</TabsTrigger>
+            </>
+          )}
+        </TabsList>
+
+        <TabsContent value="pets" className="mt-6 px-1">
+          <ClubPetsDataGrid clubId={clubId} canManage={canManageAnimals} />
         </TabsContent>
+
+        {isMember && (
+          <>
+            <TabsContent value="members" className="mt-6 px-1">
+              <ClubMembersTab clubId={clubId} isAdmin={isAdmin} club={club} />
+            </TabsContent>
+
+            <TabsContent value="events" className="mt-6 px-1">
+              <ClubEventsTab clubId={clubId} isAdmin={isAdmin} />
+            </TabsContent>
+
+            <TabsContent value="feed" className="mt-6 px-1">
+              <ClubFeedTab clubId={clubId} isAdmin={isAdmin} />
+            </TabsContent>
+
+            <TabsContent value="forums" className="mt-6 px-1">
+              <ClubForumsTab
+                clubId={clubId}
+                isAdmin={isAdmin}
+                initialThreadId={threadParam}
+                onThreadChange={setThreadParam}
+              />
+            </TabsContent>
+          </>
+        )}
       </Tabs>
+
+      <ConfirmDialog
+        open={confirmLeave}
+        onOpenChange={setConfirmLeave}
+        title="Sair da organização"
+        description={`Tem certeza que deseja sair de "${club.name}"?`}
+        confirmLabel="Sair"
+        destructive
+        loading={leaveClub.isPending}
+        onConfirm={handleLeave}
+      />
     </div>
+  );
+}
+
+function InfoChip({ icon: Icon, children }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1">
+      <Icon className="h-3.5 w-3.5" /> {children}
+    </span>
+  );
+}
+
+const brl = (value) => Number(value || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+/** Chamados de doação ativos — visíveis a todos, não só a quem administra a organização. */
+function ActiveCampaigns({ clubId }) {
+  const { data: campaigns = [] } = useClubCampaigns(clubId);
+  const active = campaigns.filter((c) => c.status !== CAMPAIGN_STATUS.CONCLUDED);
+  if (active.length === 0) return null;
+
+  return (
+    <Card className="rounded-[1.5rem]">
+      <CardContent className="space-y-4 p-5">
+        <h3 className="flex items-center gap-2 text-base font-semibold text-foreground">
+          <HandCoins className="h-4 w-4 text-primary" /> Chamados de doação ativos
+        </h3>
+        <div className="space-y-3">
+          {active.map((campaign) => {
+            const pct = campaign.goal > 0 ? Math.min(100, (Number(campaign.raised || 0) / campaign.goal) * 100) : 0;
+            return (
+              <div key={campaign.id} className="rounded-xl border border-border p-3.5">
+                <div className="mb-1.5 flex flex-wrap items-center justify-between gap-2">
+                  <span className="text-sm font-medium text-foreground">{campaign.title}</span>
+                  {campaign.deadline && <span className="text-xs text-muted-foreground">Até {campaign.deadline}</span>}
+                </div>
+                <div className="mb-1.5 h-1.5 overflow-hidden rounded-full bg-secondary">
+                  <div
+                    className="h-full rounded-full bg-[linear-gradient(90deg,hsl(var(--primary)),hsl(var(--highlight)))]"
+                    style={{ width: `${pct}%` }}
+                  />
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  <strong>{brl(campaign.raised)}</strong> arrecadados de {brl(campaign.goal)}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </CardContent>
+    </Card>
   );
 }

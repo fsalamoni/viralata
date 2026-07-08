@@ -33,6 +33,7 @@ const OrganizationsHub = lazy(() => import('@/modules/organizations/pages/Organi
 const CreateOrganization = lazy(() => import('@/modules/organizations/pages/CreateClub'));
 const OrganizationDetail = lazy(() => import('@/modules/organizations/pages/ClubDetail'));
 const OrganizationAdminPanel = lazy(() => import('@/modules/organizations/pages/OrganizationAdminPanel'));
+const EventDetail = lazy(() => import('@/modules/organizations/pages/EventDetail'));
 
 // ─── Comunidades ──────────────────────────────────────────────────────────────
 const CommunitiesDirectory = lazy(() => import('@/modules/communities/pages/CommunitiesDirectory'));
@@ -128,19 +129,16 @@ function withLayout(pageName, Component) {
 }
 
 // ─── Redirects legados (Organizações) ────────────────────────────────────────
-// `/organizacoes/:orgId` passou a ser o hub de gestão; o perfil público da
-// organização (o antigo destino desta rota) agora vive em `/comunidade/:orgId`.
+// O perfil público e os eventos das organizações já moraram em
+// `/comunidade/:orgId[...]` — hoje essa rota pertence ao módulo de
+// comunidades e as organizações vivem em `/organizacoes/:orgId[...]`.
 // Notificações antigas já gravadas no Firestore ainda apontam para o caminho
-// anterior — estes redirects preservam esses links.
-function LegacyOrgDetailRedirect() {
-  const { orgId } = useParams();
-  const location = useLocation();
-  return <Navigate to={`/comunidade/${orgId}${location.search}`} replace />;
-}
-
+// anterior — este redirect preserva os links de evento; links antigos de
+// perfil (`/comunidade/:orgId`) são resolvidos pelo fallback do próprio
+// `CommunityDetail`, que detecta ids de organização e redireciona.
 function LegacyOrgEventRedirect() {
   const { orgId, eventId } = useParams();
-  return <Navigate to={`/comunidade/${orgId}/eventos/${eventId}`} replace />;
+  return <Navigate to={`/organizacoes/${orgId}/eventos/${eventId}`} replace />;
 }
 
 function RouteTelemetry() {
@@ -230,7 +228,12 @@ export default function App() {
                   path="/organizacoes/:orgId/admin"
                   element={<ProtectedRoute>{withLayout('OrganizationAdminPanel', OrganizationAdminPanel)}</ProtectedRoute>}
                 />
-                <Route path="/organizacoes/:orgId" element={<ProtectedRoute>{withLayout('OrganizationDetail', OrganizationDetail)}</ProtectedRoute>} />
+                <Route
+                  path="/organizacoes/:orgId/eventos/:eventId"
+                  element={<ProtectedRoute>{withLayout('EventDetail', EventDetail)}</ProtectedRoute>}
+                />
+                {/* Perfil público da ONG — aberto a visitantes, como o diretório. */}
+                <Route path="/organizacoes/:orgId" element={withLayout('OrganizationDetail', OrganizationDetail)} />
 
                 {/* ── Chat ─────────────────────────────────────────────── */}
                 <Route
@@ -300,6 +303,7 @@ export default function App() {
                 <Route path="/inicio" element={<Navigate to="/feed" replace />} />
                 <Route path="/clubes" element={<Navigate to="/comunidade" replace />} />
                 <Route path="/atletas" element={<Navigate to="/feed" replace />} />
+                <Route path="/comunidade/:orgId/eventos/:eventId" element={<LegacyOrgEventRedirect />} />
 
                 {/* ── 404 ───────────────────────────────────────────────── */}
                 <Route path="*" element={<PageNotFound />} />

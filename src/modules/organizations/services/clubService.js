@@ -417,7 +417,7 @@ export async function approveJoinRequest(request, actor) {
     title: `Pedido aprovado: você agora é membro de "${trimmed(request.club_name).slice(0, 50)}"`,
     message: 'Toque para abrir a organização e ver eventos, mural e fórum.',
     type: NOTIFICATION_TYPE.CLUB_JOIN_APPROVED,
-    link: `/comunidade/${request.club_id}`,
+    link: `/organizacoes/${request.club_id}`,
     actor,
   });
   await createAuditLog({ action: 'club_join_approved', actor, details: { club_id: request.club_id, user_id: request.user_id } });
@@ -434,7 +434,7 @@ export async function rejectJoinRequest(request, actor) {
     title: `Seu pedido para "${trimmed(request.club_name).slice(0, 50)}" não foi aprovado`,
     message: 'Você pode falar com um administrador da organização para mais informações.',
     type: NOTIFICATION_TYPE.CLUB_JOIN_REJECTED,
-    link: `/comunidade/${request.club_id}`,
+    link: `/organizacoes/${request.club_id}`,
     actor,
   });
   await createAuditLog({ action: 'club_join_rejected', actor, details: { club_id: request.club_id, user_id: request.user_id } });
@@ -471,7 +471,7 @@ export async function inviteMemberToClub(club, target, inviter, profile) {
     title: `${inviterName} convidou você para a organização "${trimmed(club.name).slice(0, 50)}"`,
     message: 'Toque para aceitar ou recusar o convite.',
     type: NOTIFICATION_TYPE.CLUB_INVITE,
-    link: `/comunidade/${club.id}`,
+    link: `/organizacoes/${club.id}`,
     actor: { uid: inviter.uid, displayName: inviterName },
   });
   await createAuditLog({ action: 'club_member_invited', actor: inviter, details: { club_id: club.id, user_id: target.user_id } });
@@ -664,7 +664,7 @@ export async function createClubEvent(clubId, data, user) {
         title: `Novo evento na organização: "${trimmed(data.title).slice(0, 60)}"`,
         message: `${creatorName} criou um evento. Toque para ver e responder.`,
         type: NOTIFICATION_TYPE.CLUB_EVENT_PUBLISHED,
-        link: `/comunidade/${clubId}/eventos/${id}`,
+        link: `/organizacoes/${clubId}/eventos/${id}`,
         actor: { uid: user.uid, displayName: creatorName },
       });
     } catch (err) {
@@ -784,7 +784,7 @@ export async function inviteToEvent(event, target, inviter, profile) {
     title: `${inviterName} convidou você para "${trimmed(event.title).slice(0, 60)}"`,
     message: 'Toque para ver o evento e responder: Vou, Talvez ou Não vou.',
     type: NOTIFICATION_TYPE.EVENT_INVITE,
-    link: `/comunidade/${event.club_id}/eventos/${event.id}`,
+    link: `/organizacoes/${event.club_id}/eventos/${event.id}`,
     actor: { uid: inviter.uid, displayName: inviterName },
   });
   return payload;

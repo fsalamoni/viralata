@@ -65,7 +65,7 @@ export default function EventDetail() {
           }
           action={
             <Button asChild>
-              <Link to={membership ? `/comunidade/${clubId}?tab=events` : `/comunidade/${clubId}`}>
+              <Link to={membership ? `/organizacoes/${clubId}?tab=events` : `/organizacoes/${clubId}`}>
                 {membership ? 'Voltar para eventos' : 'Ir para a organização'}
               </Link>
             </Button>
@@ -81,7 +81,7 @@ export default function EventDetail() {
   return (
     <div className="arena-page mx-auto max-w-4xl space-y-6 px-5 py-6 pb-12">
       <Button asChild variant="ghost" size="sm">
-        <Link to={`/comunidade/${clubId}?tab=events`}><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para eventos</Link>
+        <Link to={`/organizacoes/${clubId}?tab=events`}><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para eventos</Link>
       </Button>
 
       <section className="arena-panel-strong overflow-hidden rounded-[1.25rem] p-5 sm:rounded-[2rem] sm:p-8">

@@ -148,7 +148,7 @@ function EventCard({ event, clubId, isAdmin }) {
             <Pencil className="mr-1.5 h-3.5 w-3.5" /> Editar
           </Button>
           <Button asChild size="sm" variant="secondary" className="ml-auto">
-            <Link to={`/comunidade/${clubId}/eventos/${event.id}`}>
+            <Link to={`/organizacoes/${clubId}/eventos/${event.id}`}>
               Ingressar no evento <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
             </Link>
           </Button>

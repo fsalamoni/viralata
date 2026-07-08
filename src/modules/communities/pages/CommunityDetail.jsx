@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, Navigate } from 'react-router-dom';
 import { ArrowLeft, Users, Calendar, MessageSquare, MessageCircle, Info } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
+import { EmptyState } from '@/components/ui/empty-state';
 import { getCommunity, joinCommunity } from '../services/communityService';
+import { getClub } from '@/modules/organizations/services/clubService';
 import { toast } from 'sonner';
 
 import MuralTab from '../components/MuralTab';
@@ -20,12 +22,33 @@ export default function CommunityDetail() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('mural');
   const [isMember, setIsMember] = useState(false);
+  const [legacyOrgRedirect, setLegacyOrgRedirect] = useState(false);
 
   useEffect(() => {
-    getCommunity(communityId)
-      .then(setCommunity)
-      .catch(() => toast.error('Comunidade não encontrada'))
-      .finally(() => setLoading(false));
+    let cancelled = false;
+    setLoading(true);
+    (async () => {
+      try {
+        const data = await getCommunity(communityId);
+        if (cancelled) return;
+        if (data) {
+          setCommunity(data);
+          return;
+        }
+        // Link legado: notificações antigas apontam `/comunidade/{orgId}` para
+        // o perfil público de uma ORGANIZAÇÃO (rota que hoje pertence às
+        // comunidades). Se o id for de uma organização, redireciona.
+        const club = await getClub(communityId).catch(() => null);
+        if (cancelled) return;
+        if (club) setLegacyOrgRedirect(true);
+        else setCommunity(null);
+      } catch {
+        if (!cancelled) setCommunity(null);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
   }, [communityId]);
 
   const handleJoin = async () => {
@@ -39,8 +62,26 @@ export default function CommunityDetail() {
     }
   };
 
-  if (loading) return <div className="arena-page mx-auto w-full max-w-5xl px-4 py-6 space-y-6"><Skeleton className="h-64 rounded-3xl" /></div>;
-  if (!community) return <div>Comunidade não encontrada</div>;
+  if (legacyOrgRedirect) return <Navigate to={`/organizacoes/${communityId}`} replace />;
+  if (loading) {
+    return (
+      <div className="arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8 space-y-6">
+        <Skeleton className="h-64 rounded-3xl" />
+      </div>
+    );
+  }
+  if (!community) {
+    return (
+      <div className="arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8">
+        <EmptyState
+          icon={Users}
+          title="Comunidade não encontrada"
+          description="A comunidade que você procura não existe ou foi removida."
+          action={<Button asChild><Link to="/comunidade">Voltar para comunidades</Link></Button>}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8 space-y-6">

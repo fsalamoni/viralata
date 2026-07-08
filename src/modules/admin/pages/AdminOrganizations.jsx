@@ -270,7 +270,7 @@ export default function AdminOrganizations() {
                                 {club.featured ? 'Em destaque' : 'Destacar'}
                               </Button>
                               <Button asChild variant="outline" size="icon">
-                                <Link to={`/comunidade/${club.id}`} aria-label={`Abrir ${club.name}`}>
+                                <Link to={`/organizacoes/${club.id}`} aria-label={`Abrir ${club.name}`}>
                                   <Eye className="h-4 w-4" />
                                 </Link>
                               </Button>
