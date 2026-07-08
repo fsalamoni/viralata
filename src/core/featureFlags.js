@@ -48,6 +48,16 @@ export const FEATURE_FLAG = Object.freeze({
    * recebe o botão desabilitado sem explicação.
    */
   PET_ADOPTION_GATING: 'pet_adoption_gating',
+
+  /**
+   * Mural com anexos: habilita o `MuralTabAdmin`, que permite ao admin da
+   * comunidade (ou membros com permissão `feed`) criar posts com anexos
+   * (imagens, vídeos, PDFs, documentos) além de curtidas e comentários.
+   * Quando ligada, sobrescreve `MURAL_LIKES_AND_COMMENTS` (a versão Admin
+   * já inclui tudo da Enhanced). Desligada, o mural renderiza em modo
+   * somente leitura ou sem anexos (conforme as outras flags).
+   */
+  MURAL_RICH_POSTS: 'mural_rich_posts',
 });
 
 /** Metadados de exibição para o painel de flags (admin master). */
@@ -79,7 +89,7 @@ export const FEATURE_FLAG_META = Object.freeze({
       + 'Desligada, o mural renderiza em modo somente leitura, sem '
       + 'qualquer alteração no comportamento atual.',
   },
-  [FEATURE_FLAG.PET_ADOPTION_GATING]: {
+[FEATURE_FLAG.PET_ADOPTION_GATING]: {
     label: 'Explicação de bloqueio na adoção/chat',
     description:
       'Mostra um card na página do pet com o(s) motivo(s) de o usuário não '
@@ -88,6 +98,16 @@ export const FEATURE_FLAG_META = Object.freeze({
       + 'As validações de permissão já ficam ativas mesmo com a flag '
       + 'desligada — ela apenas controla o texto explicativo. Desligada, '
       + 'o usuário recebe o botão desabilitado sem a explicação.',
+  },
+  [FEATURE_FLAG.MURAL_RICH_POSTS]: {
+    label: 'Mural · posts com anexos',
+    description:
+      'Permite ao admin da comunidade (e membros com permissão `feed`) '
+      + 'criar posts no mural com anexos (fotos, vídeos, PDFs, '
+      + 'documentos), além de curtidas e comentários. Os anexos são '
+      + 'armazenados via `storageService.uploadImage` (Firebase Storage). '
+      + 'Desligada, o mural renderiza em modo somente leitura ou sem '
+      + 'anexos (conforme as outras flags).',
   },
 });
 

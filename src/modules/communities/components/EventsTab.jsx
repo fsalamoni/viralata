@@ -27,7 +27,13 @@ export default function EventsTab({ communityId, isAdmin, membership, community 
     fetchEvents();
   }, [communityId]);
 
-  const canManageEvents = hasCommunityPermission(community, membership, COMMUNITY_PERMISSION.EVENTS);
+  // Dono da comunidade SEMPRE pode gerenciar eventos (não depende da
+  // membership carregar). Membros com permissão granular `manage_events`
+  // também. Evita o bug de "criei a comunidade e o botão de criar evento
+  // não aparece" em dados legados / membership ainda carregando.
+  const isCommunityCreator = community?.owner_id === user?.uid;
+  const canManageEvents = isCommunityCreator
+    || hasCommunityPermission(community, membership, COMMUNITY_PERMISSION.EVENTS);
 
   const handleDelete = async (eventId, e) => {
     e.stopPropagation();
