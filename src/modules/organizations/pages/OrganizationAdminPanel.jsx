@@ -24,6 +24,7 @@ import ClubDonationsTab from '@/modules/organizations/components/ClubDonationsTa
 import ClubFinanceTab from '@/modules/organizations/components/ClubFinanceTab';
 import ClubGeneralAdminTab from '@/modules/organizations/components/ClubGeneralAdminTab';
 import ClubChatAdminTab from '@/modules/organizations/components/ClubChatAdminTab';
+import ClubThemedScope from '@/modules/organizations/components/ClubThemedScope';
 
 const TAB_ICONS = {
   overview: LayoutGrid,
@@ -128,7 +129,7 @@ export default function OrganizationAdminPanel() {
   const location = [club.city, club.state].filter(Boolean).join(', ');
 
   return (
-    <div className="arena-page mx-auto max-w-5xl space-y-6 px-5 py-6 pb-12">
+    <ClubThemedScope club={club} className="arena-page mx-auto max-w-5xl space-y-6 px-5 py-6 pb-12">
       <Button asChild variant="ghost" size="sm">
         <Link to="/organizacoes"><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar às minhas organizações</Link>
       </Button>
@@ -166,7 +167,7 @@ export default function OrganizationAdminPanel() {
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="arena-tab-bar">
           {visibleTabs.map((tab) => (
-            <TabsTrigger key={tab.key} value={tab.key} className={cn('arena-tab-pill', 'gap-1.5')}>
+            <TabsTrigger key={tab.key} value={tab.key} className={cn('arena-tab-pill gap-1.5')}>
               <tab.icon className="h-4 w-4" /> {tab.label}
             </TabsTrigger>
           ))}
@@ -200,7 +201,7 @@ export default function OrganizationAdminPanel() {
           <ClubAdminTab club={club} />
         </TabsContent>
       </Tabs>
-    </div>
+    </ClubThemedScope>
   );
 }
 

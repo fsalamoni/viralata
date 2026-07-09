@@ -1,77 +1,42 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { Check, Copy, RefreshCw, Save, Search, Trash2, UserPlus, Users, X } from 'lucide-react';
-import { listAllUsers } from '@/modules/admin/services/adminService';
+import { Check, Copy, RefreshCw, Trash2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { UserAvatar } from '@/components/ui/user-avatar';
-import { ConfirmDialog } from '@/components/ui/confirm-dialog';
-import { ImageUpload } from '@/components/ui/image-upload';
 import { useClipboard } from '@/core/lib/useClipboard';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import {
-  useUpdateClub,
   useRegenerateInviteCode,
   useDeleteClub,
-  useJoinRequests,
-  useApproveJoinRequest,
-  useRejectJoinRequest,
-  useClubInvites,
-  useInviteMembersToClub,
-  useCancelClubInvite,
-  useClubMembers,
 } from '@/modules/organizations/hooks/useClubs';
+import ClubThemingSection from './ClubThemingSection';
 
 /**
- * Aba "Configurações" do painel de administração da organização: identidade
- * (nome, logo, contato, CNPJ, link de doação), código de convite e exclusão
- * da organização. Exclusiva de administradores (role `admin`) — as capacidades de
- * gestão de equipe (convites, pedidos de ingresso, permissões) ficam na aba
- * Equipe (`ClubTeamTab.jsx`), que reaproveita `ClubJoinRequests` e
- * `ClubAddMembers` exportados abaixo.
+ * Aba "Configurações" do painel de administração da organização.
+ *
+ * Após a consolidação, esta aba é dedicada a configurações estruturais
+ * da ONG que NÃO estão duplicadas em "Geral":
+ *  - Código de convite (com regen)
+ *  - Exclusão definitiva (zona de risco)
+ *  - Personalização visual (cores de cards, botões, textos)
+ *
+ * As informações de identidade, localização, contatos, CNPJ, link de
+ * doação, história e chat habilitado são editadas exclusivamente na aba
+ * "Geral" (`ClubGeneralAdminTab`), através do mesmo `useUpdateClub` e do
+ * mesmo `normalizeClubInput`. Remover a duplicação aqui não afeta o banco
+ * nem outros pontos do front-end.
+ *
+ * Acesso: somente o proprietário (admin_only). Membros sem a maior
+ * permissão não veem esta aba — ela é filtrada em `visibleAdminTabs`.
  */
 export default function ClubAdminTab({ club }) {
   const navigate = useNavigate();
   const { copy, copied } = useClipboard();
-  const updateClub = useUpdateClub(club.id);
   const regenerate = useRegenerateInviteCode(club.id);
   const deleteClub = useDeleteClub(club.id);
   const [confirmRegen, setConfirmRegen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
-
-  const [form, setForm] = useState({
-    name: club.name || '',
-    description: club.description || '',
-    city: club.city || '',
-    state: club.state || '',
-    home_venue: club.home_venue || '',
-    contact_email: club.contact_email || '',
-    contact_phone: club.contact_phone || '',
-    instagram: club.instagram || '',
-    logo_url: club.logo_url || '',
-    cnpj: club.cnpj || '',
-    donation_link: club.donation_link || '',
-  });
-
-  const setField = (key) => (e) => setForm((prev) => ({ ...prev, [key]: e.target.value }));
-
-  const handleSave = async (e) => {
-    e.preventDefault();
-    if (!form.name.trim()) {
-      toast.error('O nome da organização é obrigatório.');
-      return;
-    }
-    try {
-      await updateClub.mutateAsync(form);
-      toast.success('Organização atualizada.');
-    } catch (err) {
-      toast.error(err.message || 'Não foi possível salvar.');
-    }
-  };
 
   const handleRegenerate = async () => {
     try {
@@ -118,83 +83,7 @@ export default function ClubAdminTab({ club }) {
         </CardContent>
       </Card>
 
-      <Card className="rounded-xl">
-        <CardHeader className="p-4 sm:p-5">
-          <CardTitle className="text-base">Editar organização</CardTitle>
-          <CardDescription>Atualize as informações exibidas para a comunidade.</CardDescription>
-        </CardHeader>
-        <CardContent className="p-4 pt-0 sm:p-5 sm:pt-0">
-          <form onSubmit={handleSave} className="space-y-4">
-            <div className="space-y-2">
-              <Label>Logo / imagem da organização</Label>
-              <ImageUpload
-                value={form.logo_url}
-                onChange={(url) => setForm((prev) => ({ ...prev, logo_url: url }))}
-                folder="clubs"
-                shape="square"
-                label="Enviar logo"
-                hint="Logo ou foto da organização exibida no diretório e na página da organização."
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="admin_name">Nome *</Label>
-              <Input id="admin_name" value={form.name} onChange={setField('name')} maxLength={80} required />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="admin_description">Descrição</Label>
-              <textarea
-                id="admin_description"
-                value={form.description}
-                onChange={setField('description')}
-                rows={3}
-                maxLength={1000}
-                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              />
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="admin_city">Cidade</Label>
-                <Input id="admin_city" value={form.city} onChange={setField('city')} maxLength={60} />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="admin_state">Estado (UF)</Label>
-                <Input id="admin_state" value={form.state} onChange={setField('state')} maxLength={2} />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="admin_venue">Endereço / local principal</Label>
-              <Input id="admin_venue" value={form.home_venue} onChange={setField('home_venue')} maxLength={120} />
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="admin_email">E-mail de contato</Label>
-                <Input id="admin_email" type="email" value={form.contact_email} onChange={setField('contact_email')} maxLength={120} />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="admin_phone">Telefone de contato</Label>
-                <Input id="admin_phone" type="tel" value={form.contact_phone} onChange={setField('contact_phone')} maxLength={30} />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="admin_instagram">Instagram</Label>
-              <Input id="admin_instagram" value={form.instagram} onChange={setField('instagram')} maxLength={60} />
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="admin_cnpj">CNPJ (se for ONG formalizada)</Label>
-                <Input id="admin_cnpj" value={form.cnpj} onChange={setField('cnpj')} maxLength={18} placeholder="00.000.000/0000-00" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="admin_donation_link">Link de doação (Pix, vaquinha…)</Label>
-                <Input id="admin_donation_link" value={form.donation_link} onChange={setField('donation_link')} maxLength={300} placeholder="https://..." />
-              </div>
-            </div>
-            <Button type="submit" disabled={updateClub.isPending}>
-              <Save className="mr-1.5 h-4 w-4" /> {updateClub.isPending ? 'Salvando…' : 'Salvar alterações'}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+      <ClubThemingSection club={club} />
 
       <Card className="rounded-xl border-destructive/30">
         <CardHeader className="p-4 sm:p-5">
@@ -230,5 +119,3 @@ export default function ClubAdminTab({ club }) {
     </div>
   );
 }
-
-/** Pedidos de ingresso pendentes — o admin aprova ou recusa. */
