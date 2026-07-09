@@ -33,6 +33,17 @@ export default function CommunityDetail() {
       .finally(() => setLoading(false));
   }, [communityId]);
 
+  // Depois de um claim de ownership (comunidade órfã → owner_id = user.uid),
+  // recarrega o doc da comunidade pra todos os cálculos (canAdmin, Mural,
+  // Eventos, etc.) refletirem o novo owner_id.
+  const refreshCommunity = () => {
+    setLoading(true);
+    getCommunity(communityId)
+      .then(setCommunity)
+      .catch(() => toast.error('Comunidade não encontrada'))
+      .finally(() => setLoading(false));
+  };
+
   const { data: membership } = useMyCommunityMembership(communityId);
 
   // IMPORTANTE: derivar isMember/isAdmin diretamente de community + membership + user.
@@ -76,6 +87,7 @@ export default function CommunityDetail() {
         user={user}
         canAdmin={canAdmin}
         isMember={isMember}
+        onClaimed={refreshCommunity}
       />
 
       <section className="arena-panel-strong overflow-hidden rounded-3xl relative min-h-[200px] flex items-end p-6">
