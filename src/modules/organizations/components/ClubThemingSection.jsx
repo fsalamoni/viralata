@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { Loader2, Palette, RotateCcw, Save } from 'lucide-react';
+import { Loader2, Palette, RotateCcw, Save, Type } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { useUpdateClub } from '@/modules/organizations/hooks/useClubs';
 import {
   CLUB_THEME_FIELDS,
+  CLUB_THEME_SECTIONS,
   DEFAULT_CLUB_THEME,
   effectiveClubTheme,
   normalizeClubThemeInput,
@@ -17,9 +18,7 @@ import {
 
 /**
  * Converte um valor HSL em string (`"H S% L%"`) para um hex `#RRGGBB`
- * aceitável pelo `<input type="color">`. Aceitamos pequenas variações
- * (falta de `%`, espaços extras) e tratamos transparências como base
- * branca para o preview.
+ * aceitável pelo `<input type="color">`.
  */
 function hslStringToHex(hsl) {
   if (typeof hsl !== 'string') return '#cccccc';
@@ -76,22 +75,19 @@ function hexToHslString(hex) {
 
 /**
  * Seção de personalização visual do clube. Renderiza um `<input type="color">`
- * para cada campo configurável do tema, com um preview ao vivo e botões de
- * "Restaurar padrão" e "Salvar alterações". As mudanças só persistem após
- * clicar em "Salvar" — até lá o preview é local.
- *
- * O tema é salvo como objeto `theme` no doc do clube via `useUpdateClub`.
- * Aplicação visual: `ClubThemedScope` consome esse objeto e injeta CSS
- * variables no escopo da página.
+ * para cada campo configurável do tema (8 no total: 5 da UI geral + 3 do
+ * card da ONG), agrupados por seção. Preview ao vivo em duas áreas:
+ *  - "Cores da UI": chips simulando botões/cards de fundo
+ *  - "Card da ONG": preview real do banner com nome, mesmo markup
+ *    usado em `ClubCover.jsx`, para o admin ver exatamente como vai
+ *    aparecer na home pública antes de salvar.
  */
 export default function ClubThemingSection({ club }) {
   const updateClub = useUpdateClub(club.id);
   const initial = effectiveClubTheme(club);
   const [theme, setTheme] = useState(initial);
-  const [draft, setDraft] = useState(initial); // versão editável, ainda não persistida
+  const [draft, setDraft] = useState(initial);
 
-  // Mantém o `theme` (estado persistido) sincronizado quando o Firestore
-  // atualiza — por ex., após salvar.
   useEffect(() => { setTheme(initial); }, [club.id, club?.updated_at]);
 
   const liveStyle = buildClubThemeStyle(draft);
@@ -117,6 +113,11 @@ export default function ClubThemingSection({ club }) {
 
   const dirty = CLUB_THEME_FIELDS.some((f) => draft[f.key] !== theme[f.key]);
 
+  const grouped = CLUB_THEME_SECTIONS.map((section) => ({
+    ...section,
+    fields: CLUB_THEME_FIELDS.filter((f) => f.section === section.key),
+  }));
+
   return (
     <Card className="rounded-xl overflow-hidden">
       <CardHeader className="p-4 sm:p-5">
@@ -124,19 +125,53 @@ export default function ClubThemingSection({ club }) {
           <Palette className="h-4 w-4 text-primary" /> Personalização visual
         </CardTitle>
         <CardDescription>
-          Escolha as cores dos cards, botões e textos da sua ONG. As mudanças entram em
-          vigor quando você salvar.
+          Escolha as cores dos botões, fundos, do card principal e do
+          nome da sua ONG. As mudanças entram em vigor quando você salvar.
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4 p-4 pt-0 sm:p-5 sm:pt-0">
+      <CardContent className="space-y-5 p-4 pt-0 sm:p-5 sm:pt-0">
+
+        {/* PREVIEW — CARD DA ONG (markup espelha ClubCover.jsx para
+            fidelidade total). */}
         <div
-          className="rounded-xl border border-border p-4 transition-colors"
-          style={{
-            background: `linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--card)) 100%), hsl(${draft.primary} / 0.06)`,
-            ...liveStyle,
-          }}
+          className="overflow-hidden rounded-xl border border-border"
+          style={liveStyle}
         >
-          <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Pré-visualização</p>
+          <div
+            className="relative h-44 max-h-[260px] w-full sm:h-52"
+            style={{
+              background: `var(--cover-gradient, linear-gradient(135deg, hsl(20 90% 50%) 0%, hsl(350 80% 55%) 100%))`,
+            }}
+          >
+            <span className="absolute bottom-3 right-4 text-[11px] font-bold uppercase tracking-[0.2em] text-white/60 sm:right-6">
+              Prévia
+            </span>
+          </div>
+          <div className="relative z-10 -mt-12 bg-background px-4 pb-3 pt-0 sm:-mt-14">
+            <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-2xl border-4 border-background bg-gradient-to-br from-orange-400 to-rose-500 text-3xl font-extrabold text-white shadow-lg sm:h-28 sm:w-28">
+              {(club.name || 'A').slice(0, 1).toUpperCase()}
+            </div>
+            <h3
+              className="mt-3 text-xl font-bold tracking-tight sm:text-2xl"
+              style={{ color: 'hsl(var(--cover-name, 0 0% 100%))' }}
+            >
+              {club.name || 'Nome da ONG'}
+            </h3>
+            <p
+              className="mt-1 text-[11px] text-muted-foreground"
+              style={{ color: 'hsl(var(--muted-foreground))' }}
+            >
+              Como o card aparece na home pública.
+            </p>
+          </div>
+        </div>
+
+        {/* PREVIEW — UI (chips simulando botões/cards). */}
+        <div
+          className="rounded-xl border border-border p-4"
+          style={liveStyle}
+        >
+          <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Prévia da UI</p>
           <div className="mt-2 flex flex-wrap items-center gap-2">
             <span className="rounded-full bg-primary px-4 py-1.5 text-xs font-semibold text-primary-foreground">Botão primário</span>
             <span className="rounded-full bg-highlight px-4 py-1.5 text-xs font-semibold text-highlight-foreground">Destaque</span>
@@ -149,36 +184,50 @@ export default function ClubThemingSection({ club }) {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          {CLUB_THEME_FIELDS.map((field) => (
-            <div
-              key={field.key}
-              className="flex items-center gap-3 rounded-xl border border-border bg-card/60 p-3"
-            >
-              <div className="relative">
-                <input
-                  type="color"
-                  aria-label={`Cor: ${field.label}`}
-                  value={hslStringToHex(draft[field.key])}
-                  onChange={(e) => setColor(field.key, e.target.value)}
-                  className="h-12 w-12 cursor-pointer appearance-none rounded-lg border border-border bg-background p-0"
-                />
-              </div>
-              <div className="min-w-0 flex-1">
-                <Label htmlFor={`theme_${field.key}`} className="text-sm font-semibold">
-                  {field.label}
-                </Label>
-                <p className="text-[11px] text-muted-foreground">{field.hint}</p>
-                <Input
-                  id={`theme_${field.key}`}
-                  readOnly
-                  value={draft[field.key]}
-                  className="mt-1 h-7 font-mono text-[11px]"
-                />
-              </div>
+        {/* GRUPOS DE CAMPOS */}
+        {grouped.map((section) => (
+          <div key={section.key} className="space-y-3">
+            <div className="flex items-center gap-2 border-b border-border pb-1">
+              <h4 className="text-sm font-semibold">{section.title}</h4>
+              <span className="text-[11px] text-muted-foreground">{section.description}</span>
             </div>
-          ))}
-        </div>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {section.fields.map((field) => (
+                <div
+                  key={field.key}
+                  className="flex items-center gap-3 rounded-xl border border-border bg-card/60 p-3"
+                >
+                  <div className="relative">
+                    <input
+                      type="color"
+                      aria-label={`Cor: ${field.label}`}
+                      value={hslStringToHex(draft[field.key])}
+                      onChange={(e) => setColor(field.key, e.target.value)}
+                      className="h-12 w-12 cursor-pointer appearance-none rounded-lg border border-border bg-background p-0"
+                    />
+                    {/* Mostrador discreto do hex atual */}
+                    <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 rounded bg-background/80 px-1 text-[8px] font-mono uppercase text-muted-foreground">
+                      {hslStringToHex(draft[field.key]).replace('#', '')}
+                    </span>
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <Label htmlFor={`theme_${field.key}`} className="flex items-center gap-1.5 text-sm font-semibold">
+                      {field.key.startsWith('cover_') && field.key !== 'cover_name' && <Type className="h-3 w-3" />}
+                      {field.label}
+                    </Label>
+                    <p className="text-[11px] text-muted-foreground">{field.hint}</p>
+                    <Input
+                      id={`theme_${field.key}`}
+                      readOnly
+                      value={draft[field.key]}
+                      className="mt-1 h-7 font-mono text-[11px]"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
 
         <div className="flex flex-wrap items-center justify-end gap-2 border-t border-border pt-3">
           <Button variant="ghost" size="sm" onClick={handleReset} disabled={updateClub.isPending}>

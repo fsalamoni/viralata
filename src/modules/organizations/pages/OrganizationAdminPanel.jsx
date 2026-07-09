@@ -131,7 +131,12 @@ export default function OrganizationAdminPanel() {
   return (
     <ClubThemedScope club={club} className="arena-page mx-auto max-w-5xl space-y-6 px-5 py-6 pb-12">
       <Button asChild variant="ghost" size="sm">
-        <Link to="/organizacoes"><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar às minhas organizações</Link>
+        {/* Saindo do painel admin, o usuário volta direto à PÁGINA
+            PÚBLICA da ONG (perfil / home), não à central de organizações.
+            Comportamento esperado em qualquer aba do painel admin. */}
+        <Link to={`/organizacoes/${orgId}`}>
+          <ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para a ONG
+        </Link>
       </Button>
 
       <section className="arena-panel-strong overflow-hidden rounded-[1.25rem] p-5 sm:rounded-[2rem] sm:p-8">

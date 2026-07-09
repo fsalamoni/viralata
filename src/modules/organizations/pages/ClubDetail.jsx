@@ -18,7 +18,7 @@ import {
 } from '../hooks/useClubs';
 import { useMyPets } from '@/modules/pets/hooks/usePets';
 import { JOIN_REQUEST_STATUS } from '../domain/constants';
-import { isClubOwner, hasClubPermission, hasAnyClubPermission } from '../domain/permissions';
+import { isClubOwner, hasClubPermission } from '../domain/permissions';
 import { CLUB_PERMISSION } from '../domain/constants';
 import ClubPetsPublicTab from '../components/ClubPetsPublicTab';
 import ClubGeneralTab from '../components/ClubGeneralTab';
@@ -141,91 +141,98 @@ export default function ClubDetail() {
   // painel admin cuida do resto para membros com a permissão adequada.
 
   return (
-    <ClubThemedScope club={club} className="arena-page mx-auto w-full max-w-5xl px-4 pb-12 pt-0 sm:px-6 lg:px-8">
-      {/* Botão "Voltar" no canto superior */}
-      <div className="px-1 pb-3 pt-4">
-        <Button asChild variant="ghost" size="sm" className="-ml-2 text-muted-foreground">
-          <Link to="/organizacoes">
-            <ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar
-          </Link>
-        </Button>
-      </div>
-
-      {/* CAPA — banner laranja + chips */}
+    <ClubThemedScope club={club} className="min-h-screen">
+      {/* CAPA — full-width edge-to-edge logo abaixo da barra superior.
+          O card usa `var(--cover-gradient)` e respeita `max-h-` mesmo em
+          telas grandes. As cores vêm de `club.theme` via o `ClubThemedScope`. */}
       <ClubCover club={club} stats={stats} isAdmin={isAdmin} />
 
-      {/* TABS + ações de "Pedir para ingressar" à direita (visitante) */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <div className="mt-6 flex flex-wrap items-end justify-between gap-3 border-b border-border/60 pb-1">
-          <div className="w-full sm:w-auto">
-            <TabsList className="arena-tab-bar">
-              {TABS.map((tab) => {
-                const badge = tab.badgeKey === 'pets' ? stats.animals
-                  : tab.badgeKey === 'donations' ? null // doações: badge dinâmico poderia ser adicionado depois
-                  : null;
-                return (
-                  <TabsTrigger
-                    key={tab.key}
-                    value={tab.key}
-                    className={cn(
-                      'arena-tab-pill gap-1.5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-rose-500 data-[state=active]:text-white',
-                    )}
-                  >
-                    <tab.icon className="h-4 w-4" /> {tab.label}
-                    {badge != null && badge > 0 && (
-                      <span className="ml-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-white/20 px-1 text-[10px] font-bold data-[state=active]:bg-white/30">
-                        {badge}
-                      </span>
-                    )}
-                  </TabsTrigger>
-                );
-              })}
-            </TabsList>
-          </div>
-
-          {!isMember && !isAdmin && (
-            <div className="pb-2">
-              {isInvited ? (
-                <Button size="sm" variant="outline" className="border-warning text-warning" disabled>
-                  Você foi convidado
-                </Button>
-              ) : isPending ? (
-                <Button size="sm" variant="outline" disabled>
-                  Pedido enviado
-                </Button>
-              ) : (
-                <Button size="sm" onClick={handleRequest} disabled={requestToJoin.isPending}>
-                  {requestToJoin.isPending ? 'Enviando...' : 'Pedir para ingressar'}
-                </Button>
-              )}
-            </div>
-          )}
+      {/* CONTEÚDO ABAIXO DO CARD — max-w + padding para texto/tabs.
+          Esse wrapper cuida do breathing visual depois do banner largo. */}
+      <div className="arena-page mx-auto w-full max-w-5xl px-4 pb-12 sm:px-6 lg:px-8">
+        {/* Botão "Voltar" — agora entre o card e as tabs (uma única
+            área de navegação da página pública). */}
+        <div className="flex items-center justify-between gap-2 pt-3 pb-1">
+          <Button asChild variant="ghost" size="sm" className="-ml-2 text-muted-foreground">
+            <Link to="/organizacoes">
+              <ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar
+            </Link>
+          </Button>
         </div>
 
-        <TabsContent value="general" className="mt-8 outline-none">
-          <ClubGeneralTab club={club} stats={stats} />
-        </TabsContent>
+        {/* TABS + ações de "Pedir para ingressar" à direita (visitante) */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <div className="mt-2 flex flex-wrap items-end justify-between gap-3 border-b border-border/60 pb-1 sm:mt-3">
+            <div className="w-full sm:w-auto">
+              <TabsList className="arena-tab-bar">
+                {TABS.map((tab) => {
+                  const badge = tab.badgeKey === 'pets' ? stats.animals
+                    : tab.badgeKey === 'donations' ? null // doações: badge dinâmico poderia ser adicionado depois
+                    : null;
+                  return (
+                    <TabsTrigger
+                      key={tab.key}
+                      value={tab.key}
+                      className={cn(
+                        'arena-tab-pill gap-1.5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-rose-500 data-[state=active]:text-white',
+                      )}
+                    >
+                      <tab.icon className="h-4 w-4" /> {tab.label}
+                      {badge != null && badge > 0 && (
+                        <span className="ml-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-white/20 px-1 text-[10px] font-bold data-[state=active]:bg-white/30">
+                          {badge}
+                        </span>
+                      )}
+                    </TabsTrigger>
+                  );
+                })}
+              </TabsList>
+            </div>
 
-        <TabsContent value="pets" className="mt-8 outline-none">
-          <ClubPetsPublicTab clubId={orgId} clubName={club?.name} />
-        </TabsContent>
+            {!isMember && !isAdmin && (
+              <div className="pb-2">
+                {isInvited ? (
+                  <Button size="sm" variant="outline" className="border-warning text-warning" disabled>
+                    Você foi convidado
+                  </Button>
+                ) : isPending ? (
+                  <Button size="sm" variant="outline" disabled>
+                    Pedido enviado
+                  </Button>
+                ) : (
+                  <Button size="sm" onClick={handleRequest} disabled={requestToJoin.isPending}>
+                    {requestToJoin.isPending ? 'Enviando...' : 'Pedir para ingressar'}
+                  </Button>
+                )}
+              </div>
+            )}
+          </div>
 
-        <TabsContent value="feed" className="mt-8 outline-none">
-          <ClubFeedTab clubId={orgId} club={club} membership={membership} canManageFeed={false} />
-        </TabsContent>
+          <TabsContent value="general" className="mt-6 outline-none sm:mt-8">
+            <ClubGeneralTab club={club} stats={stats} />
+          </TabsContent>
 
-        <TabsContent value="donations" className="mt-8 outline-none">
-          <ClubDonationsTab clubId={orgId} club={club} membership={membership} canManage={false} />
-        </TabsContent>
+          <TabsContent value="pets" className="mt-6 outline-none sm:mt-8">
+            <ClubPetsPublicTab clubId={orgId} clubName={club?.name} />
+          </TabsContent>
 
-        <TabsContent value="finance" className="mt-8 outline-none">
-          <ClubFinanceTab clubId={orgId} canManage={false} />
-        </TabsContent>
+          <TabsContent value="feed" className="mt-6 outline-none sm:mt-8">
+            <ClubFeedTab clubId={orgId} club={club} membership={membership} canManageFeed={false} />
+          </TabsContent>
 
-        <TabsContent value="team" className="mt-8 outline-none">
-          <ClubTeamPublicTab clubId={orgId} club={club} viewerMembership={membership} />
-        </TabsContent>
-      </Tabs>
+          <TabsContent value="donations" className="mt-6 outline-none sm:mt-8">
+            <ClubDonationsTab clubId={orgId} club={club} membership={membership} canManage={false} />
+          </TabsContent>
+
+          <TabsContent value="finance" className="mt-6 outline-none sm:mt-8">
+            <ClubFinanceTab clubId={orgId} canManage={false} />
+          </TabsContent>
+
+          <TabsContent value="team" className="mt-6 outline-none sm:mt-8">
+            <ClubTeamPublicTab clubId={orgId} club={club} viewerMembership={membership} />
+          </TabsContent>
+        </Tabs>
+      </div>
     </ClubThemedScope>
   );
 }

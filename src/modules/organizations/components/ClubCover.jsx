@@ -1,16 +1,28 @@
 import React from 'react';
-import { Calendar, Users, PawPrint, MapPin, Settings } from 'lucide-react';
+import { Calendar, Users, PawPrint, MapPin, Settings, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 /**
- * Capa da ONG — banner laranja full-width com marca d'água de pata,
- * logo da ONG sobreposto no canto inferior esquerdo, nome e localização
- * sobre o banner, e chips de informações rápidas logo abaixo.
+ * Card da ONG exibido no topo da página pública (logo abaixo da barra
+ * superior). Ocupa toda a largura do viewport (edge-to-edge) e tem
+ * altura limitada via `max-h-*` — em telas grandes o card NÃO cresce
+ * infinitamente; o conteúdo interno se acomoda.
  *
- * Inspirado no padrão visual "ONG/abrigo" de plataformas de adoção
- * (Viralata inclui): caloroso, confiável, com motivo visual orgânico
- * (pata). Não é dashboard, não é dark — é uma página de "perfil de
- * organização" com cara de história, com o calor do laranja.
+ * Cores personalizáveis por ONG (via `club.theme`):
+ *  - `--cover-from` + `--cover-to` definem o gradiente do banner
+ *  - `--cover-name` define a cor do nome da ONG (com fallback branco)
+ *  - `--cover-gradient` é a string montada para uso direto em CSS
+ *    (`background: var(--cover-gradient)`).
+ *
+ * Aplicação: o `ClubThemedScope` que envolve esta página aplica as CSS
+ * variables no escopo — esta capa, portanto, reage automaticamente à
+ * personalização salva pelo admin (no painel > Configurações).
+ *
+ * Estrutura visual:
+ *  [ BANNER GRADIENTE — full-width, max-h, marca d'água de patas ]
+ *  [ PAINEL DE IDENTIDADE — sobreposto, abaixo do banner ]
+ *      [ LOGO ]  [ NOME (mantido no lugar) ]
+ *                 [ localização + chips — movidos 1 ponto abaixo ]
  */
 export default function ClubCover({ club, stats, isAdmin }) {
   if (!club) return null;
@@ -23,13 +35,17 @@ export default function ClubCover({ club, stats, isAdmin }) {
   const animals = stats?.animals ?? 0;
 
   return (
-    <header className="relative -mx-4 sm:-mx-6 lg:-mx-8">
-      {/* BANNER LARANJA COM MARCA D'ÁGUA */}
-      <div className="relative h-44 overflow-hidden bg-gradient-to-br from-orange-500 via-orange-500 to-rose-500 sm:h-52">
-        {/* Marca d'água: patas em opacidade baixa */}
+    <header className="relative isolate w-full overflow-hidden">
+      {/* BANNER FULL-WIDTH com gradiente personalizado. max-h impede
+          que em telas muito grandes o card cresça demais. */}
+      <div
+        className="relative h-44 max-h-[260px] w-full overflow-hidden sm:h-52"
+        style={{ background: 'var(--cover-gradient, linear-gradient(135deg, hsl(20 90% 50%), hsl(350 80% 55%)))' }}
+      >
         <PawWatermark />
 
-        {/* Botão "Painel Administrativo" — canto superior direito */}
+        {/* Link "Painel Administrativo" — canto superior direito, só
+            para quem tem poder de gestão. */}
         {isAdmin && (
           <div className="absolute right-3 top-3 z-20 sm:right-6 sm:top-4">
             <Link
@@ -38,17 +54,19 @@ export default function ClubCover({ club, stats, isAdmin }) {
             >
               <Settings className="h-3.5 w-3.5" />
               Painel Administrativo
+              <ExternalLink className="h-3 w-3 opacity-70" />
             </Link>
           </div>
         )}
 
-        {/* Tag "ONG" no canto direito — sutil, decorativa */}
-        <div className="absolute right-4 bottom-3 z-10 sm:right-6 sm:bottom-4">
+        {/* Tag "ONG" discreta no canto inferior direito */}
+        <div className="absolute bottom-3 right-4 z-10 sm:bottom-4 sm:right-6">
           <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-white/60">ONG</span>
         </div>
       </div>
 
-      {/* ÁREA DE IDENTIDADE — sobreposta ao banner, alinhada à esquerda */}
+      {/* ÁREA DE IDENTIDADE — sobreposta, alinhada à esquerda, restrita
+          ao conteúdo útil (max-w + padding do app). */}
       <div className="relative z-10 mx-auto -mt-14 max-w-5xl px-4 pb-4 sm:-mt-16 sm:px-6 lg:px-8">
         <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-end sm:gap-5">
           {/* Logo da ONG — quadrado arredondado, sobreposto ao banner */}
@@ -62,18 +80,25 @@ export default function ClubCover({ club, stats, isAdmin }) {
             )}
           </div>
 
-          {/* Nome + localização + chips */}
+          {/* Nome + (local + chips mais abaixo) */}
           <div className="min-w-0 flex-1 pb-1">
-            <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+            <h1
+              className="text-2xl font-bold tracking-tight drop-shadow sm:text-3xl"
+              style={{ color: 'hsl(var(--cover-name, 0 0% 100%))' }}
+            >
               {club.name}
             </h1>
+
+            {/* A linha com localização e chips é empurrada para baixo
+                (mt-4 → mt-5) pra não bater no nome e manter o card
+                visualmente equilibrado. */}
             {location && (
-              <p className="mt-0.5 inline-flex items-center gap-1 text-sm text-muted-foreground">
+              <p className="mt-3 inline-flex items-center gap-1 text-sm text-muted-foreground sm:mt-4">
                 <MapPin className="h-3.5 w-3.5" /> {location}
               </p>
             )}
 
-            <div className="mt-3 flex flex-wrap gap-2">
+            <div className="mt-3 flex flex-wrap gap-2 sm:mt-4">
               {founded && (
                 <InfoChip icon={Calendar} label={`Fundada em ${founded}`} />
               )}

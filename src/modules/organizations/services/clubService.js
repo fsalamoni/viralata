@@ -174,15 +174,37 @@ export async function listMyClubs(userId) {
 }
 
 export async function updateClub(id, updates, actor) {
+  // Whitelist dos campos que podem ser editados via `updateClub`. Manter
+  // essa lista explícita é uma salvaguarda: qualquer campo desconhecido
+  // aqui é silenciosamente descartado — Isso é uma FEATURE (evita
+  // sobrescrever `created_by`, `member_count`, etc por engano) e
+  // também significa que precisamos lembrar de adicionar campos novos
+  // (ex.: `theme`) aqui no momento em que eles viram personalização.
   const allowed = [
     'name', 'description', 'history', 'city', 'state', 'logo_url',
     'contact_email', 'contact_phone', 'whatsapp_number', 'instagram',
     'home_venue', 'cnpj', 'donation_link', 'chat_enabled',
+    'theme', // objeto de personalização visual (primary, highlight, …, cover_*)
   ];
   const sanitized = {};
   allowed.forEach((key) => {
     if (updates[key] === undefined) return;
-    if (typeof updates[key] === 'boolean') sanitized[key] = !!updates[key];
+    if (key === 'theme') {
+      // `theme` é um OBJETO (não string), portanto não passa pelo
+      // `trimmed()`. Sanitizamos os 8 sub-campos individualmente,
+      // descartando chaves desconhecidas (defesa contra payload hostis).
+      if (updates.theme && typeof updates.theme === 'object' && !Array.isArray(updates.theme)) {
+        const themeIn = updates.theme;
+        const themeOut = {};
+        for (const [tkey, tval] of Object.entries(themeIn)) {
+          // Apenas chaves já conhecidas passam. (Validação mais fina em
+          // `normalizeClubThemeInput` antes de chegar aqui.)
+          if (typeof tval === 'string') themeOut[tkey] = trimmed(tval);
+          else themeOut[tkey] = tval;
+        }
+        sanitized.theme = themeOut;
+      }
+    } else if (typeof updates[key] === 'boolean') sanitized[key] = !!updates[key];
     else sanitized[key] = trimmed(updates[key]);
   });
   await updateDoc(doc(db, COL.clubs, id), { ...sanitized, updated_at: serverTimestamp() });

@@ -46,10 +46,19 @@ export default {
           DEFAULT: 'hsl(var(--destructive))',
           foreground: 'hsl(var(--destructive-foreground))',
         },
-        border: 'hsl(var(--border))',
-        input: 'hsl(var(--input))',
-        ring: 'hsl(var(--ring))',
-        sidebar: {
+          border: 'hsl(var(--border))',
+          input: 'hsl(var(--input))',
+          ring: 'hsl(var(--ring))',
+          // Cores personalizáveis do card da ONG (gradient + nome). Os
+          // values HSL ficam no :root (CSS vars) e em
+          // clubs.theme (sobrescritas por ClubThemedScope).
+          cover: {
+            from: 'hsl(var(--cover-from))',
+            to: 'hsl(var(--cover-to))',
+            name: 'hsl(var(--cover-name))',
+            gradient: 'var(--cover-gradient)',
+          },
+          sidebar: {
           DEFAULT: 'hsl(var(--sidebar-background))',
           foreground: 'hsl(var(--sidebar-foreground))',
           primary: 'hsl(var(--sidebar-primary))',
