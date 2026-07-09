@@ -181,31 +181,31 @@ export default function OrganizationAdminPanel() {
           ))}
         </TabsList>
 
-        <TabsContent value="overview" className="mt-8 px-1">
+        <TabsContent value="overview" className="mt-12 px-1 sm:mt-14">
           <OverviewTab club={club} />
         </TabsContent>
-        <TabsContent value="general" className="mt-8 px-1">
+        <TabsContent value="general" className="mt-12 px-1 sm:mt-14">
           <ClubGeneralAdminTab club={club} />
         </TabsContent>
-        <TabsContent value="animals" className="mt-8 px-1">
+        <TabsContent value="animals" className="mt-12 px-1 sm:mt-14">
           <ClubPetsDataGrid clubId={orgId} canManage={canManageAnimals} />
         </TabsContent>
-        <TabsContent value="feed" className="mt-8 px-1">
+        <TabsContent value="feed" className="mt-12 px-1 sm:mt-14">
           <ClubFeedTab clubId={orgId} club={club} membership={membership} canManageFeed={canManageFeed} />
         </TabsContent>
-        <TabsContent value="donations" className="mt-8 px-1">
+        <TabsContent value="donations" className="mt-12 px-1 sm:mt-14">
           <ClubDonationsTab clubId={orgId} club={club} membership={membership} canManage={canManageDonations} />
         </TabsContent>
-        <TabsContent value="finance" className="mt-8 px-1">
+        <TabsContent value="finance" className="mt-12 px-1 sm:mt-14">
           <ClubFinanceTab clubId={orgId} canManage={canManageFinance} />
         </TabsContent>
-        <TabsContent value="chat" className="mt-8 px-1">
+        <TabsContent value="chat" className="mt-12 px-1 sm:mt-14">
           <ClubChatAdminTab club={club} />
         </TabsContent>
-        <TabsContent value="team" className="mt-8 px-1">
+        <TabsContent value="team" className="mt-12 px-1 sm:mt-14">
           <ClubTeamTab club={club} viewerMembership={membership} viewerUid={user?.uid} />
         </TabsContent>
-        <TabsContent value="settings" className="mt-8 px-1">
+        <TabsContent value="settings" className="mt-12 px-1 sm:mt-14">
           <ClubAdminTab club={club} />
         </TabsContent>
       </Tabs>
