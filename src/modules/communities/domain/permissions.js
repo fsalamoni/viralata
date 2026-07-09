@@ -1,6 +1,27 @@
 import { COMMUNITY_PERMISSION_KEYS, COMMUNITY_ROLE } from './constants.js';
 
 /**
+ * Estado do usuário atual em uma comunidade, derivado de community + membership + uid.
+ *
+ * Centraliza a regra que CommunityDetail / MuralTab / EventsTab usam para
+ * mostrar botões e forms. Resolve 100% client-side — o Firestore rules
+ * continua sendo a fonte de verdade do lado do servidor.
+ *
+ * @param {object|null} community
+ * @param {object|null} membership  doc de community_members do usuário atual (ou null)
+ * @param {string|null|undefined} currentUserUid
+ * @returns {{ isMember: boolean, canAdmin: boolean }}
+ */
+export function deriveCommunityMembershipState(community, membership, currentUserUid) {
+  const ownerMatch = Boolean(
+    community?.owner_id && currentUserUid && community.owner_id === currentUserUid,
+  );
+  const isMember = Boolean(membership) || ownerMatch;
+  const canAdmin = hasAnyCommunityPermission(community, membership, currentUserUid);
+  return { isMember, canAdmin };
+}
+
+/**
  * Verifica se o usuário é o dono da comunidade. Aceita dois caminhos:
  *  1. Membership doc existe E o user_id bate com community.owner_id
  *  2. community.owner_id bate com currentUserUid (passado direto)
@@ -30,7 +51,7 @@ export function hasAnyCommunityPermission(community, membership, currentUserUid)
   if (isCommunityOwner(community, membership, currentUserUid)) return true;
   if (!membership) return false;
   if (membership.role === COMMUNITY_ROLE.ADMIN) return true;
-  return COMMUNITY_PERMISSION_KEYS.some((key) => hasCommunityPermission(community, membership, key));
+  return COMMUNITY_PERMISSION_KEYS.some((key) => hasCommunityPermission(community, membership, key, currentUserUid));
 }
 
 export function effectiveCommunityPermissions(community, membership, currentUserUid) {

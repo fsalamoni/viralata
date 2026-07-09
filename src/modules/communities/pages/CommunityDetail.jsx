@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getCommunity, joinCommunity } from '../services/communityService';
-import { hasAnyCommunityPermission } from '../domain/permissions';
+import { hasAnyCommunityPermission, deriveCommunityMembershipState } from '../domain/permissions';
 import { useMyCommunityMembership } from '../hooks/useCommunities';
 
 import { Settings } from 'lucide-react';
@@ -24,8 +24,6 @@ export default function CommunityDetail() {
   const [community, setCommunity] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('mural');
-  const [isMember, setIsMember] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     getCommunity(communityId)
@@ -35,22 +33,26 @@ export default function CommunityDetail() {
   }, [communityId]);
 
   const { data: membership } = useMyCommunityMembership(communityId);
-  const canAdmin = hasAnyCommunityPermission(community, membership, user?.uid);
-  useEffect(() => {
-    if (membership) {
-        setIsMember(true);
-        setIsAdmin(membership.role === 'admin');
-    } else {
-        setIsMember(false);
-        setIsAdmin(false);
-    }
-  }, [membership]);
+
+  // IMPORTANTE: derivar isMember/isAdmin diretamente de community + membership + user.
+  // Antes (commit bug): tinha um useEffect que setava isAdmin a partir de
+  // membership.role==='admin' e IGNORAVA o fallback por community.owner_id.
+  // Resultado: dono de comunidade LEGADA (sem doc community_members) não
+  // conseguia postar no Mural nem criar Eventos — mesmo já tendo acesso
+  // ao botão Editar/Equipe (esses usavam canAdmin corretamente).
+  //
+  // Regra única de verdade: `deriveCommunityMembershipState` consolida os
+  // dois caminhos (membership doc OU owner_id direto) e retorna
+  // { isMember, canAdmin }. Tudo (botão Editar, aba Equipe, mural post
+  // form, eventos create) consome canAdmin ou o objeto community/membership
+  // diretamente para calcular suas próprias permissões granulares.
+  const { isMember, canAdmin } = deriveCommunityMembershipState(community, membership, user?.uid);
 
   const handleJoin = async () => {
     if (!user) return toast.error('Faça login para participar');
     try {
       await joinCommunity(communityId, user.uid);
-      setIsMember(true);
+      // membership vai chegar via useMyCommunityMembership — isMember deriva de lá
       toast.success('Você entrou na comunidade!');
     } catch (err) {
       toast.error('Erro ao entrar');
@@ -109,9 +111,9 @@ export default function CommunityDetail() {
           )}
         </TabsList>
 
-        <TabsContent value="mural"><MuralTab communityId={communityId} isMember={isMember} isAdmin={isAdmin} membership={membership} community={community} /></TabsContent>
+        <TabsContent value="mural"><MuralTab communityId={communityId} isMember={isMember} isAdmin={canAdmin} membership={membership} community={community} /></TabsContent>
         <TabsContent value="forum"><ForumTab communityId={communityId} /></TabsContent>
-        <TabsContent value="eventos"><EventsTab communityId={communityId} isAdmin={isAdmin} membership={membership} community={community} /></TabsContent>
+        <TabsContent value="eventos"><EventsTab communityId={communityId} isAdmin={canAdmin} membership={membership} community={community} /></TabsContent>
         <TabsContent value="sobre"><AboutTab community={community} /></TabsContent>
         {canAdmin && (
           <TabsContent value="equipe">

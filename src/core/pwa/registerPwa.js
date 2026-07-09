@@ -24,17 +24,11 @@ export function registerPwa() {
 
   const swUrl = `${import.meta.env.BASE_URL || '/'}sw.js`.replace(/\/{2,}/g, '/');
 
-  // Se já existe um SW controlando a página, qualquer troca de controlador
-  // significa uma ATUALIZAÇÃO. Recarrega uma única vez para o usuário receber
-  // a versão nova automaticamente, sem precisar limpar cache.
-  if (navigator.serviceWorker.controller) {
-    let refreshing = false;
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      if (refreshing) return;
-      refreshing = true;
-      window.location.reload();
-    });
-  }
+  // IMPORTANTE: não recarregamos automaticamente quando o SW troca de
+  // controller. O componente <SwUpdateBanner> (montado em Layout.jsx)
+  // detecta esse evento e mostra um banner "Nova versão disponível
+  // — Recarregar agora" com UX explícita. Auto-reload silencioso
+  // interrompe o usuário no meio de algo (digitando, scroll, etc.).
 
   window.addEventListener('load', () => {
     navigator.serviceWorker

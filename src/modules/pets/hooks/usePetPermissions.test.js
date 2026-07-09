@@ -133,4 +133,47 @@ describe('canCurrentUserEditPet', () => {
     });
     expect(out.canEdit).toBe(true);
   });
+
+  // ==========================================================================
+  // Fallback por currentUserUid — replica o teste do hook React. Importante
+  // para o cenário em que a membership do user ainda não carregou (ou nunca
+  // existiu — ONG legada sem auto-insert do criador como member), mas o user
+  // é o criador da ONG.
+  // ==========================================================================
+
+  it('permite criador da ONG sem membership carregar editar pets da ONG', () => {
+    const out = canCurrentUserEditPet({
+      pet: { owner_id: 'c1', owner_type: 'organization' },
+      user: user('u1'),
+      userProfile: profile('user'),
+      orgClub: club('u1'),  // u1 é o criador
+      orgMembership: null,  // mas o doc de membership AINDA não carregou
+    });
+    expect(out.canEdit).toBe(true);
+    expect(out.canDelete).toBe(true);
+    expect(out.reason).toBeNull();
+  });
+
+  it('permite criador da ONG sem membership NUNCA ter existido (legado)', () => {
+    const out = canCurrentUserEditPet({
+      pet: { owner_id: 'c1', owner_type: 'organization' },
+      user: user('u1'),
+      userProfile: profile('user'),
+      orgClub: club('u1'),
+      orgMembership: null,
+    });
+    expect(out.canEdit).toBe(true);
+  });
+
+  it('continua bloqueando terceiro que não é owner da ONG nem membro', () => {
+    const out = canCurrentUserEditPet({
+      pet: { owner_id: 'c1', owner_type: 'organization' },
+      user: user('intruso'),
+      userProfile: profile('user'),
+      orgClub: club('u1'),  // criador é u1, não o intruso
+      orgMembership: null,
+    });
+    expect(out.canEdit).toBe(false);
+    expect(out.reason).toMatch(/membros da organiza/i);
+  });
 });

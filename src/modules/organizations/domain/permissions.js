@@ -12,12 +12,23 @@
  *    campo legado `permissions.edit_pets` (era a única permissão granular
  *    antes deste modelo).
  *
- * Aceita `currentUserUid` como 3º parâmetro para fallback em organizações
+ * Aceita `currentUserUid` como parâmetro de fallback em organizações
  * LEGADAS cujo criador não foi inserido em `organization_members`.
+ * (Espelha o comportamento do módulo de comunidades.)
  */
 
 import { CLUB_PERMISSION_KEYS, CLUB_ROLE } from './constants.js';
 
+/**
+ * Verifica se um dado usuário (via membership OU via currentUserUid) é o
+ * dono da ONG.
+ *
+ * Assinatura: (club, membership, currentUserUid?)
+ *  - Se `currentUserUid` for passado, vale tanto se houver doc de membership
+ *    (member.user_id === club.created_by) quanto se o caller passar o uid
+ *    direto (útil quando a membership ainda não carregou / não existe).
+ *  - Compatível com chamadas antigas de 2 args (member only).
+ */
 export function isClubOwner(club, membership, currentUserUid) {
   if (!!club?.created_by && !!currentUserUid && club.created_by === currentUserUid) return true;
   return !!club?.created_by && !!membership?.user_id && club.created_by === membership.user_id;

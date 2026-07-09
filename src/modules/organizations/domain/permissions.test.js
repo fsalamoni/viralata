@@ -65,6 +65,13 @@ describe('isClubOwner — fallback por currentUserUid', () => {
   it('visitante não é owner', () => {
     expect(isClubOwner(legacyOrg, null, visitor)).toBe(false);
   });
+
+  it('back-compat: chamada de 2 args (sem currentUserUid) continua funcionando como antes', () => {
+    const ownerMembershipNoUid = { user_id: owner };
+    expect(isClubOwner(modernOrg, ownerMembershipNoUid)).toBe(true);
+    expect(hasClubPermission(modernOrg, ownerMembershipNoUid, CLUB_PERMISSION.ANIMALS)).toBe(true);
+    expect(hasAnyClubPermission(modernOrg, ownerMembershipNoUid)).toBe(true);
+  });
 });
 
 describe('hasClubPermission — owner tem permissão sem membership', () => {
