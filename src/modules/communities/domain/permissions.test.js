@@ -12,6 +12,7 @@ import {
   hasCommunityPermission,
   hasAnyCommunityPermission,
   effectiveCommunityPermissions,
+  deriveCommunityMembershipState,
 } from '@/modules/communities/domain/permissions';
 import { COMMUNITY_PERMISSION, COMMUNITY_ROLE } from '@/modules/communities/domain/constants';
 
@@ -149,5 +150,50 @@ describe('effectiveCommunityPermissions — owner sem membership tem todas as pe
     expect(perms[COMMUNITY_PERMISSION.FEED]).toBe(true);
     expect(perms[COMMUNITY_PERMISSION.EVENTS]).toBe(false);
     expect(perms[COMMUNITY_PERMISSION.TEAM]).toBe(false);
+  });
+});
+
+describe('deriveCommunityMembershipState — helper central usado em CommunityDetail', () => {
+  it('owner de comunidade LEGACY (sem membership doc) tem canAdmin=true', () => {
+    const state = deriveCommunityMembershipState(legacyCommunity, null, owner);
+    expect(state.canAdmin).toBe(true);
+    expect(state.isMember).toBe(true); // owner via uid também conta como membro
+  });
+
+  it('visitante sem membership não é admin nem membro', () => {
+    const state = deriveCommunityMembershipState(legacyCommunity, null, visitor);
+    expect(state.canAdmin).toBe(false);
+    expect(state.isMember).toBe(false);
+  });
+
+  it('membro com permissão granular é membro mas pode ou não ser admin', () => {
+    const state = deriveCommunityMembershipState(modernCommunity, memberWithFeedPermission, member);
+    expect(state.isMember).toBe(true);
+    expect(state.canAdmin).toBe(true); // qualquer permissão granular = admin
+  });
+
+  it('membro comum (sem role=admin, sem permissions) NÃO é admin', () => {
+    const plainMember = { community_id: 'comm_modern_1', user_id: member, role: COMMUNITY_ROLE.MEMBER };
+    const state = deriveCommunityMembershipState(modernCommunity, plainMember, member);
+    expect(state.isMember).toBe(true);
+    expect(state.canAdmin).toBe(false);
+  });
+
+  it('community null retorna tudo false sem quebrar', () => {
+    const state = deriveCommunityMembershipState(null, null, owner);
+    expect(state.isMember).toBe(false);
+    expect(state.canAdmin).toBe(false);
+  });
+
+  it('user null + membership existente: ainda reconhece membership', () => {
+    const state = deriveCommunityMembershipState(modernCommunity, ownerMembership, null);
+    expect(state.isMember).toBe(true);
+    expect(state.canAdmin).toBe(true); // role=admin da membership
+  });
+
+  it('regressão: owner de comunidade LEGACY que TEM membership doc', () => {
+    const state = deriveCommunityMembershipState(legacyCommunity, ownerMembership, owner);
+    expect(state.isMember).toBe(true);
+    expect(state.canAdmin).toBe(true);
   });
 });

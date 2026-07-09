@@ -13,6 +13,8 @@ import { getClub } from '../services/clubService';
 import { isClubPubliclyVisible, CLUB_DIRECTORY_STATUS } from '@/modules/communities/domain/directory';
 import { useMyMembership, useRequestToJoinClub, useMyJoinRequests, useMyClubInvites } from '../hooks/useClubs';
 import { JOIN_REQUEST_STATUS } from '@/modules/organizations/domain/constants';
+import { hasClubPermission, isClubOwner } from '../domain/permissions';
+import { CLUB_PERMISSION } from '../domain/constants';
 import ClubPetsDataGrid from '../components/ClubPetsDataGrid';
 
 function RatingBadge({ uid, className }) {
@@ -31,12 +33,18 @@ export default function ClubDetail() {
   });
 
   const { membership, isLoading: loadingMembership } = useMyMembership(orgId, user?.uid);
-  const isMember = Boolean(membership);
-  // Fallback: o criador da ONG tem acesso admin mesmo sem o doc em
-  // `organization_members` (legado / dados antigos). Mesma lógica aplicada
-  // em CommunityDetail para comunidades legadas.
-  const isOrgCreator = Boolean(user?.uid && club?.owner_id && club.owner_id === user.uid);
-  const isAdmin = isOrgCreator || membership?.role === 'admin';
+  // isMember: doc de membership existe OU user é o criador da ONG (legacy sem doc).
+  // O campo correto do doc é `club.created_by` (não `owner_id`).
+  const isMember = Boolean(
+    membership || (club?.created_by && user?.uid && club.created_by === user?.uid),
+  );
+  // isAdmin: tem qualquer permissão (incluindo owner via created_by).
+  // Sem isso o criador de uma ONG legada (sem doc em organization_members)
+  // não consegue Administrar nem gerenciar pets.
+  const isAdmin = Boolean(
+    club && (isClubOwner(club, membership, user?.uid)
+      || hasClubPermission(club, membership, CLUB_PERMISSION.TEAM, user?.uid)),
+  );
 
   const { data: myRequests = [] } = useMyJoinRequests();
   const { data: myInvites = [] } = useMyClubInvites();

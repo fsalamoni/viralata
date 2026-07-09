@@ -7,6 +7,7 @@ import {
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import NotificationsMenu from '@/modules/notifications/components/NotificationsMenu';
 import { Button } from '@/components/ui/button';
+import SwUpdateBanner from '@/components/SwUpdateBanner';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
@@ -215,6 +216,11 @@ export default function Layout({ children, currentPageName }) {
       <main className={cn('flex-1 relative', isAuthenticated && 'pb-20 md:pb-0')}>
         {children}
       </main>
+
+      {/* Banner de nova versão disponível — avisa o usuário quando o PWA
+          detecta um deploy novo. Sem isso, mobile fica preso no bundle
+          antigo mesmo com skipWaiting+clientsClaim. */}
+      <SwUpdateBanner />
 
       {/* Bottom tab bar (mobile, autenticado) */}
       {isAuthenticated && (

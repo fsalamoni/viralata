@@ -42,15 +42,17 @@ export default function OrganizationAdminPanel() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const isLoading = loadingClub || loadingMembership;
-  const isAdmin = isClubOwner(club, membership, user?.uid) || membership?.role === CLUB_ROLE.ADMIN;
+  // Fallback por uid (ONG legada sem doc de membership) — sem isso o
+  // criador não consegue Administrar nem ver as abas admin.
   const owner = isClubOwner(club, membership, user?.uid);
+  const isAdmin = isClubOwner(club, membership, user?.uid) || membership?.role === CLUB_ROLE.ADMIN;
   const canAccess = hasAnyClubPermission(club, membership, user?.uid);
 
   const visibleTabs = useMemo(() => TABS.filter((tab) => {
     if (tab.permission === null) return true;
     if (tab.permission === 'admin_only') return isAdmin;
     return hasClubPermission(club, membership, tab.permission, user?.uid);
-  }), [club, membership, isAdmin]);
+  }), [club, membership, isAdmin, user?.uid]);
 
   const requestedTab = searchParams.get('tab') || 'overview';
   const activeTab = visibleTabs.some((t) => t.key === requestedTab) ? requestedTab : (visibleTabs[0]?.key || 'overview');

@@ -70,10 +70,11 @@ export function usePetPermissions(pet) {
     };
   }
 
-  // Pet de ONG: checa membership + permissão granular
+  // Pet de ONG: checa membership + permissão granular (com fallback por uid
+  // para o dono da ONG que ainda não tem doc de membership — legado)
   if (myMembership && club) {
-    const isOwnerOfClub = isClubOwner(club, myMembership);
-    const hasAnimalsPerm = hasClubPermission(club, myMembership, CLUB_PERMISSION.ANIMALS);
+    const isOwnerOfClub = isClubOwner(club, myMembership, user?.uid);
+    const hasAnimalsPerm = hasClubPermission(club, myMembership, CLUB_PERMISSION.ANIMALS, user?.uid);
     if (isOwnerOfClub || hasAnimalsPerm) {
       return { canEdit: true, canDelete: true, reason: null };
     }
@@ -82,6 +83,12 @@ export function usePetPermissions(pet) {
       canDelete: false,
       reason: 'Você faz parte da organização, mas não tem permissão para gerenciar os animais dela.',
     };
+  }
+
+  // Edge case: pet de ONG mas membership ainda não carregou — se o user é o
+  // criador da ONG (club.created_by === user.uid), permite também.
+  if (isOrgPet && club && club.created_by && user?.uid && club.created_by === user.uid) {
+    return { canEdit: true, canDelete: true, reason: null };
   }
 
   // Pet de ONG sem membership carregada ainda (em fetching) ou usuário
@@ -127,8 +134,8 @@ export function canCurrentUserEditPet({ pet, user, userProfile, orgMembership, o
   }
   if (orgMembership && orgClub) {
     const hasPermission =
-      isClubOwner(orgClub, orgMembership) ||
-      hasClubPermission(orgClub, orgMembership, CLUB_PERMISSION.ANIMALS);
+      isClubOwner(orgClub, orgMembership, user?.uid) ||
+      hasClubPermission(orgClub, orgMembership, CLUB_PERMISSION.ANIMALS, user?.uid);
     if (hasPermission) {
       return { canEdit: true, canDelete: true, reason: null };
     }
@@ -138,6 +145,13 @@ export function canCurrentUserEditPet({ pet, user, userProfile, orgMembership, o
       reason: 'Você faz parte da organização, mas não tem permissão para gerenciar os animais dela.',
     };
   }
+
+  // Edge case: pet de ONG, sem membership carregada ainda, mas o user é o
+  // criador da ONG. Permite também (espelha o hook React).
+  if (isOrgPet && orgClub?.created_by && user?.uid && orgClub.created_by === user.uid) {
+    return { canEdit: true, canDelete: true, reason: null };
+  }
+
   return {
     canEdit: false,
     canDelete: false,
