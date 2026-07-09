@@ -170,7 +170,13 @@ export default function Layout({ children, currentPageName }) {
             )}
 
             {/* Mobile menu toggle */}
-            <button className="md:hidden p-1.5 rounded-full hover:bg-secondary/70" onClick={() => setMobileOpen((v) => !v)}>
+            <button
+              className="md:hidden p-1.5 rounded-full hover:bg-secondary/70 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              onClick={() => setMobileOpen((v) => !v)}
+              aria-expanded={mobileOpen}
+              aria-controls="mobile-nav-menu"
+              aria-label={mobileOpen ? 'Fechar menu de navegação' : 'Abrir menu de navegação'}
+            >
               {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
@@ -178,14 +184,20 @@ export default function Layout({ children, currentPageName }) {
 
         {/* Mobile Nav */}
         {mobileOpen && (
-          <div className="md:hidden border-t border-border/70 bg-background/95 backdrop-blur-xl px-4 py-3 space-y-1 safe-px">
+          <div
+            id="mobile-nav-menu"
+            role="navigation"
+            aria-label="Menu principal (mobile)"
+            className="md:hidden border-t border-border/70 bg-background/95 backdrop-blur-xl px-4 py-3 space-y-1 safe-px"
+          >
             {[...NAV_ITEMS, ...MOBILE_MENU_EXTRA_ITEMS].filter((item) => !item.auth || isAuthenticated).map(({ label, icon: Icon, to }) => (
               <Link
                 key={to}
                 to={to}
                 onClick={() => setMobileOpen(false)}
+                aria-current={location.pathname.startsWith(to) ? 'page' : undefined}
                 className={cn(
-                  'flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium transition-colors',
+                  'flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
                   location.pathname.startsWith(to)
                     ? 'bg-primary text-primary-foreground'
                     : 'text-foreground/80 hover:bg-secondary/70'

@@ -145,7 +145,7 @@ export default function AdminOrganizations() {
                   <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                     <div className="flex items-start gap-3">
                       {club.logo_url ? (
-                        <img src={club.logo_url} alt="" className="h-12 w-12 shrink-0 rounded-xl border border-primary/10 object-cover" />
+                        <img src={club.logo_url} alt="" className="h-12 w-12 shrink-0 rounded-xl border border-primary/10 object-cover" loading="lazy" decoding="async" />
                       ) : (
                         <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
                           <Building2 className="h-6 w-6" />
