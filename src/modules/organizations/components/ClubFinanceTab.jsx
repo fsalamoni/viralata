@@ -252,25 +252,27 @@ export default function ClubFinanceTab({ clubId, canManage = false }) {
         </div>
       )}
 
-      {/* Cards de totais — `pt-3 sm:pt-4` afasta o bloco das pílulas
-          de período acima (era p-4 colado). */}
-      <div className="pt-3 sm:pt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
+      {/* Cards de totais (Receitas/Despesas/Saldo): pt-6 sm:pt-7 garante
+          que o label "Receitas"/"Despesas"/"Saldo" NÃO encoste no
+          topo do card (a correção do problema reportado pelo usuário).
+          CardContent com p-6 e space-y-2 para valor generoso. */}
+      <div className="pt-4 sm:pt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
         <Card className="rounded-2xl border-[hsl(150_38%_36%/0.25)] bg-[hsl(150_38%_36%/0.08)]">
-          <CardContent className="p-5">
-            <div className="text-xs font-semibold text-[hsl(150_38%_26%)]">Receitas</div>
-            <div className="mt-1 text-xl font-bold text-[hsl(150_38%_24%)]">{brl(revenueTotal)}</div>
+          <CardContent className="space-y-2 p-6 sm:p-7">
+            <div className="text-xs font-semibold uppercase tracking-wider text-[hsl(150_38%_26%)]">Receitas</div>
+            <div className="text-2xl font-extrabold text-[hsl(150_38%_24%)] sm:text-3xl">{brl(revenueTotal)}</div>
           </CardContent>
         </Card>
         <Card className="rounded-2xl border-[hsl(9_62%_46%/0.22)] bg-[hsl(9_62%_46%/0.07)]">
-          <CardContent className="p-5">
-            <div className="text-xs font-semibold text-[hsl(9_62%_38%)]">Despesas</div>
-            <div className="mt-1 text-xl font-bold text-[hsl(9_62%_36%)]">{brl(expenseTotal)}</div>
+          <CardContent className="space-y-2 p-6 sm:p-7">
+            <div className="text-xs font-semibold uppercase tracking-wider text-[hsl(9_62%_38%)]">Despesas</div>
+            <div className="text-2xl font-extrabold text-[hsl(9_62%_36%)] sm:text-3xl">{brl(expenseTotal)}</div>
           </CardContent>
         </Card>
         <Card className="rounded-2xl">
-          <CardContent className="p-5">
-            <div className="text-xs font-semibold text-muted-foreground">Saldo</div>
-            <div className={cn('mt-1 text-xl font-bold', balance >= 0 ? 'text-[hsl(150_38%_24%)]' : 'text-[hsl(9_62%_36%)]')}>
+          <CardContent className="space-y-2 p-6 sm:p-7">
+            <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Saldo</div>
+            <div className={cn('text-2xl font-extrabold sm:text-3xl', balance >= 0 ? 'text-[hsl(150_38%_24%)]' : 'text-[hsl(9_62%_36%)]')}>
               {brl(balance)}
             </div>
           </CardContent>
@@ -378,12 +380,15 @@ export default function ClubFinanceTab({ clubId, canManage = false }) {
 function CategoryList({ title, rows, barClassName }) {
   return (
     <Card className="rounded-2xl">
-      <CardContent className="p-4 sm:p-5">
-        <h3 className="mb-3 text-sm font-semibold">{title}</h3>
+      {/* p-6 sm:p-7 com pt-6 garante que o título "Receitas por
+          categoria" não encoste no topo do card. Lista interna
+          com space-y-3.5 pra dar respiração entre as linhas. */}
+      <CardContent className="space-y-4 p-6 pt-6 sm:p-7 sm:pt-7">
+        <h3 className="text-sm font-semibold">{title}</h3>
         {rows.length === 0 ? (
           <p className="text-sm text-muted-foreground">Nenhum lançamento no período.</p>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-3.5">
             {rows.map((row) => (
               <div key={row.label}>
                 <div className="mb-1 flex justify-between text-xs">

@@ -168,9 +168,10 @@ function DonationCard({ donation, canManage, onEdit, onDelete, onAddFunds }) {
   const concluded = donation.status === CAMPAIGN_STATUS.CONCLUDED;
   return (
     <Card className="rounded-2xl">
-      {/* space-y-4 (16px entre filhos) dá respiração melhor que space-y-3
-          e pt-5 empurra o título pra dentro do card sem encostar no topo. */}
-      <CardContent className="space-y-4 p-5 pt-5">
+      {/* p-6 sm:p-7 com pt-6 sm:pt-7 garante que o título não encoste
+          na borda superior do card. space-y-5 dá 20px entre filhos
+          (vs 16px antes). Cada bloco interno ganha mais respiração. */}
+      <CardContent className="space-y-5 p-6 pt-6 sm:p-7 sm:pt-7">
         <div className="flex flex-wrap items-start justify-between gap-2">
           <h3 className="text-base font-semibold">{donation.title}</h3>
           <div className="flex flex-wrap items-center gap-1.5">
@@ -221,10 +222,10 @@ function DonationCard({ donation, canManage, onEdit, onDelete, onAddFunds }) {
           </div>
         </div>
 
-        {/* Dados para doar — caixa aninhada com mais padding interno
-            (p-4) e space-y-3 entre os itens; evita o visual "colado". */}
+        {/* Dados para doar — caixa aninhada com bastante padding
+            interno (p-5) e space-y-4 entre os itens. */}
         {(donation.pix_key || donation.pix_qr_url || donation.bank_info) && (
-          <div className="rounded-xl border border-border bg-secondary/30 p-4 space-y-3">
+          <div className="rounded-xl border border-border bg-secondary/30 p-5 space-y-4">
             <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Como contribuir</p>
             {donation.pix_key && <PixKeyBlock pixKey={donation.pix_key} />}
             {donation.pix_qr_url && (
@@ -243,11 +244,11 @@ function DonationCard({ donation, canManage, onEdit, onDelete, onAddFunds }) {
           </div>
         )}
 
-        {/* Botão "Informar contribuição" (público) — mais respiro pt-5
-            antes do divisor pra separar visualmente do bloco "Como
-            contribuir" acima. */}
+        {/* Botão "Informar contribuição" (público) — divisor com
+            mt-2 no conteúdo + pt-6 antes pra separar bem do bloco
+            "Como contribuir" acima. */}
         {!concluded && donation.enable_receipt_upload !== false && (
-          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-5">
+          <div className="mt-2 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-6">
             <p className="text-xs text-muted-foreground">
               Já contribuiu? Envie seu comprovante para a ONG registrar.
             </p>

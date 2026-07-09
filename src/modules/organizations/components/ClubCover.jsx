@@ -69,8 +69,13 @@ export default function ClubCover({ club, stats, isAdmin }) {
       {/* ÁREA DE IDENTIDADE — sobreposta, alinhada à esquerda, restrita
           ao conteúdo útil (max-w + padding do app). Usa pb generoso
           pra dar "respiro" entre o card e a próxima seção (Voltar + tabs). */}
-      <div className="relative z-10 mx-auto -mt-14 max-w-5xl px-4 pb-5 sm:-mt-16 sm:px-6 lg:px-8">
-        <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-end sm:gap-6">
+      <div className="relative z-10 mx-auto -mt-14 max-w-5xl px-4 pb-6 sm:-mt-16 sm:px-6 lg:px-8">
+        {/* Alinhamento TOPO (items-start): nome alinhado pelo topo com o
+            topo da imagem/logo, não pelo fundo como antes. A cidade
+            fica no "meio" entre o fim do banner colorido e o início
+            do card dos chips (Fundada em / seguidores / animais). Os
+            chips ficam logo abaixo do nome + cidade. */}
+        <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-start sm:gap-6">
           {/* Logo da ONG — quadrado arredondado, sobreposto ao banner.
               Quando a ONG não tem logo enviado, usamos o gradiente do
               card como fundo (consistência visual com a personalização). */}
@@ -87,12 +92,13 @@ export default function ClubCover({ club, stats, isAdmin }) {
             )}
           </div>
 
-          {/* Nome + (local + chips mais abaixo).
-              `pb-2` mantém o conteúdo "soltinho" dentro do card.
-              Localização e chips agora têm MAIS espaço vertical entre
-              eles e o nome (mt-6 sm:mt-7 vs antes mt-3 sm:mt-4) — o
-              usuário reportou que estavam atropelando o nome/logo. */}
-          <div className="min-w-0 flex-1 pb-2">
+          {/* Coluna do nome + cidade + chips. `pt-1 sm:pt-2` deixa o nome
+              respirar logo abaixo do limite superior do logo. A cidade
+              fica em `mt-10 sm:mt-12` (40–48px), colocado aproximadamente
+              no meio entre o fundo do banner (sm:h-52 ≈ 208px / overlap)
+              e o início dos chips. Os chips vêm em `mt-6 sm:mt-7`,
+              empurrados pra dar mais respiração final. */}
+          <div className="min-w-0 flex-1 pt-1 sm:pt-2">
             <h1
               className="text-2xl font-bold tracking-tight drop-shadow sm:text-3xl"
               style={{ color: 'hsl(var(--cover-name, 0 0% 100%))' }}
@@ -101,12 +107,12 @@ export default function ClubCover({ club, stats, isAdmin }) {
             </h1>
 
             {location && (
-              <p className="mt-6 inline-flex items-center gap-1 text-sm text-muted-foreground sm:mt-7">
+              <p className="mt-10 inline-flex items-center gap-1 text-sm text-muted-foreground sm:mt-12">
                 <MapPin className="h-3.5 w-3.5" /> {location}
               </p>
             )}
 
-            <div className="mt-4 flex flex-wrap gap-2 sm:mt-5">
+            <div className="mt-6 flex flex-wrap gap-2 sm:mt-7">
               {founded && (
                 <InfoChip icon={Calendar} label={`Fundada em ${founded}`} />
               )}

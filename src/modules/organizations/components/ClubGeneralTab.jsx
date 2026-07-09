@@ -212,18 +212,18 @@ export default function ClubGeneralTab({ club, stats }) {
 function StatCard({ icon: Icon, value, label }) {
   return (
     <div
-      className="rounded-2xl border border-border/40 p-5 shadow-sm"
+      className="rounded-2xl border border-border/40 p-6 shadow-sm sm:p-7"
       style={{
         background: 'linear-gradient(135deg, hsl(var(--cover-from) / 0.07) 0%, hsl(var(--cover-to) / 0.07) 100%)',
       }}
     >
       <div
-        className="flex h-10 w-10 items-center justify-center rounded-xl text-white"
+        className="flex h-11 w-11 items-center justify-center rounded-xl text-white"
         style={{ background: 'var(--cover-gradient)' }}
       >
         <Icon className="h-5 w-5" />
       </div>
-      <p className="mt-3 text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
+      <p className="mt-4 text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
         {value}
       </p>
       <p className="mt-1 text-sm text-muted-foreground">{label}</p>

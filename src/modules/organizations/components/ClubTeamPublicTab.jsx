@@ -114,7 +114,7 @@ function MemberCard({ member, viewerContext, onStartChat }) {
   if (!hasVisibleField) {
     return (
       <Card className="rounded-2xl">
-        <CardContent className="p-6 text-center text-xs text-muted-foreground">
+        <CardContent className="p-7 text-center text-xs text-muted-foreground">
           <Lock className="mx-auto mb-2 h-4 w-4" />
           As informações deste membro estão restritas no momento.
         </CardContent>
@@ -124,9 +124,10 @@ function MemberCard({ member, viewerContext, onStartChat }) {
 
   return (
     <Card className="rounded-2xl">
-      {/* p-5 e space-y-3 dão ao card do membro o mesmo "respiro"
-          dos outros cards do projeto (PetCard, DonationCard). */}
-      <CardContent className="space-y-3 p-5">
+      {/* p-6 sm:p-7 com pt-6 garante que o nome do membro não
+          encoste no topo do card. space-y-4 entre as seções internas
+          do card (header / bio / ações). */}
+      <CardContent className="space-y-4 p-6 pt-6 sm:p-7 sm:pt-7">
         <div className="flex items-start gap-3">
           {member.photo_url ? (
             <img src={member.photo_url} alt="" className="h-12 w-12 shrink-0 rounded-full border border-border object-cover" />
