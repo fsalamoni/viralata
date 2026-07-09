@@ -455,9 +455,15 @@ service cloud.firestore {
       allow read: if true;
       allow create: if isAuth() && request.resource.data.owner_id == request.auth.uid;
       // Update pelo owner: NÃO pode trocar owner_id (apenas platform_admin).
+      // Exceção: "claim" de comunidade órfã (owner_id legado === null) —
+      // o user pode se declarar dono UMA VEZ (resource.data.owner_id == null
+      // && request.resource.data.owner_id == auth.uid). Depois disso, o
+      // user passa a ser o owner oficial e o caminho normal se aplica.
       allow update: if isAuth() && (
         (request.auth.uid == resource.data.owner_id
           && request.resource.data.owner_id == resource.data.owner_id)
+        || (resource.data.owner_id == null
+          && request.resource.data.owner_id == request.auth.uid)
         || isPlatformAdmin()
       );
       allow delete: if isPlatformAdmin();

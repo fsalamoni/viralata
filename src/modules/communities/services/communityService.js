@@ -137,6 +137,41 @@ export async function joinCommunity(communityId, userId) {
   });
 }
 
+/**
+ * Claim de ownership para uma comunidade LEGADA cujo doc foi criado em uma
+ * versão antiga do `createCommunity` que não setava o campo `owner_id`.
+ *
+ * Comportamento esperado:
+ *  - Só funciona se `community.owner_id` for `null` ou inexistente.
+ *  - Seta `community.owner_id = currentUserUid`. Outras campos do doc não
+ *    são tocados (a Firestore rule do PR que introduziu essa função
+ *    restringe o update a `owner_id` apenas — sem mudar nada mais).
+ *  - Lança erro se a comunidade não existe ou se já tem owner.
+ *
+ * Defense-in-depth: o client checa (community.owner_id == null) antes de
+ * chamar; o Firestore rule reforça que o destino tem que ser == auth.uid
+ * e a origem tem que ser null.
+ *
+ * @param {string} communityId
+ * @param {string} currentUserUid  o usuário que está fazendo o claim
+ * @returns {Promise<void>}
+ */
+export async function claimCommunityOwnership(communityId, currentUserUid) {
+  if (!db) throw new Error('Banco indisponível.');
+  if (!communityId || !currentUserUid) throw new Error('Argumentos inválidos.');
+  const ref = doc(db, COMMUNITY_COLLECTION, communityId);
+  const snap = await getDoc(ref);
+  if (!snap.exists()) throw new Error('Comunidade não encontrada.');
+  const data = snap.data();
+  if (data.owner_id) {
+    throw new Error('Esta comunidade já tem um dono definido. Operação cancelada.');
+  }
+  await updateDoc(ref, {
+    owner_id: currentUserUid,
+    updated_at: serverTimestamp(),
+  });
+}
+
 
 export async function getCommunityMembership(communityId, userId) {
   if (!db || !communityId || !userId) return null;
