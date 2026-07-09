@@ -1,27 +1,25 @@
 import React, { useState } from 'react';
 import {
   Mail, MessageCircle, MapPin, Instagram, Globe,
-  Heart, Phone, Clock, ArrowUpRight,
+  Heart, Phone, Clock, ArrowUpRight, PawPrint, Users, Calendar,
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import ClubPublicChatDialog from './ClubPublicChatDialog';
 
 /**
- * Aba pública "Geral" da ONG. Layout editorial:
+ * Aba pública "Geral" da ONG — segue o padrão visual da imagem de
+ * referência: stats cards com gradiente + seções editoriais com
+ * tipografia limpa.
  *
- *  1. Hero       — Logo + nome + localização (visual limpo, sem card pesado).
- *  2. CTA Doar   — Botão grande se houver donation_link.
- *  3. Missão     — Texto grande, respirando.
- *  4. História   — Texto longo, separado.
- *  5. Contato    — Botões grandes (E-mail / WhatsApp / Chat) com cor escura.
- *  6. Detalhes   — Lista limpa de contatos (sem molduras repetidas).
- *
- * A IDENTIDADE (logo + nome) é responsabilidade do header da página
- * (ClubDetail). Aqui ela aparece UMA vez, no hero, sem repetir.
+ * Estrutura:
+ *  1. Stats cards (3 colunas) — Animais cadastrados, Seguidores, Fundação
+ *  2. Sobre a organização — descrição/missão
+ *  3. Nossa história — texto longo
+ *  4. Falar com a ONG — botões grandes (E-mail / WhatsApp / Chat)
+ *  5. Contatos detalhados — grid 2-col limpo
  */
-export default function ClubGeneralTab({ club }) {
+export default function ClubGeneralTab({ club, stats }) {
   const { isAuthenticated } = useAuth();
   const [chatOpen, setChatOpen] = useState(false);
 
@@ -36,42 +34,53 @@ export default function ClubGeneralTab({ club }) {
   const hasContactPhone = !!club.contact_phone;
   const hasWhatsapp = !!whatsappClean;
   const hasInstagram = !!club.instagram;
+  const founded = stats?.founded || (club.created_at?.toDate
+    ? club.created_at.toDate().getFullYear()
+    : null);
+  const followers = stats?.followers ?? club.member_count ?? 0;
+  const animals = stats?.animals ?? 0;
 
   return (
-    <div className="space-y-12 sm:space-y-16">
-      {/* HERO — identidade visual sem moldura */}
-      <header className="flex flex-col items-center gap-5 text-center sm:flex-row sm:items-center sm:gap-7 sm:text-left">
-        {club.logo_url ? (
-          <img
-            src={club.logo_url}
-            alt=""
-            className="h-24 w-24 shrink-0 rounded-2xl object-cover shadow-sm sm:h-28 sm:w-28"
-          />
-        ) : (
-          <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary sm:h-28 sm:w-28">
-            <Heart className="h-10 w-10" />
-          </div>
-        )}
-        <div className="min-w-0 flex-1">
-          <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-            {club.name}
-          </h1>
-          {location && (
-            <p className="mt-1.5 inline-flex items-center gap-1.5 text-sm text-muted-foreground">
-              <MapPin className="h-3.5 w-3.5" /> {location}
-            </p>
-          )}
-        </div>
-      </header>
+    <div className="space-y-10 sm:space-y-12">
+      {/* STATS CARDS — 3 colunas com gradiente */}
+      <section className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <StatCard
+          icon={PawPrint}
+          value={animals}
+          label={animals === 1 ? 'Animal cadastrado' : 'Animais cadastrados'}
+        />
+        <StatCard
+          icon={Users}
+          value={followers}
+          label="Seguidores"
+        />
+        <StatCard
+          icon={Calendar}
+          value={founded || '—'}
+          label="Fundação"
+        />
+      </section>
 
-      {/* CTA DOAÇÃO — destaque quando há link */}
+      {/* SOBRE A ORGANIZAÇÃO */}
+      {hasDescription && (
+        <section>
+          <h2 className="mb-3 text-lg font-bold text-foreground sm:text-xl">
+            Sobre a organização
+          </h2>
+          <p className="text-base leading-relaxed text-foreground/85">
+            {club.description}
+          </p>
+        </section>
+      )}
+
+      {/* CTA DOAÇÃO */}
       {club.donation_link && (
-        <div className="flex flex-col items-center gap-2 rounded-2xl border border-border/60 bg-card/50 p-6 text-center sm:flex-row sm:gap-4 sm:text-left">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+        <div className="flex flex-col items-center gap-3 rounded-2xl border border-border/60 bg-gradient-to-br from-orange-50 to-rose-50 p-6 text-center sm:flex-row sm:gap-4 sm:text-left">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-rose-500 text-white">
             <Heart className="h-6 w-6" />
           </div>
           <div className="flex-1">
-            <h2 className="text-base font-semibold text-foreground">Ajude esta causa</h2>
+            <h3 className="text-base font-semibold text-foreground">Ajude esta causa</h3>
             <p className="text-sm text-muted-foreground">
               Sua contribuição ajuda a ONG a manter e ampliar o cuidado com os animais.
             </p>
@@ -84,23 +93,11 @@ export default function ClubGeneralTab({ club }) {
         </div>
       )}
 
-      {/* MISSÃO — tipografia editorial, respiro */}
-      {hasDescription && (
-        <section>
-          <h2 className="mb-4 text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">
-            Missão
-          </h2>
-          <p className="text-lg leading-relaxed text-foreground/90 sm:text-xl sm:leading-relaxed">
-            {club.description}
-          </p>
-        </section>
-      )}
-
-      {/* HISTÓRIA — texto longo, mas com respiro */}
+      {/* HISTÓRIA */}
       {hasHistory && (
         <section>
-          <h2 className="mb-4 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">
-            <Clock className="h-3.5 w-3.5" /> Nossa história
+          <h2 className="mb-3 inline-flex items-center gap-2 text-lg font-bold text-foreground sm:text-xl">
+            <Clock className="h-5 w-5 text-primary" /> Nossa história
           </h2>
           <p className="whitespace-pre-line text-base leading-loose text-foreground/85">
             {club.history}
@@ -108,30 +105,22 @@ export default function ClubGeneralTab({ club }) {
         </section>
       )}
 
-      {/* CONTATOS — botões grandes, cor escura, letra branca */}
+      {/* FALAR COM A ONG — CTAs grandes, cor escura */}
       {(hasContactEmail || hasWhatsapp || club.chat_enabled !== false) && (
         <section>
-          <h2 className="mb-4 text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">
+          <h2 className="mb-4 text-lg font-bold text-foreground sm:text-xl">
             Falar com a ONG
           </h2>
           <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             {hasContactEmail && (
-              <Button
-                asChild
-                size="lg"
-                className="bg-foreground text-background hover:bg-foreground/90"
-              >
+              <Button asChild size="lg" className="bg-foreground text-background hover:bg-foreground/90">
                 <a href={`mailto:${club.contact_email}`}>
                   <Mail className="mr-2 h-4 w-4" /> Enviar e-mail
                 </a>
               </Button>
             )}
             {hasWhatsapp && (
-              <Button
-                asChild
-                size="lg"
-                className="bg-foreground text-background hover:bg-foreground/90"
-              >
+              <Button asChild size="lg" className="bg-foreground text-background hover:bg-foreground/90">
                 <a
                   href={`https://wa.me/55${whatsappClean}?text=${encodeURIComponent(
                     `Olá, vim pelo Viralata e gostaria de falar com a ${club.name}.`,
@@ -163,50 +152,62 @@ export default function ClubGeneralTab({ club }) {
         </section>
       )}
 
-      {/* DETALHES — grid limpo, sem repetir info do header */}
-      <section className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        {hasContactEmail && (
-          <DetailRow icon={Mail} label="E-mail" value={club.contact_email} href={`mailto:${club.contact_email}`} />
-        )}
-        {hasContactPhone && (
-          <DetailRow icon={Phone} label="Telefone" value={club.contact_phone} href={`tel:${phoneClean}`} />
-        )}
-        {hasWhatsapp && (
-          <DetailRow
-            icon={Phone}
-            label="WhatsApp"
-            value={club.whatsapp_number}
-            href={`https://wa.me/55${whatsappClean}`}
-            external
-          />
-        )}
-        {hasInstagram && (
-          <DetailRow
-            icon={Instagram}
-            label="Instagram"
-            value={club.instagram}
-            href={`https://instagram.com/${String(club.instagram).replace('@', '')}`}
-            external
-          />
-        )}
-        {club.home_venue && (
-          <DetailRow icon={MapPin} label="Endereço / sede" value={club.home_venue} />
-        )}
-        {club.cnpj && (
-          <DetailRow icon={Globe} label="CNPJ" value={club.cnpj} />
-        )}
-        {club.donation_link && (
-          <DetailRow
-            icon={Heart}
-            label="Como doar"
-            value={club.donation_link}
-            href={club.donation_link}
-            external
-          />
-        )}
+      {/* CONTATOS DETALHADOS */}
+      <section>
+        <h2 className="mb-3 text-lg font-bold text-foreground sm:text-xl">Contatos</h2>
+        <div className="grid grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-2">
+          {hasContactEmail && (
+            <DetailRow icon={Mail} label="E-mail" value={club.contact_email} href={`mailto:${club.contact_email}`} />
+          )}
+          {hasContactPhone && (
+            <DetailRow icon={Phone} label="Telefone" value={club.contact_phone} href={`tel:${phoneClean}`} />
+          )}
+          {hasWhatsapp && (
+            <DetailRow
+              icon={Phone}
+              label="WhatsApp"
+              value={club.whatsapp_number}
+              href={`https://wa.me/55${whatsappClean}`}
+              external
+            />
+          )}
+          {hasInstagram && (
+            <DetailRow
+              icon={Instagram}
+              label="Instagram"
+              value={club.instagram}
+              href={`https://instagram.com/${String(club.instagram).replace('@', '')}`}
+              external
+            />
+          )}
+          {club.home_venue && (
+            <DetailRow icon={MapPin} label="Endereço / sede" value={club.home_venue} />
+          )}
+          {club.cnpj && (
+            <DetailRow icon={Globe} label="CNPJ" value={club.cnpj} />
+          )}
+          {location && (
+            <DetailRow icon={MapPin} label="Localização" value={location} />
+          )}
+        </div>
       </section>
 
       <ClubPublicChatDialog club={club} open={chatOpen} onOpenChange={setChatOpen} />
+    </div>
+  );
+}
+
+/** Card de estatística com gradiente — padrão da imagem de referência. */
+function StatCard({ icon: Icon, value, label }) {
+  return (
+    <div className="rounded-2xl border border-orange-200/50 bg-gradient-to-br from-orange-50 via-white to-rose-50 p-5 shadow-sm">
+      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-rose-500 text-white">
+        <Icon className="h-5 w-5" />
+      </div>
+      <p className="mt-3 text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
+        {value}
+      </p>
+      <p className="mt-0.5 text-sm text-muted-foreground">{label}</p>
     </div>
   );
 }
