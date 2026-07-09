@@ -15,7 +15,7 @@ import { CLUB_DIRECTORY_STATUS, CLUB_DIRECTORY_STATUS_LABELS } from '@/modules/c
 import { useMyPets } from '@/modules/pets/hooks/usePets';
 import { useClub, useMyMembership } from '@/modules/organizations/hooks/useClubs';
 import { CLUB_ROLE, CLUB_PERMISSION } from '@/modules/organizations/domain/constants';
-import { isClubOwner, hasAnyClubPermission, visibleAdminTabs } from '@/modules/organizations/domain/permissions';
+import { isClubOwner, hasAnyClubPermission, visibleAdminTabs, hasClubPermission } from '@/modules/organizations/domain/permissions';
 import ClubAdminTab from '@/modules/organizations/components/ClubAdminTab';
 import ClubTeamTab from '@/modules/organizations/components/ClubTeamTab';
 import ClubPetsDataGrid from '@/modules/organizations/components/ClubPetsDataGrid';
@@ -63,6 +63,15 @@ export default function OrganizationAdminPanel() {
   const owner = isClubOwner(club, membership, user?.uid);
   const isAdmin = isClubOwner(club, membership, user?.uid) || membership?.role === CLUB_ROLE.ADMIN;
   const canAccess = hasAnyClubPermission(club, membership, user?.uid);
+
+  // Permissões granulares efetivas do viewer (usadas para esconder/mostrar
+  // botões dentro de cada aba). `hasClubPermission` já cobre o owner e a
+  // compatibilidade de admin legado (sem `permissions` map).
+  const canManageAnimals = hasClubPermission(club, membership, CLUB_PERMISSION.ANIMALS, user?.uid);
+  const canManageFeed = hasClubPermission(club, membership, CLUB_PERMISSION.FEED, user?.uid);
+  const canManageDonations = hasClubPermission(club, membership, CLUB_PERMISSION.DONATIONS, user?.uid);
+  const canManageFinance = hasClubPermission(club, membership, CLUB_PERMISSION.FINANCE, user?.uid);
+  const canManageTeam = hasClubPermission(club, membership, CLUB_PERMISSION.TEAM, user?.uid);
 
   const visibleTabs = useMemo(() => {
     const list = visibleAdminTabs({ club, membership, currentUserUid: user?.uid, isAdmin });
@@ -170,22 +179,22 @@ export default function OrganizationAdminPanel() {
           <ClubGeneralAdminTab club={club} />
         </TabsContent>
         <TabsContent value="animals" className="mt-6 px-1">
-          <ClubPetsDataGrid clubId={orgId} />
+          <ClubPetsDataGrid clubId={orgId} canManage={canManageAnimals} />
         </TabsContent>
         <TabsContent value="feed" className="mt-6 px-1">
-          <ClubFeedTab clubId={orgId} isAdmin={isAdmin} />
+          <ClubFeedTab clubId={orgId} club={club} membership={membership} canManageFeed={canManageFeed} />
         </TabsContent>
         <TabsContent value="donations" className="mt-6 px-1">
-          <ClubDonationsTab clubId={orgId} isAdmin={isAdmin} />
+          <ClubDonationsTab clubId={orgId} club={club} membership={membership} canManage={canManageDonations} />
         </TabsContent>
         <TabsContent value="finance" className="mt-6 px-1">
-          <ClubFinanceTab clubId={orgId} />
+          <ClubFinanceTab clubId={orgId} canManage={canManageFinance} />
         </TabsContent>
         <TabsContent value="chat" className="mt-6 px-1">
           <ClubChatAdminTab club={club} />
         </TabsContent>
         <TabsContent value="team" className="mt-6 px-1">
-          <ClubTeamTab club={club} />
+          <ClubTeamTab club={club} viewerMembership={membership} viewerUid={user?.uid} />
         </TabsContent>
         <TabsContent value="settings" className="mt-6 px-1">
           <ClubAdminTab club={club} />

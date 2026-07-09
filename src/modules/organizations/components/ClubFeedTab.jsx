@@ -25,6 +25,7 @@ import {
   uploadImage, maxImageMb, ACCEPTED_IMAGE_ATTR,
 } from '@/core/services/storageService';
 import { POST_INTERACTION, POST_INTERACTION_LABELS, ORG_MURAL_LIMITS } from '../domain/constants';
+import { canManageClubFeed } from '../domain/permissions';
 import ClubPostCard from './ClubPostCard';
 import { cn } from '@/core/lib/utils';
 
@@ -34,18 +35,23 @@ const MAX_IMAGES = ORG_MURAL_LIMITS.ATTACHMENT_MAX;
  * Mural da ONG (aba Mural).
  *
  * Funcionalidades:
- *  - Membros da ONG com permissão `feed` (ou superior) podem:
+ *  - Membros da ONG com permissão `feed` (ou owner) podem:
  *      * Criar posts com título, texto e imagem
  *      * Escolher, no momento de criar, qual o nível de interação
  *        permitido (curtidas, comentários, ambos, ou nenhum)
  *      * Editar seus próprios posts enquanto não houver curtidas/comentários
- *      * Excluir seus próprios posts (e qualquer admin pode excluir)
+ *      * Excluir seus próprios posts (e qualquer membro com `feed` pode
+ *        excluir QUALQUER post, para moderação)
  *  - O público em geral pode:
  *      * Visualizar todos os posts
  *      * Curtir e/ou comentar, conforme o que o criador do post permitiu
  *      * Excluir seus próprios comentários
+ *
+ * A permissão `feed` é resolvida pelo chamador (perfil admin) e passada em
+ * `canManageFeed`. Manter um único caminho de permissão garante coerência
+ * entre a aba visível e os botões exibidos.
  */
-export default function ClubFeedTab({ clubId, club, membership, isAdmin }) {
+export default function ClubFeedTab({ clubId, club, membership, canManageFeed }) {
   const { user, userProfile } = useAuth();
   const { data: posts = [], isLoading } = useClubPosts(clubId);
   const createPost = useCreateClubPost(clubId);
@@ -65,7 +71,7 @@ export default function ClubFeedTab({ clubId, club, membership, isAdmin }) {
     return () => window.removeEventListener('club-post-confirm-delete', handler);
   }, [posts]);
 
-  const canPost = isAdmin || hasFeedPermission(club, membership, user?.uid);
+  const canPost = canManageFeed || canManageClubFeed(club, membership, user?.uid);
 
   const handleDelete = async () => {
     if (!confirmDelete) return;
@@ -170,12 +176,7 @@ export default function ClubFeedTab({ clubId, club, membership, isAdmin }) {
   );
 }
 
-function hasFeedPermission(club, membership, uid) {
-  if (!club || !membership) return false;
-  if (membership.role === 'admin') return true;
-  return !!membership.permissions?.feed;
-}
-
+/* ============================== Editor (criar/editar) ============================== */
 /* ============================== Editor (criar/editar) ============================== */
 
 function PostEditorDialog({ open, onOpenChange, post, user, onSubmit, isPending }) {

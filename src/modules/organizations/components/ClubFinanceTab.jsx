@@ -93,10 +93,11 @@ const EMPTY_FORM = { type: LEDGER_TYPE.REVENUE, category: '', value: '', date: t
  *  - Gráfico de evolução temporal (mensal) — receitas e despesas
  *  - Quebra por categoria (receitas e despesas)
  *  - Lista de lançamentos do período
- *  - Categorias customizáveis (admin) — combinadas com as presets
- *  - Modo readOnly para o público (sem botões de criar/excluir)
+ *  - Categorias customizáveis (apenas para a equipe com permissão `finance`)
+ *  - Modo somente leitura para quem não tem a permissão `finance` (sem
+ *    botões de criar/excluir; os lançamentos já cadastrados seguem visíveis).
  */
-export default function ClubFinanceTab({ clubId, readOnly = false }) {
+export default function ClubFinanceTab({ clubId, canManage = false }) {
   const { data: entries = [], isLoading } = useClubLedger(clubId);
   const createEntry = useCreateLedgerEntry(clubId);
   const deleteEntry = useDeleteLedgerEntry(clubId);
@@ -205,7 +206,7 @@ export default function ClubFinanceTab({ clubId, readOnly = false }) {
             </button>
           ))}
         </div>
-        {!readOnly && (
+        {canManage && (
           <div className="flex items-center gap-2">
             <Button size="sm" variant="outline" onClick={() => setShowCategories(true)}>
               <Settings className="mr-1.5 h-4 w-4" /> Categorias
@@ -291,7 +292,7 @@ export default function ClubFinanceTab({ clubId, readOnly = false }) {
                 <span className={cn('shrink-0 text-sm font-semibold', entry.type === LEDGER_TYPE.REVENUE ? 'text-[hsl(150_38%_24%)]' : 'text-[hsl(9_62%_36%)]')}>
                   {entry.type === LEDGER_TYPE.REVENUE ? '+' : '-'}{brl(entry.value)}
                 </span>
-                {!readOnly && (
+                {canManage && (
                   <button
                     type="button"
                     onClick={() => handleDelete(entry.id)}
