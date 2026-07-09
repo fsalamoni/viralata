@@ -13,7 +13,7 @@ import { getClub } from '../services/clubService';
 import { isClubPubliclyVisible, CLUB_DIRECTORY_STATUS } from '@/modules/communities/domain/directory';
 import { useMyMembership, useRequestToJoinClub, useMyJoinRequests, useMyClubInvites } from '../hooks/useClubs';
 import { JOIN_REQUEST_STATUS } from '@/modules/organizations/domain/constants';
-import { hasClubPermission, isClubOwner } from '../domain/permissions';
+import { hasClubPermission, isClubOwner, hasAnyClubPermission } from '../domain/permissions';
 import { CLUB_PERMISSION } from '../domain/constants';
 import ClubPetsDataGrid from '../components/ClubPetsDataGrid';
 
@@ -104,11 +104,63 @@ export default function ClubDetail() {
 
   const location = [club.city, club.state].filter(Boolean).join(' / ');
 
+  // Diagnóstico temporário — remover após identificar a causa
+  const ownerMatch = isClubOwner(club, membership, user?.uid);
+  const anyPerm = hasAnyClubPermission(club, membership, user?.uid);
+
   return (
     <div className="arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8 space-y-6">
       <Button asChild variant="ghost" size="sm">
         <Link to="/organizacoes"><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar</Link>
       </Button>
+
+      {/* Diagnóstico temporário — remover após identificar a causa */}
+      <div
+        data-testid="club-debug-panel"
+        role="status"
+        className="rounded-2xl border-2 border-warning/40 bg-warning/5 p-4 text-xs space-y-2"
+      >
+        <div className="flex items-center gap-2 font-bold text-warning">
+          <Info className="h-4 w-4" />
+          <span>Diagnóstico temporário — ONG</span>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 font-mono text-foreground/80">
+          <div>club.id: <span className="font-bold">{String(club.id || '∅').slice(0, 14)}…</span></div>
+          <div>club.created_by: <span className="font-bold">{String(club.created_by || '∅').slice(0, 14)}…</span></div>
+          <div>club.owner_id: <span className="font-bold">{String(club.owner_id || '∅').slice(0, 14)}…</span></div>
+          <div>user.uid: <span className="font-bold">{String(user?.uid || '∅').slice(0, 14)}…</span></div>
+          <div>
+            created_by === user.uid?:{' '}
+            <span className={`font-bold ${ownerMatch ? 'text-emerald-700' : 'text-destructive'}`}>
+              {String(ownerMatch)}
+            </span>
+          </div>
+          <div>
+            hasAnyClubPermission(...)?:{' '}
+            <span className={`font-bold ${anyPerm ? 'text-emerald-700' : 'text-destructive'}`}>
+              {String(anyPerm)}
+            </span>
+          </div>
+          <div>
+            isAdmin (UI gating):{' '}
+            <span className={`font-bold ${isAdmin ? 'text-emerald-700' : 'text-destructive'}`}>
+              {String(isAdmin)}
+            </span>
+          </div>
+          <div>
+            isMember (UI gating):{' '}
+            <span className={`font-bold ${isMember ? 'text-emerald-700' : 'text-destructive'}`}>
+              {String(isMember)}
+            </span>
+          </div>
+          <div>
+            membership:{' '}
+            <span className="font-bold">
+              {membership ? `role=${membership.role} perms=${JSON.stringify(membership.permissions || {})}` : 'null (legacy / não carregou)'}
+            </span>
+          </div>
+        </div>
+      </div>
 
       <section className="arena-panel-strong overflow-hidden rounded-[1.25rem] p-5 sm:rounded-[2rem] sm:p-8">
         <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
