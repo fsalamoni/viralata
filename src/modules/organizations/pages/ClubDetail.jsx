@@ -174,7 +174,13 @@ export default function ClubDetail() {
                       key={tab.key}
                       value={tab.key}
                       className={cn(
-                        'arena-tab-pill gap-1.5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-rose-500 data-[state=active]:text-white',
+                        // Pill ativo usa o gradiente PERSONALIZADO do
+                        // card da ONG (definido em `clubs.theme` e
+                        // aplicado por `ClubThemedScope`). Quando o admin
+                        // não personalizou, cai no default laranja→rosa
+                        // declarado em :root. Garante coerência visual
+                        // entre o card da ONG e a navegação interna.
+                        'arena-tab-pill gap-1.5 data-[state=active]:text-white data-[state=active]:[background:var(--cover-gradient)]',
                       )}
                     >
                       <tab.icon className="h-4 w-4" /> {tab.label}

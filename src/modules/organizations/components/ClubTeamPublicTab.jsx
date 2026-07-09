@@ -70,11 +70,15 @@ export default function ClubTeamPublicTab({ clubId, club, viewerMembership }) {
   }
 
   return (
-    <div className="space-y-3">
+    // space-y-5 dá mais respiro entre o aviso superior e a grade de
+    // cards do que o space-y-3 antigo.
+    <div className="space-y-5">
       <p className="text-xs text-muted-foreground">
         Cada membro pode escolher quais informações compartilhar. Apenas o que está liberado para você é exibido abaixo.
       </p>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      {/* gap-4 entre os cards (era gap-3) — coletivo, numa grade de
+          2–3 colunas em desktop, faz diferença de respiro. */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {visible.map((m) => {
           const filtered = filterMemberForViewer(m, { viewer: viewerContext, club });
           return (
@@ -110,8 +114,8 @@ function MemberCard({ member, viewerContext, onStartChat }) {
   if (!hasVisibleField) {
     return (
       <Card className="rounded-2xl">
-        <CardContent className="p-5 text-center text-xs text-muted-foreground">
-          <Lock className="mx-auto mb-1 h-4 w-4" />
+        <CardContent className="p-6 text-center text-xs text-muted-foreground">
+          <Lock className="mx-auto mb-2 h-4 w-4" />
           As informações deste membro estão restritas no momento.
         </CardContent>
       </Card>
@@ -120,7 +124,9 @@ function MemberCard({ member, viewerContext, onStartChat }) {
 
   return (
     <Card className="rounded-2xl">
-      <CardContent className="p-4">
+      {/* p-5 e space-y-3 dão ao card do membro o mesmo "respiro"
+          dos outros cards do projeto (PetCard, DonationCard). */}
+      <CardContent className="space-y-3 p-5">
         <div className="flex items-start gap-3">
           {member.photo_url ? (
             <img src={member.photo_url} alt="" className="h-12 w-12 shrink-0 rounded-full border border-border object-cover" />
@@ -132,7 +138,7 @@ function MemberCard({ member, viewerContext, onStartChat }) {
           <div className="min-w-0 flex-1">
             {member.user_name && <p className="truncate text-sm font-semibold">{member.user_name}</p>}
             {member.title && (
-              <p className="truncate text-xs text-muted-foreground">
+              <p className="mt-0.5 truncate text-xs text-muted-foreground">
                 <Briefcase className="mr-1 inline h-3 w-3" /> {member.title}
               </p>
             )}
@@ -140,16 +146,16 @@ function MemberCard({ member, viewerContext, onStartChat }) {
         </div>
 
         {member.bio && (
-          <p className="mt-3 line-clamp-3 whitespace-pre-wrap text-xs text-foreground/85">{member.bio}</p>
+          <p className="line-clamp-3 whitespace-pre-wrap text-xs leading-relaxed text-foreground/85">{member.bio}</p>
         )}
         {member.history && (
-          <details className="mt-2 text-[11px] text-muted-foreground">
+          <details className="text-[11px] text-muted-foreground">
             <summary className="cursor-pointer font-semibold">Histórico na ONG</summary>
             <p className="mt-1 whitespace-pre-wrap leading-5">{member.history}</p>
           </details>
         )}
 
-        <div className="mt-3 flex flex-wrap items-center gap-1.5">
+        <div className="flex flex-wrap items-center gap-1.5 pt-1">
           {member.user_email && (
             <Button asChild size="icon" variant="outline" className="h-8 w-8" title={`E-mail: ${member.user_email}`}>
               <a href={`mailto:${member.user_email}`}><Mail className="h-3.5 w-3.5" /></a>
@@ -179,7 +185,7 @@ function MemberCard({ member, viewerContext, onStartChat }) {
         </div>
 
         {hidden.length > 0 && (
-          <p className="mt-3 inline-flex items-center gap-1 text-[10px] text-muted-foreground">
+          <p className="inline-flex items-center gap-1 pt-1 text-[10px] text-muted-foreground">
             <EyeOff className="h-3 w-3" /> Algumas informações estão ocultas para você.
           </p>
         )}

@@ -37,11 +37,12 @@ export default function ClubCover({ club, stats, isAdmin }) {
   return (
     <header className="relative isolate w-full overflow-hidden">
       {/* BANNER FULL-WIDTH com gradiente personalizado. max-h impede
-          que em telas muito grandes o card cresça demais. */}
+          que em telas grandes o card cresça demais. */}
       <div
         className="relative h-44 max-h-[260px] w-full overflow-hidden sm:h-52"
-        style={{ background: 'var(--cover-gradient, linear-gradient(135deg, hsl(20 90% 50%), hsl(350 80% 55%)))' }}
+        style={{ background: 'var(--cover-gradient, linear-gradient(135deg, hsl(20 90% 50%) 0%, hsl(350 80% 55%) 100%))' }}
       >
+
         <PawWatermark />
 
         {/* Link "Painel Administrativo" — canto superior direito, só
@@ -66,11 +67,17 @@ export default function ClubCover({ club, stats, isAdmin }) {
       </div>
 
       {/* ÁREA DE IDENTIDADE — sobreposta, alinhada à esquerda, restrita
-          ao conteúdo útil (max-w + padding do app). */}
-      <div className="relative z-10 mx-auto -mt-14 max-w-5xl px-4 pb-4 sm:-mt-16 sm:px-6 lg:px-8">
-        <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-end sm:gap-5">
-          {/* Logo da ONG — quadrado arredondado, sobreposto ao banner */}
-          <div className="flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-2xl border-4 border-background bg-gradient-to-br from-orange-400 to-rose-500 shadow-lg sm:h-32 sm:w-32">
+          ao conteúdo útil (max-w + padding do app). Usa pb generoso
+          pra dar "respiro" entre o card e a próxima seção (Voltar + tabs). */}
+      <div className="relative z-10 mx-auto -mt-14 max-w-5xl px-4 pb-5 sm:-mt-16 sm:px-6 lg:px-8">
+        <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-end sm:gap-6">
+          {/* Logo da ONG — quadrado arredondado, sobreposto ao banner.
+              Quando a ONG não tem logo enviado, usamos o gradiente do
+              card como fundo (consistência visual com a personalização). */}
+          <div
+            className="flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-2xl border-4 border-background shadow-lg sm:h-32 sm:w-32"
+            style={{ background: 'var(--cover-gradient, linear-gradient(135deg, hsl(28 88% 60%) 0%, hsl(348 78% 60%) 100%))' }}
+          >
             {club.logo_url ? (
               <img src={club.logo_url} alt="" className="h-full w-full object-cover" />
             ) : (
@@ -80,8 +87,12 @@ export default function ClubCover({ club, stats, isAdmin }) {
             )}
           </div>
 
-          {/* Nome + (local + chips mais abaixo) */}
-          <div className="min-w-0 flex-1 pb-1">
+          {/* Nome + (local + chips mais abaixo).
+              `pb-2` mantém o conteúdo "soltinho" dentro do card.
+              Localização e chips agora têm MAIS espaço vertical entre
+              eles e o nome (mt-6 sm:mt-7 vs antes mt-3 sm:mt-4) — o
+              usuário reportou que estavam atropelando o nome/logo. */}
+          <div className="min-w-0 flex-1 pb-2">
             <h1
               className="text-2xl font-bold tracking-tight drop-shadow sm:text-3xl"
               style={{ color: 'hsl(var(--cover-name, 0 0% 100%))' }}
@@ -89,16 +100,13 @@ export default function ClubCover({ club, stats, isAdmin }) {
               {club.name}
             </h1>
 
-            {/* A linha com localização e chips é empurrada para baixo
-                (mt-4 → mt-5) pra não bater no nome e manter o card
-                visualmente equilibrado. */}
             {location && (
-              <p className="mt-3 inline-flex items-center gap-1 text-sm text-muted-foreground sm:mt-4">
+              <p className="mt-6 inline-flex items-center gap-1 text-sm text-muted-foreground sm:mt-7">
                 <MapPin className="h-3.5 w-3.5" /> {location}
               </p>
             )}
 
-            <div className="mt-3 flex flex-wrap gap-2 sm:mt-4">
+            <div className="mt-4 flex flex-wrap gap-2 sm:mt-5">
               {founded && (
                 <InfoChip icon={Calendar} label={`Fundada em ${founded}`} />
               )}

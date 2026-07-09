@@ -189,7 +189,10 @@ export default function ClubFinanceTab({ clubId, canManage = false }) {
   }
 
   return (
-    <div className="space-y-5">
+    // space-y-7 entre as seções principais: dá respiração
+    // adequada entre o topo (período + cards de totais),
+    // o gráfico, e as listas por categoria.
+    <div className="space-y-7">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2">
           {Object.values(FINANCE_PERIOD).map((p) => (
@@ -249,21 +252,23 @@ export default function ClubFinanceTab({ clubId, canManage = false }) {
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+      {/* Cards de totais — `pt-3 sm:pt-4` afasta o bloco das pílulas
+          de período acima (era p-4 colado). */}
+      <div className="pt-3 sm:pt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
         <Card className="rounded-2xl border-[hsl(150_38%_36%/0.25)] bg-[hsl(150_38%_36%/0.08)]">
-          <CardContent className="p-4">
+          <CardContent className="p-5">
             <div className="text-xs font-semibold text-[hsl(150_38%_26%)]">Receitas</div>
             <div className="mt-1 text-xl font-bold text-[hsl(150_38%_24%)]">{brl(revenueTotal)}</div>
           </CardContent>
         </Card>
         <Card className="rounded-2xl border-[hsl(9_62%_46%/0.22)] bg-[hsl(9_62%_46%/0.07)]">
-          <CardContent className="p-4">
+          <CardContent className="p-5">
             <div className="text-xs font-semibold text-[hsl(9_62%_38%)]">Despesas</div>
             <div className="mt-1 text-xl font-bold text-[hsl(9_62%_36%)]">{brl(expenseTotal)}</div>
           </CardContent>
         </Card>
         <Card className="rounded-2xl">
-          <CardContent className="p-4">
+          <CardContent className="p-5">
             <div className="text-xs font-semibold text-muted-foreground">Saldo</div>
             <div className={cn('mt-1 text-xl font-bold', balance >= 0 ? 'text-[hsl(150_38%_24%)]' : 'text-[hsl(9_62%_36%)]')}>
               {brl(balance)}
@@ -418,12 +423,17 @@ const MONTH_SHORT = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Se
 function TimelineChart({ entries }) {
   const series = useMemo(() => buildMonthlySeries(entries), [entries]);
   if (series.length < 2) {
+    // Empty state maior e centralizado vertical/horizontal — fica
+    // visualmente claro como "aguarde mais dados" sem encostar nas
+    // bordas do card de saldo acima.
     return (
       <Card className="rounded-2xl">
-        <CardContent className="p-5 text-center text-xs text-muted-foreground">
-          {series.length === 0
-            ? 'Sem dados para gerar o gráfico de evolução.'
-            : 'É preciso pelo menos 2 meses de dados para mostrar a evolução.'}
+        <CardContent className="flex min-h-[160px] items-center justify-center p-6 text-center text-sm text-muted-foreground">
+          <p className="max-w-xs">
+            {series.length === 0
+              ? 'Sem dados ainda para gerar o gráfico de evolução. Conforme você registrar lançamentos, a linha aparece aqui.'
+              : 'É preciso pelo menos 2 meses de dados para mostrar a evolução.'}
+          </p>
         </CardContent>
       </Card>
     );

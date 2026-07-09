@@ -41,8 +41,8 @@ export default function ClubGeneralTab({ club, stats }) {
   const animals = stats?.animals ?? 0;
 
   return (
-    <div className="space-y-10 sm:space-y-12">
-      {/* STATS CARDS — 3 colunas com gradiente */}
+    <div className="space-y-10 sm:space-y-14">
+      {/* STATS CARDS — 3 colunas com gradiente personalizado */}
       <section className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <StatCard
           icon={PawPrint}
@@ -61,9 +61,10 @@ export default function ClubGeneralTab({ club, stats }) {
         />
       </section>
 
-      {/* SOBRE A ORGANIZAÇÃO */}
+      {/* SOBRE A ORGANIZAÇÃO — adiciona mais padding-top no card genérico
+          para que o texto respire do card vizinho acima. */}
       {hasDescription && (
-        <section>
+        <section className="pt-2 sm:pt-3">
           <h2 className="mb-3 text-lg font-bold text-foreground sm:text-xl">
             Sobre a organização
           </h2>
@@ -73,10 +74,20 @@ export default function ClubGeneralTab({ club, stats }) {
         </section>
       )}
 
-      {/* CTA DOAÇÃO */}
+      {/* CTA DOAÇÃO — bg sutil derivado das cores personalizadas
+          (cover_from/cover_to com opacidade) + ícone com o gradiente
+          completo. Mantém o brand consistente com o card da ONG. */}
       {club.donation_link && (
-        <div className="flex flex-col items-center gap-3 rounded-2xl border border-border/60 bg-gradient-to-br from-orange-50 to-rose-50 p-6 text-center sm:flex-row sm:gap-4 sm:text-left">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-rose-500 text-white">
+        <div
+          className="flex flex-col items-center gap-3 rounded-2xl border border-border/60 p-6 text-center sm:flex-row sm:gap-4 sm:text-left"
+          style={{
+            background: 'linear-gradient(135deg, hsl(var(--cover-from) / 0.07) 0%, hsl(var(--cover-to) / 0.07) 100%)',
+          }}
+        >
+          <div
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-white"
+            style={{ background: 'var(--cover-gradient)' }}
+          >
             <Heart className="h-6 w-6" />
           </div>
           <div className="flex-1">
@@ -95,7 +106,7 @@ export default function ClubGeneralTab({ club, stats }) {
 
       {/* HISTÓRIA */}
       {hasHistory && (
-        <section>
+        <section className="pt-2 sm:pt-3">
           <h2 className="mb-3 inline-flex items-center gap-2 text-lg font-bold text-foreground sm:text-xl">
             <Clock className="h-5 w-5 text-primary" /> Nossa história
           </h2>
@@ -105,10 +116,10 @@ export default function ClubGeneralTab({ club, stats }) {
         </section>
       )}
 
-      {/* FALAR COM A ONG — CTAs grandes, cor escura */}
+      {/* FALAR COM A ONG — CTAs grandes em cor sólida (alto contraste). */}
       {(hasContactEmail || hasWhatsapp || club.chat_enabled !== false) && (
-        <section>
-          <h2 className="mb-4 text-lg font-bold text-foreground sm:text-xl">
+        <section className="pt-2 sm:pt-3">
+          <h2 className="mb-5 text-lg font-bold text-foreground sm:text-xl">
             Falar com a ONG
           </h2>
           <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
@@ -153,7 +164,7 @@ export default function ClubGeneralTab({ club, stats }) {
       )}
 
       {/* CONTATOS DETALHADOS */}
-      <section>
+      <section className="pt-2 sm:pt-3">
         <h2 className="mb-3 text-lg font-bold text-foreground sm:text-xl">Contatos</h2>
         <div className="grid grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-2">
           {hasContactEmail && (
@@ -197,17 +208,25 @@ export default function ClubGeneralTab({ club, stats }) {
   );
 }
 
-/** Card de estatística com gradiente — padrão da imagem de referência. */
+/** Card de estatística com gradiente personalizado (cover). */
 function StatCard({ icon: Icon, value, label }) {
   return (
-    <div className="rounded-2xl border border-orange-200/50 bg-gradient-to-br from-orange-50 via-white to-rose-50 p-5 shadow-sm">
-      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-rose-500 text-white">
+    <div
+      className="rounded-2xl border border-border/40 p-5 shadow-sm"
+      style={{
+        background: 'linear-gradient(135deg, hsl(var(--cover-from) / 0.07) 0%, hsl(var(--cover-to) / 0.07) 100%)',
+      }}
+    >
+      <div
+        className="flex h-10 w-10 items-center justify-center rounded-xl text-white"
+        style={{ background: 'var(--cover-gradient)' }}
+      >
         <Icon className="h-5 w-5" />
       </div>
       <p className="mt-3 text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
         {value}
       </p>
-      <p className="mt-0.5 text-sm text-muted-foreground">{label}</p>
+      <p className="mt-1 text-sm text-muted-foreground">{label}</p>
     </div>
   );
 }

@@ -168,7 +168,9 @@ function DonationCard({ donation, canManage, onEdit, onDelete, onAddFunds }) {
   const concluded = donation.status === CAMPAIGN_STATUS.CONCLUDED;
   return (
     <Card className="rounded-2xl">
-      <CardContent className="space-y-3 p-5">
+      {/* space-y-4 (16px entre filhos) dá respiração melhor que space-y-3
+          e pt-5 empurra o título pra dentro do card sem encostar no topo. */}
+      <CardContent className="space-y-4 p-5 pt-5">
         <div className="flex flex-wrap items-start justify-between gap-2">
           <h3 className="text-base font-semibold">{donation.title}</h3>
           <div className="flex flex-wrap items-center gap-1.5">
@@ -219,9 +221,10 @@ function DonationCard({ donation, canManage, onEdit, onDelete, onAddFunds }) {
           </div>
         </div>
 
-        {/* Dados para doar */}
+        {/* Dados para doar — caixa aninhada com mais padding interno
+            (p-4) e space-y-3 entre os itens; evita o visual "colado". */}
         {(donation.pix_key || donation.pix_qr_url || donation.bank_info) && (
-          <div className="rounded-xl border border-border bg-secondary/30 p-3 space-y-2">
+          <div className="rounded-xl border border-border bg-secondary/30 p-4 space-y-3">
             <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Como contribuir</p>
             {donation.pix_key && <PixKeyBlock pixKey={donation.pix_key} />}
             {donation.pix_qr_url && (
@@ -240,9 +243,11 @@ function DonationCard({ donation, canManage, onEdit, onDelete, onAddFunds }) {
           </div>
         )}
 
-        {/* Botão "Informar contribuição" (público) */}
+        {/* Botão "Informar contribuição" (público) — mais respiro pt-5
+            antes do divisor pra separar visualmente do bloco "Como
+            contribuir" acima. */}
         {!concluded && donation.enable_receipt_upload !== false && (
-          <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border pt-3">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-5">
             <p className="text-xs text-muted-foreground">
               Já contribuiu? Envie seu comprovante para a ONG registrar.
             </p>
