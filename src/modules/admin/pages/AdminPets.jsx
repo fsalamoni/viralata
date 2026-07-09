@@ -36,7 +36,7 @@ export default function AdminPets() {
         <div className="space-y-2">
           {pets.map((pet) => (
             <div key={pet.id} className="flex items-center gap-3 p-3 rounded-xl border border-border bg-card">
-              <img src={pet.photos?.[0] || '/placeholder-pet.svg'} alt="" className="w-12 h-12 rounded-lg object-cover flex-shrink-0" />
+              <img src={pet.photos?.[0] || '/placeholder-pet.svg'} alt="" className="w-12 h-12 rounded-lg object-cover flex-shrink-0" loading="lazy" decoding="async" />
               <div className="flex-1 min-w-0">
                 <p className="font-medium text-sm text-foreground truncate">{pet.title || pet.name}</p>
                 <div className="flex gap-1 mt-0.5">

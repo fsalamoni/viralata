@@ -17,6 +17,8 @@ import InterestPanel from '../components/InterestPanel';
 import RatingForm from '../components/RatingForm';
 import PetShareCard from '../components/PetShareCard';
 import AdoptionFormFill from '../components/AdoptionFormFill';
+import PetDetailSkeleton from '../components/PetDetailSkeleton';
+import PetNotFound from '../components/PetNotFound';
 import { hasQuestions } from '../domain/adoptionForm';
 import { usePetShareImage } from '../hooks/usePetShareImage';
 import { Button } from '@/components/ui/button';
@@ -76,8 +78,8 @@ export default function PetDetail() {
   const petPermissions = usePetPermissions(pet);
   const showAdoptionGating = useFeatureFlag(FEATURE_FLAG.PET_ADOPTION_GATING);
 
-  if (isLoading) return <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>;
-  if (!pet) return <div className="text-center py-16 text-muted-foreground">Pet não encontrado.</div>;
+  if (isLoading) return <PetDetailSkeleton />;
+  if (!pet) return <PetNotFound petId={petId} />;
 
   // `canManage` segue indicando se o usuário pode editar/deletar — alimenta
   // as tabs e os botões de gestão. A flag PET_ADOPTION_GATING decide se
@@ -206,8 +208,9 @@ export default function PetDetail() {
           <div className="arena-panel aspect-square rounded-[1.25rem] overflow-hidden">
             <img
               src={pet.photos?.[currentPhoto] || '/placeholder-pet.svg'}
-              alt={pet.title}
+              alt={pet.title || 'Foto do pet'}
               className="w-full h-full object-cover"
+              fetchPriority={currentPhoto === 0 ? 'high' : 'auto'}
             />
           </div>
           {pet.photos?.length > 1 && (
@@ -216,9 +219,11 @@ export default function PetDetail() {
                 <button
                   key={i}
                   onClick={() => setCurrentPhoto(i)}
-                  className={`flex-shrink-0 w-16 h-16 rounded-xl overflow-hidden border-2 transition-colors ${i === currentPhoto ? 'border-primary' : 'border-transparent'}`}
+                  aria-label={`Ver foto ${i + 1} de ${pet.photos.length}`}
+                  aria-pressed={i === currentPhoto}
+                  className={`flex-shrink-0 w-16 h-16 rounded-xl overflow-hidden border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${i === currentPhoto ? 'border-primary' : 'border-transparent'}`}
                 >
-                  <img src={url} alt="" className="w-full h-full object-cover" />
+                  <img src={url} alt="" className="w-full h-full object-cover" loading="lazy" decoding="async" />
                 </button>
               ))}
             </div>
@@ -290,7 +295,15 @@ export default function PetDetail() {
                 <div className="truncate text-[13px] font-bold text-foreground">{owner?.platform_name || owner?.name || 'Responsável'}</div>
                 <div className="text-[11.5px] text-muted-foreground">Responsável pelo pet</div>
               </div>
-              <Button variant="outline" size="sm" onClick={handleOpenChat} disabled={openingChat} className="shrink-0 gap-1.5">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleOpenChat}
+                disabled={openingChat}
+                aria-busy={openingChat}
+                aria-label={`Conversar com ${owner?.platform_name || 'responsável'} pelo pet ${pet?.name || ''}`}
+                className="shrink-0 gap-1.5"
+              >
                 <MessageCircle className="h-4 w-4" /> Conversar
               </Button>
             </div>
@@ -308,11 +321,19 @@ export default function PetDetail() {
                   size="icon"
                   onClick={handleDelete}
                   disabled={deletePet.isPending}
+                  aria-label="Excluir este pet"
                 >
                   <Trash2 className="w-4 h-4" />
                 </Button>
               </div>
-              <Button variant="outline" onClick={handleShare} disabled={sharing || !pet.photos?.[0]} className="w-full">
+              <Button
+                variant="outline"
+                onClick={handleShare}
+                disabled={sharing || !pet.photos?.[0]}
+                aria-busy={sharing}
+                aria-label="Compartilhar este pet"
+                className="w-full"
+              >
                 <Share2 className="w-4 h-4 mr-2" />
                 {sharing ? 'Gerando imagem...' : 'Compartilhar'}
               </Button>

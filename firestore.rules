@@ -11,6 +11,28 @@ service cloud.firestore {
     function isClubMember(clubId) {
       return isAuth() && exists(/databases/$(database)/documents/club_members/$(clubId + '_' + request.auth.uid));
     }
+    // === Comunidade helpers ===
+    // Mesma estrutura do clube mas usando `community_members/<communityId>_<uid>`.
+    // Fallback por owner_id para comunidades LEGADAS cujo creator não foi
+    // adicionado como member (mesma correção aplicada em
+    // src/modules/communities/domain/permissions.js no PR #30).
+    function isCommunityMember(communityId) {
+      return isAuth() && exists(/databases/$(database)/documents/community_members/$(communityId + '_' + request.auth.uid));
+    }
+    function isCommunityAdmin(communityId) {
+      return isCommunityMember(communityId)
+        && get(/databases/$(database)/documents/community_members/$(communityId + '_' + request.auth.uid)).data.role == 'admin';
+    }
+    function canManageCommunity(community) {
+      return isAuth() && (
+        // Plataforma sempre pode
+        isPlatformAdmin()
+        // Dono (mesmo sem doc de member)
+        || (community.owner_id != null && community.owner_id == request.auth.uid)
+        // Admin da comunidade via membership
+        || isCommunityAdmin(community.id)
+      );
+    }
     function isClubAdmin(clubId) {
       return isAuth() && exists(/databases/$(database)/documents/club_members/$(clubId + '_' + request.auth.uid))
         && get(/databases/$(database)/documents/club_members/$(clubId + '_' + request.auth.uid)).data.role == 'admin';
@@ -97,6 +119,13 @@ service cloud.firestore {
           isClubAdmin(resource.data.owner_id) || canEditClubPets(resource.data.owner_id) || hasClubPermission(resource.data.owner_id, 'animals')
         )) ||
         isPlatformAdmin()
+      ) && (
+        // Defeito de segurança: o owner_id NÃO pode ser trocado por update,
+        // mesmo pelo próprio dono. Apenas platform_admin pode reatribuir.
+        // Sem isso, qualquer usuário autenticado poderia 'roubar' pets
+        // de outros criando update com novo owner_id.
+        request.resource.data.owner_id == resource.data.owner_id ||
+        isPlatformAdmin()
       );
       allow delete: if isAuth() && (
         resource.data.owner_id == request.auth.uid ||
@@ -148,7 +177,13 @@ service cloud.firestore {
     match /conversations/{conversationId} {
       allow read: if isAuth() && request.auth.uid in resource.data.member_ids;
       allow create: if isAuth() && request.auth.uid in request.resource.data.member_ids;
-      allow update: if isAuth() && request.auth.uid in resource.data.member_ids;
+      // Permite update para membros, mas NÃO para alterar member_ids
+      // (caso contrário, um membro poderia remover outros). Apenas
+      // platform_admin pode mudar a composição de membros.
+      allow update: if isAuth() && request.auth.uid in resource.data.member_ids && (
+        request.resource.data.member_ids == resource.data.member_ids ||
+        isPlatformAdmin()
+      );
       allow delete: if isPlatformAdmin();
 
       match /messages/{messageId} {
@@ -418,20 +453,59 @@ service cloud.firestore {
     
     match /communities/{communityId} {
       allow read: if true;
-      allow create: if isAuth();
-      allow update, delete: if isAuth() && (isPlatformAdmin() || request.auth.uid == resource.data.owner_id);
+      allow create: if isAuth() && request.resource.data.owner_id == request.auth.uid;
+      // Update pelo owner: NÃO pode trocar owner_id (apenas platform_admin).
+      allow update: if isAuth() && (
+        (request.auth.uid == resource.data.owner_id
+          && request.resource.data.owner_id == resource.data.owner_id)
+        || isPlatformAdmin()
+      );
+      allow delete: if isPlatformAdmin();
     }
     
     match /community_members/{memberId} {
       allow read: if true;
-      allow create, update, delete: if isAuth();
+      // Defeito de segurança: 'create, update, delete: if isAuth()' permitia
+      // que QUALQUER usuário autenticado modificasse memberships (incluindo
+      // se promover a admin ou remover o criador). Agora:
+      //  - create: o user_id do doc DEVE ser o próprio usuário OU um admin
+      //    da comunidade criando outro membro (convite).
+      //  - update: só admin da comunidade OU o próprio user_id do doc
+      //    (para auto-atualizações como 'last_seen'). O campo 'role' só
+      //    pode ser alterado por admin.
+      //  - delete: admin OU o próprio user_id (sair da comunidade).
+      allow create: if isAuth() && (
+        request.resource.data.user_id == request.auth.uid ||
+        canManageCommunity(get(/databases/$(database)/documents/communities/$(communityId)).data)
+      );
+      allow update: if isAuth() && (
+        canManageCommunity(get(/databases/$(database)/documents/communities/$(communityId)).data) ||
+        (resource.data.user_id == request.auth.uid && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['last_seen', 'updated_at']))
+      );
+      allow delete: if isAuth() && (
+        canManageCommunity(get(/databases/$(database)/documents/communities/$(communityId)).data) ||
+        resource.data.user_id == request.auth.uid
+      );
     }
     
     match /community_posts/{postId} {
       allow read: if true;
-      allow create: if isAuth();
-      allow update: if isAuth() && request.auth.uid == resource.data.author_id;
-      allow delete: if isAuth() && (isPlatformAdmin() || request.auth.uid == resource.data.author_id);
+      // Antes: 'create: if isAuth()' permitia QUALQUER usuário criar posts
+      // em QUALQUER comunidade. Agora exige ser membro OU admin da
+      // comunidade-alvo.
+      allow create: if isAuth() && (
+        canManageCommunity(get(/databases/$(database)/documents/communities/$(communityId)).data) ||
+        isCommunityMember(communityId)
+      );
+      allow update: if isAuth() && (
+        request.auth.uid == resource.data.author_id ||
+        canManageCommunity(get(/databases/$(database)/documents/communities/$(communityId)).data)
+      );
+      allow delete: if isAuth() && (
+        request.auth.uid == resource.data.author_id ||
+        canManageCommunity(get(/databases/$(database)/documents/communities/$(communityId)).data) ||
+        isPlatformAdmin()
+      );
     }
     
     match /community_post_likes/{likeId} {

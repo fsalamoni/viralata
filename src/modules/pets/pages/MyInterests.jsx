@@ -207,6 +207,7 @@ function InterestCard({ interest, pet, petLoading, onOpen, onRemove }) {
               alt=""
               className={`absolute inset-0 h-full w-full object-cover ${grayscale ? 'grayscale opacity-70' : ''}`}
               loading="lazy"
+              decoding="async"
             />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
