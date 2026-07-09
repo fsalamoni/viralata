@@ -72,6 +72,12 @@ export default function ClubFeedTab({ clubId, club, membership, canManageFeed })
   }, [posts]);
 
   const canPost = canManageFeed || canManageClubFeed(club, membership, user?.uid);
+  // `isAdminView` = mural está sendo exibido dentro do painel admin ou pra
+  // alguém que pode gerenciar. Se for só a visualização pública, escondemos
+  // as ações de gestão (criar / editar / excluir post). Os likes e
+  // comentários continuam liberados — são interação social legítima do
+  // público, não "gestão da ONG" (essa fica exclusiva no painel admin).
+  const isAdminView = canPost;
 
   const handleDelete = async () => {
     if (!confirmDelete) return;
@@ -111,7 +117,8 @@ export default function ClubFeedTab({ clubId, club, membership, canManageFeed })
       ) : (
         <div className="space-y-3">
           {posts.map((post) => {
-            const canEdit = post.author_id === user?.uid
+            const canEdit = isAdminView
+              && post.author_id === user?.uid
               && (post.likes_count || 0) === 0
               && (post.comments_count || 0) === 0;
             return (
@@ -121,6 +128,7 @@ export default function ClubFeedTab({ clubId, club, membership, canManageFeed })
                   club={club}
                   membership={membership}
                   currentUserUid={user?.uid}
+                  readonly={!isAdminView}
                 />
                 {canEdit && (
                   <div className="flex justify-end">

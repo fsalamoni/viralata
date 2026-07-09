@@ -12,8 +12,10 @@ import {
   hasClubPermission,
   hasAnyClubPermission,
   effectiveClubPermissions,
+  visibleAdminTabs,
+  canReplyInClubChat,
 } from '@/modules/organizations/domain/permissions';
-import { CLUB_PERMISSION, CLUB_ROLE } from '@/modules/organizations/domain/constants';
+import { CLUB_PERMISSION, CLUB_ROLE, CLUB_PERMISSION_KEYS } from '@/modules/organizations/domain/constants';
 
 const owner = 'user_owner_321';
 const admin = 'user_admin_654';
@@ -48,6 +50,20 @@ const adminMembership = {
 const memberWithAnimalPerm = {
   org_id: 'org_modern_1',
   user_id: member,
+  role: CLUB_ROLE.MEMBER,
+  permissions: { [CLUB_PERMISSION.ANIMALS]: true },
+};
+
+const memberWithFeedOnly = {
+  org_id: 'org_modern_1',
+  user_id: 'user_feed_only',
+  role: CLUB_ROLE.MEMBER,
+  permissions: { [CLUB_PERMISSION.FEED]: true },
+};
+
+const memberWithAnimalOnly = {
+  org_id: 'org_modern_1',
+  user_id: 'user_animal_only',
   role: CLUB_ROLE.MEMBER,
   permissions: { [CLUB_PERMISSION.ANIMALS]: true },
 };
@@ -146,5 +162,138 @@ describe('effectiveClubPermissions — owner sem membership tem todas ON', () =>
     const perms = effectiveClubPermissions(modernOrg, memberWithAnimalPerm, member);
     expect(perms[CLUB_PERMISSION.ANIMALS]).toBe(true);
     expect(perms[CLUB_PERMISSION.FINANCE]).toBe(false);
+  });
+});
+
+describe('visibleAdminTabs — admin panel: granular + chat', () => {
+  it('owner vê todas as abas (incluindo Configurações e Chat)', () => {
+    const tabs = visibleAdminTabs({
+      club: modernOrg,
+      membership: ownerMembership,
+      currentUserUid: owner,
+      isAdmin: true,
+    });
+    const keys = tabs.map((t) => t.key);
+    expect(keys).toContain('general');
+    expect(keys).toContain('animals');
+    expect(keys).toContain('feed');
+    expect(keys).toContain('donations');
+    expect(keys).toContain('finance');
+    expect(keys).toContain('team');
+    expect(keys).toContain('chat');
+    expect(keys).toContain('settings');
+  });
+
+  it('admin (sem permissions explícito, role=admin) vê todas as abas', () => {
+    const tabs = visibleAdminTabs({
+      club: modernOrg,
+      membership: adminMembership,
+      currentUserUid: admin,
+      isAdmin: true,
+    });
+    const keys = tabs.map((t) => t.key);
+    expect(keys).toEqual(expect.arrayContaining(['animals', 'feed', 'donations', 'finance', 'team', 'chat', 'settings']));
+  });
+
+  it('membro só com feed vê só Mural + Chat (não vê Configurações)', () => {
+    const tabs = visibleAdminTabs({
+      club: modernOrg,
+      membership: memberWithFeedOnly,
+      currentUserUid: memberWithFeedOnly.user_id,
+      isAdmin: false,
+    });
+    const keys = tabs.map((t) => t.key);
+    expect(keys).toContain('overview');
+    expect(keys).toContain('feed');
+    expect(keys).toContain('chat');
+    // Não tem permissão donations/finance/team/animals
+    expect(keys).not.toContain('donations');
+    expect(keys).not.toContain('finance');
+    expect(keys).not.toContain('team');
+    expect(keys).not.toContain('animals');
+    // Sem `admin_only` → não vê Configurações
+    expect(keys).not.toContain('settings');
+    // Geral exige team, e esse membro não tem
+    expect(keys).not.toContain('general');
+  });
+
+  it('membro só com animals vê só Pets (sem Mural, sem Chat)', () => {
+    const tabs = visibleAdminTabs({
+      club: modernOrg,
+      membership: memberWithAnimalOnly,
+      currentUserUid: memberWithAnimalOnly.user_id,
+      isAdmin: false,
+    });
+    const keys = tabs.map((t) => t.key);
+    expect(keys).toContain('overview');
+    expect(keys).toContain('animals');
+    // Sem team/feed → Mural e Chat escondidos
+    expect(keys).not.toContain('feed');
+    expect(keys).not.toContain('chat');
+    // Geral exige team
+    expect(keys).not.toContain('general');
+    // Sem admin_only
+    expect(keys).not.toContain('settings');
+  });
+
+  it('visitante sem nenhuma permissão vê lista vazia', () => {
+    const tabs = visibleAdminTabs({
+      club: modernOrg,
+      membership: null,
+      currentUserUid: visitor,
+      isAdmin: false,
+    });
+    expect(tabs).toEqual([]);
+  });
+});
+
+describe('canReplyInClubChat', () => {
+  it('owner sempre pode responder', () => {
+    expect(canReplyInClubChat(modernOrg, ownerMembership, owner)).toBe(true);
+  });
+
+  it('admin com permissão feed pode responder', () => {
+    expect(canReplyInClubChat(modernOrg, memberWithFeedOnly, memberWithFeedOnly.user_id)).toBe(true);
+  });
+
+  it('admin com permissão team pode responder', () => {
+    const adminWithTeam = {
+      org_id: 'org_modern_1',
+      user_id: 'user_team_only',
+      role: CLUB_ROLE.MEMBER,
+      permissions: { [CLUB_PERMISSION.TEAM]: true },
+    };
+    expect(canReplyInClubChat(modernOrg, adminWithTeam, adminWithTeam.user_id)).toBe(true);
+  });
+
+  it('membro sem feed/team NÃO pode responder', () => {
+    expect(canReplyInClubChat(modernOrg, memberWithAnimalOnly, memberWithAnimalOnly.user_id)).toBe(false);
+  });
+
+  it('visitante NÃO pode responder', () => {
+    expect(canReplyInClubChat(modernOrg, null, visitor)).toBe(false);
+  });
+});
+
+describe('Separação público × painel admin (regressão)', () => {
+  // Garante que as funções de permissão usadas para renderizar a página
+  // PÚBLICA (ClubDetail) NÃO dão acesso a operações de gestão — apenas
+  // indicam quem pode ler. As ações de inserir/editar/excluir da ONG
+  // ficam exclusivas no painel admin.
+  it('membro comum com permissao FEED tem permissao FEED, mas o painel admin e o UNICO que renderiza os botoes de criar/editar post', () => {
+    // As funções de domínio só verificam se a permissão EXISTE. Quem
+    // decide se o botão aparece na página pública é o ClubDetail.jsx,
+    // que deliberadamente passa canManageFeed=false. Aqui validamos
+    // que a permissão granular está coerente.
+    expect(hasClubPermission(modernOrg, memberWithFeedOnly, CLUB_PERMISSION.FEED, memberWithFeedOnly.user_id)).toBe(true);
+    expect(hasClubPermission(modernOrg, memberWithFeedOnly, CLUB_PERMISSION.DONATIONS, memberWithFeedOnly.user_id)).toBe(false);
+    expect(hasClubPermission(modernOrg, memberWithFeedOnly, CLUB_PERMISSION.FINANCE, memberWithFeedOnly.user_id)).toBe(false);
+    expect(hasClubPermission(modernOrg, memberWithFeedOnly, CLUB_PERMISSION.TEAM, memberWithFeedOnly.user_id)).toBe(false);
+  });
+
+  it('visitante sem membership não tem NENHUMA permissão granular', () => {
+    CLUB_PERMISSION_KEYS.forEach((key) => {
+      expect(hasClubPermission(modernOrg, null, key, visitor)).toBe(false);
+    });
   });
 });

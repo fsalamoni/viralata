@@ -85,6 +85,7 @@ export function visibleAdminTabs({ club, membership, currentUserUid, isAdmin }) 
   // seguem as permissões granulares (mas o owner sempre pode tudo).
   // "Visão Geral" (overview) é sempre visível para quem entrou no painel.
   // "Geral" (edição de dados da ONG) exige permissão `team`.
+  // "Chat" (responder ao público) usa `canReplyInClubChat` (feed OU team).
   return [
     { key: 'overview', label: 'Visão Geral', always: true },
     { key: 'general', label: 'Geral', permission: 'team' },
@@ -92,11 +93,15 @@ export function visibleAdminTabs({ club, membership, currentUserUid, isAdmin }) 
     { key: 'feed', label: 'Mural da ONG', permission: 'feed' },
     { key: 'donations', label: 'Chamados de Doação', permission: 'donations' },
     { key: 'finance', label: 'Prestação de Contas', permission: 'finance' },
+    { key: 'chat', label: 'Conversas', permission: 'chat' },
     { key: 'team', label: 'Equipe', permission: 'team' },
     { key: 'settings', label: 'Configurações', permission: 'admin_only' },
   ].filter((tab) => {
     if (tab.always) return true;
     if (tab.permission === 'admin_only') return isAdmin || owner;
+    if (tab.permission === 'chat') {
+      return canReplyInClubChat(club, membership, currentUserUid);
+    }
     return hasClubPermission(club, membership, tab.permission, currentUserUid);
   });
 }

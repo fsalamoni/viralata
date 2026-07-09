@@ -129,12 +129,16 @@ export default function ClubDetail() {
     );
   }
 
-  // Permissões granulares para os botões das abas. Mantemos a coerência com
-  // o painel admin: owner sempre pode tudo; admin legacy (sem `permissions`
-  // explícito) também; demais precisam da permissão específica.
-  const canManageFeedPub = hasClubPermission(club, membership, CLUB_PERMISSION.FEED, user?.uid);
-  const canManageDonationsPub = hasClubPermission(club, membership, CLUB_PERMISSION.DONATIONS, user?.uid);
-  const canManageFinancePub = hasClubPermission(club, membership, CLUB_PERMISSION.FINANCE, user?.uid);
+  // A página pública é PURAMENTE para visualização + interações sociais
+  // restritas (curtir, comentar, informar contribuição, pedir pra ingressar).
+  // Toda gestão — inserir/editar/excluir conteúdo, gerenciar equipe,
+  // configurações — passa exclusivamente pelo painel administrativo
+  // (visível em /organizacao/:orgId/admin), onde os botões certos aparecem
+  // de acordo com as permissões granulares (animals, finance, donations,
+  // feed, team).
+  //
+  // Por isso, nesta página, todos os `canManage*` abaixo são `false`. O
+  // painel admin cuida do resto para membros com a permissão adequada.
 
   return (
     <ClubThemedScope club={club} className="arena-page mx-auto w-full max-w-5xl px-4 pb-12 pt-0 sm:px-6 lg:px-8">
@@ -207,15 +211,15 @@ export default function ClubDetail() {
         </TabsContent>
 
         <TabsContent value="feed" className="mt-8 outline-none">
-          <ClubFeedTab clubId={orgId} club={club} membership={membership} canManageFeed={canManageFeedPub} />
+          <ClubFeedTab clubId={orgId} club={club} membership={membership} canManageFeed={false} />
         </TabsContent>
 
         <TabsContent value="donations" className="mt-8 outline-none">
-          <ClubDonationsTab clubId={orgId} club={club} membership={membership} canManage={canManageDonationsPub} />
+          <ClubDonationsTab clubId={orgId} club={club} membership={membership} canManage={false} />
         </TabsContent>
 
         <TabsContent value="finance" className="mt-8 outline-none">
-          <ClubFinanceTab clubId={orgId} canManage={canManageFinancePub} />
+          <ClubFinanceTab clubId={orgId} canManage={false} />
         </TabsContent>
 
         <TabsContent value="team" className="mt-8 outline-none">

@@ -31,7 +31,7 @@ import ImageZoomDialog from './ImageZoomDialog';
  *  - Lista de comentários (carregamento sob demanda ao abrir)
  *  - Ações de gestão (excluir, se o usuário puder)
  */
-export default function ClubPostCard({ post, club, membership, currentUserUid }) {
+export default function ClubPostCard({ post, club, membership, currentUserUid, readonly = false }) {
   const { user, userProfile } = useAuth();
   const [commentsOpen, setCommentsOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -45,7 +45,11 @@ export default function ClubPostCard({ post, club, membership, currentUserUid })
   const deleteComment = useDeleteClubPostComment(post.id);
   const toggleLike = useToggleClubPostLike(club?.id);
 
-  const canDelete = canDeleteClubPost(post, club, membership, currentUserUid);
+  // Em modo somente-leitura (página pública), NENHUMA ação de gestão
+  // aparece: nem o botão "Excluir post" (autor OU admin com `feed`), nem
+  // a exclusão de comentário próprio. Curtida + comentário continuam
+  // disponíveis (interação social legítima do público).
+  const canDelete = !readonly && canDeleteClubPost(post, club, membership, currentUserUid);
   const canLike = canLikeClubPost(post, user);
   const canComment = canCommentOnClubPost(post, user);
 
@@ -204,6 +208,7 @@ export default function ClubPostCard({ post, club, membership, currentUserUid })
                 deleteComment={deleteComment}
                 currentUser={user}
                 userProfile={userProfile}
+                allowDeleteOwnComment={!readonly}
               />
             )}
           </div>
@@ -253,7 +258,7 @@ function ConfirmDeleteWrapper({ post, onClose }) {
   );
 }
 
-function CommentsSection({ post, commentsQ, addComment, deleteComment, currentUser, userProfile }) {
+function CommentsSection({ post, commentsQ, addComment, deleteComment, currentUser, userProfile, allowDeleteOwnComment = true }) {
   const [text, setText] = useState('');
   const [sending, setSending] = useState(false);
   const [confirmDel, setConfirmDel] = useState(null);
@@ -309,7 +314,7 @@ function CommentsSection({ post, commentsQ, addComment, deleteComment, currentUs
                   </p>
                   <p className="whitespace-pre-wrap text-[13px] text-foreground/90">{c.text}</p>
                 </div>
-                {isMine && (
+                {isMine && allowDeleteOwnComment && (
                   <Button
                     variant="ghost"
                     size="icon"
