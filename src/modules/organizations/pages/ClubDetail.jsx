@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { ArrowLeft, Building2, Info, Settings, PawPrint, MessageSquare, HandCoins, Wallet, Users } from 'lucide-react';
+import { ArrowLeft, Building2, Settings, PawPrint, MessageSquare, HandCoins, Wallet, Users, Info } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 import { toast } from 'sonner';
@@ -28,10 +27,7 @@ import ClubFinanceTab from '../components/ClubFinanceTab';
 import ClubTeamPublicTab from '../components/ClubTeamPublicTab';
 import { cn } from '@/core/lib/utils';
 
-/** Abas públicas da ONG — sempre as 6 (algumas podem estar vazias
- *  se a ONG ainda não preencheu). A ordem reflete o que faz mais sentido
- *  para o visitante: Geral (info), Pets (ação), Mural, Doações, Financeiro,
- *  Equipe. */
+/** Abas públicas da ONG. */
 const TABS = [
   { key: 'general', label: 'Geral', icon: Info },
   { key: 'pets', label: 'Pets para Adoção', icon: PawPrint },
@@ -84,16 +80,17 @@ export default function ClubDetail() {
 
   if (isLoading || (isAuthenticated && loadingMembership)) {
     return (
-      <div className="arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8 space-y-6">
-        <Skeleton className="h-40 rounded-[2rem]" />
-        <Skeleton className="h-64 rounded-[2rem]" />
+      <div className="arena-page mx-auto w-full max-w-4xl px-4 py-6 sm:px-6 lg:px-8 space-y-6">
+        <Skeleton className="h-10 w-32" />
+        <Skeleton className="h-16 w-full rounded-2xl" />
+        <Skeleton className="h-64 w-full rounded-2xl" />
       </div>
     );
   }
 
   if (isError || !club) {
     return (
-      <div className="arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8">
+      <div className="arena-page mx-auto w-full max-w-4xl px-4 py-6 sm:px-6 lg:px-8">
         <EmptyState
           icon={Building2}
           title="ONG não encontrada"
@@ -106,7 +103,7 @@ export default function ClubDetail() {
 
   if (!isClubPubliclyVisible(club) && !membership) {
     return (
-      <div className="arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8">
+      <div className="arena-page mx-auto w-full max-w-4xl px-4 py-6 sm:px-6 lg:px-8">
         <EmptyState
           icon={Building2}
           title="Organização indisponível"
@@ -118,61 +115,49 @@ export default function ClubDetail() {
   }
 
   return (
-    <div className="arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8 space-y-5">
-      <Button asChild variant="ghost" size="sm">
-        <Link to="/organizacoes"><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar</Link>
-      </Button>
-
-      {/* Cabeçalho compacto: ações rápidas + identidade */}
-      <header className="arena-panel-strong overflow-hidden rounded-[1.25rem] p-5 sm:rounded-[2rem] sm:p-6">
-        <div className="flex flex-wrap items-start gap-4">
-          {club.logo_url ? (
-            <img src={club.logo_url} alt="" className="h-14 w-14 shrink-0 rounded-2xl border border-white/15 object-cover" />
-          ) : (
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/10 text-orange-50">
-              <Building2 className="h-6 w-6" />
-            </div>
+    <div className="arena-page mx-auto w-full max-w-4xl px-4 py-6 sm:px-6 lg:px-8 space-y-6">
+      {/* HEADER — minimalista: voltar + ações à direita, sem card pesado. */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <Button asChild variant="ghost" size="sm" className="-ml-2 text-muted-foreground">
+          <Link to="/organizacoes">
+            <ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar
+          </Link>
+        </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          {isAdmin && (
+            <Button asChild size="sm" className="bg-foreground text-background hover:bg-foreground/90">
+              <Link to={`/organizacoes/${orgId}/admin`}>
+                <Settings className="mr-1.5 h-4 w-4" /> Painel Administrativo
+              </Link>
+            </Button>
           )}
-          <div className="min-w-0 flex-1">
-            <h1 className="text-2xl font-bold text-white sm:text-3xl">{club.name}</h1>
-            {isMember && (
-              <Badge variant={isAdmin ? 'warning' : 'success'} className="mt-2 rounded-full uppercase tracking-[0.12em]">
-                {isAdmin ? 'Você é admin' : 'Você é membro da equipe'}
-              </Badge>
-            )}
-          </div>
-          <div className="flex shrink-0 flex-wrap gap-2">
-            {isAdmin && (
-              <Button asChild size="sm" className="border-0 bg-white text-foreground hover:bg-secondary">
-                <Link to={`/organizacoes/${orgId}/admin`}><Settings className="mr-1.5 h-4 w-4" /> Administrar</Link>
+          {!isMember && !isAdmin && (
+            isInvited ? (
+              <Button size="sm" variant="outline" className="border-warning text-warning" disabled>
+                Você foi convidado
               </Button>
-            )}
-            {!isMember && (
-              isInvited ? (
-                <Button size="sm" variant="outline" className="border-warning text-warning hover:bg-warning/10" disabled>
-                  Você foi convidado — abrir
-                </Button>
-              ) : isPending ? (
-                <Button size="sm" variant="outline" disabled>Pedido enviado</Button>
-              ) : (
-                <Button size="sm" variant="outline" onClick={handleRequest} disabled={requestToJoin.isPending}>
-                  {requestToJoin.isPending ? 'Enviando...' : 'Pedir para ingressar'}
-                </Button>
-              )
-            )}
-          </div>
+            ) : isPending ? (
+              <Button size="sm" variant="outline" disabled>
+                Pedido enviado
+              </Button>
+            ) : (
+              <Button size="sm" variant="outline" onClick={handleRequest} disabled={requestToJoin.isPending}>
+                {requestToJoin.isPending ? 'Enviando...' : 'Pedir para ingressar'}
+              </Button>
+            )
+          )}
         </div>
-      </header>
+      </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full space-y-5">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full space-y-6">
         <div className="overflow-x-auto pb-2 scrollbar-none">
-          <TabsList className="h-auto w-full flex-wrap justify-start gap-1 rounded-xl bg-transparent p-0 sm:gap-2">
+          <TabsList className="h-auto w-full flex-wrap justify-start gap-1 rounded-xl bg-transparent p-0 sm:gap-1.5">
             {TABS.map((tab) => (
               <TabsTrigger
                 key={tab.key}
                 value={tab.key}
                 className={cn(
-                  'rounded-lg gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground',
+                  'rounded-lg gap-1.5 data-[state=active]:bg-foreground data-[state=active]:text-background',
                 )}
               >
                 <tab.icon className="h-4 w-4" /> {tab.label}
