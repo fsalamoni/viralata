@@ -63,7 +63,7 @@ export async function getClubPost(postId) {
 export async function createClubPost(clubId, input, user, profile) {
   if (!user?.uid) throw new Error('Usuário não autenticado.');
   const norm = normalizePostInput(input);
-  if (!norm.hasContent) throw new Error('Escreva uma mensagem ou anexe uma imagem.');
+  if (!norm.hasContent) throw new Error('Escreva um título, uma mensagem ou anexe uma imagem.');
 
   const id = doc(collection(db, COL.posts)).id;
   const payload = {
@@ -72,6 +72,7 @@ export async function createClubPost(clubId, input, user, profile) {
     author_id: user.uid,
     author_name: profile?.platform_name || profile?.full_name || user.displayName || user.email || 'Membro',
     author_photo: profile?.photo_url || user.photoURL || '',
+    title: norm.title,
     content: norm.content,
     attachments: norm.attachments,
     allow_likes: norm.allow_likes,
@@ -92,6 +93,7 @@ export async function updateClubPost(postId, input, user) {
   const norm = normalizePostInput(input);
   if (!norm.hasContent) throw new Error('Escreva uma mensagem ou anexe uma imagem.');
   const sanitized = {
+    title: norm.title,
     content: norm.content,
     attachments: norm.attachments,
     allow_likes: norm.allow_likes,

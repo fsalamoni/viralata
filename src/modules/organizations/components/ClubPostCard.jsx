@@ -18,13 +18,16 @@ import {
 import { canLikeClubPost, canCommentOnClubPost, canDeleteClubPost } from '../domain/permissions';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import ImageZoomDialog from './ImageZoomDialog';
 
 /**
  * Card de post do mural da ONG. Mostra:
  *  - Cabeçalho com autor e timestamp
+ *  - Título (se houver)
  *  - Conteúdo (texto)
- *  - Anexos (imagens/documentos)
- *  - Botões de interação (like, comentário) — visíveis apenas se o post permitir
+ *  - Galeria de imagens (clicáveis → modal de zoom)
+ *  - Outros anexos (lista)
+ *  - Botões de interação (like, comentário)
  *  - Lista de comentários (carregamento sob demanda ao abrir)
  *  - Ações de gestão (excluir, se o usuário puder)
  */
@@ -32,6 +35,7 @@ export default function ClubPostCard({ post, club, membership, currentUserUid })
   const { user, userProfile } = useAuth();
   const [commentsOpen, setCommentsOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [zoomImage, setZoomImage] = useState(null);
 
   const myLikesQ = useMyLikedPostIds(club?.id);
   const liked = myLikesQ.data?.includes(post.id);
@@ -58,15 +62,17 @@ export default function ClubPostCard({ post, club, membership, currentUserUid })
   };
 
   const handleDelete = async () => {
-    // O componente é auto-contido: dispara um evento DOM que o pai
-    // (ClubFeedTab) ouve para abrir o ConfirmDialog de exclusão global.
-    // Isso evita criar um prop drilling desnecessário.
     window.dispatchEvent(new CustomEvent('club-post-confirm-delete', { detail: { postId: post.id } }));
   };
 
   const authorName = post.author_name || 'Membro';
   const authorPhoto = post.author_photo || null;
   const createdAt = post.created_at_ms ? new Date(post.created_at_ms) : new Date();
+  const title = String(post.title || '').trim();
+  const hasTitle = title.length > 0;
+  const attachments = Array.isArray(post.attachments) ? post.attachments : [];
+  const images = attachments.filter((a) => isImageAttachment(a));
+  const files = attachments.filter((a) => !isImageAttachment(a));
 
   return (
     <Card className="rounded-2xl">
@@ -101,27 +107,62 @@ export default function ClubPostCard({ post, club, membership, currentUserUid })
               )}
             </div>
 
+            {hasTitle && (
+              <h3 className="mt-2 text-base font-bold leading-snug text-foreground sm:text-lg">
+                {title}
+              </h3>
+            )}
+
             {post.content && (
-              <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-6 text-foreground/90">
+              <p className="mt-1.5 whitespace-pre-wrap break-words text-sm leading-6 text-foreground/90">
                 {post.content}
               </p>
             )}
 
-            {Array.isArray(post.attachments) && post.attachments.length > 0 && (
+            {/* Galeria de imagens — grid 2 ou 3 colunas, clicável para zoom */}
+            {images.length > 0 && (
+              <div
+                className={`mt-3 grid gap-1.5 ${
+                  images.length === 1
+                    ? 'grid-cols-1'
+                    : images.length === 2
+                      ? 'grid-cols-2'
+                      : images.length === 3
+                        ? 'grid-cols-3'
+                        : 'grid-cols-2 sm:grid-cols-3'
+                }`}
+              >
+                {images.map((img, idx) => (
+                  <button
+                    key={`${img.path || img.url}-${idx}`}
+                    type="button"
+                    onClick={() => setZoomImage({ src: img.url, alt: img.name || 'Imagem da publicação', name: img.name })}
+                    className="group relative aspect-square overflow-hidden rounded-lg border border-border bg-secondary/40 transition-opacity hover:opacity-95"
+                    aria-label={`Ampliar ${img.name || 'imagem'}`}
+                  >
+                    <img
+                      src={img.url}
+                      alt={img.name || ''}
+                      loading="lazy"
+                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Outros anexos (não-imagem) */}
+            {files.length > 0 && (
               <ul className="mt-3 space-y-1.5">
-                {post.attachments.map((att, idx) => (
-                  <li key={`${att.url}-${idx}`}>
+                {files.map((att, idx) => (
+                  <li key={`${att.path || att.url}-${idx}`}>
                     <a
                       href={att.url}
                       target="_blank"
-                      rel="noreferrer"
+                      rel="noopener noreferrer"
                       className="flex items-center gap-2 rounded-lg border border-border bg-secondary/30 px-3 py-2 text-xs hover:bg-secondary/60"
                     >
-                      {att.type?.startsWith('image/') || /\.(jpe?g|png|gif|webp|avif)$/i.test(att.url || '') ? (
-                        <ImageIcon className="h-4 w-4 text-primary" />
-                      ) : (
-                        <FileText className="h-4 w-4 text-muted-foreground" />
-                      )}
+                      <FileText className="h-4 w-4 text-muted-foreground" />
                       <span className="min-w-0 flex-1 truncate">{att.name || 'Anexo'}</span>
                     </a>
                   </li>
@@ -171,11 +212,25 @@ export default function ClubPostCard({ post, club, membership, currentUserUid })
       {confirmDelete && (
         <ConfirmDeleteWrapper post={post} onClose={() => setConfirmDelete(false)} />
       )}
+      {zoomImage && (
+        <ImageZoomDialog
+          src={zoomImage.src}
+          alt={zoomImage.alt}
+          name={zoomImage.name}
+          open
+          onOpenChange={(o) => !o && setZoomImage(null)}
+        />
+      )}
     </Card>
   );
 }
 
-/** Wrapper de confirmação que dispara o callback externo. */
+function isImageAttachment(att) {
+  if (!att) return false;
+  if (att.type?.startsWith('image/')) return true;
+  return /\.(jpe?g|png|gif|webp|avif|heic|heif)$/i.test(att.url || '');
+}
+
 function ConfirmDeleteWrapper({ post, onClose }) {
   return (
     <ConfirmDialog
@@ -187,13 +242,6 @@ function ConfirmDeleteWrapper({ post, onClose }) {
       destructive
       onConfirm={async () => {
         try {
-          // Usa o hook indiretamente — o caller (ClubFeedTab) passa o
-          // `onDeleteRef` na chain de propriedades; aqui usamos o global
-          // do hook do post. Como já temos a mutação via hook do pai,
-          // o caminho é: emitimos um custom event que o pai ouve.
-          // Para simplificar, o pai (ClubFeedTab) usa `data-confirm-delete`
-          // + um único hook por aba, então o Card dispara a ação via DOM.
-          // — No MVP, o pai usa um único hook compartilhado.
           window.dispatchEvent(new CustomEvent('club-post-confirm-delete', { detail: { postId: post.id } }));
         } catch (err) {
           toast.error(err?.message || 'Não foi possível excluir.');

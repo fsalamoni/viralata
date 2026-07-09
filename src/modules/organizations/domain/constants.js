@@ -342,6 +342,7 @@ export const POST_ATTACHMENT_TYPE = Object.freeze({
 
 /** Limites e regras do mural e chat da ONG. */
 export const ORG_MURAL_LIMITS = Object.freeze({
+  TITLE_MAX: 120,
   CONTENT_MAX: 4000,
   ATTACHMENT_MAX: 10,
   ATTACHMENT_MAX_BYTES: 25 * 1024 * 1024, // 25MB

@@ -10,7 +10,6 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
@@ -36,7 +35,7 @@ const MAX_IMAGES = ORG_MURAL_LIMITS.ATTACHMENT_MAX;
  *
  * Funcionalidades:
  *  - Membros da ONG com permissão `feed` (ou superior) podem:
- *      * Criar posts com texto + anexos (imagens, vídeos, documentos)
+ *      * Criar posts com título, texto e imagem
  *      * Escolher, no momento de criar, qual o nível de interação
  *        permitido (curtidas, comentários, ambos, ou nenhum)
  *      * Editar seus próprios posts enquanto não houver curtidas/comentários
@@ -48,16 +47,15 @@ const MAX_IMAGES = ORG_MURAL_LIMITS.ATTACHMENT_MAX;
  */
 export default function ClubFeedTab({ clubId, club, membership, isAdmin }) {
   const { user, userProfile } = useAuth();
-  const { data: posts = [], isLoading, refetch } = useClubPosts(clubId);
+  const { data: posts = [], isLoading } = useClubPosts(clubId);
   const createPost = useCreateClubPost(clubId);
   const updatePost = useUpdateClubPost(clubId);
   const deletePost = useDeleteClubPost(clubId);
 
   const [editorOpen, setEditorOpen] = useState(false);
-  const [editing, setEditing] = useState(null); // post sendo editado
+  const [editing, setEditing] = useState(null);
   const [confirmDelete, setConfirmDelete] = useState(null);
 
-  // Listener para confirmar exclusão disparada pelo card filho.
   useEffect(() => {
     const handler = (e) => {
       const post = posts.find((p) => p.id === e.detail?.postId);
@@ -139,6 +137,7 @@ export default function ClubFeedTab({ clubId, club, membership, isAdmin }) {
         open={editorOpen}
         onOpenChange={(v) => { if (!v) { setEditorOpen(false); setEditing(null); } }}
         post={editing}
+        user={user}
         onSubmit={async (data) => {
           try {
             if (editing) {
@@ -179,20 +178,22 @@ function hasFeedPermission(club, membership, uid) {
 
 /* ============================== Editor (criar/editar) ============================== */
 
-function PostEditorDialog({ open, onOpenChange, post, onSubmit, isPending }) {
+function PostEditorDialog({ open, onOpenChange, post, user, onSubmit, isPending }) {
   const fileInputRef = useRef(null);
+  const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [pending, setPending] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [interaction, setInteraction] = useState(POST_INTERACTION.BOTH);
 
-  // Popula quando editando um post existente.
   useEffect(() => {
     if (open) {
+      setTitle(post?.title || '');
       setContent(post?.content || '');
       setPending(post?.attachments || []);
       setInteraction(post?.allow_interaction || POST_INTERACTION.BOTH);
     } else {
+      setTitle('');
       setContent('');
       setPending([]);
       setInteraction(POST_INTERACTION.BOTH);
@@ -205,14 +206,16 @@ function PostEditorDialog({ open, onOpenChange, post, onSubmit, isPending }) {
     if (files.length === 0) return;
     const remaining = MAX_IMAGES - pending.length;
     if (remaining <= 0) {
-      toast.error(`Máximo de ${MAX_IMAGES} anexos por publicação.`);
+      toast.error(`Máximo de ${MAX_IMAGES} imagens por publicação.`);
       return;
     }
     setUploading(true);
     try {
       for (const file of files.slice(0, remaining)) {
         try {
-          const meta = await uploadImage(file, { uid: post?.author_id, folder: 'club_posts' });
+          // Importante: usar o `user.uid` do caller, não o `post?.author_id`
+          // (que é undefined quando estamos criando um post novo).
+          const meta = await uploadImage(file, { uid: user?.uid, folder: 'club_posts' });
           setPending((prev) => [...prev, {
             url: meta.url,
             path: meta.path,
@@ -231,12 +234,13 @@ function PostEditorDialog({ open, onOpenChange, post, onSubmit, isPending }) {
 
   const removePending = (idx) => setPending((prev) => prev.filter((_, i) => i !== idx));
 
-  const canSubmit = (content.trim() || pending.length > 0) && !isPending && !uploading;
+  const canSubmit = (title.trim() || content.trim() || pending.length > 0) && !isPending && !uploading;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!canSubmit) return;
     await onSubmit({
+      title,
       content,
       attachments: pending,
       allow_interaction: interaction,
@@ -249,10 +253,24 @@ function PostEditorDialog({ open, onOpenChange, post, onSubmit, isPending }) {
         <DialogHeader>
           <DialogTitle>{post ? 'Editar publicação' : 'Nova publicação'}</DialogTitle>
           <DialogDescription>
-            Compartilhe um aviso, fotos, documentos ou eventos com a comunidade da ONG.
+            Compartilhe um aviso, fotos ou eventos com a comunidade da ONG.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="post_title">Título</Label>
+            <Input
+              id="post_title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value.slice(0, ORG_MURAL_LIMITS.TITLE_MAX))}
+              maxLength={ORG_MURAL_LIMITS.TITLE_MAX}
+              placeholder="Ex.: Mutirão de adoção neste sábado"
+            />
+            <p className="text-right text-[10px] text-muted-foreground">
+              {title.length}/{ORG_MURAL_LIMITS.TITLE_MAX}
+            </p>
+          </div>
+
           <div className="space-y-2">
             <Label htmlFor="post_content">Mensagem</Label>
             <Textarea
@@ -269,28 +287,34 @@ function PostEditorDialog({ open, onOpenChange, post, onSubmit, isPending }) {
           </div>
 
           <div className="space-y-2">
-            <Label>Anexos</Label>
+            <Label>Imagem</Label>
             {pending.length > 0 && (
-              <ul className="space-y-1.5">
+              <div
+                className={`grid gap-1.5 ${
+                  pending.length === 1
+                    ? 'grid-cols-1'
+                    : pending.length === 2
+                      ? 'grid-cols-2'
+                      : 'grid-cols-3'
+                }`}
+              >
                 {pending.map((att, idx) => (
-                  <li
+                  <div
                     key={`${att.path || att.url}-${idx}`}
-                    className="flex items-center gap-2 rounded-lg border border-border bg-secondary/30 px-3 py-2 text-xs"
+                    className="group relative aspect-square overflow-hidden rounded-lg border border-border bg-secondary/30"
                   >
-                    <span className="min-w-0 flex-1 truncate">{att.name || 'anexo'}</span>
-                    <Button
+                    <img src={att.url} alt={att.name} className="h-full w-full object-cover" />
+                    <button
                       type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="h-6 w-6"
                       onClick={() => removePending(idx)}
+                      className="absolute right-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-black/65 text-white opacity-0 transition-opacity group-hover:opacity-100"
                       aria-label={`Remover ${att.name}`}
                     >
                       <X className="h-3.5 w-3.5" />
-                    </Button>
-                  </li>
+                    </button>
+                  </div>
                 ))}
-              </ul>
+              </div>
             )}
             <input
               ref={fileInputRef}
@@ -308,10 +332,10 @@ function PostEditorDialog({ open, onOpenChange, post, onSubmit, isPending }) {
               disabled={uploading || pending.length >= MAX_IMAGES}
             >
               {uploading ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <ImagePlus className="mr-1.5 h-4 w-4" />}
-              {uploading ? 'Enviando…' : 'Adicionar anexos'}
+              {uploading ? 'Enviando…' : 'Adicionar imagem'}
             </Button>
             <p className="text-[10px] text-muted-foreground">
-              Até {MAX_IMAGES} anexos, {maxImageMb()} MB cada.
+              Até {MAX_IMAGES} imagens, {maxImageMb()} MB cada.
             </p>
           </div>
 

@@ -613,13 +613,13 @@ service cloud.firestore {
 
     // Curtidas no mural da ONG. O id do doc é `${postId}_${uid}` para
     // garantir idempotência (uma curtida por usuário por post).
+    // A validação de "o post permite curtidas" é feita no client-side
+    // (canLikeClubPost) — mesma estratégia adotada em `community_post_likes`
+    // — para evitar um `get()` extra dentro da transação.
     match /club_post_likes/{likeId} {
       allow read: if true;
       allow create: if isAuth()
-        && request.resource.data.user_id == request.auth.uid
-        // Só permite curtir se o post tiver `allow_likes == true` (ou
-        // `allow_interaction` ∈ {likes, both}).
-        && get(/databases/$(database)/documents/club_posts/$(request.resource.data.post_id)).data.get('allow_likes', false) == true;
+        && request.resource.data.user_id == request.auth.uid;
       allow delete: if isAuth() && resource.data.user_id == request.auth.uid;
     }
 

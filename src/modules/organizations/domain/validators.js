@@ -68,7 +68,9 @@ export function normalizeMemberInput(input = {}) {
 
 export function normalizePostInput(input = {}) {
   const text = cap(trimOrEmpty(input.content), ORG_MURAL_LIMITS.CONTENT_MAX);
+  const title = cap(trimOrEmpty(input.title), ORG_MURAL_LIMITS.TITLE_MAX);
   const hasText = text.length > 0;
+  const hasTitle = title.length > 0;
   const attachments = Array.isArray(input.attachments) ? input.attachments : [];
 
   const allowed = Object.values(POST_INTERACTION);
@@ -77,6 +79,7 @@ export function normalizePostInput(input = {}) {
     : POST_INTERACTION.BOTH;
 
   return {
+    title,
     content: text,
     attachments: attachments
       .filter((a) => a && a.url)
@@ -91,7 +94,9 @@ export function normalizePostInput(input = {}) {
     allow_likes: interaction === POST_INTERACTION.LIKES || interaction === POST_INTERACTION.BOTH,
     allow_comments: interaction === POST_INTERACTION.COMMENTS || interaction === POST_INTERACTION.BOTH,
     allow_interaction: interaction,
-    hasContent: hasText || attachments.length > 0,
+    // hasContent inclui o título — uma publicação pode ser só com título,
+    // sem texto e sem anexos (ex.: "Mutirão no sábado").
+    hasContent: hasText || hasTitle || attachments.length > 0,
   };
 }
 
