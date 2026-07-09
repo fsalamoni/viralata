@@ -44,7 +44,7 @@ service cloud.firestore {
     function isClubOwnerOrAdmin(clubId) {
       return isAuth() && (
         isClubOwnerUid(clubId, request.auth.uid)
-        || isClubOwnerOrAdmin(clubId)
+        || isClubAdmin(clubId)
       );
     }
     function hasEventInvite(eventId) {
