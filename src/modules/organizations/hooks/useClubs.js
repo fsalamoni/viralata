@@ -15,6 +15,7 @@ import {
   setMemberRole,
   setMemberPermissions,
   removeMember,
+  updateMemberProfile,
   requestToJoinClub,
   getMyJoinRequest,
   listMyJoinRequests,
@@ -205,6 +206,18 @@ export function useRemoveMember(clubId) {
   return useMutation({
     mutationFn: (member) => removeMember(clubId, member, user),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['club-members', clubId] }),
+  });
+}
+
+export function useUpdateMemberProfile(clubId) {
+  const { user } = useAuth();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ member, input }) => updateMemberProfile(clubId, member, input, user),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['club-members', clubId] });
+      qc.invalidateQueries({ queryKey: ['club-membership', clubId] });
+    },
   });
 }
 

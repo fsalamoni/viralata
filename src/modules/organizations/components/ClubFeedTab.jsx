@@ -1,219 +1,168 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
-import { Download, ImagePlus, Loader2, MessageSquare, Send, Trash2, X } from 'lucide-react';
+import {
+  PlusCircle, Send, Trash2, X, ImagePlus, Loader2, MessageSquare, Pencil,
+} from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from '@/components/ui/select';
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
+} from '@/components/ui/dialog';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
-import { useClubPosts, useCreateClubPost, useDeleteClubPost } from '@/modules/organizations/hooks/useClubs';
 import {
-  uploadImage,
-  downloadImage,
-  deleteImage,
-  maxImageMb,
-  ACCEPTED_IMAGE_ATTR,
+  useClubPosts, useCreateClubPost, useUpdateClubPost, useDeleteClubPost,
+} from '../hooks/useClubFeed';
+import {
+  uploadImage, maxImageMb, ACCEPTED_IMAGE_ATTR,
 } from '@/core/services/storageService';
+import { POST_INTERACTION, POST_INTERACTION_LABELS, ORG_MURAL_LIMITS } from '../domain/constants';
+import ClubPostCard from './ClubPostCard';
+import { cn } from '@/core/lib/utils';
 
-const MAX_IMAGES_PER_POST = 10;
+const MAX_IMAGES = ORG_MURAL_LIMITS.ATTACHMENT_MAX;
 
-function initials(name) {
-  return String(name || 'A').split(' ').filter(Boolean).slice(0, 2).map((p) => p[0]?.toUpperCase()).join('') || 'A';
-}
-
-function timeAgo(ms) {
-  if (!ms) return '';
-  const diff = Date.now() - ms;
-  const minutes = Math.floor(diff / 60000);
-  if (minutes < 1) return 'agora';
-  if (minutes < 60) return `há ${minutes} min`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `há ${hours} h`;
-  const days = Math.floor(hours / 24);
-  if (days < 30) return `há ${days} d`;
-  return new Date(ms).toLocaleDateString('pt-BR');
-}
-
-export default function ClubFeedTab({ clubId, isAdmin }) {
-  const { user } = useAuth();
-  const { data: posts = [], isLoading } = useClubPosts(clubId);
+/**
+ * Mural da ONG (aba Mural).
+ *
+ * Funcionalidades:
+ *  - Membros da ONG com permissão `feed` (ou superior) podem:
+ *      * Criar posts com texto + anexos (imagens, vídeos, documentos)
+ *      * Escolher, no momento de criar, qual o nível de interação
+ *        permitido (curtidas, comentários, ambos, ou nenhum)
+ *      * Editar seus próprios posts enquanto não houver curtidas/comentários
+ *      * Excluir seus próprios posts (e qualquer admin pode excluir)
+ *  - O público em geral pode:
+ *      * Visualizar todos os posts
+ *      * Curtir e/ou comentar, conforme o que o criador do post permitiu
+ *      * Excluir seus próprios comentários
+ */
+export default function ClubFeedTab({ clubId, club, membership, isAdmin }) {
+  const { user, userProfile } = useAuth();
+  const { data: posts = [], isLoading, refetch } = useClubPosts(clubId);
   const createPost = useCreateClubPost(clubId);
+  const updatePost = useUpdateClubPost(clubId);
   const deletePost = useDeleteClubPost(clubId);
-  const fileInputRef = useRef(null);
-  const [content, setContent] = useState('');
-  const [pendingImages, setPendingImages] = useState([]);
-  const [uploading, setUploading] = useState(false);
+
+  const [editorOpen, setEditorOpen] = useState(false);
+  const [editing, setEditing] = useState(null); // post sendo editado
   const [confirmDelete, setConfirmDelete] = useState(null);
 
-  const handlePickImages = async (event) => {
-    const files = Array.from(event.target.files || []);
-    event.target.value = '';
-    if (files.length === 0) return;
-    const remaining = MAX_IMAGES_PER_POST - pendingImages.length;
-    if (remaining <= 0) {
-      toast.error(`Máximo de ${MAX_IMAGES_PER_POST} imagens por publicação.`);
-      return;
-    }
-    setUploading(true);
-    try {
-      for (const file of files.slice(0, remaining)) {
-        try {
-          const meta = await uploadImage(file, { uid: user?.uid, folder: 'posts' });
-          setPendingImages((prev) => [...prev, meta]);
-        } catch (err) {
-          toast.error(err.message || `Falha ao enviar ${file.name}.`);
-        }
-      }
-    } finally {
-      setUploading(false);
-    }
-  };
+  // Listener para confirmar exclusão disparada pelo card filho.
+  useEffect(() => {
+    const handler = (e) => {
+      const post = posts.find((p) => p.id === e.detail?.postId);
+      if (post) setConfirmDelete(post);
+    };
+    window.addEventListener('club-post-confirm-delete', handler);
+    return () => window.removeEventListener('club-post-confirm-delete', handler);
+  }, [posts]);
 
-  const removePending = async (image) => {
-    setPendingImages((prev) => prev.filter((img) => img.path !== image.path));
-    // Remove do Storage o anexo que não será publicado (best-effort).
-    deleteImage(image.path);
-  };
-
-  const handlePost = async (e) => {
-    e.preventDefault();
-    if (!content.trim() && pendingImages.length === 0) return;
-    try {
-      await createPost.mutateAsync({ content, images: pendingImages });
-      setContent('');
-      setPendingImages([]);
-    } catch (err) {
-      toast.error(err.message || 'Não foi possível publicar.');
-    }
-  };
+  const canPost = isAdmin || hasFeedPermission(club, membership, user?.uid);
 
   const handleDelete = async () => {
     if (!confirmDelete) return;
     try {
       await deletePost.mutateAsync(confirmDelete.id);
-      // Remove as imagens da publicação do Storage (best-effort).
-      (confirmDelete.images || []).forEach((img) => img.path && deleteImage(img.path));
+      toast.success('Post excluído.');
       setConfirmDelete(null);
     } catch (err) {
-      toast.error(err.message || 'Não foi possível remover.');
+      toast.error(err?.message || 'Não foi possível excluir o post.');
     }
   };
 
-  const canSubmit = (content.trim() || pendingImages.length > 0) && !createPost.isPending && !uploading;
+  const handleEdit = (post) => {
+    setEditing(post);
+    setEditorOpen(true);
+  };
 
   return (
     <div className="space-y-4">
-      <Card className="rounded-xl">
-        <CardContent className="p-4">
-          <form onSubmit={handlePost} className="space-y-3">
-            <textarea
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              rows={3}
-              maxLength={2000}
-              placeholder="Compartilhe um aviso, avise sobre um mutirão, comemore uma adoção…"
-              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            />
-
-            {pendingImages.length > 0 && (
-              <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
-                {pendingImages.map((image) => (
-                  <div key={image.path} className="group relative aspect-square overflow-hidden rounded-lg border border-primary/10">
-                    <img src={image.url} alt="" className="h-full w-full object-cover" />
-                    <button
-                      type="button"
-                      onClick={() => removePending(image)}
-                      aria-label="Remover imagem"
-                      className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-black/55 text-white opacity-0 transition-opacity group-hover:opacity-100"
-                    >
-                      <X className="h-3.5 w-3.5" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept={ACCEPTED_IMAGE_ATTR}
-              multiple
-              onChange={handlePickImages}
-              className="hidden"
-            />
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={uploading || pendingImages.length >= MAX_IMAGES_PER_POST}
-              >
-                {uploading ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <ImagePlus className="mr-1.5 h-4 w-4" />}
-                {uploading ? 'Enviando…' : 'Adicionar imagens'}
-              </Button>
-              <Button type="submit" size="sm" disabled={!canSubmit}>
-                <Send className="mr-1.5 h-4 w-4" /> {createPost.isPending ? 'Publicando…' : 'Publicar'}
-              </Button>
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Até {MAX_IMAGES_PER_POST} imagens por publicação, {maxImageMb()} MB cada. As imagens podem ser baixadas em alta qualidade pelos membros.
-            </p>
-          </form>
-        </CardContent>
-      </Card>
+      {canPost && (
+        <Button
+          type="button"
+          onClick={() => { setEditing(null); setEditorOpen(true); }}
+        >
+          <PlusCircle className="mr-1.5 h-4 w-4" /> Nova publicação
+        </Button>
+      )}
 
       {isLoading ? (
-        <div className="space-y-3">{[1, 2].map((i) => <Skeleton key={i} className="h-20 rounded-xl" />)}</div>
+        <div className="space-y-3">{[1, 2].map((i) => <Skeleton key={i} className="h-32 rounded-2xl" />)}</div>
       ) : posts.length === 0 ? (
-        <EmptyState icon={MessageSquare} title="Mural vazio" description="Seja o primeiro a publicar algo para a organização." />
+        <EmptyState
+          icon={MessageSquare}
+          title="Mural vazio"
+          description={canPost ? 'Crie a primeira publicação para esta ONG.' : 'Esta ONG ainda não publicou nada.'}
+        />
       ) : (
         <div className="space-y-3">
           {posts.map((post) => {
-            const canDelete = isAdmin || post.author_id === user?.uid;
+            const canEdit = post.author_id === user?.uid
+              && (post.likes_count || 0) === 0
+              && (post.comments_count || 0) === 0;
             return (
-              <Card key={post.id} className="rounded-xl">
-                <CardContent className="p-4">
-                  <div className="flex items-start gap-3">
-                    {post.author_photo ? (
-                      <img src={post.author_photo} alt="" className="h-9 w-9 shrink-0 rounded-full border border-primary/10 object-cover" />
-                    ) : (
-                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">
-                        {initials(post.author_name)}
-                      </div>
-                    )}
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center justify-between gap-2">
-                        <div className="min-w-0">
-                          <span className="font-medium text-foreground">{post.author_name}</span>
-                          <span className="ml-2 text-xs text-muted-foreground">{timeAgo(post.created_at_ms)}</span>
-                        </div>
-                        {canDelete && (
-                          <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0 text-destructive hover:text-destructive/85" onClick={() => setConfirmDelete(post)}>
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </Button>
-                        )}
-                      </div>
-                      {post.content && (
-                        <p className="mt-1 whitespace-pre-wrap break-words text-sm leading-6 text-foreground/80">{post.content}</p>
-                      )}
-                      <PostImages images={post.images} />
-                    </div>
+              <div key={post.id} className="space-y-1">
+                <ClubPostCard
+                  post={post}
+                  club={club}
+                  membership={membership}
+                  currentUserUid={user?.uid}
+                />
+                {canEdit && (
+                  <div className="flex justify-end">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => handleEdit(post)}
+                    >
+                      <Pencil className="mr-1.5 h-3.5 w-3.5" /> Editar publicação
+                    </Button>
                   </div>
-                </CardContent>
-              </Card>
+                )}
+              </div>
             );
           })}
         </div>
       )}
 
+      <PostEditorDialog
+        open={editorOpen}
+        onOpenChange={(v) => { if (!v) { setEditorOpen(false); setEditing(null); } }}
+        post={editing}
+        onSubmit={async (data) => {
+          try {
+            if (editing) {
+              await updatePost.mutateAsync({ postId: editing.id, input: data });
+              toast.success('Publicação atualizada.');
+            } else {
+              await createPost.mutateAsync(data);
+              toast.success('Publicado!');
+            }
+            setEditorOpen(false);
+            setEditing(null);
+          } catch (err) {
+            toast.error(err?.message || 'Não foi possível salvar a publicação.');
+          }
+        }}
+        isPending={createPost.isPending || updatePost.isPending}
+      />
+
       <ConfirmDialog
         open={!!confirmDelete}
         onOpenChange={(v) => !v && setConfirmDelete(null)}
-        title="Remover publicação"
-        description="Tem certeza que deseja remover esta publicação do mural? As imagens anexadas também serão removidas."
-        confirmLabel="Remover"
+        title="Excluir publicação"
+        description="Tem certeza que deseja excluir esta publicação? Esta ação não pode ser desfeita."
+        confirmLabel="Excluir"
         destructive
         loading={deletePost.isPending}
         onConfirm={handleDelete}
@@ -222,41 +171,175 @@ export default function ClubFeedTab({ clubId, isAdmin }) {
   );
 }
 
-function PostImages({ images }) {
-  const list = Array.isArray(images) ? images.filter((img) => img && img.url) : [];
-  if (list.length === 0) return null;
+function hasFeedPermission(club, membership, uid) {
+  if (!club || !membership) return false;
+  if (membership.role === 'admin') return true;
+  return !!membership.permissions?.feed;
+}
 
-  const handleDownload = (image) => {
-    toast.promise(downloadImage(image.url, image.name), {
-      loading: 'Baixando imagem…',
-      success: 'Download iniciado.',
-      error: 'Não foi possível baixar a imagem.',
+/* ============================== Editor (criar/editar) ============================== */
+
+function PostEditorDialog({ open, onOpenChange, post, onSubmit, isPending }) {
+  const fileInputRef = useRef(null);
+  const [content, setContent] = useState('');
+  const [pending, setPending] = useState([]);
+  const [uploading, setUploading] = useState(false);
+  const [interaction, setInteraction] = useState(POST_INTERACTION.BOTH);
+
+  // Popula quando editando um post existente.
+  useEffect(() => {
+    if (open) {
+      setContent(post?.content || '');
+      setPending(post?.attachments || []);
+      setInteraction(post?.allow_interaction || POST_INTERACTION.BOTH);
+    } else {
+      setContent('');
+      setPending([]);
+      setInteraction(POST_INTERACTION.BOTH);
+    }
+  }, [open, post]);
+
+  const handlePick = async (e) => {
+    const files = Array.from(e.target.files || []);
+    e.target.value = '';
+    if (files.length === 0) return;
+    const remaining = MAX_IMAGES - pending.length;
+    if (remaining <= 0) {
+      toast.error(`Máximo de ${MAX_IMAGES} anexos por publicação.`);
+      return;
+    }
+    setUploading(true);
+    try {
+      for (const file of files.slice(0, remaining)) {
+        try {
+          const meta = await uploadImage(file, { uid: post?.author_id, folder: 'club_posts' });
+          setPending((prev) => [...prev, {
+            url: meta.url,
+            path: meta.path,
+            name: file.name,
+            type: file.type,
+            size: file.size,
+          }]);
+        } catch (err) {
+          toast.error(err?.message || `Falha ao enviar ${file.name}.`);
+        }
+      }
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const removePending = (idx) => setPending((prev) => prev.filter((_, i) => i !== idx));
+
+  const canSubmit = (content.trim() || pending.length > 0) && !isPending && !uploading;
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!canSubmit) return;
+    await onSubmit({
+      content,
+      attachments: pending,
+      allow_interaction: interaction,
     });
   };
 
   return (
-    <div className={`mt-3 grid gap-2 ${list.length === 1 ? 'grid-cols-1 sm:max-w-md' : 'grid-cols-2 sm:grid-cols-3'}`}>
-      {list.map((image) => (
-        <div key={image.path || image.url} className="group relative overflow-hidden rounded-lg border border-primary/10 bg-secondary/40">
-          <a href={image.url} target="_blank" rel="noopener noreferrer" className="block">
-            <img
-              src={image.url}
-              alt={image.name || ''}
-              loading="lazy"
-              className={`w-full object-cover ${list.length === 1 ? 'max-h-96' : 'aspect-square'}`}
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-h-[90vh] max-w-lg overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>{post ? 'Editar publicação' : 'Nova publicação'}</DialogTitle>
+          <DialogDescription>
+            Compartilhe um aviso, fotos, documentos ou eventos com a comunidade da ONG.
+          </DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="post_content">Mensagem</Label>
+            <Textarea
+              id="post_content"
+              value={content}
+              onChange={(e) => setContent(e.target.value.slice(0, ORG_MURAL_LIMITS.CONTENT_MAX))}
+              rows={4}
+              maxLength={ORG_MURAL_LIMITS.CONTENT_MAX}
+              placeholder="Escreva sua mensagem…"
             />
-          </a>
-          <button
-            type="button"
-            onClick={() => handleDownload(image)}
-            aria-label="Baixar imagem"
-            title="Baixar em alta qualidade"
-            className="absolute bottom-2 right-2 flex h-9 w-9 items-center justify-center rounded-full bg-black/55 text-white opacity-0 transition-opacity hover:bg-black/70 group-hover:opacity-100"
-          >
-            <Download className="h-4 w-4" />
-          </button>
-        </div>
-      ))}
-    </div>
+            <p className="text-right text-[10px] text-muted-foreground">
+              {content.length}/{ORG_MURAL_LIMITS.CONTENT_MAX}
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Anexos</Label>
+            {pending.length > 0 && (
+              <ul className="space-y-1.5">
+                {pending.map((att, idx) => (
+                  <li
+                    key={`${att.path || att.url}-${idx}`}
+                    className="flex items-center gap-2 rounded-lg border border-border bg-secondary/30 px-3 py-2 text-xs"
+                  >
+                    <span className="min-w-0 flex-1 truncate">{att.name || 'anexo'}</span>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6"
+                      onClick={() => removePending(idx)}
+                      aria-label={`Remover ${att.name}`}
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept={ACCEPTED_IMAGE_ATTR}
+              multiple
+              onChange={handlePick}
+              className="hidden"
+            />
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading || pending.length >= MAX_IMAGES}
+            >
+              {uploading ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <ImagePlus className="mr-1.5 h-4 w-4" />}
+              {uploading ? 'Enviando…' : 'Adicionar anexos'}
+            </Button>
+            <p className="text-[10px] text-muted-foreground">
+              Até {MAX_IMAGES} anexos, {maxImageMb()} MB cada.
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="post_interaction">Interação permitida</Label>
+            <Select value={interaction} onValueChange={setInteraction}>
+              <SelectTrigger id="post_interaction"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {Object.values(POST_INTERACTION).map((v) => (
+                  <SelectItem key={v} value={v}>{POST_INTERACTION_LABELS[v]}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-[11px] text-muted-foreground">
+              Define se o público pode curtir e/ou comentar esta publicação. Após receber interações, a configuração fica travada (edição exige remover as interações).
+            </p>
+          </div>
+
+          <DialogFooter>
+            <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>
+              Cancelar
+            </Button>
+            <Button type="submit" disabled={!canSubmit}>
+              <Send className="mr-1.5 h-4 w-4" /> {isPending ? 'Salvando…' : (post ? 'Salvar alterações' : 'Publicar')}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }

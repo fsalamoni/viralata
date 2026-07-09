@@ -2,7 +2,7 @@ import React, { useEffect, useMemo } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
-  ArrowLeft, Building2, LayoutGrid, PawPrint, MessageSquare, HandCoins, Wallet, Users, ShieldCheck,
+  ArrowLeft, Building2, LayoutGrid, PawPrint, MessageSquare, HandCoins, Wallet, Users, ShieldCheck, Info, MessageCircle,
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -15,23 +15,39 @@ import { CLUB_DIRECTORY_STATUS, CLUB_DIRECTORY_STATUS_LABELS } from '@/modules/c
 import { useMyPets } from '@/modules/pets/hooks/usePets';
 import { useClub, useMyMembership } from '@/modules/organizations/hooks/useClubs';
 import { CLUB_ROLE, CLUB_PERMISSION } from '@/modules/organizations/domain/constants';
-import { isClubOwner, hasClubPermission, hasAnyClubPermission } from '@/modules/organizations/domain/permissions';
+import { isClubOwner, hasAnyClubPermission, visibleAdminTabs } from '@/modules/organizations/domain/permissions';
 import ClubAdminTab from '@/modules/organizations/components/ClubAdminTab';
 import ClubTeamTab from '@/modules/organizations/components/ClubTeamTab';
 import ClubPetsDataGrid from '@/modules/organizations/components/ClubPetsDataGrid';
 import ClubFeedTab from '@/modules/organizations/components/ClubFeedTab';
 import ClubDonationsTab from '@/modules/organizations/components/ClubDonationsTab';
 import ClubFinanceTab from '@/modules/organizations/components/ClubFinanceTab';
+import ClubGeneralAdminTab from '@/modules/organizations/components/ClubGeneralAdminTab';
+import ClubChatAdminTab from '@/modules/organizations/components/ClubChatAdminTab';
 
-const TABS = [
-  { key: 'overview', label: 'Visão Geral', icon: LayoutGrid, permission: null },
-  { key: 'animals', label: 'Animais', icon: PawPrint, permission: CLUB_PERMISSION.ANIMALS },
-  { key: 'feed', label: 'Mural da ONG', icon: MessageSquare, permission: CLUB_PERMISSION.FEED },
-  { key: 'donations', label: 'Chamados de Doação', icon: HandCoins, permission: CLUB_PERMISSION.DONATIONS },
-  { key: 'finance', label: 'Prestação de Contas', icon: Wallet, permission: CLUB_PERMISSION.FINANCE },
-  { key: 'team', label: 'Equipe', icon: Users, permission: CLUB_PERMISSION.TEAM },
-  { key: 'settings', label: 'Configurações', icon: ShieldCheck, permission: 'admin_only' },
-];
+const TAB_ICONS = {
+  overview: LayoutGrid,
+  general: Info,
+  animals: PawPrint,
+  feed: MessageSquare,
+  donations: HandCoins,
+  finance: Wallet,
+  team: Users,
+  chat: MessageCircle,
+  settings: ShieldCheck,
+};
+
+const TAB_PERMISSION = {
+  overview: null,
+  general: 'team',     // aba Geral visível para qualquer um com permissão
+  animals: CLUB_PERMISSION.ANIMALS,
+  feed: CLUB_PERMISSION.FEED,
+  donations: CLUB_PERMISSION.DONATIONS,
+  finance: CLUB_PERMISSION.FINANCE,
+  team: CLUB_PERMISSION.TEAM,
+  chat: 'team',        // chat requer permissão de team
+  settings: 'admin_only',
+};
 
 export default function OrganizationAdminPanel() {
   const { orgId } = useParams();
@@ -48,11 +64,15 @@ export default function OrganizationAdminPanel() {
   const isAdmin = isClubOwner(club, membership, user?.uid) || membership?.role === CLUB_ROLE.ADMIN;
   const canAccess = hasAnyClubPermission(club, membership, user?.uid);
 
-  const visibleTabs = useMemo(() => TABS.filter((tab) => {
-    if (tab.permission === null) return true;
-    if (tab.permission === 'admin_only') return isAdmin;
-    return hasClubPermission(club, membership, tab.permission, user?.uid);
-  }), [club, membership, isAdmin, user?.uid]);
+  const visibleTabs = useMemo(() => {
+    const list = visibleAdminTabs({ club, membership, currentUserUid: user?.uid, isAdmin });
+    return list.map((tab) => ({
+      key: tab.key,
+      label: tab.label,
+      icon: TAB_ICONS[tab.key] || Info,
+      permission: tab.permission,
+    }));
+  }, [club, membership, isAdmin, user?.uid]);
 
   const requestedTab = searchParams.get('tab') || 'overview';
   const activeTab = visibleTabs.some((t) => t.key === requestedTab) ? requestedTab : (visibleTabs[0]?.key || 'overview');
@@ -146,6 +166,9 @@ export default function OrganizationAdminPanel() {
         <TabsContent value="overview" className="mt-6 px-1">
           <OverviewTab club={club} />
         </TabsContent>
+        <TabsContent value="general" className="mt-6 px-1">
+          <ClubGeneralAdminTab club={club} />
+        </TabsContent>
         <TabsContent value="animals" className="mt-6 px-1">
           <ClubPetsDataGrid clubId={orgId} />
         </TabsContent>
@@ -153,10 +176,13 @@ export default function OrganizationAdminPanel() {
           <ClubFeedTab clubId={orgId} isAdmin={isAdmin} />
         </TabsContent>
         <TabsContent value="donations" className="mt-6 px-1">
-          <ClubDonationsTab clubId={orgId} />
+          <ClubDonationsTab clubId={orgId} isAdmin={isAdmin} />
         </TabsContent>
         <TabsContent value="finance" className="mt-6 px-1">
           <ClubFinanceTab clubId={orgId} />
+        </TabsContent>
+        <TabsContent value="chat" className="mt-6 px-1">
+          <ClubChatAdminTab club={club} />
         </TabsContent>
         <TabsContent value="team" className="mt-6 px-1">
           <ClubTeamTab club={club} />

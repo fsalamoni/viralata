@@ -1,11 +1,14 @@
 import React, { useMemo, useState } from 'react';
 import { toast } from 'sonner';
-import { Plus, Trash2 } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
+import {
+  Plus, Trash2, Edit2, Settings, X, Check,
+} from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Badge } from '@/components/ui/badge';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
@@ -13,12 +16,23 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
 } from '@/components/ui/dialog';
 import { cn } from '@/core/lib/utils';
-import { useClubLedger, useCreateLedgerEntry, useDeleteLedgerEntry } from '@/modules/organizations/hooks/useClubs';
-import { LEDGER_TYPE, LEDGER_CATEGORY_PRESETS, FINANCE_PERIOD, FINANCE_PERIOD_LABELS } from '@/modules/organizations/domain/constants';
+import { useClubLedger, useCreateLedgerEntry, useDeleteLedgerEntry } from '../hooks/useClubs';
+import {
+  useClubLedgerCategories,
+  useCreateLedgerCategory,
+  useUpdateLedgerCategory,
+  useDeleteLedgerCategory,
+} from '../hooks/useClubLedgerCategories';
+import {
+  LEDGER_TYPE,
+  LEDGER_CATEGORY_PRESETS,
+  FINANCE_PERIOD,
+  FINANCE_PERIOD_LABELS,
+  FINANCE_LIMITS,
+} from '../domain/constants';
 
 const brl = (value) => Number(value || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
-/** Data local (não UTC) no formato YYYY-MM-DD, para comparar com `entry.date`. */
 function toLocalISODate(date) {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, '0');
@@ -31,13 +45,12 @@ const MONTH_LABELS = [
   'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro',
 ];
 
-/**
- * Intervalo [início, fim) de datas locais (YYYY-MM-DD) para o período
- * selecionado. `end` é exclusivo (primeiro dia após o período).
- */
+/** Para `FINANCE_PERIOD.FULL`, retorna o range "tudo". */
 function periodRange(period, { year, month, semester }) {
-  let start;
-  let end;
+  if (period === FINANCE_PERIOD.FULL) {
+    return { since: '0000-00-00', until: '9999-12-31' };
+  }
+  let start; let end;
   if (period === FINANCE_PERIOD.MONTHLY) {
     start = new Date(year, month, 1);
     end = new Date(year, month + 1, 1);
@@ -53,6 +66,7 @@ function periodRange(period, { year, month, semester }) {
 }
 
 function periodLabel(period, { year, month, semester }) {
+  if (period === FINANCE_PERIOD.FULL) return 'Todo o histórico';
   if (period === FINANCE_PERIOD.MONTHLY) return `${MONTH_LABELS[month]} de ${year}`;
   if (period === FINANCE_PERIOD.SEMIANNUAL) return `${semester}º semestre de ${year}`;
   return `Ano de ${year}`;
@@ -70,10 +84,23 @@ function categoryBreakdown(entries, total) {
 
 const EMPTY_FORM = { type: LEDGER_TYPE.REVENUE, category: '', value: '', date: toLocalISODate(new Date()), note: '' };
 
-export default function ClubFinanceTab({ clubId }) {
+/**
+ * Aba "Prestação de Contas" da ONG.
+ *
+ * Funcionalidades:
+ *  - 4 janelas de agregação: Integral, Mensal, Semestral, Anual
+ *  - Cards de totais: receitas, despesas, saldo
+ *  - Gráfico de evolução temporal (mensal) — receitas e despesas
+ *  - Quebra por categoria (receitas e despesas)
+ *  - Lista de lançamentos do período
+ *  - Categorias customizáveis (admin) — combinadas com as presets
+ *  - Modo readOnly para o público (sem botões de criar/excluir)
+ */
+export default function ClubFinanceTab({ clubId, readOnly = false }) {
   const { data: entries = [], isLoading } = useClubLedger(clubId);
   const createEntry = useCreateLedgerEntry(clubId);
   const deleteEntry = useDeleteLedgerEntry(clubId);
+  const { data: customCategories = [] } = useClubLedgerCategories(clubId);
   const now = new Date();
   const currentYear = now.getFullYear();
   const [period, setPeriod] = useState(FINANCE_PERIOD.MONTHLY);
@@ -81,12 +108,11 @@ export default function ClubFinanceTab({ clubId }) {
   const [month, setMonth] = useState(now.getMonth());
   const [semester, setSemester] = useState(now.getMonth() < 6 ? 1 : 2);
   const [createOpen, setCreateOpen] = useState(false);
+  const [showCategories, setShowCategories] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
 
   const setField = (key) => (e) => setForm((prev) => ({ ...prev, [key]: e.target.value }));
 
-  // Histórico desde a criação da organização: as opções de ano vão do ano do
-  // lançamento mais antigo (ou do ano atual, se ainda não houver nada) até hoje.
   const yearOptions = useMemo(() => {
     let earliest = currentYear;
     entries.forEach((entry) => {
@@ -103,12 +129,10 @@ export default function ClubFinanceTab({ clubId }) {
     [period, year, month, semester],
   );
 
-  const filtered = useMemo(() => {
-    return entries.filter((entry) => {
-      const d = String(entry.date || '');
-      return d >= since && d < until;
-    });
-  }, [entries, since, until]);
+  const filtered = useMemo(() => entries.filter((entry) => {
+    const d = String(entry.date || '');
+    return d >= since && d < until;
+  }), [entries, since, until]);
 
   const revenueEntries = filtered.filter((e) => e.type === LEDGER_TYPE.REVENUE);
   const expenseEntries = filtered.filter((e) => e.type === LEDGER_TYPE.EXPENSE);
@@ -118,7 +142,25 @@ export default function ClubFinanceTab({ clubId }) {
   const revenueByCategory = categoryBreakdown(revenueEntries, revenueTotal);
   const expenseByCategory = categoryBreakdown(expenseEntries, expenseTotal);
 
-  const categoryOptions = LEDGER_CATEGORY_PRESETS[form.type] || [];
+  // Categorias disponíveis = presets + customizadas, deduplicadas.
+  const availableCategories = useMemo(() => {
+    const map = new Map();
+    Object.values(LEDGER_TYPE).forEach((type) => {
+      (LEDGER_CATEGORY_PRESETS[type] || []).forEach((label) => {
+        if (!map.has(`${type}::${label}`)) map.set(`${type}::${label}`, { type, label, is_preset: true });
+      });
+    });
+    customCategories.forEach((c) => {
+      if (!c.type || !c.label) return;
+      map.set(`${c.type}::${c.label}`, { type: c.type, label: c.label, is_preset: false, id: c.id });
+    });
+    return Array.from(map.values());
+  }, [customCategories]);
+
+  const categoryOptions = useMemo(
+    () => availableCategories.filter((c) => c.type === form.type).map((c) => c.label),
+    [availableCategories, form.type],
+  );
 
   const handleCreate = async (e) => {
     e.preventDefault();
@@ -163,40 +205,48 @@ export default function ClubFinanceTab({ clubId }) {
             </button>
           ))}
         </div>
-        <Button size="sm" onClick={() => setCreateOpen(true)}>
-          <Plus className="mr-1.5 h-4 w-4" /> Novo lançamento
-        </Button>
+        {!readOnly && (
+          <div className="flex items-center gap-2">
+            <Button size="sm" variant="outline" onClick={() => setShowCategories(true)}>
+              <Settings className="mr-1.5 h-4 w-4" /> Categorias
+            </Button>
+            <Button size="sm" onClick={() => setCreateOpen(true)}>
+              <Plus className="mr-1.5 h-4 w-4" /> Novo lançamento
+            </Button>
+          </div>
+        )}
       </div>
 
-      {/* Seleção de mês/semestre/ano — histórico desde a criação da organização */}
-      <div className="flex flex-wrap items-center gap-2">
-        {period === FINANCE_PERIOD.MONTHLY && (
-          <Select value={String(month)} onValueChange={(v) => setMonth(Number(v))}>
-            <SelectTrigger className="h-9 w-36"><SelectValue /></SelectTrigger>
+      {period !== FINANCE_PERIOD.FULL && (
+        <div className="flex flex-wrap items-center gap-2">
+          {period === FINANCE_PERIOD.MONTHLY && (
+            <Select value={String(month)} onValueChange={(v) => setMonth(Number(v))}>
+              <SelectTrigger className="h-9 w-36"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {MONTH_LABELS.map((label, i) => <SelectItem key={label} value={String(i)}>{label}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          )}
+          {period === FINANCE_PERIOD.SEMIANNUAL && (
+            <Select value={String(semester)} onValueChange={(v) => setSemester(Number(v))}>
+              <SelectTrigger className="h-9 w-40"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="1">1º semestre</SelectItem>
+                <SelectItem value="2">2º semestre</SelectItem>
+              </SelectContent>
+            </Select>
+          )}
+          <Select value={String(year)} onValueChange={(v) => setYear(Number(v))}>
+            <SelectTrigger className="h-9 w-28"><SelectValue /></SelectTrigger>
             <SelectContent>
-              {MONTH_LABELS.map((label, i) => <SelectItem key={label} value={String(i)}>{label}</SelectItem>)}
+              {yearOptions.map((y) => <SelectItem key={y} value={String(y)}>{y}</SelectItem>)}
             </SelectContent>
           </Select>
-        )}
-        {period === FINANCE_PERIOD.SEMIANNUAL && (
-          <Select value={String(semester)} onValueChange={(v) => setSemester(Number(v))}>
-            <SelectTrigger className="h-9 w-40"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="1">1º semestre</SelectItem>
-              <SelectItem value="2">2º semestre</SelectItem>
-            </SelectContent>
-          </Select>
-        )}
-        <Select value={String(year)} onValueChange={(v) => setYear(Number(v))}>
-          <SelectTrigger className="h-9 w-28"><SelectValue /></SelectTrigger>
-          <SelectContent>
-            {yearOptions.map((y) => <SelectItem key={y} value={String(y)}>{y}</SelectItem>)}
-          </SelectContent>
-        </Select>
-        <span className="text-xs font-medium text-muted-foreground">
-          {periodLabel(period, { year, month, semester })}
-        </span>
-      </div>
+          <span className="text-xs font-medium text-muted-foreground">
+            {periodLabel(period, { year, month, semester })}
+          </span>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <Card className="rounded-2xl border-[hsl(150_38%_36%/0.25)] bg-[hsl(150_38%_36%/0.08)]">
@@ -221,6 +271,8 @@ export default function ClubFinanceTab({ clubId }) {
         </Card>
       </div>
 
+      <TimelineChart entries={entries} />
+
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <CategoryList title="Receitas por categoria" rows={revenueByCategory} barClassName="bg-[hsl(150_38%_40%)]" />
         <CategoryList title="Despesas por categoria" rows={expenseByCategory} barClassName="bg-[hsl(9_62%_50%)]" />
@@ -239,14 +291,16 @@ export default function ClubFinanceTab({ clubId }) {
                 <span className={cn('shrink-0 text-sm font-semibold', entry.type === LEDGER_TYPE.REVENUE ? 'text-[hsl(150_38%_24%)]' : 'text-[hsl(9_62%_36%)]')}>
                   {entry.type === LEDGER_TYPE.REVENUE ? '+' : '-'}{brl(entry.value)}
                 </span>
-                <button
-                  type="button"
-                  onClick={() => handleDelete(entry.id)}
-                  className="shrink-0 text-muted-foreground transition-colors hover:text-destructive"
-                  title="Remover lançamento"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
+                {!readOnly && (
+                  <button
+                    type="button"
+                    onClick={() => handleDelete(entry.id)}
+                    className="shrink-0 text-muted-foreground transition-colors hover:text-destructive"
+                    title="Remover lançamento"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                )}
               </div>
             ))}
           </CardContent>
@@ -284,7 +338,7 @@ export default function ClubFinanceTab({ clubId }) {
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="ledger_value">Valor (R$) *</Label>
-                <Input id="ledger_value" type="number" min="0.01" step="0.01" value={form.value} onChange={setField('value')} required />
+                <Input id="ledger_value" type="number" min={FINANCE_LIMITS.VALUE_MIN} step="0.01" value={form.value} onChange={setField('value')} required />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="ledger_date">Data *</Label>
@@ -293,7 +347,7 @@ export default function ClubFinanceTab({ clubId }) {
             </div>
             <div className="space-y-2">
               <Label htmlFor="ledger_note">Observação</Label>
-              <Input id="ledger_note" value={form.note} onChange={setField('note')} maxLength={200} />
+              <Input id="ledger_note" value={form.note} onChange={setField('note')} maxLength={FINANCE_LIMITS.NOTE_MAX} />
             </div>
             <DialogFooter>
               <Button type="submit" disabled={createEntry.isPending || !form.category}>
@@ -303,6 +357,14 @@ export default function ClubFinanceTab({ clubId }) {
           </form>
         </DialogContent>
       </Dialog>
+
+      {showCategories && (
+        <CategoriesDialog
+          clubId={clubId}
+          customCategories={customCategories}
+          onClose={() => setShowCategories(false)}
+        />
+      )}
     </div>
   );
 }
@@ -331,5 +393,252 @@ function CategoryList({ title, rows, barClassName }) {
         )}
       </CardContent>
     </Card>
+  );
+}
+
+/* ============================== Gráfico de evolução temporal ============================== */
+
+function buildMonthlySeries(entries) {
+  const map = new Map();
+  entries.forEach((e) => {
+    const ym = String(e.date || '').slice(0, 7);
+    if (!/^\d{4}-\d{2}$/.test(ym)) return;
+    if (!map.has(ym)) map.set(ym, { ym, revenue: 0, expense: 0, balance: 0 });
+    const bucket = map.get(ym);
+    if (e.type === LEDGER_TYPE.REVENUE) bucket.revenue += Number(e.value || 0);
+    else if (e.type === LEDGER_TYPE.EXPENSE) bucket.expense += Number(e.value || 0);
+    bucket.balance = bucket.revenue - bucket.expense;
+  });
+  return Array.from(map.values()).sort((a, b) => a.ym.localeCompare(b.ym));
+}
+
+const MONTH_SHORT = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+
+function TimelineChart({ entries }) {
+  const series = useMemo(() => buildMonthlySeries(entries), [entries]);
+  if (series.length < 2) {
+    return (
+      <Card className="rounded-2xl">
+        <CardContent className="p-5 text-center text-xs text-muted-foreground">
+          {series.length === 0
+            ? 'Sem dados para gerar o gráfico de evolução.'
+            : 'É preciso pelo menos 2 meses de dados para mostrar a evolução.'}
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const W = 600; const H = 200;
+  const PAD_X = 32; const PAD_Y = 24;
+  const innerW = W - PAD_X * 2;
+  const innerH = H - PAD_Y * 2;
+  const maxY = Math.max(1, ...series.flatMap((d) => [d.revenue, d.expense]));
+  const xFor = (i) => series.length === 1 ? PAD_X : PAD_X + (i / (series.length - 1)) * innerW;
+  const yFor = (v) => PAD_Y + innerH - (v / maxY) * innerH;
+  const path = (key) => series.map((d, i) => `${i === 0 ? 'M' : 'L'} ${xFor(i).toFixed(1)} ${yFor(d[key]).toFixed(1)}`).join(' ');
+  const area = (key) => {
+    const top = series.map((d, i) => `${i === 0 ? 'M' : 'L'} ${xFor(i).toFixed(1)} ${yFor(d[key]).toFixed(1)}`).join(' ');
+    const bottom = ` L ${xFor(series.length - 1).toFixed(1)} ${(PAD_Y + innerH).toFixed(1)} L ${xFor(0).toFixed(1)} ${(PAD_Y + innerH).toFixed(1)} Z`;
+    return top + bottom;
+  };
+
+  return (
+    <Card className="rounded-2xl">
+      <CardHeader className="p-4 sm:p-5">
+        <CardTitle className="text-base">Evolução mensal</CardTitle>
+        <CardDescription>Receitas e despesas ao longo dos meses</CardDescription>
+      </CardHeader>
+      <CardContent className="p-4 pt-0 sm:p-5 sm:pt-0">
+        <div className="overflow-x-auto">
+          <svg
+            viewBox={`0 0 ${W} ${H}`}
+            className="h-48 w-full"
+            preserveAspectRatio="none"
+            role="img"
+            aria-label="Gráfico de evolução mensal"
+          >
+            <line
+              x1={PAD_X}
+              y1={PAD_Y + innerH}
+              x2={W - PAD_X}
+              y2={PAD_Y + innerH}
+              stroke="currentColor"
+              strokeWidth="1"
+              className="text-border"
+            />
+            <path d={area('revenue')} fill="hsl(150 38% 50% / 0.18)" />
+            <path d={path('revenue')} fill="none" stroke="hsl(150 38% 36%)" strokeWidth="2" />
+            <path d={path('expense')} fill="none" stroke="hsl(9 62% 46%)" strokeWidth="2" strokeDasharray="4 3" />
+            {series.map((d, i) => (
+              <circle key={`r-${i}`} cx={xFor(i)} cy={yFor(d.revenue)} r="3" fill="hsl(150 38% 36%)" />
+            ))}
+            {series.map((d, i) => (
+              <circle key={`e-${i}`} cx={xFor(i)} cy={yFor(d.expense)} r="3" fill="hsl(9 62% 46%)" />
+            ))}
+            {series.map((d, i) => {
+              const [, mm] = d.ym.split('-');
+              return (
+                <text
+                  key={`x-${i}`}
+                  x={xFor(i)}
+                  y={H - 6}
+                  fontSize="9"
+                  textAnchor="middle"
+                  className="fill-muted-foreground"
+                >
+                  {MONTH_SHORT[Number(mm) - 1]}/{d.ym.slice(2, 4)}
+                </text>
+              );
+            })}
+            <text x={PAD_X - 4} y={PAD_Y + 4} fontSize="9" textAnchor="end" className="fill-muted-foreground">
+              {brl(maxY).replace('R$', '')}
+            </text>
+            <text x={PAD_X - 4} y={PAD_Y + innerH} fontSize="9" textAnchor="end" className="fill-muted-foreground">
+              0
+            </text>
+          </svg>
+        </div>
+        <div className="mt-2 flex flex-wrap items-center gap-3 text-[11px] text-muted-foreground">
+          <span className="inline-flex items-center gap-1.5">
+            <span className="h-2 w-3 rounded-sm" style={{ background: 'hsl(150 38% 36%)' }} /> Receitas
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <span className="h-0.5 w-3" style={{ background: 'hsl(9 62% 46%)', borderTop: '2px dashed hsl(9 62% 46%)' }} /> Despesas
+          </span>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+/* ============================== Gestão de categorias customizadas ============================== */
+
+function CategoriesDialog({ clubId, customCategories, onClose }) {
+  const createCategory = useCreateLedgerCategory(clubId);
+  const updateCategory = useUpdateLedgerCategory(clubId);
+  const deleteCategory = useDeleteLedgerCategory(clubId);
+  const [newCat, setNewCat] = useState({ type: LEDGER_TYPE.REVENUE, label: '' });
+  const [editing, setEditing] = useState(null);
+  const setNewField = (key) => (e) => setNewCat((p) => ({ ...p, [key]: e.target.value }));
+
+  const handleAdd = async (e) => {
+    e.preventDefault();
+    try {
+      await createCategory.mutateAsync(newCat);
+      setNewCat({ type: LEDGER_TYPE.REVENUE, label: '' });
+      toast.success('Categoria criada.');
+    } catch (err) {
+      toast.error(err?.message || 'Não foi possível criar a categoria.');
+    }
+  };
+
+  const handleUpdate = async (category) => {
+    try {
+      await updateCategory.mutateAsync({ categoryId: category.id, updates: { label: category.label } });
+      toast.success('Categoria atualizada.');
+      setEditing(null);
+    } catch (err) {
+      toast.error(err?.message || 'Não foi possível atualizar.');
+    }
+  };
+
+  const handleDelete = async (category) => {
+    try {
+      await deleteCategory.mutateAsync(category.id);
+      toast.success('Categoria excluída.');
+    } catch (err) {
+      toast.error(err?.message || 'Não foi possível excluir.');
+    }
+  };
+
+  const byType = (type) => customCategories.filter((c) => c.type === type);
+
+  return (
+    <Dialog open onOpenChange={(v) => !v && onClose()}>
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Categorias customizadas</DialogTitle>
+          <DialogDescription>
+            Categorias predefinidas (Doações, Alimentação etc.) já estão sempre disponíveis. Adicione categorias extras que a ONG utiliza.
+          </DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleAdd} className="flex flex-wrap items-end gap-2">
+          <div className="flex-1 min-w-[140px] space-y-1.5">
+            <Label>Tipo</Label>
+            <Select value={newCat.type} onValueChange={(v) => setNewCat((p) => ({ ...p, type: v }))}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value={LEDGER_TYPE.REVENUE}>Receita</SelectItem>
+                <SelectItem value={LEDGER_TYPE.EXPENSE}>Despesa</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex-[2] min-w-[180px] space-y-1.5">
+            <Label htmlFor="new_cat_label">Rótulo</Label>
+            <Input
+              id="new_cat_label"
+              value={newCat.label}
+              onChange={setNewField('label')}
+              maxLength={FINANCE_LIMITS.CATEGORY_MAX}
+              placeholder="Ex.: Ração, Castração, Patrocínio"
+              required
+            />
+          </div>
+          <Button type="submit" disabled={createCategory.isPending}>
+            <Plus className="mr-1.5 h-4 w-4" /> Adicionar
+          </Button>
+        </form>
+        <div className="mt-2 space-y-4">
+          {([LEDGER_TYPE.REVENUE, LEDGER_TYPE.EXPENSE]).map((type) => (
+            <div key={type}>
+              <h4 className="mb-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                {type === LEDGER_TYPE.REVENUE ? 'Receitas' : 'Despesas'} — customizadas
+              </h4>
+              {byType(type).length === 0 ? (
+                <p className="text-xs text-muted-foreground">Nenhuma categoria customizada.</p>
+              ) : (
+                <ul className="space-y-1.5">
+                  {byType(type).map((c) => (
+                    <li key={c.id} className="flex items-center gap-2 rounded-lg border border-border bg-secondary/30 px-2 py-1.5 text-xs">
+                      {editing?.id === c.id ? (
+                        <>
+                          <Input
+                            value={editing.label}
+                            onChange={(e) => setEditing((p) => ({ ...p, label: e.target.value }))}
+                            maxLength={FINANCE_LIMITS.CATEGORY_MAX}
+                            className="h-7 flex-1"
+                          />
+                          <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => handleUpdate(editing)} aria-label="Salvar">
+                            <Check className="h-3.5 w-3.5" />
+                          </Button>
+                          <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setEditing(null)} aria-label="Cancelar">
+                            <X className="h-3.5 w-3.5" />
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          <Badge variant="outline" className="rounded-full">{c.label}</Badge>
+                          <span className="ml-auto flex">
+                            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setEditing(c)} aria-label="Editar">
+                              <Edit2 className="h-3.5 w-3.5" />
+                            </Button>
+                            <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => handleDelete(c)} aria-label="Excluir">
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          </span>
+                        </>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          ))}
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>Fechar</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

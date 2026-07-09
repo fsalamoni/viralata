@@ -3,7 +3,7 @@
  *
  * Modelo:
  *  - Proprietário (`club.created_by === currentUserUid` ou membership.user_id):
- *    sempre todas as 5 permissões, implícito, não pode ser editado/removido pela UI.
+ *    sempre todas as permissões, implícito, não pode ser editado/removido pela UI.
  *  - Administrador (`membership.role === 'admin'`) sem `permissions`
  *    explícito: tratado como tendo todas (compatibilidade com admins
  *    promovidos antes desta granularidade existir).
@@ -15,6 +15,15 @@
  * Aceita `currentUserUid` como parâmetro de fallback em organizações
  * LEGADAS cujo criador não foi inserido em `organization_members`.
  * (Espelha o comportamento do módulo de comunidades.)
+ *
+ * Permissões disponíveis (CLUB_PERMISSION):
+ *  - ANIMALS   → gerenciar pets (planilha)
+ *  - FINANCE   → prestação de contas (lançamentos, categorias)
+ *  - DONATIONS → chamados de doação (criar, editar, excluir, ver comprovantes)
+ *  - FEED      → publicar/editar/excluir posts do mural
+ *  - TEAM      → gerenciar equipe (admitir, atribuir permissões, remover)
+ *
+ * Cada permissão é consultável independentemente em qualquer camada da UI.
  */
 
 import { CLUB_PERMISSION_KEYS, CLUB_ROLE } from './constants.js';
@@ -61,4 +70,106 @@ export function effectiveClubPermissions(club, membership, currentUserUid) {
     result[key] = hasClubPermission(club, membership, key, currentUserUid);
   });
   return result;
+}
+
+/* ============================== Helpers de UI ============================== */
+
+/**
+ * Quais abas do painel admin o usuário pode ver. Usado por
+ * `OrganizationAdminPanel` para filtrar a lista de TabsTrigger.
+ */
+export function visibleAdminTabs({ club, membership, currentUserUid, isAdmin }) {
+  const owner = isClubOwner(club, membership, currentUserUid);
+  if (!hasAnyClubPermission(club, membership, currentUserUid)) return [];
+  // Configurações da ONG: apenas admins (proprietário conta). Outras abas
+  // seguem as permissões granulares (mas o owner sempre pode tudo).
+  return [
+    { key: 'overview', label: 'Visão Geral', permission: null, always: true },
+    { key: 'general', label: 'Geral', permission: 'general', always: true },
+    { key: 'animals', label: 'Pets para Adoção', permission: 'animals' },
+    { key: 'feed', label: 'Mural da ONG', permission: 'feed' },
+    { key: 'donations', label: 'Chamados de Doação', permission: 'donations' },
+    { key: 'finance', label: 'Prestação de Contas', permission: 'finance' },
+    { key: 'team', label: 'Equipe', permission: 'team' },
+    { key: 'settings', label: 'Configurações', permission: 'admin_only' },
+  ].filter((tab) => {
+    if (tab.always) return true;
+    if (tab.permission === 'admin_only') return isAdmin || owner;
+    return hasClubPermission(club, membership, tab.permission, currentUserUid);
+  });
+}
+
+/* ============================== Mural ============================== */
+
+/** O usuário pode criar/editar/excluir QUALQUER post do mural? */
+export function canManageClubFeed(club, membership, currentUserUid) {
+  return hasClubPermission(club, membership, 'feed', currentUserUid);
+}
+
+/** O usuário pode excluir um post específico (autor OU permissão de feed)? */
+export function canDeleteClubPost(post, club, membership, currentUserUid) {
+  if (!post) return false;
+  if (post.author_id && post.author_id === currentUserUid) return true;
+  return canManageClubFeed(club, membership, currentUserUid);
+}
+
+/** O usuário pode CURTIR este post? (precisa estar logado e o post permite) */
+export function canLikeClubPost(post, user) {
+  if (!user?.uid) return false;
+  if (!post) return false;
+  if (post.allow_likes === true) return true;
+  if (post.allow_interaction === 'likes' || post.allow_interaction === 'both') return true;
+  return false;
+}
+
+/** O usuário pode COMENTAR neste post? */
+export function canCommentOnClubPost(post, user) {
+  if (!user?.uid) return false;
+  if (!post) return false;
+  if (post.allow_comments === true) return true;
+  if (post.allow_interaction === 'comments' || post.allow_interaction === 'both') return true;
+  return false;
+}
+
+/* ============================== Doações ============================== */
+
+/** Quem pode criar/editar/excluir os chamados de doação. */
+export function canManageClubDonations(club, membership, currentUserUid) {
+  return hasClubPermission(club, membership, 'donations', currentUserUid);
+}
+
+/** Quem pode ver e atualizar o status dos comprovantes enviados pelo público. */
+export function canManageClubReceipts(club, membership, currentUserUid) {
+  return canManageClubDonations(club, membership, currentUserUid);
+}
+
+/* ============================== Financeiro ============================== */
+
+export function canManageClubFinance(club, membership, currentUserUid) {
+  return hasClubPermission(club, membership, 'finance', currentUserUid);
+}
+
+/* ============================== Equipe ============================== */
+
+export function canManageClubTeam(club, membership, currentUserUid) {
+  return hasClubPermission(club, membership, 'team', currentUserUid);
+}
+
+/** O owner pode promover/rebaixar/excluir, e qualquer admin com permissão team
+ *  também. Mas: ninguém pode alterar o owner. */
+export function canEditMember(club, member, membership, currentUserUid) {
+  if (isClubOwner(club, member)) return false; // owner é imutável
+  if (isClubOwner(club, membership, currentUserUid)) return true;
+  return canManageClubTeam(club, membership, currentUserUid);
+}
+
+/* ============================== Chat dedicado com a ONG ============================== */
+
+/** Quem pode responder no chat dedicado com a ONG.
+ *  Por padrão: o owner e qualquer admin com permissão FEED ou TEAM.
+ *  Ajuste no painel se a ONG quiser restringir. */
+export function canReplyInClubChat(club, membership, currentUserUid) {
+  if (isClubOwner(club, membership, currentUserUid)) return true;
+  return hasClubPermission(club, membership, 'feed', currentUserUid)
+    || hasClubPermission(club, membership, 'team', currentUserUid);
 }

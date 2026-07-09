@@ -1,30 +1,50 @@
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { MapPin, Building2, ArrowLeft, Settings, Info, Instagram, Mail, Phone, Heart } from 'lucide-react';
+import { ArrowLeft, Building2, Info, Settings, PawPrint, MessageSquare, HandCoins, Wallet, Users } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { toast } from 'sonner';
 import { EmptyState } from '@/components/ui/empty-state';
+import { toast } from 'sonner';
 import { getClub } from '../services/clubService';
-import { isClubPubliclyVisible, CLUB_DIRECTORY_STATUS } from '@/modules/communities/domain/directory';
-import { useMyMembership, useRequestToJoinClub, useMyJoinRequests, useMyClubInvites } from '../hooks/useClubs';
-import { JOIN_REQUEST_STATUS } from '@/modules/organizations/domain/constants';
-import { hasClubPermission, isClubOwner, hasAnyClubPermission } from '../domain/permissions';
+import { isClubPubliclyVisible } from '@/modules/communities/domain/directory';
+import {
+  useMyMembership,
+  useRequestToJoinClub,
+  useMyJoinRequests,
+  useMyClubInvites,
+} from '../hooks/useClubs';
+import { JOIN_REQUEST_STATUS } from '../domain/constants';
+import { isClubOwner, hasClubPermission, hasAnyClubPermission } from '../domain/permissions';
 import { CLUB_PERMISSION } from '../domain/constants';
-import ClubPetsDataGrid from '../components/ClubPetsDataGrid';
+import ClubPetsPublicTab from '../components/ClubPetsPublicTab';
+import ClubGeneralTab from '../components/ClubGeneralTab';
+import ClubFeedTab from '../components/ClubFeedTab';
+import ClubDonationsTab from '../components/ClubDonationsTab';
+import ClubFinanceTab from '../components/ClubFinanceTab';
+import ClubTeamPublicTab from '../components/ClubTeamPublicTab';
+import { cn } from '@/core/lib/utils';
 
-function RatingBadge({ uid, className }) {
-  return null;
-}
+/** Abas públicas da ONG — sempre as 6 (algumas podem estar vazias
+ *  se a ONG ainda não preencheu). A ordem reflete o que faz mais sentido
+ *  para o visitante: Geral (info), Pets (ação), Mural, Doações, Financeiro,
+ *  Equipe. */
+const TABS = [
+  { key: 'general', label: 'Geral', icon: Info },
+  { key: 'pets', label: 'Pets para Adoção', icon: PawPrint },
+  { key: 'feed', label: 'Mural', icon: MessageSquare },
+  { key: 'donations', label: 'Chamados de Doação', icon: HandCoins },
+  { key: 'finance', label: 'Prestação de Contas', icon: Wallet },
+  { key: 'team', label: 'Equipe', icon: Users },
+];
 
 export default function ClubDetail() {
   const { orgId } = useParams();
   const { user, isAuthenticated } = useAuth();
-  const [activeTab, setActiveTab] = useState('pets');
+  const [activeTab, setActiveTab] = useState('general');
 
   const { data: club, isLoading, isError } = useQuery({
     queryKey: ['club', orgId],
@@ -33,14 +53,9 @@ export default function ClubDetail() {
   });
 
   const { membership, isLoading: loadingMembership } = useMyMembership(orgId, user?.uid);
-  // isMember: doc de membership existe OU user é o criador da ONG (legacy sem doc).
-  // O campo correto do doc é `club.created_by` (não `owner_id`).
   const isMember = Boolean(
     membership || (club?.created_by && user?.uid && club.created_by === user?.uid),
   );
-  // isAdmin: tem qualquer permissão (incluindo owner via created_by).
-  // Sem isso o criador de uma ONG legada (sem doc em organization_members)
-  // não consegue Administrar nem gerenciar pets.
   const isAdmin = Boolean(
     club && (isClubOwner(club, membership, user?.uid)
       || hasClubPermission(club, membership, CLUB_PERMISSION.TEAM, user?.uid)),
@@ -102,196 +117,92 @@ export default function ClubDetail() {
     );
   }
 
-  const location = [club.city, club.state].filter(Boolean).join(' / ');
-
-  // Diagnóstico temporário — remover após identificar a causa
-  const ownerMatch = isClubOwner(club, membership, user?.uid);
-  const anyPerm = hasAnyClubPermission(club, membership, user?.uid);
-
   return (
-    <div className="arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8 space-y-6">
+    <div className="arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8 space-y-5">
       <Button asChild variant="ghost" size="sm">
         <Link to="/organizacoes"><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar</Link>
       </Button>
 
-      {/* Diagnóstico temporário — remover após identificar a causa */}
-      <div
-        data-testid="club-debug-panel"
-        role="status"
-        className="rounded-2xl border-2 border-warning/40 bg-warning/5 p-4 text-xs space-y-2"
-      >
-        <div className="flex items-center gap-2 font-bold text-warning">
-          <Info className="h-4 w-4" />
-          <span>Diagnóstico temporário — ONG</span>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 font-mono text-foreground/80">
-          <div>club.id: <span className="font-bold">{String(club.id || '∅').slice(0, 14)}…</span></div>
-          <div>club.created_by: <span className="font-bold">{String(club.created_by || '∅').slice(0, 14)}…</span></div>
-          <div>club.owner_id: <span className="font-bold">{String(club.owner_id || '∅').slice(0, 14)}…</span></div>
-          <div>user.uid: <span className="font-bold">{String(user?.uid || '∅').slice(0, 14)}…</span></div>
-          <div>
-            created_by === user.uid?:{' '}
-            <span className={`font-bold ${ownerMatch ? 'text-emerald-700' : 'text-destructive'}`}>
-              {String(ownerMatch)}
-            </span>
-          </div>
-          <div>
-            hasAnyClubPermission(...)?:{' '}
-            <span className={`font-bold ${anyPerm ? 'text-emerald-700' : 'text-destructive'}`}>
-              {String(anyPerm)}
-            </span>
-          </div>
-          <div>
-            isAdmin (UI gating):{' '}
-            <span className={`font-bold ${isAdmin ? 'text-emerald-700' : 'text-destructive'}`}>
-              {String(isAdmin)}
-            </span>
-          </div>
-          <div>
-            isMember (UI gating):{' '}
-            <span className={`font-bold ${isMember ? 'text-emerald-700' : 'text-destructive'}`}>
-              {String(isMember)}
-            </span>
-          </div>
-          <div>
-            membership:{' '}
-            <span className="font-bold">
-              {membership ? `role=${membership.role} perms=${JSON.stringify(membership.permissions || {})}` : 'null (legacy / não carregou)'}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <section className="arena-panel-strong overflow-hidden rounded-[1.25rem] p-5 sm:rounded-[2rem] sm:p-8">
-        <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
-          <div className="flex items-start gap-4">
-            {club.logo_url ? (
-              <img src={club.logo_url} alt="" className="h-16 w-16 shrink-0 rounded-2xl border border-white/15 object-cover" />
-            ) : (
-              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white/10 text-orange-50">
-                <Building2 className="h-7 w-7" />
-              </div>
-            )}
-            <div className="min-w-0">
-              <h1 className="text-2xl font-bold text-white sm:text-3xl">{club.name}</h1>
-              <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-orange-50/80">
-                {location && <span className="inline-flex items-center gap-1"><MapPin className="h-4 w-4" /> {location}</span>}
-              </div>
-              
-              {isMember && (
-                <Badge variant={isAdmin ? 'warning' : 'success'} className="mt-3 rounded-full uppercase tracking-[0.12em]">
-                  {isAdmin ? 'Você é admin' : 'Você é membro da equipe'}
-                </Badge>
-              )}
+      {/* Cabeçalho compacto: ações rápidas + identidade */}
+      <header className="arena-panel-strong overflow-hidden rounded-[1.25rem] p-5 sm:rounded-[2rem] sm:p-6">
+        <div className="flex flex-wrap items-start gap-4">
+          {club.logo_url ? (
+            <img src={club.logo_url} alt="" className="h-14 w-14 shrink-0 rounded-2xl border border-white/15 object-cover" />
+          ) : (
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/10 text-orange-50">
+              <Building2 className="h-6 w-6" />
             </div>
+          )}
+          <div className="min-w-0 flex-1">
+            <h1 className="text-2xl font-bold text-white sm:text-3xl">{club.name}</h1>
+            {isMember && (
+              <Badge variant={isAdmin ? 'warning' : 'success'} className="mt-2 rounded-full uppercase tracking-[0.12em]">
+                {isAdmin ? 'Você é admin' : 'Você é membro da equipe'}
+              </Badge>
+            )}
           </div>
-
-          <div className="flex shrink-0 flex-wrap gap-2.5">
+          <div className="flex shrink-0 flex-wrap gap-2">
             {isAdmin && (
-              <Button
-                asChild
-                size="sm"
-                className="border-0 bg-white text-foreground hover:bg-secondary"
-              >
+              <Button asChild size="sm" className="border-0 bg-white text-foreground hover:bg-secondary">
                 <Link to={`/organizacoes/${orgId}/admin`}><Settings className="mr-1.5 h-4 w-4" /> Administrar</Link>
               </Button>
             )}
             {!isMember && (
-              <>
-                {isInvited ? (
-                  <Button size="sm" variant="outline" className="border-warning text-warning hover:bg-warning/10" disabled>
-                    Você foi convidado — abrir
-                  </Button>
-                ) : isPending ? (
-                  <Button size="sm" variant="outline" disabled>
-                    Pedido enviado
-                  </Button>
-                ) : (
-                  <Button size="sm" variant="outline" onClick={handleRequest} disabled={requestToJoin.isPending}>
-                    {requestToJoin.isPending ? 'Enviando...' : 'Pedir para ingressar'}
-                  </Button>
-                )}
-              </>
-            )}
-            {club.donation_link && (
-              <Button asChild size="sm" className="bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--highlight))_100%)] text-white hover:opacity-90">
-                <a href={club.donation_link} target="_blank" rel="noreferrer">
-                  <Heart className="mr-1.5 h-4 w-4" /> Ajudar (Doar)
-                </a>
-              </Button>
+              isInvited ? (
+                <Button size="sm" variant="outline" className="border-warning text-warning hover:bg-warning/10" disabled>
+                  Você foi convidado — abrir
+                </Button>
+              ) : isPending ? (
+                <Button size="sm" variant="outline" disabled>Pedido enviado</Button>
+              ) : (
+                <Button size="sm" variant="outline" onClick={handleRequest} disabled={requestToJoin.isPending}>
+                  {requestToJoin.isPending ? 'Enviando...' : 'Pedir para ingressar'}
+                </Button>
+              )
             )}
           </div>
         </div>
-      </section>
+      </header>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full space-y-5">
         <div className="overflow-x-auto pb-2 scrollbar-none">
           <TabsList className="h-auto w-full flex-wrap justify-start gap-1 rounded-xl bg-transparent p-0 sm:gap-2">
-            <TabsTrigger value="pets" className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              Pets para adoção
-            </TabsTrigger>
-            <TabsTrigger value="sobre" className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              Sobre a ONG
-            </TabsTrigger>
+            {TABS.map((tab) => (
+              <TabsTrigger
+                key={tab.key}
+                value={tab.key}
+                className={cn(
+                  'rounded-lg gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground',
+                )}
+              >
+                <tab.icon className="h-4 w-4" /> {tab.label}
+              </TabsTrigger>
+            ))}
           </TabsList>
         </div>
 
-        <TabsContent value="pets" className="min-h-[400px] outline-none">
-          <ClubPetsDataGrid clubId={orgId} canManage={isAdmin} />
+        <TabsContent value="general" className="outline-none">
+          <ClubGeneralTab club={club} />
         </TabsContent>
 
-        <TabsContent value="sobre" className="outline-none">
-          <div className="arena-panel-strong rounded-2xl p-6 sm:p-8 space-y-6">
-            <div>
-              <h3 className="font-bold text-lg text-white mb-2 flex items-center gap-2">
-                <Info className="w-5 h-5 text-primary" /> Nossa Missão
-              </h3>
-              <p className="text-orange-50/90 leading-7 whitespace-pre-wrap">
-                {club.description || 'Esta ONG ainda não adicionou uma descrição.'}
-              </p>
-            </div>
+        <TabsContent value="pets" className="min-h-[400px] outline-none">
+          <ClubPetsPublicTab clubId={orgId} clubName={club?.name} />
+        </TabsContent>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {club.contact_email && (
-                <div className="flex items-center gap-3 p-4 rounded-xl bg-black/10">
-                  <Mail className="w-5 h-5 text-primary" />
-                  <div>
-                    <p className="text-xs text-orange-50/60 uppercase font-bold tracking-wider">E-mail</p>
-                    <p className="text-sm font-medium text-white">{club.contact_email}</p>
-                  </div>
-                </div>
-              )}
-              {club.contact_phone && (
-                <div className="flex items-center gap-3 p-4 rounded-xl bg-black/10">
-                  <Phone className="w-5 h-5 text-primary" />
-                  <div>
-                    <p className="text-xs text-orange-50/60 uppercase font-bold tracking-wider">Telefone</p>
-                    <p className="text-sm font-medium text-white">{club.contact_phone}</p>
-                  </div>
-                </div>
-              )}
-              {club.instagram && (
-                <div className="flex items-center gap-3 p-4 rounded-xl bg-black/10">
-                  <Instagram className="w-5 h-5 text-primary" />
-                  <div>
-                    <p className="text-xs text-orange-50/60 uppercase font-bold tracking-wider">Instagram</p>
-                    <a href={`https://instagram.com/${club.instagram.replace('@', '')}`} target="_blank" rel="noreferrer" className="text-sm font-medium text-highlight hover:underline">
-                      {club.instagram}
-                    </a>
-                  </div>
-                </div>
-              )}
-              {club.cnpj && (
-                <div className="flex items-center gap-3 p-4 rounded-xl bg-black/10">
-                  <Building2 className="w-5 h-5 text-primary" />
-                  <div>
-                    <p className="text-xs text-orange-50/60 uppercase font-bold tracking-wider">CNPJ</p>
-                    <p className="text-sm font-medium text-white">{club.cnpj}</p>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
+        <TabsContent value="feed" className="outline-none">
+          <ClubFeedTab clubId={orgId} isAdmin={isAdmin} />
+        </TabsContent>
+
+        <TabsContent value="donations" className="outline-none">
+          <ClubDonationsTab clubId={orgId} isAdmin={isAdmin} />
+        </TabsContent>
+
+        <TabsContent value="finance" className="outline-none">
+          <ClubFinanceTab clubId={orgId} readOnly={!isAdmin} />
+        </TabsContent>
+
+        <TabsContent value="team" className="outline-none">
+          <ClubTeamPublicTab clubId={orgId} club={club} viewerMembership={membership} />
         </TabsContent>
       </Tabs>
     </div>

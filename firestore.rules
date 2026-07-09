@@ -574,5 +574,212 @@ service cloud.firestore {
         allow delete: if isAuth() && voteUid == request.auth.uid;
       }
     }
+
+    // =========================================================================
+    // ORGANIZAÇÕES (ONGs) — Novas regras para o módulo de Organizações
+    // =========================================================================
+
+    // --- Mural da ONG: posts, likes e comentários ---
+    // Posts do mural são visíveis para qualquer pessoa (qualquer user da
+    // plataforma). A regra de "se o post permite interação" é aplicada
+    // client-side — mas likes/comments são validados pelas regras abaixo.
+    match /club_posts/{postId} {
+      allow read: if true;
+      // Autor precisa ser membro da ONG e dono do `author_id`.
+      allow create: if isAuth()
+        && isClubMember(request.resource.data.club_id)
+        && request.resource.data.author_id == request.auth.uid
+        && (
+          hasClubPermission(request.resource.data.club_id, 'feed')
+          || isClubAdmin(request.resource.data.club_id)
+        );
+      // Update: autor do post pode editar enquanto ninguém curtiu/comentou,
+      // OU admin/equipe com permissão de feed pode editar/excluir.
+      allow update: if isAuth() && (
+        (resource.data.author_id == request.auth.uid
+          && (resource.data.likes_count == null || resource.data.likes_count == 0)
+          && (resource.data.comments_count == null || resource.data.comments_count == 0))
+        || isClubAdmin(resource.data.club_id)
+        || hasClubPermission(resource.data.club_id, 'feed')
+        || isPlatformAdmin()
+      );
+      allow delete: if isAuth() && (
+        resource.data.author_id == request.auth.uid
+        || isClubAdmin(resource.data.club_id)
+        || hasClubPermission(resource.data.club_id, 'feed')
+        || isPlatformAdmin()
+      );
+    }
+
+    // Curtidas no mural da ONG. O id do doc é `${postId}_${uid}` para
+    // garantir idempotência (uma curtida por usuário por post).
+    match /club_post_likes/{likeId} {
+      allow read: if true;
+      allow create: if isAuth()
+        && request.resource.data.user_id == request.auth.uid
+        // Só permite curtir se o post tiver `allow_likes == true` (ou
+        // `allow_interaction` ∈ {likes, both}).
+        && get(/databases/$(database)/documents/club_posts/$(request.resource.data.post_id)).data.get('allow_likes', false) == true;
+      allow delete: if isAuth() && resource.data.user_id == request.auth.uid;
+    }
+
+    // Comentários no mural da ONG.
+    match /club_post_comments/{commentId} {
+      allow read: if true;
+      allow create: if isAuth()
+        && request.resource.data.author_id == request.auth.uid
+        // Só permite comentar se o post permitir.
+        && get(/databases/$(database)/documents/club_posts/$(request.resource.data.post_id)).data.get('allow_comments', false) == true;
+      // Edição: apenas o próprio autor pode editar (e só texto). Exclusão:
+      // o autor, admin da ONG, ou alguém com permissão 'feed'.
+      allow update: if isAuth() && (
+        request.auth.uid == resource.data.author_id
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['text', 'updated_at'])
+      );
+      allow delete: if isAuth() && (
+        request.auth.uid == resource.data.author_id
+        || isClubAdmin(resource.data.club_id)
+        || hasClubPermission(resource.data.club_id, 'feed')
+        || isPlatformAdmin()
+      );
+    }
+
+    // --- Chamados de doação (v2 — com PIX, QR e comprovantes) ---
+    // Substitui `club_campaigns` para os novos fluxos. A coleção legada
+    // continua existindo e tem suas próprias regras acima.
+    match /club_donations/{donationId} {
+      allow read: if true; // Transparência pública
+      allow create: if isAuth() && (
+        isClubAdmin(request.resource.data.club_id)
+        || hasClubPermission(request.resource.data.club_id, 'donations')
+      );
+      allow update: if isAuth()
+        && request.resource.data.club_id == resource.data.club_id
+        && (
+          isClubAdmin(resource.data.club_id)
+          || hasClubPermission(resource.data.club_id, 'donations')
+          || isPlatformAdmin()
+        );
+      allow delete: if isAuth() && (
+        isClubAdmin(resource.data.club_id)
+        || hasClubPermission(resource.data.club_id, 'donations')
+        || isPlatformAdmin()
+      );
+    }
+
+    // Comprovantes de contribuição enviados pelo público.
+    match /club_donation_receipts/{receiptId} {
+      // Quem pode ver: o próprio usuário que enviou, a equipe da ONG
+      // (admin ou permissão donations) e platform_admin.
+      allow read: if isAuth() && (
+        resource.data.user_id == request.auth.uid
+        || isClubAdmin(resource.data.club_id)
+        || hasClubPermission(resource.data.club_id, 'donations')
+        || isPlatformAdmin()
+      );
+      // Qualquer usuário autenticado pode enviar um comprovante, desde que:
+      //  - o user_id seja ele mesmo;
+      //  - a doação tenha `enable_receipt_upload == true`.
+      allow create: if isAuth()
+        && request.resource.data.user_id == request.auth.uid
+        && get(/databases/$(database)/documents/club_donations/$(request.resource.data.donation_id)).data.get('enable_receipt_upload', false) == true;
+      // Apenas a equipe da ONG pode atualizar o status (confirmar/rejeitar).
+      // Restringe os campos alteráveis a status/updated_at/reviewed_by.
+      allow update: if isAuth() && (
+        (isClubAdmin(resource.data.club_id)
+         || hasClubPermission(resource.data.club_id, 'donations')
+         || isPlatformAdmin())
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(
+          ['status', 'updated_at', 'reviewed_by', 'reviewed_at', 'admin_note']
+        )
+      );
+      allow delete: if isAuth() && (
+        isClubAdmin(resource.data.club_id)
+        || hasClubPermission(resource.data.club_id, 'donations')
+        || isPlatformAdmin()
+        || resource.data.user_id == request.auth.uid
+      );
+    }
+
+    // --- Categorias configuráveis da prestação de contas ---
+    match /club_ledger_categories/{categoryId} {
+      // Categorias customizadas são lidas por qualquer membro da ONG.
+      allow read: if isAuth() && (
+        isClubMember(resource.data.club_id) || isPlatformAdmin()
+      );
+      allow create, update, delete: if isAuth() && (
+        isClubAdmin(request.resource.data.club_id)
+        || hasClubPermission(request.resource.data.club_id, 'finance')
+        || isPlatformAdmin()
+      );
+    }
+
+    // --- Chat dedicado entre um usuário e a ONG ---
+    // A thread é criada quando o primeiro user inicia a conversa. A
+    // equipe da ONG entra como participante adicional ao responder.
+    match /club_chat_threads/{threadId} {
+      allow read: if isAuth() && (
+        resource.data.user_id == request.auth.uid
+        || isClubMember(resource.data.club_id)
+        || isPlatformAdmin()
+      );
+      // O usuário cria a thread para si mesmo, vinculado a uma ONG.
+      // O status começa como 'open' e o user_id é o caller.
+      allow create: if isAuth()
+        && request.resource.data.user_id == request.auth.uid
+        && request.resource.data.club_id != null;
+      // Update: o user pode fechar a própria thread; a ONG pode mudar
+      // status (open/closed/archived).
+      allow update: if isAuth() && (
+        (resource.data.user_id == request.auth.uid
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'updated_at', 'last_message_at']))
+        || isClubAdmin(resource.data.club_id)
+        || hasClubPermission(resource.data.club_id, 'feed')
+        || hasClubPermission(resource.data.club_id, 'team')
+        || isPlatformAdmin()
+      );
+      allow delete: if isAuth() && (
+        isClubAdmin(resource.data.club_id) || isPlatformAdmin()
+      );
+
+      // Mensagens da thread. As mensagens são sempre escritas pelo
+      // próprio autor (`sender_id == auth.uid`).
+      match /messages/{messageId} {
+        allow read: if isAuth() && (
+          get(/databases/$(database)/documents/club_chat_threads/$(threadId)).data.user_id == request.auth.uid
+          || isClubMember(get(/databases/$(database)/documents/club_chat_threads/$(threadId)).data.club_id)
+          || isPlatformAdmin()
+        );
+        allow create: if isAuth() && request.resource.data.sender_id == request.auth.uid;
+        allow update: if isAuth() && request.auth.uid == resource.data.sender_id
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['text', 'edited', 'updated_at']);
+        allow delete: if isAuth() && (
+          request.auth.uid == resource.data.sender_id
+          || isClubAdmin(get(/databases/$(database)/documents/club_chat_threads/$(threadId)).data.club_id)
+          || isPlatformAdmin()
+        );
+      }
+    }
+
+    // --- Atualização do documento `clubs/{id}` para os novos campos da aba
+    //     "Geral" (history, whatsapp_number, chat_enabled, etc.) e para os
+    //     campos de privacidade/bio do `club_members/{id}`.
+    // A regra `match /clubs/{clubId}` original já permite update por admin;
+    // a única coisa nova é permitir que o próprio membro edite a própria
+    // bio/privacy/contact (mas NÃO o role/permissions).
+
+    // Permite que um membro edite APENAS seus próprios campos visuais
+    // (title, bio, history, whatsapp, phone, privacy_map) — sem mexer em
+    // role/permissions, que continuam exclusivos de admin/team.
+    match /club_members/{memberId} {
+      allow update: if isPlatformAdmin()
+        || (isClubAdmin(resource.data.club_id)
+            && !isClubOwnerUid(resource.data.club_id, resource.data.user_id))
+        || (resource.data.user_id == request.auth.uid
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(
+              ['title', 'bio', 'history', 'phone', 'whatsapp', 'photo_url',
+               'user_name', 'user_email', 'privacy_map', 'updated_at']
+            ));
+    }
   }
 }

@@ -174,10 +174,16 @@ export async function listMyClubs(userId) {
 }
 
 export async function updateClub(id, updates, actor) {
-  const allowed = ['name', 'description', 'city', 'state', 'logo_url', 'contact_email', 'contact_phone', 'instagram', 'home_venue', 'cnpj', 'donation_link'];
+  const allowed = [
+    'name', 'description', 'history', 'city', 'state', 'logo_url',
+    'contact_email', 'contact_phone', 'whatsapp_number', 'instagram',
+    'home_venue', 'cnpj', 'donation_link', 'chat_enabled',
+  ];
   const sanitized = {};
   allowed.forEach((key) => {
-    if (updates[key] !== undefined) sanitized[key] = trimmed(updates[key]);
+    if (updates[key] === undefined) return;
+    if (typeof updates[key] === 'boolean') sanitized[key] = !!updates[key];
+    else sanitized[key] = trimmed(updates[key]);
   });
   await updateDoc(doc(db, COL.clubs, id), { ...sanitized, updated_at: serverTimestamp() });
   await createAuditLog({ action: 'club_updated', actor, details: { club_id: id, fields: Object.keys(sanitized) } });
@@ -325,6 +331,34 @@ export async function removeMember(clubId, member, actor) {
   await deleteDoc(doc(db, COL.members, memberDocId(clubId, member.user_id)));
   await updateDoc(doc(db, COL.clubs, clubId), { member_count: increment(-1), updated_at: serverTimestamp() }).catch(() => {});
   await createAuditLog({ action: 'club_member_removed', actor, details: { club_id: clubId, user_id: member.user_id } });
+}
+
+/**
+ * Atualiza os campos visuais do member (title, bio, history, photo, phone,
+ * whatsapp, privacy_map). O próprio membro pode editar os seus; admin/team
+ * também pode. Não altera role/permissions (esses têm APIs próprias).
+ */
+export async function updateMemberProfile(clubId, member, input, actor) {
+  if (!member?.user_id) throw new Error('Membro inválido.');
+  // A regra de firestore já limita `affectedKeys` aos campos visuais. Aqui
+  // no cliente só aplicamos trim + caps.
+  const allowed = ['user_name', 'user_email', 'photo_url', 'title', 'bio', 'history', 'phone', 'whatsapp', 'privacy_map'];
+  const sanitized = {};
+  allowed.forEach((key) => {
+    if (input[key] === undefined) return;
+    if (key === 'privacy_map' && typeof input[key] === 'object') {
+      sanitized[key] = input[key];
+    } else {
+      sanitized[key] = String(input[key] ?? '').trim();
+    }
+  });
+  sanitized.updated_at = serverTimestamp();
+  await updateDoc(doc(db, COL.members, memberDocId(clubId, member.user_id)), sanitized);
+  await createAuditLog({
+    action: 'club_member_profile_updated',
+    actor,
+    details: { club_id: clubId, user_id: member.user_id, fields: Object.keys(sanitized) },
+  });
 }
 
 /* ------------------ Join requests & membership invites ------------------ */
