@@ -78,6 +78,21 @@ jobs:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/firebase-sa.json
 
+      # Aplica o CORS do Storage (storage.cors.json) sempre que houver
+      # mudança nesse arquivo. O deploy do Firebase não atualiza o CORS
+      # automaticamente — só as rules — então sem este step o browser
+      # bloqueia as imagens com "blocked by CORS policy".
+      - name: Apply Storage CORS (Production — main)
+        if: always() && github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          echo "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/firebase-sa.json"
+          gsutil -h "Cache-Control:no-cache,max-age=0" \
+            -m cors set storage.cors.json \
+            "gs://viralata-4cf0b.firebasestorage.app"
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/firebase-sa.json
+
       # Requer papéis de IAM adicionais na service account (além dos já usados
       # por Hosting/Firestore/Storage): Cloud Functions Admin, Cloud Build
       # Editor, Artifact Registry Administrator e Service Account User — e as

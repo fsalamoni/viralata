@@ -37,6 +37,16 @@ service cloud.firestore {
       return isAuth() && exists(/databases/$(database)/documents/club_members/$(clubId + '_' + request.auth.uid))
         && get(/databases/$(database)/documents/club_members/$(clubId + '_' + request.auth.uid)).data.role == 'admin';
     }
+    // O criador da ONG (`clubs.created_by`) tem todas as permissões de admin
+    // mesmo quando o doc `club_members/{clubId_uid}` ainda não foi inserido
+    // (ONG legada, race condition pós-criação, etc.). Espelha o fallback
+    // client-side em `domain/permissions.js::isClubOwner`.
+    function isClubOwnerOrAdmin(clubId) {
+      return isAuth() && (
+        isClubOwnerUid(clubId, request.auth.uid)
+        || isClubOwnerOrAdmin(clubId)
+      );
+    }
     function hasEventInvite(eventId) {
       return isAuth() && exists(/databases/$(database)/documents/event_invites/$(eventId + '_' + request.auth.uid));
     }
@@ -67,7 +77,7 @@ service cloud.firestore {
     function canManagePet(petData) {
       return petData.owner_id == request.auth.uid ||
         (petData.get('owner_type', '') == 'organization' && (
-          isClubAdmin(petData.owner_id) || canEditClubPets(petData.owner_id) || hasClubPermission(petData.owner_id, 'animals')
+          isClubOwnerOrAdmin(petData.owner_id) || canEditClubPets(petData.owner_id) || hasClubPermission(petData.owner_id, 'animals')
         ));
     }
     // Dono fixo da plataforma (bootstrap do primeiro platform_admin) — espelha
@@ -108,7 +118,7 @@ service cloud.firestore {
       allow create: if isAuth() && (
         request.resource.data.owner_id == request.auth.uid ||
         (request.resource.data.owner_type == 'organization' && (
-          isClubAdmin(request.resource.data.owner_id) ||
+          isClubOwnerOrAdmin(request.resource.data.owner_id) ||
           canEditClubPets(request.resource.data.owner_id) ||
           hasClubPermission(request.resource.data.owner_id, 'animals')
         ))
@@ -116,7 +126,7 @@ service cloud.firestore {
       allow update: if isAuth() && (
         resource.data.owner_id == request.auth.uid ||
         (resource.data.owner_type == 'organization' && (
-          isClubAdmin(resource.data.owner_id) || canEditClubPets(resource.data.owner_id) || hasClubPermission(resource.data.owner_id, 'animals')
+          isClubOwnerOrAdmin(resource.data.owner_id) || canEditClubPets(resource.data.owner_id) || hasClubPermission(resource.data.owner_id, 'animals')
         )) ||
         isPlatformAdmin()
       ) && (
@@ -130,7 +140,7 @@ service cloud.firestore {
       allow delete: if isAuth() && (
         resource.data.owner_id == request.auth.uid ||
         (resource.data.owner_type == 'organization' && (
-          isClubAdmin(resource.data.owner_id) || canEditClubPets(resource.data.owner_id) || hasClubPermission(resource.data.owner_id, 'animals')
+          isClubOwnerOrAdmin(resource.data.owner_id) || canEditClubPets(resource.data.owner_id) || hasClubPermission(resource.data.owner_id, 'animals')
         )) ||
         isPlatformAdmin()
       );
@@ -237,9 +247,9 @@ service cloud.firestore {
       // contra remoção/rebaixamento — ver domain/permissions.js) e não pode
       // ser trocado por um admin comum, só por um platform_admin.
       allow update: if isPlatformAdmin() ||
-        (isClubAdmin(clubId) && request.resource.data.get('created_by', resource.data.created_by) == resource.data.created_by) ||
+        (isClubOwnerOrAdmin(clubId) && request.resource.data.get('created_by', resource.data.created_by) == resource.data.created_by) ||
         (isClubMember(clubId) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['member_count', 'updated_at']));
-      allow delete: if isClubAdmin(clubId) || isPlatformAdmin();
+      allow delete: if isClubOwnerOrAdmin(clubId) || isPlatformAdmin();
     }
 
     match /club_members/{memberId} {
@@ -261,17 +271,17 @@ service cloud.firestore {
           request.resource.data.get('role', '') == 'admin' &&
           !('permissions' in request.resource.data) &&
           isClubOwnerUid(request.resource.data.club_id, request.auth.uid)) ||
-        isClubAdmin(request.resource.data.club_id) ||
+        isClubOwnerOrAdmin(request.resource.data.club_id) ||
         isPlatformAdmin()
       );
       // Proprietário é protegido: nem outro admin pode alterar seu papel/
       // permissões, nem removê-lo — só ele mesmo (saindo do clube) ou um
       // platform_admin.
       allow update: if isPlatformAdmin() ||
-        (isClubAdmin(resource.data.club_id) && !isClubOwnerUid(resource.data.club_id, resource.data.user_id));
+        (isClubOwnerOrAdmin(resource.data.club_id) && !isClubOwnerUid(resource.data.club_id, resource.data.user_id));
       allow delete: if isAuth() && (
         resource.data.user_id == request.auth.uid ||
-        (isClubAdmin(resource.data.club_id) && !isClubOwnerUid(resource.data.club_id, resource.data.user_id)) ||
+        (isClubOwnerOrAdmin(resource.data.club_id) && !isClubOwnerUid(resource.data.club_id, resource.data.user_id)) ||
         isPlatformAdmin()
       );
     }
@@ -279,35 +289,35 @@ service cloud.firestore {
     match /club_join_requests/{requestId} {
       allow read: if isAuth() && (
         resource.data.user_id == request.auth.uid ||
-        isClubAdmin(resource.data.club_id) ||
+        isClubOwnerOrAdmin(resource.data.club_id) ||
         isPlatformAdmin()
       );
       allow create: if isAuth() && request.resource.data.user_id == request.auth.uid;
-      allow update, delete: if isClubAdmin(resource.data.club_id) || isPlatformAdmin();
+      allow update, delete: if isClubOwnerOrAdmin(resource.data.club_id) || isPlatformAdmin();
     }
 
     match /club_member_invites/{inviteId} {
       allow read: if isAuth() && (
         resource.data.user_id == request.auth.uid ||
-        isClubAdmin(resource.data.club_id) ||
+        isClubOwnerOrAdmin(resource.data.club_id) ||
         isPlatformAdmin()
       );
-      allow create: if isAuth() && isClubAdmin(request.resource.data.club_id) && request.resource.data.invited_by == request.auth.uid;
+      allow create: if isAuth() && isClubOwnerOrAdmin(request.resource.data.club_id) && request.resource.data.invited_by == request.auth.uid;
       allow update: if isAuth() && resource.data.user_id == request.auth.uid;
-      allow delete: if isClubAdmin(resource.data.club_id) || isPlatformAdmin();
+      allow delete: if isClubOwnerOrAdmin(resource.data.club_id) || isPlatformAdmin();
     }
 
     match /club_events/{eventId} {
       allow read: if isAuth() && (
         (resource.data.visibility == 'public' && isClubMember(resource.data.club_id)) ||
         hasEventInvite(eventId) ||
-        isClubAdmin(resource.data.club_id) ||
+        isClubOwnerOrAdmin(resource.data.club_id) ||
         isPlatformAdmin()
       );
       allow create: if isAuth() && isClubMember(request.resource.data.club_id) && request.resource.data.created_by == request.auth.uid;
       allow update, delete: if isAuth() && (
         resource.data.created_by == request.auth.uid ||
-        isClubAdmin(resource.data.club_id) ||
+        isClubOwnerOrAdmin(resource.data.club_id) ||
         isPlatformAdmin()
       );
 
@@ -326,7 +336,7 @@ service cloud.firestore {
         allow update: if isAuth() && resource.data.sender_id == request.auth.uid;
         allow delete: if isAuth() && (
           resource.data.sender_id == request.auth.uid ||
-          isClubAdmin(eventClubId(eventId)) ||
+          isClubOwnerOrAdmin(eventClubId(eventId)) ||
           isPlatformAdmin()
         );
       }
@@ -340,13 +350,13 @@ service cloud.firestore {
     match /club_event_rsvps/{rsvpId} {
       allow read: if isAuth() && (
         resource.data.user_id == request.auth.uid ||
-        isClubAdmin(resource.data.club_id) ||
+        isClubOwnerOrAdmin(resource.data.club_id) ||
         isPlatformAdmin()
       );
       allow create, update: if isAuth() && request.resource.data.user_id == request.auth.uid;
       allow delete: if isAuth() && (
         resource.data.user_id == request.auth.uid ||
-        isClubAdmin(resource.data.club_id) ||
+        isClubOwnerOrAdmin(resource.data.club_id) ||
         isPlatformAdmin()
       );
     }
@@ -355,7 +365,7 @@ service cloud.firestore {
       allow read: if isAuth() && (
         resource.data.user_id == request.auth.uid ||
         resource.data.invited_by == request.auth.uid ||
-        isClubAdmin(resource.data.club_id) ||
+        isClubOwnerOrAdmin(resource.data.club_id) ||
         isPlatformAdmin()
       );
       allow create: if isAuth() && (
@@ -366,7 +376,7 @@ service cloud.firestore {
       allow delete: if isAuth() && (
         resource.data.user_id == request.auth.uid ||
         resource.data.invited_by == request.auth.uid ||
-        isClubAdmin(resource.data.club_id) ||
+        isClubOwnerOrAdmin(resource.data.club_id) ||
         isPlatformAdmin()
       );
     }
@@ -376,7 +386,7 @@ service cloud.firestore {
       allow create: if isAuth() && isClubMember(request.resource.data.club_id) && request.resource.data.author_id == request.auth.uid;
       allow delete: if isAuth() && (
         resource.data.author_id == request.auth.uid ||
-        isClubAdmin(resource.data.club_id) ||
+        isClubOwnerOrAdmin(resource.data.club_id) ||
         isPlatformAdmin()
       );
     }
@@ -385,34 +395,34 @@ service cloud.firestore {
     match /club_campaigns/{campaignId} {
       allow read: if true; // Visível publicamente (transparência de arrecadação)
       allow create: if isAuth() && (
-        isClubAdmin(request.resource.data.club_id) || hasClubPermission(request.resource.data.club_id, 'donations')
+        isClubOwnerOrAdmin(request.resource.data.club_id) || hasClubPermission(request.resource.data.club_id, 'donations')
       );
       // `club_id` é imutável no update — impede que quem só tem permissão
       // `donations` na organização A "mude de dono" uma campanha para a
       // organização B (o campo não está na allow-list de updateClubCampaign,
       // mas a regra precisa recusar mesmo assim para quem usa o SDK direto).
       allow update: if isAuth() && request.resource.data.club_id == resource.data.club_id && (
-        isClubAdmin(resource.data.club_id) || hasClubPermission(resource.data.club_id, 'donations') || isPlatformAdmin()
+        isClubOwnerOrAdmin(resource.data.club_id) || hasClubPermission(resource.data.club_id, 'donations') || isPlatformAdmin()
       );
       allow delete: if isAuth() && (
-        isClubAdmin(resource.data.club_id) || hasClubPermission(resource.data.club_id, 'donations') || isPlatformAdmin()
+        isClubOwnerOrAdmin(resource.data.club_id) || hasClubPermission(resource.data.club_id, 'donations') || isPlatformAdmin()
       );
     }
 
     // ─── Prestação de contas (lançamentos financeiros) de uma organização ──────
     match /club_ledger/{entryId} {
       allow read: if isAuth() && (
-        isClubAdmin(resource.data.club_id) || hasClubPermission(resource.data.club_id, 'finance') || isPlatformAdmin()
+        isClubOwnerOrAdmin(resource.data.club_id) || hasClubPermission(resource.data.club_id, 'finance') || isPlatformAdmin()
       );
       allow create: if isAuth() && (
-        isClubAdmin(request.resource.data.club_id) || hasClubPermission(request.resource.data.club_id, 'finance')
+        isClubOwnerOrAdmin(request.resource.data.club_id) || hasClubPermission(request.resource.data.club_id, 'finance')
       );
       // `club_id` imutável no update — mesma razão do club_campaigns acima.
       allow update: if isAuth() && request.resource.data.club_id == resource.data.club_id && (
-        isClubAdmin(resource.data.club_id) || hasClubPermission(resource.data.club_id, 'finance') || isPlatformAdmin()
+        isClubOwnerOrAdmin(resource.data.club_id) || hasClubPermission(resource.data.club_id, 'finance') || isPlatformAdmin()
       );
       allow delete: if isAuth() && (
-        isClubAdmin(resource.data.club_id) || hasClubPermission(resource.data.club_id, 'finance') || isPlatformAdmin()
+        isClubOwnerOrAdmin(resource.data.club_id) || hasClubPermission(resource.data.club_id, 'finance') || isPlatformAdmin()
       );
     }
 
@@ -421,12 +431,12 @@ service cloud.firestore {
       allow create: if isAuth() && isClubMember(request.resource.data.club_id) && request.resource.data.author_id == request.auth.uid;
       allow update: if isAuth() && (
         resource.data.author_id == request.auth.uid ||
-        isClubAdmin(resource.data.club_id) ||
+        isClubOwnerOrAdmin(resource.data.club_id) ||
         isPlatformAdmin()
       );
       allow delete: if isAuth() && (
         resource.data.author_id == request.auth.uid ||
-        isClubAdmin(resource.data.club_id) ||
+        isClubOwnerOrAdmin(resource.data.club_id) ||
         isPlatformAdmin()
       );
 
@@ -436,7 +446,7 @@ service cloud.firestore {
         allow update: if isAuth() && resource.data.author_id == request.auth.uid;
         allow delete: if isAuth() && (
           resource.data.author_id == request.auth.uid ||
-          isClubAdmin(resource.data.club_id) ||
+          isClubOwnerOrAdmin(resource.data.club_id) ||
           isPlatformAdmin()
         );
       }
@@ -591,7 +601,7 @@ service cloud.firestore {
         && request.resource.data.author_id == request.auth.uid
         && (
           hasClubPermission(request.resource.data.club_id, 'feed')
-          || isClubAdmin(request.resource.data.club_id)
+          || isClubOwnerOrAdmin(request.resource.data.club_id)
         );
       // Update: autor do post pode editar enquanto ninguém curtiu/comentou,
       // OU admin/equipe com permissão de feed pode editar/excluir.
@@ -599,13 +609,13 @@ service cloud.firestore {
         (resource.data.author_id == request.auth.uid
           && (resource.data.likes_count == null || resource.data.likes_count == 0)
           && (resource.data.comments_count == null || resource.data.comments_count == 0))
-        || isClubAdmin(resource.data.club_id)
+        || isClubOwnerOrAdmin(resource.data.club_id)
         || hasClubPermission(resource.data.club_id, 'feed')
         || isPlatformAdmin()
       );
       allow delete: if isAuth() && (
         resource.data.author_id == request.auth.uid
-        || isClubAdmin(resource.data.club_id)
+        || isClubOwnerOrAdmin(resource.data.club_id)
         || hasClubPermission(resource.data.club_id, 'feed')
         || isPlatformAdmin()
       );
@@ -638,7 +648,7 @@ service cloud.firestore {
       );
       allow delete: if isAuth() && (
         request.auth.uid == resource.data.author_id
-        || isClubAdmin(resource.data.club_id)
+        || isClubOwnerOrAdmin(resource.data.club_id)
         || hasClubPermission(resource.data.club_id, 'feed')
         || isPlatformAdmin()
       );
@@ -650,18 +660,18 @@ service cloud.firestore {
     match /club_donations/{donationId} {
       allow read: if true; // Transparência pública
       allow create: if isAuth() && (
-        isClubAdmin(request.resource.data.club_id)
+        isClubOwnerOrAdmin(request.resource.data.club_id)
         || hasClubPermission(request.resource.data.club_id, 'donations')
       );
       allow update: if isAuth()
         && request.resource.data.club_id == resource.data.club_id
         && (
-          isClubAdmin(resource.data.club_id)
+          isClubOwnerOrAdmin(resource.data.club_id)
           || hasClubPermission(resource.data.club_id, 'donations')
           || isPlatformAdmin()
         );
       allow delete: if isAuth() && (
-        isClubAdmin(resource.data.club_id)
+        isClubOwnerOrAdmin(resource.data.club_id)
         || hasClubPermission(resource.data.club_id, 'donations')
         || isPlatformAdmin()
       );
@@ -673,7 +683,7 @@ service cloud.firestore {
       // (admin ou permissão donations) e platform_admin.
       allow read: if isAuth() && (
         resource.data.user_id == request.auth.uid
-        || isClubAdmin(resource.data.club_id)
+        || isClubOwnerOrAdmin(resource.data.club_id)
         || hasClubPermission(resource.data.club_id, 'donations')
         || isPlatformAdmin()
       );
@@ -686,7 +696,7 @@ service cloud.firestore {
       // Apenas a equipe da ONG pode atualizar o status (confirmar/rejeitar).
       // Restringe os campos alteráveis a status/updated_at/reviewed_by.
       allow update: if isAuth() && (
-        (isClubAdmin(resource.data.club_id)
+        (isClubOwnerOrAdmin(resource.data.club_id)
          || hasClubPermission(resource.data.club_id, 'donations')
          || isPlatformAdmin())
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(
@@ -694,7 +704,7 @@ service cloud.firestore {
         )
       );
       allow delete: if isAuth() && (
-        isClubAdmin(resource.data.club_id)
+        isClubOwnerOrAdmin(resource.data.club_id)
         || hasClubPermission(resource.data.club_id, 'donations')
         || isPlatformAdmin()
         || resource.data.user_id == request.auth.uid
@@ -708,7 +718,7 @@ service cloud.firestore {
         isClubMember(resource.data.club_id) || isPlatformAdmin()
       );
       allow create, update, delete: if isAuth() && (
-        isClubAdmin(request.resource.data.club_id)
+        isClubOwnerOrAdmin(request.resource.data.club_id)
         || hasClubPermission(request.resource.data.club_id, 'finance')
         || isPlatformAdmin()
       );
@@ -733,13 +743,13 @@ service cloud.firestore {
       allow update: if isAuth() && (
         (resource.data.user_id == request.auth.uid
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'updated_at', 'last_message_at']))
-        || isClubAdmin(resource.data.club_id)
+        || isClubOwnerOrAdmin(resource.data.club_id)
         || hasClubPermission(resource.data.club_id, 'feed')
         || hasClubPermission(resource.data.club_id, 'team')
         || isPlatformAdmin()
       );
       allow delete: if isAuth() && (
-        isClubAdmin(resource.data.club_id) || isPlatformAdmin()
+        isClubOwnerOrAdmin(resource.data.club_id) || isPlatformAdmin()
       );
 
       // Mensagens da thread. As mensagens são sempre escritas pelo
@@ -755,7 +765,7 @@ service cloud.firestore {
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['text', 'edited', 'updated_at']);
         allow delete: if isAuth() && (
           request.auth.uid == resource.data.sender_id
-          || isClubAdmin(get(/databases/$(database)/documents/club_chat_threads/$(threadId)).data.club_id)
+          || isClubOwnerOrAdmin(get(/databases/$(database)/documents/club_chat_threads/$(threadId)).data.club_id)
           || isPlatformAdmin()
         );
       }
@@ -773,7 +783,7 @@ service cloud.firestore {
     // role/permissions, que continuam exclusivos de admin/team.
     match /club_members/{memberId} {
       allow update: if isPlatformAdmin()
-        || (isClubAdmin(resource.data.club_id)
+        || (isClubOwnerOrAdmin(resource.data.club_id)
             && !isClubOwnerUid(resource.data.club_id, resource.data.user_id))
         || (resource.data.user_id == request.auth.uid
             && request.resource.data.diff(resource.data).affectedKeys().hasOnly(

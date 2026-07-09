@@ -1,6 +1,13 @@
 [
   {
-    "origin": ["https://viralata.web.app", "https://viralata--pr-*.web.app"],
+    "origin": [
+      "https://viralata.web.app",
+      "https://viralata-4cf0b.firebaseapp.com",
+      "https://viralata--pr-*.web.app",
+      "https://viralata-4cf0b--pr-*.web.app",
+      "http://localhost:5173",
+      "http://localhost:4173"
+    ],
     "method": ["GET", "HEAD", "PUT", "POST", "DELETE"],
     "maxAgeSeconds": 3600,
     "responseHeader": [
