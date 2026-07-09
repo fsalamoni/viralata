@@ -124,6 +124,7 @@ export default function ClubDonationsTab({ clubId, isAdmin = false }) {
       <DonationEditorDialog
         open={createOpen}
         onOpenChange={(v) => { if (!v) { setCreateOpen(false); setEditing(null); } }}
+        clubId={clubId}
         donation={editing}
       />
 
@@ -273,9 +274,9 @@ function PixKeyBlock({ pixKey }) {
 
 /* ============================== Editor de doação (criar/editar) ============================== */
 
-function DonationEditorDialog({ open, onOpenChange, donation }) {
-  const createDonation = useCreateClubDonation(donation?.club_id || '');
-  const updateDonation = useUpdateClubDonation(donation?.club_id || '');
+function DonationEditorDialog({ open, onOpenChange, clubId, donation }) {
+  const createDonation = useCreateClubDonation(clubId);
+  const updateDonation = useUpdateClubDonation(clubId);
   const [form, setForm] = useState(EMPTY_DONATION);
   const [saving, setSaving] = useState(false);
 
