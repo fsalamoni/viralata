@@ -29,6 +29,9 @@ import {
 } from '@/modules/organizations/hooks/useClubs';
 import { JOIN_REQUEST_STATUS } from '@/modules/organizations/domain/constants';
 import { cn } from '@/core/lib/utils';
+import PageHero from '@/components/PageHero';
+import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
+import { FEATURE_FLAG } from '@/core/featureFlags';
 import { useCommunities } from '@/modules/communities/hooks/useCommunities';
 import { getVisibleCommunityMap } from '@/modules/communities/domain/directory';
 
@@ -55,6 +58,7 @@ function locationText(club) {
 
 export default function ClubsDirectory() {
   const { isAuthAvailable, authUnavailableReason, userProfile } = useAuth();
+  const pageHeroEnabled = useFeatureFlag(FEATURE_FLAG.PAGE_HERO_ENABLED);
   const { data: clubs = [], isLoading } = useClubs();
   const { data: communities = [] } = useCommunities();
   const { data: myClubs = [] } = useMyClubs();
@@ -155,54 +159,94 @@ export default function ClubsDirectory() {
 
   return (
     <div className="arena-page mx-auto max-w-6xl space-y-8 px-5 py-6 pb-12">
-      <section className="grid grid-cols-1 gap-6 xl:grid-cols-[1.08fr,0.92fr]">
-        <Card className="arena-panel-strong overflow-hidden rounded-[1.25rem] border-0 sm:rounded-[2rem]">
-          <CardContent className="relative p-5 sm:p-8 lg:p-10">
-            <div className="relative max-w-2xl">
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-orange-50/80">
-                <Building2 className="h-3.5 w-3.5" /> ONGs Parceiras
-              </span>
-              <h2 className="mt-5 text-2xl font-semibold leading-tight text-white sm:text-3xl lg:text-4xl">
-                Encontre uma organização ou cadastre a sua.
-              </h2>
-              <p className="mt-4 max-w-xl text-sm leading-7 text-orange-50/75 sm:text-base">
-                Gerencie pets para adoção, organize mutirões e mantenha sua equipe conectada
-                em um só lugar.
-              </p>
-              <div className="mt-6 flex flex-wrap gap-3">
-                <Button asChild className="bg-white text-foreground hover:bg-secondary">
-                  <Link to="/organizacoes/criar"><Plus className="mr-1.5 h-4 w-4" /> Cadastrar organização</Link>
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="rounded-[2rem] border-white/80 bg-white/82">
-          <CardContent className="p-6 sm:p-7">
-            <span className="arena-chip">Ingressar com código</span>
-            <h3 className="mt-4 text-2xl font-semibold text-foreground">Tem um convite?</h3>
-            <p className="mt-2 text-sm leading-6 text-muted-foreground">
-              Digite o código compartilhado por um administrador para entrar na organização.
-            </p>
-            <form onSubmit={handleJoin} className="mt-5 flex flex-col gap-3 sm:flex-row">
-              <div className="relative flex-1">
-                <Hash className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/70" />
-                <Input
-                  value={code}
-                  onChange={(e) => setCode(e.target.value.toUpperCase())}
-                  placeholder="CÓDIGO"
-                  maxLength={12}
-                  className="pl-9 uppercase tracking-[0.2em]"
-                />
-              </div>
-              <Button type="submit" disabled={joinClub.isPending || !code.trim()}>
-                {joinClub.isPending ? 'Entrando…' : 'Ingressar'}
+      {pageHeroEnabled ? (
+        <>
+          <PageHero
+            eyebrow="ONGs Parceiras"
+            title="Encontre uma organização ou cadastre a sua."
+            description="Gerencie pets para adoção, organize mutirões e mantenha sua equipe conectada em um só lugar."
+            actions={
+              <Button asChild className="bg-white text-foreground hover:bg-secondary">
+                <Link to="/organizacoes/criar"><Plus className="mr-1.5 h-4 w-4" /> Cadastrar organização</Link>
               </Button>
-            </form>
-          </CardContent>
-        </Card>
-      </section>
+            }
+          />
+
+          <Card className="rounded-[2rem] border-white/80 bg-white/82">
+            <CardContent className="p-6 sm:p-7">
+              <span className="arena-chip">Ingressar com código</span>
+              <h3 className="mt-4 text-2xl font-semibold text-foreground">Tem um convite?</h3>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                Digite o código compartilhado por um administrador para entrar na organização.
+              </p>
+              <form onSubmit={handleJoin} className="mt-5 flex flex-col gap-3 sm:flex-row">
+                <div className="relative flex-1">
+                  <Hash className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/70" />
+                  <Input
+                    value={code}
+                    onChange={(e) => setCode(e.target.value.toUpperCase())}
+                    placeholder="CÓDIGO"
+                    maxLength={12}
+                    className="pl-9 uppercase tracking-[0.2em]"
+                  />
+                </div>
+                <Button type="submit" disabled={joinClub.isPending || !code.trim()}>
+                  {joinClub.isPending ? 'Entrando…' : 'Ingressar'}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </>
+      ) : (
+        <section className="grid grid-cols-1 gap-6 xl:grid-cols-[1.08fr,0.92fr]">
+          <Card className="arena-panel-strong overflow-hidden rounded-[1.25rem] border-0 sm:rounded-[2rem]">
+            <CardContent className="relative p-5 sm:p-8 lg:p-10">
+              <div className="relative max-w-2xl">
+                <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-orange-50/80">
+                  <Building2 className="h-3.5 w-3.5" /> ONGs Parceiras
+                </span>
+                <h2 className="mt-5 text-2xl font-semibold leading-tight text-white sm:text-3xl lg:text-4xl">
+                  Encontre uma organização ou cadastre a sua.
+                </h2>
+                <p className="mt-4 max-w-xl text-sm leading-7 text-orange-50/75 sm:text-base">
+                  Gerencie pets para adoção, organize mutirões e mantenha sua equipe conectada
+                  em um só lugar.
+                </p>
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <Button asChild className="bg-white text-foreground hover:bg-secondary">
+                    <Link to="/organizacoes/criar"><Plus className="mr-1.5 h-4 w-4" /> Cadastrar organização</Link>
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="rounded-[2rem] border-white/80 bg-white/82">
+            <CardContent className="p-6 sm:p-7">
+              <span className="arena-chip">Ingressar com código</span>
+              <h3 className="mt-4 text-2xl font-semibold text-foreground">Tem um convite?</h3>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                Digite o código compartilhado por um administrador para entrar na organização.
+              </p>
+              <form onSubmit={handleJoin} className="mt-5 flex flex-col gap-3 sm:flex-row">
+                <div className="relative flex-1">
+                  <Hash className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/70" />
+                  <Input
+                    value={code}
+                    onChange={(e) => setCode(e.target.value.toUpperCase())}
+                    placeholder="CÓDIGO"
+                    maxLength={12}
+                    className="pl-9 uppercase tracking-[0.2em]"
+                  />
+                </div>
+                <Button type="submit" disabled={joinClub.isPending || !code.trim()}>
+                  {joinClub.isPending ? 'Entrando…' : 'Ingressar'}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </section>
+      )}
 
       {myClubs.length > 0 && (
         <section className="space-y-4">

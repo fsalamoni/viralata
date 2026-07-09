@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { Trash2, Eye, CheckCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import PageHero from '@/components/PageHero';
 
 export default function AdminPets() {
   const { isPlatformAdmin } = useAuth();
@@ -30,8 +31,12 @@ export default function AdminPets() {
   if (!isPlatformAdmin) return null;
 
   return (
-    <div className="arena-page max-w-5xl mx-auto px-4 py-6 space-y-4">
-      <h1 className="text-2xl font-bold text-foreground">Gerenciar Pets</h1>
+    <div className="arena-page mx-auto max-w-5xl space-y-6 px-4 py-6">
+      <PageHero
+        eyebrow="Admin · Pets"
+        title="Gerenciar Pets"
+        description="Visualize, edite e remova pets cadastrados na plataforma. Apenas o admin master tem acesso."
+      />
       {loading ? <p className="text-muted-foreground">Carregando...</p> : (
         <div className="space-y-2">
           {pets.map((pet) => (

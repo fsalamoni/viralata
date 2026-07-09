@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { ImageUpload } from '@/components/ui/image-upload';
 import { createCommunity } from '../services/communityService';
+import PageHero from '@/components/PageHero';
 import { toast } from 'sonner';
 
 export default function CreateCommunity() {
@@ -33,15 +34,19 @@ export default function CreateCommunity() {
   };
 
   return (
-    <div className="arena-page mx-auto w-full max-w-2xl px-4 py-6 sm:px-6 lg:px-8 space-y-6">
-      <Button variant="ghost" size="sm" onClick={() => navigate('/comunidade')}>
-        <ArrowLeft className="mr-2 w-4 h-4" /> Voltar
-      </Button>
+    <div className="arena-page mx-auto w-full max-w-2xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+      <PageHero
+        eyebrow="Comunidade"
+        title="Criar Nova Comunidade"
+        description="Crie um espaço para conectar pessoas em torno de uma causa, cidade ou tipo de pet. Você poderá editar as informações depois."
+        actions={
+          <Button variant="ghost" size="sm" onClick={() => navigate('/comunidade')}>
+            <ArrowLeft className="mr-2 w-4 h-4" /> Voltar
+          </Button>
+        }
+      />
 
       <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl">Criar Nova Comunidade</CardTitle>
-        </CardHeader>
         <CardContent>
           <form onSubmit={onSubmit} className="space-y-4">
             <div className="space-y-2">

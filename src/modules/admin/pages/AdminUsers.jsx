@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toast } from 'sonner';
 import { ShieldOff, ShieldCheck } from 'lucide-react';
+import PageHero from '@/components/PageHero';
 
 export default function AdminUsers() {
   const { user, isPlatformAdmin } = useAuth();
@@ -55,13 +56,19 @@ export default function AdminUsers() {
   if (!isPlatformAdmin) return null;
 
   return (
-    <div className="arena-page max-w-5xl mx-auto px-4 py-6 space-y-4">
-      <h1 className="text-2xl font-bold text-foreground">Gerenciar Usuários</h1>
-      <Input
-        placeholder="Buscar por nome ou e-mail..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="max-w-sm"
+    <div className="arena-page mx-auto max-w-5xl space-y-6 px-4 py-6">
+      <PageHero
+        eyebrow="Admin · Usuários"
+        title="Gerenciar Usuários"
+        description="Busque, visualize e modere usuários da plataforma. Banimento é registrado na trilha de auditoria."
+        actions={
+          <Input
+            placeholder="Buscar por nome ou e-mail..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-64 bg-white/10 text-white placeholder:text-orange-100/60 border-white/20"
+          />
+        }
       />
       {loading ? <p className="text-muted-foreground">Carregando...</p> : (
         <div className="space-y-2">

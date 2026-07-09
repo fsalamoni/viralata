@@ -6,6 +6,7 @@ import { useMyRadar, useSetRadarActive } from '../hooks/usePets';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Skeleton } from '@/components/ui/skeleton';
+import PageHero from '@/components/PageHero';
 
 export default function RadarSettings() {
   const { user, isProfileComplete } = useAuth();
@@ -15,20 +16,17 @@ export default function RadarSettings() {
   const active = radar?.active === true;
 
   return (
-    <div className="arena-page max-w-2xl mx-auto px-4 py-6 space-y-6">
-      <Link to="/perfil" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
-        <ArrowLeft className="w-4 h-4" /> Voltar ao perfil
-      </Link>
-
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-          <RadarIcon className="w-5 h-5" />
-        </div>
-        <div>
-          <h1 className="text-xl font-bold text-foreground">Radar de Pets</h1>
-          <p className="text-sm text-muted-foreground">Seja avisado assim que um pet compatível com você for cadastrado.</p>
-        </div>
-      </div>
+    <div className="arena-page mx-auto max-w-2xl space-y-6 px-4 py-6">
+      <PageHero
+        eyebrow="Pets"
+        title="Radar de Pets"
+        description="Seja avisado assim que um pet compatível com você for cadastrado."
+        actions={
+          <Link to="/perfil" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
+            <ArrowLeft className="w-4 h-4" /> Voltar ao perfil
+          </Link>
+        }
+      />
 
       <Card>
         <CardHeader className="pb-3">

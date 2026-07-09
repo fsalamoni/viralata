@@ -17,6 +17,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import { Upload, ArrowLeft, PawPrint } from 'lucide-react';
 import { cn } from '@/core/lib/utils';
+import PageHero from '@/components/PageHero';
 import AdoptionFormBuilder from '../components/AdoptionFormBuilder';
 import { normalizeForm } from '../domain/adoptionForm';
 
@@ -250,18 +251,17 @@ export default function CreatePet() {
     || (adminClubs.find((c) => c.donation_link)?.donation_link ?? '');
 
   return (
-    <div className="arena-page mx-auto max-w-2xl px-5 pb-24 pt-6">
-      <div className="mb-1.5 flex items-center gap-3">
-        <Button type="button" variant="ghost" size="sm" onClick={() => navigate(-1)}>
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-      </div>
-      <h1 className="font-['Sora'] text-[22px] font-extrabold text-foreground">
-        {isEditing ? 'Editar Pet' : 'Cadastrar Pet para Adoção'}
-      </h1>
-      <p className="mb-6.5 mt-1.5 text-[13px] text-muted-foreground">
-        Leva menos de 2 minutos — capriche na descrição, ela ajuda a encontrar o lar certo.
-      </p>
+    <div className="arena-page mx-auto max-w-2xl space-y-6 px-5 pb-24 pt-6">
+      <PageHero
+        eyebrow="Pets"
+        title={isEditing ? 'Editar Pet' : 'Cadastrar Pet para Adoção'}
+        description="Leva menos de 2 minutos — capriche na descrição, ela ajuda a encontrar o lar certo."
+        actions={
+          <Button type="button" variant="ghost" size="sm" onClick={() => navigate(-1)}>
+            <ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar
+          </Button>
+        }
+      />
 
       {!isEditing && adminClubs.length > 0 && (
         <div className="mb-5 space-y-1">

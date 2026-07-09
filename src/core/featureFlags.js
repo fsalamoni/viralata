@@ -58,6 +58,20 @@ export const FEATURE_FLAG = Object.freeze({
    * somente leitura ou sem anexos (conforme as outras flags).
    */
   MURAL_RICH_POSTS: 'mural_rich_posts',
+
+  /**
+   * Cabeçalho-padrão das páginas (PageHero): quando ligada, as páginas que
+   * já usam o componente `<PageHero>` (e as que forem migradas) passam a
+   * renderizar o card gradiente laranja→rosa com o título da página DENTRO
+   * do card, em vez de um h1 simples sem painel. O gradiente usa as CSS
+   * vars `--cover-from`/`--cover-to` (`src/index.css`), que por padrão são
+   * laranja→rosa (a cor-padrão da plataforma). A `<ClubDetail>` (capa da
+   * ONG) e a `<Home>` (landing de marketing) ficam de fora — elas têm
+   * padrões visuais próprios. Desligada, cada `<PageHero>` se degrada
+   * para um `<header>` simples sem gradiente; páginas que ainda não usam
+   * `<PageHero>` permanecem inalteradas. É puramente aditiva.
+   */
+  PAGE_HERO_ENABLED: 'page_hero_enabled',
 });
 
 /** Metadados de exibição para o painel de flags (admin master). */
@@ -109,6 +123,17 @@ export const FEATURE_FLAG_META = Object.freeze({
       + 'Desligada, o mural renderiza em modo somente leitura ou sem '
       + 'anexos (conforme as outras flags).',
   },
+  [FEATURE_FLAG.PAGE_HERO_ENABLED]: {
+    label: 'Cabeçalho-padrão das páginas (PageHero)',
+    description:
+      'Quando ligada, as páginas que usam `<PageHero>` passam a '
+      + 'renderizar o card gradiente laranja→rosa (a cor-padrão da '
+      + 'plataforma) com o título da página dentro do card. A Home, a '
+      + 'capa da ONG (`ClubDetail`) e a capa de comunidade têm padrões '
+      + 'visuais próprios e não são afetadas. Desligada, cada `<PageHero>` '
+      + 'se degrada para um cabeçalho simples sem gradiente; páginas '
+      + 'ainda não migradas ficam inalteradas. Puramente aditiva.',
+  },
 });
 
 /**
@@ -125,6 +150,7 @@ export const DEFAULT_FEATURE_FLAGS = Object.freeze({
   [FEATURE_FLAG.MURAL_LIKES_AND_COMMENTS]: true,
   [FEATURE_FLAG.PET_ADOPTION_GATING]: true,
   [FEATURE_FLAG.MURAL_RICH_POSTS]: true,
+  [FEATURE_FLAG.PAGE_HERO_ENABLED]: false,
 });
 
 /**

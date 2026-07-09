@@ -12,6 +12,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { toast } from 'sonner';
+import PageHero from '@/components/PageHero';
 
 /**
  * Página "Meus Interesses" — lista os pets nos quais o usuário demonstrou
@@ -89,18 +90,17 @@ export default function MyInterests() {
   }
 
   return (
-    <div className="arena-page mx-auto max-w-4xl px-5 py-6 pb-12 space-y-5">
-      <div className="flex items-center justify-between gap-3">
-        <div>
+    <div className="arena-page mx-auto max-w-4xl space-y-6 px-5 pb-12 py-6">
+      <PageHero
+        eyebrow="Pets"
+        title="Meus Interesses"
+        description="Pets que você curtiu. Acompanhe o status, converse e remova quando quiser."
+        actions={
           <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
             <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
           </Button>
-          <h1 className="font-['Sora'] text-[26px] font-extrabold mt-1">Meus Interesses</h1>
-          <p className="text-sm text-muted-foreground">
-            Pets que você curtiu. Acompanhe o status, converse e remova quando quiser.
-          </p>
-        </div>
-      </div>
+        }
+      />
 
       <ul className="grid gap-4 sm:grid-cols-2">
         {items.map(({ interest, pet, petLoading }) => (

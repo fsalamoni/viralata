@@ -4,6 +4,7 @@ import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import PageHero from '@/components/PageHero';
 
 export default function AdminReports() {
   const { isPlatformAdmin } = useAuth();
@@ -18,8 +19,12 @@ export default function AdminReports() {
   if (!isPlatformAdmin) return null;
 
   return (
-    <div className="arena-page max-w-4xl mx-auto px-4 py-6 space-y-4">
-      <h1 className="text-2xl font-bold text-foreground">Denúncias de Maus-Tratos</h1>
+    <div className="arena-page mx-auto max-w-4xl space-y-6 px-4 py-6">
+      <PageHero
+        eyebrow="Admin · Denúncias"
+        title="Denúncias de Maus-Tratos"
+        description="Denúncias enviadas pelo público. Apenas o admin master tem acesso. Cada denúncia pode gerar um PDF formatado para entrega à Delegacia."
+      />
       {loading ? <p className="text-muted-foreground">Carregando...</p> : (
         <div className="space-y-3">
           {reports.map((r) => (

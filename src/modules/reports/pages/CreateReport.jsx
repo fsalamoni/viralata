@@ -4,6 +4,7 @@ import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { createAbuseReport } from '../services/reportService';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import PageHero from '@/components/PageHero';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
@@ -88,14 +89,17 @@ export default function CreateReport() {
   const dateStr = format(new Date(), "dd 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR });
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
-      <div className="flex items-center gap-3">
-        <Button variant="ghost" size="sm" onClick={() => navigate(-1)}><ArrowLeft className="w-4 h-4" /></Button>
-        <h1 className="text-2xl font-bold text-foreground">Registrar Denúncia</h1>
-      </div>
-      <div className="rounded-xl border border-highlight/40 bg-highlight/[0.14] p-4 text-sm text-[hsl(30,60%,24%)]">
-        <strong>Importante:</strong> Esta denúncia ficará registrada na plataforma. Ao concluir, você poderá baixar um PDF formatado para entregar à Delegacia de Crimes Ambientais ou à Polícia Civil.
-      </div>
+    <div className="arena-page mx-auto max-w-2xl space-y-6 px-4 py-6">
+      <PageHero
+        eyebrow="Denúncia"
+        title="Registrar Denúncia"
+        description="Esta denúncia ficará registrada na plataforma. Ao concluir, você poderá baixar um PDF formatado para entregar à Delegacia de Crimes Ambientais ou à Polícia Civil."
+        actions={
+          <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
+            <ArrowLeft className="mr-1.5 w-4 h-4" /> Voltar
+          </Button>
+        }
+      />
 
       {!reportId ? (
         <form onSubmit={handleSubmit} className="space-y-5">

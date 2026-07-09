@@ -6,6 +6,7 @@ import {
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { fetchMetricsData, groupByMonth, groupByField } from '../services/metricsService';
+import PageHero from '@/components/PageHero';
 
 export default function AdminMetrics() {
   const { isPlatformAdmin } = useAuth();
@@ -26,8 +27,12 @@ export default function AdminMetrics() {
   const petsByState = groupByField(data.pets, 'state');
 
   return (
-    <div className="arena-page max-w-5xl mx-auto px-4 py-6 space-y-6">
-      <h1 className="text-2xl font-bold text-foreground">Métricas da Plataforma</h1>
+    <div className="arena-page mx-auto max-w-5xl space-y-6 px-4 py-6">
+      <PageHero
+        eyebrow="Admin · Métricas"
+        title="Métricas da Plataforma"
+        description="Visão geral do crescimento: pets cadastrados, adoções concluídas, usuários e denúncias. Cada card abre o detalhe."
+      />
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <SummaryCard label="Pets cadastrados" value={data.pets.length} />

@@ -1,17 +1,23 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { cn } from '@/core/lib/utils';
+import PageHero from './PageHero';
 
+/**
+ * Páginas legais (Política de Privacidade, Termos, Legislação). O cabeçalho
+ * usa o `<PageHero>` padrão da plataforma para ganhar o gradiente quando a
+ * flag `PAGE_HERO_ENABLED` está ligada; com a flag desligada, degrada para
+ * o mesmo painel sem gradiente (puramente aditivo, idêntico ao que já existia).
+ */
 export function LegalPage({ eyebrow, title, description, meta, children }) {
   return (
     <div className="mx-auto max-w-6xl space-y-5">
-      <section className="arena-panel-strong rounded-lg p-5 sm:p-6">
-        <div className="max-w-3xl space-y-3">
-          {eyebrow && <p className="text-xs font-semibold uppercase tracking-wider text-orange-200/80">{eyebrow}</p>}
-          <h1 className="text-2xl font-bold text-white sm:text-3xl">{title}</h1>
-          {description && <p className="text-sm leading-6 text-orange-50/90 sm:text-base">{description}</p>}
-          {meta && <p className="text-xs text-orange-50/70">{meta}</p>}
-        </div>
-      </section>
+      <PageHero
+        eyebrow={eyebrow}
+        title={title}
+        description={description}
+      >
+        {meta ? <p className="text-xs text-muted-foreground">{meta}</p> : null}
+      </PageHero>
       <div className="min-w-0 space-y-4">{children}</div>
     </div>
   );

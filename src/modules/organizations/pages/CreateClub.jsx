@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { ImageUpload } from '@/components/ui/image-upload';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { useCreateClub } from '@/modules/organizations/hooks/useClubs';
+import PageHero from '@/components/PageHero';
 
 const INITIAL = {
   name: '',
@@ -54,24 +55,16 @@ export default function CreateClub() {
 
   return (
     <div className="arena-page mx-auto max-w-3xl space-y-6 px-5 py-6 pb-12">
-      <Button asChild variant="ghost" size="sm">
-        <Link to="/organizacoes"><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para organizações</Link>
-      </Button>
-
-      <section className="arena-panel-strong rounded-lg p-5 sm:p-6">
-        <div className="flex items-start gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-highlight text-highlight-foreground">
-            <Building2 className="h-5 w-5" />
-          </div>
-          <div className="max-w-2xl space-y-2">
-            <p className="text-xs font-semibold uppercase tracking-wider text-highlight">Nova organização</p>
-            <h1 className="text-2xl font-bold text-white sm:text-3xl">Cadastrar organização</h1>
-            <p className="text-sm leading-6 text-orange-50/85">
-              Você será o administrador da organização e poderá convidar sua equipe por meio de um código exclusivo.
-            </p>
-          </div>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="Nova organização"
+        title="Cadastrar organização"
+        description="Você será o administrador da organização e poderá convidar sua equipe por meio de um código exclusivo."
+        actions={
+          <Button asChild variant="ghost" size="sm">
+            <Link to="/organizacoes"><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para organizações</Link>
+          </Button>
+        }
+      />
 
       <Card className="overflow-hidden">
         <CardHeader className="border-b border-primary/10 bg-white/45 p-4 sm:p-5">
