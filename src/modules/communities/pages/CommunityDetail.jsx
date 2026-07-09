@@ -17,6 +17,7 @@ import ForumTab from '../components/ForumTab';
 import EventsTab from '../components/EventsTab';
 import AboutTab from '../components/AboutTab';
 import CommunityTeamTab from '../components/CommunityTeamTab';
+import CommunityDebugPanel from '../components/CommunityDebugPanel';
 
 export default function CommunityDetail() {
   const { communityId } = useParams();
@@ -67,6 +68,15 @@ export default function CommunityDetail() {
       <Button variant="ghost" size="sm" asChild>
         <Link to="/comunidade"><ArrowLeft className="mr-2 w-4 h-4" /> Voltar</Link>
       </Button>
+
+      {/* Painel de diagnóstico temporário — remover após identificar a causa */}
+      <CommunityDebugPanel
+        community={community}
+        membership={membership}
+        user={user}
+        canAdmin={canAdmin}
+        isMember={isMember}
+      />
 
       <section className="arena-panel-strong overflow-hidden rounded-3xl relative min-h-[200px] flex items-end p-6">
         {community.cover_url && (
