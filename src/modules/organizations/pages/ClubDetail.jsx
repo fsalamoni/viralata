@@ -143,53 +143,53 @@ export default function ClubDetail() {
       <ClubCover club={club} stats={stats} isAdmin={isAdmin} />
 
       {/* TABS + ações de "Pedir para ingressar" à direita (visitante) */}
-      <div className="mt-6 flex flex-wrap items-end justify-between gap-3 border-b border-border/60 pb-1">
-        <div className="overflow-x-auto scrollbar-none">
-          <TabsList className="h-auto w-full flex-wrap justify-start gap-1 rounded-xl bg-transparent p-0 sm:gap-1.5">
-            {TABS.map((tab) => {
-              const badge = tab.badgeKey === 'pets' ? stats.animals
-                : tab.badgeKey === 'donations' ? null // doações: badge dinâmico poderia ser adicionado depois
-                : null;
-              return (
-                <TabsTrigger
-                  key={tab.key}
-                  value={tab.key}
-                  className={cn(
-                    'rounded-lg gap-1.5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-rose-500 data-[state=active]:text-white',
-                  )}
-                >
-                  <tab.icon className="h-4 w-4" /> {tab.label}
-                  {badge != null && badge > 0 && (
-                    <span className="ml-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-white/20 px-1 text-[10px] font-bold data-[state=active]:bg-white/30">
-                      {badge}
-                    </span>
-                  )}
-                </TabsTrigger>
-              );
-            })}
-          </TabsList>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <div className="mt-6 flex flex-wrap items-end justify-between gap-3 border-b border-border/60 pb-1">
+          <div className="overflow-x-auto scrollbar-none">
+            <TabsList className="h-auto w-full flex-wrap justify-start gap-1 rounded-xl bg-transparent p-0 sm:gap-1.5">
+              {TABS.map((tab) => {
+                const badge = tab.badgeKey === 'pets' ? stats.animals
+                  : tab.badgeKey === 'donations' ? null // doações: badge dinâmico poderia ser adicionado depois
+                  : null;
+                return (
+                  <TabsTrigger
+                    key={tab.key}
+                    value={tab.key}
+                    className={cn(
+                      'rounded-lg gap-1.5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-rose-500 data-[state=active]:text-white',
+                    )}
+                  >
+                    <tab.icon className="h-4 w-4" /> {tab.label}
+                    {badge != null && badge > 0 && (
+                      <span className="ml-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-white/20 px-1 text-[10px] font-bold data-[state=active]:bg-white/30">
+                        {badge}
+                      </span>
+                    )}
+                  </TabsTrigger>
+                );
+              })}
+            </TabsList>
+          </div>
+
+          {!isMember && !isAdmin && (
+            <div className="pb-2">
+              {isInvited ? (
+                <Button size="sm" variant="outline" className="border-warning text-warning" disabled>
+                  Você foi convidado
+                </Button>
+              ) : isPending ? (
+                <Button size="sm" variant="outline" disabled>
+                  Pedido enviado
+                </Button>
+              ) : (
+                <Button size="sm" onClick={handleRequest} disabled={requestToJoin.isPending}>
+                  {requestToJoin.isPending ? 'Enviando...' : 'Pedir para ingressar'}
+                </Button>
+              )}
+            </div>
+          )}
         </div>
 
-        {!isMember && !isAdmin && (
-          <div className="pb-2">
-            {isInvited ? (
-              <Button size="sm" variant="outline" className="border-warning text-warning" disabled>
-                Você foi convidado
-              </Button>
-            ) : isPending ? (
-              <Button size="sm" variant="outline" disabled>
-                Pedido enviado
-              </Button>
-            ) : (
-              <Button size="sm" onClick={handleRequest} disabled={requestToJoin.isPending}>
-                {requestToJoin.isPending ? 'Enviando...' : 'Pedir para ingressar'}
-              </Button>
-            )}
-          </div>
-        )}
-      </div>
-
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsContent value="general" className="mt-8 outline-none">
           <ClubGeneralTab club={club} stats={stats} />
         </TabsContent>
