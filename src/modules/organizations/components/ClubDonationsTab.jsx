@@ -67,16 +67,20 @@ const EMPTY_RECEIPT = {
  *      * Título, descrição, meta, valor arrecadado
  *      * Chave PIX / QR Code / dados bancários
  *      * Botão "Informar contribuição" — abre diálogo para enviar comprovante
- *  - Admin: além do público, pode:
+ *  - Equipe com permissão `donations` (ou owner): além do público, pode:
  *      * Criar/editar/excluir doações
  *      * Registrar valor arrecadado
  *      * Ver e gerenciar os comprovantes enviados (status, nota interna)
  *
+ * A permissão `donations` é resolvida pelo chamador (perfil admin) e
+ * passada em `canManage`. Manter um único caminho de permissão garante
+ * coerência entre a aba visível e os botões exibidos.
+ *
  * Separação:
  *  - Aba atual: lista de doações (este arquivo)
- *  - "Comprovantes" é uma subseção dentro do admin (abaixo da lista).
+ *  - "Comprovantes" é uma subseção dentro da área de gestão (abaixo da lista).
  */
-export default function ClubDonationsTab({ clubId, isAdmin = false }) {
+export default function ClubDonationsTab({ clubId, canManage = false, club = null, membership = null }) {
   const { data: donations = [], isLoading } = useClubDonations(clubId);
   const deleteDonation = useDeleteClubDonation(clubId);
   const [createOpen, setCreateOpen] = useState(false);
@@ -87,7 +91,7 @@ export default function ClubDonationsTab({ clubId, isAdmin = false }) {
 
   return (
     <div className="space-y-5">
-      {isAdmin && (
+      {canManage && (
         <div className="flex justify-end">
           <Button size="sm" onClick={() => { setEditing(null); setCreateOpen(true); }}>
             <Plus className="mr-1.5 h-4 w-4" /> Novo chamado de doação
@@ -109,7 +113,7 @@ export default function ClubDonationsTab({ clubId, isAdmin = false }) {
             <DonationCard
               key={d.id}
               donation={d}
-              isAdmin={isAdmin}
+              canManage={canManage}
               onEdit={() => { setEditing(d); setCreateOpen(true); }}
               onDelete={() => setConfirmDelete(d)}
               onAddFunds={() => { setAddFundsFor(d); setFundAmount(''); }}
@@ -118,8 +122,8 @@ export default function ClubDonationsTab({ clubId, isAdmin = false }) {
         </div>
       )}
 
-      {/* Comprovantes (só admin) — embaixo da lista de doações */}
-      {isAdmin && <ClubReceiptsSection clubId={clubId} />}
+      {/* Comprovantes (equipe com permissão `donations`) — embaixo da lista */}
+      {canManage && <ClubReceiptsSection clubId={clubId} />}
 
       <DonationEditorDialog
         open={createOpen}
@@ -158,7 +162,7 @@ export default function ClubDonationsTab({ clubId, isAdmin = false }) {
 
 /* ============================== Card de doação ============================== */
 
-function DonationCard({ donation, isAdmin, onEdit, onDelete, onAddFunds }) {
+function DonationCard({ donation, canManage, onEdit, onDelete, onAddFunds }) {
   const [receiptOpen, setReceiptOpen] = useState(false);
   const pct = donation.goal > 0 ? Math.min(100, (Number(donation.raised || 0) / donation.goal) * 100) : 0;
   const concluded = donation.status === CAMPAIGN_STATUS.CONCLUDED;
@@ -177,7 +181,7 @@ function DonationCard({ donation, isAdmin, onEdit, onDelete, onAddFunds }) {
             ) : (
               <Badge variant="warning" className="rounded-full">Aberta</Badge>
             )}
-            {isAdmin && (
+            {canManage && (
               <>
                 <Button size="icon" variant="ghost" className="h-7 w-7" onClick={onEdit} aria-label="Editar">
                   <Edit2 className="h-3.5 w-3.5" />
@@ -207,7 +211,7 @@ function DonationCard({ donation, isAdmin, onEdit, onDelete, onAddFunds }) {
               <strong>{brl(donation.raised)}</strong> arrecadados de {brl(donation.goal)}
               <span className="ml-2 text-xs text-muted-foreground">({Math.round(pct)}%)</span>
             </span>
-            {isAdmin && !concluded && (
+            {canManage && !concluded && (
               <Button size="sm" variant="outline" onClick={onAddFunds}>
                 Registrar valor
               </Button>

@@ -27,6 +27,7 @@ import ClubDonationsTab from '../components/ClubDonationsTab';
 import ClubFinanceTab from '../components/ClubFinanceTab';
 import ClubTeamPublicTab from '../components/ClubTeamPublicTab';
 import ClubCover from '../components/ClubCover';
+import ClubThemedScope from '../components/ClubThemedScope';
 import { cn } from '@/core/lib/utils';
 
 /** Abas públicas da ONG — com badges nas que têm contagem. */
@@ -128,8 +129,15 @@ export default function ClubDetail() {
     );
   }
 
+  // Permissões granulares para os botões das abas. Mantemos a coerência com
+  // o painel admin: owner sempre pode tudo; admin legacy (sem `permissions`
+  // explícito) também; demais precisam da permissão específica.
+  const canManageFeedPub = hasClubPermission(club, membership, CLUB_PERMISSION.FEED, user?.uid);
+  const canManageDonationsPub = hasClubPermission(club, membership, CLUB_PERMISSION.DONATIONS, user?.uid);
+  const canManageFinancePub = hasClubPermission(club, membership, CLUB_PERMISSION.FINANCE, user?.uid);
+
   return (
-    <div className="arena-page mx-auto w-full max-w-5xl px-4 pb-12 pt-0 sm:px-6 lg:px-8">
+    <ClubThemedScope club={club} className="arena-page mx-auto w-full max-w-5xl px-4 pb-12 pt-0 sm:px-6 lg:px-8">
       {/* Botão "Voltar" no canto superior */}
       <div className="px-1 pb-3 pt-4">
         <Button asChild variant="ghost" size="sm" className="-ml-2 text-muted-foreground">
@@ -145,8 +153,8 @@ export default function ClubDetail() {
       {/* TABS + ações de "Pedir para ingressar" à direita (visitante) */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <div className="mt-6 flex flex-wrap items-end justify-between gap-3 border-b border-border/60 pb-1">
-          <div className="overflow-x-auto scrollbar-none">
-            <TabsList className="h-auto w-full flex-wrap justify-start gap-1 rounded-xl bg-transparent p-0 sm:gap-1.5">
+          <div className="w-full sm:w-auto">
+            <TabsList className="arena-tab-bar">
               {TABS.map((tab) => {
                 const badge = tab.badgeKey === 'pets' ? stats.animals
                   : tab.badgeKey === 'donations' ? null // doações: badge dinâmico poderia ser adicionado depois
@@ -156,7 +164,7 @@ export default function ClubDetail() {
                     key={tab.key}
                     value={tab.key}
                     className={cn(
-                      'rounded-lg gap-1.5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-rose-500 data-[state=active]:text-white',
+                      'arena-tab-pill gap-1.5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-rose-500 data-[state=active]:text-white',
                     )}
                   >
                     <tab.icon className="h-4 w-4" /> {tab.label}
@@ -199,21 +207,21 @@ export default function ClubDetail() {
         </TabsContent>
 
         <TabsContent value="feed" className="mt-8 outline-none">
-          <ClubFeedTab clubId={orgId} isAdmin={isAdmin} />
+          <ClubFeedTab clubId={orgId} club={club} membership={membership} canManageFeed={canManageFeedPub} />
         </TabsContent>
 
         <TabsContent value="donations" className="mt-8 outline-none">
-          <ClubDonationsTab clubId={orgId} isAdmin={isAdmin} />
+          <ClubDonationsTab clubId={orgId} club={club} membership={membership} canManage={canManageDonationsPub} />
         </TabsContent>
 
         <TabsContent value="finance" className="mt-8 outline-none">
-          <ClubFinanceTab clubId={orgId} readOnly={!isAdmin} />
+          <ClubFinanceTab clubId={orgId} canManage={canManageFinancePub} />
         </TabsContent>
 
         <TabsContent value="team" className="mt-8 outline-none">
           <ClubTeamPublicTab clubId={orgId} club={club} viewerMembership={membership} />
         </TabsContent>
       </Tabs>
-    </div>
+    </ClubThemedScope>
   );
 }

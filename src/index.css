@@ -195,12 +195,12 @@
   }
 
   .arena-tab-bar {
-    @apply mb-2 flex h-auto w-full flex-nowrap justify-start gap-1.5 overflow-x-auto rounded-[1.1rem] border border-border/70 bg-card/80 p-1.5 backdrop-blur-xl;
+    @apply mb-2 flex h-auto w-full flex-wrap items-center justify-start gap-1.5 rounded-[1.1rem] border border-border/70 bg-card/80 p-1.5 backdrop-blur-xl;
     box-shadow: 0 18px 42px -30px rgba(64, 34, 18, 0.32);
   }
 
   .arena-tab-pill {
-    @apply min-h-10 shrink-0 whitespace-nowrap rounded-full px-3.5 py-2 text-sm font-semibold;
+    @apply min-h-9 shrink-0 whitespace-nowrap rounded-full px-3 py-1.5 text-[13px] font-semibold sm:px-3.5 sm:py-2 sm:text-sm;
   }
 
   .match-surface {

@@ -83,9 +83,11 @@ export function visibleAdminTabs({ club, membership, currentUserUid, isAdmin }) 
   if (!hasAnyClubPermission(club, membership, currentUserUid)) return [];
   // Configurações da ONG: apenas admins (proprietário conta). Outras abas
   // seguem as permissões granulares (mas o owner sempre pode tudo).
+  // "Visão Geral" (overview) é sempre visível para quem entrou no painel.
+  // "Geral" (edição de dados da ONG) exige permissão `team`.
   return [
-    { key: 'overview', label: 'Visão Geral', permission: null, always: true },
-    { key: 'general', label: 'Geral', permission: 'general', always: true },
+    { key: 'overview', label: 'Visão Geral', always: true },
+    { key: 'general', label: 'Geral', permission: 'team' },
     { key: 'animals', label: 'Pets para Adoção', permission: 'animals' },
     { key: 'feed', label: 'Mural da ONG', permission: 'feed' },
     { key: 'donations', label: 'Chamados de Doação', permission: 'donations' },
