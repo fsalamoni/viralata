@@ -80,7 +80,7 @@ export default function ClubPostCard({ post, club, membership, currentUserUid, r
 
   return (
     <Card className="rounded-2xl">
-      <CardContent className="p-4 sm:p-5">
+      <CardContent className="p-6 pt-6 sm:p-7 sm:pt-7">
         <div className="flex items-start gap-3">
           {authorPhoto ? (
             <img src={authorPhoto} alt="" className="h-10 w-10 shrink-0 rounded-full border border-border object-cover" />

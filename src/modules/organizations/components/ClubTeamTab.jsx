@@ -66,14 +66,14 @@ export default function ClubTeamTab({ club, viewerMembership, viewerUid }) {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {viewerCanManageTeam && (
         <Card className="rounded-xl">
-          <CardHeader className="p-4 sm:p-5">
-            <CardTitle className="text-base">Código de convite</CardTitle>
-            <CardDescription>Compartilhe este código para que novos membros ingressem na organização.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3 p-4 pt-0 sm:p-5 sm:pt-0">
+      <CardHeader className="p-6 sm:p-7">
+          <CardTitle className="text-base">Código de convite</CardTitle>
+          <CardDescription>Compartilhe este código para que novos membros ingressem na organização.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3 p-6 pt-0 sm:p-7 sm:pt-0">
             <div className="flex flex-wrap items-center gap-2">
               <code className="rounded-md border border-primary/10 bg-secondary/40 px-4 py-2 text-lg font-bold tracking-[0.25em] text-foreground">
                 {club.invite_code}
@@ -144,7 +144,7 @@ function ClubPermissionsCard({ club, viewerMembership, viewerUid }) {
 
   return (
     <Card className="rounded-xl">
-      <CardHeader className="p-4 sm:p-5">
+      <CardHeader className="p-6 sm:p-7">
         <CardTitle className="text-base">Permissões da equipe</CardTitle>
         <CardDescription className="flex items-start gap-2">
           <Info className="mt-[2px] h-3.5 w-3.5 shrink-0" />
@@ -166,7 +166,7 @@ function ClubPermissionsCard({ club, viewerMembership, viewerUid }) {
           ))}
         </ul>
       </CardHeader>
-      <CardContent className="space-y-3 p-4 pt-0 sm:p-5 sm:pt-0">
+      <CardContent className="space-y-3 p-6 pt-0 sm:p-7 sm:pt-0">
         {isLoading ? (
           <p className="text-sm text-muted-foreground">Carregando…</p>
         ) : sorted.length === 0 ? (
@@ -280,13 +280,13 @@ function ClubMembersCardsSection({ club, viewerMembership, viewerUid }) {
 
   return (
     <Card className="rounded-xl">
-      <CardHeader className="p-4 sm:p-5">
+      <CardHeader className="p-6 sm:p-7">
         <CardTitle className="text-base">Membros da equipe</CardTitle>
         <CardDescription>
           Cada membro tem um card com privacidade por campo. Edite as informações e a visibilidade pelo botão de edição.
         </CardDescription>
       </CardHeader>
-      <CardContent className="p-4 pt-0 sm:p-5 sm:pt-0">
+      <CardContent className="p-6 pt-0 sm:p-7 sm:pt-0">
         {isLoading ? (
           <p className="text-sm text-muted-foreground">Carregando…</p>
         ) : members.length === 0 ? (

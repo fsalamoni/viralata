@@ -59,13 +59,13 @@ export default function ClubAdminTab({ club }) {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <Card className="rounded-xl">
-        <CardHeader className="p-4 sm:p-5">
+        <CardHeader className="p-6 sm:p-7">
           <CardTitle className="text-base">Código de convite</CardTitle>
           <CardDescription>Compartilhe este código para que novos membros ingressem na organização.</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-3 p-4 pt-0 sm:p-5 sm:pt-0">
+        <CardContent className="space-y-3 p-6 pt-0 sm:p-7 sm:pt-0">
           <div className="flex flex-wrap items-center gap-2">
             <code className="rounded-md border border-primary/10 bg-secondary/40 px-4 py-2 text-lg font-bold tracking-[0.25em] text-foreground">
               {club.invite_code}
@@ -86,11 +86,11 @@ export default function ClubAdminTab({ club }) {
       <ClubThemingSection club={club} />
 
       <Card className="rounded-xl border-destructive/30">
-        <CardHeader className="p-4 sm:p-5">
+        <CardHeader className="p-6 sm:p-7">
           <CardTitle className="text-base text-destructive">Zona de risco</CardTitle>
           <CardDescription>A exclusão da organização remove membros, eventos e mural. Não pode ser desfeita.</CardDescription>
         </CardHeader>
-        <CardContent className="p-4 pt-0 sm:p-5 sm:pt-0">
+        <CardContent className="p-6 pt-0 sm:p-7 sm:pt-0">
           <Button variant="destructive" onClick={() => setConfirmDelete(true)} disabled={deleteClub.isPending}>
             <Trash2 className="mr-1.5 h-4 w-4" /> Excluir organização
           </Button>

@@ -590,7 +590,7 @@ function ClubReceiptsSection({ clubId }) {
 
   return (
     <Card className="rounded-2xl">
-      <CardHeader className="p-4 sm:p-5">
+      <CardHeader className="p-6 sm:p-7">
         <CardTitle className="flex items-center gap-2 text-base">
           <ReceiptIcon className="h-4 w-4 text-primary" /> Comprovantes recebidos
         </CardTitle>
@@ -598,7 +598,7 @@ function ClubReceiptsSection({ clubId }) {
           Total de {receipts.length} {receipts.length === 1 ? 'comprovante' : 'comprovantes'} enviados pelo público.
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-3 p-4 pt-0 sm:p-5 sm:pt-0">
+      <CardContent className="space-y-3 p-6 pt-0 sm:p-7 sm:pt-0">
         <div className="flex flex-wrap gap-2">
           {['all', ...Object.values(RECEIPT_STATUS)].map((s) => (
             <button

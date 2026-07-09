@@ -24,14 +24,14 @@ export function ClubJoinRequests({ club }) {
 
   return (
     <Card className="rounded-xl">
-      <CardHeader className="p-4 sm:p-5">
+      <CardHeader className="p-6 sm:p-7">
         <CardTitle className="flex items-center gap-2 text-base">
           Pedidos de ingresso
           {requests.length > 0 && <Badge variant="warning" className="rounded-full">{requests.length}</Badge>}
         </CardTitle>
         <CardDescription>Pessoas que pediram para entrar na organização.</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-2 p-4 pt-0 sm:p-5 sm:pt-0">
+      <CardContent className="space-y-2 p-6 pt-0 sm:p-7 sm:pt-0">
         {isLoading ? (
           <p className="text-sm text-muted-foreground">Carregando…</p>
         ) : requests.length === 0 ? (

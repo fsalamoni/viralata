@@ -84,11 +84,11 @@ export function ClubAddMembers({ club }) {
 
   return (
     <Card className="rounded-xl">
-      <CardHeader className="p-4 sm:p-5">
+      <CardHeader className="p-6 sm:p-7">
         <CardTitle className="flex items-center gap-2 text-base"><UserPlus className="h-4 w-4" /> Adicionar membros</CardTitle>
         <CardDescription>Selecione usuários da plataforma e envie convites. Eles recebem um aviso e decidem aceitar.</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-3 p-4 pt-0 sm:p-5 sm:pt-0">
+      <CardContent className="space-y-3 p-6 pt-0 sm:p-7 sm:pt-0">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input

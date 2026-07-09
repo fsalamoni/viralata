@@ -60,13 +60,13 @@ export default function ClubGeneralAdminTab({ club }) {
   };
 
   return (
-    <form onSubmit={handleSave} className="space-y-4">
+    <form onSubmit={handleSave} className="space-y-6">
       <Card className="rounded-xl">
-        <CardHeader className="p-4 sm:p-5">
+        <CardHeader className="p-6 sm:p-7">
           <CardTitle className="text-base">Identidade</CardTitle>
           <CardDescription>Como a ONG aparece para o público.</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4 p-4 pt-0 sm:p-5 sm:pt-0">
+        <CardContent className="space-y-4 p-6 pt-0 sm:p-7 sm:pt-0">
           <div className="space-y-2">
             <Label>Logo / imagem da organização</Label>
             <ImageUpload
@@ -111,11 +111,11 @@ export default function ClubGeneralAdminTab({ club }) {
       </Card>
 
       <Card className="rounded-xl">
-        <CardHeader className="p-4 sm:p-5">
+        <CardHeader className="p-6 sm:p-7">
           <CardTitle className="text-base">Localização</CardTitle>
           <CardDescription>Cidade, estado e endereço principal.</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4 p-4 pt-0 sm:p-5 sm:pt-0">
+        <CardContent className="space-y-4 p-6 pt-0 sm:p-7 sm:pt-0">
           <div className="grid gap-4 sm:grid-cols-3">
             <div className="space-y-2 sm:col-span-2">
               <Label htmlFor="g_city">Cidade</Label>
@@ -134,11 +134,11 @@ export default function ClubGeneralAdminTab({ club }) {
       </Card>
 
       <Card className="rounded-xl">
-        <CardHeader className="p-4 sm:p-5">
+        <CardHeader className="p-6 sm:p-7">
           <CardTitle className="text-base">Contatos</CardTitle>
           <CardDescription>Aparecem na aba &ldquo;Geral&rdquo; pública e nos botões de ação (e-mail, WhatsApp, chat).</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4 p-4 pt-0 sm:p-5 sm:pt-0">
+        <CardContent className="space-y-4 p-6 pt-0 sm:p-7 sm:pt-0">
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="g_email">E-mail</Label>
@@ -174,11 +174,11 @@ export default function ClubGeneralAdminTab({ club }) {
       </Card>
 
       <Card className="rounded-xl">
-        <CardHeader className="p-4 sm:p-5">
+        <CardHeader className="p-6 sm:p-7">
           <CardTitle className="text-base">Atendimento por chat</CardTitle>
           <CardDescription>Permite que usuários da plataforma abram uma conversa direta com a ONG.</CardDescription>
         </CardHeader>
-        <CardContent className="flex items-center justify-between gap-3 p-4 pt-0 sm:p-5 sm:pt-0">
+        <CardContent className="flex items-center justify-between gap-3 p-6 pt-0 sm:p-7 sm:pt-0">
           <div className="flex items-center gap-2 text-sm">
             <MessageCircle className="h-4 w-4 text-primary" />
             <span>Chat com a ONG habilitado</span>

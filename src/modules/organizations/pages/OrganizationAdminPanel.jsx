@@ -129,7 +129,7 @@ export default function OrganizationAdminPanel() {
   const location = [club.city, club.state].filter(Boolean).join(', ');
 
   return (
-    <ClubThemedScope club={club} className="arena-page mx-auto max-w-5xl space-y-6 px-5 py-6 pb-12">
+    <ClubThemedScope club={club} className="arena-page mx-auto max-w-5xl space-y-8 px-5 py-6 pb-12 sm:space-y-10">
       <Button asChild variant="ghost" size="sm">
         {/* Saindo do painel admin, o usuário volta direto à PÁGINA
             PÚBLICA da ONG (perfil / home), não à central de organizações.
@@ -139,7 +139,10 @@ export default function OrganizationAdminPanel() {
         </Link>
       </Button>
 
-      <section className="arena-panel-strong overflow-hidden rounded-[1.25rem] p-5 sm:rounded-[2rem] sm:p-8">
+      {/* Header do painel admin — padding generoso (p-6 sm:p-10) e
+          gap-5 sm:gap-6 entre o avatar e o bloco de texto. Mais respiro
+          que o p-5 sm:p-8 antigo. */}
+      <section className="arena-panel-strong overflow-hidden rounded-[1.25rem] p-6 sm:rounded-[2rem] sm:p-10">
         <div className="flex flex-wrap items-start gap-4">
           <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-white/15 bg-white/10 text-[19px] font-extrabold text-white">
             {initials}
@@ -178,31 +181,31 @@ export default function OrganizationAdminPanel() {
           ))}
         </TabsList>
 
-        <TabsContent value="overview" className="mt-6 px-1">
+        <TabsContent value="overview" className="mt-8 px-1">
           <OverviewTab club={club} />
         </TabsContent>
-        <TabsContent value="general" className="mt-6 px-1">
+        <TabsContent value="general" className="mt-8 px-1">
           <ClubGeneralAdminTab club={club} />
         </TabsContent>
-        <TabsContent value="animals" className="mt-6 px-1">
+        <TabsContent value="animals" className="mt-8 px-1">
           <ClubPetsDataGrid clubId={orgId} canManage={canManageAnimals} />
         </TabsContent>
-        <TabsContent value="feed" className="mt-6 px-1">
+        <TabsContent value="feed" className="mt-8 px-1">
           <ClubFeedTab clubId={orgId} club={club} membership={membership} canManageFeed={canManageFeed} />
         </TabsContent>
-        <TabsContent value="donations" className="mt-6 px-1">
+        <TabsContent value="donations" className="mt-8 px-1">
           <ClubDonationsTab clubId={orgId} club={club} membership={membership} canManage={canManageDonations} />
         </TabsContent>
-        <TabsContent value="finance" className="mt-6 px-1">
+        <TabsContent value="finance" className="mt-8 px-1">
           <ClubFinanceTab clubId={orgId} canManage={canManageFinance} />
         </TabsContent>
-        <TabsContent value="chat" className="mt-6 px-1">
+        <TabsContent value="chat" className="mt-8 px-1">
           <ClubChatAdminTab club={club} />
         </TabsContent>
-        <TabsContent value="team" className="mt-6 px-1">
+        <TabsContent value="team" className="mt-8 px-1">
           <ClubTeamTab club={club} viewerMembership={membership} viewerUid={user?.uid} />
         </TabsContent>
-        <TabsContent value="settings" className="mt-6 px-1">
+        <TabsContent value="settings" className="mt-8 px-1">
           <ClubAdminTab club={club} />
         </TabsContent>
       </Tabs>
@@ -214,13 +217,13 @@ function OverviewTab({ club }) {
   const founded = club.created_at?.toDate ? club.created_at.toDate().getFullYear() : null;
   const { data: pets = [] } = useMyPets(club.id);
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <StatCard value={pets.length} label="Animais cadastrados" />
         <StatCard value={club.member_count || 0} label="Seguidores" />
         <StatCard value={founded || '—'} label="Fundação" />
       </div>
-      <div className="rounded-2xl border border-border bg-card p-5">
+      <div className="rounded-2xl border border-border bg-card p-6 sm:p-7">
         <h3 className="mb-2 text-sm font-semibold">Sobre a organização</h3>
         <p className="whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">
           {club.description || 'Nenhuma descrição cadastrada ainda.'}
@@ -232,7 +235,7 @@ function OverviewTab({ club }) {
 
 function StatCard({ value, label }) {
   return (
-    <div className="rounded-2xl border border-border bg-card p-4">
+    <div className="rounded-2xl border border-border bg-card p-6 sm:p-7">
       <div className="text-[21px] font-extrabold">{value}</div>
       <div className="mt-1 text-xs font-medium text-muted-foreground">{label}</div>
     </div>

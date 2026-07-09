@@ -460,11 +460,11 @@ function TimelineChart({ entries }) {
 
   return (
     <Card className="rounded-2xl">
-      <CardHeader className="p-4 sm:p-5">
+      <CardHeader className="p-6 sm:p-7">
         <CardTitle className="text-base">Evolução mensal</CardTitle>
         <CardDescription>Receitas e despesas ao longo dos meses</CardDescription>
       </CardHeader>
-      <CardContent className="p-4 pt-0 sm:p-5 sm:pt-0">
+      <CardContent className="p-6 pt-0 sm:p-7 sm:pt-0">
         <div className="overflow-x-auto">
           <svg
             viewBox={`0 0 ${W} ${H}`}

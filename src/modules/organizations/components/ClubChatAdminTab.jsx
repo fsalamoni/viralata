@@ -43,13 +43,13 @@ export default function ClubChatAdminTab({ club }) {
   return (
     <div className="grid grid-cols-1 gap-3 lg:grid-cols-[320px,1fr]">
       <Card className="rounded-2xl">
-        <CardHeader className="p-4">
+        <CardHeader className="p-6 sm:p-7">
           <CardTitle className="flex items-center gap-2 text-base">
             <Users className="h-4 w-4 text-primary" /> Conversas
           </CardTitle>
           <CardDescription>Threads abertas pelo público com esta ONG.</CardDescription>
         </CardHeader>
-        <CardContent className="p-2 sm:p-3">
+        <CardContent className="p-3 sm:p-4">
           {isLoading ? (
             <div className="space-y-2">{[1, 2].map((i) => <Skeleton key={i} className="h-14 rounded-xl" />)}</div>
           ) : threads.length === 0 ? (

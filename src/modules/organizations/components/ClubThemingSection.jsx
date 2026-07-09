@@ -120,7 +120,7 @@ export default function ClubThemingSection({ club }) {
 
   return (
     <Card className="rounded-xl overflow-hidden">
-      <CardHeader className="p-4 sm:p-5">
+      <CardHeader className="p-6 sm:p-7">
         <CardTitle className="flex items-center gap-2 text-base">
           <Palette className="h-4 w-4 text-primary" /> Personalização visual
         </CardTitle>
@@ -129,7 +129,7 @@ export default function ClubThemingSection({ club }) {
           nome da sua ONG. As mudanças entram em vigor quando você salvar.
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-5 p-4 pt-0 sm:p-5 sm:pt-0">
+      <CardContent className="space-y-5 p-6 pt-0 sm:p-7 sm:pt-0">
 
         {/* PREVIEW — CARD DA ONG (markup espelha ClubCover.jsx para
             fidelidade total). */}
