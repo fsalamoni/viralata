@@ -13,6 +13,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { toast } from 'sonner';
 import PageHero from '@/components/PageHero';
+import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 
 /**
  * Página "Meus Interesses" — lista os pets nos quais o usuário demonstrou
@@ -30,6 +31,7 @@ export default function MyInterests() {
   const [confirmRemove, setConfirmRemove] = useState(null);
   const [removing, setRemoving] = useState(false);
   const deleteInterest = useDeleteInterest();
+  const wrapperClass = useArenaPageClasses('arena-page mx-auto max-w-4xl space-y-6 px-5 pb-12 py-6');
 
   // Enriquece cada interesse com o doc do pet (para status, foto, dados).
   // Uma única query Firestore `where('__name__', 'in', [...pet_ids])` para
@@ -90,7 +92,7 @@ export default function MyInterests() {
   }
 
   return (
-    <div className="arena-page mx-auto max-w-4xl space-y-6 px-5 pb-12 py-6">
+    <div className={wrapperClass}>
       <PageHero
         eyebrow="Pets"
         title="Meus Interesses"

@@ -12,6 +12,7 @@ import { Switch } from '@/components/ui/switch';
 import { cn } from '@/core/lib/utils';
 import { toast } from 'sonner';
 import PageHero from '@/components/PageHero';
+import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import { usePlatformSettings } from '@/core/lib/FeatureFlagsContext';
 
 const RADIUS_OPTIONS = [5, 10, 25, 50, 100];
@@ -355,7 +356,7 @@ export default function PetFeedEnhanced() {
   const hasFilters = species !== 'all' || size !== 'all' || Boolean(trimmedCity) || Boolean(radius);
 
   return (
-    <div className="arena-page mx-auto max-w-6xl px-5 py-5.5 pb-12">
+    <div className={useArenaPageClasses('arena-page mx-auto max-w-6xl px-5 py-5.5 pb-12')}>
       <PageHero
         eyebrow="Feed"
         title={`Encontre seu novo melhor amigo${firstName ? `, ${firstName}` : ''}`}

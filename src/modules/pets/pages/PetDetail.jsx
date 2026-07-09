@@ -12,6 +12,7 @@ import {
 import { usePetPermissions } from '../hooks/usePetPermissions';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
+import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import { getOrCreateDirectConversation } from '@/modules/chat/services/chatService';
 import InterestPanel from '../components/InterestPanel';
 import RatingForm from '../components/RatingForm';
@@ -77,6 +78,7 @@ export default function PetDetail() {
 
   const petPermissions = usePetPermissions(pet);
   const showAdoptionGating = useFeatureFlag(FEATURE_FLAG.PET_ADOPTION_GATING);
+  const wrapperClass = useArenaPageClasses('arena-page max-w-4xl mx-auto px-4 py-6 space-y-6');
 
   if (isLoading) return <PetDetailSkeleton />;
   if (!pet) return <PetNotFound petId={petId} />;
@@ -192,7 +194,7 @@ export default function PetDetail() {
   }
 
   return (
-    <div className="arena-page max-w-4xl mx-auto px-4 py-6 space-y-6">
+    <div className={wrapperClass}>
       <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
         <ArrowLeft className="w-4 h-4 mr-1" /> Voltar
       </Button>

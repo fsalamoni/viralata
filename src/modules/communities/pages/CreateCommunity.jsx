@@ -9,6 +9,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { ImageUpload } from '@/components/ui/image-upload';
 import { createCommunity } from '../services/communityService';
 import PageHero from '@/components/PageHero';
+import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import { toast } from 'sonner';
 
 export default function CreateCommunity() {
@@ -34,7 +35,7 @@ export default function CreateCommunity() {
   };
 
   return (
-    <div className="arena-page mx-auto w-full max-w-2xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+    <div className={useArenaPageClasses('arena-page mx-auto w-full max-w-2xl space-y-6 px-4 py-6 sm:px-6 lg:px-8')}>
       <PageHero
         eyebrow="Comunidade"
         title="Criar Nova Comunidade"

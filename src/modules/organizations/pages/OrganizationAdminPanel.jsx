@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/core/lib/utils';
+import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { CLUB_DIRECTORY_STATUS, CLUB_DIRECTORY_STATUS_LABELS } from '@/modules/communities/domain/directory';
 import { useMyPets } from '@/modules/pets/hooks/usePets';
@@ -65,6 +66,12 @@ export default function OrganizationAdminPanel() {
   const isAdmin = isClubOwner(club, membership, user?.uid) || membership?.role === CLUB_ROLE.ADMIN;
   const canAccess = hasAnyClubPermission(club, membership, user?.uid);
 
+  // Hooks de classe do wrapper. Devem ficar ANTES dos early-returns —
+  // chamá-los depois violaria as rules-of-hooks do React.
+  const loadingClass = useArenaPageClasses('arena-page mx-auto max-w-5xl space-y-6 px-5 py-6 pb-12');
+  const errorClass = useArenaPageClasses('arena-page mx-auto max-w-2xl px-5 py-6 pb-12');
+  const successClass = useArenaPageClasses('arena-page mx-auto max-w-5xl space-y-8 px-5 py-6 pb-12 sm:space-y-10');
+
   // Permissões granulares efetivas do viewer (usadas para esconder/mostrar
   // botões dentro de cada aba). `hasClubPermission` já cobre o owner e a
   // compatibilidade de admin legado (sem `permissions` map).
@@ -103,7 +110,7 @@ export default function OrganizationAdminPanel() {
 
   if (isLoading) {
     return (
-      <div className="arena-page mx-auto max-w-5xl space-y-6 px-5 py-6 pb-12">
+      <div className={loadingClass}>
         <Skeleton className="h-28 rounded-[2rem]" />
         <Skeleton className="h-96 rounded-[2rem]" />
       </div>
@@ -112,7 +119,7 @@ export default function OrganizationAdminPanel() {
 
   if (!club) {
     return (
-      <div className="arena-page mx-auto max-w-2xl px-5 py-6 pb-12">
+      <div className={errorClass}>
         <EmptyState
           icon={Building2}
           title="Organização não encontrada"
@@ -129,7 +136,7 @@ export default function OrganizationAdminPanel() {
   const location = [club.city, club.state].filter(Boolean).join(', ');
 
   return (
-    <ClubThemedScope club={club} className="arena-page mx-auto max-w-5xl space-y-8 px-5 py-6 pb-12 sm:space-y-10">
+    <ClubThemedScope club={club} className={successClass}>
       <Button asChild variant="ghost" size="sm">
         {/* Saindo do painel admin, o usuário volta direto à PÁGINA
             PÚBLICA da ONG (perfil / home), não à central de organizações.

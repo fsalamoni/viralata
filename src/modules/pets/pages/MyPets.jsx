@@ -7,6 +7,7 @@ import { PlusCircle, PawPrint, Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/core/lib/utils';
 import PageHero from '@/components/PageHero';
+import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 
 const STATUS_STYLE = {
   available: { label: 'Disponível', className: 'bg-secondary text-secondary-foreground' },
@@ -73,7 +74,7 @@ export default function MyPets() {
   }
 
   return (
-    <div className="arena-page mx-auto max-w-3xl space-y-6 px-5 pb-16 pt-5.5">
+    <div className={useArenaPageClasses('arena-page mx-auto max-w-3xl space-y-6 px-5 pb-16 pt-5.5')}>
       <PageHero
         eyebrow="Pets"
         title="Meus Pets"

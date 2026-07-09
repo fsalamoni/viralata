@@ -7,6 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useClubs, useMyClubs } from '@/modules/organizations/hooks/useClubs';
 import { CLUB_ROLE, CLUB_ROLE_LABELS } from '@/modules/organizations/domain/constants';
 import PageHero from '@/components/PageHero';
+import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 
 /**
  * Hub de gestão de organizações (`/organizacoes`): "Minhas organizações"
@@ -30,7 +31,7 @@ export default function OrganizationsHub() {
   );
 
   return (
-    <div className="arena-page mx-auto max-w-5xl space-y-8 px-5 py-6 pb-12">
+    <div className={useArenaPageClasses('arena-page mx-auto max-w-5xl space-y-8 px-5 py-6 pb-12')}>
       <PageHero
         eyebrow="Organizações"
         title="Administre suas organizações em um só lugar"

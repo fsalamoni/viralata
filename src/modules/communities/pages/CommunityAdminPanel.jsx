@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/core/lib/utils';
+import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { useCommunity, useMyCommunityMembership } from '@/modules/communities/hooks/useCommunities';
 import { COMMUNITY_ROLE, COMMUNITY_PERMISSION } from '@/modules/communities/domain/constants';
@@ -46,6 +47,11 @@ export default function CommunityAdminPanel() {
   const requestedTab = searchParams.get('tab') || 'overview';
   const activeTab = visibleTabs.some((t) => t.key === requestedTab) ? requestedTab : (visibleTabs[0]?.key || 'overview');
 
+  // Hooks de classe dos wrappers. Devem ficar ANTES dos early-returns.
+  const loadingClass = useArenaPageClasses('arena-page mx-auto max-w-5xl space-y-6 px-5 py-6 pb-12');
+  const errorClass = useArenaPageClasses('arena-page mx-auto max-w-2xl px-5 py-6 pb-12');
+  const successClass = useArenaPageClasses('arena-page mx-auto max-w-5xl space-y-6 px-5 py-6 pb-12');
+
   const setActiveTab = (tab) => {
     const next = new URLSearchParams(searchParams);
     next.set('tab', tab);
@@ -62,7 +68,7 @@ export default function CommunityAdminPanel() {
 
   if (isLoading) {
     return (
-      <div className="arena-page mx-auto max-w-5xl space-y-6 px-5 py-6 pb-12">
+      <div className={loadingClass}>
         <Skeleton className="h-28 rounded-[2rem]" />
         <Skeleton className="h-96 rounded-[2rem]" />
       </div>
@@ -71,7 +77,7 @@ export default function CommunityAdminPanel() {
 
   if (!community) {
     return (
-      <div className="arena-page mx-auto max-w-2xl px-5 py-6 pb-12">
+      <div className={errorClass}>
         <EmptyState
           icon={Building2}
           title="Comunidade não encontrada"
@@ -87,7 +93,7 @@ export default function CommunityAdminPanel() {
   const initials = (community.name || 'C').split(' ').filter(Boolean).slice(0, 2).map((w) => w[0]?.toUpperCase()).join('');
 
   return (
-    <div className="arena-page mx-auto max-w-5xl space-y-6 px-5 py-6 pb-12">
+    <div className={successClass}>
       <Button asChild variant="ghost" size="sm">
         <Link to={`/comunidade/${communityId}`}><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar à comunidade</Link>
       </Button>

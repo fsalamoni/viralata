@@ -8,11 +8,13 @@ import { toast } from 'sonner';
 import { Trash2, Eye, CheckCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import PageHero from '@/components/PageHero';
+import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 
 export default function AdminPets() {
   const { isPlatformAdmin } = useAuth();
   const [pets, setPets] = useState([]);
   const [loading, setLoading] = useState(true);
+  const wrapperClass = useArenaPageClasses('arena-page mx-auto max-w-5xl space-y-6 px-4 py-6');
 
   useEffect(() => {
     if (!isPlatformAdmin) return;
@@ -31,7 +33,7 @@ export default function AdminPets() {
   if (!isPlatformAdmin) return null;
 
   return (
-    <div className="arena-page mx-auto max-w-5xl space-y-6 px-4 py-6">
+    <div className={wrapperClass}>
       <PageHero
         eyebrow="Admin · Pets"
         title="Gerenciar Pets"

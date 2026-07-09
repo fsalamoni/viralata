@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Switch } from '@/components/ui/switch';
 import { Skeleton } from '@/components/ui/skeleton';
 import PageHero from '@/components/PageHero';
+import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 
 export default function RadarSettings() {
   const { user, isProfileComplete } = useAuth();
@@ -16,7 +17,7 @@ export default function RadarSettings() {
   const active = radar?.active === true;
 
   return (
-    <div className="arena-page mx-auto max-w-2xl space-y-6 px-4 py-6">
+    <div className={useArenaPageClasses('arena-page mx-auto max-w-2xl space-y-6 px-4 py-6')}>
       <PageHero
         eyebrow="Pets"
         title="Radar de Pets"

@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import PageHero from '@/components/PageHero';
+import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import { Flag, Shield, Sparkles, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -22,6 +23,10 @@ export default function AdminFlags() {
   const { settings } = usePlatformSettings();
   const [savingFlag, setSavingFlag] = useState('');
 
+  // Hooks de classe dos wrappers. Devem ficar ANTES dos early-returns.
+  const deniedClass = useArenaPageClasses('arena-page mx-auto max-w-3xl py-16 text-center');
+  const successClass = useArenaPageClasses('arena-page mx-auto flex max-w-4xl flex-col gap-6 px-4 py-6');
+
   // Auto-marca a migração de flags como aplicada (idempotente, fire-and-forget).
   // Evita que o FeatureFlagsProvider rode a migração legado a cada load e
   // documenta que o admin já está gerenciando flags manualmente.
@@ -33,7 +38,7 @@ export default function AdminFlags() {
 
   if (!isPlatformAdmin) {
     return (
-      <div className="arena-page mx-auto max-w-3xl py-16 text-center">
+      <div className={deniedClass}>
         <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10 text-destructive">
           <Shield className="h-5 w-5" />
         </div>
@@ -61,7 +66,7 @@ export default function AdminFlags() {
   }
 
   return (
-    <div className="arena-page mx-auto flex max-w-4xl flex-col gap-6 px-4 py-6">
+    <div className={successClass}>
       <PageHero
         eyebrow="Admin"
         title="Flags de atualizações"

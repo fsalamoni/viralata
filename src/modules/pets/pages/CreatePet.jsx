@@ -18,6 +18,7 @@ import { toast } from 'sonner';
 import { Upload, ArrowLeft, PawPrint } from 'lucide-react';
 import { cn } from '@/core/lib/utils';
 import PageHero from '@/components/PageHero';
+import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import AdoptionFormBuilder from '../components/AdoptionFormBuilder';
 import { normalizeForm } from '../domain/adoptionForm';
 
@@ -117,6 +118,9 @@ export default function CreatePet() {
   const [adoptionForm, setAdoptionForm] = useState({ fields: [] });
   const [uploading, setUploading] = useState(false);
   const [step, setStep] = useState(0);
+
+  // Hooks de classe dos wrappers. Devem ficar ANTES dos early-returns.
+  const wrapperClass = useArenaPageClasses('arena-page mx-auto max-w-2xl space-y-6 px-5 pb-24 pt-6');
 
   const { register, handleSubmit, setValue, watch, reset, trigger, formState: { errors } } = useForm({
     resolver: zodResolver(schema),
@@ -251,7 +255,7 @@ export default function CreatePet() {
     || (adminClubs.find((c) => c.donation_link)?.donation_link ?? '');
 
   return (
-    <div className="arena-page mx-auto max-w-2xl space-y-6 px-5 pb-24 pt-6">
+    <div className={wrapperClass}>
       <PageHero
         eyebrow="Pets"
         title={isEditing ? 'Editar Pet' : 'Cadastrar Pet para Adoção'}

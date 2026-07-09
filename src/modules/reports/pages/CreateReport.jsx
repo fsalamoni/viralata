@@ -5,6 +5,7 @@ import { createAbuseReport } from '../services/reportService';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import PageHero from '@/components/PageHero';
+import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
@@ -89,7 +90,7 @@ export default function CreateReport() {
   const dateStr = format(new Date(), "dd 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR });
 
   return (
-    <div className="arena-page mx-auto max-w-2xl space-y-6 px-4 py-6">
+    <div className={useArenaPageClasses('arena-page mx-auto max-w-2xl space-y-6 px-4 py-6')}>
       <PageHero
         eyebrow="Denúncia"
         title="Registrar Denúncia"

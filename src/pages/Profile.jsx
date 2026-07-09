@@ -19,6 +19,7 @@ import { getRatingsForUser, summarizeRatings } from '@/modules/pets/services/rat
 import { exportMyData, downloadDataExport } from '@/core/services/dataExportService';
 import { deleteMyAccount } from '@/core/services/deleteAccountService';
 import PageHero from '@/components/PageHero';
+import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 
 const GENDER_OPTIONS = [
   { value: 'male', label: 'Masculino' },
@@ -107,6 +108,7 @@ function buildProfileForm(userProfile, user) {
 export default function Profile() {
   const navigate = useNavigate();
   const { user, userProfile, updateUserProfile, signOut } = useAuth();
+  const wrapperClass = useArenaPageClasses('arena-page mx-auto flex max-w-5xl flex-col gap-6 px-5 py-6 pb-16');
   const [exporting, setExporting] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -240,7 +242,7 @@ export default function Profile() {
   }
 
   return (
-    <div className="arena-page mx-auto flex max-w-5xl flex-col gap-6 px-5 py-6 pb-16">
+    <div className={wrapperClass}>
       <PageHero
         eyebrow="Meu perfil"
         title={fullName || user?.email || 'Seu perfil'}

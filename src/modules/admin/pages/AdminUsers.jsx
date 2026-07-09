@@ -8,12 +8,14 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toast } from 'sonner';
 import { ShieldOff, ShieldCheck } from 'lucide-react';
 import PageHero from '@/components/PageHero';
+import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 
 export default function AdminUsers() {
   const { user, isPlatformAdmin } = useAuth();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const wrapperClass = useArenaPageClasses('arena-page mx-auto max-w-5xl space-y-6 px-4 py-6');
 
   useEffect(() => {
     if (!isPlatformAdmin) return;
@@ -56,7 +58,7 @@ export default function AdminUsers() {
   if (!isPlatformAdmin) return null;
 
   return (
-    <div className="arena-page mx-auto max-w-5xl space-y-6 px-4 py-6">
+    <div className={wrapperClass}>
       <PageHero
         eyebrow="Admin · Usuários"
         title="Gerenciar Usuários"

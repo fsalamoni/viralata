@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import PageHero from '@/components/PageHero';
+import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import { usePlatformSettings } from '@/core/lib/FeatureFlagsContext';
 
 const READ_FILTERS = [
@@ -31,6 +32,7 @@ export default function AdminNotifications() {
   const [typeFilter, setTypeFilter] = useState('all');
   const [readFilter, setReadFilter] = useState('all');
   const maxNotifications = settings.operational_limits.admin_notifications_limit;
+  const wrapperClass = useArenaPageClasses('arena-page mx-auto max-w-6xl px-4 py-6 space-y-6');
 
   useEffect(() => {
     if (!isPlatformAdmin) return undefined;
@@ -73,7 +75,7 @@ export default function AdminNotifications() {
   if (!isPlatformAdmin) return <div className="text-center py-16 text-muted-foreground">Acesso restrito.</div>;
 
   return (
-    <div className="arena-page mx-auto max-w-6xl px-4 py-6 space-y-6">
+    <div className={wrapperClass}>
       <PageHero
         eyebrow="Admin"
         title="Notificações"

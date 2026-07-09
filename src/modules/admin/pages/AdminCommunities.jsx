@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { ImageUpload } from '@/components/ui/image-upload';
 import PageHero from '@/components/PageHero';
+import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import { useAdminCommunities, useCreateCommunity, useDeleteCommunity, useUpdateCommunity } from '@/modules/communities/hooks/useCommunities';
 import { COMMUNITY_VISIBILITY, COMMUNITY_VISIBILITY_LABELS } from '@/modules/communities/domain/constants';
 import { sortCommunities } from '@/modules/communities/domain/directory';
@@ -29,6 +30,7 @@ const COMMUNITY_INITIAL = {
 export default function AdminCommunities() {
   const { isPlatformAdmin } = useAuth();
   const [communityForm, setCommunityForm] = useState(COMMUNITY_INITIAL);
+  const wrapperClass = useArenaPageClasses('arena-page mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 lg:px-8 flex flex-col gap-6');
 
   const { data: communities = [], isLoading } = useAdminCommunities();
   const createCommunity = useCreateCommunity();
@@ -60,7 +62,7 @@ export default function AdminCommunities() {
   if (!isPlatformAdmin) return null;
 
   return (
-    <div className="arena-page mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 lg:px-8 flex flex-col gap-6">
+    <div className={wrapperClass}>
       <div className="mb-1.5 flex items-center gap-3">
         <Button variant="ghost" size="sm" asChild>
           <Link to="/admin"><ArrowLeft className="mr-2 w-4 h-4" /> Voltar ao Painel</Link>

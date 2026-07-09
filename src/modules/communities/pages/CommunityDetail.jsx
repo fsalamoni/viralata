@@ -18,6 +18,7 @@ import EventsTab from '../components/EventsTab';
 import AboutTab from '../components/AboutTab';
 import CommunityTeamTab from '../components/CommunityTeamTab';
 import CommunityDebugPanel from '../components/CommunityDebugPanel';
+import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 
 export default function CommunityDetail() {
   const { communityId } = useParams();
@@ -60,6 +61,10 @@ export default function CommunityDetail() {
   // diretamente para calcular suas próprias permissões granulares.
   const { isMember, canAdmin } = deriveCommunityMembershipState(community, membership, user?.uid);
 
+  // Hooks de classe dos wrappers. Devem ficar ANTES dos early-returns.
+  const loadingClass = useArenaPageClasses('arena-page mx-auto w-full max-w-5xl px-4 py-6 space-y-6');
+  const successClass = useArenaPageClasses('arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8 space-y-6');
+
   const handleJoin = async () => {
     if (!user) return toast.error('Faça login para participar');
     try {
@@ -71,11 +76,11 @@ export default function CommunityDetail() {
     }
   };
 
-  if (loading) return <div className="arena-page mx-auto w-full max-w-5xl px-4 py-6 space-y-6"><Skeleton className="h-64 rounded-3xl" /></div>;
+  if (loading) return <div className={loadingClass}><Skeleton className="h-64 rounded-3xl" /></div>;
   if (!community) return <div>Comunidade não encontrada</div>;
 
   return (
-    <div className="arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8 space-y-6">
+    <div className={successClass}>
       <Button variant="ghost" size="sm" asChild>
         <Link to="/comunidade"><ArrowLeft className="mr-2 w-4 h-4" /> Voltar</Link>
       </Button>

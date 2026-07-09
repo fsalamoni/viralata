@@ -25,6 +25,7 @@ import { EventFormDialog } from '@/modules/organizations/components/ClubEventsTa
 import EventDatesPanel from '@/modules/organizations/components/EventDatesPanel';
 import EventParticipantsPanel from '@/modules/organizations/components/EventParticipantsPanel';
 import EventChat from '@/modules/organizations/components/EventChat';
+import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 
 function formatDateTime(value) {
   if (!value) return null;
@@ -40,9 +41,15 @@ export default function EventDetail() {
   const [editOpen, setEditOpen] = useState(false);
   const [tab, setTab] = useState('detalhes');
 
+  // Hooks de classe dos wrappers. Devem ficar ANTES dos early-returns —
+  // chamá-los depois violaria as rules-of-hooks do React.
+  const loadingClass = useArenaPageClasses('arena-page mx-auto max-w-4xl space-y-6 px-5 py-6 pb-12');
+  const errorClass = useArenaPageClasses('arena-page mx-auto max-w-2xl px-5 py-6 pb-12');
+  const successClass = useArenaPageClasses('arena-page mx-auto max-w-4xl space-y-6 px-5 py-6 pb-12');
+
   if (isLoading) {
     return (
-      <div className="arena-page mx-auto max-w-4xl space-y-6 px-5 py-6 pb-12">
+      <div className={loadingClass}>
         <Skeleton className="h-28 rounded-[2rem]" />
         <Skeleton className="h-64 rounded-[2rem]" />
       </div>
@@ -54,7 +61,7 @@ export default function EventDetail() {
   // Se não carregou, é porque não existe ou o usuário não tem acesso.
   if (isError || !event) {
     return (
-      <div className="arena-page mx-auto max-w-2xl px-5 py-6 pb-12">
+      <div className={errorClass}>
         <EmptyState
           icon={membership ? CalendarDays : Building2}
           title={membership ? 'Evento não encontrado' : 'Evento indisponível'}
@@ -79,7 +86,7 @@ export default function EventDetail() {
   const when = formatDateTime(event.starts_at);
 
   return (
-    <div className="arena-page mx-auto max-w-4xl space-y-6 px-5 py-6 pb-12">
+    <div className={successClass}>
       <Button asChild variant="ghost" size="sm">
         <Link to={`/comunidade/${clubId}?tab=events`}><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para eventos</Link>
       </Button>

@@ -10,6 +10,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { toast } from 'sonner';
 import { getClub } from '../services/clubService';
 import { isClubPubliclyVisible } from '@/modules/communities/domain/directory';
+import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import {
   useMyMembership,
   useRequestToJoinClub,
@@ -79,6 +80,10 @@ export default function ClubDetail() {
   const isPending = myRequests.some((r) => r.club_id === orgId && r.status === JOIN_REQUEST_STATUS.PENDING);
   const isInvited = myInvites.some((i) => i.club_id === orgId);
 
+  // Hooks de classe dos wrappers. Devem ficar ANTES dos early-returns.
+  const loadingClass = useArenaPageClasses('arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8 space-y-6');
+  const errorClass = useArenaPageClasses('arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8');
+
   const handleRequest = async () => {
     if (!isAuthenticated) {
       toast.error('Você precisa estar logado para ingressar.');
@@ -95,7 +100,7 @@ export default function ClubDetail() {
 
   if (isLoading || (isAuthenticated && loadingMembership)) {
     return (
-      <div className="arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8 space-y-6">
+      <div className={loadingClass}>
         <Skeleton className="h-52 w-full rounded-2xl" />
         <Skeleton className="h-16 w-full rounded-2xl" />
         <Skeleton className="h-64 w-full rounded-2xl" />
@@ -105,7 +110,7 @@ export default function ClubDetail() {
 
   if (isError || !club) {
     return (
-      <div className="arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8">
+      <div className={errorClass}>
         <EmptyState
           icon={Building2}
           title="ONG não encontrada"
@@ -118,7 +123,7 @@ export default function ClubDetail() {
 
   if (!isClubPubliclyVisible(club) && !membership) {
     return (
-      <div className="arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8">
+      <div className={errorClass}>
         <EmptyState
           icon={Building2}
           title="Organização indisponível"

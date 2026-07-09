@@ -5,9 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Shield, PawPrint, Building2, AlertTriangle, Users, BarChart3, ScrollText, Bell, SlidersHorizontal, Flag } from 'lucide-react';
 import PageHero from '@/components/PageHero';
+import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 
 export default function AdminDashboard() {
   const { isPlatformAdmin } = useAuth();
+  const wrapperClass = useArenaPageClasses('arena-page max-w-4xl mx-auto px-4 py-6 space-y-6');
   if (!isPlatformAdmin) return <div className="text-center py-16 text-muted-foreground">Acesso restrito.</div>;
 
   const sections = [
@@ -24,7 +26,7 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div className="arena-page max-w-4xl mx-auto px-4 py-6 space-y-6">
+    <div className={wrapperClass}>
       <PageHero
         eyebrow="Admin"
         title="Painel Administrativo"

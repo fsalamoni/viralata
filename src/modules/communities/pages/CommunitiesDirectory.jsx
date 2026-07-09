@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import PageHero from '@/components/PageHero';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
+import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 
 export default function CommunitiesDirectory() {
   const pageHeroEnabled = useFeatureFlag(FEATURE_FLAG.PAGE_HERO_ENABLED);
@@ -38,7 +39,7 @@ export default function CommunitiesDirectory() {
   }, [communities, search]);
 
   return (
-    <div className="arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8 space-y-8">
+    <div className={useArenaPageClasses('arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8 space-y-8')}>
       {pageHeroEnabled ? (
         <>
           <PageHero

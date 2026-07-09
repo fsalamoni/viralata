@@ -10,6 +10,7 @@ import { ImageUpload } from '@/components/ui/image-upload';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { useCreateClub } from '@/modules/organizations/hooks/useClubs';
 import PageHero from '@/components/PageHero';
+import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 
 const INITIAL = {
   name: '',
@@ -54,7 +55,7 @@ export default function CreateClub() {
   };
 
   return (
-    <div className="arena-page mx-auto max-w-3xl space-y-6 px-5 py-6 pb-12">
+    <div className={useArenaPageClasses('arena-page mx-auto max-w-3xl space-y-6 px-5 py-6 pb-12')}>
       <PageHero
         eyebrow="Nova organização"
         title="Cadastrar organização"

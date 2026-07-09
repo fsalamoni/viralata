@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { cn } from '@/core/lib/utils';
+import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import PageHero from './PageHero';
 
 /**
@@ -10,7 +11,7 @@ import PageHero from './PageHero';
  */
 export function LegalPage({ eyebrow, title, description, meta, children }) {
   return (
-    <div className="mx-auto max-w-6xl space-y-5">
+    <div className={useArenaPageClasses('mx-auto max-w-6xl space-y-5')}>
       <PageHero
         eyebrow={eyebrow}
         title={title}

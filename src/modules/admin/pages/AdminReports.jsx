@@ -5,11 +5,13 @@ import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import PageHero from '@/components/PageHero';
+import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 
 export default function AdminReports() {
   const { isPlatformAdmin } = useAuth();
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
+  const wrapperClass = useArenaPageClasses('arena-page mx-auto max-w-4xl space-y-6 px-4 py-6');
 
   useEffect(() => {
     if (!isPlatformAdmin) return;
@@ -19,7 +21,7 @@ export default function AdminReports() {
   if (!isPlatformAdmin) return null;
 
   return (
-    <div className="arena-page mx-auto max-w-4xl space-y-6 px-4 py-6">
+    <div className={wrapperClass}>
       <PageHero
         eyebrow="Admin · Denúncias"
         title="Denúncias de Maus-Tratos"

@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import PageHero from '@/components/PageHero';
+import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import { listAdminClubs, updateAdminClub } from '@/modules/admin/services/adminService';
 import { useAdminCommunities } from '@/modules/communities/hooks/useCommunities';
 import { CLUB_DIRECTORY_STATUS, CLUB_DIRECTORY_STATUS_LABELS, sortCommunities } from '@/modules/communities/domain/directory';
@@ -21,6 +22,7 @@ export default function AdminOrganizations() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [communityFilter, setCommunityFilter] = useState('all');
+  const wrapperClass = useArenaPageClasses('arena-page mx-auto flex max-w-6xl flex-col gap-6 px-4 py-6');
 
   const { data: clubs = [], isLoading: loadingClubs } = useQuery({
     queryKey: ['admin-clubs'],
@@ -77,7 +79,7 @@ export default function AdminOrganizations() {
   const featuredClubs = clubs.filter((club) => club.featured).length;
 
   return (
-    <div className="arena-page mx-auto flex max-w-6xl flex-col gap-6 px-4 py-6">
+    <div className={wrapperClass}>
       <div className="mb-1.5 flex items-center gap-3">
         <Button variant="ghost" size="sm" asChild>
           <Link to="/admin"><ArrowLeft className="mr-2 w-4 h-4" /> Voltar ao Painel</Link>

@@ -32,6 +32,7 @@ import { cn } from '@/core/lib/utils';
 import PageHero from '@/components/PageHero';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
+import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import { useCommunities } from '@/modules/communities/hooks/useCommunities';
 import { getVisibleCommunityMap } from '@/modules/communities/domain/directory';
 
@@ -158,7 +159,7 @@ export default function ClubsDirectory() {
   };
 
   return (
-    <div className="arena-page mx-auto max-w-6xl space-y-8 px-5 py-6 pb-12">
+    <div className={useArenaPageClasses('arena-page mx-auto max-w-6xl space-y-8 px-5 py-6 pb-12')}>
       {pageHeroEnabled ? (
         <>
           <PageHero

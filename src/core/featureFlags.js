@@ -72,6 +72,22 @@ export const FEATURE_FLAG = Object.freeze({
    * `<PageHero>` permanecem inalteradas. É puramente aditiva.
    */
   PAGE_HERO_ENABLED: 'page_hero_enabled',
+
+  /**
+   * Layout-padrão das páginas (largura, padding e espaçamento uniformes):
+   * quando ligada, todas as páginas autenticadas passam a compartilhar o
+   * mesmo wrapper raiz (`arena-page mx-auto max-w-6xl px-5 py-6 pb-12
+   * space-y-6`) — 1152px de largura, 24px lateral e de topo, 24px de gap
+   * entre seções filhas. Resolve as inconsistências históricas entre
+   * páginas (algumas max-w-3xl, outras max-w-5xl, outras px-4, outras
+   * px-5, outras com padding responsivo sm:px-6 lg:px-8). A navegação
+   * entre páginas passa a sentir o mínimo de diferença estrutural.
+   * Exceções controladas (mantidas como estão): `Home` e `ChatPage`
+   * (full-bleed / split-pane) e o `success` de `ClubDetail` (a
+   * `ClubCover` assume o topo com pt-0). Desligada, cada página mantém
+   * seu wrapper original — puramente aditivo.
+   */
+  STANDARDIZED_PAGE_LAYOUT: 'standardized_page_layout',
 });
 
 /** Metadados de exibição para o painel de flags (admin master). */
@@ -134,6 +150,19 @@ export const FEATURE_FLAG_META = Object.freeze({
       + 'se degrada para um cabeçalho simples sem gradiente; páginas '
       + 'ainda não migradas ficam inalteradas. Puramente aditiva.',
   },
+  [FEATURE_FLAG.STANDARDIZED_PAGE_LAYOUT]: {
+    label: 'Layout-padrão das páginas (largura + espaçamento)',
+    description:
+      'Quando ligada, todas as páginas autenticadas passam a usar o '
+      + 'mesmo wrapper raiz (`arena-page mx-auto max-w-6xl px-5 py-6 '
+      + 'pb-12 space-y-6`) — 1152px de largura, 24px de padding '
+      + 'lateral e vertical, 24px de gap entre seções. Resolve a '
+      + 'inconsistência histórica entre páginas com max-w-3xl/4xl/5xl/6xl, '
+      + 'px-4/px-5 e padding responsivo. Exceções mantidas: `Home`, '
+      + '`ChatPage` e o topo da `ClubDetail` (que tem `ClubCover`). '
+      + 'Desligada, cada página mantém o wrapper original. '
+      + 'Puramente aditivo.',
+  },
 });
 
 /**
@@ -151,6 +180,7 @@ export const DEFAULT_FEATURE_FLAGS = Object.freeze({
   [FEATURE_FLAG.PET_ADOPTION_GATING]: true,
   [FEATURE_FLAG.MURAL_RICH_POSTS]: true,
   [FEATURE_FLAG.PAGE_HERO_ENABLED]: false,
+  [FEATURE_FLAG.STANDARDIZED_PAGE_LAYOUT]: false,
 });
 
 /**

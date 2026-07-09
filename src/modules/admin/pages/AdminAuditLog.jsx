@@ -3,13 +3,15 @@ import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { AuditLogTable } from '@/components/AuditLogTable';
 import { ScrollText } from 'lucide-react';
 import PageHero from '@/components/PageHero';
+import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 
 export default function AdminAuditLog() {
   const { isPlatformAdmin } = useAuth();
+  const wrapperClass = useArenaPageClasses('arena-page mx-auto max-w-6xl space-y-6 px-4 py-6');
   if (!isPlatformAdmin) return <div className="text-center py-16 text-muted-foreground">Acesso restrito.</div>;
 
   return (
-    <div className="arena-page mx-auto max-w-6xl space-y-6 px-4 py-6">
+    <div className={wrapperClass}>
       <PageHero
         eyebrow="Admin"
         title="Auditoria"
