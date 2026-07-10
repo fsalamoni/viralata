@@ -905,3 +905,178 @@ Ao final de cada fase:
 - Atualizar `docs/MODULES.md` se a fase adicionou módulo
 - Atualizar `docs/DATA_MODEL.md` se a fase adicionou coleção/campo
 - Reportar ao usuário: o que foi feito, em que etapa estamos, qual o próximo passo, quanto falta
+
+---
+
+## 11. Adendo: Conformidade Legal, Multi-Tenant e Engenharia de Custos
+
+> Seção incorporada após análise jurídica + técnica (2026-07-10).
+> Origem: documento "Estrutura Analítica e Compliance Jurídico para Plataformas SaaS de Gestão de Causa Animal e Abrigos" + revisão de multi-tenant.
+
+### 11.1 Multi-tenant & isolamento de dados por abrigo (afeta Fases 1, 2, 4, 8)
+
+**Princípio**: O "Cadastro Único" do animal (id, características, foto pública) é **global e segue o animal**. Mas prontuários, tarefas, notas internas, medicamentos, evaluations, listas de adotantes reprovados — tudo isso é **tenant-specific** (do abrigo que o possui no momento).
+
+**Por quê**: Se o animal X for transferido do Abrigo A para o Abrigo B, o Abrigo B **NÃO deve** ver:
+- Notas internas do Abrigo A
+- Histórico de adotantes reprovados
+- Avaliações técnicas que o Abrigo A fez (podem ser sigilosas)
+- Decisões de gestão do Abrigo A
+
+**Implementação** (Firestore, sem mudar de banco):
+
+1. **Coleções globais** (sem `club_id`): `pets/{petId}` (dados públicos + identificadores), `users/{uid}`.
+2. **Coleções tenant-specific** (com `club_id`): `pets/{petId}/medical/{recordId}`, `pets/{petId}/medications/{medId}`, `pets/{petId}/clinical_notes/{noteId}`, `clubs/{clubId}/intake_records/{recordId}`, `clubs/{clubId}/fosters/{fosterId}`, `clubs/{clubId}/adoption_workflow/{adoptionId}`.
+3. **Firestore rules** garantem que um documento de `medical` só é legível se o `request.auth.uid` for membro/admin do `club_id` do documento (ou platform admin).
+4. **Migração de histórico**: ao transferir animal, prontuário antigo fica *congelado* (read-only) e o novo abrigo cria prontuário novo. Animal transferido carrega apenas a "linha do tempo pública" (vacinas administradas, idade, peso) — não as notas.
+5. **Fase de entrega**: isso entra na **Fase 1** (campo `shelter_owner_club_id` no pet) + **Fase 8** (prontuário é subcoleção com `club_id`).
+
+### 11.2 Soft delete que não custa caro (afeta Fase 10)
+
+**Problema**: Manter fotos excluídas no Firebase Storage cresce o custo indefinidamente.
+
+**Solução aprovada**:
+- **Firestore**: soft delete com `deleted_at`, `deleted_by`, `purge_after`. Custo: alguns bytes por doc.
+- **Storage**: ao deletar, mover referência para `trash/{petId}/{photoId}.jpg` em bucket separado. Após **30 dias**, Cloud Function agendada **deleta fisicamente** o arquivo do Storage.
+- **UI**: thumbnail do item deletado aparece acinzentado na galeria com botão "Restaurar" (até 30 dias). Após 30 dias, some.
+- **Backups**: bucket de trash com lifecycle rule de 60 dias para o coldline, depois delete.
+
+**Fase de entrega**: implementado na **Fase 10** (Vitrines / Galeria de fotos) e replicado em todas as coleções de mídia.
+
+### 11.3 Integração com Google Forms (afeta Fase 5)
+
+**Decisão**: **manter Google Forms como canal opcional** (opt-in por abrigo), **além** do formulário nativo.
+
+**Razões** (discordo parcialmente da sugestão de substituir):
+1. Google Forms é ótimo para captação **externa sem login** (visitante anônimo do Instagram/Facebook do abrigo).
+2. Abrigos pequenos não usam a plataforma diariamente — formulário nativo é fricção.
+3. Forms é grátis; formulário nativo requer desenvolvimento e manutenção.
+
+**Arquitetura híbrida (Fase 5 — Adopter Full Profile)**:
+- **Formulário nativo** (default): dentro do app, para adotantes logados. UX rica, validação client-side, anexa documentos.
+- **Google Forms** (opt-in, por abrigo): webhook que cai em `adopter_applications/{appId}` com `source='google_forms'`, `form_responses/{field}`. Fica numa fila onde o abrigo revisa, marca campos faltantes, e aprova/recusa.
+- **Migração de Forms → nativo**: pode ser feito gradual (Fase 18+).
+
+### 11.4 Tarefas de pós-adoção via CRON (afeta Fase 6)
+
+**Problema**: Plano de pós-adoção tem marcos em 3 semanas, 3 meses, 6 meses, 1 ano, 2 anos, 3 anos. Gerar tudo no momento da adoção = 1M+ docs pré-criados.
+
+**Solução aprovada**: **Materialização dinâmica via Cloud Function agendada (CRON diário)**.
+
+```
+1. Adoção registrada → cria doc adoption_workflow/{id} com
+   adoption_date, milestones[]. Cada milestone tem
+   {label, days_after_adoption, type, template_id}.
+
+2. Cloud Function scheduled `materializePostAdoptionTasks`
+   roda diariamente:
+   - Lê adoções onde adoption_date < today
+   - Para cada milestone onde today >= adoption_date + days_after:
+     - Cria task no Kanban (se ainda não existe — idempotência)
+     - Marca milestone como "materialized"
+   - Tasks de até 90 dias no futuro: também materializa agora
+     (buffer para não perder se o CRON falhar 1 dia)
+   - Tasks de 90+ dias: ficam só como milestone; materializa
+     quando faltam 90 dias.
+
+3. Edge case: se o abrigo cancelar adoção, milestones futuras
+   são simplesmente ignoradas (não materializam).
+```
+
+**Fase de entrega**: **Fase 6** (Pós-adoção follow-up) + **Fase 15** (Kanban) — o Kanban lê direto de `tasks/` que é a materialização.
+
+### 11.5 Organização modular do abrigo (afeta Fase 0 e estrutura geral)
+
+Princípio aprovado, com adaptação ao nosso Firestore (que já é multi-tenant via `club_id`):
+
+```
+src/modules/shelter/
+├── domain/
+│   ├── core/          # Identidade: animal base, abrigo, owner
+│   │   ├── animal.js
+│   │   └── permissions.js
+│   ├── clinical/      # Prontuário, medicação, vacinas, exames
+│   │   ├── records.js
+│   │   └── medication.js
+│   ├── operational/   # Adoção, adotante, kanban, vitrines, RSVP
+│   │   ├── adoption.js
+│   │   └── kanban.js
+│   ├── legal/         # Termos, disclaimers, e-sign
+│   │   └── terms.js
+│   └── search/        # Indexação (Meilisearch ou similar)
+│       └── indexer.js
+├── services/          # Camada fina de I/O
+├── hooks/             # React Query + Firestore listeners
+├── components/        # Componentes compartilhados do abrigo
+└── pages/             # Rotas
+```
+
+A separação por `domain/{core,clinical,operational,legal,search}` reflete o que a análise propôs (Core/Clínico/Operacional/Eventos/Busca/Admin).
+
+### 11.6 Conformidade legal crítica (afeta Fase 18)
+
+Da análise jurídica, o mínimo viável de Fase 18 (Legal Terms) precisa entregar:
+
+**Telemedicina veterinária (CFMV 1.465/2022)**:
+- [ ] Disclaimer permanente: "Este sistema não faz teleconsulta inaugural. Requer RPVAR (consulta presencial prévia)."
+- [ ] Bloqueio de módulos de telemedicina para casos de urgência/emergência (redireciona para hospital físico).
+- [ ] Limite de 180 dias para renovações de receita remota (aviso + bloqueio).
+- [ ] Tela para abrigo designar RT (responsável técnico) com ART ativa.
+- [ ] Disclaimer de que a plataforma **não** exerce ato médico — apenas registra.
+
+**LGPD (Lei 13.709/2018)**:
+- [ ] Banner de consentimento com base legal explícita (Art. 7º II, V, IX).
+- [ ] DPO (Encarregado) designado e contato visível.
+- [ ] Direito de exportação de dados (Art. 18 V) — botão "Baixar meus dados".
+- [ ] Direito de exclusão (Art. 18 VI) — com soft delete + purge em 30 dias.
+- [ ] Retenção de logs de acesso por 6 meses (Marco Civil Art. 15).
+- [ ] Protocolo de breach notification à ANPD em 48h (Art. 48) — playbook interno.
+
+**Adoção (Art. 936 CC + Lei 14.063/2020)**:
+- [ ] Termo de adoção com cláusula de assunção de risco pelo adotante.
+- [ ] Disclaimer de vícios redibitórios biológicos (parvovirose, cinomose, etc).
+- [ ] Assinatura eletrônica avançada (Lei 14.063/2020): hash SHA-256 do documento + timestamp + IP + biometria/liveness. Não requer ICP-Brasil (caro demais para abrigos).
+- [ ] Transferência de microchip registrada no termo.
+
+**Doações (ITCMD)**:
+- [ ] Disclaimer de que a plataforma **não** é substituto tributário nem consultor fiscal.
+- [ ] Cada abrigo declara seu regime estadual (isenções de ITCMD variam).
+- [ ] Disclaimer de natureza filantrópica irreversível (doação não gera direito a reembolso, salvo chargeback).
+
+**Conteúdo de terceiros (Marco Civil Art. 19)**:
+- [ ] Procedimento de notificação judicial e remoção de conteúdo (já temos em `reportContent`).
+
+### 11.7 Segurança crítica (afeta Fase 19)
+
+Da mesma análise, Fase 19 deve entregar:
+
+- [ ] **Backup imutável (WORM)** no GCS, com lifecycle 90 dias.
+- [ ] **Criptografia at-rest** (Firestore já faz) + em trânsito (HTTPS forçado).
+- [ ] **RBAC granular**: por abrigo, por papel, por feature. (Já temos `isClubOwnerOrAdmin` — estender.)
+- [ ] **MFA opcional** para usuários com permissão de admin (TOTP via app authenticator).
+- [ ] **Políticas de senha**: mínimo 12 chars, sem repetição das últimas 5.
+- [ ] **Política de descarte seguro**: ao excluir user, apaga PII em 30 dias, mantém logs agregados.
+- [ ] **Logs de auditoria**: quem viu/editou/excluiu o quê, retidos por 6 meses (Marco Civil).
+- [ ] **Penetration test anual**: terceiro independente.
+
+### 11.8 Itens **deprioritizados** (com justificação)
+
+- **Telemedicina completa**: adiamos para além da Fase 22. Custo de manter RTs, risco regulatório alto, e o usuário final do viralata não pediu urgência.
+- **CRMV registration da plataforma**: só se virarmos a mediar consultas. Hoje somos software inerte (operador), não organizamos agendas.
+- **Busca via Elasticsearch**: Meilisearch é mais leve e suficiente para o escopo.
+
+### 11.9 Resumo do impacto no roadmap
+
+| Fase | Itens novos incorporados | Esforço extra |
+|------|--------------------------|---------------|
+| **Fase 0** (atual) | Estrutura de pastas `domain/{core,clinical,operational,legal,search}/` no skeleton. | ~30min |
+| **Fase 1** | Campo `shelter_owner_club_id` no pet; subcoleções tenant-specific definidas no modelo. | +1h |
+| **Fase 5** | Suporte a Google Forms webhook. | +1 dia |
+| **Fase 6** | CRON de materialização de tasks de pós-adoção. | +1 dia |
+| **Fase 10** | Soft delete + purge de Storage. | +1 dia |
+| **Fase 15** | Lê de materialização, não de geração prévia. | incluído |
+| **Fase 18** | Todos os 14 itens da seção 11.6. | +3 dias |
+| **Fase 19** | Todos os 8 itens da seção 11.7. | +3 dias |
+
+Total extra: **~10 dias** distribuídos em 8 fases. Não muda a sequência de fases.
+# Triggering deploy after index fix
