@@ -395,7 +395,42 @@ service cloud.firestore {
       }
     }
 
-    // ─── Radar de Pets (alerta de pet compatível) ──────────────────────────────
+
+    // ─── Fase 10: Coleção `pet_photos` (Galeria multi-tenant) ─────────
+    // Soft delete + purge 30d via Cloud Function galleryPurgeCron.
+    // Multi-tenant via shelter_club_id em cada foto. A foto é do pet
+    // mas pertence ao abrigo que a subiu.
+    match /pet_photos/{photoId} {
+      allow read: if isAuth() && (
+        isPlatformAdmin() ||
+        (resource.data.shelter_club_id != null &&
+          (isClubOwnerOrAdmin(resource.data.shelter_club_id) ||
+           canEditClubPets(resource.data.shelter_club_id) ||
+           hasClubPermission(resource.data.shelter_club_id, 'animals') ||
+           hasClubPermission(resource.data.shelter_club_id, 'gallery')))
+      );
+      allow create: if isAuth() && (
+        isPlatformAdmin() ||
+        (request.resource.data.shelter_club_id != null &&
+          (isClubOwnerOrAdmin(request.resource.data.shelter_club_id) ||
+           canEditClubPets(request.resource.data.shelter_club_id) ||
+           hasClubPermission(request.resource.data.shelter_club_id, 'animals') ||
+           hasClubPermission(request.resource.data.shelter_club_id, 'gallery')))
+      );
+      allow update: if isAuth() && (
+        isPlatformAdmin() ||
+        (resource.data.shelter_club_id != null &&
+          (isClubOwnerOrAdmin(resource.data.shelter_club_id) ||
+           canEditClubPets(resource.data.shelter_club_id) ||
+           hasClubPermission(resource.data.shelter_club_id, 'animals') ||
+           hasClubPermission(resource.data.shelter_club_id, 'gallery')))
+      );
+      // Delete físico: só Cloud Function galleryPurgeCron (admin SDK)
+      // e platform_admin (debug). Soft delete é via update (deleted_at).
+      allow delete: if isAuth() && isPlatformAdmin();
+    }
+
+    // ─── Radar de Pets (alerta de pet compatível) ──────────────────────────
     // Escrita pela Cloud Function usa o Admin SDK e ignora estas regras.
     match /pet_radars/{uid} {
       allow read: if isOwner(uid) || isPlatformAdmin();
