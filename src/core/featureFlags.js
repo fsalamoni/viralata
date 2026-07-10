@@ -1,3 +1,5 @@
+import { SHELTER_FEATURE_FLAG, SHELTER_FEATURE_FLAG_META as SHELTER_META } from '@/modules/shelter/domain/constants';
+
 /**
  * Catálogo de feature flags da plataforma.
  *
@@ -107,6 +109,13 @@ export const FEATURE_FLAG = Object.freeze({
    * — puramente aditiva, nenhuma diferença visual antes de ligar.
    */
   COMMUNITY_NGO_PARITY: 'community_ngo_parity',
+
+  // ─── Sistema de Gestão do Abrigo (Fases 0-21) ───────────────────────────
+  // Cada flag = 1 fase do SHELTER_MGMT_ROADMAP. Default OFF.
+  ...Object.values(SHELTER_FEATURE_FLAG).reduce(
+    (acc, key) => ({ ...acc, [key]: key }),
+    {},
+  ),
 });
 
 /** Metadados de exibição para o painel de flags (admin master). */
@@ -196,6 +205,13 @@ export const FEATURE_FLAG_META = Object.freeze({
       + 'Configurações). Desligada (default), a comunidade mantém '
       + 'seu padrão antigo. Puramente aditivo.',
   },
+
+
+  // SHELTER_* (Sistema de Gestão do Abrigo): meta importada de
+  // src/modules/shelter/domain/constants.js (não duplica string).
+  ...Object.fromEntries(
+    Object.entries(SHELTER_META).map(([k, v]) => [k, v]),
+  ),
 });
 
 /**
@@ -215,6 +231,12 @@ export const DEFAULT_FEATURE_FLAGS = Object.freeze({
   [FEATURE_FLAG.PAGE_HERO_ENABLED]: false,
   [FEATURE_FLAG.STANDARDIZED_PAGE_LAYOUT]: false,
   [FEATURE_FLAG.COMMUNITY_NGO_PARITY]: false,
+
+  // SHELTER_* (Sistema de Gestão do Abrigo): todas OFF por default.
+  // As chaves vêm de SHELTER_FEATURE_FLAG no módulo shelter/.
+  ...Object.fromEntries(
+    Object.values(SHELTER_FEATURE_FLAG).map((k) => [k, false]),
+  ),
 });
 
 /**
@@ -230,5 +252,7 @@ export function normalizeFeatureFlags(raw) {
       if (typeof raw[key] === 'boolean') out[key] = raw[key];
     });
   }
+
+
   return out;
 }

@@ -33,7 +33,7 @@ export default function OrganizationsHub() {
   return (
     <div className={useArenaPageClasses('arena-page mx-auto max-w-5xl space-y-8 px-5 py-6 pb-12')}>
       <PageHero
-        eyebrow="Organizações"
+        eyebrow="Abrigos"
         title="Administre suas organizações em um só lugar"
         description="Acesse animais, equipe, mural, doações e finanças com o mesmo padrão visual das páginas públicas da plataforma."
         actions={(
