@@ -75,3 +75,79 @@ exports.onPetCreatedNotifyRadar = onDocumentCreated(
     }
   },
 );
+
+// ─── Fase 5: Google Forms webhook (Fase 5) ──────────────────────────────
+//
+// Endpoint HTTP que recebe o webhook do Google Apps Script quando alguém
+// submete uma resposta ao Form do abrigo. Cria um application na
+// subcoleção `adoption_workflow` do abrigo correspondente.
+//
+// Segurança:
+// - O abrigo configura um `secret_token` na config
+// - O Apps Script envia esse secret no payload
+// - Se não bater, rejeitamos (401)
+// - Cloud Function tem rate limit implícito do Cloud Run
+//
+// Habilitar no abrigo: criar doc em
+// `clubs/{clubId}/integrations/google_forms` com `enabled=true` e
+// `form_id`. Cloud Function encontra o abrigo pelo `form_id` no payload.
+
+const { onRequest } = require('firebase-functions/v2/https');
+const { getGoogleFormsConfigByFormId, processFormsWebhook } = require('./googleFormsWebhook');
+
+exports.googleFormsWebhook = onRequest(
+  {
+    region: REGION,
+    cors: false, // chamado só pelo Apps Script (server-to-server)
+    maxInstances: 10,
+  },
+  async (req, res) => {
+    if (req.method !== 'POST') {
+      res.status(405).send('Method Not Allowed');
+      return;
+    }
+    try {
+      const payload = req.body;
+      if (!payload || typeof payload !== 'object') {
+        res.status(400).send('Invalid payload');
+        return;
+      }
+
+      // 1. Encontra config pelo form_id
+      const config = await getGoogleFormsConfigByFormId(db, payload.form_id);
+      if (!config) {
+        logger.warn('googleFormsWebhook: form_id não configurado', { form_id: payload.form_id });
+        res.status(404).send('Form not configured');
+        return;
+      }
+      if (!config.enabled) {
+        res.status(403).send('Integration disabled');
+        return;
+      }
+
+      // 2. Valida secret
+      if (payload.secret !== config.secret_token) {
+        logger.warn('googleFormsWebhook: invalid secret', { form_id: payload.form_id });
+        res.status(401).send('Invalid secret');
+        return;
+      }
+
+      // 3. Processa (cria application)
+      const result = await processFormsWebhook(
+        db,
+        { ...payload, shelter_club_id: config.shelter_club_id },
+        config,
+      );
+
+      logger.info('googleFormsWebhook: created application', {
+        application_id: result.application_id,
+        shelter_club_id: config.shelter_club_id,
+      });
+
+      res.status(200).json(result);
+    } catch (err) {
+      logger.error('googleFormsWebhook failed', { error: String(err) });
+      res.status(500).send(String(err?.message || err));
+    }
+  },
+);
