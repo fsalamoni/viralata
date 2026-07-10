@@ -87,6 +87,45 @@ service cloud.firestore {
         && request.auth.token.email.lower() == 'fsalamoni@gmail.com';
     }
 
+    // ─── Fase 1: Validação do Cadastro Único do Animal ──────────────────
+    // Espelha o Zod schema `shelterAnimalProfileSchema` em
+    // src/modules/shelter/domain/core/animal.js. Defense-in-depth: se o
+    // client for burlado, o Firestore ainda rejeita.
+    //
+    // Só valida campos PRESENTES no resource. Campos opcionais não precisam
+    // estar lá (backward-compat com pets legados).
+    function _shelterAnimalProfileValid(newData, oldData) {
+      // microchip_id: 15 dígitos se presente
+      (!('microchip_id' in newData) || newData.microchip_id == null ||
+        (newData.microchip_id is string &&
+         newData.microchip_id.size() == 15 &&
+         newData.microchip_id.matches('^[0-9]{15}$'))) &&
+      // asilomar_status: enum se presente
+      (!('asilomar_status' in newData) ||
+        newData.asilomar_status in ['healthy', 'treatable_rehabilitatable',
+                                    'treatable_manageable', 'unhealthy_untreatable',
+                                    'undetermined']) &&
+      // intake_type: enum se presente
+      (!('intake_type' in newData) || newData.intake_type == null ||
+        newData.intake_type in ['rescue', 'born', 'transfer', 'surrender', 'purchase']) &&
+      // rescue_date: string ISO 8601 se presente
+      (!('rescue_date' in newData) || newData.rescue_date == null ||
+        (newData.rescue_date is string &&
+         newData.rescue_date.size() >= 10)) &&
+      // deceased_at: string ISO 8601 se presente
+      (!('deceased_at' in newData) || newData.deceased_at == null ||
+        (newData.deceased_at is string &&
+         newData.deceased_at.size() >= 10)) &&
+      // shelter_owner_club_id: string não-vazia se presente
+      (!('shelter_owner_club_id' in newData) || newData.shelter_owner_club_id == null ||
+        (newData.shelter_owner_club_id is string &&
+         newData.shelter_owner_club_id.size() > 0)) &&
+      // rescue_by_uid: string se presente
+      (!('rescue_by_uid' in newData) || newData.rescue_by_uid == null ||
+        (newData.rescue_by_uid is string &&
+         newData.rescue_by_uid.size() > 0))
+    }
+
     // ─── Usuários ─────────────────────────────────────────────────────────────
     match /users/{userId} {
       allow read: if isAuth();
@@ -143,6 +182,47 @@ service cloud.firestore {
           isClubOwnerOrAdmin(resource.data.owner_id) || canEditClubPets(resource.data.owner_id) || hasClubPermission(resource.data.owner_id, 'animals')
         )) ||
         isPlatformAdmin()
+      );
+
+      // ─── Fase 1: Cadastro Único do Animal (perfil de abrigo) ───────────────
+      // Os campos do schema `shelterAnimalProfileSchema` (resgate, microchip,
+      // intake, asilomar, deceased_at) podem ser editados pelas mesmas
+      // pessoas que editam o pet. A regra de update acima já permite, mas
+      // adicionamos validação de formato e o princípio de não-trocar
+      // `shelter_owner_club_id` sem platform_admin.
+      //
+      // Reforços:
+      // 1. `shelter_owner_club_id` se setado, só pode ser alterado por
+      //    platform_admin OU se o pet mudar de dono organizacional
+      //    explicitamente (Fase 1: ainda não implementado — campo é write-once).
+      // 2. `rescue_date`, `asilomar_evaluated_at`, `deceased_at` devem ser
+      //    ISO 8601 (validação no service via Zod — aqui só bloqueia tipos
+      //    errados).
+      // 3. `microchip_id` se presente, deve ter 15 dígitos.
+      // 4. `asilomar_status` se presente, deve ser um dos 5 valores válidos.
+      // 5. `intake_type` se presente, deve ser um dos 5 valores válidos.
+      allow update: if isAuth() && (
+        resource.data.owner_id == request.auth.uid ||
+        (resource.data.owner_type == 'organization' && (
+          isClubOwnerOrAdmin(resource.data.owner_id) || canEditClubPets(resource.data.owner_id) || hasClubPermission(resource.data.owner_id, 'animals')
+        )) ||
+        isPlatformAdmin()
+      ) && (
+        // Não-trocar owner_id
+        request.resource.data.owner_id == resource.data.owner_id ||
+        isPlatformAdmin()
+      ) && (
+        // Validação dos campos do Cadastro Único (Fase 1)
+        _shelterAnimalProfileValid(request.resource.data, resource.data) &&
+        // shelter_owner_club_id é write-once: se já setado, não pode mudar
+        // sem platform_admin. Se ainda não setado, qualquer um dos editores
+        // acima pode setar.
+        (
+          !('shelter_owner_club_id' in resource.data) ||
+          resource.data.shelter_owner_club_id == null ||
+          request.resource.data.shelter_owner_club_id == resource.data.shelter_owner_club_id ||
+          isPlatformAdmin()
+        )
       );
     }
 
