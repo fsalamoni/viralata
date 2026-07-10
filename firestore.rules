@@ -390,6 +390,52 @@ service cloud.firestore {
         (isClubOwnerOrAdmin(clubId) && request.resource.data.get('created_by', resource.data.created_by) == resource.data.created_by) ||
         (isClubMember(clubId) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['member_count', 'updated_at']));
       allow delete: if isClubOwnerOrAdmin(clubId) || isPlatformAdmin();
+
+      // ─── Fase 3: Subcoleção `adoption_workflow` (multi-tenant) ──────
+      // Cada application pertence a um abrigo (`shelter_club_id` redundante
+      // com a path para defense-in-depth). Read/write controlado.
+      //
+      // - read: abrigo dono (admin/owner/members com permissão 'animals')
+      //         + o próprio applicant_uid (vê seu pedido)
+      //         + platform_admin
+      // - create: applicant (qualquer user logado). `shelter_club_id`
+      //           DEVE ser o clubId da path. Status só pode ser 'applied'.
+      // - update: abrigo (decisão) ou applicant (cancel/withdraw).
+      //           `shelter_club_id` e `applicant_uid` são IMUTÁVEIS.
+      // - delete: só platform_admin.
+      match /adoption_workflow/{applicationId} {
+        allow read: if isAuth() && (
+          isPlatformAdmin() ||
+          isClubOwnerOrAdmin(clubId) ||
+          canEditClubPets(clubId) ||
+          hasClubPermission(clubId, 'animals') ||
+          // O próprio applicant pode ler seu pedido
+          resource.data.applicant_uid == request.auth.uid
+        );
+        allow create: if isAuth() && (
+          // shelter_club_id deve bater com a path
+          request.resource.data.shelter_club_id == clubId &&
+          // applicant_uid é o próprio usuário
+          request.resource.data.applicant_uid == request.auth.uid &&
+          // Status inicial é sempre 'applied'
+          request.resource.data.status == 'applied' &&
+          // pet_id é obrigatório
+          request.resource.data.pet_id is string &&
+          request.resource.data.pet_id.size() > 0
+        );
+        allow update: if isAuth() && (
+          // shelter_club_id e applicant_uid IMUTÁVEIS
+          request.resource.data.shelter_club_id == resource.data.shelter_club_id &&
+          request.resource.data.applicant_uid == resource.data.applicant_uid &&
+          // abrigo OU applicant podem atualizar
+          (isPlatformAdmin() ||
+           isClubOwnerOrAdmin(clubId) ||
+           canEditClubPets(clubId) ||
+           hasClubPermission(clubId, 'animals') ||
+           resource.data.applicant_uid == request.auth.uid)
+        );
+        allow delete: if isAuth() && isPlatformAdmin();
+      }
     }
 
     match /club_members/{memberId} {
