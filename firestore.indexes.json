@@ -289,16 +289,6 @@
           "order": "DESCENDING"
         }
       ]
-    },
-    {
-      "collectionGroup": "integrations",
-      "queryScope": "COLLECTION_GROUP",
-      "fields": [
-        {
-          "fieldPath": "form_id",
-          "order": "ASCENDING"
-        }
-      ]
     }
   ],
   "fieldOverrides": []
