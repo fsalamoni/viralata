@@ -253,6 +253,42 @@
           "order": "DESCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "adoption_workflow",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "shelter_club_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "created_at",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "adoption_workflow",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "shelter_club_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "pet_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "created_at",
+          "order": "DESCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": []
