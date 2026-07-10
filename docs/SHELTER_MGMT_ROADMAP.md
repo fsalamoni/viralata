@@ -60,7 +60,7 @@ Cada módulo é **isolado e autônomo**: falha em um módulo não derruba os dem
 └──────────────────────────────────────────────────────────┘
 ```
 
-**9/22 fases concluídas, 13/22 pendentes.**
+**11/22 fases concluídas, 11/22 pendentes.**
 ```
 
 ## 4. Dependências entre fases
@@ -73,13 +73,13 @@ Fase 0 (preparação)
             ├→ Fase 6 (pós-adoção) ✅
             ├→ Fase 7 (lares temporários) ✅
             ├→ Fase 8 (saúde / prontuário) ✅
-            │    └→ Fase 9 (medicação) ⏸️
-            └→ Fase 10 (galeria) ⏸️
+            │    └→ Fase 9 (medicação) ✅
+            └→ Fase 10 (galeria) ✅
        └→ Fase 3 (adoção workflow) ✅
             └→ Fase 4 (adotante) ✅
   └→ Fase 11 (vitrines) ⏸️
        └→ Fase 12 (RSVP) ⏸️
-       └→ Fase 13 (voluntários) ⏸️
+       └→ Fase 13 (voluntários) ✅
   └→ Fase 14 (dashboard) ⏸️
        ├→ Fase 14 (kanban)
        ├→ Fase 15 (relatórios)
@@ -581,7 +581,66 @@ Fase 0 (preparação)
 - +8 testes
 - smoke test em produção com flag OFF
 
-### Fase 12 — Gestão de Voluntários · flag `SHELTER_VOLUNTEERS`
+### Fase 12 — Gestão de Voluntários · flag `SHELTER_VOLUNTEER_PROFILE_V1` ✅
+
+**Status**: ✅ Concluída em 2026-07-10 (Fase 13 do projeto, 11/22 fases). Bundle `index-bFVuAo0r.js`. 711/711 testes passando (98 novos).
+
+**Objetivo**: cadastro, habilidades, disponibilidade e histórico de participação de voluntários. Multi-tenant: cada abrigo tem sua própria rostagem com background check **per-shelter** (não portável). LGPD: aceite do termo versionado com snapshot.
+
+**Novas coleções** (multi-tenant):
+
+1. `users/{uid}/volunteer_profile/main` (id fixo `main`) — perfil global do voluntário
+2. `clubs/{clubId}/volunteers/{volunteerUid}` (id determinista = uid) — rostagem per-shelter
+3. `clubs/{clubId}/volunteer_participations/{participationId}` — participações em eventos
+
+**Schema do perfil global**:
+- `skills[]` — `dog_walking`, `cat_socialization`, `transport`, `grooming`, `photography`, `events`
+- `availability[]` — slots `{day_of_week: mon..sun, start_time: HH:MM, end_time: HH:MM}` (max 30)
+- `radius_km` (0–500, opcional)
+- `transport_available` (bool), `has_vehicle` (bool)
+- `notes` (string, max 2000)
+- `terms_accepted_at` (ISO timestamp) + `terms_version` (snapshot LGPD)
+
+**Schema do roster per-shelter**:
+- `shelter_club_id`, `volunteer_uid`, `volunteer_name` (snapshot), `volunteer_email/phone/photo_url` (snapshot opcional)
+- `status`: `active` | `paused` | `blocked` | `left` (terminal)
+- `background_check_status` (per-shelter): `not_required` | `pending` | `approved` | `rejected`
+- `background_check_at`, `background_check_notes`
+- `terms_accepted_at` + `terms_version` + `signature_text` (espelho do aceite global — LGPD)
+- `joined_at`, `left_at`
+
+**Schema da participation**:
+- `shelter_club_id`, `volunteer_uid`, `volunteer_name` (snapshot)
+- `event_type`: `exhibition` | `shelter_visit` | `foster_transport` | `event_other`
+- `event_id` (string livre, opcional), `exhibition_id` (FK opcional Fase 11)
+- `event_label`, `event_date` (ISO)
+- `role`: `carregamento` | `transporte_ida` | `transporte_volta` | `cuidador` | `outro`
+- `check_in` (ISO, opcional), `check_out` (ISO, opcional), `hours_logged` (calculado no check-out)
+
+**LGPD / termo**: o termo de voluntariado vive em `src/modules/shelter/domain/legal/volunteerTerms.js` (stub resumido, `TERMS_VERSION = '2026-07-10'`, com TODO pra substituir pelo texto integral na Fase 18). O aceite é gravado como snapshot imutável no perfil global E espelhado no roster per-shelter.
+
+**UI**:
+- `VolunteerProfileForm` — form do perfil do voluntário (skills, availability, radius, transporte) + aceite do termo (signature_text). Exige aceite antes de permitir save.
+- `VolunteersRoster` — lista de voluntários do abrigo (filtros por status, badges de BG check, ações: aprovar/rejeitar BG, pausar/retomar/bloquear/sair).
+- `ParticipationForm` — form para o abrigo registrar uma participation (evento, role, voluntário).
+- `ParticipationsList` — lista de participations com totais de horas, em andamento, concluídas. Botões de check-in/out (abrigo OU self-service do voluntário).
+
+**Firestore rules**:
+- `users/{userId}/volunteer_profile/{profileId}` — owner write, owner + platform_admin read. `terms_accepted_at` obrigatório no create.
+- `clubs/{clubId}/volunteers/{volunteerUid}` — abrigo (admin/owner/animals) + próprio voluntário (read + auto-join + pausa/saída). `shelter_club_id` e `volunteer_uid` IMUTÁVEIS. Delete só platform_admin.
+- `clubs/{clubId}/volunteer_participations/{participationId}` — abrigo (admin/owner/animals) + próprio voluntário (read + check-in/out self-service). `shelter_club_id`, `volunteer_uid`, `event_type` IMUTÁVEIS. Delete só platform_admin.
+
+**Validação**:
+- typecheck/lint/build OK
+- +98 testes
+- smoke test em produção com flag OFF
+
+**Decisões críticas**:
+- Perfil global em `users/{uid}/volunteer_profile/main` (subcoleção single-doc, id fixo `main`) — simplicidade + segue o padrão `adopter_profile` da Fase 4.
+- Background check **per-shelter** (não portável entre abrigos) — cada abrigo aprova/rejeita independentemente.
+- Termo **global** (não per-shelter) — o voluntário aceita uma vez o termo da plataforma; cada abrigo espelha o aceite no roster.
+- `exhibition_id` como FK opcional e string livre — Fase 13 não depende da Fase 11 (vitrines), funciona com ou sem.
+- Coexiste com `SHELTER_VOLUNTEERS` (placeholder guarda-chuva Fase 0) sem colisão de string.
 
 **Objetivo**: cadastro e histórico de voluntários.
 

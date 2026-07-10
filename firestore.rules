@@ -174,6 +174,21 @@ service cloud.firestore {
         allow update: if isOwner(userId) && request.resource.data.user_uid == userId;
         allow delete: if isOwner(userId) || isPlatformAdmin();
       }
+
+      // ─── Fase 13: Subcoleção `volunteer_profile` (perfil do voluntário) ───
+      // O perfil global do voluntário (skills, availability, radius, aceite
+      // do termo). Doc único por uid (id fixo "main"). LGPD: apenas o
+      // próprio dono lê/escreve, plataforma admin (debug) tem acesso.
+      // Padrão: o abrigo NÃO lê este perfil diretamente. Quando o
+      // voluntário entra na rostagem, o service faz um SNAPSHOT dos
+      // campos relevantes para `clubs/{clubId}/volunteers/{uid}`. Esse
+      // snapshot é o que o abrigo vê — defense-in-depth.
+      match /volunteer_profile/{profileId} {
+        allow read: if isAuth() && (isOwner(userId) || isPlatformAdmin());
+        allow create: if isOwner(userId) && request.resource.data.get('terms_accepted_at', null) is string;
+        allow update: if isOwner(userId);
+        allow delete: if isOwner(userId) || isPlatformAdmin();
+      }
     }
 
     // ─── Pets ─────────────────────────────────────────────────────────────────
@@ -667,6 +682,103 @@ service cloud.firestore {
           hasClubPermission(clubId, 'animals') ||
           // LT pode aceitar (pending → active) ou cancelar antes de começar
           resource.data.foster_uid == request.auth.uid
+        );
+        allow delete: if isAuth() && isPlatformAdmin();
+      }
+
+      // ─── Fase 13: Subcoleção `volunteers` (rostagem per-shelter) ─────────
+      // Multi-tenant. Cada doc = (abrigo, voluntário) com status da rostagem
+      // e background check PER-SHELTER (não portável entre abrigos).
+      // Id determinista = volunteerUid (1 doc por par abrigo+voluntário).
+      //
+      // - read: abrigo (admin/owner/animals) + o próprio voluntário
+      // - create: abrigo (admin/owner/animals) OU o próprio voluntário
+      //   (auto-join, com snapshot do aceite do termo vindo do perfil global)
+      // - update: abrigo (status da rostagem, BG check) OU o próprio
+      //   voluntário (pausar/retomar/left). shelter_club_id e
+      //   volunteer_uid são IMUTÁVEIS.
+      // - delete: só platform_admin (hard delete)
+      match /volunteers/{volunteerUid} {
+        allow read: if isAuth() && (
+          isPlatformAdmin() ||
+          isClubOwnerOrAdmin(clubId) ||
+          canEditClubPets(clubId) ||
+          hasClubPermission(clubId, 'animals') ||
+          // O próprio voluntário pode ler sua rostagem
+          volunteerUid == request.auth.uid
+        );
+        allow create: if isAuth() && (
+          request.resource.data.shelter_club_id == clubId &&
+          request.resource.data.volunteer_uid is string &&
+          request.resource.data.volunteer_uid.size() > 0 &&
+          request.resource.data.volunteer_name is string &&
+          request.resource.data.volunteer_name.size() >= 2 &&
+          request.resource.data.terms_accepted_at is string &&
+          (isPlatformAdmin() ||
+           isClubOwnerOrAdmin(clubId) ||
+           canEditClubPets(clubId) ||
+           hasClubPermission(clubId, 'animals') ||
+           // Auto-join: o próprio voluntário pode se adicionar
+           volunteerUid == request.auth.uid)
+        );
+        allow update: if isAuth() && (
+          // shelter_club_id e volunteer_uid IMUTÁVEIS
+          request.resource.data.shelter_club_id == resource.data.shelter_club_id &&
+          request.resource.data.volunteer_uid == resource.data.volunteer_uid &&
+          (isPlatformAdmin() ||
+           isClubOwnerOrAdmin(clubId) ||
+           canEditClubPets(clubId) ||
+           hasClubPermission(clubId, 'animals') ||
+           // O próprio voluntário pode pausar/retomar/sair
+           volunteerUid == request.auth.uid)
+        );
+        allow delete: if isAuth() && isPlatformAdmin();
+      }
+
+      // ─── Fase 13: Subcoleção `volunteer_participations` (turnos) ─────────
+      // Multi-tenant. Cada doc = (abrigo, voluntário, evento) com check-in/out.
+      // exhibition_id é FK opcional para Fase 11 (vitrines) — string livre
+      // aqui, sem dependência.
+      //
+      // - read: abrigo (admin/owner/animals) + o próprio voluntário
+      // - create: abrigo (admin/owner/animals)
+      // - update: abrigo (notas, event_date) OU o próprio voluntário
+      //   (check-in / check-out self-service)
+      // - delete: só platform_admin
+      match /volunteer_participations/{participationId} {
+        allow read: if isAuth() && (
+          isPlatformAdmin() ||
+          isClubOwnerOrAdmin(clubId) ||
+          canEditClubPets(clubId) ||
+          hasClubPermission(clubId, 'animals') ||
+          // O próprio voluntário pode ler suas participações
+          resource.data.volunteer_uid == request.auth.uid
+        );
+        allow create: if isAuth() && (
+          request.resource.data.shelter_club_id == clubId &&
+          request.resource.data.volunteer_uid is string &&
+          request.resource.data.volunteer_uid.size() > 0 &&
+          request.resource.data.volunteer_name is string &&
+          request.resource.data.event_type is string &&
+          request.resource.data.event_label is string &&
+          request.resource.data.event_date is string &&
+          request.resource.data.role is string &&
+          (isPlatformAdmin() ||
+           isClubOwnerOrAdmin(clubId) ||
+           canEditClubPets(clubId) ||
+           hasClubPermission(clubId, 'animals'))
+        );
+        allow update: if isAuth() && (
+          // shelter_club_id, volunteer_uid, event_type IMUTÁVEIS
+          request.resource.data.shelter_club_id == resource.data.shelter_club_id &&
+          request.resource.data.volunteer_uid == resource.data.volunteer_uid &&
+          request.resource.data.event_type == resource.data.event_type &&
+          (isPlatformAdmin() ||
+           isClubOwnerOrAdmin(clubId) ||
+           canEditClubPets(clubId) ||
+           hasClubPermission(clubId, 'animals') ||
+           // Self-service check-in/out
+           resource.data.volunteer_uid == request.auth.uid)
         );
         allow delete: if isAuth() && isPlatformAdmin();
       }

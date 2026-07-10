@@ -188,6 +188,39 @@ Doc único (não é a coleção `feature_flags`, que não existe). Campo
 `feature_flags: { [flagKey]: boolean }`, editado só pelo admin master
 (`platformSettingsService.setFeatureFlag`).
 
+## Sistema de Gestão do Abrigo (Fases 0–12)
+
+Coleções introduzidas pelo módulo `shelter/`. Multi-tenant via `shelter_club_id`
+em cada doc (exceto o perfil global do voluntário e os pets, que são globais).
+
+### `users/{uid}/volunteer_profile/main` (Fase 13, global) 🆕
+Subcoleção single-doc (id fixo `main`). Perfil global do voluntário:
+`skills[]` (dog_walking, cat_socialization, transport, grooming, photography, events),
+`availability[]` (slots `{day_of_week, start_time, end_time}`, max 30),
+`radius_km` (0–500), `transport_available`, `has_vehicle`, `notes`,
+`terms_accepted_at` (ISO timestamp) + `terms_version` (snapshot LGPD).
+Acesso: apenas o próprio `uid` (write + read) + platform_admin (read).
+
+### `clubs/{clubId}/volunteers/{volunteerUid}` (Fase 13, multi-tenant) 🆕
+Roster per-shelter, id determinista = `volunteerUid`. Snapshot do voluntário
+(`volunteer_name`, `volunteer_email/phone/photo_url`) — o abrigo NÃO lê
+`users/{uid}/volunteer_profile` diretamente. `status` (active/paused/blocked/left),
+`background_check_status` (not_required/pending/approved/rejected — **per-shelter**),
+`background_check_at/notes`, `terms_accepted_at` + `terms_version` + `signature_text`
+(espelho do aceite global, LGPD), `joined_at`/`left_at`. Read: abrigo (admin/owner/animals)
++ o próprio voluntário. Create: abrigo OU o próprio voluntário (auto-join com snapshot
+do aceite). Update: abrigo (status/BG check) OU próprio voluntário (pausar/retomar/left).
+Delete: só platform_admin.
+
+### `clubs/{clubId}/volunteer_participations/{participationId}` (Fase 13, multi-tenant) 🆕
+Registro de turnos. `volunteer_uid` + `volunteer_name` (snapshot), `event_type`
+(exhibition/shelter_visit/foster_transport/event_other), `event_id` (livre) +
+`exhibition_id` (FK opcional Fase 11), `event_label` + `event_date` (ISO), `role`
+(carregamento/transporte_ida/transporte_volta/cuidador/outro), `check_in`/`check_out`
+(ISO) + `hours_logged` (calculado no check-out). Read: abrigo + próprio voluntário.
+Create: abrigo. Update: abrigo OU próprio voluntário (check-in/out self-service).
+Delete: só platform_admin.
+
 ## Relacionamentos (resumo)
 
 ```
