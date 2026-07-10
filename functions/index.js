@@ -151,3 +151,11 @@ exports.googleFormsWebhook = onRequest(
     }
   },
 );
+
+// ─── Fase 6: Pós-adoção com CRON de materialização ──────────────────────
+//
+// Cloud Function scheduled que roda diariamente para materializar
+// milestones de pós-adoção. Ver functions/postAdoptionCron.js para
+// detalhes da implementação.
+const { materializePostAdoptionTasks } = require('./postAdoptionCron');
+exports.materializePostAdoptionTasks = materializePostAdoptionTasks;

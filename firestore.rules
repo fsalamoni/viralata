@@ -470,6 +470,51 @@ service cloud.firestore {
         );
         allow delete: if isAuth() && isPlatformAdmin();
       }
+
+      // ─── Fase 6: Subcoleção `post_adoption` (plano de pós-adoção) ──
+      match /post_adoption/{postAdoptionId} {
+        allow read: if isAuth() && (
+          isPlatformAdmin() ||
+          isClubOwnerOrAdmin(clubId) ||
+          canEditClubPets(clubId) ||
+          hasClubPermission(clubId, 'animals') ||
+          // O próprio adotante pode ler seu plano
+          resource.data.adopter_uid == request.auth.uid
+        );
+        // Apenas Cloud Function (admin SDK) cria — sem permissão direta
+        // para client. O abrigo não cria manualmente.
+        allow create: if isAuth() && false;
+        allow update: if isAuth() && (
+          isPlatformAdmin() ||
+          isClubOwnerOrAdmin(clubId) ||
+          canEditClubPets(clubId) ||
+          hasClubPermission(clubId, 'animals') ||
+          // Adotante pode marcar como devolvido/pausa
+          resource.data.adopter_uid == request.auth.uid
+        );
+        allow delete: if isAuth() && isPlatformAdmin();
+      }
+
+      // ─── Fase 6: Subcoleção `kanban_tasks` (materializadas pelo CRON) ──
+      match /kanban_tasks/{taskId} {
+        allow read: if isAuth() && (
+          isPlatformAdmin() ||
+          isClubOwnerOrAdmin(clubId) ||
+          hasClubPermission(clubId, 'animals') ||
+          // Adotante vê as tasks dele
+          resource.data.adopter_uid == request.auth.uid
+        );
+        // Apenas Cloud Function (admin SDK) cria tasks
+        allow create: if isAuth() && false;
+        allow update: if isAuth() && (
+          isPlatformAdmin() ||
+          isClubOwnerOrAdmin(clubId) ||
+          hasClubPermission(clubId, 'animals') ||
+          // Adotante pode completar/skip
+          resource.data.adopter_uid == request.auth.uid
+        );
+        allow delete: if isAuth() && isPlatformAdmin();
+      }
     }
 
     match /club_members/{memberId} {
