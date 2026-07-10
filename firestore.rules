@@ -515,6 +515,34 @@ service cloud.firestore {
         );
         allow delete: if isAuth() && isPlatformAdmin();
       }
+
+      // ─── Fase 7: Subcoleção `fosters` (Lares Temporários) ───────────
+      // Multi-tenant. Cada placement = (abrigo, pet, LT) com prazo.
+      match /fosters/{fosterId} {
+        allow read: if isAuth() && (
+          isPlatformAdmin() ||
+          isClubOwnerOrAdmin(clubId) ||
+          canEditClubPets(clubId) ||
+          hasClubPermission(clubId, 'animals') ||
+          // O próprio LT (foster_uid) pode ler seu placement
+          resource.data.foster_uid == request.auth.uid
+        );
+        allow create: if isAuth() && (
+          isPlatformAdmin() ||
+          isClubOwnerOrAdmin(clubId) ||
+          canEditClubPets(clubId) ||
+          hasClubPermission(clubId, 'animals')
+        );
+        allow update: if isAuth() && (
+          isPlatformAdmin() ||
+          isClubOwnerOrAdmin(clubId) ||
+          canEditClubPets(clubId) ||
+          hasClubPermission(clubId, 'animals') ||
+          // LT pode aceitar (pending → active) ou cancelar antes de começar
+          resource.data.foster_uid == request.auth.uid
+        );
+        allow delete: if isAuth() && isPlatformAdmin();
+      }
     }
 
     match /club_members/{memberId} {
