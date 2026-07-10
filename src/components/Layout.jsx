@@ -23,7 +23,7 @@ const STANDALONE_PAGES = ['Home', 'Login', 'OnboardingQuestionnaire'];
 // avatar, como especificado no handoff.
 const NAV_ITEMS = [
   { label: 'Feed', icon: PawPrint, to: '/feed' },
-  { label: 'Organizações', icon: Building2, to: '/organizacoes', auth: true },
+  { label: 'Abrigos', icon: Building2, to: '/organizacoes', auth: true },
   { label: 'Comunidade', icon: Users, to: '/comunidade' },
   { label: 'Chat', icon: MessageCircle, to: '/chat', auth: true },
 ];

@@ -362,12 +362,12 @@ export default function ClubsDirectory() {
           </div>
           <p className="mt-2 text-[11.5px] text-muted-foreground/90">
             {!trimmedCity
-              ? 'Sem cidade definida — mostrando todas as organizações da plataforma'
+              ? 'Sem cidade definida — mostrando todos os abrigos da plataforma'
               : radiusActive
-                ? `Organizações até ${radius} km de ${trimmedCity} (distância aproximada pelo centro da cidade)`
+                ? `Abrigos até ${radius} km de ${trimmedCity} (distância aproximada pelo centro da cidade)`
                 : radius
-                  ? `Não conhecemos a localização de "${trimmedCity}" para calcular distância — mostrando só organizações nessa cidade.`
-                  : `Organizações em ${trimmedCity}`}
+                  ? `Não conhecemos a localização de "${trimmedCity}" para calcular distância — mostrando só abrigos nessa cidade.`
+                  : `Abrigos em ${trimmedCity}`}
             {communityId !== 'all' && (
               <>
                 {' · '}

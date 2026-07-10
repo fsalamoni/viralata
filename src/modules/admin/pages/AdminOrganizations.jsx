@@ -88,7 +88,7 @@ export default function AdminOrganizations() {
 
       <PageHero
         eyebrow="Admin"
-        title="Organizações"
+        title="Abrigos"
         description="Controle editorial do diretório, vínculos entre comunidades e organizações, publicação e destaques globais."
         actions={(
           <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold text-orange-50/85">
@@ -98,7 +98,7 @@ export default function AdminOrganizations() {
       />
 
       <div className="grid gap-4 md:grid-cols-3">
-        <SummaryCard icon={Building2} label="Organizações" value={clubs.length} />
+        <SummaryCard icon={Building2} label="Abrigos" value={clubs.length} />
         <SummaryCard icon={Sparkles} label="Destaques" value={featuredClubs} />
         <SummaryCard icon={ShieldCheck} label="Pendências" value={clubsInReview + clubsSuspended} />
       </div>
@@ -199,7 +199,7 @@ export default function AdminOrganizations() {
                           type="button"
                           variant={club.featured ? 'secondary' : 'outline'}
                           className="flex-1"
-                          onClick={() => handleClubUpdate(club, { featured: !club.featured }, club.featured ? 'Organização removida dos destaques.' : 'Organização marcada como destaque.')}
+                          onClick={() => handleClubUpdate(club, { featured: !club.featured }, club.featured ? 'Abrigo removido dos destaques.' : 'Abrigo marcado como destaque.')}
                           disabled={updateClubMutation.isPending}
                         >
                           <Sparkles className="mr-1.5 h-4 w-4" />

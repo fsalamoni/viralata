@@ -8,6 +8,27 @@
 > estrutural documentada (cobertura de cidades do filtro de raio, CVE do
 > `xlsx` sem patch no npm).
 
+## Roadmap paralelo: Sistema de Gestão do Abrigo
+
+Em paralelo ao roadmap acima, está em andamento o **Sistema de Gestão do
+Abrigo** — a grande evolução da plataforma pra transformá-la num hub
+completo de gestão da causa animal. Ver
+**[`docs/SHELTER_MGMT_ROADMAP.md`](./SHELTER_MGMT_ROADMAP.md)** para o
+plano detalhado (22 fases, 5 macro-blocos, ~25-40 dias de trabalho).
+
+Status atual (2026-07-10):
+
+| Fase | Nome | Status |
+|---|---|---|
+| 0 | Preparação (renomeação + skeleton) | ⏳ Em planejamento |
+| 1 | Cadastro Único do Animal | ⏸️ Aguardando Fase 0 |
+| 2-9 | Núcleo do Animal | ⏸️ Aguardando |
+| 10-16 | Operação do Abrigo | ⏸️ Aguardando |
+| 17 | Busca Inteligente (Meilisearch) | ⏸️ Aguardando |
+| 18-22 | Legal + Segurança + Admin + Cutover | ⏸️ Aguardando |
+
+Convenções: ✅ concluído · 🟡 em andamento · ⏸️ aguardando · ❌ bloqueado. Cada fase = 1 feature flag (`SHELTER_*`) default OFF. Módulo isolado em `src/modules/shelter/`. Princípios: schema evolutivo, dual-read/write durante migração, defense in depth, audit log de tudo.
+
 ## Contexto
 
 A plataforma já tem paridade funcional com os dois documentos de

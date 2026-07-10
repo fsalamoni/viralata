@@ -163,3 +163,49 @@ Painel exclusivo de `platform_admin` (`/admin/*`).
 | `/denuncias/nova` | `reports/pages/CreateReport` |
 | `/perfil` | `pages/Profile` |
 | `/admin/*` | `admin/pages/*` |
+
+
+## shelter/ — Sistema de Gestão do Abrigo (em construção)
+
+> Em construção. Ver **[`docs/SHELTER_MGMT_ROADMAP.md`](./SHELTER_MGMT_ROADMAP.md)**
+> para o plano detalhado. Este módulo agrega tudo relativo a abrigos
+> (renomeação de "Organizações" para "Abrigos"), cadastro único do
+> animal, timeline, workflow de adoção, lares temporários, prontuário
+> médico, medicação, vitrines, kanban de tarefas, busca inteligente e
+> tudo o que envolve a gestão de abrigos. Cada feature entra atrás de
+> uma feature flag `SHELTER_*` (default OFF), e a UI convive com o
+> módulo `organizations/` até a cutover final (Fase 21).
+
+Sub-módulos previstos (1 por feature flag):
+
+- `shelter/constants.js` — enums compartilhados (status de adoção, tipo
+  de evento na timeline, tipo de medication, etc.)
+- `shelter/permissions.js` — helpers de permissão do abrigo
+  (espelha o padrão de `organizations/domain/permissions.js`)
+- `shelter/services/` — CRUDs por feature (timelineService, adoptionService,
+  medicationService, exhibitionService, fosterService, kanbanService, etc.)
+- `shelter/components/` — widgets compartilhados (Timeline, KanbanBoard,
+  MedicationScheduler, ExhibitionCard, SmartSearchBox, etc.)
+- `shelter/pages/` — páginas standalone (SmartSearch, ShelterReports,
+  ShelterDashboard, etc.)
+- `shelter/hooks/` — hooks específicos (usePetTimeline, useMedicationDoses,
+  useKanban, useSmartSearch, etc.)
+
+Coleções Firestore novas (cada fase adiciona a sua):
+
+- `pet_timeline/{petId}/events/{eventId}` (Fase 2)
+- `adoption_applications/{applicationId}` (Fase 3)
+- `post_adoption_followups/{followupId}` (Fase 5)
+- `foster_placements/{placementId}` (Fase 6)
+- `pet_medical_records/{petId}/records/{recordId}` (Fase 7)
+- `medication_prescriptions/{prescriptionId}` (Fase 8)
+- `pet_photos/{photoId}` (Fase 9)
+- `exhibitions/{exhibitionId}` (Fase 10) + subcollections
+- `volunteer_participation/{participationId}` (Fase 12)
+- `kanban_boards/{boardId}` + `kanban_columns/{columnId}` + `kanban_cards/{cardId}` (Fase 14)
+- `terms_acceptances/{userId}` (Fase 18)
+- `search_index` (Fase 17 — Meilisearch, fora do Firestore)
+
+Permissões: defense in depth (Firestore rules + service + hook + UI). Audit
+log de toda mutação relevante. Soft delete com lixeira para registros
+sensíveis (fotos, animais, adoções).
