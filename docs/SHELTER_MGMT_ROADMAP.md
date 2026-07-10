@@ -1,9 +1,11 @@
 # Sistema de Gestão do Abrigo — Roadmap Detalhado
 
-> **Status**: em planejamento (Fase 0 — preparação, em implementação)
-> **Versão**: 0.1 — 2026-07-10
+> **Status**: Fases 0–8 concluídas (9/22). Próximas: Fase 9 (Medicamentos), Fase 10 (Galeria).
+> **Versão**: 0.2 — 2026-07-10 (atualizado pós-Fase 8)
 > **Owner**: Mavis (sub-agente técnico do repo `fsalamoni/viralata`)
 > **Macro-blocos**: 5 (A fundação, B núcleo do animal, C operação, D busca, E legal/segurança/admin)
+>
+> **Nota sobre numeração**: a Fase 5 deste roadmap (Google Forms webhook) foi adicionada após o plano original — ela **não substitui** a Fase 5 do roadmap (pós-adoção), apenas foi inserida **antes** dela. Resultado: as fases 5+ do projeto estão **+1 acima** do plano original (pós-adoção = Fase 6 do projeto, Lares Temporários = Fase 7, etc.). O tracker em `.mavis/scratchpad/shelter-roadmap-tracker.md` usa a numeração do projeto (que é a fonte da verdade).
 
 ## 1. Visão geral
 
@@ -38,37 +40,47 @@ Cada módulo é **isolado e autônomo**: falha em um módulo não derruba os dem
 │  • cadastro único, timeline, adoção, adotante,           │
 │    pós-adoção, lares temporários, saúde, medicação,     │
 │    galeria                                              │
+│  • Status (2026-07-10): Fases 1–8 ✅, Fase 9 ⏸️        │
 ├──────────────────────────────────────────────────────────┤
-│  BLOCO C — OPERAÇÃO DO ABRIGO (Fases 10-16) ~7 PRs      │
+│  BLOCO C — OPERAÇÃO DO ABRIGO (Fases 10-17) ~8 PRs      │
 │  • vitrines, RSVP, voluntários, dashboard, kanban,      │
 │    relatórios, indicadores                              │
+│  • Status (2026-07-10): Fases 10–17 ⏸️                 │
 ├──────────────────────────────────────────────────────────┤
-│  BLOCO D — BUSCA + DESCOBERTA (Fase 17)  ~1 PR grande   │
+│  BLOCO D — BUSCA + DESCOBERTA (Fase 18)  ~1 PR grande   │
 │  • sistema de busca inteligente multi-filtro             │
+│  • Status (2026-07-10): 🚨 Decisão de backend pendente │
 ├──────────────────────────────────────────────────────────┤
-│  BLOCO E — LEGAL + SEGURANÇA + ADMIN (Fases 18-22) ~5 PRs│
+│  BLOCO E — LEGAL + SEGURANÇA + ADMIN (Fases 19-22) ~5 PRs│
 │  • termos completos, LGPD, segurança avançada, painel    │
 │    de saúde da plataforma, cutover                       │
+│  • Status (2026-07-10): Fases 19–22 ⏸️                 │
+│  • Nota: 13 docs legais já guardados em                 │
+│    /workspace/attachments/legal-seg/                     │
 └──────────────────────────────────────────────────────────┘
+```
+
+**9/22 fases concluídas, 13/22 pendentes.**
 ```
 
 ## 4. Dependências entre fases
 
 ```
 Fase 0 (preparação)
-  └→ Fase 1 (cadastro)
-       └→ Fase 2 (timeline)
-            ├→ Fase 5 (pós-adoção)
-            ├→ Fase 7 (saúde)
-            │    └→ Fase 8 (medicação)
-            └→ Fase 9 (galeria)
-       └→ Fase 3 (adoção workflow)
-            └→ Fase 4 (adotante)
-       └→ Fase 6 (lares temporários)
-  └→ Fase 10 (vitrines)
-       └→ Fase 11 (RSVP)
-       └→ Fase 12 (voluntários)
-  └→ Fase 13 (dashboard)
+  └→ Fase 1 (cadastro) ✅
+       └→ Fase 2 (timeline) ✅
+            ├→ Fase 5 (Google Forms) ✅
+            ├→ Fase 6 (pós-adoção) ✅
+            ├→ Fase 7 (lares temporários) ✅
+            ├→ Fase 8 (saúde / prontuário) ✅
+            │    └→ Fase 9 (medicação) ⏸️
+            └→ Fase 10 (galeria) ⏸️
+       └→ Fase 3 (adoção workflow) ✅
+            └→ Fase 4 (adotante) ✅
+  └→ Fase 11 (vitrines) ⏸️
+       └→ Fase 12 (RSVP) ⏸️
+       └→ Fase 13 (voluntários) ⏸️
+  └→ Fase 14 (dashboard) ⏸️
        ├→ Fase 14 (kanban)
        ├→ Fase 15 (relatórios)
        └→ Fase 16 (indicadores)

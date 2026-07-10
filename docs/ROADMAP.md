@@ -18,14 +18,33 @@ plano detalhado (22 fases, 5 macro-blocos, ~25-40 dias de trabalho).
 
 Status atual (2026-07-10):
 
-| Fase | Nome | Status |
-|---|---|---|
-| 0 | Preparação (renomeação + skeleton) | ⏳ Em planejamento |
-| 1 | Cadastro Único do Animal | ⏸️ Aguardando Fase 0 |
-| 2-9 | Núcleo do Animal | ⏸️ Aguardando |
-| 10-16 | Operação do Abrigo | ⏸️ Aguardando |
-| 17 | Busca Inteligente (Meilisearch) | ⏸️ Aguardando |
-| 18-22 | Legal + Segurança + Admin + Cutover | ⏸️ Aguardando |
+| Fase | Nome | Status | PR |
+|---|---|---|---|
+| 0 | Preparação (renomeação + skeleton) | ✅ Concluída | #37 |
+| 1 | Cadastro Único do Animal | ✅ Concluída | #38, #39 |
+| 2 | Timeline do Animal | ✅ Concluída | #40 |
+| 3 | Workflow de Adoção | ✅ Concluída | #41 |
+| 4 | Perfil Completo do Adotante | ✅ Concluída | #42 |
+| 5 | Google Forms webhook (canal opt-in) | ✅ Concluída | #43, #44, #46, #47 |
+| 6 | Pós-Adoção com CRON de materialização | ✅ Concluída | #48 |
+| 7 | Lares Temporários (Fosters) | ✅ Concluída | #49 |
+| 8 | Prontuário Médico (Health Records) | ✅ Concluída | #50 |
+| 9 | Gestão de Medicamentos | ⏸️ Aguardando | — |
+| 10 | Galeria de Fotos (soft delete + purge 30d) | ⏸️ Aguardando | — |
+| 11 | Vitrines / Eventos | ⏸️ Aguardando | — |
+| 12 | Escalas + RSVP de Vitrines | ⏸️ Aguardando | — |
+| 13 | Gestão de Voluntários | ⏸️ Aguardando | — |
+| 14 | Dashboard do Abrigo (tempo real) | ⏸️ Aguardando | — |
+| 15 | Central de Pendências (Kanban) ⚠️ GRANDE | ⏸️ Aguardando | — |
+| 16 | Relatórios de Abrigos | ⏸️ Aguardando | — |
+| 17 | Indicadores de Vitrines + Voluntários | ⏸️ Aguardando | — |
+| 18 | Busca Inteligente ⚠️ GRANDE | 🚨 Decisão pendente (Meilisearch vs Typesense vs Algolia vs Firestore) | — |
+| 19 | Termos e Políticas completos (Legal) ⚠️ GRANDE | ⏸️ Aguardando (13 docs já guardados) | — |
+| 20 | Segurança Avançada | ⏸️ Aguardando | — |
+| 21 | Painel de Saúde da Plataforma (Admin Master) | ⏸️ Aguardando | — |
+| 22 | Migração Final + Cutover | ⏸️ Aguardando | — |
+
+**9/22 fases concluídas.** Detalhes completos em `docs/SHELTER_MGMT_ROADMAP.md` e em `.mavis/scratchpad/shelter-roadmap-tracker.md`.
 
 Convenções: ✅ concluído · 🟡 em andamento · ⏸️ aguardando · ❌ bloqueado. Cada fase = 1 feature flag (`SHELTER_*`) default OFF. Módulo isolado em `src/modules/shelter/`. Princípios: schema evolutivo, dual-read/write durante migração, defense in depth, audit log de tudo.
 

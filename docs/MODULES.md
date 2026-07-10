@@ -165,47 +165,69 @@ Painel exclusivo de `platform_admin` (`/admin/*`).
 | `/admin/*` | `admin/pages/*` |
 
 
-## shelter/ — Sistema de Gestão do Abrigo (em construção)
+## shelter/
 
-> Em construção. Ver **[`docs/SHELTER_MGMT_ROADMAP.md`](./SHELTER_MGMT_ROADMAP.md)**
-> para o plano detalhado. Este módulo agrega tudo relativo a abrigos
-> (renomeação de "Organizações" para "Abrigos"), cadastro único do
-> animal, timeline, workflow de adoção, lares temporários, prontuário
-> médico, medicação, vitrines, kanban de tarefas, busca inteligente e
-> tudo o que envolve a gestão de abrigos. Cada feature entra atrás de
-> uma feature flag `SHELTER_*` (default OFF), e a UI convive com o
-> módulo `organizations/` até a cutover final (Fase 21).
+> **Status (2026-07-10)**: **9/22 fases concluídas** (Fases 0–8 ✅, PRs #37–#50).
+> Roadmap completo em `docs/SHELTER_MGMT_ROADMAP.md`. Tracker operacional
+> em `.mavis/scratchpad/shelter-roadmap-tracker.md`. 22 fases planejadas.
+> Todas as 22 SHELTER_* flags default OFF (inclusive `SHELTER_FOUNDATION`).
+> Próximas fases: 9 (Medicação) e 10 (Galeria).
 
-Sub-módulos previstos (1 por feature flag):
+### Estrutura interna
 
-- `shelter/constants.js` — enums compartilhados (status de adoção, tipo
-  de evento na timeline, tipo de medication, etc.)
-- `shelter/permissions.js` — helpers de permissão do abrigo
-  (espelha o padrão de `organizations/domain/permissions.js`)
-- `shelter/services/` — CRUDs por feature (timelineService, adoptionService,
-  medicationService, exhibitionService, fosterService, kanbanService, etc.)
-- `shelter/components/` — widgets compartilhados (Timeline, KanbanBoard,
-  MedicationScheduler, ExhibitionCard, SmartSearchBox, etc.)
-- `shelter/pages/` — páginas standalone (SmartSearch, ShelterReports,
-  ShelterDashboard, etc.)
-- `shelter/hooks/` — hooks específicos (usePetTimeline, useMedicationDoses,
-  useKanban, useSmartSearch, etc.)
+```
+src/modules/shelter/
+├── domain/
+│   ├── core/          # Identidade: animal base, abrigo, owner
+│   │   ├── animal.js
+│   │   └── permissions.js
+│   ├── clinical/      # Prontuário, medicação, vacinas, exames
+│   │   ├── records.js
+│   │   └── medication.js
+│   ├── operational/   # Adoção, adotante, kanban, vitrines, RSVP
+│   │   ├── adoption.js
+│   │   └── kanban.js
+│   ├── legal/         # Termos, disclaimers, e-sign
+│   │   └── terms.js
+│   └── search/        # Indexação (Meilisearch ou similar)
+│       └── indexer.js
+├── services/          # Camada fina de I/O
+├── hooks/             # React Query + Firestore listeners
+├── components/        # Componentes compartilhados do abrigo
+└── pages/             # Rotas
+```
 
-Coleções Firestore novas (cada fase adiciona a sua):
+### Coleções Firestore planejadas (multi-tenant)
 
-- `pet_timeline/{petId}/events/{eventId}` (Fase 2)
-- `adoption_applications/{applicationId}` (Fase 3)
-- `post_adoption_followups/{followupId}` (Fase 5)
-- `foster_placements/{placementId}` (Fase 6)
-- `pet_medical_records/{petId}/records/{recordId}` (Fase 7)
-- `medication_prescriptions/{prescriptionId}` (Fase 8)
-- `pet_photos/{photoId}` (Fase 9)
-- `exhibitions/{exhibitionId}` (Fase 10) + subcollections
-- `volunteer_participation/{participationId}` (Fase 12)
-- `kanban_boards/{boardId}` + `kanban_columns/{columnId}` + `kanban_cards/{cardId}` (Fase 14)
-- `terms_acceptances/{userId}` (Fase 18)
-- `search_index` (Fase 17 — Meilisearch, fora do Firestore)
+**Globais** (sem `club_id`, leitura pública para features de vitrine):
+- `pets/{petId}` — cadastro base do animal (campos da Fase 1)
+- `users/{uid}` — perfis
 
-Permissões: defense in depth (Firestore rules + service + hook + UI). Audit
-log de toda mutação relevante. Soft delete com lixeira para registros
-sensíveis (fotos, animais, adoções).
+**Tenant-specific** (com `club_id`, leitura restrita ao abrigo):
+- `pets/{petId}/medical/{recordId}` — prontuário
+- `pets/{petId}/medications/{medId}` — medicação
+- `pets/{petId}/clinical_notes/{noteId}` — notas internas
+- `clubs/{clubId}/intake_records/{recordId}` — resgates
+- `clubs/{clubId}/fosters/{fosterId}` — lares temporários
+- `clubs/{clubId}/adoption_workflow/{adoptionId}` — adoções
+- `clubs/{clubId}/volunteers/{volunteerId}` — voluntários
+- `clubs/{clubId}/kanban/{boardId}/tasks/{taskId}` — kanban operacional
+- `clubs/{clubId}/legal_terms/{termId}` — termos de adoção aceitos
+
+### Feature flags do módulo
+
+22 flags, todas default OFF, administradas em `/admin/flags`:
+`shelter_foundation`, `shelter_animal_unified_profile`, `shelter_pet_timeline`, `shelter_adoption_workflow`, `shelter_adopter_full_profile`, `shelter_post_adoption_followup`, `shelter_foster`, `shelter_health_records`, `shelter_medication`, `shelter_gallery`, `shelter_exhibitions`, `shelter_exhibition_rsvps`, `shelter_volunteers`, `shelter_dashboard`, `shelter_kanban`, `shelter_reports`, `shelter_indicators`, `shelter_smart_search`, `shelter_legal_terms`, `shelter_security_hardening`, `shelter_platform_health`, `shelter_cutover`.
+
+Cada flag corresponde a 1 fase. Ativar uma flag = o comportamento da fase entra em produção.
+
+### Conformidade legal (Fase 18)
+
+Da análise jurídica (LGPD, CFMV 1.465/2022, Art. 936 CC, Lei 14.063/2020, ITCMD), ver seção 11 do `docs/SHELTER_MGMT_ROADMAP.md`. Itens críticos:
+- E-assinatura avançada (Lei 14.063/2020) — hash SHA-256 + timestamp + liveness
+- Disclaimer de RPVAR e emergência (CFMV)
+- Renúncia a responsabilidade tributária (ITCMD)
+- Assunção de risco na adoção (Art. 936 CC)
+- DPO designado (LGPD)
+- Backup WORM + breach notification (LGPD Art. 48)
+
