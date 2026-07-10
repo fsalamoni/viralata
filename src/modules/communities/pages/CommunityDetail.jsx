@@ -18,7 +18,6 @@ import ForumTab from '../components/ForumTab';
 import EventsTab from '../components/EventsTab';
 import AboutTab from '../components/AboutTab';
 import CommunityTeamTab from '../components/CommunityTeamTab';
-import CommunityDebugPanel from '../components/CommunityDebugPanel';
 import CommunityCover from '../components/CommunityCover';
 import { cn } from '@/core/lib/utils';
 
@@ -58,17 +57,6 @@ export default function CommunityDetail() {
       .catch(() => toast.error('Comunidade não encontrada'))
       .finally(() => setLoading(false));
   }, [communityId]);
-
-  // Depois de um claim de ownership (comunidade órfã → owner_id = user.uid),
-  // recarrega o doc da comunidade pra todos os cálculos (canAdmin, Mural,
-  // Eventos, etc.) refletirem o novo owner_id.
-  const refreshCommunity = () => {
-    setLoading(true);
-    getCommunity(communityId)
-      .then(setCommunity)
-      .catch(() => toast.error('Comunidade não encontrada'))
-      .finally(() => setLoading(false));
-  };
 
   const { data: membership } = useMyCommunityMembership(communityId);
 
@@ -131,16 +119,6 @@ export default function CommunityDetail() {
       {parityEnabled && (
         <CommunityCover community={community} stats={stats} isAdmin={canAdmin} />
       )}
-
-      {/* Painel de diagnóstico temporário — remover após identificar a causa */}
-      <CommunityDebugPanel
-        community={community}
-        membership={membership}
-        user={user}
-        canAdmin={canAdmin}
-        isMember={isMember}
-        onClaimed={refreshCommunity}
-      />
 
       {/* Modo LEGADO (flag OFF): capa-flat simples com nome + contagem
           de membros + botões "Editar" / "Participar". Mantido idêntico
