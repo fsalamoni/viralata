@@ -686,6 +686,111 @@ service cloud.firestore {
         allow delete: if isAuth() && isPlatformAdmin();
       }
 
+      // ─── Fase 11: Subcoleção `exhibitions` (Vitrines / Eventos) ───────
+      // Multi-tenant. Cada vitrine = (abrigo, organizador) com janela de
+      // tempo, local (lat/lng), animais (internos + externos de outros
+      // abrigos), escalas e log do destino de cada animal pós-evento.
+      //
+      // - read: abrigo (admin/owner/animals) + o próprio organizador +
+      //   qualquer co-organizador
+      // - create: abrigo (admin/owner/animals) — organizer_uid vem
+      //   obrigatório e vira imutável (write-once)
+      // - update: abrigo (status, pets, etc) — organizer_uid e
+      //   shelter_club_id são IMUTÁVEIS, status só aceita valores
+      //   válidos (scheduled/active/completed/cancelled)
+      // - delete: só platform_admin
+      match /exhibitions/{exhibitionId} {
+        allow read: if isAuth() && (
+          isPlatformAdmin() ||
+          isClubOwnerOrAdmin(clubId) ||
+          canEditClubPets(clubId) ||
+          hasClubPermission(clubId, 'animals') ||
+          // Organizador e co-organizadores podem ler
+          resource.data.organizer_uid == request.auth.uid ||
+          request.auth.uid in resource.data.get('co_organizers_uids', [])
+        );
+        allow create: if isAuth() && (
+          isPlatformAdmin() ||
+          isClubOwnerOrAdmin(clubId) ||
+          canEditClubPets(clubId) ||
+          hasClubPermission(clubId, 'animals')
+        ) && request.resource.data.shelter_club_id == clubId
+          && request.resource.data.organizer_uid is string
+          && request.resource.data.organizer_uid.size() > 0
+          && request.resource.data.status == 'scheduled';
+        allow update: if isAuth() && (
+          isPlatformAdmin() ||
+          isClubOwnerOrAdmin(clubId) ||
+          canEditClubPets(clubId) ||
+          hasClubPermission(clubId, 'animals')
+        ) && request.resource.data.shelter_club_id == resource.data.shelter_club_id
+          && request.resource.data.organizer_uid == resource.data.organizer_uid
+          && request.resource.data.status in ['scheduled', 'active', 'completed', 'cancelled'];
+        allow delete: if isAuth() && isPlatformAdmin();
+
+        // ─── Subcoleção `shifts` (Escalas da vitrine) ──────────────
+        // Cada escala = (vitrine, role, janela, vagas totais/preenchidas).
+        match /shifts/{shiftId} {
+          allow read: if isAuth() && (
+            isPlatformAdmin() ||
+            isClubOwnerOrAdmin(clubId) ||
+            canEditClubPets(clubId) ||
+            hasClubPermission(clubId, 'animals')
+          );
+          allow create: if isAuth() && (
+            isPlatformAdmin() ||
+            isClubOwnerOrAdmin(clubId) ||
+            canEditClubPets(clubId) ||
+            hasClubPermission(clubId, 'animals')
+          ) && request.resource.data.shelter_club_id == clubId
+            && request.resource.data.exhibition_id == exhibitionId
+            && request.resource.data.slots_total is int
+            && request.resource.data.slots_total > 0
+            && request.resource.data.slots_filled == 0;
+          allow update: if isAuth() && (
+            isPlatformAdmin() ||
+            isClubOwnerOrAdmin(clubId) ||
+            canEditClubPets(clubId) ||
+            hasClubPermission(clubId, 'animals')
+          ) && request.resource.data.shelter_club_id == resource.data.shelter_club_id
+            && request.resource.data.exhibition_id == resource.data.exhibition_id
+            && request.resource.data.slots_filled <= request.resource.data.slots_total;
+          allow delete: if isAuth() && isPlatformAdmin();
+        }
+
+        // ─── Subcoleção `post_event_log` (Destino de cada animal) ──
+        // Um log por pet (interno ou externo). Idempotente via query na
+        // service layer; rules não deduplicam (responsabilidade do service).
+        match /post_event_log/{logId} {
+          allow read: if isAuth() && (
+            isPlatformAdmin() ||
+            isClubOwnerOrAdmin(clubId) ||
+            canEditClubPets(clubId) ||
+            hasClubPermission(clubId, 'animals')
+          );
+          allow create: if isAuth() && (
+            isPlatformAdmin() ||
+            isClubOwnerOrAdmin(clubId) ||
+            canEditClubPets(clubId) ||
+            hasClubPermission(clubId, 'animals')
+          ) && request.resource.data.shelter_club_id == clubId
+            && request.resource.data.exhibition_id == exhibitionId
+            && request.resource.data.pet_id is string
+            && request.resource.data.pet_id.size() > 0
+            && request.resource.data.destination in ['returned_to_shelter', 'adopted', 'transferred', 'died']
+            && request.resource.data.pet_origin in ['internal', 'external']
+            && request.resource.data.logged_by_uid == request.auth.uid;
+          allow update: if isAuth() && (
+            isPlatformAdmin() ||
+            isClubOwnerOrAdmin(clubId) ||
+            canEditClubPets(clubId) ||
+            hasClubPermission(clubId, 'animals')
+          ) && request.resource.data.shelter_club_id == resource.data.shelter_club_id
+            && request.resource.data.exhibition_id == resource.data.exhibition_id;
+          allow delete: if isAuth() && isPlatformAdmin();
+        }
+      }
+
       // ─── Fase 13: Subcoleção `volunteers` (rostagem per-shelter) ─────────
       // Multi-tenant. Cada doc = (abrigo, voluntário) com status da rostagem
       // e background check PER-SHELTER (não portável entre abrigos).
