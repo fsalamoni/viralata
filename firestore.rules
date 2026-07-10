@@ -336,6 +336,63 @@ service cloud.firestore {
         );
         allow delete: if isAuth() && isPlatformAdmin();
       }
+
+      // ─── Fase 9: Subcoleção `medications` (Prescrição + Doses) ───
+      // Multi-tenant via shelter_club_id em cada medicação. Doses ficam
+      // em sub-subcoleção `doses/` (mesmas regras de leitura).
+      match /medications/{medId} {
+        allow read: if isAuth() && (
+          isPlatformAdmin() ||
+          canManagePet(get(/databases/$(database)/documents/pets/$(petId)).data) ||
+          (resource.data.shelter_club_id != null &&
+            (isClubOwnerOrAdmin(resource.data.shelter_club_id) ||
+             canEditClubPets(resource.data.shelter_club_id) ||
+             hasClubPermission(resource.data.shelter_club_id, 'animals') ||
+             hasClubPermission(resource.data.shelter_club_id, 'health')))
+        );
+        allow create: if isAuth() && (
+          isPlatformAdmin() ||
+          canManagePet(get(/databases/$(database)/documents/pets/$(petId)).data) ||
+          (request.resource.data.shelter_club_id != null &&
+            (isClubOwnerOrAdmin(request.resource.data.shelter_club_id) ||
+             canEditClubPets(request.resource.data.shelter_club_id) ||
+             hasClubPermission(request.resource.data.shelter_club_id, 'animals') ||
+             hasClubPermission(request.resource.data.shelter_club_id, 'health')))
+        );
+        allow update: if isAuth() && (
+          isPlatformAdmin() ||
+          canManagePet(get(/databases/$(database)/documents/pets/$(petId)).data) ||
+          (resource.data.shelter_club_id != null &&
+            (isClubOwnerOrAdmin(resource.data.shelter_club_id) ||
+             canEditClubPets(resource.data.shelter_club_id) ||
+             hasClubPermission(resource.data.shelter_club_id, 'animals') ||
+             hasClubPermission(resource.data.shelter_club_id, 'health')))
+        );
+        allow delete: if isAuth() && isPlatformAdmin();
+
+        // Doses: escrita idempotente por abrigo; leitura para voluntários.
+        match /doses/{doseId} {
+          allow read: if isAuth() && (
+            isPlatformAdmin() ||
+            canManagePet(get(/databases/$(database)/documents/pets/$(petId)).data) ||
+            (get(/databases/$(database)/documents/pets/$(petId)/medications/$(medId)).data.shelter_club_id != null &&
+              (isClubOwnerOrAdmin(get(/databases/$(database)/documents/pets/$(petId)/medications/$(medId)).data.shelter_club_id) ||
+               canEditClubPets(get(/databases/$(database)/documents/pets/$(petId)/medications/$(medId)).data.shelter_club_id) ||
+               hasClubPermission(get(/databases/$(database)/documents/pets/$(petId)/medications/$(medId)).data.shelter_club_id, 'animals') ||
+               hasClubPermission(get(/databases/$(database)/documents/pets/$(petId)/medications/$(medId)).data.shelter_club_id, 'health')))
+          );
+          allow create, update: if isAuth() && (
+            isPlatformAdmin() ||
+            canManagePet(get(/databases/$(database)/documents/pets/$(petId)).data) ||
+            (request.resource.data.shelter_club_id != null &&
+              (isClubOwnerOrAdmin(request.resource.data.shelter_club_id) ||
+               canEditClubPets(request.resource.data.shelter_club_id) ||
+               hasClubPermission(request.resource.data.shelter_club_id, 'animals') ||
+               hasClubPermission(request.resource.data.shelter_club_id, 'health')))
+          );
+          allow delete: if isAuth() && isPlatformAdmin();
+        }
+      }
     }
 
     // ─── Radar de Pets (alerta de pet compatível) ──────────────────────────────
