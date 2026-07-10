@@ -289,6 +289,38 @@
           "order": "DESCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "medical",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "shelter_club_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "exam_date",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "medical",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "shelter_club_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "exam_date",
+          "order": "DESCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": []
