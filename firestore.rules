@@ -87,6 +87,15 @@ service cloud.firestore {
         && request.auth.token.email.lower() == 'fsalamoni@gmail.com';
     }
 
+    // ─── Fase 2: Helper para buscar o shelter_owner_club_id do pet ──────────
+    // Usado pela regra da subcoleção `timeline` para checar se o usuário
+    // é do abrigo dono. Retorna null se pet não tem abrigo vinculado
+    // (pet individual). Lê o doc com `get` — isso custa 1 read por
+    // checagem. Como o cache de rules é razoável, não é problema.
+    function _petShelterClubId(petId) {
+      return get(/databases/$(database)/documents/pets/$(petId)).data.get('shelter_owner_club_id', null);
+    }
+
     // ─── Fase 1: Validação do Cadastro Único do Animal ──────────────────
     // Espelha o Zod schema `shelterAnimalProfileSchema` em
     // src/modules/shelter/domain/core/animal.js. Defense-in-depth: se o
@@ -225,6 +234,56 @@ service cloud.firestore {
           isPlatformAdmin()
         )
       );
+
+      // ─── Fase 2: Subcoleção `timeline` (multi-tenant) ───────────────
+      // Eventos de vida do animal (vacina, pesagem, consulta, etc). É
+      // tenant-specific: cada evento carrega `shelter_club_id` e o
+      // Firestore garante que só o abrigo correto lê/escreve.
+      //
+      // Regras:
+      // - read: abrigo dono do pet (via `shelter_owner_club_id`) vê tudo;
+      //         plataforma_admin vê tudo; público NÃO vê (são notas internas).
+      // - create: abrigo com permissão `animals` no club OU dono direto do
+      //           pet individual. `shelter_club_id` é obrigatório.
+      // - update: abrigo dono. `shelter_club_id` é IMUTÁVEL (write-once).
+      // - delete: abrigo dono (soft delete via update na verdade).
+      match /timeline/{eventId} {
+        allow read: if isAuth() && (
+          // Platform admin sempre pode
+          isPlatformAdmin() ||
+          // Abrigo dono do pet (lê via get)
+          (_petShelterClubId(petId) != null &&
+            isClubOwnerOrAdmin(_petShelterClubId(petId))) ||
+          canEditClubPets(_petShelterClubId(petId)) ||
+          hasClubPermission(_petShelterClubId(petId), 'animals') ||
+          // Dono direto do pet (pessoa física) também lê
+          canManagePet(get(/databases/$(database)/documents/pets/$(petId)).data)
+        );
+        allow create: if isAuth() && (
+          // shelter_club_id é obrigatório
+          request.resource.data.shelter_club_id is string &&
+          request.resource.data.shelter_club_id.size() > 0 &&
+          // Quem pode adicionar: abrigo do pet com permissão, OU dono direto
+          (canManagePet(get(/databases/$(database)/documents/pets/$(petId)).data) ||
+           (request.resource.data.shelter_club_id != null &&
+            (isClubOwnerOrAdmin(request.resource.data.shelter_club_id) ||
+             canEditClubPets(request.resource.data.shelter_club_id) ||
+             hasClubPermission(request.resource.data.shelter_club_id, 'animals'))) ||
+           isPlatformAdmin())
+        );
+        allow update: if isAuth() && (
+          // shelter_club_id é IMUTÁVEL
+          request.resource.data.shelter_club_id == resource.data.shelter_club_id &&
+          // Quem pode editar: abrigo do pet, OU platform admin
+          (isPlatformAdmin() ||
+           canManagePet(get(/databases/$(database)/documents/pets/$(petId)).data) ||
+           (resource.data.shelter_club_id != null &&
+            (isClubOwnerOrAdmin(resource.data.shelter_club_id) ||
+             canEditClubPets(resource.data.shelter_club_id) ||
+             hasClubPermission(resource.data.shelter_club_id, 'animals'))))
+        );
+        allow delete: if isAuth() && isPlatformAdmin();
+      }
     }
 
     // ─── Radar de Pets (alerta de pet compatível) ──────────────────────────────
