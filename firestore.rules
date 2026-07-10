@@ -670,6 +670,36 @@ service cloud.firestore {
         );
         allow delete: if isAuth() && isPlatformAdmin();
       }
+
+      // ─── Fase 11: Subcoleção `exhibitions` (Vitrines / Eventos) ───
+      // Multi-tenant. Cada evento pertence ao abrigo organizador
+      // (organizer_shelter_id == clubId da path — defense-in-depth).
+      // Co-organizadores de outros abrigos têm acesso READ-ONLY via
+      // co_organizers[] (validação cross-tenant fica no service).
+      match /exhibitions/{exhibitionId} {
+        allow read: if isAuth() && (
+          isPlatformAdmin() ||
+          isClubOwnerOrAdmin(clubId) ||
+          canEditClubPets(clubId) ||
+          hasClubPermission(clubId, 'animals') ||
+          hasClubPermission(clubId, 'events')
+        );
+        allow create: if isAuth() && (
+          isPlatformAdmin() ||
+          isClubOwnerOrAdmin(clubId) ||
+          canEditClubPets(clubId) ||
+          hasClubPermission(clubId, 'animals') ||
+          hasClubPermission(clubId, 'events')
+        ) && request.resource.data.organizer_shelter_id == clubId;
+        allow update: if isAuth() && (
+          isPlatformAdmin() ||
+          isClubOwnerOrAdmin(clubId) ||
+          canEditClubPets(clubId) ||
+          hasClubPermission(clubId, 'animals') ||
+          hasClubPermission(clubId, 'events')
+        ) && request.resource.data.organizer_shelter_id == resource.data.organizer_shelter_id;
+        allow delete: if isAuth() && isPlatformAdmin();
+      }
     }
 
     match /club_members/{memberId} {

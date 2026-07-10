@@ -1,7 +1,7 @@
 # Sistema de Gestão do Abrigo — Roadmap Detalhado
 
-> **Status**: Fases 0–8 concluídas (9/22). Próximas: Fase 9 (Medicamentos), Fase 10 (Galeria).
-> **Versão**: 0.2 — 2026-07-10 (atualizado pós-Fase 8)
+> **Status**: Fases 0–10 concluídas (11/22). Próxima: Fase 11 (Vitrines / Eventos).
+> **Versão**: 0.3 — 2026-07-10 (atualizado pós-Fase 10)
 > **Owner**: Mavis (sub-agente técnico do repo `fsalamoni/viralata`)
 > **Macro-blocos**: 5 (A fundação, B núcleo do animal, C operação, D busca, E legal/segurança/admin)
 >
@@ -36,22 +36,22 @@ Cada módulo é **isolado e autônomo**: falha em um módulo não derruba os dem
 │  • módulo shelter/ skeleton                             │
 │  • modelagem de dados definitiva                        │
 ├──────────────────────────────────────────────────────────┤
-│  BLOCO B — NÚCLEO DO ANIMAL (Fases 1-9)  ~9 PRs         │
+│  BLOCO B — NÚCLEO DO ANIMAL (Fases 1-10) ~10 PRs        │
 │  • cadastro único, timeline, adoção, adotante,           │
 │    pós-adoção, lares temporários, saúde, medicação,     │
 │    galeria                                              │
-│  • Status (2026-07-10): Fases 1–8 ✅, Fase 9 ⏸️        │
+│  • Status (2026-07-10): Fases 1–10 ✅                   │
 ├──────────────────────────────────────────────────────────┤
-│  BLOCO C — OPERAÇÃO DO ABRIGO (Fases 10-17) ~8 PRs      │
+│  BLOCO C — OPERAÇÃO DO ABRIGO (Fases 11-18) ~8 PRs      │
 │  • vitrines, RSVP, voluntários, dashboard, kanban,      │
 │    relatórios, indicadores                              │
-│  • Status (2026-07-10): Fases 10–17 ⏸️                 │
+│  • Status (2026-07-10): Fases 11–18 ⏸️                 │
 ├──────────────────────────────────────────────────────────┤
 │  BLOCO D — BUSCA + DESCOBERTA (Fase 18)  ~1 PR grande   │
 │  • sistema de busca inteligente multi-filtro             │
 │  • Status (2026-07-10): 🚨 Decisão de backend pendente │
 ├──────────────────────────────────────────────────────────┤
-│  BLOCO E — LEGAL + SEGURANÇA + ADMIN (Fases 19-22) ~5 PRs│
+│  BLOCO E — LEGAL + SEGURANÇA + ADMIN (Fases 19-22) ~4 PRs│
 │  • termos completos, LGPD, segurança avançada, painel    │
 │    de saúde da plataforma, cutover                       │
 │  • Status (2026-07-10): Fases 19–22 ⏸️                 │
@@ -60,7 +60,7 @@ Cada módulo é **isolado e autônomo**: falha em um módulo não derruba os dem
 └──────────────────────────────────────────────────────────┘
 ```
 
-**9/22 fases concluídas, 13/22 pendentes.**
+**11/22 fases concluídas, 11/22 pendentes.**
 ```
 
 ## 4. Dependências entre fases
@@ -73,22 +73,22 @@ Fase 0 (preparação)
             ├→ Fase 6 (pós-adoção) ✅
             ├→ Fase 7 (lares temporários) ✅
             ├→ Fase 8 (saúde / prontuário) ✅
-            │    └→ Fase 9 (medicação) ⏸️
-            └→ Fase 10 (galeria) ⏸️
+            │    └→ Fase 9 (medicação) ✅
+            └→ Fase 10 (galeria) ✅
        └→ Fase 3 (adoção workflow) ✅
             └→ Fase 4 (adotante) ✅
-  └→ Fase 11 (vitrines) ⏸️
+  └→ Fase 11 (vitrines) ⏸️ 🟡  ← em andamento
        └→ Fase 12 (RSVP) ⏸️
        └→ Fase 13 (voluntários) ⏸️
   └→ Fase 14 (dashboard) ⏸️
-       ├→ Fase 14 (kanban)
-       ├→ Fase 15 (relatórios)
-       └→ Fase 16 (indicadores)
-  └→ Fase 17 (busca) — depende de TUDO acima
-  └→ Fase 18 (legal) — pode ser feita em paralelo
-  └→ Fase 19 (segurança) — pode ser feita em paralelo
-  └→ Fase 20 (admin) — pode ser feita em paralelo
-       └→ Fase 21 (cutover)
+       ├→ Fase 15 (kanban)
+       ├→ Fase 16 (relatórios)
+       └→ Fase 17 (indicadores)
+  └→ Fase 18 (busca) — depende de TUDO acima
+  └→ Fase 19 (legal) — pode ser feita em paralelo
+  └→ Fase 20 (segurança) — pode ser feita em paralelo
+  └→ Fase 21 (admin) — pode ser feita em paralelo
+       └→ Fase 22 (cutover)
 ```
 
 ## 5. Fases detalhadas
