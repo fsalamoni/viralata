@@ -88,6 +88,25 @@ export const FEATURE_FLAG = Object.freeze({
    * seu wrapper original — puramente aditivo.
    */
   STANDARDIZED_PAGE_LAYOUT: 'standardized_page_layout',
+
+  /**
+   * Paridade visual da comunidade com a ONG: quando ligada, a página
+   * pública da comunidade passa a usar um `<CommunityCover>` no mesmo
+   * padrão do `<ClubCover>` da ONG (banner gradiente, marca-d'água,
+   * avatar-iniciais sobreposto, nome, cidade e chips Padronizados).
+   * E o painel de administração da comunidade passa a usar o mesmo
+   * layout visual do painel da ONG (`arena-panel-strong` no header,
+   * `arena-tab-bar`, stat cards `p-6 sm:p-7`, `mt-12 sm:mt-14` entre
+   * abas e conteúdo), com **apenas** as abas pertinentes à comunidade
+   * (Visão Geral, Mural, Equipe, Configurações). Abas específicas da
+   * ONG (Geral, Pets, Doações, Financeiro, Conversas) ficam fora
+   * porque não fazem sentido para comunidades.
+   *
+   * Desligada (default), a página pública da comunidade mantém seu
+   * painel-flat simples e o painel admin mantém suas 3 abas originais
+   * — puramente aditiva, nenhuma diferença visual antes de ligar.
+   */
+  COMMUNITY_NGO_PARITY: 'community_ngo_parity',
 });
 
 /** Metadados de exibição para o painel de flags (admin master). */
@@ -163,6 +182,20 @@ export const FEATURE_FLAG_META = Object.freeze({
       + 'Desligada, cada página mantém o wrapper original. '
       + 'Puramente aditivo.',
   },
+  [FEATURE_FLAG.COMMUNITY_NGO_PARITY]: {
+    label: 'Comunidade · paridade visual com a ONG',
+    description:
+      'Quando ligada, a página pública da comunidade passa a usar o '
+      + 'mesmo padrão visual da capa da ONG (`<ClubCover>`-like): '
+      + 'banner gradiente, avatar-iniciais sobreposto, nome, cidade '
+      + 'e chips Padronizados. E o painel de administração da '
+      + 'comunidade passa a usar o mesmo padrão visual do painel da '
+      + 'ONG (header `arena-panel-strong`, `arena-tab-bar`, stat '
+      + 'cards `p-6 sm:p-7`, `mt-12 sm:mt-14`), com apenas as abas '
+      + 'pertinentes à comunidade (Visão Geral, Mural, Equipe, '
+      + 'Configurações). Desligada (default), a comunidade mantém '
+      + 'seu padrão antigo. Puramente aditivo.',
+  },
 });
 
 /**
@@ -181,6 +214,7 @@ export const DEFAULT_FEATURE_FLAGS = Object.freeze({
   [FEATURE_FLAG.MURAL_RICH_POSTS]: true,
   [FEATURE_FLAG.PAGE_HERO_ENABLED]: false,
   [FEATURE_FLAG.STANDARDIZED_PAGE_LAYOUT]: false,
+  [FEATURE_FLAG.COMMUNITY_NGO_PARITY]: false,
 });
 
 /**
