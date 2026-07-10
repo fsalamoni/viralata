@@ -408,6 +408,23 @@ service cloud.firestore {
         (isClubMember(clubId) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['member_count', 'updated_at']));
       allow delete: if isClubOwnerOrAdmin(clubId) || isPlatformAdmin();
 
+      // ─── Fase 5: Subcoleção `integrations/google_forms` ────────────
+      // Config por abrigo da integração com Google Forms. Plataforma admin
+      // tem acesso amplo (debug); abrigo só lê/escreve a sua própria.
+      match /integrations/google_forms {
+        allow read: if isAuth() && (
+          isPlatformAdmin() ||
+          isClubOwnerOrAdmin(clubId) ||
+          hasClubPermission(clubId, 'integrations')
+        );
+        allow create, update: if isAuth() && (
+          isPlatformAdmin() ||
+          isClubOwnerOrAdmin(clubId) ||
+          hasClubPermission(clubId, 'integrations')
+        );
+        allow delete: if isAuth() && isPlatformAdmin();
+      }
+
       // ─── Fase 3: Subcoleção `adoption_workflow` (multi-tenant) ──────
       // Cada application pertence a um abrigo (`shelter_club_id` redundante
       // com a path para defense-in-depth). Read/write controlado.
