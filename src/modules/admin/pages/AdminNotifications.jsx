@@ -92,7 +92,7 @@ export default function AdminNotifications() {
           <CardTitle className="text-base">Fila recente de notificações</CardTitle>
           <CardDescription>Confira links originais, destinos normalizados e status de leitura.</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4 p-4 sm:p-5">
+        <CardContent className="space-y-4 p-6 sm:p-7">
           {error && <p className="text-sm text-destructive">{error}</p>}
 
           <div className="grid gap-3 md:grid-cols-[minmax(0,2fr)_180px_180px]">

@@ -109,11 +109,11 @@ export function AuditLogTable({ title, description, userId, className = '' }) {
 
   return (
     <Card className={`overflow-hidden ${className}`}>
-      <CardHeader className="border-b border-border bg-card p-4 sm:p-5">
+      <CardHeader className="border-b border-border bg-card p-6 sm:p-7">
         <CardTitle className="text-base text-foreground">{title}</CardTitle>
         {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>
-      <CardContent className="space-y-4 p-4 sm:p-5">
+      <CardContent className="space-y-4 p-6 sm:p-7">
         {error && <p className="text-sm text-destructive">{error}</p>}
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
           <FilterInput label="Ator" value={filters.actor} onChange={(value) => updateFilter(setFilters, 'actor', value)} placeholder="Nome, e-mail ou UID" />
