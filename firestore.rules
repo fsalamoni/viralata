@@ -157,6 +157,23 @@ service cloud.firestore {
         request.resource.data.get('banned_reason', null) == resource.data.get('banned_reason', null)
       );
       allow delete: if isPlatformAdmin();
+
+      // ─── Fase 4: Subcoleção `adopter_profile` (perfil completo) ──────
+      // O perfil pertence ao adotante. Acesso:
+      // - read: o próprio dono (uid) + platform_admin (debug/LGPD)
+      // - write: o próprio dono
+      //
+      // Padrão: o abrigo NÃO lê o adopter_profile diretamente. Quando o
+      // adotante submete uma application, o service faz um SNAPSHOT dos
+      // campos relevantes para `applicant_form` (na subcoleção de adoption
+      // workflow). Esse snapshot é o que o abrigo vê. Isso evita ter
+      // que gerenciar consent granular por abrigo aqui.
+      match /adopter_profile/{profileId} {
+        allow read: if isAuth() && (isOwner(userId) || isPlatformAdmin());
+        allow create: if isOwner(userId) && request.resource.data.user_uid == userId;
+        allow update: if isOwner(userId) && request.resource.data.user_uid == userId;
+        allow delete: if isOwner(userId) || isPlatformAdmin();
+      }
     }
 
     // ─── Pets ─────────────────────────────────────────────────────────────────

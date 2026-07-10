@@ -26,6 +26,7 @@ import {
   isTerminal,
 } from '@/modules/shelter/domain/operational/adoption';
 import { addTimelineEvent } from '@/modules/shelter/services/timelineService';
+import { getAdopterProfile } from '@/modules/shelter/services/adopterProfileService';
 
 const CLUBS_COLLECTION = 'clubs';
 const APPS_SUBCOLLECTION = 'adoption_workflow';
@@ -45,11 +46,20 @@ export async function submitAdoptionApplication(input, actor) {
   if (!actor?.uid) throw new Error('actor.uid é obrigatório');
 
   const parsed = submitApplicationSchema.parse(input);
+
+  // Fase 4: se o adotante tem adopter_profile, faz SNAPSHOT dos campos
+  // extras no application. Garante que o abrigo vê o perfil completo
+  // sem precisar acessar users/{uid}/adopter_profile (regra permissiva
+  // demais para abrigo). O snapshot é imutável após o submit.
+  const profile = await getAdopterProfile(actor.uid).catch(() => null);
+  const applicant_snapshot = profile ? _buildSnapshotFromProfile(profile) : null;
+
   const payload = {
     pet_id: parsed.pet_id,
     shelter_club_id: parsed.shelter_club_id,
     applicant_uid: actor.uid,
     applicant_form: parsed.applicant_form,
+    applicant_snapshot,    // Fase 4: profile completo, se existir
     status: 'applied',
     created_at: serverTimestamp(),
     updated_at: serverTimestamp(),
@@ -326,4 +336,42 @@ function currentApplicantUid(approvedAppId, pendentes) {
   // Não dá pra saber daqui (não temos o doc), então deixamos null.
   // A Fase 6 (pós-adoção) vai puxar essa info.
   return null;
+}
+
+// Helper: extrai um snapshot leve do profile completo (Fase 4)
+function _buildSnapshotFromProfile(profile) {
+  if (!profile) return null;
+  return {
+    full_name: profile.full_name,
+    phone: profile.phone,
+    email: profile.email,
+    address: profile.address,
+    household_size: profile.household_size,
+    household_adults: profile.household_adults,
+    household_children: profile.household_children,
+    children_ages: profile.children_ages,
+    home_type: profile.home_type,
+    has_yard: profile.has_yard,
+    yard_size_m2: profile.yard_size_m2,
+    has_fence: profile.has_fence,
+    living_arrangement: profile.living_arrangement,
+    landlord_allows_pets: profile.landlord_allows_pets,
+    household_all_agree: profile.household_all_agree,
+    pet_experience_level: profile.pet_experience_level,
+    years_of_experience: profile.years_of_experience,
+    current_pets: profile.current_pets,
+    had_pets_before: profile.had_pets_before,
+    previous_pets_deceased_or_given: profile.previous_pets_deceased_or_given,
+    monthly_income_range: profile.monthly_income_range,
+    willing_to_spend_vet: profile.willing_to_spend_vet,
+    has_vet_reference: profile.has_vet_reference,
+    vet_name: profile.vet_name,
+    vet_phone: profile.vet_phone,
+    adoption_reason: profile.adoption_reason,
+    hours_alone_per_day: profile.hours_alone_per_day,
+    exercise_time_per_day_minutes: profile.exercise_time_per_day_minutes,
+    has_transport: profile.has_transport,
+    profile_completeness: profile.profile_completeness,
+    snapshot_at: new Date().toISOString(),
+  };
 }
