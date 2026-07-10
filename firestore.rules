@@ -301,6 +301,41 @@ service cloud.firestore {
         );
         allow delete: if isAuth() && isPlatformAdmin();
       }
+
+      // ─── Fase 8: Subcoleção `medical` (Prontuário Veterinário) ───
+      // Multi-tenant via shelter_club_id em cada record. Defense-in-depth:
+      // se o pet não pertence a nenhum abrigo, somente o owner / admin
+      // vê (pets individuais não compartilham prontuário com abrigos).
+      match /medical/{recordId} {
+        allow read: if isAuth() && (
+          isPlatformAdmin() ||
+          canManagePet(get(/databases/$(database)/documents/pets/$(petId)).data) ||
+          (resource.data.shelter_club_id != null &&
+            (isClubOwnerOrAdmin(resource.data.shelter_club_id) ||
+             canEditClubPets(resource.data.shelter_club_id) ||
+             hasClubPermission(resource.data.shelter_club_id, 'animals') ||
+             hasClubPermission(resource.data.shelter_club_id, 'health')))
+        );
+        allow create: if isAuth() && (
+          isPlatformAdmin() ||
+          canManagePet(get(/databases/$(database)/documents/pets/$(petId)).data) ||
+          (request.resource.data.shelter_club_id != null &&
+            (isClubOwnerOrAdmin(request.resource.data.shelter_club_id) ||
+             canEditClubPets(request.resource.data.shelter_club_id) ||
+             hasClubPermission(request.resource.data.shelter_club_id, 'animals') ||
+             hasClubPermission(request.resource.data.shelter_club_id, 'health')))
+        );
+        allow update: if isAuth() && (
+          isPlatformAdmin() ||
+          canManagePet(get(/databases/$(database)/documents/pets/$(petId)).data) ||
+          (resource.data.shelter_club_id != null &&
+            (isClubOwnerOrAdmin(resource.data.shelter_club_id) ||
+             canEditClubPets(resource.data.shelter_club_id) ||
+             hasClubPermission(resource.data.shelter_club_id, 'animals') ||
+             hasClubPermission(resource.data.shelter_club_id, 'health')))
+        );
+        allow delete: if isAuth() && isPlatformAdmin();
+      }
     }
 
     // ─── Radar de Pets (alerta de pet compatível) ──────────────────────────────
