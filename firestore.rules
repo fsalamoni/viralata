@@ -174,6 +174,31 @@ service cloud.firestore {
         allow update: if isOwner(userId) && request.resource.data.user_uid == userId;
         allow delete: if isOwner(userId) || isPlatformAdmin();
       }
+
+      // ─── Fase 13: Subcoleção `volunteer_profile` (perfil GLOBAL) ───
+      // O perfil de voluntário pertence ao usuário (não ao abrigo).
+      // Acesso:
+      // - read: o próprio dono + platform_admin (debug/LGPD) + qualquer
+      //         autenticado (perfis são públicos para matching).
+      // - create: o próprio dono. `user_id` deve bater com o path.
+      // - update: o próprio dono + platform_admin. `user_id` é imutável.
+      // - delete: o próprio dono + platform_admin (soft delete via update
+      //           na verdade; hard delete só via Cloud Function admin).
+      match /volunteer_profile/{profileId} {
+        allow read: if isAuth();
+        allow create: if isAuth() && (
+          request.auth.uid == userId &&
+          request.resource.data.user_id == userId
+        );
+        allow update: if isAuth() && (
+          request.auth.uid == userId ||
+          isPlatformAdmin()
+        ) && request.resource.data.user_id == resource.data.user_id;
+        allow delete: if isAuth() && (
+          request.auth.uid == userId ||
+          isPlatformAdmin()
+        );
+      }
     }
 
     // ─── Pets ─────────────────────────────────────────────────────────────────
@@ -668,6 +693,38 @@ service cloud.firestore {
           // LT pode aceitar (pending → active) ou cancelar antes de começar
           resource.data.foster_uid == request.auth.uid
         );
+        allow delete: if isAuth() && isPlatformAdmin();
+      }
+
+      // ─── Fase 13: Subcoleção `volunteer_participation` ──────────────
+      // Multi-tenant. Cada participation = (abrigo, voluntário, evento)
+      // com check-in/out, horas, transporte prestado. O abrigo gerencia
+      // (cria/atualiza/check-in/check-out); o próprio voluntário lê as
+      // próprias participações; platform_admin deleta.
+      match /volunteer_participation/{participationId} {
+        allow read: if isAuth() && (
+          isPlatformAdmin() ||
+          isClubOwnerOrAdmin(clubId) ||
+          canEditClubPets(clubId) ||
+          hasClubPermission(clubId, 'events') ||
+          hasClubPermission(clubId, 'volunteers') ||
+          // O próprio voluntário lê suas participações
+          resource.data.volunteer_uid == request.auth.uid
+        );
+        allow create: if isAuth() && (
+          isPlatformAdmin() ||
+          isClubOwnerOrAdmin(clubId) ||
+          canEditClubPets(clubId) ||
+          hasClubPermission(clubId, 'events') ||
+          hasClubPermission(clubId, 'volunteers')
+        ) && request.resource.data.shelter_club_id == clubId;
+        allow update: if isAuth() && (
+          isPlatformAdmin() ||
+          isClubOwnerOrAdmin(clubId) ||
+          canEditClubPets(clubId) ||
+          hasClubPermission(clubId, 'events') ||
+          hasClubPermission(clubId, 'volunteers')
+        ) && request.resource.data.shelter_club_id == resource.data.shelter_club_id;
         allow delete: if isAuth() && isPlatformAdmin();
       }
     }
