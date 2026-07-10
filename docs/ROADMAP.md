@@ -29,8 +29,8 @@ Status atual (2026-07-10):
 | 6 | Pós-Adoção com CRON de materialização | ✅ Concluída | #48 |
 | 7 | Lares Temporários (Fosters) | ✅ Concluída | #49 |
 | 8 | Prontuário Médico (Health Records) | ✅ Concluída | #50 |
-| 9 | Gestão de Medicamentos | ⏸️ Aguardando | — |
-| 10 | Galeria de Fotos (soft delete + purge 30d) | ⏸️ Aguardando | — |
+| 9 | Gestão de Medicamentos | ✅ Concluída | #51 |
+| 10 | Galeria de Fotos (soft delete + purge 30d) | ✅ Concluída | #52 |
 | 11 | Vitrines / Eventos | ⏸️ Aguardando | — |
 | 12 | Escalas + RSVP de Vitrines | ⏸️ Aguardando | — |
 | 13 | Gestão de Voluntários | ⏸️ Aguardando | — |
