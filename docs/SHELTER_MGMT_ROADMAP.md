@@ -1,6 +1,6 @@
 # Sistema de Gestão do Abrigo — Roadmap Detalhado
 
-> **Status**: Fases 0–8 concluídas (9/22). Próximas: Fase 9 (Medicamentos), Fase 10 (Galeria).
+> **Status**: Fases 0–12 concluídas (13/22). Próxima: Fase 13 (Gestão de Voluntários).
 > **Versão**: 0.2 — 2026-07-10 (atualizado pós-Fase 8)
 > **Owner**: Mavis (sub-agente técnico do repo `fsalamoni/viralata`)
 > **Macro-blocos**: 5 (A fundação, B núcleo do animal, C operação, D busca, E legal/segurança/admin)
@@ -60,7 +60,7 @@ Cada módulo é **isolado e autônomo**: falha em um módulo não derruba os dem
 └──────────────────────────────────────────────────────────┘
 ```
 
-**9/22 fases concluídas, 13/22 pendentes.**
+**13/22 fases concluídas, 9/22 pendentes.**
 ```
 
 ## 4. Dependências entre fases

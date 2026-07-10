@@ -31,8 +31,8 @@ Status atual (2026-07-10):
 | 8 | Prontuário Médico (Health Records) | ✅ Concluída | #50 |
 | 9 | Gestão de Medicamentos | ✅ Concluída | #51 |
 | 10 | Galeria de Fotos (soft delete + purge 30d) | ✅ Concluída | #52 |
-| 11 | Vitrines / Eventos | ⏸️ Aguardando | — |
-| 12 | Escalas + RSVP de Vitrines | ⏸️ Aguardando | — |
+| 11 | Vitrines / Eventos | ✅ Concluída | #53 |
+| 12 | Escalas + RSVP de Vitrines | ✅ Concluída | (ver `feat/shelter-exhibition-rsvps`) |
 | 13 | Gestão de Voluntários | ⏸️ Aguardando | — |
 | 14 | Dashboard do Abrigo (tempo real) | ⏸️ Aguardando | — |
 | 15 | Central de Pendências (Kanban) ⚠️ GRANDE | ⏸️ Aguardando | — |
@@ -44,7 +44,7 @@ Status atual (2026-07-10):
 | 21 | Painel de Saúde da Plataforma (Admin Master) | ⏸️ Aguardando | — |
 | 22 | Migração Final + Cutover | ⏸️ Aguardando | — |
 
-**9/22 fases concluídas.** Detalhes completos em `docs/SHELTER_MGMT_ROADMAP.md` e em `.mavis/scratchpad/shelter-roadmap-tracker.md`.
+**13/22 fases concluídas.** Detalhes completos em `docs/SHELTER_MGMT_ROADMAP.md` e em `.mavis/scratchpad/shelter-roadmap-tracker.md`.
 
 Convenções: ✅ concluído · 🟡 em andamento · ⏸️ aguardando · ❌ bloqueado. Cada fase = 1 feature flag (`SHELTER_*`) default OFF. Módulo isolado em `src/modules/shelter/`. Princípios: schema evolutivo, dual-read/write durante migração, defense in depth, audit log de tudo.
 

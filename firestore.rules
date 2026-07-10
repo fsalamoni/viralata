@@ -670,6 +670,99 @@ service cloud.firestore {
         );
         allow delete: if isAuth() && isPlatformAdmin();
       }
+
+      // ─── Fase 11: Subcoleção `exhibitions` (Vitrines / Eventos) ───
+      // Multi-tenant. Cada evento pertence ao abrigo organizador
+      // (organizer_shelter_id == clubId da path — defense-in-depth).
+      // Co-organizadores de outros abrigos têm acesso READ-ONLY via
+      // co_organizers[] (validação cross-tenant fica no service).
+      match /exhibitions/{exhibitionId} {
+        allow read: if isAuth() && (
+          isPlatformAdmin() ||
+          isClubOwnerOrAdmin(clubId) ||
+          canEditClubPets(clubId) ||
+          hasClubPermission(clubId, 'animals') ||
+          hasClubPermission(clubId, 'events')
+        );
+        allow create: if isAuth() && (
+          isPlatformAdmin() ||
+          isClubOwnerOrAdmin(clubId) ||
+          canEditClubPets(clubId) ||
+          hasClubPermission(clubId, 'animals') ||
+          hasClubPermission(clubId, 'events')
+        ) && request.resource.data.organizer_shelter_id == clubId;
+        allow update: if isAuth() && (
+          isPlatformAdmin() ||
+          isClubOwnerOrAdmin(clubId) ||
+          canEditClubPets(clubId) ||
+          hasClubPermission(clubId, 'animals') ||
+          hasClubPermission(clubId, 'events')
+        ) && request.resource.data.organizer_shelter_id == resource.data.organizer_shelter_id;
+        allow delete: if isAuth() && isPlatformAdmin();
+
+        // ─── Fase 12: Sub-coleção `invites` (convocações/RSVP) ───
+        // Multi-tenant via {clubId} e {exhibitionId}. Convites são
+        // direcionados a voluntários individuais; voluntários podem ler
+        // e responder o próprio convite (não o de outros).
+        match /invites/{inviteId} {
+          // Read: abrigo (admin/permissão) + platform_admin + o próprio voluntário
+          allow read: if isAuth() && (
+            isPlatformAdmin() ||
+            isClubOwnerOrAdmin(clubId) ||
+            canEditClubPets(clubId) ||
+            hasClubPermission(clubId, 'events') ||
+            resource.data.volunteer_uid == request.auth.uid
+          );
+          // Create: abrigo (admin/permissão)
+          allow create: if isAuth() && (
+            isPlatformAdmin() ||
+            isClubOwnerOrAdmin(clubId) ||
+            canEditClubPets(clubId) ||
+            hasClubPermission(clubId, 'events')
+          ) && request.resource.data.shelter_club_id == clubId
+            && request.resource.data.exhibition_id == exhibitionId;
+          // Update: abrigo OU o próprio voluntário (apenas para responder)
+          allow update: if isAuth() && (
+            isPlatformAdmin() ||
+            isClubOwnerOrAdmin(clubId) ||
+            canEditClubPets(clubId) ||
+            hasClubPermission(clubId, 'events') ||
+            resource.data.volunteer_uid == request.auth.uid
+          );
+          allow delete: if isAuth() && (
+            isPlatformAdmin() ||
+            isClubOwnerOrAdmin(clubId) ||
+            hasClubPermission(clubId, 'events')
+          );
+        }
+
+        // ─── Fase 12: Sub-coleção `shifts` (escalas/turnos) ───
+        // Multi-tenant. Voluntários atribuídos a um shift podem
+        // lê-lo (precisam ver seu turno).
+        match /shifts/{shiftId} {
+          // Read: abrigo + platform_admin + qualquer voluntário ATRIBUÍDO
+          allow read: if isAuth() && (
+            isPlatformAdmin() ||
+            isClubOwnerOrAdmin(clubId) ||
+            canEditClubPets(clubId) ||
+            hasClubPermission(clubId, 'events') ||
+            resource.data.assigned_uids.hasAny([request.auth.uid])
+          );
+          // Create/Update: abrigo (admin/permissão)
+          allow create, update: if isAuth() && (
+            isPlatformAdmin() ||
+            isClubOwnerOrAdmin(clubId) ||
+            canEditClubPets(clubId) ||
+            hasClubPermission(clubId, 'events')
+          ) && request.resource.data.shelter_club_id == clubId
+            && request.resource.data.exhibition_id == exhibitionId;
+          allow delete: if isAuth() && (
+            isPlatformAdmin() ||
+            isClubOwnerOrAdmin(clubId) ||
+            hasClubPermission(clubId, 'events')
+          );
+        }
+      }
     }
 
     match /club_members/{memberId} {
