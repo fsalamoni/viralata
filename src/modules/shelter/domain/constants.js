@@ -49,8 +49,12 @@ export const SHELTER_FEATURE_FLAG = Object.freeze({
   SHELTER_EXHIBITIONS: 'shelter_exhibitions',
   // Fase 11 — Escalas + Confirmação de Presença (Vitrines)
   SHELTER_EXHIBITION_RSVPS: 'shelter_exhibition_rsvps',
-  // Fase 12 — Gestão de Voluntários
+  // Fase 12 — Gestão de Voluntários (placeholder guarda-chuva da fase)
   SHELTER_VOLUNTEERS: 'shelter_volunteers',
+  // Fase 13 (no projeto) — Gestão de Voluntários v1 (perfil + roster + participation)
+  // Convive com `shelter_volunteers` (placeholder guarda-chuva) sem colisão
+  // de string. Liga a UI/service deste PR.
+  SHELTER_VOLUNTEER_PROFILE_V1: 'shelter_volunteer_profile_v1',
   // Fase 13 — Dashboard do Abrigo
   SHELTER_DASHBOARD: 'shelter_dashboard',
   // Fase 14 — Kanban de Tarefas
@@ -159,10 +163,25 @@ export const SHELTER_FEATURE_FLAG_META = Object.freeze({
       + 'Disponibilidade, observações, escalas por turno.',
   },
   [SHELTER_FEATURE_FLAG.SHELTER_VOLUNTEERS]: {
-    label: 'Abrigos · gestão de voluntários',
+    label: 'Abrigos · gestão de voluntários (guarda-chuva)',
     description:
-      'Tipo de membro "voluntário" com cadastro completo, habilidades, '
-      + 'disponibilidade. Histórico de participação em eventos.',
+      'Placeholder guarda-chuva da fase de voluntários. NÃO liga a '
+      + 'nada por si só. Use `shelter_volunteer_profile_v1` (ou a flag '
+      + 'específica do sub-PR) para ligar a UI/service de cada '
+      + 'incremento desta fase.',
+  },
+  [SHELTER_FEATURE_FLAG.SHELTER_VOLUNTEER_PROFILE_V1]: {
+    label: 'Abrigos · voluntários v1 (perfil + roster + participation)',
+    description:
+      'Liga a Gestão de Voluntários v1: perfil global do voluntário '
+      + '(skills, availability, radius, transporte) em '
+      + '`users/{uid}/volunteer_profile/main`; rostagem per-shelter em '
+      + '`clubs/{clubId}/volunteers/{uid}` com background check '
+      + 'per-shelter; e participations (turnos em eventos) em '
+      + '`clubs/{clubId}/volunteer_participations/{id}` com '
+      + 'check-in/out. Inclui aceite do termo de voluntariado (LGPD, '
+      + 'snapshot versionado). `exhibition_id` na participation é FK '
+      + 'opcional para a Fase 11 (vitrines).',
   },
   [SHELTER_FEATURE_FLAG.SHELTER_DASHBOARD]: {
     label: 'Abrigos · dashboard em tempo real',
