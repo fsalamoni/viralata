@@ -42,7 +42,7 @@ Status atual (2026-07-11):
 | 19 | Termos e Políticas completos (Legal) ⚠️ GRANDE | ✅ Concluída | #58 |
 | 20 | Segurança Avançada | ✅ Concluída | #62 |
 | 21 | Painel de Saúde da Plataforma (Admin Master) | ✅ Concluída | #60 |
-| 22 | Migração Final + Cutover | ⏸️ Aguardando | — |
+| 22 | Migração Final + Cutover | ✅ PR #66 pendente | #66 |
 
 **20/22 fases concluídas** (0–17 ✅, 19 ✅, 20 ✅, 21 ✅; 18 ⏸️, 22 ⏸️). Último commit: `d023232` (merge PRs 64+65, reports + indicators tabs).
 
