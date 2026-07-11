@@ -1,7 +1,7 @@
 # Sistema de Gestão do Abrigo — Roadmap Detalhado
 
-> **Status**: Fases 0–15 concluídas (16/22). Próximas: Fase 15 (Kanban) ou 19 (Legal).
-> **Versão**: 0.5 — 2026-07-11 (atualizado pós-Fase 19 completa)
+> **Status**: 18/22 fases concluídas (0–14 ✅, 19 ✅, 20 ✅, 21 ✅; 15–18 ⏸️, 22 ⏸️). Próxima: Fase 15 (Kanban).
+> **Versão**: 0.6 — 2026-07-11 (bug fix functions vitest + tracker reconstruído)
 > **Owner**: Mavis (sub-agente técnico do repo `fsalamoni/viralata`)
 > **Macro-blocos**: 5 (A fundação, B núcleo do animal, C operação, D busca, E legal/segurança/admin)
 >
@@ -45,8 +45,7 @@ Cada módulo é **isolado e autônomo**: falha em um módulo não derruba os dem
 │  BLOCO C — OPERAÇÃO DO ABRIGO (Fases 10-17) ~8 PRs      │
 │  • vitrines, RSVP, voluntários, dashboard, kanban,      │
 │    relatórios, indicadores                              │
-│  • Status (2026-07-11): Fases 14 (dashboard) ✅,         │
-│    15–17 ⏸️                                              │
+│  • Status (2026-07-11): Fases 11–14 ✅, 15–17 ⏸️       │
 ├──────────────────────────────────────────────────────────┤
 │  BLOCO D — BUSCA + DESCOBERTA (Fase 18)  ~1 PR grande   │
 │  • sistema de busca inteligente multi-filtro             │
@@ -55,13 +54,13 @@ Cada módulo é **isolado e autônomo**: falha em um módulo não derruba os dem
 │  BLOCO E — LEGAL + SEGURANÇA + ADMIN (Fases 19-22) ~5 PRs│
 │  • termos completos, LGPD, segurança avançada, painel    │
 │    de saúde da plataforma, cutover                       │
-│  • Status (2026-07-10): Fases 19–22 ⏸️                 │
+│  • Status (2026-07-11): Fases 19 ✅, 20 ✅, 21 🟡, 22 ⏸️ │
 │  • Nota: 13 docs legais já guardados em                 │
 │    /workspace/attachments/legal-seg/                     │
 └──────────────────────────────────────────────────────────┘
 ```
 
-**16/22 fases concluídas, 6/22 pendentes.**
+**18/22 fases concluídas, 4/22 pendentes** (15, 16, 17, 18; 22 ⏸️ cutover).
 ```
 
 ## 4. Dependências entre fases
@@ -89,7 +88,7 @@ Fase 0 (preparação)
   └→ Fase 18 (busca inteligente) — decisão pendente (Meilisearch vs Typesense vs Algolia vs Firestore)
   └→ Fase 19 (legal) ✅ — completa mergeada em PR #58
   └→ Fase 19 (segurança) ✅ — mergeada em PR #62
-  └→ Fase 20 (plataforma saúde) — parcial mergeada em PR #60, falta security alerts
+  └→ Fase 20 (plataforma saúde) ✅ — mergeada em PR #60
        └→ Fase 21 (cutover)
 ```
 
