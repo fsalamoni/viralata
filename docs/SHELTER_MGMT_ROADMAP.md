@@ -60,7 +60,7 @@ Cada módulo é **isolado e autônomo**: falha em um módulo não derruba os dem
 └──────────────────────────────────────────────────────────┘
 ```
 
-**20/22 fases concluídas, 2/22 pendentes** (18 ⏸️ decisão backend; 22 ⏸️ cutover).
+**21/22 fases concluídas, 1/22 pendente** (18 ⏸️ decisão backend; 22 ⏸️ PR #66 pendente).
 ```
 
 ## 4. Dependências entre fases
