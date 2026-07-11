@@ -26,7 +26,7 @@ import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { ShieldCheck, ShieldOff, ShieldAlert, Lock } from 'lucide-react';
+import { ShieldCheck, ShieldOff, Search, ShieldAlert, Lock } from 'lucide-react';
 import PageHero from '@/components/PageHero';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 
@@ -156,6 +156,7 @@ export default function AdminUsers() {
               <AdminRow
                 key={u.id}
                 user={u}
+                isOwner={isOwner}
                 isSelf={u.id === user?.uid}
                 isActing={acting === u.id}
                 onDemote={() => handleDemote(u)}
@@ -196,7 +197,7 @@ export default function AdminUsers() {
   );
 }
 
-function AdminRow({ user, isSelf, isActing, onDemote, canAct }) {
+function AdminRow({ user, isOwner, isSelf, isActing, onDemote, canAct }) {
   return (
     <div className="flex items-center gap-3 p-3 rounded-xl border border-border bg-card">
       <Avatar className="w-10 h-10 flex-shrink-0">

@@ -64,6 +64,7 @@ const Profile = lazy(() => import('@/pages/Profile'));
 const AdminDashboard = lazy(() => import('@/modules/admin/pages/AdminDashboard'));
 const AdminPets = lazy(() => import('@/modules/admin/pages/AdminPets'));
 const AdminReports = lazy(() => import('@/modules/admin/pages/AdminReports'));
+const AdminUserManagement = lazy(() => import('@/modules/admin/pages/AdminUserManagement'));
 const AdminUsers = lazy(() => import('@/modules/admin/pages/AdminUsers'));
 const AdminOrganizations = lazy(() => import('@/modules/admin/pages/AdminOrganizations'));
 const AdminCommunities = lazy(() => import('@/modules/admin/pages/AdminCommunities'));
@@ -72,6 +73,8 @@ const AdminAuditLog = lazy(() => import('@/modules/admin/pages/AdminAuditLog'));
 const AdminNotifications = lazy(() => import('@/modules/admin/pages/AdminNotifications'));
 const AdminPlatformSettings = lazy(() => import('@/modules/admin/pages/AdminPlatformSettings'));
 const AdminFlags = lazy(() => import('@/modules/admin/pages/AdminFlags'));
+const PlatformHealth = lazy(() => import('@/modules/admin/pages/PlatformHealth'));
+const AlertConfigs = lazy(() => import('@/modules/admin/pages/AlertConfigs'));
 
 // ─── QueryClient ─────────────────────────────────────────────────────────────
 const queryClient = new QueryClient({
@@ -287,7 +290,19 @@ export default function App() {
                 />
                 <Route
                   path="/admin/usuarios"
+                  element={<AdminRoute>{withLayout('AdminUserManagement', AdminUserManagement)}</AdminRoute>}
+                />
+                <Route
+                  path="/admin/admins"
                   element={<AdminRoute>{withLayout('AdminUsers', AdminUsers)}</AdminRoute>}
+                />
+                <Route
+                  path="/admin/saude"
+                  element={<AdminRoute>{withLayout('PlatformHealth', PlatformHealth)}</AdminRoute>}
+                />
+                <Route
+                  path="/admin/alertas"
+                  element={<AdminRoute>{withLayout('AlertConfigs', AlertConfigs)}</AdminRoute>}
                 />
                 <Route
                   path="/admin/organizacoes"
