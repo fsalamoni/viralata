@@ -750,6 +750,7 @@ service cloud.firestore {
         allow delete: if isAuth() && isPlatformAdmin();
       }
 
+<<<<<<< HEAD
       // ─── Fase 11: Subcoleção `exhibitions` (Vitrines / Eventos) ───────
       // Multi-tenant. Cada vitrine = (abrigo, organizador) com janela de
       // tempo, local (lat/lng), animais (internos + externos de outros
@@ -950,6 +951,25 @@ service cloud.firestore {
            resource.data.volunteer_uid == request.auth.uid)
         );
         allow delete: if isAuth() && isPlatformAdmin();
+=======
+      // ─── Fase 14: Coleção `dashboard_widgets` (customizável por abrigo) ───
+      // Widgets do dashboard — métricas customizadas que o abrigo cria.
+      // Multi-tenant: cada widget pertence a UM abrigo (`shelter_club_id`).
+      // Quem pode ler/escrever: platform admin, owner/admin do abrigo, ou
+      // membro com permissão granular `dashboard` (a ser adicionada em
+      // Fases 16/19; enquanto isso, isClubOwnerOrAdmin cobre).
+      match /dashboard_widgets/{widgetId} {
+        allow read: if isAuth() && (
+          isPlatformAdmin() ||
+          isClubOwnerOrAdmin(clubId) ||
+          hasClubPermission(clubId, 'dashboard')
+        );
+        allow create, update, delete: if isAuth() && (
+          isPlatformAdmin() ||
+          isClubOwnerOrAdmin(clubId) ||
+          hasClubPermission(clubId, 'dashboard')
+        ) && request.resource.data.shelter_club_id == clubId;
+>>>>>>> 97c525b (feat(shelter): Fase 14 — Dashboard do Abrigo (SHELTER_DASHBOARD))
       }
     }
 
