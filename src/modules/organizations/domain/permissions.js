@@ -93,6 +93,7 @@ export function visibleAdminTabs({ club, membership, currentUserUid, isAdmin }) 
     { key: 'feed', label: 'Mural da ONG', permission: 'feed' },
     { key: 'donations', label: 'Chamados de Doação', permission: 'donations' },
     { key: 'finance', label: 'Prestação de Contas', permission: 'finance' },
+    { key: 'indicators', label: 'Indicadores', permission: 'animals' },
     { key: 'chat', label: 'Conversas', permission: 'chat' },
     { key: 'team', label: 'Equipe', permission: 'team' },
     { key: 'settings', label: 'Configurações', permission: 'admin_only' },

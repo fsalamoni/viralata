@@ -1,6 +1,6 @@
 # Sistema de Gestão do Abrigo — Roadmap Detalhado
 
-> **Status**: 19/22 fases concluídas (0–15 ✅, 19 ✅, 20 ✅, 21 ✅; 16–18 ⏸️, 22 ⏸️). Próxima: Fase 16 (Relatórios de Abrigos).
+> **Status**: 20/22 fases concluídas (0–17 ✅, 19 ✅, 20 ✅, 21 ✅; 18 ⏸️, 22 ⏸️). Próxima: Fase 18 (Smart Search — aguarda decisão backend).
 > **Versão**: 0.7 — 2026-07-11 (Fase 15 — Kanban v1: PR #63)
 > **Owner**: Mavis (sub-agente técnico do repo `fsalamoni/viralata`)
 > **Macro-blocos**: 5 (A fundação, B núcleo do animal, C operação, D busca, E legal/segurança/admin)
