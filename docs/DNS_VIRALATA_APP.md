@@ -3,6 +3,23 @@
 > **Status**: custom domain registrado no Firebase Hosting via API (`projects/viralata-4cf0b/sites/viralata/customDomains/viralata.app`).
 > **Bloqueio restante**: DNS ainda aponta para Hostinger. Necessário atualizar registros DNS.
 
+## 🚨 USE ESTA URL AGORA: `https://viralata.web.app`
+
+A URL oficial e funcional do Viralata é:
+
+# **https://viralata.web.app**
+
+Acessos atuais (11 jul 2026):
+
+| URL | Status | Servido por |
+|---|---|---|
+| `https://viralata.web.app/admin/flags` | ✅ **200** | Firebase Hosting |
+| `https://viralata.web.app/` | ✅ **200** | Firebase Hosting |
+| `https://viralata.app/admin/flags` | ❌ **404** | Hostinger (DNS antigo) |
+| `https://viralata.app/` | ⚠️ **homepage antiga** | Hostinger (DNS antigo) |
+
+O deploy atual está em `viralata.web.app` e funciona perfeitamente. O `viralata.app` é o domínio customizado e vai funcionar assim que o DNS for migrado (próxima seção).
+
 ## Diagnóstico
 
 Acessos atuais:
