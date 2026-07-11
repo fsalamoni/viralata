@@ -20,7 +20,7 @@ function makeCollectionChain() {
   // `.where()` encadeados não se sobrescrevem entre calls.
   const chain = {
     where: vi.fn(() => chain),
-    where: vi.fn(() => chain),
+
     count: vi.fn(() => chain),
     get: mockGet,
     limit: vi.fn(() => chain),

@@ -176,7 +176,6 @@ exports.materializePostAdoptionTasks = materializePostAdoptionTasks;
 // a amarração com os triggers do Firebase.
 const { onSchedule } = require('firebase-functions/v2/scheduler');
 const { onDocumentCreated: onDocCreated } = require('firebase-functions/v2/firestore');
-const { logger } = require('firebase-functions');
 const { runSnapshotPlatformHealth, setLogger: setHealthLogger } = require('./platformHealthCron');
 const { runOnPlatformAlertEvent, setLogger: setAlertsLogger } = require('./adminAlerts');
 
