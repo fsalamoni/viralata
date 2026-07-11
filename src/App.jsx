@@ -19,6 +19,7 @@ const Legislation = lazy(() => import('@/pages/Legislation'));
 const LegalPageViewer = lazy(() => import('@/pages/legal/LegalPageViewer'));
 const PageNotFound = lazy(() => import('@/pages/PageNotFound'));
 const BannedNotice = lazy(() => import('@/pages/BannedNotice'));
+const AdminDebugPage = lazy(() => import('@/pages/AdminDebugPage'));
 
 // ─── Onboarding ───────────────────────────────────────────────────────────────
 const OnboardingQuestionnaire = lazy(() => import('@/modules/onboarding/pages/OnboardingQuestionnaire'));
@@ -169,6 +170,12 @@ export default function App() {
                 <Route path="/politica-privacidade" element={withLayout('PrivacyPolicy', PrivacyPolicy)} />
                 <Route path="/termos" element={withLayout('Terms', Terms)} />
                 <Route path="/legislacao" element={withLayout('Legislation', Legislation)} />
+
+                {/* Debug page (admin only) */}
+                <Route
+                  path="/admin-debug"
+                  element={<AdminRoute>{withLayout('AdminDebugPage', AdminDebugPage)}</AdminRoute>}
+                />
                 {/* Fase 19: páginas legais integrais sob /legal/*.
                     Flag-gated — se OFF, o viewer redireciona para a rota
                     legada correspondente. */}
