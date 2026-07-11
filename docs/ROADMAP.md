@@ -39,12 +39,12 @@ Status atual (2026-07-11):
 | 16 | Relatórios de Abrigos | ⏸️ Aguardando | — |
 | 17 | Indicadores de Vitrines + Voluntários | ⏸️ Aguardando | — |
 | 18 | Busca Inteligente ⚠️ GRANDE | 🚨 Decisão pendente (Meilisearch vs Typesense vs Algolia vs Firestore) | — |
-| 19 | Termos e Políticas completos (Legal) ⚠️ GRANDE | 🟡 Parcial (P.R #59 mergeado, #58 aguardando rebase) | #59 |
+| 19 | Termos e Políticas completos (Legal) ⚠️ GRANDE | ✅ Concluída | #58 |
 | 20 | Segurança Avançada | ✅ Concluída | #62 |
 | 21 | Painel de Saúde da Plataforma (Admin Master) | 🟡 Parcial (security alerts faltando) | #60 |
 | 22 | Migração Final + Cutover | ⏸️ Aguardando | — |
 
-**15/22 fases concluídas (Fases 0–14 ✅).** Detalhes completos em `docs/SHELTER_MGMT_ROADMAP.md` e em `.mavis/scratchpad/shelter-roadmap-tracker.md`.
+**16/22 fases concluídas (Fases 0–15 ✅, contando Fases 11–14 + 19 + 20).** Detalhes completos em `docs/SHELTER_MGMT_ROADMAP.md` e em `.mavis/scratchpad/shelter-roadmap-tracker.md`.
 
 Convenções: ✅ concluído · 🟡 em andamento · ⏸️ aguardando · ❌ bloqueado. Cada fase = 1 feature flag (`SHELTER_*`) default OFF. Módulo isolado em `src/modules/shelter/`. Princípios: schema evolutivo, dual-read/write durante migração, defense in depth, audit log de tudo.
 
