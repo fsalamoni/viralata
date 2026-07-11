@@ -20,6 +20,7 @@ const LegalPageViewer = lazy(() => import('@/pages/legal/LegalPageViewer'));
 const PageNotFound = lazy(() => import('@/pages/PageNotFound'));
 const BannedNotice = lazy(() => import('@/pages/BannedNotice'));
 const AdminDebugPage = lazy(() => import('@/pages/AdminDebugPage'));
+const PublicDebugPage = lazy(() => import('@/pages/PublicDebugPage'));
 
 // ─── Onboarding ───────────────────────────────────────────────────────────────
 const OnboardingQuestionnaire = lazy(() => import('@/modules/onboarding/pages/OnboardingQuestionnaire'));
@@ -171,6 +172,11 @@ export default function App() {
                 <Route path="/termos" element={withLayout('Terms', Terms)} />
                 <Route path="/legislacao" element={withLayout('Legislation', Legislation)} />
 
+                {/* Debug page pública — sem auth. Use ?debug=1 para ativar */}
+                <Route
+                  path="/public-debug"
+                  element={withLayout('PublicDebugPage', PublicDebugPage)}
+                />
                 {/* Debug page (admin only) */}
                 <Route
                   path="/admin-debug"
