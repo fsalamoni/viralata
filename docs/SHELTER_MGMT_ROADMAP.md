@@ -1,7 +1,7 @@
 # Sistema de Gestão do Abrigo — Roadmap Detalhado
 
 > **Status**: 20/22 fases concluídas (0–17 ✅, 19 ✅, 20 ✅, 21 ✅; 18 ⏸️, 22 ⏸️). Próxima: Fase 18 (Smart Search — aguarda decisão backend).
-> **Versão**: 0.8 — 2026-07-11 (Fases 16-17: PRs #64, #65)
+> **Versão**: 0.9 — 2026-07-11 (Fases 16-17 mergeadas em main, PRs #64+65 fechados)
 > **Owner**: Mavis (sub-agente técnico do repo `fsalamoni/viralata`)
 > **Macro-blocos**: 5 (A fundação, B núcleo do animal, C operação, D busca, E legal/segurança/admin)
 >
@@ -45,7 +45,7 @@ Cada módulo é **isolado e autônomo**: falha em um módulo não derruba os dem
 │  BLOCO C — OPERAÇÃO DO ABRIGO (Fases 10-17) ~8 PRs      │
 │  • vitrines, RSVP, voluntários, dashboard, kanban,      │
 │    relatórios, indicadores                              │
-│  • Status (2026-07-11): Fases 11–14 ✅, 15–17 ⏸️       │
+│  • Status (2026-07-11): Fases 10–17 ✅ (completo!)    │
 ├──────────────────────────────────────────────────────────┤
 │  BLOCO D — BUSCA + DESCOBERTA (Fase 18)  ~1 PR grande   │
 │  • sistema de busca inteligente multi-filtro             │
@@ -54,13 +54,13 @@ Cada módulo é **isolado e autônomo**: falha em um módulo não derruba os dem
 │  BLOCO E — LEGAL + SEGURANÇA + ADMIN (Fases 19-22) ~5 PRs│
 │  • termos completos, LGPD, segurança avançada, painel    │
 │    de saúde da plataforma, cutover                       │
-│  • Status (2026-07-11): Fases 19 ✅, 20 ✅, 21 🟡, 22 ⏸️ │
+│  • Status (2026-07-11): Fases 19 ✅, 20 ✅, 21 ✅, 22 ⏸️ │
 │  • Nota: 13 docs legais já guardados em                 │
 │    /workspace/attachments/legal-seg/                     │
 └──────────────────────────────────────────────────────────┘
 ```
 
-**18/22 fases concluídas, 4/22 pendentes** (15, 16, 17, 18; 22 ⏸️ cutover).
+**20/22 fases concluídas, 2/22 pendentes** (18 ⏸️ decisão backend; 22 ⏸️ cutover).
 ```
 
 ## 4. Dependências entre fases

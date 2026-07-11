@@ -35,16 +35,16 @@ Status atual (2026-07-11):
 | 12 | Escalas + RSVP de Vitrines | ✅ Concluída | (parte do #56) |
 | 13 | Gestão de Voluntários | ✅ Concluída | #54 |
 | 14 | Dashboard do Abrigo (tempo real) | ✅ Concluída | #61 |
-| 15 | Central de Pendências (Kanban) ⚠️ GRANDE | 🟡 PR aberto | #63 |
-| 16 | Relatórios de Abrigos | 🟡 PR aberto | #64 |
-| 17 | Indicadores de Vitrines + Voluntários | 🟡 PR aberto | #65 |
+| 15 | Central de Pendências (Kanban) ⚠️ GRANDE | ✅ Concluída | #63 |
+| 16 | Relatórios de Abrigos | ✅ Concluída | merged main |
+| 17 | Indicadores de Vitrines + Voluntários | ✅ Concluída | merged main |
 | 18 | Busca Inteligente ⚠️ GRANDE | 🚨 Decisão pendente (Meilisearch vs Typesense vs Algolia vs Firestore) | — |
 | 19 | Termos e Políticas completos (Legal) ⚠️ GRANDE | ✅ Concluída | #58 |
 | 20 | Segurança Avançada | ✅ Concluída | #62 |
 | 21 | Painel de Saúde da Plataforma (Admin Master) | ✅ Concluída | #60 |
 | 22 | Migração Final + Cutover | ⏸️ Aguardando | — |
 
-**18/22 fases concluídas** (0–14 ✅, 19 ✅, 20 ✅, 21 ✅; 15–18 ⏸️, 22 ⏸️). Último commit: `7440da8` (fix functions vitest).
+**20/22 fases concluídas** (0–17 ✅, 19 ✅, 20 ✅, 21 ✅; 18 ⏸️, 22 ⏸️). Último commit: `d023232` (merge PRs 64+65, reports + indicators tabs).
 
 Convenções: ✅ concluído · 🟡 em andamento · ⏸️ aguardando · ❌ bloqueado. Cada fase = 1 feature flag (`SHELTER_*`) default OFF. Módulo isolado em `src/modules/shelter/`. Princípios: schema evolutivo, dual-read/write durante migração, defense in depth, audit log de tudo.
 
