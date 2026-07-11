@@ -175,6 +175,7 @@ service cloud.firestore {
         allow delete: if isOwner(userId) || isPlatformAdmin();
       }
 
+<<<<<<< HEAD
       // ─── Fase 13: Subcoleção `volunteer_profile` (perfil do voluntário) ───
       // O perfil global do voluntário (skills, availability, radius, aceite
       // do termo). Doc único por uid (id fixo "main"). LGPD: apenas o
@@ -188,6 +189,25 @@ service cloud.firestore {
         allow create: if isOwner(userId) && request.resource.data.get('terms_accepted_at', null) is string;
         allow update: if isOwner(userId);
         allow delete: if isOwner(userId) || isPlatformAdmin();
+=======
+      // ─── Fase 19: Subcoleção `terms_acceptances` (aceites legais) ──
+      // Cada aceite é IMUTÁVEL (Lei 14.063/2020 — prova legal). Não pode
+      // ser editado nem deletado pelo próprio usuário — apenas lido.
+      // Apenas platform_admin pode remover (via Admin SDK, fora do client).
+      //
+      // - read: o próprio dono (uid) + platform_admin (auditoria LGPD)
+      // - create: o próprio dono, com user_uid consistente
+      // - update: BLOQUEADO — aceite é prova legal
+      // - delete: apenas platform_admin
+      //
+      // Não há índices em subcoleção simples (auto-criado pelo Firestore
+      // para campos `accepted_at`, `terms_type`, `terms_version`).
+      match /terms_acceptances/{acceptanceId} {
+        allow read: if isAuth() && (isOwner(userId) || isPlatformAdmin());
+        allow create: if isOwner(userId) && request.resource.data.user_uid == userId;
+        allow update: if false;
+        allow delete: if isPlatformAdmin();
+>>>>>>> e862878 (feat(shelter): Fase 19 — Termos e Políticas completos (SHELTER_LEGAL_TERMS))
       }
     }
 

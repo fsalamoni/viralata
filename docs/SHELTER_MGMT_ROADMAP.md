@@ -1,6 +1,7 @@
 # Sistema de Gestão do Abrigo — Roadmap Detalhado
 
-> **Status**: Fases 0–8 concluídas (9/22). Próximas: Fase 9 (Medicamentos), Fase 10 (Galeria).
+> **Status**: Fases 0–13 concluídas + Fase 19 (Termos e Políticas) concluída — **14/22 fases concluídas, 8/22 pendentes** (segundo o branch `feat/shelter-19-legal-terms`).
+> **Versão**: 0.3 — 2026-07-11 (atualizado pós-Fase 19)
 > **Versão**: 0.2 — 2026-07-10 (atualizado pós-Fase 8)
 > **Owner**: Mavis (sub-agente técnico do repo `fsalamoni/viralata`)
 > **Macro-blocos**: 5 (A fundação, B núcleo do animal, C operação, D busca, E legal/segurança/admin)
@@ -60,7 +61,7 @@ Cada módulo é **isolado e autônomo**: falha em um módulo não derruba os dem
 └──────────────────────────────────────────────────────────┘
 ```
 
-**11/22 fases concluídas, 11/22 pendentes.**
+**14/22 fases concluídas, 8/22 pendentes** (após merge da Fase 19).
 ```
 
 ## 4. Dependências entre fases
@@ -73,13 +74,13 @@ Fase 0 (preparação)
             ├→ Fase 6 (pós-adoção) ✅
             ├→ Fase 7 (lares temporários) ✅
             ├→ Fase 8 (saúde / prontuário) ✅
-            │    └→ Fase 9 (medicação) ✅
-            └→ Fase 10 (galeria) ✅
+            │    └→ Fase 9 (medicação) ⏸️
+            └→ Fase 10 (galeria) ⏸️
        └→ Fase 3 (adoção workflow) ✅
             └→ Fase 4 (adotante) ✅
   └→ Fase 11 (vitrines) ⏸️
        └→ Fase 12 (RSVP) ⏸️
-       └→ Fase 13 (voluntários) ✅
+       └→ Fase 13 (voluntários) ⏸️
   └→ Fase 14 (dashboard) ⏸️
        ├→ Fase 14 (kanban)
        ├→ Fase 15 (relatórios)
@@ -581,66 +582,7 @@ Fase 0 (preparação)
 - +8 testes
 - smoke test em produção com flag OFF
 
-### Fase 12 — Gestão de Voluntários · flag `SHELTER_VOLUNTEER_PROFILE_V1` ✅
-
-**Status**: ✅ Concluída em 2026-07-10 (Fase 13 do projeto, 11/22 fases). Bundle `index-bFVuAo0r.js`. 711/711 testes passando (98 novos).
-
-**Objetivo**: cadastro, habilidades, disponibilidade e histórico de participação de voluntários. Multi-tenant: cada abrigo tem sua própria rostagem com background check **per-shelter** (não portável). LGPD: aceite do termo versionado com snapshot.
-
-**Novas coleções** (multi-tenant):
-
-1. `users/{uid}/volunteer_profile/main` (id fixo `main`) — perfil global do voluntário
-2. `clubs/{clubId}/volunteers/{volunteerUid}` (id determinista = uid) — rostagem per-shelter
-3. `clubs/{clubId}/volunteer_participations/{participationId}` — participações em eventos
-
-**Schema do perfil global**:
-- `skills[]` — `dog_walking`, `cat_socialization`, `transport`, `grooming`, `photography`, `events`
-- `availability[]` — slots `{day_of_week: mon..sun, start_time: HH:MM, end_time: HH:MM}` (max 30)
-- `radius_km` (0–500, opcional)
-- `transport_available` (bool), `has_vehicle` (bool)
-- `notes` (string, max 2000)
-- `terms_accepted_at` (ISO timestamp) + `terms_version` (snapshot LGPD)
-
-**Schema do roster per-shelter**:
-- `shelter_club_id`, `volunteer_uid`, `volunteer_name` (snapshot), `volunteer_email/phone/photo_url` (snapshot opcional)
-- `status`: `active` | `paused` | `blocked` | `left` (terminal)
-- `background_check_status` (per-shelter): `not_required` | `pending` | `approved` | `rejected`
-- `background_check_at`, `background_check_notes`
-- `terms_accepted_at` + `terms_version` + `signature_text` (espelho do aceite global — LGPD)
-- `joined_at`, `left_at`
-
-**Schema da participation**:
-- `shelter_club_id`, `volunteer_uid`, `volunteer_name` (snapshot)
-- `event_type`: `exhibition` | `shelter_visit` | `foster_transport` | `event_other`
-- `event_id` (string livre, opcional), `exhibition_id` (FK opcional Fase 11)
-- `event_label`, `event_date` (ISO)
-- `role`: `carregamento` | `transporte_ida` | `transporte_volta` | `cuidador` | `outro`
-- `check_in` (ISO, opcional), `check_out` (ISO, opcional), `hours_logged` (calculado no check-out)
-
-**LGPD / termo**: o termo de voluntariado vive em `src/modules/shelter/domain/legal/volunteerTerms.js` (stub resumido, `TERMS_VERSION = '2026-07-10'`, com TODO pra substituir pelo texto integral na Fase 18). O aceite é gravado como snapshot imutável no perfil global E espelhado no roster per-shelter.
-
-**UI**:
-- `VolunteerProfileForm` — form do perfil do voluntário (skills, availability, radius, transporte) + aceite do termo (signature_text). Exige aceite antes de permitir save.
-- `VolunteersRoster` — lista de voluntários do abrigo (filtros por status, badges de BG check, ações: aprovar/rejeitar BG, pausar/retomar/bloquear/sair).
-- `ParticipationForm` — form para o abrigo registrar uma participation (evento, role, voluntário).
-- `ParticipationsList` — lista de participations com totais de horas, em andamento, concluídas. Botões de check-in/out (abrigo OU self-service do voluntário).
-
-**Firestore rules**:
-- `users/{userId}/volunteer_profile/{profileId}` — owner write, owner + platform_admin read. `terms_accepted_at` obrigatório no create.
-- `clubs/{clubId}/volunteers/{volunteerUid}` — abrigo (admin/owner/animals) + próprio voluntário (read + auto-join + pausa/saída). `shelter_club_id` e `volunteer_uid` IMUTÁVEIS. Delete só platform_admin.
-- `clubs/{clubId}/volunteer_participations/{participationId}` — abrigo (admin/owner/animals) + próprio voluntário (read + check-in/out self-service). `shelter_club_id`, `volunteer_uid`, `event_type` IMUTÁVEIS. Delete só platform_admin.
-
-**Validação**:
-- typecheck/lint/build OK
-- +98 testes
-- smoke test em produção com flag OFF
-
-**Decisões críticas**:
-- Perfil global em `users/{uid}/volunteer_profile/main` (subcoleção single-doc, id fixo `main`) — simplicidade + segue o padrão `adopter_profile` da Fase 4.
-- Background check **per-shelter** (não portável entre abrigos) — cada abrigo aprova/rejeita independentemente.
-- Termo **global** (não per-shelter) — o voluntário aceita uma vez o termo da plataforma; cada abrigo espelha o aceite no roster.
-- `exhibition_id` como FK opcional e string livre — Fase 13 não depende da Fase 11 (vitrines), funciona com ou sem.
-- Coexiste com `SHELTER_VOLUNTEERS` (placeholder guarda-chuva Fase 0) sem colisão de string.
+### Fase 12 — Gestão de Voluntários · flag `SHELTER_VOLUNTEERS`
 
 **Objetivo**: cadastro e histórico de voluntários.
 
@@ -820,39 +762,53 @@ Fase 0 (preparação)
 - +15 testes
 - smoke test em produção com flag OFF
 
-### Fase 18 — Termos e Políticas completos (Legal) · flag `SHELTER_LEGAL_TERMS` (GRANDE - textual)
+### Fase 18 — Termos e Políticas completos (Legal) · flag `SHELTER_LEGAL_TERMS` (GRANDE - textual) ✅
+
+**Status**: concluída em 2026-07-11 (PR da Fase 19 — worktree `feat/shelter-19-legal-terms`).
 
 **Objetivo**: textos legais completos e sistema de aceite.
 
-**Páginas a atualizar/criar**:
-- `src/pages/Terms.jsx` (expandir)
-- `src/pages/PrivacyPolicy.jsx` (expandir)
-- `src/pages/Legislation.jsx` (expandir)
-- `src/pages/Liability.jsx` (novo — isenção do criador)
+**Páginas atualizadas/criadas** (11 total):
+- `src/pages/Terms.jsx` (expandido)
+- `src/pages/PrivacyPolicy.jsx` (expandido)
+- `src/pages/Legislation.jsx` (expandido)
 - `src/pages/AdopterTerms.jsx` (novo)
-- `src/pages/ShelterTerms.jsx` (novo)
+- `src/pages/ShelterTerms.jsx` (novo, com DPA completo)
 - `src/pages/VolunteerTerms.jsx` (novo)
 - `src/pages/FosterTerms.jsx` (novo)
 - `src/pages/DonorTerms.jsx` (novo)
+- `src/pages/CodeOfConduct.jsx` (novo)
+- `src/pages/CookiePolicy.jsx` (novo)
 
-**Conteúdo**:
-- **LGPD completa**: finalidade, base legal, direitos do titular, retenção, DPO
-- **Legislação animal**: Lei 9605/98 art. 32, Decreto 24.645/34, leis municipais
-- **Código Civil**: guarda, responsabilidade civil
-- **Código Penal**: maus-tratos
-- **Isenção total** do criador/desenvolvedor
+**Conteúdo entregue**:
+- **LGPD completa** (Lei 13.709/2018): finalidade, base legal por tratamento (Art. 7º), direitos do titular (Art. 18), retenção, DPO, breach notification (Art. 48), transferência internacional (Art. 33)
+- **Lei 14.063/2020**: assinatura eletrônica avançada com hash SHA-256 + timestamp + IP + liveness
+- **Marco Civil** (Lei 12.965/2014): retenção de logs 6m
+- **CFMV 1.465/2022**: disclaimers de telemedicina veterinária
+- **Lei 9.605/98 + Lei 14.064/2020**: penalidades de maus-tratos
+- **Art. 936 CC**: responsabilidade do dono por ato do animal
+- **ITCMD**: disclaimer por estado (SP, RJ, MG, RS)
+- **Lei 9.608/1998**: voluntariado
+- **Código Civil Arts. 538-564**: doação
+- **Isenção total** do criador/desenvolvedor (Limitação §12 dos Termos)
 - **Autorização expressa** para uso de imagem, dados, chat, adoções
 - **Sigilo de dados** salvo expressa autorização
+- **DPO/Encarregado**: canal permanente (`dpo@viralata.app`)
 
 **Sistema de aceite**:
-- Tabela `terms_acceptances/{userId}` com histórico (versão, data, IP, hash)
-- Modal de aceite em momentos-chave (onboarding, adoção, chat, abrigo)
-- Bloqueio de features até aceite
+- Subcoleção `users/{userId}/terms_acceptances/{acceptanceId}` (imutável — `update: false`)
+- Schema: `terms_type`, `terms_version` (YYYY-MM-DD), `document_hash` (sha256:...), `signature_text`, `accepted_at`, `ip_address`, `user_agent`, `liveness_verified`, `legal_basis`
+- Modal `TermsAcceptanceModal` (3 checkboxes padrão: Li / Compreendo / Aceito)
+- Componente `TermsDocument` (wrapper para renderizar doc + checkboxes + assinatura)
+- Hook `useTermsAcceptance` (queries + mutations)
+- Service `termsAcceptanceService` (8 funções: recordAcceptance, getAcceptances, getCurrentAcceptances, hasAccepted, getPendingTypes, recordBulkAcceptances, deleteAcceptance, getCurrentTermsVersion)
+- Bloqueio de features via `usePendingTerms` no modal de onboarding (próxima fase)
+- Firestore rules: `allow create: if isOwner(userId)`, `allow update: if false` (imutável), `allow delete: if isPlatformAdmin()`
 
 **Validação**:
-- typecheck/lint/build OK
-- +10 testes
-- smoke test em produção com flag OFF
+- typecheck/lint/build OK (`✓ built in 42.55s`)
+- 666 testes passando (38 arquivos) — 53 testes novos: 33 domain + 20 service
+- Smoke test em produção com flag OFF (default)
 
 ### Fase 19 — Segurança Avançada · flag `SHELTER_SECURITY_HARDENING`
 

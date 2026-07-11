@@ -167,11 +167,11 @@ Painel exclusivo de `platform_admin` (`/admin/*`).
 
 ## shelter/
 
-> **Status (2026-07-10)**: **11/22 fases concluídas** (Fases 0–10 + 12 ✅, PRs #37–#52 + PR Fase 13).
+> **Status (2026-07-11)**: **14/22 fases concluídas (Fase 19 parcial via PR #59)** (Fases 0–13 + Fase 19 ✅, PRs #37–#57 + worktree `feat/shelter-19-legal-terms`).
 > Roadmap completo em `docs/SHELTER_MGMT_ROADMAP.md`. Tracker operacional
 > em `.mavis/scratchpad/shelter-roadmap-tracker.md`. 22 fases planejadas.
-> Todas as SHELTER_* flags default OFF (inclusive `SHELTER_FOUNDATION`).
-> Próximas fases: 11 (Vitrines) em paralelo, depois 14 (Dashboard).
+> Todas as 22 SHELTER_* flags default OFF (inclusive `SHELTER_FOUNDATION`).
+> Próximas fases: 20 (Segurança) e 21 (Plataforma).
 
 ### Estrutura interna
 
@@ -210,18 +210,14 @@ src/modules/shelter/
 - `clubs/{clubId}/intake_records/{recordId}` — resgates
 - `clubs/{clubId}/fosters/{fosterId}` — lares temporários
 - `clubs/{clubId}/adoption_workflow/{adoptionId}` — adoções
-- `clubs/{clubId}/volunteers/{volunteerUid}` — voluntários (Fase 13)
-- `clubs/{clubId}/volunteer_participations/{participationId}` — turnos (Fase 13)
+- `clubs/{clubId}/volunteers/{volunteerId}` — voluntários
 - `clubs/{clubId}/kanban/{boardId}/tasks/{taskId}` — kanban operacional
 - `clubs/{clubId}/legal_terms/{termId}` — termos de adoção aceitos
-
-**Subcoleção de voluntário** (Fase 13, global):
-- `users/{uid}/volunteer_profile/main` (id fixo `main`) — perfil global do voluntário (skills, availability, radius, aceite do termo)
 
 ### Feature flags do módulo
 
 22 flags, todas default OFF, administradas em `/admin/flags`:
-`shelter_foundation`, `shelter_animal_unified_profile`, `shelter_pet_timeline`, `shelter_adoption_workflow`, `shelter_adopter_full_profile`, `shelter_post_adoption_followup`, `shelter_foster`, `shelter_health_records`, `shelter_medication`, `shelter_gallery`, `shelter_exhibitions`, `shelter_exhibition_rsvps`, `shelter_volunteers` (guarda-chuva), `shelter_volunteer_profile_v1` (Fase 13, perfil + roster + participation), `shelter_dashboard`, `shelter_kanban`, `shelter_reports`, `shelter_indicators`, `shelter_smart_search`, `shelter_legal_terms`, `shelter_security_hardening`, `shelter_platform_health`, `shelter_cutover`.
+`shelter_foundation`, `shelter_animal_unified_profile`, `shelter_pet_timeline`, `shelter_adoption_workflow`, `shelter_adopter_full_profile`, `shelter_post_adoption_followup`, `shelter_foster`, `shelter_health_records`, `shelter_medication`, `shelter_gallery`, `shelter_exhibitions`, `shelter_exhibition_rsvps`, `shelter_volunteers`, `shelter_dashboard`, `shelter_kanban`, `shelter_reports`, `shelter_indicators`, `shelter_smart_search`, `shelter_legal_terms`, `shelter_security_hardening`, `shelter_platform_health`, `shelter_cutover`.
 
 Cada flag corresponde a 1 fase. Ativar uma flag = o comportamento da fase entra em produção.
 
@@ -234,22 +230,4 @@ Da análise jurídica (LGPD, CFMV 1.465/2022, Art. 936 CC, Lei 14.063/2020, ITCM
 - Assunção de risco na adoção (Art. 936 CC)
 - DPO designado (LGPD)
 - Backup WORM + breach notification (LGPD Art. 48)
-
-### volunteers/ (Fase 13) 🆕
-
-Sub-módulo dentro de `src/modules/shelter/` (convivendo com adoption, fosters, etc.):
-
-- **domain/operational/volunteerProfile.js** — schemas Zod (perfil, roster, participation), 6 enums (SKILLS, DAYS_OF_WEEK, SHELTER_STATUS, BG_CHECK_STATUS, ROLES, EVENT_TYPES), 4 helpers de transição/cálculo.
-- **domain/legal/volunteerTerms.js** — stub versionado (`TERMS_VERSION='2026-07-10'`, texto resumido, TODO Fase 18).
-- **services/volunteerProfileService.js** — CRUD no perfil global (`users/{uid}/volunteer_profile/main`) + roster per-shelter (`clubs/{clubId}/volunteers/{uid}`), com snapshot do aceite do termo.
-- **services/volunteerParticipationService.js** — CRUD em `clubs/{clubId}/volunteer_participations/{id}` com check-in/out e cálculo automático de horas.
-- **hooks** — `useVolunteerProfile`, `useUpsertVolunteerProfile`, `useAcceptVolunteerTerms`, `useShelterVolunteers`, `useJoinShelterAsVolunteer`, `useUpdateShelterVolunteer`, `useLeaveShelter`, `useParticipations`, `useCheckInOut`, etc.
-- **components** — `VolunteerProfileForm` (perfil + aceite do termo), `VolunteersRoster` (lista do abrigo), `ParticipationForm` (registro de turno), `ParticipationsList` (lista + check-in/out).
-- **firestore.rules** — 3 novos match blocks (`volunteer_profile`, `volunteers`, `volunteer_participations`) com `return` explícito + `isClubOwnerOrAdmin`/`canEditClubPets`/`hasClubPermission('animals')` + dono do perfil/participation.
-
-**Padrões**:
-- O abrigo **NÃO** lê o `users/{uid}/volunteer_profile` diretamente — o service faz snapshot dos campos relevantes no `clubs/{clubId}/volunteers/{uid}` (defense-in-depth + LGPD).
-- Background check é **per-shelter** (não portável) — cada abrigo aprova/rejeita independentemente.
-- Termo de voluntariado é **global** (não per-shelter) — uma única aceitação na plataforma, espelhada no roster.
-- `exhibition_id` é FK opcional na participation (string livre) — Fase 13 não depende da Fase 11.
 
