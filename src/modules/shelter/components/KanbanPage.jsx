@@ -2,7 +2,8 @@
  * KanbanPage — página principal do Kanban
  */
 import { useState } from 'react';
-import { useBoards, useCards, useBoardMutations } from '../hooks/useKanban';import { KanbanBoard } from './KanbanBoard';
+import { useBoards, useCards, useBoardMutations } from '../hooks/useKanban';
+import { KanbanBoard } from './KanbanBoard';
 import { KanbanCreateColumn } from './KanbanCreateColumn';
 import { KanbanCardModal } from './KanbanCardModal';
 
