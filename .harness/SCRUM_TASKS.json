@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-11T23:38:42.579Z",
+  "generatedAt": "2026-07-11T23:43:48.108Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -26,11 +26,11 @@
     {
       "id": "wt-auto-import",
       "branch": "feat/harness-auto-import",
-      "head": "a2ed8b682554e81169a5a0c342ba585f45f09a7e",
-      "headTitle": "feat(harness): TASK-202 auto-import do painel-scrum.html (Regra B §B.2)",
+      "head": "cdaac20575d487c8a4f23579bb8e2e8efea84ae1",
+      "headTitle": "fix(harness): resolve nit duplicado ### B.2 (renomeia antigo B.2 para B.1.5)",
       "path": "D:/viralata/.worktrees/wt-auto-import",
       "status": "ahead-of-main",
-      "commitsAhead": 1,
+      "commitsAhead": 3,
       "primarySession": null,
       "sessionTitle": null,
       "focus": []
@@ -3471,7 +3471,7 @@
         "fase-18"
       ],
       "blockedBy": [
-        "TASK-118"
+        "TASK-205"
       ],
       "relatedTasks": [
         "TASK-048"
@@ -3500,7 +3500,7 @@
         "fase-18"
       ],
       "blockedBy": [
-        "TASK-118"
+        "TASK-205"
       ],
       "relatedTasks": [
         "TASK-048"
@@ -3528,7 +3528,7 @@
         "fase-18"
       ],
       "blockedBy": [
-        "TASK-119"
+        "TASK-206"
       ],
       "relatedTasks": [
         "TASK-048"
@@ -3556,7 +3556,7 @@
         "fase-18"
       ],
       "blockedBy": [
-        "TASK-118"
+        "TASK-205"
       ],
       "relatedTasks": [
         "TASK-048",
@@ -3585,7 +3585,7 @@
         "fase-18"
       ],
       "blockedBy": [
-        "TASK-122"
+        "TASK-209"
       ],
       "relatedTasks": [
         "TASK-048"
@@ -3613,7 +3613,7 @@
         "fase-18"
       ],
       "blockedBy": [
-        "TASK-122"
+        "TASK-209"
       ],
       "relatedTasks": [
         "TASK-048",
@@ -3643,8 +3643,8 @@
         "fase-18"
       ],
       "blockedBy": [
-        "TASK-123",
-        "TASK-124"
+        "TASK-210",
+        "TASK-211"
       ],
       "relatedTasks": [
         "TASK-048"
@@ -3655,7 +3655,7 @@
       "updatedAt": "2026-07-11"
     },
     {
-      "id": "TASK-117",
+      "id": "TASK-204",
       "title": "Voluntários: página pública institucional /voluntarios",
       "type": "feature",
       "category": "legal",
@@ -3674,9 +3674,9 @@
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [
-        "TASK-118",
-        "TASK-119",
-        "TASK-120"
+        "TASK-205",
+        "TASK-206",
+        "TASK-207"
       ],
       "evidence": "Regra A §1.1 (público) — Voluntários em abrigos",
       "description": "BLOCO INDEPENDENTE. Criar src/pages/Voluntarios.jsx pública com: (1) o que é ser voluntário, (2) tipos de role (cuidador, transporte_ida, transporte_volta, carregamento, eventos), (3) termo v2 inline, (4) CTA para login/signup, (5) FAQ. Sem auth. Rota /voluntarios.",
@@ -3684,7 +3684,7 @@
       "updatedAt": "2026-07-11"
     },
     {
-      "id": "TASK-118",
+      "id": "TASK-205",
       "title": "Voluntários: bloco \"Seja voluntário\" no perfil público do abrigo",
       "type": "feature",
       "category": "shelter",
@@ -3703,8 +3703,8 @@
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [
-        "TASK-117",
-        "TASK-119"
+        "TASK-204",
+        "TASK-206"
       ],
       "evidence": "Regra A §1.1 — perfil público do abrigo",
       "description": "BLOCO INDEPENDENTE. Adicionar CTA \"Seja voluntário\" no src/modules/organizations/pages/ClubDetail.jsx (ou novo src/modules/shelter/pages/ShelterPublicProfile.jsx). Modal inline com form de inscrição (nome, email, telefone, cidade, disponibilidade, skills). Submit chama volunteerService.signup() + clickwrap no termo v2.",
@@ -3712,7 +3712,7 @@
       "updatedAt": "2026-07-11"
     },
     {
-      "id": "TASK-119",
+      "id": "TASK-206",
       "title": "Voluntários: bloco \"Minhas voluntariadas\" no perfil do usuário",
       "type": "feature",
       "category": "shelter",
@@ -3731,7 +3731,7 @@
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [
-        "TASK-120"
+        "TASK-207"
       ],
       "evidence": "Regra A §1.4 (perfil) — perfil do usuário",
       "description": "BLOCO INDEPENDENTE. Adicionar seção \"Minhas voluntariadas\" em src/pages/Profile.jsx. Lista: participações passadas, próximas escalas, badges (frequência, horas, transporte), botão \"Aceitar próximo convite\". Clickwrap inline pra aceitar escalas.",
@@ -3739,7 +3739,7 @@
       "updatedAt": "2026-07-11"
     },
     {
-      "id": "TASK-120",
+      "id": "TASK-207",
       "title": "Voluntários: sistema de escalas (turnos, check-in/out, hours_logged)",
       "type": "feature",
       "category": "shelter",
@@ -3758,7 +3758,7 @@
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [
-        "TASK-119"
+        "TASK-206"
       ],
       "evidence": "Regra A §1.2 (papel voluntário) + SHELTER_MGMT_ROADMAP §Fase 12",
       "description": "BLOCO INDEPENDENTE. Criar UI de escalas em VolunteerParticipationForm.jsx. Cada participation tem check_in/check_out, hours_logged auto, foto opcional de prova. Dashboard pessoal: próximas escalas, atrasadas, concluídas. Notificação 24h antes.",
@@ -3766,7 +3766,7 @@
       "updatedAt": "2026-07-11"
     },
     {
-      "id": "TASK-121",
+      "id": "TASK-208",
       "title": "Voluntários: vinculação a vitrines e eventos (atribuições)",
       "type": "feature",
       "category": "shelter",
@@ -3784,7 +3784,7 @@
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [
-        "TASK-120"
+        "TASK-207"
       ],
       "evidence": "Regra A §1.1 (vitrines) + SHELTER_MGMT §Fase 11",
       "description": "BLOCO INDEPENDENTE. Em ExhibitionDetails.jsx, adicionar \"Escalas\" com: lista de roles, atribuir voluntários (select de roster do abrigo), confirmar presença, substituir. Persistir em volunteer_participation.",
@@ -3792,7 +3792,7 @@
       "updatedAt": "2026-07-11"
     },
     {
-      "id": "TASK-122",
+      "id": "TASK-209",
       "title": "Voluntários: termo v2 com LGPD e Lei 14.063/2020",
       "type": "docs",
       "category": "legal",
@@ -3811,7 +3811,7 @@
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [
-        "TASK-123"
+        "TASK-210"
       ],
       "evidence": "Regra A §1.3 (LGPD) — base legal execução de contrato de voluntário",
       "description": "BLOCO INDEPENDENTE. Atualizar src/modules/shelter/domain/legal/volunteerTerms.js com: (1) base legal LGPD Art. 7º V (execução de contrato), (2) e-sign Lei 14.063/2020 (hash SHA-256 + timestamp + IP), (3) cláusula de voluntariado não-remunerado, (4) cláusula de confidencialidade de dados do abrigo, (5) disclaimer de risco. advogado humano valida.",
@@ -3819,7 +3819,7 @@
       "updatedAt": "2026-07-11"
     },
     {
-      "id": "TASK-123",
+      "id": "TASK-210",
       "title": "Voluntários: clickwrap de aceite em ações críticas (cada evento que vai participar)",
       "type": "feature",
       "category": "legal",
@@ -3838,7 +3838,7 @@
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [
-        "TASK-122"
+        "TASK-209"
       ],
       "evidence": "Regra A §1.3 (LGPD) + clickwrap de aceite",
       "description": "BLOCO INDEPENDENTE. Adicionar modal/checkbox de aceite do termo v2 antes de: (a) signup como voluntário, (b) aceitar escala, (c) check-in. Gravar em audit_log com {user_id, action, document_version, ip, timestamp, signature_text_hash}. Lei 14.063/2020 compliance.",
@@ -3846,7 +3846,7 @@
       "updatedAt": "2026-07-11"
     },
     {
-      "id": "TASK-124",
+      "id": "TASK-211",
       "title": "Voluntários: auditoria completa (signup, assignment, shift, role_change)",
       "type": "feature",
       "category": "shelter",
@@ -3870,7 +3870,7 @@
       "updatedAt": "2026-07-11"
     },
     {
-      "id": "TASK-125",
+      "id": "TASK-212",
       "title": "Voluntários: Firestore rules com isolamento tenant",
       "type": "feature",
       "category": "shelter",
@@ -3913,7 +3913,7 @@
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [
-        "TASK-120"
+        "TASK-207"
       ],
       "evidence": "Regra A §1.4 (perfil) + SHELTER_MGMT §Fase 12 métricas",
       "description": "BLOCO INDEPENDENTE. Adicionar métricas no VolunteerProfileForm/Profile: #participações, #transporte_ida, #transporte_volta, frequência (%), horas totais. Computed fields no Firestore (Cloud Function onWrite).",
@@ -3966,7 +3966,7 @@
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [
-        "TASK-122"
+        "TASK-209"
       ],
       "evidence": "Regra A §1.3 (LGPD) — clickwrap formal",
       "description": "BLOCO INDEPENDENTE. Substituir o placeholder buildAdoptionTermsAcceptance em src/modules/pets/services/adoptionService.js pelo termo v2 (05_Termo_Adocao.md) com signature_text + SHA-256 hash. Gravar em audit_log completo.",
@@ -4441,7 +4441,7 @@
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [
-        "TASK-121"
+        "TASK-208"
       ],
       "evidence": "Regra A §1.2 (papel voluntário)",
       "description": "BLOCO INDEPENDENTE. Em ExhibitionDetails.jsx: criar shifts (data+hora+role+capacity), atribuir voluntários, confirmar presença, check-in. Integra com volunteer_participation (TASK-121).",
@@ -4543,7 +4543,7 @@
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [
-        "TASK-121"
+        "TASK-208"
       ],
       "evidence": "Regra A §1.2 (papel voluntário) + Regra A §1.3 (integrações)",
       "description": "BLOCO INDEPENDENTE. Em KanbanCardModal, assignees pode incluir volunteers do roster (não só membros do abrigo). Conecta kanban com volunteer_profile.",
@@ -5587,7 +5587,7 @@
       "blockedBy": [],
       "relatedTasks": [
         "TASK-006",
-        "TASK-122",
+        "TASK-209",
         "TASK-128"
       ],
       "evidence": "Verifier report VERDICT_LEGAL_V2_a66e030.md Check 3; src/modules/shelter/domain/legal/texts/adoptionTerms.v1.js:414-417; volunteerTerms.v2.js:503-508; shelterOnboardingTerms.v1.js:894-896",
@@ -5617,7 +5617,7 @@
       "blockedBy": [],
       "relatedTasks": [
         "TASK-110",
-        "TASK-123",
+        "TASK-210",
         "TASK-128",
         "TASK-134"
       ],
@@ -5712,7 +5712,7 @@
       "relatedTasks": [
         "TASK-010",
         "TASK-196",
-        "TASK-124"
+        "TASK-211"
       ],
       "evidence": "COVERAGE_AUDIT.md Eixo 3 — auditoria explícita de exclusão de comunidade; src/modules/communities/hooks/useCommunities.js",
       "description": "BLOCO INDEPENDENTE. Confirmar se useDeleteCommunity (hook em useCommunities.js) chama auditService.log com action=community.delete incluindo user_id, document_version, ip_address, timestamp, user_agent. Marco Civil Art. 15 = 6 meses retenção do log. Se faltar, adicionar createAuditLog. Regra A §1.3 (auditoria).",
@@ -5886,9 +5886,9 @@
       "title": "Corrigir 9 IDs duplicados em SCRUM_TASKS.json (TASK-117 a TASK-125 — Voluntários reusou IDs do Smart Search)",
       "type": "bug",
       "category": "infra",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
-      "owner": "unassigned",
+      "owner": "mvs_44f2762343f94f28b506f2f4c8c12eae",
       "branch": null,
       "flag": null,
       "worktree": null,
@@ -5905,9 +5905,18 @@
         "TASK-061"
       ],
       "evidence": "node .harness/sync.cjs (one-shot) reporta 9 IDs duplicados: TASK-117 a TASK-125.",
-      "description": "Sync.cjs detecta 9 IDs duplicados em SCRUM_TASKS.json. Investigação: TASK-117 a TASK-125 foram adicionados duas vezes — primeiro batch (113-121) sobre Smart Search/LGPD, segundo batch (122-130) sobre Voluntários. Provável causa: script de criação Regra A gaps usou offset errado. FIX: renumerar o segundo batch (Voluntários) para TASK-204 a TASK-212 mantendo ordem, atualizar relatedTasks que apontam pra eles. npm run sync:check deve sair com exit 0 após fix.",
+      "description": "Sync.cjs detecta 9 IDs duplicados em SCRUM_TASKS.json. Investigação: TASK-117 a TASK-125 foram adicionados duas vezes - primeiro batch (113-121) sobre Smart Search/LGPD, segundo batch (117-125) sobre Voluntários. Provável causa: script de criação Regra A gaps usou offset errado. FIX APLICADO: Voluntários renumerados para TASK-204 a TASK-212. Referências relatedTasks/blockedBy atualizadas em cascata. npm run sync:check deve sair com exit 0.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11 20:35"
+      "updatedAt": "2026-07-11",
+      "resolvedAt": "2026-07-11T20:55:00-03:00",
+      "history": [
+        {
+          "ts": "2026-07-11T23:55:00.000Z",
+          "type": "fix",
+          "agent": "mvs_44f2762343f94f28b506f2f4c8c12eae",
+          "summary": "Renumerados 9 IDs Voluntários 117-125 → 204-212. 25 refs atualizadas. sync:check exit 0."
+        }
+      ]
     }
   ],
   "definitionOfDone": [
