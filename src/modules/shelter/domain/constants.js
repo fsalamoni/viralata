@@ -49,6 +49,11 @@ export const SHELTER_FEATURE_FLAG = Object.freeze({
   SHELTER_EXHIBITIONS: 'shelter_exhibitions',
   // Fase 11 — Escalas + Confirmação de Presença (Vitrines)
   SHELTER_EXHIBITION_RSVPS: 'shelter_exhibition_rsvps',
+  // Fase 11 (no projeto) — Vitrines / Eventos (workflow completo:
+  // vitrines + shifts + post_event_log). Convive com
+  // `shelter_exhibitions` e `shelter_exhibition_rsvps` sem colisão de
+  // string. Liga a UI/service deste PR. (Fase 11 entrega os 3 numa só.)
+  SHELTER_EXHIBITION_WORKFLOW_V1: 'shelter_exhibition_workflow_v1',
   // Fase 12 — Gestão de Voluntários (placeholder guarda-chuva da fase)
   SHELTER_VOLUNTEERS: 'shelter_volunteers',
   // Fase 13 (no projeto) — Gestão de Voluntários v1 (perfil + roster + participation)
@@ -161,6 +166,17 @@ export const SHELTER_FEATURE_FLAG_META = Object.freeze({
     description:
       'Convocação de voluntários por evento (sim/não/talvez). '
       + 'Disponibilidade, observações, escalas por turno.',
+  },
+  [SHELTER_FEATURE_FLAG.SHELTER_EXHIBITION_WORKFLOW_V1]: {
+    label: 'Abrigos · vitrines e eventos (workflow completo)',
+    description:
+      'Workflow completo de vitrines / eventos da Fase 11: cadastro '
+      + 'da vitrine (título, local, janela), coalizão entre abrigos '
+      + '(co-organizadores + pets externos), escalas de trabalho por '
+      + 'turno/role, e log do destino de cada animal pós-evento '
+      + '(voltou/adotado/transferido/óbito). State machine com '
+      + 'scheduled → active → completed e cancel como estado terminal. '
+      + 'Habilita a UI no painel do abrigo.',
   },
   [SHELTER_FEATURE_FLAG.SHELTER_VOLUNTEERS]: {
     label: 'Abrigos · gestão de voluntários (guarda-chuva)',

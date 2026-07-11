@@ -411,6 +411,34 @@
           "order": "DESCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "exhibitions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "datetime_start",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "exhibitions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "organizer_uid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "datetime_start",
+          "order": "DESCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": []
