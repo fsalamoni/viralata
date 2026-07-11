@@ -73,8 +73,9 @@ describe('legal/index — exports', () => {
 });
 
 describe('legal/index — LEGAL_PAGES', () => {
-  it('tem 6 páginas (termos, privacidade, avisos, conduta, cookies, legislacao-animal)', () => {
-    expect(LEGAL_PAGES).toHaveLength(6);
+  it('tem 10 páginas (6 estáticas + 4 ações: doacoes, voluntariado/LT, LT standalone, adesao abrigos)', () => {
+    // 10 a partir da v2 (Viralata_Documentos_Legais_Completos_v2.zip)
+    expect(LEGAL_PAGES).toHaveLength(10);
   });
 
   it('todas as páginas têm slug, title, description e version', () => {
@@ -82,24 +83,46 @@ describe('legal/index — LEGAL_PAGES', () => {
       expect(p.slug).toMatch(/^[a-z-]+$/);
       expect(typeof p.title).toBe('string');
       expect(typeof p.description).toBe('string');
+      // Debug helper: loga qual página está com version undefined
+      if (typeof p.version !== 'string') {
+        // eslint-disable-next-line no-console
+        console.error('LEGAL_PAGE sem version:', JSON.stringify(p));
+      }
       expect(typeof p.version).toBe('string');
     });
   });
 
   it('slugs esperados estão presentes', () => {
     const slugs = LEGAL_PAGES.map((p) => p.slug);
+    // Estáticas
     expect(slugs).toContain('termos-de-uso');
     expect(slugs).toContain('politica-de-privacidade');
     expect(slugs).toContain('avisos-legais');
     expect(slugs).toContain('codigo-de-conduta');
     expect(slugs).toContain('cookies');
     expect(slugs).toContain('legislacao-animal');
+    // Ações (v2)
+    expect(slugs).toContain('politica-doacoes');
+    expect(slugs).toContain('termos-voluntariado-lar-temporario');
+    expect(slugs).toContain('termo-lar-temporario');
+    expect(slugs).toContain('termo-adesao-abrigos-ong');
+  });
+
+  it('slugs são únicos', () => {
+    const slugs = LEGAL_PAGES.map((p) => p.slug);
+    expect(new Set(slugs).size).toBe(slugs.length);
   });
 
   it('getLegalPageBySlug retorna a página certa', () => {
     const p = getLegalPageBySlug('cookies');
     expect(p).toBeTruthy();
     expect(p.title).toBe('Política de Cookies');
+  });
+
+  it('getLegalPageBySlug retorna o termo de adesão (v2)', () => {
+    const p = getLegalPageBySlug('termo-adesao-abrigos-ong');
+    expect(p).toBeTruthy();
+    expect(p.title).toBe('Termo de Adesão para Abrigos/ONGs');
   });
 
   it('getLegalPageBySlug retorna null para slug inválido', () => {

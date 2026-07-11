@@ -36,13 +36,22 @@ import { getLegalPageBySlug, LEGAL_PAGES } from '@/modules/shelter/domain/legal'
 // Slug → texto. Mantido aqui (em vez de constants do módulo
 // legal) para fazer tree-shaking do bundle: cada página
 // só puxa o texto que vai renderizar.
+//
+// A partir de 2026-07-11, as 6 páginas estáticas carregam
+// os textos v2 (do zip Viralata_Documentos_Legais_Completos_v2.zip)
+// e 4 novas páginas (doacoes, termos-voluntariado-lar-temporario,
+// termo-lar-temporario, termo-adesao-abrigos-ong) foram adicionadas.
 const TEXT_BY_SLUG = {
-  'termos-de-uso': () => import('@/modules/shelter/domain/legal/texts/termosDeUso').then((m) => m.TERMS_OF_USE_TEXT),
-  'politica-de-privacidade': () => import('@/modules/shelter/domain/legal/texts/politicaDePrivacidade').then((m) => m.PRIVACY_POLICY_TEXT),
-  'avisos-legais': () => import('@/modules/shelter/domain/legal/texts/avisosLegais').then((m) => m.LEGAL_NOTICES_TEXT),
-  'codigo-de-conduta': () => import('@/modules/shelter/domain/legal/texts/codigoDeConduta').then((m) => m.CODE_OF_CONDUCT_TEXT),
-  'cookies': () => import('@/modules/shelter/domain/legal/texts/cookies').then((m) => m.COOKIE_POLICY_TEXT),
-  'legislacao-animal': () => import('@/modules/shelter/domain/legal/texts/legislacaoAnimal').then((m) => m.ANIMAL_LEGISLATION_TEXT),
+  'termos-de-uso': () => import('@/modules/shelter/domain/legal/texts/termosDeUso.v2').then((m) => m.TERMS_OF_USE_TEXT),
+  'politica-de-privacidade': () => import('@/modules/shelter/domain/legal/texts/politicaDePrivacidade.v2').then((m) => m.PRIVACY_POLICY_TEXT),
+  'avisos-legais': () => import('@/modules/shelter/domain/legal/texts/avisosLegais.v2').then((m) => m.LEGAL_NOTICES_TEXT),
+  'codigo-de-conduta': () => import('@/modules/shelter/domain/legal/texts/codigoDeConduta.v2').then((m) => m.CODE_OF_CONDUCT_TEXT),
+  'cookies': () => import('@/modules/shelter/domain/legal/texts/cookies.v2').then((m) => m.COOKIE_POLICY_TEXT),
+  'legislacao-animal': () => import('@/modules/shelter/domain/legal/texts/legislacaoAnimal.v2').then((m) => m.ANIMAL_LEGISLATION_TEXT),
+  'politica-doacoes': () => import('@/modules/shelter/domain/legal/texts/doacoes.v1').then((m) => m.DONATION_POLICY_TEXT),
+  'termos-voluntariado-lar-temporario': () => import('@/modules/shelter/domain/legal/texts/voluntariado.v3').then((m) => m.VOLUNTEER_AND_FOSTER_TEXT),
+  'termo-lar-temporario': () => import('@/modules/shelter/domain/legal/texts/larTemporario.v1').then((m) => m.FOSTER_TERMS_TEXT),
+  'termo-adesao-abrigos-ong': () => import('@/modules/shelter/domain/legal/texts/adesaoAbrigosOng.v1').then((m) => m.SHELTER_ADHESION_TEXT),
 };
 
 export default function LegalPageViewer() {
@@ -213,4 +222,7 @@ const LEGACY_SLUG_MAP = Object.freeze({
   'termos-de-uso': '/termos',
   'politica-de-privacidade': '/politica-privacidade',
   'legislacao-animal': '/legislacao',
+  // Os 7 slugs novos (politica-doacoes, termos-voluntariado-lar-temporario,
+  // termo-lar-temporario, termo-adesao-abrigos-ong + 3 redundantes)
+  // não têm rota legada: caem no 404 se a flag estiver OFF.
 });

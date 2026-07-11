@@ -28,7 +28,8 @@ import ClubGeneralAdminTab from '@/modules/organizations/components/ClubGeneralA
 import ClubChatAdminTab from '@/modules/organizations/components/ClubChatAdminTab';
 import ClubThemedScope from '@/modules/organizations/components/ClubThemedScope';
 import { ShelterPetScopedTab } from '@/modules/organizations/components/ShelterPetScopedTab';
-import { useFeatureFlag, FEATURE_FLAG } from '@/core/lib/FeatureFlagsContext';
+import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
+import { FEATURE_FLAG } from '@/core/featureFlags';
 import ReportsTab from '@/modules/shelter/components/ReportsTab';
 import IndicatorsTab from '@/modules/shelter/components/IndicatorsTab';
 import { DashboardPage } from '@/modules/shelter/components/DashboardPage';
