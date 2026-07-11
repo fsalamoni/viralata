@@ -39,6 +39,6 @@ echo "=== Adding $DOMAIN to $SITE ==="
 curl -s -X POST \
   -H "Authorization: Bearer $ACCESS_TOKEN" \
   -H "Content-Type: application/json" \
-  "https://firebasehosting.googleapis.com/v1beta1/projects/${FIREBASE_PROJECT_ID}/sites/${SITE}/customDomains?customDomainId=${DOMAIN//\./_}" \
-  -d "{\"hostName\": \"$DOMAIN\"}"
+  "https://firebasehosting.googleapis.com/v1beta1/projects/${FIREBASE_PROJECT_ID}/sites/${SITE}/customDomains?customDomainId=$DOMAIN" \
+  -d "{}"
 echo ""
