@@ -31,17 +31,17 @@ Status atual (2026-07-11):
 | 8 | Prontuário Médico (Health Records) | ✅ Concluída | #50 |
 | 9 | Gestão de Medicamentos | ✅ Concluída | #51 |
 | 10 | Galeria de Fotos (soft delete + purge 30d) | ✅ Concluída | #52 |
-| 11 | Vitrines / Eventos | ⏸️ Aguardando | — |
-| 12 | Escalas + RSVP de Vitrines | ⏸️ Aguardando | — |
-| 13 | Gestão de Voluntários | ⏸️ Aguardando | — |
-| 14 | Dashboard do Abrigo (tempo real) | ✅ Concluída | PR #58 (em revisão) |
+| 11 | Vitrines / Eventos | ✅ Concluída | #56 (workflow V1) |
+| 12 | Escalas + RSVP de Vitrines | ✅ Concluída | (parte do #56) |
+| 13 | Gestão de Voluntários | ✅ Concluída | #54 |
+| 14 | Dashboard do Abrigo (tempo real) | ✅ Concluída | #61 |
 | 15 | Central de Pendências (Kanban) ⚠️ GRANDE | ⏸️ Aguardando | — |
 | 16 | Relatórios de Abrigos | ⏸️ Aguardando | — |
 | 17 | Indicadores de Vitrines + Voluntários | ⏸️ Aguardando | — |
 | 18 | Busca Inteligente ⚠️ GRANDE | 🚨 Decisão pendente (Meilisearch vs Typesense vs Algolia vs Firestore) | — |
-| 19 | Termos e Políticas completos (Legal) ⚠️ GRANDE | ⏸️ Aguardando (13 docs já guardados) | — |
-| 20 | Segurança Avançada | ⏸️ Aguardando | — |
-| 21 | Painel de Saúde da Plataforma (Admin Master) | ⏸️ Aguardando | — |
+| 19 | Termos e Políticas completos (Legal) ⚠️ GRANDE | 🟡 Parcial (P.R #59 mergeado, #58 aguardando rebase) | #59 |
+| 20 | Segurança Avançada | ✅ Concluída | #62 |
+| 21 | Painel de Saúde da Plataforma (Admin Master) | 🟡 Parcial (security alerts faltando) | #60 |
 | 22 | Migração Final + Cutover | ⏸️ Aguardando | — |
 
 **15/22 fases concluídas (Fases 0–14 ✅).** Detalhes completos em `docs/SHELTER_MGMT_ROADMAP.md` e em `.mavis/scratchpad/shelter-roadmap-tracker.md`.

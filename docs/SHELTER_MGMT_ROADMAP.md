@@ -1,7 +1,7 @@
 # Sistema de Gestão do Abrigo — Roadmap Detalhado
 
 > **Status**: Fases 0–14 concluídas (15/22). Próximas: Fase 15 (Kanban) ou 19 (Legal).
-> **Versão**: 0.3 — 2026-07-11 (atualizado pós-Fase 14)
+> **Versão**: 0.4 — 2026-07-11 (atualizado pós-Fases 14, 19, 20, 21)
 > **Owner**: Mavis (sub-agente técnico do repo `fsalamoni/viralata`)
 > **Macro-blocos**: 5 (A fundação, B núcleo do animal, C operação, D busca, E legal/segurança/admin)
 >
@@ -75,20 +75,21 @@ Fase 0 (preparação)
             ├→ Fase 7 (lares temporários) ✅
             ├→ Fase 8 (saúde / prontuário) ✅
             │    └→ Fase 9 (medicação) ⏸️
-            └→ Fase 10 (galeria) ⏸️
+            └→ Fase 10 (galeria) ✅
        └→ Fase 3 (adoção workflow) ✅
             └→ Fase 4 (adotante) ✅
-  └→ Fase 11 (vitrines) ⏸️
-       └→ Fase 12 (RSVP) ⏸️
-       └→ Fase 13 (voluntários) ⏸️
+  └→ Fase 11 (vitrines) ✅
+       └→ Fase 12 (RSVP) ✅
+       └→ Fase 13 (voluntários) ✅
   └→ Fase 14 (dashboard) ✅
        ├→ Fase 15 (kanban)
        ├→ Fase 16 (relatórios)
        └→ Fase 17 (indicadores)
   └→ Fase 17 (busca) — depende de TUDO acima
-  └→ Fase 18 (legal) — pode ser feita em paralelo
-  └→ Fase 19 (segurança) — pode ser feita em paralelo
-  └→ Fase 20 (admin) — pode ser feita em paralelo
+  └→ Fase 18 (busca inteligente) — decisão pendente (Meilisearch vs Typesense vs Algolia vs Firestore)
+  └→ Fase 19 (legal) — parcial mergeada em PR #59, completa em #58 (rebase do user pendente)
+  └→ Fase 19 (segurança) ✅ — mergeada em PR #62
+  └→ Fase 20 (plataforma saúde) — parcial mergeada em PR #60, falta security alerts
        └→ Fase 21 (cutover)
 ```
 
