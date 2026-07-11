@@ -175,7 +175,6 @@ service cloud.firestore {
         allow delete: if isOwner(userId) || isPlatformAdmin();
       }
 
-<<<<<<< HEAD
       // ─── Fase 13: Subcoleção `volunteer_profile` (perfil do voluntário) ───
       // O perfil global do voluntário (skills, availability, radius, aceite
       // do termo). Doc único por uid (id fixo "main"). LGPD: apenas o
@@ -189,7 +188,6 @@ service cloud.firestore {
         allow create: if isOwner(userId) && request.resource.data.get('terms_accepted_at', null) is string;
         allow update: if isOwner(userId);
         allow delete: if isOwner(userId) || isPlatformAdmin();
-=======
       // ─── Fase 19: Subcoleção `terms_acceptances` (aceites legais) ──
       // Cada aceite é IMUTÁVEL (Lei 14.063/2020 — prova legal). Não pode
       // ser editado nem deletado pelo próprio usuário — apenas lido.
@@ -207,7 +205,6 @@ service cloud.firestore {
         allow create: if isOwner(userId) && request.resource.data.user_uid == userId;
         allow update: if false;
         allow delete: if isPlatformAdmin();
->>>>>>> e862878 (feat(shelter): Fase 19 — Termos e Políticas completos (SHELTER_LEGAL_TERMS))
       }
     }
 
@@ -750,7 +747,6 @@ service cloud.firestore {
         allow delete: if isAuth() && isPlatformAdmin();
       }
 
-<<<<<<< HEAD
       // ─── Fase 11: Subcoleção `exhibitions` (Vitrines / Eventos) ───────
       // Multi-tenant. Cada vitrine = (abrigo, organizador) com janela de
       // tempo, local (lat/lng), animais (internos + externos de outros
@@ -951,7 +947,6 @@ service cloud.firestore {
            resource.data.volunteer_uid == request.auth.uid)
         );
         allow delete: if isAuth() && isPlatformAdmin();
-=======
       // ─── Fase 14: Coleção `dashboard_widgets` (customizável por abrigo) ───
       // Widgets do dashboard — métricas customizadas que o abrigo cria.
       // Multi-tenant: cada widget pertence a UM abrigo (`shelter_club_id`).
@@ -969,7 +964,6 @@ service cloud.firestore {
           isClubOwnerOrAdmin(clubId) ||
           hasClubPermission(clubId, 'dashboard')
         ) && request.resource.data.shelter_club_id == clubId;
->>>>>>> 97c525b (feat(shelter): Fase 14 — Dashboard do Abrigo (SHELTER_DASHBOARD))
       }
     }
 
