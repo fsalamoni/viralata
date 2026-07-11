@@ -73,12 +73,9 @@ const AdminAuditLog = lazy(() => import('@/modules/admin/pages/AdminAuditLog'));
 const AdminNotifications = lazy(() => import('@/modules/admin/pages/AdminNotifications'));
 const AdminPlatformSettings = lazy(() => import('@/modules/admin/pages/AdminPlatformSettings'));
 const AdminFlags = lazy(() => import('@/modules/admin/pages/AdminFlags'));
-<<<<<<< HEAD
 const PlatformHealth = lazy(() => import('@/modules/admin/pages/PlatformHealth'));
 const AlertConfigs = lazy(() => import('@/modules/admin/pages/AlertConfigs'));
-=======
 const AdminSecurityAlerts = lazy(() => import('@/modules/admin/pages/SecurityAlerts'));
->>>>>>> 3469fcf (feat(shelter): Fase 20 — Segurança Avançada (SHELTER_SECURITY_HARDENING))
 
 // ─── QueryClient ─────────────────────────────────────────────────────────────
 const queryClient = new QueryClient({

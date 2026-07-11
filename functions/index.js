@@ -162,7 +162,6 @@ exports.googleFormsWebhook = onRequest(
 const { materializePostAdoptionTasks } = require('./postAdoptionCron');
 exports.materializePostAdoptionTasks = materializePostAdoptionTasks;
 
-<<<<<<< HEAD
 // ─── Fase 21: Painel de Saúde da Plataforma ─────────────────────────────
 //
 // Duas Cloud Functions:
@@ -204,7 +203,6 @@ exports.onPlatformAlertEvent = onDocCreated(
     await runOnPlatformAlertEvent(event);
   },
 );
-=======
 // ─── Fase 20: Alertas de segurança (Security Alerts) ────────────────────
 //
 // Cloud Function onCall `triggerSecurityAlert` — chamada por
@@ -219,4 +217,3 @@ exports.triggerSecurityAlert = triggerSecurityAlert;
 
 // Re-export do applyRateLimit para facilitar testes / composição.
 exports.__applyRateLimit = applyRateLimit;
->>>>>>> 3469fcf (feat(shelter): Fase 20 — Segurança Avançada (SHELTER_SECURITY_HARDENING))
