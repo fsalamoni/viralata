@@ -1,7 +1,7 @@
 # Sistema de Gestão do Abrigo — Roadmap Detalhado
 
-> **Status**: 21/22 fases concluídas (0–17, 19, 20, 21, 22 ✅; apenas Fase 18 ⏸️ decisão backend pendente.
-> **Versão**: 1.0.0 — 2026-07-11 (Fase 22 mergeada, 21/22 concluídas, restando apenas Fase 18)
+> **Status**: 22/22 fases concluídas ✅ (Fases 18 e 22 entregues em produção, PRs #66 e #68 mergeados).
+> **Versão**: 1.0.0 — 2026-07-11 (Sistema de Gestão do Abrigo completo, todas as 22 fases entregues e em produção)
 > **Owner**: Mavis (sub-agente técnico do repo `fsalamoni/viralata`)
 > **Macro-blocos**: 5 (A fundação, B núcleo do animal, C operação, D busca, E legal/segurança/admin)
 >
