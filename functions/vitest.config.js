@@ -21,6 +21,9 @@ const mocksDir = path.resolve(__dirname, '__mocks__');
 export default defineConfig({
   resolve: {
     alias: {
+      '@': path.resolve(__dirname, '../src'),
+      '@core': path.resolve(__dirname, '../src/core'),
+      '@modules': path.resolve(__dirname, '../src/modules'),
       'firebase-admin/firestore': path.join(mocksDir, 'firebase-admin-firestore.cjs'),
       'firebase-admin/app': path.join(mocksDir, 'firebase-admin-app.cjs'),
     },

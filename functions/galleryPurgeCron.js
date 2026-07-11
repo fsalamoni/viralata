@@ -11,20 +11,14 @@
  * Schedule: todo dia às 04:00 BRT (07:00 UTC). Diferente do CRON de
  * pós-adoção (03:00 BRT) pra não concentrar carga.
  *
+ * O núcleo testável está em `galleryPurgeCronCore.js`.
+ *
  * @see docs/SHELTER_MGMT_ROADMAP.md § 11.2
  */
 
 const functions = require('firebase-functions/v1');
 const admin = require('firebase-admin');
-
-const PURGE_DAYS = 30;
-const BATCH_SIZE = 200;
-
-function daysSince(isoDate) {
-  if (!isoDate) return 0;
-  const ms = Date.now() - new Date(isoDate).getTime();
-  return ms / (24 * 3600 * 1000);
-}
+const { processGalleryPurge, PURGE_DAYS } = require('./galleryPurgeCronCore');
 
 /**
  * Cloud Function agendada — purga fotos soft-deletadas há >30d.
@@ -44,7 +38,7 @@ exports.galleryPurgeCron = functions.pubsub
     // Busca docs deletados há mais de 30d
     const photosSnap = await db.collection('pet_photos')
       .where('deleted_at', '<', cutoffIso)
-      .limit(BATCH_SIZE)
+      .limit(200)
       .get();
 
     if (photosSnap.empty) {
@@ -52,34 +46,12 @@ exports.galleryPurgeCron = functions.pubsub
       return { purged: 0 };
     }
 
-    let purged = 0;
-    let errors = 0;
-    const batch = db.batch();
+    const result = await processGalleryPurge(
+      { db, storage },
+      photosSnap.docs,
+      { error: functions.logger.error, info: functions.logger.info },
+    );
 
-    for (const doc of photosSnap.docs) {
-      const data = doc.data();
-      try {
-        // 1. Deletar arquivo do Storage
-        if (data.storage_path) {
-          const file = storage.bucket().file(data.storage_path);
-          await file.delete({ ignoreNotFound: true });
-        }
-        // 2. Remover doc do Firestore
-        batch.delete(doc.ref);
-        purged++;
-      } catch (err) {
-        functions.logger.error('galleryPurgeCron: failed to purge photo', {
-          photo_id: doc.id,
-          err: String(err?.message || err),
-        });
-        errors++;
-      }
-    }
-
-    if (purged > 0) {
-      await batch.commit();
-    }
-
-    functions.logger.info('galleryPurgeCron: done', { purged, errors });
-    return { purged, errors };
+    functions.logger.info('galleryPurgeCron: done', { purged: result.purged, errors: result.errors });
+    return result;
   });
