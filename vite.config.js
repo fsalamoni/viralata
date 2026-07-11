@@ -94,7 +94,16 @@ export default defineConfig(({ mode }) => {
     test: {
       environment: 'jsdom',
       globals: true,
-      include: ['src/**/*.{test,spec}.{js,jsx,ts,tsx}'],
+      include: [
+        'src/**/*.{test,spec}.{js,jsx,ts,tsx}',
+        'tests/security/**/*.{test,spec}.{js,jsx,ts,tsx}',
+      ],
+      exclude: [
+        '**/node_modules/**',
+        '**/.git/**',
+        'tests/e2e/**',
+        'functions/**',
+      ],
     },
   };
 });
