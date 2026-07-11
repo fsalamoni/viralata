@@ -1592,5 +1592,38 @@ service cloud.firestore {
       allow read: if isAuth() && isPlatformAdmin();
       allow create, update, delete: if false;  // só Admin SDK / Cloud Function
     }
+
+    // ─── Fase 15: Kanban / Central de Pendências ─────────────────────────
+    //
+    // Multi-tenant em clubs/{clubId}/kanban_*:
+    //   kanban_boards/{boardId} — board raiz
+    //   kanban_columns/{columnId} — colunas (FK board_id)
+    //   kanban_cards/{cardId} — cards (FK board_id + column_id)
+    //
+    // Regras: admin/owner do abrigo. Card assignees podem atualizar
+    // SOMENTE o campo status.
+
+    match /clubs/{clubId}/kanban_boards/{boardId} {
+      allow read: if shelterCanAccess(clubId);
+      allow write: if shelterCanManage(clubId);
+    }
+
+    match /clubs/{clubId}/kanban_columns/{columnId} {
+      allow read: if shelterCanAccess(clubId);
+      allow write: if shelterCanManage(clubId);
+    }
+
+    match /clubs/{clubId}/kanban_cards/{cardId} {
+      allow read: if shelterCanAccess(clubId);
+      allow create, update, delete: if shelterCanManage(clubId);
+      // Assignees podem mover cards atualizando SOMENTE status e log
+      allow update: if
+        shelterCanAccess(clubId) &&
+        request.auth != null &&
+        request.resource.data.assignees.hasAll([request.auth.uid]) &&
+        // Apenas campos permitidos para assignee
+        request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['status', 'log']);
+    }
   }
 }
