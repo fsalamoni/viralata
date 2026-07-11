@@ -31,11 +31,15 @@ jobs:
 
       - name: Add Custom Domain via Firebase API
         env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.sa.outputs.path }}
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          DOMAIN: ${{ inputs.domain }}
+          SITE: ${{ inputs.site }}
+          FIREBASE_PROJECT_ID: viralata-4cf0b
         run: |
           set -e
           echo "$FIREBASE_SERVICE_ACCOUNT" > /tmp/firebase-sa.json
-          export GOOGLE_APPLICATION_CREDENTIALS=/tmp/firebase-sa.json
+          cd ${{ github.workspace }}
+          npm install jsonwebtoken --no-save 2>&1 | tail -1
 
           # Get access token
           ACCESS_TOKEN=$(node -e "
@@ -47,7 +51,8 @@ jobs:
               sa.private_key, { algorithm: 'RS256' }
             );
             const https = require('https');
-            const data = require('querystring').stringify({ grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer', assertion: token });
+            const querystring = require('querystring');
+            const data = querystring.stringify({ grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer', assertion: token });
             const req = https.request({ hostname: 'oauth2.googleapis.com', path: '/token', method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }, (res) => {
               let body = '';
               res.on('data', c => body += c);
@@ -57,22 +62,18 @@ jobs:
             req.end();
           ")
 
-          echo "Got access token"
+          echo "Got access token (length: ${#ACCESS_TOKEN})"
 
           # List existing custom domains
           echo "=== Existing custom domains ==="
           curl -s -H "Authorization: Bearer $ACCESS_TOKEN" \
-            "https://firebasehosting.googleapis.com/v1beta1/projects/${FIREBASE_PROJECT_ID}/sites/${SITE}/customDomains" | head -100
+            "https://firebasehosting.googleapis.com/v1beta1/projects/${FIREBASE_PROJECT_ID}/sites/${SITE}/customDomains"
 
           # Add the custom domain
+          echo ""
           echo "=== Adding $DOMAIN to $SITE ==="
           curl -s -X POST \
             -H "Authorization: Bearer $ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
             "https://firebasehosting.googleapis.com/v1beta1/projects/${FIREBASE_PROJECT_ID}/sites/${SITE}/customDomains?customDomainId=${DOMAIN//\./_}" \
-            -d "{\"hostName\": \"$DOMAIN\"}" | head -100
-        env:
-          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          FIREBASE_PROJECT_ID: viralata-4cf0b
-          DOMAIN: ${{ inputs.domain }}
-          SITE: ${{ inputs.site }}
+            -d "{\"hostName\": \"$DOMAIN\"}"
