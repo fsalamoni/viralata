@@ -333,6 +333,14 @@
         { "fieldPath": "status", "order": "ASCENDING" },
         { "fieldPath": "start_date", "order": "DESCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "community_events",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "community_id", "order": "ASCENDING" },
+        { "fieldPath": "starts_at", "order": "ASCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []

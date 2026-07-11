@@ -85,17 +85,23 @@ export default function OrganizationAdminPanel() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   // Shelter feature flags
-  const [shelterFoundation] = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_FOUNDATION);
-  const [shelterDashboard] = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_DASHBOARD);
-  const [shelterKanban] = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_KANBAN);
-  const [shelterReports] = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_REPORTS);
-  const [shelterIndicators] = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_INDICATORS);
-  const [shelterExhibitions] = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_EXHIBITIONS);
-  const [shelterVolunteers] = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_VOLUNTEERS);
-  const [shelterHealthRecords] = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_HEALTH_RECORDS);
-  const [shelterMedication] = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_MEDICATION);
-  const [shelterPetTimeline] = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_PET_TIMELINE);
-  const [shelterFoster] = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_FOSTER);
+  // NOTA: `useFeatureFlag` retorna **um booleano**, NÃO um tuple `[value, setter]`.
+  // O destructuring `const [x] = useFeatureFlag(...)` (v1 deste arquivo) faz com
+  // que o build do Vite gere `Array.from(boolean)[0]`, que em runtime joga
+  // `TypeError: G is not a function or its return value is not iterable` quando
+  // a flag está OFF (false é primitivo, não iterável). Erro observado em prod:
+  // /organizacoes/{id}/admin. Fix: remover o destructuring.
+  const shelterFoundation = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_FOUNDATION);
+  const shelterDashboard = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_DASHBOARD);
+  const shelterKanban = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_KANBAN);
+  const shelterReports = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_REPORTS);
+  const shelterIndicators = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_INDICATORS);
+  const shelterExhibitions = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_EXHIBITIONS);
+  const shelterVolunteers = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_VOLUNTEERS);
+  const shelterHealthRecords = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_HEALTH_RECORDS);
+  const shelterMedication = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_MEDICATION);
+  const shelterPetTimeline = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_PET_TIMELINE);
+  const shelterFoster = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_FOSTER);
 
   const isLoading = loadingClub || loadingMembership;
   // Fallback por uid (ONG legada sem doc de membership) — sem isso o
@@ -159,7 +165,14 @@ export default function OrganizationAdminPanel() {
     return tabs;
   }, [shelterFoundation, shelterDashboard, shelterKanban, shelterExhibitions, shelterVolunteers, shelterHealthRecords, shelterMedication, shelterPetTimeline, shelterFoster]);
 
-  const allVisibleTabs = useMemo(() => [...visibleTabs, ...shelterTabs], [visibleTabs, shelterTabs]);
+  // Defensive coding: garantir que ambos são arrays antes do spread.
+  // `visibleAdminTabs` e o memo de `shelterTabs` retornam arrays, mas se
+  // algum deles vier undefined (regressão, mock, race condition) o spread
+  // joga `TypeError: ... is not iterable` — quebra a página inteira.
+  const allVisibleTabs = useMemo(
+    () => Array.prototype.concat(visibleTabs || [], shelterTabs || []),
+    [visibleTabs, shelterTabs],
+  );
 
   const requestedTab = searchParams.get('tab') || 'overview';
   const activeTab = allVisibleTabs.some((t) => t.key === requestedTab) ? requestedTab : (allVisibleTabs[0]?.key || 'overview');

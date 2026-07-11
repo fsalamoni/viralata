@@ -54,15 +54,16 @@ vi.mock('@/modules/organizations/hooks/useClubs', () => ({
   }),
 }));
 
-// TODAS as flags ativas
+// Feature flags: o mock precisa refletir a API real — useFeatureFlag
+// retorna **um booleano**, NÃO um tuple `[value, setter]`. Versões
+// anteriores deste teste retornavam `[true, () => {}]`, o que mascarava
+// o bug de runtime que só aparece com `false` (v1 do componente usava
+// `const [x] = useFeatureFlag(...)` que crasha em produção quando a
+// flag está OFF). Mantemos o mock controlado por uma flag para que cada
+// test set o valor desejado.
+const mockFeatureFlags = { enabled: false };
 vi.mock('@/core/lib/FeatureFlagsContext', () => ({
-  useFeatureFlag: (key) => {
-    if (typeof key === 'string') {
-      // Ativa tudo que é SHELTER_
-      return [key.startsWith('SHELTER_'), () => {}];
-    }
-    return [true, () => {}];
-  },
+  useFeatureFlag: () => mockFeatureFlags.enabled,
   FEATURE_FLAG: new Proxy({}, { get: (_, k) => k }),
 }));
 
@@ -99,6 +100,7 @@ describe('OrganizationAdminPanel - com TODAS flags ativas', () => {
   });
 
   it('não quebra com todas as flags SHELTER ativas', () => {
+    mockFeatureFlags.enabled = true;
     expect(() => {
       const html = renderToString(
         React.createElement(
@@ -114,6 +116,35 @@ describe('OrganizationAdminPanel - com TODAS flags ativas', () => {
       );
       // Sanity: o HTML deve ter pelo menos o nome do abrigo
       expect(html).toContain('Abrigo Teste');
+    }).not.toThrow();
+  });
+
+  it('não quebra com TODAS as flags SHELTER OFF (regressão do bug prod)', () => {
+    // Caso real: usuário com a flag SHELTER_LEGAL_TERMS_V1 OFF. Antes do
+    // fix, `useFeatureFlag` retornava `false` e o destructuring
+    // `const [x] = useFeatureFlag(...)` quebrava o painel inteiro com
+    // "TypeError: G is not a function or its return value is not iterable".
+    // Este test garante que isso nunca mais aconteça.
+    mockFeatureFlags.enabled = false;
+    expect(() => {
+      const html = renderToString(
+        React.createElement(
+          MemoryRouter,
+          { initialEntries: ['/organizacoes/club-1/admin'] },
+          React.createElement(Routes, null,
+            React.createElement(Route, {
+              path: '/organizacoes/:orgId/admin',
+              element: React.createElement(OrganizationAdminPanel),
+            })
+          )
+        )
+      );
+      // Sanity: o HTML deve ter pelo menos o nome do abrigo mesmo com todas flags off
+      expect(html).toContain('Abrigo Teste');
+      // E não deve renderizar nenhuma aba SHELTER (todas off)
+      expect(html).not.toContain('Pendências'); // kanban tab
+      expect(html).not.toContain('Vitrines');  // exhibitions tab
+      expect(html).not.toContain('Voluntários'); // volunteers tab
     }).not.toThrow();
   });
 });
