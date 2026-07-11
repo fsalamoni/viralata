@@ -1,6 +1,6 @@
 # Sistema de Gestão do Abrigo — Roadmap Detalhado
 
-> **Status**: Fases 0–13 concluídas (14/22). Próximas: Fase 15 (Kanban) ou 19 (Legal).
+> **Status**: Fases 0–14 concluídas (15/22). Próximas: Fase 15 (Kanban) ou 19 (Legal).
 > **Versão**: 0.3 — 2026-07-11 (atualizado pós-Fase 14)
 > **Owner**: Mavis (sub-agente técnico do repo `fsalamoni/viralata`)
 > **Macro-blocos**: 5 (A fundação, B núcleo do animal, C operação, D busca, E legal/segurança/admin)
