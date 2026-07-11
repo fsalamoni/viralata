@@ -949,6 +949,8 @@ service cloud.firestore {
            resource.data.volunteer_uid == request.auth.uid)
         );
         allow delete: if isAuth() && isPlatformAdmin();
+      }
+
       // ─── Fase 14: Coleção `dashboard_widgets` (customizável por abrigo) ───
       // Widgets do dashboard — métricas customizadas que o abrigo cria.
       // Multi-tenant: cada widget pertence a UM abrigo (`shelter_club_id`).
