@@ -7,9 +7,18 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
   Home as HomeIcon, Trees, Building2, Tractor, Sofa, Footprints, Wind,
-  UsersRound, PawPrint, Bird, Rabbit, Ban, Wallet, MapPin, Shield,
+  UsersRound, PawPrint, Bird, Rabbit, Ban, Wallet, MapPin, Shield, FileText,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import {
+  TERMS_TYPE,
+  MANDATORY_TERMS_FOR_SIGNUP,
+  TERMS_TYPE_META,
+  getCurrentTermsVersion,
+  computeDocumentHash,
+  getTermsDocument,
+} from '@/modules/shelter/domain/legal/terms';
+import { recordAcceptance } from '@/modules/shelter/services/termsAcceptanceService';
 
 const STEPS = [
   {
@@ -105,7 +114,16 @@ export default function OnboardingQuestionnaire() {
     city: userProfile?.city || '',
     state: userProfile?.state || '',
     lgpd_consent: false,
+    // Term acceptance (TASK-049 — Lei 14.063/2020 + LGPD).
+    // Cada termo tem o próprio checkbox + o `signature_text` é
+    // compartilhado entre eles (campo abaixo). Defaults todos
+    // desmarcados.
+    accept_terms_general: false,
+    accept_terms_privacy: false,
+    accept_terms_conduct: false,
+    terms_signature: '',
   });
+  const [termsHashes, setTermsHashes] = useState({});
   const [saving, setSaving] = useState(false);
   const current = STEPS[step];
 
@@ -125,20 +143,69 @@ export default function OnboardingQuestionnaire() {
   function canAdvance() {
     if (current.type === 'radio') return Boolean(answers[current.field]);
     if (current.type === 'location') return answers.city.length >= 2 && answers.state.length === 2;
-    if (current.type === 'consent') return answers.lgpd_consent === true;
+    if (current.type === 'consent') {
+      // 3 checkboxes obrigatórios + signature com pelo menos 3 chars
+      // (mesma regra do `recordAcceptanceInputSchema.signature_text`).
+      return (
+        answers.accept_terms_general
+        && answers.accept_terms_privacy
+        && answers.accept_terms_conduct
+        && answers.lgpd_consent
+        && answers.terms_signature.trim().length >= 3
+      );
+    }
     return true;
   }
 
   async function handleFinish() {
     setSaving(true);
     try {
+      // 1) Grava os aceites de termos (3 docs obrigatórios do
+      //    MANDATORY_TERMS_FOR_SIGNUP) com hash, version, IP
+      //    (null no client — preenchido por Cloud Function) e
+      //    user_agent. Falha em qualquer um bloqueia o finish.
+      //    Cada aceite vai pra subcoleção imutável
+      //    `users/{uid}/terms_acceptances/{docId}`.
+      const acceptances = [
+        { field: 'accept_terms_general', type: TERMS_TYPE.GENERAL },
+        { field: 'accept_terms_privacy', type: TERMS_TYPE.PRIVACY },
+        { field: 'accept_terms_conduct', type: TERMS_TYPE.CONDUCT },
+      ];
+      for (const { type } of acceptances) {
+        const content = getTermsDocument(type);
+        const documentHash = await computeDocumentHash(content);
+        const version = getCurrentTermsVersion(type);
+        await recordAcceptance(
+          userProfile?.uid || userProfile?.id,
+          {
+            terms_type: type,
+            terms_version: version,
+            signature_text: answers.terms_signature,
+            document_hash: documentHash,
+            ip_address: null, // preenchido por Cloud Function
+            user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : null,
+            legal_basis: 'consent',
+            liveness_verified: false,
+            document_label: TERMS_TYPE_META[type]?.label || type,
+          },
+          {
+            uid: userProfile?.uid || userProfile?.id,
+            email: userProfile?.email,
+            displayName: userProfile?.full_name || answers.terms_signature,
+          },
+        );
+      }
+
+      // 2) Grava o perfil do usuário (incluindo lgpd_consent_at).
       await updateUserProfile({
         ...answers,
         lgpd_consent_at: new Date().toISOString(),
       });
       toast.success('Perfil concluído! Bem-vindo ao Viralata 🐾');
       navigate('/feed');
-    } catch {
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('[Onboarding] finish failed:', err);
       toast.error('Erro ao salvar perfil. Tente novamente.');
     } finally {
       setSaving(false);
@@ -258,28 +325,110 @@ export default function OnboardingQuestionnaire() {
           {current.type === 'consent' && (
             <div className="flex flex-col gap-3.5">
               <p className="text-[13px] leading-[1.6] text-muted-foreground">
-                Usamos os dados deste questionário para sugerir pets compatíveis com a sua
-                realidade. Você pode revisar nossa{' '}
-                <Link to="/politica-privacidade" target="_blank" className="text-primary underline">
-                  Política de Privacidade
-                </Link>{' '}
-                e nossos{' '}
-                <Link to="/termos" target="_blank" className="text-primary underline">
-                  Termos de Uso
-                </Link>. A qualquer momento você pode baixar ou excluir seus dados na página de
-                perfil.
+                Para usar a Viralata, precisamos do seu consentimento livre e
+                informado nos documentos abaixo. Você pode ler cada um na
+                íntegra antes de aceitar.
               </p>
-              <div className="flex items-start gap-3 rounded-2xl border-2 border-border p-3.5">
-                <Checkbox
-                  id="lgpd_consent"
-                  checked={answers.lgpd_consent}
-                  onCheckedChange={(v) => setField('lgpd_consent', v)}
-                  className="mt-0.5"
-                />
-                <Label htmlFor="lgpd_consent" className="cursor-pointer text-[13px] font-normal leading-[1.55]">
-                  Li e concordo com o uso dos meus dados conforme descrito acima, em conformidade
-                  com a LGPD.
-                </Label>
+
+              <div className="space-y-2.5">
+                {[
+                  {
+                    field: 'accept_terms_general',
+                    label: 'Termos e Condições Gerais de Uso',
+                    slug: 'termos-de-uso',
+                    meta: TERMS_TYPE_META[TERMS_TYPE.GENERAL],
+                  },
+                  {
+                    field: 'accept_terms_privacy',
+                    label: 'Política de Privacidade e Proteção de Dados (LGPD)',
+                    slug: 'politica-de-privacidade',
+                    meta: TERMS_TYPE_META[TERMS_TYPE.PRIVACY],
+                  },
+                  {
+                    field: 'accept_terms_conduct',
+                    label: 'Código de Conduta e Política de Tolerância Zero',
+                    slug: 'codigo-de-conduta',
+                    meta: TERMS_TYPE_META[TERMS_TYPE.CONDUCT],
+                  },
+                ].map(({ field, label, slug, meta }) => (
+                  <div
+                    key={field}
+                    className="flex items-start gap-3 rounded-2xl border-2 border-border p-3.5"
+                    data-testid={`onboarding-terms-${field}`}
+                  >
+                    <Checkbox
+                      id={field}
+                      checked={answers[field]}
+                      onCheckedChange={(v) => setField(field, v)}
+                      className="mt-0.5"
+                    />
+                    <Label
+                      htmlFor={field}
+                      className="cursor-pointer text-[13px] font-normal leading-[1.55]"
+                    >
+                      <span className="font-semibold">Li e aceito</span>{' '}
+                      os{' '}
+                      <Link
+                        to={`/legal/${slug}`}
+                        target="_blank"
+                        className="text-primary underline"
+                      >
+                        {label}
+                      </Link>
+                      {meta?.version && (
+                        <span className="text-foreground/60">
+                          {' '}
+                          (versão {meta.version})
+                        </span>
+                      )}
+                      .
+                    </Label>
+                  </div>
+                ))}
+
+                <div className="flex items-start gap-3 rounded-2xl border-2 border-border p-3.5 bg-muted/30">
+                  <Checkbox
+                    id="lgpd_consent"
+                    checked={answers.lgpd_consent}
+                    onCheckedChange={(v) => setField('lgpd_consent', v)}
+                    className="mt-0.5"
+                  />
+                  <Label
+                    htmlFor="lgpd_consent"
+                    className="cursor-pointer text-[13px] font-normal leading-[1.55]"
+                  >
+                    Autorizo o tratamento dos meus dados pessoais pela Viralata
+                    e pelos Abrigos/ONGs parceiros, conforme descrito na{' '}
+                    <Link
+                      to="/legal/politica-de-privacidade"
+                      target="_blank"
+                      className="text-primary underline"
+                    >
+                      Política de Privacidade
+                    </Link>{' '}
+                    (LGPD, Lei 13.709/2018).
+                  </Label>
+                </div>
+
+                <div className="space-y-1.5 pt-1">
+                  <Label htmlFor="terms_signature" className="text-xs font-bold flex items-center gap-1.5">
+                    <FileText className="h-3.5 w-3.5" />
+                    Assinatura eletrônica (Lei 14.063/2020)
+                  </Label>
+                  <Input
+                    id="terms_signature"
+                    value={answers.terms_signature}
+                    onChange={(e) => setField('terms_signature', e.target.value)}
+                    placeholder="Digite seu nome completo"
+                    autoComplete="name"
+                    data-testid="onboarding-terms-signature"
+                  />
+                  <p className="text-[11px] text-foreground/60 leading-relaxed">
+                    Sua assinatura será registrada com IP, data/hora, hash do
+                    documento e versão aceita, servindo como prova de aceite
+                    (Lei 14.063/2020).
+                  </p>
+                </div>
               </div>
             </div>
           )}
