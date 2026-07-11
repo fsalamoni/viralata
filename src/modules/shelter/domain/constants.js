@@ -70,8 +70,17 @@ export const SHELTER_FEATURE_FLAG = Object.freeze({
   SHELTER_INDICATORS: 'shelter_indicators',
   // Fase 17 — Busca Inteligente
   SHELTER_SMART_SEARCH: 'shelter_smart_search',
-  // Fase 18 — Termos e Políticas completos
+  // Fase 18 — Termos e Políticas completos (guarda-chuva)
   SHELTER_LEGAL_TERMS: 'shelter_legal_terms',
+  // Fase 19 (no projeto) — Termos e Políticas Legais v1
+  // Convive com `shelter_legal_terms` (placeholder guarda-chuva) sem
+  // colisão de string. Liga a UI/service deste PR:
+  //  - Termo de Voluntariado v2 (texto integral)
+  //  - Termo de Adoção (aceite no submit da application)
+  //  - Termo de Adesão (DPA) para o abrigo
+  //  - Banner de Cookies (LGPD)
+  //  - 5 páginas legais estáticas (/legal/*)
+  SHELTER_LEGAL_TERMS_V1: 'shelter_legal_terms_v1',
   // Fase 19 — Segurança Avançada
   SHELTER_SECURITY_HARDENING: 'shelter_security_hardening',
   // Fase 20 — Painel de Saúde da Plataforma
@@ -237,13 +246,27 @@ export const SHELTER_FEATURE_FLAG_META = Object.freeze({
       + 'Cmd+K. Backend Meilisearch self-hosted.',
   },
   [SHELTER_FEATURE_FLAG.SHELTER_LEGAL_TERMS]: {
-    label: 'Abrigos · termos e políticas completos',
+    label: 'Abrigos · termos e políticas completos (guarda-chuva)',
     description:
-      'Termos de Uso, Política de Privacidade, Isenção de '
-      + 'Responsabilidade expandidos. Termos individuais por tipo de '
-      + 'usuário (adotante, abrigo, voluntário, LT, doador). LGPD, '
-      + 'legislação animal, código civil/penal. Sistema de aceite com '
-      + 'histórico.',
+      'Placeholder guarda-chuva da fase de termos e políticas. NÃO liga '
+      + 'a nada por si só. Use `shelter_legal_terms_v1` (ou a flag '
+      + 'específica do sub-PR) para ligar a UI/service de cada '
+      + 'incremento desta fase.',
+  },
+  [SHELTER_FEATURE_FLAG.SHELTER_LEGAL_TERMS_V1]: {
+    label: 'Abrigos · termos e políticas legais v1',
+    description:
+      'Liga a entrega da Fase 19 (Legal Terms v1): termo de voluntariado '
+      + 'integral v2 com LGPD e Lei 14.063/2020; termo de adoção com '
+      + 'aceite + signature_text no submit da application; termo de '
+      + 'adesão (DPA, operadora=Viralata / controlador=Abrigo) aceito '
+      + 'no cadastro do abrigo e gravado em '
+      + '`clubs/{clubId}/onboarding/terms_accepted`; banner de cookies '
+      + 'com persistência em localStorage (consent_version=2026-07-10); '
+      + '5 páginas legais estáticas em /legal/* (termos-de-uso, '
+      + 'politica-de-privacidade, avisos-legais, codigo-de-conduta, '
+      + 'legislacao-animal). Todos os aceites registram '
+      + '`terms_accepted_at` + `terms_version` para auditoria LGPD.',
   },
   [SHELTER_FEATURE_FLAG.SHELTER_SECURITY_HARDENING]: {
     label: 'Abrigos · segurança avançada',

@@ -25,6 +25,9 @@ import {
   assertValidTransition,
   isTerminal,
 } from '@/modules/shelter/domain/operational/adoption';
+import {
+  buildAdoptionTermsAcceptance,
+} from '@/modules/shelter/domain/legal/adoptionTerms';
 import { addTimelineEvent } from '@/modules/shelter/services/timelineService';
 import { getAdopterProfile } from '@/modules/shelter/services/adopterProfileService';
 
@@ -37,7 +40,24 @@ const PETS_COLLECTION = 'pets';
 /**
  * Adotante submete uma application para adotar um pet.
  *
- * @param {object} input - {pet_id, shelter_club_id, applicant_form}
+ * FASE 19 (Bloco 4): o submit também exige o aceite do Termo de
+ * Adoção Responsável (Lei 14.063/2020, LGPD). Os campos
+ * `terms_accepted_at` + `terms_version` + `signature_text` ficam
+ * gravados no doc da application IMUTAVELMENTE. O cliente UI
+ * coleta o `signature_text` no formulário de aceite antes de
+ * chamar esta função.
+ *
+ * Backward-compat: applications criadas ANTES deste PR não têm
+ * esses campos. A regra do firestore.rules SÓ exige os campos em
+ * create (não em update), e a UI que adiciona esse requisito
+ * é gated por feature flag. Docs legados continuam funcionando
+ * normalmente (a UI exibe "termo pendente" para o abrigo e o
+ * adotante pode ser convidado a re-aceitar).
+ *
+ * @param {object} input - {
+ *   pet_id, shelter_club_id, applicant_form,
+ *   terms_signature_text?  // Fase 19: nome completo do adotante
+ * }
  * @param {object} actor - {uid, displayName}
  * @returns {Promise<{id: string}>}
  */
@@ -65,6 +85,23 @@ export async function submitAdoptionApplication(input, actor) {
     updated_at: serverTimestamp(),
   };
 
+  // Fase 19 (Bloco 4): se o input trouxer terms_signature_text, grava
+  // o aceite do Termo de Adoção Responsável. Opcional para preservar
+  // backward-compat com a Fase 3 (que já está em produção sem o termo).
+  // A regra do firestore.rules só EXIGE esses campos em create se a
+  // feature flag estiver ON — o caller (UI) é quem decide.
+  if (parsed.terms_signature_text) {
+    try {
+      const termsAcceptance = buildAdoptionTermsAcceptance(parsed.terms_signature_text);
+      payload.terms_accepted_at = termsAcceptance.terms_accepted_at;
+      payload.terms_version = termsAcceptance.terms_version;
+      payload.signature_text = termsAcceptance.signature_text;
+    } catch (err) {
+      // Re-raise para que a UI saiba que a assinatura é inválida
+      throw new Error(`Termo de Adoção: ${err.message}`);
+    }
+  }
+
   const ref = await addDoc(
     collection(db, CLUBS_COLLECTION, parsed.shelter_club_id, APPS_SUBCOLLECTION),
     payload,
@@ -77,6 +114,7 @@ export async function submitAdoptionApplication(input, actor) {
       application_id: ref.id,
       pet_id: parsed.pet_id,
       shelter_club_id: parsed.shelter_club_id,
+      terms_version: payload.terms_version || null,
     },
   }).catch((err) => {
     logger.warn('adoptionService.submitAdoptionApplication', {

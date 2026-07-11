@@ -1,32 +1,58 @@
 /**
- * @fileoverview Termo de Voluntariado — stub versionado (Fase 13).
+ * @fileoverview Termo de Voluntariado — VERSÃO INTEGRAL v2 (Fase 19 / Legal Terms v1).
  *
- * Texto RESUMIDO exibido na UI no momento do aceite. O termo INTEGRAL
- * vive em `/workspace/attachments/legal-seg/08_Termos_Voluntariado_LT.md`
- * (documento externo, mantido fora do repositório por decisão do
- * time — ver `docs/SHELTER_MGMT_ROADMAP.md` §11.6).
+ * Substitui o stub da Fase 13 pelo texto integral do Termo de
+ * Voluntariado. O texto é versionado semanticamente:
  *
- * LGPD: o aceite do termo é gravado como snapshot imutável em
+ *   - `2026-07-10`    v1 (stub — Fase 13,LGPD minimizado)
+ *   - `2026-07-10-v2` v2 (texto integral — Fase 19, Lei 14.063/2020)
+ *
+ * Cada novo aceite GRAVA a versão aceita em
  * `users/{uid}/volunteer_profile/main` (campos `terms_accepted_at` +
- * `terms_version`). Cada abrigo também guarda o snapshot do aceite
- * na sua rostagem (`clubs/{clubId}/volunteers/{uid}`).
+ * `terms_version`) e o abrigo espelha em
+ * `clubs/{clubId}/volunteers/{volunteerUid}`. Voluntários que aceitaram
+ * a v1 precisam REACEITAR a v2 (a UI mostra um banner "termo
+ * atualizado" enquanto a versão global != a atual). Migração é manual
+ * e idempotente (regra do firestore.rules libera update do campo de
+ * aceite).
  *
- * Fase 18 (Legal Terms) substituirá este stub pelo texto integral
- * (com tabela de aceites, versionamento semântico, e-assinatura
- * avançada Lei 14.063/2020). Por ora, snapshot resumido é suficiente
- * para a Fase 13 entrar em produção com flag OFF.
+ * LGPD (Lei 13.709/2018): o aceite é o consentimento (art. 7º, I) para
+ * tratamento dos dados cadastrados no perfil do voluntário. O snapshot
+ * é imutável após gravação. O termo também satisfaz o art. 9º
+ * (informação ao titular) listando finalidades, bases legais,
+ * compartilhamento e retenção.
  *
- * @see docs/SHELTER_MGMT_ROADMAP.md § Fase 13 + §11.6
+ * Lei 14.063/2020: o aceite usa o nível "básico" de assinatura
+ * eletrônica (registro + hash do `signature_text` no audit log).
+ * Não usamos certificado digital ICP-Brasil nem biometria — basta
+ * para fluxos sem partes obrigadas por lei federal.
+ *
+ * O texto é renderizado em componentes de UI antes do checkbox
+ * "Li e aceito". É longo de propósito: integridade legal > concisão.
+ * `getVolunteerTermsText()` retorna o markdown/JSX-friendly blob.
+ *
+ * @see docs/SHELTER_MGMT_ROADMAP.md § Fase 19 + §11.6
+ * @see src/modules/shelter/domain/legal/texts/volunteerTerms.v2.js
  */
 
-export const VOLUNTEER_TERMS_VERSION = '2026-07-10';
+import { VOLUNTEER_TERMS_TEXT_V2 } from '@/modules/shelter/domain/legal/texts/volunteerTerms.v2';
+
+export const VOLUNTEER_TERMS_VERSION = '2026-07-10-v2';
 
 /**
- * Texto exibido ao voluntário no momento do aceite. Curto (1-2
- * parágrafos) e aponta para o termo integral. Emojis opcionais,
- * separados por uma linha em branco para renderização.
+ * Versões anteriores (para migração e detecção de "termo desatualizado"
+ * no perfil do voluntário). NÃO remover — a UI usa para avisar.
  */
-export const VOLUNTEER_TERMS_TEXT = `Eu, voluntário(a) da plataforma Viralata, declaro ter lido e estar de acordo com o Termo de Voluntariado integral (versão ${VOLUNTEER_TERMS_VERSION}), disponível para consulta em /workspace/attachments/legal-seg/08_Termos_Voluntariado_LT.md. Compreendo que meu cadastro como voluntário é gratuito, não gera vínculo empregatício, e que meus dados pessoais serão tratados conforme a Lei Geral de Proteção de Dados (LGPD, Lei 13.709/2018) e a Política de Privacidade da plataforma. Autorizo o uso dos meus dados de disponibilidade, habilidades e contato para fins exclusivos de convocação e gestão de atividades voluntárias em abrigos parceiros, e posso revogar este consentimento a qualquer momento pela minha conta.`;
+export const VOLUNTEER_TERMS_PRIOR_VERSIONS = Object.freeze([
+  '2026-07-10', // v1 (stub, Fase 13)
+]);
+
+/**
+ * Texto integral do termo (markdown simples). Renderizado em
+ * `<pre>` ou via componente que parseia headings/listas. Comprimento
+ * esperado: 3-5 telas em desktop.
+ */
+export const VOLUNTEER_TERMS_TEXT = VOLUNTEER_TERMS_TEXT_V2;
 
 export const VOLUNTEER_TERMS_SHORT_LABEL = 'Termo de Voluntariado';
 
@@ -35,4 +61,13 @@ export const VOLUNTEER_TERMS_SHORT_LABEL = 'Termo de Voluntariado';
  */
 export function getVolunteerTermsLabel() {
   return `${VOLUNTEER_TERMS_SHORT_LABEL} (versão ${VOLUNTEER_TERMS_VERSION})`;
+}
+
+/**
+ * Indica se a versão de termo aceito pelo usuário é a mais recente.
+ * @param {string|null|undefined} acceptedVersion
+ * @returns {boolean}
+ */
+export function isCurrentVolunteerTermsVersion(acceptedVersion) {
+  return acceptedVersion === VOLUNTEER_TERMS_VERSION;
 }
