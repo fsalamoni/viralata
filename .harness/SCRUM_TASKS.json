@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-11T23:26:55.182Z",
+  "generatedAt": "2026-07-11T23:38:42.579Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -10,7 +10,56 @@
     "endsAt": "2026-07-18",
     "goal": "Estabilizar produção pós-deploy das 22 fases, fechar 3 worktrees em paralelo, decidir backend da Fase 18, priorizar débitos técnicos"
   },
-  "activeWorktrees": [],
+  "activeWorktrees": [
+    {
+      "id": "wt-17ff480a",
+      "branch": "wt/17ff480a",
+      "head": "d0bb369efb7b9546e954dde47e5f40596d01ca93",
+      "headTitle": "feat(community): paridade visual+estrutural com a ONG, gated por flag",
+      "path": "D:/viralata/.worktrees/wt-17ff480a",
+      "status": "in-sync",
+      "commitsAhead": 0,
+      "primarySession": null,
+      "sessionTitle": null,
+      "focus": []
+    },
+    {
+      "id": "wt-auto-import",
+      "branch": "feat/harness-auto-import",
+      "head": "a2ed8b682554e81169a5a0c342ba585f45f09a7e",
+      "headTitle": "feat(harness): TASK-202 auto-import do painel-scrum.html (Regra B §B.2)",
+      "path": "D:/viralata/.worktrees/wt-auto-import",
+      "status": "ahead-of-main",
+      "commitsAhead": 1,
+      "primarySession": null,
+      "sessionTitle": null,
+      "focus": []
+    },
+    {
+      "id": "wt-e79e15ca",
+      "branch": "wt/e79e15ca",
+      "head": "03f6a5c2f8444cf55dd46712d48769509263e435",
+      "headTitle": "feat(harness+legal+shelter): TASK-126..130 (autosync, smart detection, hooks) + TASK-201 polish",
+      "path": "D:/viralata/.worktrees/wt-e79e15ca",
+      "status": "ahead-of-main",
+      "commitsAhead": 4,
+      "primarySession": null,
+      "sessionTitle": null,
+      "focus": []
+    },
+    {
+      "id": "wt-legal-v2",
+      "branch": "feat/legal-docs-v2",
+      "head": "ce916dfa9afa1f04a7fe20704ddd45f2524e6555",
+      "headTitle": "feat(onboarding): adicionar 3 checkboxes de aceite + assinatura eletrônica (Lei 14.063/2020)",
+      "path": "D:/viralata/.worktrees/wt-legal-v2",
+      "status": "ahead-of-main",
+      "commitsAhead": 4,
+      "primarySession": null,
+      "sessionTitle": null,
+      "focus": []
+    }
+  ],
   "activeSessions": [
     {
       "id": "mvs_311d078987d0414a90f57ef28b789b18",
@@ -6011,12 +6060,12 @@
     "firestoreIndexes": 35,
     "bundleSizeKB": 4125,
     "shelterPhases": "21/22 completas em produção (Fase 18 pendente decisão)",
-    "activeWorktreesAheadOfMain": 0,
+    "activeWorktreesAheadOfMain": 3,
     "mergedWorktreesThisSprint": [
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": "5da437b",
+    "mainCommit": "5da437b4acb975c8f8c440b29196b534e3e08247",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
