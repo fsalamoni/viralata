@@ -21,8 +21,12 @@ import { useDashboard } from '@/modules/shelter/hooks/useDashboard';
 import { DashboardCard } from './DashboardCard';
 import { DashboardWidgetManager } from './DashboardWidgetManager';
 
-export function DashboardPage() {
-  const { clubId } = useParams();
+export function DashboardPage({ clubId: clubIdProp }) {
+  const params = useParams();
+  // Aceita o clubId via prop OU da URL. Isso permite que o componente
+  // seja usado em duas rotas: `/abrigos/:clubId/dashboard` (URL) e
+  // dentro de `OrganizationAdminPanel` (rota `/organizacoes/:orgId/admin`).
+  const clubId = clubIdProp || params.clubId || params.orgId;
   // Hook SEMPRE no topo (rules-of-hooks) — useDashboard tolera clubId falsy.
   const { data, isLoading, hasError, errors } = useDashboard(clubId);
 

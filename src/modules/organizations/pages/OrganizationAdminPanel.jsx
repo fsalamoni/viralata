@@ -27,6 +27,7 @@ import ClubFinanceTab from '@/modules/organizations/components/ClubFinanceTab';
 import ClubGeneralAdminTab from '@/modules/organizations/components/ClubGeneralAdminTab';
 import ClubChatAdminTab from '@/modules/organizations/components/ClubChatAdminTab';
 import ClubThemedScope from '@/modules/organizations/components/ClubThemedScope';
+import { ShelterPetScopedTab } from '@/modules/organizations/components/ShelterPetScopedTab';
 import { useFeatureFlag, FEATURE_FLAG } from '@/core/lib/FeatureFlagsContext';
 import ReportsTab from '@/modules/shelter/components/ReportsTab';
 import IndicatorsTab from '@/modules/shelter/components/IndicatorsTab';
@@ -311,32 +312,32 @@ export default function OrganizationAdminPanel() {
         )}
         {shelterFoundation && shelterExhibitions && (
           <TabsContent value="exhibitions" className="mt-12 px-1 sm:mt-14">
-            <ExhibitionsList clubId={orgId} />
+            <ExhibitionsList shelterClubId={orgId} />
           </TabsContent>
         )}
         {shelterFoundation && shelterVolunteers && (
           <TabsContent value="volunteers" className="mt-12 px-1 sm:mt-14">
-            <VolunteersRoster clubId={orgId} />
+            <VolunteersRoster shelterClubId={orgId} />
           </TabsContent>
         )}
         {shelterFoundation && shelterHealthRecords && (
           <TabsContent value="medical_records" className="mt-12 px-1 sm:mt-14">
-            <MedicalRecordsList clubId={orgId} />
+            <ShelterPetScopedTab clubId={orgId} kind="medical" />
           </TabsContent>
         )}
         {shelterFoundation && shelterMedication && (
           <TabsContent value="medications" className="mt-12 px-1 sm:mt-14">
-            <MedicationsList clubId={orgId} />
+            <ShelterPetScopedTab clubId={orgId} kind="medications" />
           </TabsContent>
         )}
         {shelterFoundation && shelterPetTimeline && (
           <TabsContent value="timeline" className="mt-12 px-1 sm:mt-14">
-            <TimelineList clubId={orgId} />
+            <ShelterPetScopedTab clubId={orgId} kind="timeline" />
           </TabsContent>
         )}
         {shelterFoundation && shelterFoster && (
           <TabsContent value="foster" className="mt-12 px-1 sm:mt-14">
-            <FostersList clubId={orgId} />
+            <FostersList shelterClubId={orgId} canAbriho />
           </TabsContent>
         )}
       </Tabs>
