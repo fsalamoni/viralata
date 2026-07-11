@@ -1,6 +1,6 @@
 # Protocolo de Coordenação entre Sessões · Viralata
 
-> v1.0 · 2026-07-11 · mantido em `.harness/SCRUM_PROTOCOL.md` (espelho da aba "Protocolo" do `painel-scrum.html`)
+> v1.3 · 2026-07-11 · mantido em `.harness/SCRUM_PROTOCOL.md` (espelho da aba "Protocolo" do `painel-scrum.html`)
 
 ## 1. Identidade
 
@@ -168,9 +168,11 @@ node .harness/sync.cjs --json     # output em JSON
 
 - **Worktrees ativos**: lê `git worktree list --porcelain` e popula `activeWorktrees`
 - **commitsAhead**: para cada worktree, conta `git rev-list --count main..HEAD`
-- **Status**:
-  - `in-sync` se commitsAhead === 0
-  - `ahead-of-main` caso contrário
+- **commitsBehind** (TASK-126): conta `git rev-list --count HEAD..main` — quanto main tem à frente do worktree
+- **Status** (3 categorias):
+  - `ahead-of-main` se commitsAhead > 0 (worktree tem commits que main não tem)
+  - `behind-main` se commitsAhead === 0 && commitsBehind > 0 (worktree parado num commit antigo; main evoluiu à frente — **NÃO é in-sync**)
+  - `in-sync` se commitsAhead === 0 && commitsBehind === 0 (worktree e main no mesmo commit)
 - **Refs quebradas**: percorre `blockedBy` e `relatedTasks` de cada task. Se apontar para ID inexistente, reporta (mas não corrige automaticamente).
 - **IDs duplicados**: detecta dois tasks com o mesmo `id`.
 - **Owners faltando**: tasks sem campo `owner`.
@@ -189,10 +191,12 @@ Em caso de conflito: o JSON commitado é o contrato. Mudanças locais não commi
 
 | Quando | Comando |
 |---|---|
-| Antes de commitar | `node .harness/sync.cjs --check` (deve dar exit 0) |
-| Depois de pull | `node .harness/sync.cjs --fix` |
+| Antes de commitar | `node .harness/sync.cjs --check` (deve dar exit 0) — **automático via pre-commit hook** |
+| Depois de pull | `node .harness/sync.cjs --fix` — **automático via post-merge hook** |
 | Depois de mexer manualmente no JSON | `node .harness/sync.cjs --check` |
-| Setup de hook pre-commit | ver §13.6 |
+| Setup de hook pre-commit | `node .harness/install-hooks.cjs` (one-shot) |
+| Ver o que cada commit fez | olhar `task.history[]` no JSON |
+| Capturar atividade de siblings | `node .harness/autosync.cjs` (daemon) ou `--once` (one-shot) |
 
 ### 13.6 Hook pre-commit (opcional)
 
@@ -209,7 +213,45 @@ node .harness/sync.cjs --check || {
 
 Alternativa moderna: husky / pre-commit framework. Mas o script simples acima funciona sem dependências.
 
-### 13.7 Última atualização
+### 13.7 Smart detection (TASK-126..130)
+
+`sync.cjs` agora é inteligente. Em todo `--fix` (manual ou via hook) ele:
+
+1. **Ingere commits de cada worktree** (`git log main..HEAD`) e extrai padrões:
+   - `TASK-XXX` → adiciona evento `{ts, type:'commit', worktree, branch, commit, subject}` em `task.history[]`
+   - `RISK-XXX` → adiciona evento em `riskRegister[].history[]`
+   - `MR#N` → loga em `metrics.mrLog[]`
+2. **Auto-linka**: se a task referenciada está `ready` e o commit é num worktree ativo, atualiza `task.branch` e `task.worktree` (apenas quando ainda não estavam setados).
+3. **Atualiza evidence**: se a task tem evidence fraca ou incompleta, adiciona `commit <short> em <branch>: <subject>`.
+4. **Sempre atualiza** `task.updatedAt` e `metrics.lastIngest`.
+
+Resultado: cada commit com `TASK-056: ...` no message vira rastreável no JSON sem ninguém precisar atualizar manualmente.
+
+### 13.8 Autosync daemon (siblings em background)
+
+`autosync.cjs` é um daemon que pollá `mavis communication messages` a cada N segundos e:
+
+1. Lê mensagens recebidas pela minha sessão desde o último cursor (persiste em `.harness/.autosync-cursor.json`).
+2. Extrai `TASK-XXX` / `RISK-XXX` / `MR#N` do body de cada mensagem → adiciona em `task.history[]` / `riskRegister[].history[]` com `eventKey=comm-<messageId>` (idempotente).
+3. **Detecção semântica** — categoriza a mensagem em `metrics.semanticEvents[]`:
+   - `verifier-fail` → `Veredito: FAIL`, `# VEREDITO: FAIL`
+   - `verifier-pass` → `Veredito: PASS`, `# VEREDITO: PASS`
+   - `report-delivered` → `Relatório fechado`, `Path: ...`
+   - `producer-no-go` → `no-go`, `impossível fix`
+   - `fixes-delivered` → `fix A/B/C`, `delivered`, `merged` (com TASK-XXX)
+
+Uso:
+- `node .harness/autosync.cjs` — daemon (Ctrl-C pra parar)
+- `node .harness/autosync.cjs --once` — one-shot
+- `node .harness/autosync.cjs --interval 30` — poll a cada 30s
+- `node .harness/autosync.cjs --verbose` — log de cada tick
+
+Para iniciar em background: `start-job $script = { node .harness/autosync.cjs }` ou rodar num terminal dedicado.
+
+### 13.9 Última atualização
 
 - v1.0 — 2026-07-11 — TASK-061 (Mavis mvs_311d0)
+- v1.1 — 2026-07-11 — TASK-126..130: smart commit detection, autosync daemon, git hooks automáticos
+- v1.2 — 2026-07-11 — TASK-126 fix: categoria `behind-main` no sync.cjs (worktree parado em commit velho ≠ in-sync). Também adiciona `commitsBehind` por worktree e métrica `activeWorktreesBehindMain`. Detecta drift do wt-17ff480a que estava marcado `in-sync` mas tem 83 commits atrás.
+- v1.3 — 2026-07-11 — sync.cjs: `findIssues` agora aceita RISK-XXX em `blockedBy` (além de TASK-XXX). Antes, TASK-003 → RISK-002 era reportado como broken ref. Validação de integridade respeita o destino real do id.
 

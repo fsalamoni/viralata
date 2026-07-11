@@ -1,6 +1,6 @@
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
-import PetFeedOriginal from './PetFeed.original';
+import PetFeedOriginal from './PetFeed.v1';
 import PetFeedEnhanced from './PetFeedEnhanced';
 
 /**

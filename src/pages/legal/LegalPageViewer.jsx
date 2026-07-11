@@ -29,6 +29,7 @@ import { Copy, Check, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { LegalPage, LegalSection } from '@/components/legal-page';
+import PageNotFound from '@/pages/PageNotFound';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
 import { getLegalPageBySlug, LEGAL_PAGES } from '@/modules/shelter/domain/legal';
@@ -128,11 +129,11 @@ export default function LegalPageViewer() {
   if (!enabled) {
     const legacy = LEGACY_SLUG_MAP[slug];
     if (legacy) return <Navigate to={legacy} replace />;
-    return <Navigate to="/page-not-found" replace />;
+    return <PageNotFound />;
   }
 
   if (!page || !textLoader) {
-    return <Navigate to="/page-not-found" replace />;
+    return <PageNotFound />;
   }
 
   return (

@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-11T17:47:05.173Z",
+  "generatedAt": "2026-07-11T23:30:49.327Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -17,8 +17,9 @@
       "head": "d0bb369efb7b9546e954dde47e5f40596d01ca93",
       "headTitle": "feat(community): paridade visual+estrutural com a ONG, gated por flag",
       "path": "D:/viralata/.worktrees/wt-17ff480a",
-      "status": "in-sync",
+      "status": "behind-main",
       "commitsAhead": 0,
+      "commitsBehind": 83,
       "primarySession": "mvs_44f2762343f94f28b506f2f4c8c12eae",
       "sessionTitle": "Sync local repo with web",
       "focus": [
@@ -31,11 +32,12 @@
     {
       "id": "wt-e79e15ca",
       "branch": "wt/e79e15ca",
-      "head": "5d263c390f4d1af415c31eef3bfa6b816284b173",
-      "headTitle": "docs(shelter): TASK-076 — DELIVERABLE.md do fix wt/e79e15ca",
+      "head": "febfd9858425c6371cba73195c74ac7d83d0e84a",
+      "headTitle": "feat(harness): TASK-061+062 — sync.cjs + SCRUM_PROTOCOL.md §13 auto-sync",
       "path": "D:/viralata/.worktrees/wt-e79e15ca",
       "status": "ahead-of-main",
-      "commitsAhead": 4,
+      "commitsAhead": 3,
+      "commitsBehind": 0,
       "primarySession": null,
       "sessionTitle": null,
       "focus": []
@@ -43,11 +45,12 @@
     {
       "id": "wt-legal-v2",
       "branch": "feat/legal-docs-v2",
-      "head": "6bab5311b08f484e1f65bdcd9886fd3ad0dc6aa0",
-      "headTitle": "fix(org-panel): corrigir TypeError G is not a function + index community_events",
+      "head": "ce916dfa9afa1f04a7fe20704ddd45f2524e6555",
+      "headTitle": "feat(onboarding): adicionar 3 checkboxes de aceite + assinatura eletrônica (Lei 14.063/2020)",
       "path": "D:/viralata/.worktrees/wt-legal-v2",
       "status": "ahead-of-main",
-      "commitsAhead": 1,
+      "commitsAhead": 4,
+      "commitsBehind": 1,
       "primarySession": "mvs_311d078987d0414a90f57ef28b789b18",
       "sessionTitle": "Legal docs v2 + bug fix org panel + varredura completa",
       "focus": [
@@ -65,12 +68,12 @@
     {
       "id": "mvs_311d078987d0414a90f57ef28b789b18",
       "agentName": "mavis",
-      "title": "Legal docs v2 + bug fix org panel + varredura completa",
+      "title": "Legal docs v2 + navigation polish + varredura (root)",
       "status": "started",
       "workspace": "D:\\viralata\\.worktrees\\wt-e79e15ca",
       "branch": "wt/e79e15ca",
-      "lastActiveAt": "2026-07-11T17:47:05.171Z",
-      "deliverable": "wt-e79e15ca @ a66e030 (1 commit ahead of main c0d2ffd). Pacote a66e030: TASK-056 (OrgAdminPanel TypeError), TASK-057 (community_events index), TASK-058 (5 páginas legais v2), TASK-049 (Onboarding 3 checkboxes), TASK-050 (auditService 8 actions), TASK-051 (LegalFooter 5 links). Minhas adições: TASK-068 (safeTabs), TASK-069 (TabErrorBoundary em 10 tabs), TASK-070 (auditoria), TASK-071 (test mock corrigido), TASK-072 (lint/typecheck/build OK). Falta: TASK-075 deploy índice, TASK-076 DELIVERABLE.md, TASK-077 commit + push."
+      "lastActiveAt": "2026-07-11T23:30:49.325Z",
+      "deliverable": "wt-e79e15ca @ 67a4c7a (5 commits ahead of main 5da437b). Pacote original: TASK-056/057/058/049/050/051 + TASK-068/069/070/071/072 (defensive coding, single acceptance dialog, safeTabs, TabErrorBoundary) + TASK-073/074 (setup) + TASK-075/076/077 (DELIVERABLE + sync.cjs + protocol §13). NEW: TASK-126/127/128/129 (3 MRs de navigation polish) + TASK-130 (auditoria FAIL pendente)."
     },
     {
       "id": "mvs_44f2762343f94f28b506f2f4c8c12eae",
@@ -98,6 +101,36 @@
       "workspace": "D:\\viralata",
       "branch": "main",
       "lastActiveAt": "2026-07-11T14:21:50-03:00"
+    },
+    {
+      "id": "mvs_60b9c898c2904f35997cdb7777e64897",
+      "agentName": "general",
+      "title": "Navigation audit (PASS, 11 polish findings)",
+      "status": "finished",
+      "workspace": "C:\\Users\\Usuario\\.mavis\\agents\\general\\workspace",
+      "branch": null,
+      "lastActiveAt": "2026-07-11T14:57:00-03:00",
+      "deliverable": "relatorio-navegacao-viralata.md (524 linhas, 11 findings: 0 blocker, 4 major, 4 minor, 3 info). Split em MR#1 (zero risco) + MR#2 (após sweep) + MR#3 (HOLD até RISK-002)."
+    },
+    {
+      "id": "mvs_e0d16b97131d4b2db17fc81f82de5408",
+      "agentName": "verifier",
+      "title": "Auditoria (FAIL — escopo diferente do navigation audit)",
+      "status": "started",
+      "workspace": "verifier workspace",
+      "branch": null,
+      "lastActiveAt": "2026-07-11T19:30:00-03:00",
+      "deliverable": "VEREDITO FAIL (msg 73). Em standby (msg 76) aguardando producer voltar com fixes A/B/C pra re-verificar. Relatório completo (path, escopo, blockers file:line) ainda não chegou — pedido em msg 74."
+    },
+    {
+      "id": "mvs_d7cbfb611ba74580b72d628c5f649833",
+      "agentName": "coder",
+      "title": "Producer das fixes A/B/C (FAIL auditor)",
+      "status": "started",
+      "workspace": "coder workspace (desconhecido)",
+      "branch": null,
+      "lastActiveAt": "2026-07-11T19:00:00-03:00",
+      "deliverable": "Trabalhando em fixes A/B/C após FAIL. Sem update desde a notificação do FAIL. Status incerto — pode estar trabalhando silenciosamente ou travado. Próximo contato esperado: entrega de fixes OU report de no-go."
     }
   ],
   "columns": [
@@ -237,7 +270,7 @@
       "title": "Merge worktree wt/17ff480a (paridade visual ONG/comunidade)",
       "type": "feature",
       "category": "design",
-      "status": "in_review",
+      "status": "blocked",
       "priority": "high",
       "owner": "human",
       "branch": "wt/17ff480a",
@@ -252,6 +285,7 @@
         "layout"
       ],
       "blockedBy": [
+        "RISK-002",
         "TASK-009"
       ],
       "relatedTasks": [
@@ -259,9 +293,19 @@
         "TASK-011"
       ],
       "description": "Branch com 10 commits à frente de main: paridade visual+estrutural comunidade/ONG (gated por flag COMMUNITY_NGO_PARITY), padronização de padding/spacing nos cards admin, layout padronizado nas páginas autenticadas (STANDARDIZED_PAGE_LAYOUT), PageHero flagável (PAGE_HERO_ENABLED), mais espaço entre abas e cards (mt-12 sm:mt-14).",
-      "evidence": "D:\\viralata\\.worktrees\\wt-17ff480a",
+      "evidence": "wt/17ff480a @ d0bb369 — 83 commits ATRÁS de main (sync.cjs 2026-07-11 20:16, categoria behind-main nova). Paridade NÃO mergeada. Bloqueada por RISK-002 (decisão humana sobre estratégia de merge: rebase, fast-forward, ou merge manual dos 83 commits). | sync.cjs --fix: 2026-07-11T23:19:13Z",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-11",
+      "history": [
+        {
+          "ts": "2026-07-11T23:19:13Z",
+          "type": "status-change",
+          "body": "in_review → blocked. Razão: paridade não mergeada, behind-main=83, depende de RISK-002.",
+          "source": "scrum-stale-fix-2026-07-11",
+          "from_status": "in_review",
+          "to_status": "blocked"
+        }
+      ]
     },
     {
       "id": "TASK-004",
@@ -408,9 +452,9 @@
       "title": "Revisar paridade visual comunidade/ONG",
       "type": "chore",
       "category": "design",
-      "status": "in_progress",
+      "status": "ready",
       "priority": "high",
-      "owner": "mvs_44f2762343f94f28b506f2f4c8c12eae",
+      "owner": "human",
       "branch": "wt/17ff480a",
       "flag": "COMMUNITY_NGO_PARITY",
       "worktree": ".worktrees/wt-17ff480a",
@@ -422,7 +466,18 @@
       "blockedBy": [],
       "description": "Design review da paridade. Conferir banner gradiente, avatar-iniciais, nome, cidade, chips — e o painel admin da comunidade (header arena-panel-strong, arena-tab-bar, stat cards p-6 sm:p-7, mt-12 sm:mt-14). Flag default OFF — não muda nada até admin ligar.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-11",
+      "evidence": "Design review pausada — paridade não mergeada (TASK-003 blocked por RISK-002). Owner anterior mvs_44f2762343f94f28b506f2f4c8c12eae finished desde 2026-07-09. Reabrir quando wt/17ff480a entrar em main (ou em worktree revisável). | sync.cjs --fix: 2026-07-11T23:19:13Z",
+      "history": [
+        {
+          "ts": "2026-07-11T23:19:13Z",
+          "type": "status-change",
+          "body": "in_progress → ready. Razão: owner finished, paridade não mergeada, sem alvo revisável.",
+          "source": "scrum-stale-fix-2026-07-11",
+          "from_status": "in_progress",
+          "to_status": "ready"
+        }
+      ]
     },
     {
       "id": "TASK-011",
@@ -913,10 +968,18 @@
         "TASK-003",
         "TASK-010"
       ],
-      "description": "wt/e79e15ca: DONE (cherry-pick c0d2ffd, deploy OK, smoke test 25/25). wt/17ff480a: PENDENTE (branch wt/17ff480a @ d0bb369, 10 commits ahead, paridade visual ONG/comunidade). Próximo: revisar TASK-010 (design review da paridade) e decidir merge de wt/17ff480a. Risco de conflito: ambos worktrees tocam OrgAdminPanel e Layout.",
-      "evidence": "git log origin/main; sibling scratchpad mvs_311d078987d0414a90f57ef28b789b18",
+      "description": "Sincronizar main com 3 worktrees paralelos:\n- wt/e79e15ca @ 67a4c7a — 5 commits À FRENTE, 2 commits atrás (status ahead-of-main). Parte cherry-picked em main (a66e030→5da437b, 838451e→c0d2ffd), parte ainda não.\n- wt/17ff480a @ d0bb369 — 0 commits à frente, 83 ATRÁS (status behind-main, NOVO). Paridade visual ONG/comunidade NÃO mergeada. Bloqueada por RISK-002 (decisão humana).\n- wt-legal-v2 @ ce916df — 4 commits à frente, 1 atrás (status ahead-of-main). 5 páginas legais (privacidade, termos, cookies, etc) NÃO mergeadas.\n\nPróximos passos:\n1. Decidir estratégia de merge para wt/17ff480a (RISK-002): rebase, fast-forward, ou merge manual dos 83 commits\n2. Reabrir TASK-010 (design review) quando wt/17ff480a entrar em main\n3. Decidir merge de wt-legal-v2 (5 páginas legais, em revisão)\n4. Atualizar TASK-003, TASK-010, TASK-128 quando merges forem feitos",
+      "evidence": "3 worktrees detectados: wt-e79e15ca (ahead=5, behind=2), wt-17ff480a (ahead=0, behind=83), wt-legal-v2 (ahead=4, behind=1). Status por sync.cjs --fix em 2026-07-11T23:19:13Z. Decisões humanas pendentes: RISK-002 (merge wt/17ff480a), merge legal v2.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-11",
+      "history": [
+        {
+          "ts": "2026-07-11T23:19:13Z",
+          "type": "description-refresh",
+          "body": "Descrição atualizada: 2 → 3 worktrees (inclui wt-legal-v2). Adicionadas categorias ahead/behind.",
+          "source": "scrum-stale-fix-2026-07-11"
+        }
+      ]
     },
     {
       "id": "TASK-032",
@@ -1706,7 +1769,7 @@
       "status": "ready",
       "priority": "high",
       "owner": "unassigned",
-      "branch": "feat/legal-docs-v2",
+      "branch": "wt/e79e15ca",
       "flag": "SHELTER_LEGAL_TERMS_V1",
       "worktree": ".worktrees/wt-legal-v2",
       "pr": null,
@@ -1724,10 +1787,34 @@
         "TASK-058",
         "TASK-007"
       ],
-      "evidence": ".tmp-legal-docs/03_Avisos_Legais.md",
+      "evidence": ".tmp-legal-docs/03_Avisos_Legais.md | +67a4c7a | +febfd98",
       "description": "BLOCO INDEPENDENTE. Criar src/pages/legal/AvisosLegais.jsx com 03_Avisos_Legais.md (3.7 KB). SUBSTITUI src/pages/legal/avisosLegais.js (v1 com TODO JURÍDICO em :259). Rota /legal/avisos-legais.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-11",
+      "history": [
+        {
+          "ts": "2026-07-11 14:47:55 -0300",
+          "type": "commit",
+          "worktree": "wt-e79e15ca",
+          "branch": "wt/e79e15ca",
+          "commit": "67a4c7a70b6284141fc6c9d6b0def132f05ed244",
+          "short": "67a4c7a",
+          "subject": "feat(harness): TASK-061+062 — sync.cjs + SCRUM_PROTOCOL.md §13 auto-sync",
+          "author": "Mavis",
+          "category": "implementation"
+        },
+        {
+          "ts": "2026-07-11 14:47:55 -0300",
+          "type": "commit",
+          "worktree": "wt-e79e15ca",
+          "branch": "wt/e79e15ca",
+          "commit": "febfd9858425c6371cba73195c74ac7d83d0e84a",
+          "short": "febfd98",
+          "subject": "feat(harness): TASK-061+062 — sync.cjs + SCRUM_PROTOCOL.md §13 auto-sync",
+          "author": "Mavis",
+          "category": "implementation"
+        }
+      ]
     },
     {
       "id": "TASK-062",
@@ -1887,7 +1974,18 @@
       "evidence": ".tmp-legal-docs/08_Termos_Voluntariado_LT.md | Diagnóstico useFeatureFlag: tuple em mock, bool em prod. Causa raiz identificada.",
       "description": "BLOCO INDEPENDENTE. Criar src/pages/legal/TermosVoluntariadoLT.jsx com 08_Termos_Voluntariado_LT.md (2.8 KB). Combinado. Integra com clickwrap de voluntariado (TASK-098) e Lar Temporário (TASK-096).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-11",
+      "history": [
+        {
+          "ts": "2026-07-11T22:54:43.713Z",
+          "type": "communication",
+          "eventKey": "comm-15",
+          "messageId": 15,
+          "from": "sibling",
+          "body": "[Re: status ✓] Beleza, vi que você já concluiu várias (TASK-066 a 074, 089-09...",
+          "status": "prompt done"
+        }
+      ]
     },
     {
       "id": "TASK-067",
@@ -1950,10 +2048,34 @@
       "relatedTasks": [
         "TASK-058"
       ],
-      "evidence": ".tmp-legal-docs/10_Guia_Legislacao_Animal.md | safeTabs helper adicionado em OrganizationAdminPanel.jsx:79-92. Substitui spread [...visibleTabs, ...shelterTabs]. | safeTabs helper + TabErrorBoundary em OrganizationAdminPanel.jsx (defensive coding) | commit 87d84b7",
+      "evidence": ".tmp-legal-docs/10_Guia_Legislacao_Animal.md | safeTabs helper adicionado em OrganizationAdminPanel.jsx:79-92. Substitui spread [...visibleTabs, ...shelterTabs]. | safeTabs helper + TabErrorBoundary em OrganizationAdminPanel.jsx (defensive coding) | commit 87d84b7 | +ab66be4",
       "description": "BLOCO INDEPENDENTE. Criar src/pages/legal/LegislacaoAnimal.jsx com 10_Guia_Legislacao_Animal.md (6.9 KB). Lei 9605/98 art. 32, Decreto 24.645/34. Rota /legal/legislacao-animal.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-11",
+      "history": [
+        {
+          "ts": "2026-07-11 14:44:05 -0300",
+          "type": "commit",
+          "worktree": "wt-e79e15ca",
+          "branch": "wt/e79e15ca",
+          "commit": "87d84b7445bd69195ecda50ccd9fad331784b42d",
+          "short": "87d84b7",
+          "subject": "fix(orgs+shelter): TASK-068+069+104+105 — defensive coding + single acceptance dialog",
+          "author": "Mavis",
+          "category": "implementation"
+        },
+        {
+          "ts": "2026-07-11 14:44:05 -0300",
+          "type": "commit",
+          "worktree": "wt-e79e15ca",
+          "branch": "wt/e79e15ca",
+          "commit": "ab66be4a9c09a9c108b66e17648b7d1864a4042c",
+          "short": "ab66be4",
+          "subject": "fix(orgs+shelter): TASK-068+069+104+105 — defensive coding + single acceptance dialog",
+          "author": "Mavis",
+          "category": "implementation"
+        }
+      ]
     },
     {
       "id": "TASK-069",
@@ -2208,10 +2330,34 @@
         "TASK-077",
         "TASK-078"
       ],
-      "evidence": "D:\\\\viralata\\\\.worktrees\\\\wt-e79e15ca\\\\DELIVERABLE.md criado (8 secoes: scope, arquivos, testes, validacao, reverter, proximos passos, coordination, licoes)",
+      "evidence": "D:\\\\viralata\\\\.worktrees\\\\wt-e79e15ca\\\\DELIVERABLE.md criado (8 secoes: scope, arquivos, testes, validacao, reverter, proximos passos, coordination, licoes) | +5d263c3 | +9f0ba51",
       "description": "BLOCO INDEPENDENTE. Adicionar search_keywords em users/{uid}. Apenas campos públicos: display_name, city, role. LGPD: NÃO incluir email, phone, cpf, rg, instagram_handle (PII não é searchable).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-11",
+      "history": [
+        {
+          "ts": "2026-07-11 14:46:24 -0300",
+          "type": "commit",
+          "worktree": "wt-e79e15ca",
+          "branch": "wt/e79e15ca",
+          "commit": "5d263c390f4d1af415c31eef3bfa6b816284b173",
+          "short": "5d263c3",
+          "subject": "docs(shelter): TASK-076 — DELIVERABLE.md do fix wt/e79e15ca",
+          "author": "Mavis",
+          "category": "polish"
+        },
+        {
+          "ts": "2026-07-11 14:46:24 -0300",
+          "type": "commit",
+          "worktree": "wt-e79e15ca",
+          "branch": "wt/e79e15ca",
+          "commit": "9f0ba515510dcc0a81811027cc5e0b8204577292",
+          "short": "9f0ba51",
+          "subject": "docs(shelter): TASK-076 — DELIVERABLE.md do fix wt/e79e15ca",
+          "author": "Mavis",
+          "category": "polish"
+        }
+      ]
     },
     {
       "id": "TASK-077",
@@ -3636,6 +3782,258 @@
       "description": "Tests: hook com mock, página com query vazia + query com typo. Smoke test em produção com flag OFF (deve ser no-op, sem mudar UI). Capturar bundle hash.",
       "createdAt": "2026-07-11",
       "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-126",
+      "title": "MR#1: PageNotFound direto + rename PetFeed.original.jsx → PetFeed.v1.jsx (navigation polish)",
+      "status": "in_review",
+      "priority": "high",
+      "type": "chore",
+      "category": "core",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "wt/e79e15ca",
+      "flag": null,
+      "worktree": ".worktrees/wt-e79e15ca",
+      "pr": null,
+      "tags": [
+        "mr1",
+        "navigation-audit",
+        "polish",
+        "zero-merge-risk",
+        "low-risk"
+      ],
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-127",
+        "TASK-128",
+        "TASK-129"
+      ],
+      "evidence": "C:\\Users\\Usuario\\.mavis\\agents\\general\\workspace\\relatorio-navegacao-viralata.md §MAJOR-01 + §MINOR-04 | fix aplicado em wt/e79e15ca: LegalPageViewer.jsx:131,135 → <PageNotFound />; PetFeed.original.jsx → PetFeed.v1.jsx + import em PetFeed.jsx:3 | typecheck verde, lint verde, build OK (17.38s), 1359/1361 testes (2 falhas pré-existentes de timezone em exhibition.test.js — sem relação com este MR)",
+      "description": "MR#1 — IMPLEMENTADO em wt/e79e15ca, awaiting commit+push+MR. 2 fixes:\n\n1. **MAJOR-01** (src/pages/legal/LegalPageViewer.jsx:131,135): trocar `<Navigate to=\"/page-not-found\" replace />` por `<PageNotFound />` direto (preserva URL do slug legal). Não há rota /page-not-found declarada em App.jsx — funciona por sorte via catch-all `*`.\n\n2. **MINOR-04** (src/modules/pets/pages/PetFeed.original.jsx → PetFeed.v1.jsx): rename + ajuste de import em src/modules/pets/pages/PetFeed.jsx:3 (`'./PetFeed.original'` → `'./PetFeed.v1'`). Cosmético.\n\nEscopo total: ~5 linhas de diff. Validação: typecheck verde, lint verde, build OK, 1359/1361 testes (2 falhas pré-existentes de timezone).\n\n**Workflow**:\n- (1) ✅ Aplicar 2 fixes em wt/e79e15ca\n- (2) ✅ npm run typecheck + npm run lint + npm run build + npm test\n- (3) ⏳ Smoke test 25/25 rotas (manual ou smoke-routes.mjs)\n- (4) ⏳ Commit + push + abrir MR",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11",
+      "history": [
+        {
+          "ts": "2026-07-11 20:18:00 -0300",
+          "type": "manual",
+          "actor": "mvs_311d078987d0414a90f57ef28b789b18",
+          "from": "ready",
+          "to": "in_review",
+          "summary": "MR#1 implementado: LegalPageViewer.jsx (Navigate→PageNotFound direto) + rename PetFeed.original→v1. typecheck/lint/build OK, 1359/1361 testes (2 falhas pré-existentes timezone, sem relação)."
+        }
+      ]
+    },
+    {
+      "id": "TASK-127",
+      "title": "MR#2: deletar 7 páginas legais órfãs (AdopterTerms, CodeOfConduct, CookiePolicy, DonorTerms, FosterTerms, ShelterTerms, VolunteerTerms)",
+      "status": "ready",
+      "priority": "high",
+      "type": "chore",
+      "category": "legal",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "wt/e79e15ca",
+      "flag": null,
+      "worktree": ".worktrees/wt-e79e15ca",
+      "pr": null,
+      "tags": [
+        "mr2",
+        "navigation-audit",
+        "cleanup",
+        "dead-code",
+        "needs-sweep"
+      ],
+      "blockedBy": [
+        "TASK-129"
+      ],
+      "relatedTasks": [
+        "TASK-043",
+        "TASK-126",
+        "TASK-128"
+      ],
+      "evidence": "C:\\Users\\Usuario\\.mavis\\agents\\general\\workspace\\relatorio-navegacao-viralata.md §MAJOR-02",
+      "description": "MR#2 — depende do sweep extra (TASK-129). Auditor confirmou que NÃO há `import` em `App.jsx`, mas relatório pede grep em `functions/`, `sitemap.xml`, e-mails transacionais, `LegalFooter` antes do `git rm`.\n\n7 arquivos em `src/pages/`:\n- AdopterTerms.jsx, CodeOfConduct.jsx, CookiePolicy.jsx, DonorTerms.jsx, FosterTerms.jsx, ShelterTerms.jsx, VolunteerTerms.jsx\n\n**Workflow**:\n- (1) TASK-129: sweep completo\n- (2) Se sweep OK: `git rm src/pages/{7 arquivos}`\n- (3) npm test + typecheck + lint + build\n- (4) Smoke test em /legal/* e footer\n- (5) Commit + push + abrir MR",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-128",
+      "title": "MR#3: AdminRoute preserva location + rota /comunidade/:communityId duplicada + OnboardingGate polish (HOLD até RISK-002)",
+      "status": "blocked",
+      "priority": "high",
+      "type": "chore",
+      "category": "core",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "wt/e79e15ca",
+      "flag": null,
+      "worktree": ".worktrees/wt-e79e15ca",
+      "pr": null,
+      "tags": [
+        "mr3",
+        "navigation-audit",
+        "polish",
+        "hold-risk002",
+        "app-jsx"
+      ],
+      "blockedBy": [
+        "TASK-090"
+      ],
+      "relatedTasks": [
+        "TASK-126",
+        "TASK-127"
+      ],
+      "evidence": "C:\\Users\\Usuario\\.mavis\\agents\\general\\workspace\\relatorio-navegacao-viralata.md §MAJOR-03 + §MAJOR-04 + §MINOR-01/02/03",
+      "description": "MR#3 — HOLD até RISK-002 fechar (TASK-090). Todos os fixes mexem em `App.jsx`, que está modificado em `wt-17ff480a` → conflito direto de merge.\n\n5 fixes:\n1. **MAJOR-03** (src/App.jsx:114-120): AdminRoute não preserva `location` no redirect (inconsistência com ProtectedRoute). Adicionar `state={{ from: location }}` + ler no login redirect.\n2. **MAJOR-04**: rota `/comunidade/:communityId` duplicada. Decidir entre as duas (provavelmente a `community` é a ONG, e a duplicata é a versão legada `comunidade`).\n3. **MINOR-01** (src/modules/onboarding/OnboardingGate.jsx): retorna `children` durante `isLoadingAuth` — flicker de UI. Skeleton/loader enquanto carrega.\n4. **MINOR-02** (src/modules/onboarding/OnboardingGate.jsx): `ONBOARDING_ALLOWED_PATHS` não cobre `/legal/*` — usuário logado pode ser bloqueado de ler legal. Adicionar prefixo.\n5. **MINOR-03** (src/modules/admin/pages/OrganizationAdminPanel.jsx): botão \"Voltar\" leva pra público — debatível, re-auditar pós-merge.\n\n**Workflow**:\n- (1) Aguardar decisão de TASK-090 (RISK-002, estratégia de merge dos 2 worktrees)\n- (2) Após merge de wt-17ff480a em main: re-auditar este MR no worktree novo\n- (3) Aplicar 5 fixes em novo worktree (feat/nav-polish-post-merge)\n- (4) npm test + typecheck + lint + build\n- (5) Smoke test 25/25 rotas + navegação admin profunda\n- (6) Commit + push + abrir MR",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-129",
+      "title": "Sweep antes do MR#2: confirmar que 7 páginas legais órfãs não são linkadas em lugar nenhum",
+      "status": "ready",
+      "priority": "high",
+      "type": "chore",
+      "category": "legal",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "wt/e79e15ca",
+      "flag": null,
+      "worktree": ".worktrees/wt-e79e15ca",
+      "pr": null,
+      "tags": [
+        "mr2-pre",
+        "navigation-audit",
+        "sweep",
+        "quick"
+      ],
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-127",
+        "TASK-043"
+      ],
+      "evidence": "C:\\Users\\Usuario\\.mavis\\agents\\general\\workspace\\relatorio-navegacao-viralata.md §MAJOR-02 (solicitação do auditor)",
+      "description": "Pré-requisito do MR#2. Auditor já confirmou zero imports em App.jsx, mas relatório pede busca extensiva ANTES do `git rm`.\n\n**Sweep (5 alvos)**:\n- (1) `rg \"AdopterTerms|CodeOfConduct|CookiePolicy|DonorTerms|FosterTerms|ShelterTerms|VolunteerTerms\" src/` — fora `src/pages/`\n- (2) `rg \"<nome>\" functions/` — Cloud Functions com e-mails transacionais\n- (3) `public/sitemap.xml` ou gerador de sitemap\n- (4) `src/components/LegalFooter.jsx` — links diretos pra esses arquivos\n- (5) Templates de e-mail (transactional templates em `functions/` ou `src/emails/`)\n- (6) `docs/` — menções em documentação\n\n**Output esperado**: docs/ORPHAN_LEGAL_PAGES_SWEEP.md com resultado por alvo, linkando para qualquer match encontrado. Se tudo limpo: green light pro `git rm`.\n\n**Estimativa**: 15-30 min. Pode ser feito pelo próprio Mavis (root) ou delegado pro producer.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-130",
+      "title": "Auditoria de navegação: aguardar relatório do FAIL de outro auditor (escopo diferente)",
+      "status": "in_review",
+      "priority": "high",
+      "type": "chore",
+      "category": "core",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "wt/e79e15ca",
+      "flag": null,
+      "worktree": ".worktrees/wt-e79e15ca",
+      "pr": null,
+      "tags": [
+        "auditoria",
+        "fail",
+        "pendente",
+        "escopo-segredo"
+      ],
+      "blockedBy": [],
+      "relatedTasks": [],
+      "evidence": "msg 73 VEREDITO FAIL (verifier mvs_e0d16b97131d4b2db17fc81f82de5408) | msg 76 ack do verifier em standby | msg 74 pedido de relatório completo | RELATÓRIO RECEBIDO: C:\\Users\\Usuario\\.mavis\\agents\\general\\workspace\\relatorio-navegacao-viralata.md (General mvs_60b9c898c2904f35997cdb7777e64897, 11 findings — 4 MAJOR + 4 MINOR + 3 NIT, 0 blocker; escopo DIFERENTE do verifier FAIL). | Producer mvs_d7cbfb611ba74580b72d628c5f649833 trabalhando em fixes A/B/C — sem update desde o FAIL. | sync.cjs --fix: 2026-07-11T23:19:13Z",
+      "description": "Recebido VEREDITO FAIL (msg 73) de um auditor/verifier DIFERENTE do navigation audit (mvs_60b9c898c2904f35997cdb7777e64897). Escopo exato e blockers NÃO conhecidos até relatório chegar. Producer sibling (mvs_d7cbfb611ba74580b72d628c5f649833) trabalhando em fixes A/B/C, sem update desde o FAIL.\n\n**Status atual**:\n- Verifier em standby (msg 76) — esperando o producer voltar com fixes A/B/C pra re-verificar\n- Producer — sem mensagens desde o FAIL, status incerto\n- MR#1, MR#2, MR#3 — todos HOLD até esse FAIL ser resolvido\n- RISK-002 — aguardando decisão humana (estratégia de merge)\n\n**Próximo contato meu =** assim que producer entregar fixes OU reportar no-go (sem fixes possíveis), OU verifier mandar o relatório.\n\n**Heads-up**: se o auditor original tá falando \"no go\" pra merge, RISK-002 pode precisar de rework também (estratégia de merge dos 2 worktrees pode precisar mudar).",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11",
+      "history": [
+        {
+          "ts": "2026-07-11T23:19:13Z",
+          "type": "evidence-update",
+          "body": "Relatório do General chegou: relatorio-navegacao-viralata.md, 11 findings, 0 blocker. Status mantido in_review até producer voltar com fixes A/B/C.",
+          "source": "scrum-stale-fix-2026-07-11",
+          "from_status": "in_progress",
+          "to_status": "in_review"
+        }
+      ]
+    },
+    {
+      "id": "TASK-131",
+      "title": "Smart detection no sync.cjs: ingere TASK-XXX/RISK-XXX/MR#N de commits e atualiza history",
+      "status": "done",
+      "priority": "high",
+      "type": "feature",
+      "category": "kanban",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "wt/e79e15ca",
+      "flag": null,
+      "worktree": ".worktrees/wt-e79e15ca",
+      "pr": null,
+      "tags": [
+        "automation",
+        "sync",
+        "smart-detection",
+        "history",
+        "v1.1"
+      ],
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-132",
+        "TASK-133"
+      ],
+      "evidence": ".harness/sync.cjs (ingestCommits + extractRefs) | test run: 9 commits scaneados, 3 TASK-XXX detectados (TASK-061, TASK-068, TASK-076) | metrics.lastIngest registrado",
+      "description": "sync.cjs agora detecta TASK-XXX/RISK-XXX/MR#N em commit messages e:\n1. Adiciona evento {ts, type, worktree, branch, commit, subject, author, category} em task.history[]\n2. Adiciona evento em riskRegister[].history[]\n3. Loga em metrics.mrLog[]\n4. Auto-linka branch/worktree em tasks ready\n5. Enriquece evidence com short-hash do commit\n6. Atualiza task.updatedAt e metrics.lastIngest\n\nIdempotente: dedup por commit hash. Funciona em todos os worktrees ativos.\n\nExemplo: commit `87d84b7 fix(orgs+shelter): TASK-068+069+104+105 ...` → 1 entrada em TASK-068.history (TASK-069/104/105 ficam pra commits futuros que os referenciem direto).",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-132",
+      "title": "install-hooks.cjs: instala git hooks de auto-sync (pre-commit, post-commit, post-merge, post-checkout, post-rewrite)",
+      "status": "done",
+      "priority": "high",
+      "type": "feature",
+      "category": "ci",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "wt/e79e15ca",
+      "flag": null,
+      "worktree": ".worktrees/wt-e79e15ca",
+      "pr": null,
+      "tags": [
+        "automation",
+        "git-hooks",
+        "auto-sync",
+        "v1.1"
+      ],
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-131",
+        "TASK-133"
+      ],
+      "evidence": ".harness/install-hooks.cjs | 5 hooks instalados em D:\\viralata\\.git\\hooks\\ (compartilhado entre worktrees) | marker comment 'Managed by .harness/install-hooks.cjs' para idempotência",
+      "description": "Script que instala 5 git hooks compartilhados via .git/hooks/ (todos os worktrees herdam):\n- **pre-commit**: roda `sync.cjs --check` — bloqueia commit se JSON tem problemas\n- **post-commit**: roda `sync.cjs --fix --quiet` — ingere TASK-XXX do message\n- **post-merge**: roda `sync.cjs --fix --quiet` — re-sincroniza worktrees após merge\n- **post-checkout**: roda `sync.cjs --fix --quiet` (só se $3=1, branch checkout)\n- **post-rewrite**: roda `sync.cjs --fix --quiet` (rebase/amend)\n\nDetecta HOOKS_DIR corretamente para worktrees (via `git rev-parse --git-common-dir` + fallback).\n\nIdempotente: hooks já gerenciados são sobrescritos; hooks de outras origens são preservados com backup `.pre-sync-<ts>.bak`.\n\n**Para desinstalar**: `node .harness/install-hooks.cjs --uninstall`\n**Para inspecionar**: `node .harness/install-hooks.cjs --status`\n\n**Status atual**: 5/5 hooks instalados. pre-commit bloqueia commit com JSON quebrado. Cada commit daqui pra frente vai auto-popular `task.history[]`.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-133",
+      "title": "autosync.cjs: daemon que pollá mavis communication e ingere TASK-XXX + detecta semântica (verifier-fail, report-delivered, etc.)",
+      "status": "ready",
+      "priority": "high",
+      "type": "feature",
+      "category": "ci",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "wt/e79e15ca",
+      "flag": null,
+      "worktree": ".worktrees/wt-e79e15ca",
+      "pr": null,
+      "tags": [
+        "automation",
+        "daemon",
+        "mavis-comm",
+        "semantic-events",
+        "v1.1"
+      ],
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-131",
+        "TASK-132"
+      ],
+      "evidence": ".harness/autosync.cjs | test one-shot: 6 changes detectados (msg #68, #70, #72, #73, #74, #75, #76) | metrics.semanticEvents: 2 eventos (verifier-fail #73, report-delivered #72) | cursor persistido em .harness/.autosync-cursor.json",
+      "description": "Daemon que pollá `mavis communication messages --to <mySessionId>` a cada 60s (configurável via --interval) e:\n\n1. Detecta TASK-XXX/RISK-XXX/MR#N no body de cada mensagem → adiciona em task.history[] com eventKey=comm-<id> (idempotente)\n2. **Detecção semântica** → classifica em metrics.semanticEvents[]:\n   - `verifier-fail` (Veredito: FAIL)\n   - `verifier-pass` (Veredito: PASS)\n   - `report-delivered` (Relatório fechado/Path:)\n   - `producer-no-go` (no-go/impossível fix)\n   - `fixes-delivered` (fix A/B/C/delivered/merged + TASK-XXX)\n\nEstado persistido em `.harness/.autosync-cursor.json` (lastMessageId). Idempotente — não duplica.\n\n**Modos**:\n- `node .harness/autosync.cjs` — daemon contínuo (Ctrl-C)\n- `node .harness/autosync.cjs --once` — one-shot (já testado, 6 changes)\n- `node .harness/autosync.cjs --interval 30` — poll a cada 30s\n- `node .harness/autosync.cjs --verbose` — log detalhado\n\n**Não está rodando em background ainda** — precisa de um job/terminal dedicado. Para iniciar em sessão: `node .harness/autosync.cjs > .harness/autosync.log 2>&1 &` (PowerShell: `Start-Process node -ArgumentList '.harness/autosync.cjs'`).\n\n**Benefício**: cada mensagem que chego (verifier FAIL, producer DONE, auditor report) vira rastreável no scrum com timestamp, autor e referência à mensagem original.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
     }
   ],
   "definitionOfDone": [
@@ -3680,7 +4078,30 @@
       "impact": "medium",
       "mitigation": "Rebase ou merge com cuidado. Testar local após merge. Ambos tocam Layout e OrgAdminPanel.",
       "owner": "human",
-      "status": "open"
+      "status": "open",
+      "history": [
+        {
+          "ts": "2026-07-11T22:54:43.713Z",
+          "type": "communication",
+          "eventKey": "comm-40-RISK-002",
+          "messageId": 40,
+          "body": "[Re: reportando ✓] Esse é o gatilho que pedi — RISK-002 tá rolando. Respondo."
+        },
+        {
+          "ts": "2026-07-11T22:54:43.713Z",
+          "type": "communication",
+          "eventKey": "comm-33-RISK-002",
+          "messageId": 33,
+          "body": "Tô de pé. Não respondo mais até RISK-002 bater — pra parar o ping-pong."
+        },
+        {
+          "ts": "2026-07-11T22:54:43.713Z",
+          "type": "communication",
+          "eventKey": "comm-21-RISK-002",
+          "messageId": 21,
+          "body": "[Fechado ✓] Combinado. RISK-002 é o gatilho — quando você (ou eu) for puxar T..."
+        }
+      ]
     },
     {
       "id": "RISK-003",
@@ -3779,15 +4200,33 @@
     ],
     "openTODOs": 5,
     "openLegalReviews": 3,
-    "totalTasks": 122,
-    "done": 32,
-    "inProgress": 2,
+    "totalTasks": 130,
+    "done": 34,
+    "inProgress": 3,
     "inReview": 3,
-    "blocked": 0,
-    "ready": 78,
+    "blocked": 1,
+    "ready": 82,
     "backlog": 6,
     "risksTotal": 8,
-    "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. Commit 87d84b7 com defensive coding + single acceptance dialog. 122 tasks: 32 done, 3 in_progress, 79 ready.",
+    "sessionNote": "Sessão mvs_311d078987d0414a90f57ef28b789b18 (root) em wt-e79e15ca @ 67a4c7a. **AUTOMAÇÃO ATIVADA** (TASK-131/132/133): sync.cjs com smart commit detection, 5 git hooks instalados, autosync.cjs testado (6 changes no one-shot). 130 tasks: 34 done, 3 in_progress, 3 in_review, 1 blocked, 82 ready. Próximo passo: start autosync em background para auto-tracking contínuo.",
+    "navigationAudit": {
+      "auditor": "mvs_60b9c898c2904f35997cdb7777e64897 (general)",
+      "report": "C:\\Users\\Usuario\\.mavis\\agents\\general\\workspace\\relatorio-navegacao-viralata.md",
+      "verdict": "PASS com 11 polish (0 blocker, 4 major, 4 minor, 3 info)",
+      "mrSplit": {
+        "MR#1 (TASK-126)": "MAJOR-01 + MINOR-04 — zero risco de merge, ~5 linhas",
+        "MR#2 (TASK-127)": "MAJOR-02 — deletar 7 páginas órfãs (após sweep TASK-129)",
+        "MR#3 (TASK-128)": "MAJOR-03 + MAJOR-04 + MINOR-01/02/03 — HOLD até RISK-002"
+      }
+    },
+    "failAuditor": {
+      "verifier": "mvs_e0d16b97131d4b2db17fc81f82de5408 (verifier)",
+      "verdict": "FAIL (msg 73)",
+      "scope": "DESCONHECIDO — escopo diferente do navigation audit",
+      "reportPath": "DESCONHECIDO — pedido completo em msg 74, ainda sem resposta",
+      "producer": "mvs_d7cbfb611ba74580b72d628c5f649833 (coder) — trabalhando em fixes A/B/C, sem update",
+      "impact": "TODOS os 3 MRs HOLD até esse FAIL ser resolvido. RISK-002 pode precisar rework se auditor falar 'no go' pra merge."
+    },
     "contribuicaoCoder": {
       "agent": "agent-1cc44353fc6b (Viralata Coder)",
       "sessionId": "mvs_f1e04f28717d42cdba05e221b7b4b6f3",
@@ -3802,7 +4241,7 @@
       "uso": "ambos escrevem em SCRUM_TASKS.json; mavis communication send para coordenar"
     },
     "dropped": 1,
-    "subdivided": "2026-07-11 14:33 — usuário pediu tasks granulares para acompanhar evolução. 58 novas tasks (TASK-059 a TASK-116), cada uma em bloco independente.",
+    "subdivided": "2026-07-11 14:33 — usuário pediu tasks granulares para acompanhar evolução. 58 novas tasks (TASK-059 a TASK-116), cada uma em bloco independente. 2026-07-11 19:45 — adicionadas TASK-126 a TASK-130 (MR#1/2/3 + sweep + FAIL pendente).",
     "subdivisionByCategory": {
       "Legal Docs por documento (TASK-059 a TASK-070)": 12,
       "Legal Docs setup (TASK-071 a TASK-074)": 4,
@@ -3813,8 +4252,54 @@
       "Defensive coding (TASK-099 a TASK-103)": 5,
       "Cookie banner (TASK-104 a TASK-107)": 4,
       "Continuar pente fino (TASK-108 a TASK-112)": 5,
-      "Ativar flag (TASK-113 a TASK-116)": 4
+      "Ativar flag (TASK-113 a TASK-116)": 4,
+      "Navigation audit (TASK-126 a TASK-130)": 5
     },
-    "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela)."
+    "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
+    "lastIngest": {
+      "ts": "2026-07-11T23:30:49.325Z",
+      "taskHits": 3,
+      "riskHits": 0,
+      "mrHits": 0,
+      "commitsScanned": 7
+    },
+    "semanticEvents": [
+      {
+        "ts": "2026-07-11T22:54:43.713Z",
+        "eventKey": "semantic-73",
+        "kind": "verifier-fail",
+        "messageId": 73,
+        "refs": {
+          "tasks": [],
+          "risks": [],
+          "mrs": []
+        },
+        "body": "# VEREDITO: FAIL"
+      },
+      {
+        "ts": "2026-07-11T22:54:43.713Z",
+        "eventKey": "semantic-72",
+        "kind": "report-delivered",
+        "messageId": 72,
+        "refs": {
+          "tasks": [],
+          "risks": [],
+          "mrs": []
+        },
+        "body": "Relatório fechado. Path: C:\\Users\\Usuario\\.mavis\\agents\\general\\workspace\\rel..."
+      }
+    ],
+    "activeWorktreesBehindMain": 1,
+    "lastStaleFix": {
+      "ts": "2026-07-11T23:19:13Z",
+      "tasks": [
+        "TASK-003",
+        "TASK-010",
+        "TASK-031",
+        "TASK-130"
+      ],
+      "reason": "correções stale detectadas em scratchpad-wt17ff480a-correction.md",
+      "source": "mvs_311d078987d0414a90f57ef28b789b18 (Mavis)"
+    }
   }
 }
