@@ -52,6 +52,14 @@ export const AUDIT_ACTION_LABELS = {
   community_deleted: 'Comunidade excluída',
   community_post_created: 'Post publicado na comunidade',
   community_post_deleted: 'Post removido da comunidade',
+  // ─── Fase 21: Platform health (admin master) ─────────────────────
+  platform_admin_promoted: 'Platform admin promovido',
+  platform_admin_demoted: 'Platform admin rebaixado',
+  platform_alert_config_created: 'Configuração de alerta criada',
+  platform_alert_config_updated: 'Configuração de alerta atualizada',
+  platform_alert_config_deleted: 'Configuração de alerta removida',
+  platform_alert_triggered: 'Alerta da plataforma disparado',
+  platform_billing_summary_updated: 'Resumo de billing da plataforma atualizado',
 };
 
 export async function createAuditLog({

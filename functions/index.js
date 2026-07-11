@@ -159,3 +159,45 @@ exports.googleFormsWebhook = onRequest(
 // detalhes da implementação.
 const { materializePostAdoptionTasks } = require('./postAdoptionCron');
 exports.materializePostAdoptionTasks = materializePostAdoptionTasks;
+
+// ─── Fase 21: Painel de Saúde da Plataforma ─────────────────────────────
+//
+// Duas Cloud Functions:
+//
+// 1. `snapshotPlatformHealth` (scheduled, every 1h): coleta métricas
+//    materializadas em `platform_health_snapshots/`.
+//
+// 2. `onPlatformAlertEvent` (firestore trigger): quando um doc novo
+//    aparece em `platform_alert_events/`, dispara Slack/Email conforme
+//    as configs ativas em `platform_alert_config/`.
+//
+// Os handlers de lógica são testáveis em isolation (ver
+// platformHealthCron.test.js e adminAlerts.test.js). Aqui só fazemos
+// a amarração com os triggers do Firebase.
+const { onSchedule } = require('firebase-functions/v2/scheduler');
+const { onDocumentCreated: onDocCreated } = require('firebase-functions/v2/firestore');
+const { runSnapshotPlatformHealth, setLogger: setHealthLogger } = require('./platformHealthCron');
+const { runOnPlatformAlertEvent, setLogger: setAlertsLogger } = require('./adminAlerts');
+
+// Injeta o logger real do Cloud Functions nos módulos de lógica.
+setHealthLogger(logger);
+setAlertsLogger(logger);
+
+exports.snapshotPlatformHealth = onSchedule(
+  {
+    schedule: 'every 1 hours',
+    timeZone: 'UTC',
+    region: 'southamerica-east1',
+    maxInstances: 1,
+  },
+  async () => {
+    await runSnapshotPlatformHealth();
+  },
+);
+
+exports.onPlatformAlertEvent = onDocCreated(
+  { document: 'platform_alert_events/{eventId}', region: 'southamerica-east1' },
+  async (event) => {
+    await runOnPlatformAlertEvent(event);
+  },
+);

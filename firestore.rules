@@ -552,6 +552,50 @@ service cloud.firestore {
       allow write: if isPlatformAdmin();
     }
 
+    // ─── Fase 21: Painel de Saúde da Plataforma (admin master) ─────────────
+    // Coleções de observabilidade/admin. Apenas platform_admin lê; escrita
+    // é via Cloud Function (admin SDK) para os snapshots, e via admin
+    // client para billing/alert_config.
+    match /platform_health_snapshots/{snapshotId} {
+      allow read: if isAuth() && isPlatformAdmin();
+      allow write: if false; // só Cloud Function (platformHealthCron)
+    }
+
+    match /platform_alert_config/{configId} {
+      allow read: if isAuth() && isPlatformAdmin();
+      allow create, update, delete: if isAuth() && isPlatformAdmin();
+    }
+
+    match /platform_alert_events/{eventId} {
+      allow read: if isAuth() && isPlatformAdmin();
+      // Escrita só pela Cloud Function (adminAlerts) e pela trigger
+      // server-side via adminAlertsService.evaluateAlerts.
+      allow write: if false;
+    }
+
+    match /platform_billing/{periodId} {
+      allow read: if isAuth() && isPlatformAdmin();
+      allow create, update: if isAuth() && isPlatformAdmin();
+      allow delete: if false; // imutável
+    }
+
+    // function_invocations + slow_queries: instrumentação interna.
+    // Apenas Cloud Function escreve (admin SDK); platform_admin lê.
+    match /function_invocations/{invocationId} {
+      allow read: if isAuth() && isPlatformAdmin();
+      allow write: if false;
+    }
+
+    match /slow_queries/{queryId} {
+      allow read: if isAuth() && isPlatformAdmin();
+      allow write: if false;
+    }
+
+    match /deploys/{deployId} {
+      allow read: if isAuth() && isPlatformAdmin();
+      allow write: if false; // Cloud Function / CI only
+    }
+
     // ─── Comunidades (entidade editorial/global) ───────────────────────────────
     match /communities/{communityId} {
       allow read: if true;

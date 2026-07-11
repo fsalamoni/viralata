@@ -1,7 +1,6 @@
 # Sistema de Gestão do Abrigo — Roadmap Detalhado
 
-> **Status**: Fases 0–13 concluídas + Fase 19 (Termos e Políticas) concluída — **14/22 fases concluídas, 8/22 pendentes** (segundo o branch `feat/shelter-19-legal-terms`).
-> **Versão**: 0.3 — 2026-07-11 (atualizado pós-Fase 19)
+> **Status**: Fases 0–8 concluídas (9/22). Próximas: Fase 9 (Medicamentos), Fase 10 (Galeria).
 > **Versão**: 0.2 — 2026-07-10 (atualizado pós-Fase 8)
 > **Owner**: Mavis (sub-agente técnico do repo `fsalamoni/viralata`)
 > **Macro-blocos**: 5 (A fundação, B núcleo do animal, C operação, D busca, E legal/segurança/admin)
@@ -61,7 +60,8 @@ Cada módulo é **isolado e autônomo**: falha em um módulo não derruba os dem
 └──────────────────────────────────────────────────────────┘
 ```
 
-**14/22 fases concluídas, 8/22 pendentes** (após merge da Fase 19).
+**14/22 fases concluídas, 8/22 pendentes.**
+<!-- Atualizado em 2026-07-11 — Fase 21 entregue: Painel de Saúde da Plataforma (admin master). -->
 ```
 
 ## 4. Dependências entre fases
@@ -762,53 +762,39 @@ Fase 0 (preparação)
 - +15 testes
 - smoke test em produção com flag OFF
 
-### Fase 18 — Termos e Políticas completos (Legal) · flag `SHELTER_LEGAL_TERMS` (GRANDE - textual) ✅
-
-**Status**: concluída em 2026-07-11 (PR da Fase 19 — worktree `feat/shelter-19-legal-terms`).
+### Fase 18 — Termos e Políticas completos (Legal) · flag `SHELTER_LEGAL_TERMS` (GRANDE - textual)
 
 **Objetivo**: textos legais completos e sistema de aceite.
 
-**Páginas atualizadas/criadas** (11 total):
-- `src/pages/Terms.jsx` (expandido)
-- `src/pages/PrivacyPolicy.jsx` (expandido)
-- `src/pages/Legislation.jsx` (expandido)
+**Páginas a atualizar/criar**:
+- `src/pages/Terms.jsx` (expandir)
+- `src/pages/PrivacyPolicy.jsx` (expandir)
+- `src/pages/Legislation.jsx` (expandir)
+- `src/pages/Liability.jsx` (novo — isenção do criador)
 - `src/pages/AdopterTerms.jsx` (novo)
-- `src/pages/ShelterTerms.jsx` (novo, com DPA completo)
+- `src/pages/ShelterTerms.jsx` (novo)
 - `src/pages/VolunteerTerms.jsx` (novo)
 - `src/pages/FosterTerms.jsx` (novo)
 - `src/pages/DonorTerms.jsx` (novo)
-- `src/pages/CodeOfConduct.jsx` (novo)
-- `src/pages/CookiePolicy.jsx` (novo)
 
-**Conteúdo entregue**:
-- **LGPD completa** (Lei 13.709/2018): finalidade, base legal por tratamento (Art. 7º), direitos do titular (Art. 18), retenção, DPO, breach notification (Art. 48), transferência internacional (Art. 33)
-- **Lei 14.063/2020**: assinatura eletrônica avançada com hash SHA-256 + timestamp + IP + liveness
-- **Marco Civil** (Lei 12.965/2014): retenção de logs 6m
-- **CFMV 1.465/2022**: disclaimers de telemedicina veterinária
-- **Lei 9.605/98 + Lei 14.064/2020**: penalidades de maus-tratos
-- **Art. 936 CC**: responsabilidade do dono por ato do animal
-- **ITCMD**: disclaimer por estado (SP, RJ, MG, RS)
-- **Lei 9.608/1998**: voluntariado
-- **Código Civil Arts. 538-564**: doação
-- **Isenção total** do criador/desenvolvedor (Limitação §12 dos Termos)
+**Conteúdo**:
+- **LGPD completa**: finalidade, base legal, direitos do titular, retenção, DPO
+- **Legislação animal**: Lei 9605/98 art. 32, Decreto 24.645/34, leis municipais
+- **Código Civil**: guarda, responsabilidade civil
+- **Código Penal**: maus-tratos
+- **Isenção total** do criador/desenvolvedor
 - **Autorização expressa** para uso de imagem, dados, chat, adoções
 - **Sigilo de dados** salvo expressa autorização
-- **DPO/Encarregado**: canal permanente (`dpo@viralata.app`)
 
 **Sistema de aceite**:
-- Subcoleção `users/{userId}/terms_acceptances/{acceptanceId}` (imutável — `update: false`)
-- Schema: `terms_type`, `terms_version` (YYYY-MM-DD), `document_hash` (sha256:...), `signature_text`, `accepted_at`, `ip_address`, `user_agent`, `liveness_verified`, `legal_basis`
-- Modal `TermsAcceptanceModal` (3 checkboxes padrão: Li / Compreendo / Aceito)
-- Componente `TermsDocument` (wrapper para renderizar doc + checkboxes + assinatura)
-- Hook `useTermsAcceptance` (queries + mutations)
-- Service `termsAcceptanceService` (8 funções: recordAcceptance, getAcceptances, getCurrentAcceptances, hasAccepted, getPendingTypes, recordBulkAcceptances, deleteAcceptance, getCurrentTermsVersion)
-- Bloqueio de features via `usePendingTerms` no modal de onboarding (próxima fase)
-- Firestore rules: `allow create: if isOwner(userId)`, `allow update: if false` (imutável), `allow delete: if isPlatformAdmin()`
+- Tabela `terms_acceptances/{userId}` com histórico (versão, data, IP, hash)
+- Modal de aceite em momentos-chave (onboarding, adoção, chat, abrigo)
+- Bloqueio de features até aceite
 
 **Validação**:
-- typecheck/lint/build OK (`✓ built in 42.55s`)
-- 666 testes passando (38 arquivos) — 53 testes novos: 33 domain + 20 service
-- Smoke test em produção com flag OFF (default)
+- typecheck/lint/build OK
+- +10 testes
+- smoke test em produção com flag OFF
 
 ### Fase 19 — Segurança Avançada · flag `SHELTER_SECURITY_HARDENING`
 
@@ -830,24 +816,43 @@ Fase 0 (preparação)
 
 ### Fase 20 — Painel de Saúde da Plataforma (Admin Master) · flag `SHELTER_PLATFORM_HEALTH`
 
-**Objetivo**: dashboard de saúde da plataforma.
+**Objetivo**: dashboard de saúde da plataforma. ✅ **Entregue** em 2026-07-11.
 
-**Nova aba no `/admin`**:
-- **Saúde**: latência, error rate, deploys, uptime
-- **Custos**: Firebase billing API, breakdown por serviço, projeção
-- **Capacidade**: tamanho das collections, queries lentas, índices faltando
-- **Movimentação**: audit log centralizado de TUDO
-- **Gerenciamento de admins**: delegar admin a outros usuários
-- **Alertas**: configurar Slack/Email pra billing spike, error rate
+**Nova aba no `/admin/saude`**:
+- **Saúde**: latência Firestore (p50/p99), error rate, active users 24h,
+  signups 24h, function invocations 24h, errors 24h, uptime 30d, último deploy.
+- **Custos**: billing manual (reads/writes/deletes/storage/bandwidth/custo estimado)
+  por período. Roadmap: integração com Firebase Billing API.
+- **Capacidade**: top-N collections com `count()`, queries lentas registradas
+  (heurística MVP), fingerprints de queries repetidas (índice faltando).
+- **Movimentação**: reusa `AuditLogTable` (Fase 0).
+
+**Nova aba em `/admin/admins`**:
+- Lista `platform_admins` com promote/demote.
+- Apenas o **dono fixo** (`fsalamoni@gmail.com`) pode delegar.
+- Self-demote **bloqueado** (regra de segurança).
+- Audit log: `platform_admin_promoted` / `platform_admin_demoted`.
+
+**Nova aba em `/admin/alertas`**:
+- CRUD de `platform_alert_config` (type/channels/threshold/destination).
+- Tipos: error_rate, latency_p99, billing, uptime, slow_query.
+- Canais: Slack (webhook), Email (stub — SendGrid no roadmap).
+- Histórico de eventos em `platform_alert_events`.
 
 **Cloud Functions**:
-- Scheduled que busca billing data
-- Alertas via SendGrid/email
+- `snapshotPlatformHealth` (scheduled, every 1h) — materializa
+  `platform_health_snapshots/{timestamp}` e avalia thresholds.
+- `onPlatformAlertEvent` (firestore trigger) — dispatch Slack/Email.
+- Logger injetado via `setLogger()` para testabilidade sem
+  `firebase-functions` instalado.
 
 **Validação**:
 - typecheck/lint/build OK
-- +10 testes
-- smoke test em produção com flag OFF
+- +59 testes (37 admin services + 24 functions) — todos verdes
+- +3 firestore rules (`platform_health_snapshots`, `platform_alert_config`,
+  `platform_alert_events`, `platform_billing`, `function_invocations`,
+  `slow_queries`, `deploys`)
+- smoke test em produção com flag OFF (default)
 
 ### Fase 21 — Migração final + Cutover · flag `SHELTER_CUTOVER`
 
