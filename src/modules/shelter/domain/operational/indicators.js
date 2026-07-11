@@ -390,7 +390,7 @@ export function computeVolunteerSummary(participations, start, end, nMonths = 12
   return volunteerSummarySchema.parse({
     type: 'volunteer_summary',
     totalVolunteers: uniqueVolunteers,
-    activeVolunteers: uniqueVolunteers, // TODO: filtrar por "último 90 dias"
+    activeVolunteers: _countActiveVolunteers(participations, 90),
     totalParticipations,
     totalTransportsIda,
     totalTransportsVolta,
@@ -399,6 +399,24 @@ export function computeVolunteerSummary(participations, start, end, nMonths = 12
     avgParticipationsPerVolunteer,
     byMonth,
   });
+}
+
+/**
+ * Conta voluntários com pelo menos 1 participação nos últimos N dias.
+ * @param {Array<object>} participations
+ * @param {number} [days=90]
+ * @returns {number}
+ */
+function _countActiveVolunteers(participations, days = 90) {
+  if (!Array.isArray(participations) || participations.length === 0) return 0;
+  const cutoff = Date.now() - days * 24 * 60 * 60 * 1000;
+  const uids = new Set();
+  for (const p of participations) {
+    const d = p.created_at?.toDate ? p.created_at.toDate() : (p.created_at ? new Date(p.created_at) : null);
+    if (!d) continue;
+    if (d.getTime() >= cutoff && p.volunteer_uid) uids.add(p.volunteer_uid);
+  }
+  return uids.size;
 }
 
 /**

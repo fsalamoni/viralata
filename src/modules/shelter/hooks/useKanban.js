@@ -185,5 +185,12 @@ export function useCardMutations(clubId, boardId) {
     },
   });
 
-  return { createCard: create, updateCard: update, moveCard: move, deleteCard: del, toggleChecklistItem: toggleChecklist };
+  const addChecklist = useMutation({
+    mutationFn: ({ cardId, text }) => kanbanService.addChecklistItem(clubId, cardId, text),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: kanbanKeys.cards(clubId, boardId) });
+    },
+  });
+
+  return { createCard: create, updateCard: update, moveCard: move, deleteCard: del, toggleChecklistItem: toggleChecklist, addChecklistItem: addChecklist };
 }

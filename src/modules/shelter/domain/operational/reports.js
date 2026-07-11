@@ -513,8 +513,13 @@ export function computeBalanceReport(pets, apps, posts, nMonths = 12, referenceD
       return d >= monthStart && d <= monthEnd;
     }).length;
 
-    // Transfers out: foster ended com reason=transferred
-    const transfers_out = 0; // TODO: calcular quando houver campo
+    // Transfers out: foster ended com reason=transferred no mês
+    const transfers_out = posts.filter((post) => {
+      if (post.status !== 'returned') return false;
+      if (post.return_reason !== 'transferred') return false;
+      const d = post.returned_at ? new Date(post.returned_at) : null;
+      return d && d >= monthStart && d <= monthEnd;
+    }).length;
 
     const balance = intake - adoptions - returns - deaths - transfers_out;
 

@@ -126,14 +126,17 @@ export async function createClub(creator, profile, data) {
     updated_at: serverTimestamp(),
   };
 
-  await setDoc(doc(db, COL.clubs, id), payload);
-  try {
-    await setDoc(doc(db, COL.members, memberDocId(id, creator.uid)), memberPayload(id, creator, profile, CLUB_ROLE.ADMIN));
-  } catch (err) {
-    // Rollback: evita clube órfão sem administrador.
-    await deleteDoc(doc(db, COL.clubs, id)).catch(() => {});
-    throw err;
-  }
+  // Cria o doc do clube e o membership do criador em uma única
+  // operação atômica (writeBatch). Sem isso, se o segundo setDoc
+  // falhasse, ficaríamos com um clube órfão sem admin — o rollback
+  // via deleteDoc é uma mitigação fraca (perde audit log, pode
+  // falhar, etc).
+  const clubRef = doc(db, COL.clubs, id);
+  const memberRef = doc(db, COL.members, memberDocId(id, creator.uid));
+  const batch = writeBatch(db);
+  batch.set(clubRef, payload);
+  batch.set(memberRef, memberPayload(id, creator, profile, CLUB_ROLE.ADMIN));
+  await batch.commit();
 
   await createAuditLog({ action: 'club_created', actor: creator, details: { club_id: id, name: payload.name } });
   logger.info('club_created', { id });
@@ -266,9 +269,15 @@ export async function joinClubByCode(code, user, profile) {
   const existing = await getMembership(club.id, user.uid);
   if (existing) return club;
 
-  await setDoc(doc(db, COL.members, memberDocId(club.id, user.uid)), memberPayload(club.id, user, profile, CLUB_ROLE.MEMBER));
-  // Atualização cosmética do contador (best-effort).
-  await updateDoc(doc(db, COL.clubs, club.id), { member_count: increment(1), updated_at: serverTimestamp() }).catch(() => {});
+  // Operação atômica: cria o membership E incrementa o counter em um
+  // único commit. Sem isso, se o contador falhar, ficamos com
+  // member_count desatualizado (drift permanente).
+  const memberRef = doc(db, COL.members, memberDocId(club.id, user.uid));
+  const clubRef = doc(db, COL.clubs, club.id);
+  const batch = writeBatch(db);
+  batch.set(memberRef, memberPayload(club.id, user, profile, CLUB_ROLE.MEMBER));
+  batch.update(clubRef, { member_count: increment(1), updated_at: serverTimestamp() });
+  await batch.commit();
   await createAuditLog({ action: 'club_member_joined', actor: user, details: { club_id: club.id } });
   return club;
 }
@@ -283,8 +292,14 @@ export async function leaveClub(clubId, user, profile) {
     throw new Error('Você é o único administrador. Promova outro membro a administrador antes de sair.');
   }
 
-  await deleteDoc(doc(db, COL.members, memberDocId(clubId, user.uid)));
-  await updateDoc(doc(db, COL.clubs, clubId), { member_count: increment(-1), updated_at: serverTimestamp() }).catch(() => {});
+  // Operação atômica: deleta o membership E decrementa o counter.
+  // Sem isso, o contador poderia ficar dessincronizado.
+  const memberRef = doc(db, COL.members, memberDocId(clubId, user.uid));
+  const clubRef = doc(db, COL.clubs, clubId);
+  const batch = writeBatch(db);
+  batch.delete(memberRef);
+  batch.update(clubRef, { member_count: increment(-1), updated_at: serverTimestamp() });
+  await batch.commit();
   await createAuditLog({ action: 'club_member_left', actor: user, details: { club_id: clubId } });
 }
 

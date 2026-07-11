@@ -11,7 +11,7 @@ import {
 } from '../domain/operational/kanban';
 
 export function KanbanCardModal({ card, clubId, boardId, onClose }) {
-  const { updateCard, deleteCard, toggleChecklistItem } = useCardMutations(clubId, boardId);
+  const { updateCard, deleteCard, toggleChecklistItem, addChecklistItem } = useCardMutations(clubId, boardId);
   const [editing, setEditing] = useState(false);
   const [title, setTitle] = useState(card.title);
   const [description, setDescription] = useState(card.description || '');
@@ -27,9 +27,15 @@ export function KanbanCardModal({ card, clubId, boardId, onClose }) {
   };
 
   const handleAddChecklist = async () => {
-    if (!newChecklistItem.trim()) return;
-    // TODO: usar addChecklistItem mutation — adiciona ao array local
-    setNewChecklistItem('');
+    const text = newChecklistItem.trim();
+    if (!text) return;
+    try {
+      await addChecklistItem.mutateAsync({ cardId: card.id, text });
+      setNewChecklistItem('');
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('KanbanCardModal.handleAddChecklist', err);
+    }
   };
 
   const handleDelete = async () => {

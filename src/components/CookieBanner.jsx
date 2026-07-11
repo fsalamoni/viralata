@@ -101,18 +101,24 @@ export function CookieBanner() {
 
   // API helper para "Configurações > Privacidade" — exposto em
   // window para que outras UIs possam reabrir o banner.
-  if (typeof window !== 'undefined' && enabled) {
-    if (!window.__cookieConsentApi__) {
-      window.__cookieConsentApi__ = {
-        reopen: () => {
-          clearStoredConsent();
-          setVisible(true);
-        },
-        reset: clearStoredConsent,
-        getCurrent: readStoredConsent,
-      };
-    }
-  }
+  // Importante: a atribuição é feita em useEffect para não causar
+  // re-renders ou side-effects durante a fase de render do React.
+  useEffect(() => {
+    if (typeof window === 'undefined' || !enabled) return undefined;
+    if (window.__cookieConsentApi__) return undefined;
+    window.__cookieConsentApi__ = {
+      reopen: () => {
+        clearStoredConsent();
+        setVisible(true);
+      },
+      reset: clearStoredConsent,
+      getCurrent: readStoredConsent,
+    };
+    return () => {
+      // Só remove a API se ela ainda for a nossa referência.
+      if (window.__cookieConsentApi__) delete window.__cookieConsentApi__;
+    };
+  }, [enabled]);
 
   if (!enabled || !hydrated || !visible) return null;
 

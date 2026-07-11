@@ -313,6 +313,15 @@ async function _cascadeApproval(shelterClubId, approvedAppId, petId, actor, note
     where('status', 'in', ['applied', 'under_review']),
   ));
 
+  // 2. Carregar pet (se for pet de abrigo) ANTES do batch
+  //    para incluir a atualização de pet no mesmo commit atômico.
+  const petRef = doc(db, PETS_COLLECTION, petId);
+  const petSnap = await getDoc(petRef);
+  const pet = petSnap.exists() ? petSnap.data() : null;
+  const isShelterPet = pet
+    && pet.owner_type === 'organization'
+    && pet.owner_id === shelterClubId;
+
   const batch = writeBatch(db);
   const rejectedNote = 'Animal já adotado por outro adotante.';
   for (const d of pendentes.docs) {
@@ -325,23 +334,16 @@ async function _cascadeApproval(shelterClubId, approvedAppId, petId, actor, note
       updated_at: serverTimestamp(),
     });
   }
-  if (!pendentes.empty) {
-    await batch.commit();
+  if (isShelterPet) {
+    batch.update(petRef, {
+      status: 'adopted',
+      adopted_at: serverTimestamp(),
+      adopted_by_uid: currentApplicantUid(approvedAppId, pendentes), // best-effort
+      updated_at: serverTimestamp(),
+    });
   }
-
-  // 2. Marcar pet como adotado (se for pet de abrigo)
-  const petRef = doc(db, PETS_COLLECTION, petId);
-  const petSnap = await getDoc(petRef);
-  if (petSnap.exists()) {
-    const pet = petSnap.data();
-    if (pet.owner_type === 'organization' && pet.owner_id === shelterClubId) {
-      await updateDoc(petRef, {
-        status: 'adopted',
-        adopted_at: serverTimestamp(),
-        adopted_by_uid: currentApplicantUid(approvedAppId, pendentes), // best-effort
-        updated_at: serverTimestamp(),
-      });
-    }
+  if (!pendentes.empty || isShelterPet) {
+    await batch.commit();
   }
 
   // 3. Evento na timeline do pet

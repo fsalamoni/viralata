@@ -109,6 +109,27 @@ async function dispatchSlack(alertEvent, configs) {
     .map((c) => c.destination && c.destination.slack_webhook_url)
     .filter(Boolean)[0];
   if (!hook) return { channel: 'slack', ok: false, reason: 'no_webhook' };
+
+  // SSRF guard: a URL deve apontar para um host autorizado.
+  // Sem essa checagem, um config malicioso poderia redirecionar o
+  // POST para um endpoint interno (metadata service, localhost, etc).
+  let parsed;
+  try {
+    parsed = new URL(hook);
+  } catch {
+    return { channel: 'slack', ok: false, reason: 'invalid_url' };
+  }
+  if (parsed.protocol !== 'https:') {
+    return { channel: 'slack', ok: false, reason: 'insecure_protocol' };
+  }
+  const allowedHosts = (process.env.SLACK_ALLOWED_HOSTS || 'hooks.slack.com')
+    .split(',')
+    .map((h) => h.trim().toLowerCase())
+    .filter(Boolean);
+  if (!allowedHosts.includes(parsed.hostname.toLowerCase())) {
+    return { channel: 'slack', ok: false, reason: 'host_not_allowed' };
+  }
+
   const payload = buildSlackPayload(alertEvent);
   try {
     if (process.env.SLACK_DRY_RUN === '1' || process.env.NODE_ENV === 'test') {

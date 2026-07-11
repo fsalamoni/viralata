@@ -24,14 +24,21 @@ const mockWhere = vi.fn((...args) => ({ _w: true, _args: args }));
 const mockOrderBy = vi.fn((...args) => ({ _o: true, _args: args }));
 const mockLimit = vi.fn((n) => ({ _limit: n }));
 const mockServerTimestamp = vi.fn(() => ({ _isServerTimestamp: true }));
+const _mockBatches = [];
 const mockWriteBatch = vi.fn(() => {
   const ops = [];
-  return {
+  const batch = {
     update: (ref, data) => ops.push({ type: 'update', ref, data }),
     commit: vi.fn().mockResolvedValue(null),
     _ops: ops,
   };
+  _mockBatches.push(batch);
+  return batch;
 });
+const mockBatchCommit = {
+  reset: () => { _mockBatches.length = 0; },
+  count: () => _mockBatches.filter((b) => b.commit.mock.calls.length > 0).length,
+};
 const mockDb = { _isDb: true };
 
 vi.mock('firebase/firestore', () => ({
@@ -85,6 +92,8 @@ beforeEach(() => {
   mockAddDoc.mockReset();
   mockUpdateDoc.mockReset();
   mockCreateAuditLog.mockReset().mockResolvedValue(null);
+  mockWriteBatch.mockClear();
+  mockBatchCommit.reset();
 });
 
 function appSnap(data, id = 'a1') {
@@ -307,9 +316,12 @@ describe('decideApplication', () => {
       decision_notes: 'Aprovado, lembro do adotante',
     }, { uid: 'u1' });
     expect(r.status).toBe('approved');
-    // updateDoc é chamado 2x: 1) app principal, 2) pet (cascade)
-    // As outras pendentes vão via writeBatch, não updateDoc direto.
-    expect(mockUpdateDoc).toHaveBeenCalledTimes(2);
+    // Após refactor: app + pet ficam no mesmo writeBatch atômico
+    // (antes era app via updateDoc + pet via updateDoc separado).
+    // Garantimos: 1 updateDoc (app principal) + 1 batch.commit() cobrindo
+    // tanto a rejeição das outras pendentes quanto o pet.status='adopted'.
+    expect(mockUpdateDoc).toHaveBeenCalledTimes(1);
+    expect(mockBatchCommit.count()).toBe(1);
   });
 });
 
