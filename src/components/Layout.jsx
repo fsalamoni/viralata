@@ -8,6 +8,7 @@ import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import NotificationsMenu from '@/modules/notifications/components/NotificationsMenu';
 import { Button } from '@/components/ui/button';
 import SwUpdateBanner from '@/components/SwUpdateBanner';
+import LegalFooter from '@/components/LegalFooter';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
@@ -258,6 +259,13 @@ export default function Layout({ children, currentPageName }) {
           })}
         </nav>
       )}
+
+      {/* Rodapé com links legais (TASK-051). Gated por
+          SHELTER_LEGAL_TERMS_V1 — quando OFF, o componente
+          se oculta sozinho. Renderizado depois da bottom tab
+          bar (mobile) para garantir ordem visual
+          [tab bar] [conteúdo] [footer]. */}
+      <LegalFooter />
     </div>
   );
 }

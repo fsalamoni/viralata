@@ -26,3 +26,7 @@ functions/node_modules
 =
 .mavis
 .mavis
+
+# Temporary file extraction / scratch spaces
+.tmp-legal-docs/
+.tmp-*

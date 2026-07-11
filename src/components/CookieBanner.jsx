@@ -154,13 +154,27 @@ export function CookieBanner() {
               (LGPD).
             </p>
           </div>
-          <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
+          <div className="flex flex-col gap-2 sm:flex-row sm:justify-end sm:items-center">
+            <Button
+              asChild
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="w-full sm:w-auto"
+              data-testid="cookie-configure-link"
+            >
+              {/* Link para a página /legal/cookies onde o usuário
+                  pode ler os detalhes de cada categoria e
+                  personalizar o consentimento por categoria. */}
+              <Link to="/legal/cookies">Configurar</Link>
+            </Button>
             <Button
               type="button"
               variant="outline"
               size="sm"
               onClick={handleReject}
               className="w-full sm:w-auto"
+              data-testid="cookie-reject-btn"
             >
               Recusar não essenciais
             </Button>
@@ -169,8 +183,9 @@ export function CookieBanner() {
               size="sm"
               onClick={handleAccept}
               className="w-full sm:w-auto"
+              data-testid="cookie-accept-btn"
             >
-              Aceitar
+              Aceitar Todos
             </Button>
           </div>
         </CardContent>
