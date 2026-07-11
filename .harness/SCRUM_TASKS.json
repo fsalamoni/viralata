@@ -1,0 +1,3820 @@
+{
+  "$schema": "./SCRUM_TASKS.schema.md",
+  "version": "1.0.0",
+  "generatedAt": "2026-07-11T17:47:05.173Z",
+  "project": "viralata",
+  "currentSprint": {
+    "id": "SPRINT-2026-W28",
+    "label": "Sprint 2026-W28 (consolidação pós-22 fases + cutover)",
+    "startedAt": "2026-07-11",
+    "endsAt": "2026-07-18",
+    "goal": "Estabilizar produção pós-deploy das 22 fases, fechar 3 worktrees em paralelo, decidir backend da Fase 18, priorizar débitos técnicos"
+  },
+  "activeWorktrees": [
+    {
+      "id": "wt-17ff480a",
+      "branch": "wt/17ff480a",
+      "head": "d0bb369efb7b9546e954dde47e5f40596d01ca93",
+      "headTitle": "feat(community): paridade visual+estrutural com a ONG, gated por flag",
+      "path": "D:/viralata/.worktrees/wt-17ff480a",
+      "status": "in-sync",
+      "commitsAhead": 0,
+      "primarySession": "mvs_44f2762343f94f28b506f2f4c8c12eae",
+      "sessionTitle": "Sync local repo with web",
+      "focus": [
+        "Paridade visual comunidade/ONG (COMMUNITY_NGO_PARITY)",
+        "PageHero flagável (PAGE_HERO_ENABLED)",
+        "Layout padronizado autenticado (STANDARDIZED_PAGE_LAYOUT)",
+        "Padronização de padding/spacing de cards admin"
+      ]
+    },
+    {
+      "id": "wt-e79e15ca",
+      "branch": "wt/e79e15ca",
+      "head": "5d263c390f4d1af415c31eef3bfa6b816284b173",
+      "headTitle": "docs(shelter): TASK-076 — DELIVERABLE.md do fix wt/e79e15ca",
+      "path": "D:/viralata/.worktrees/wt-e79e15ca",
+      "status": "ahead-of-main",
+      "commitsAhead": 4,
+      "primarySession": null,
+      "sessionTitle": null,
+      "focus": []
+    },
+    {
+      "id": "wt-legal-v2",
+      "branch": "feat/legal-docs-v2",
+      "head": "6bab5311b08f484e1f65bdcd9886fd3ad0dc6aa0",
+      "headTitle": "fix(org-panel): corrigir TypeError G is not a function + index community_events",
+      "path": "D:/viralata/.worktrees/wt-legal-v2",
+      "status": "ahead-of-main",
+      "commitsAhead": 1,
+      "primarySession": "mvs_311d078987d0414a90f57ef28b789b18",
+      "sessionTitle": "Legal docs v2 + bug fix org panel + varredura completa",
+      "focus": [
+        "Substituir textos legais v2 (Viralata_Documentos_Legais_Completos_v2.zip)",
+        "Adicionar página termo-lar-temporario + termo-adesao-abrigos-ong",
+        "Adicionar checkboxes de aceite no cadastro (termos, privacidade, conduta)",
+        "Implementar audit_log com IP + timestamp + version + user_agent",
+        "Corrigir TypeError OrganizationAdminPanel (algo deu errado)",
+        "Adicionar índice community_events composite (community_id + starts_at)",
+        "Banner cookies + links footer p/avisos-legais, legislacao-animal, cookies"
+      ]
+    }
+  ],
+  "activeSessions": [
+    {
+      "id": "mvs_311d078987d0414a90f57ef28b789b18",
+      "agentName": "mavis",
+      "title": "Legal docs v2 + bug fix org panel + varredura completa",
+      "status": "started",
+      "workspace": "D:\\viralata\\.worktrees\\wt-e79e15ca",
+      "branch": "wt/e79e15ca",
+      "lastActiveAt": "2026-07-11T17:47:05.171Z",
+      "deliverable": "wt-e79e15ca @ a66e030 (1 commit ahead of main c0d2ffd). Pacote a66e030: TASK-056 (OrgAdminPanel TypeError), TASK-057 (community_events index), TASK-058 (5 páginas legais v2), TASK-049 (Onboarding 3 checkboxes), TASK-050 (auditService 8 actions), TASK-051 (LegalFooter 5 links). Minhas adições: TASK-068 (safeTabs), TASK-069 (TabErrorBoundary em 10 tabs), TASK-070 (auditoria), TASK-071 (test mock corrigido), TASK-072 (lint/typecheck/build OK). Falta: TASK-075 deploy índice, TASK-076 DELIVERABLE.md, TASK-077 commit + push."
+    },
+    {
+      "id": "mvs_44f2762343f94f28b506f2f4c8c12eae",
+      "agentName": "mavis",
+      "title": "Sync local repo with web",
+      "status": "finished",
+      "workspace": "D:\\viralata\\.worktrees\\wt-17ff480a",
+      "branch": "wt/17ff480a",
+      "lastActiveAt": "2026-07-09"
+    },
+    {
+      "id": "mvs_53fc6b86ccf441ccb3d7a90d497eb73f",
+      "agentName": "mavis",
+      "title": "main",
+      "status": "finished",
+      "workspace": "C:\\Users\\Usuario\\.mavis\\agents\\mavis\\workspace",
+      "branch": null,
+      "lastActiveAt": "2026-07-09"
+    },
+    {
+      "id": "mvs_f1e04f28717d42cdba05e221b7b4b6f3",
+      "agentName": "agent-1cc44353fc6b",
+      "title": "Viralata Coder (este agente)",
+      "status": "started",
+      "workspace": "D:\\viralata",
+      "branch": "main",
+      "lastActiveAt": "2026-07-11T14:21:50-03:00"
+    }
+  ],
+  "columns": [
+    "backlog",
+    "ready",
+    "in_progress",
+    "in_review",
+    "blocked",
+    "done",
+    "dropped"
+  ],
+  "priorities": [
+    "critical",
+    "high",
+    "medium",
+    "low"
+  ],
+  "types": [
+    "feature",
+    "bug",
+    "refactor",
+    "docs",
+    "security",
+    "infra",
+    "debt",
+    "decision",
+    "chore"
+  ],
+  "categories": [
+    "core",
+    "shelter",
+    "pets",
+    "orgs",
+    "community",
+    "admin",
+    "security",
+    "infra",
+    "design",
+    "kanban",
+    "lgpd",
+    "legal",
+    "docs",
+    "ci",
+    "test",
+    "perf",
+    "search"
+  ],
+  "tasks": [
+    {
+      "id": "TASK-001",
+      "title": "Decidir backend da Fase 18 (Smart Search)",
+      "type": "decision",
+      "category": "search",
+      "status": "done",
+      "priority": "critical",
+      "owner": "human",
+      "branch": null,
+      "flag": "SHELTER_SMART_SEARCH",
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "fase-18",
+        "infra",
+        "decidido",
+        "firestore-nativo"
+      ],
+      "blockedBy": [],
+      "evidence": "instrução direta do usuário em 2026-07-11 14:28",
+      "description": "DECIDIDO 2026-07-11: usar o Firebase (Firestore) do próprio projeto viralata — southamerica-east1. Sem serviço externo (Meilisearch/Typesense/Algolia descartados). Tradeoffs aceitos: sem typo-tolerance nativa, sem highlighting, queries limitadas a composite indexes. Compensar com: (a) índice composto bem desenhado para combinações frequentes, (b) Cloud Function de fuzzy match client-side para buscas livres, (c) busca facetada via where+orderBy+limit. Indexação por Cloud Function on Firestore write.",
+      "options": [
+        {
+          "id": "firestore",
+          "label": "Firestore nativo do projeto (escolhido)",
+          "cost": "Incluso (southamerica-east1)",
+          "tradeoffs": "Sem typo-tolerance nativa, sem highlighting, queries via composite indexes"
+        },
+        {
+          "id": "meili",
+          "label": "Meilisearch self-hosted (descartado)",
+          "cost": "$0/mês (Cloud Run free tier)",
+          "tradeoffs": "Excelente latência, exige manter instância extra"
+        },
+        {
+          "id": "typesense",
+          "label": "Typesense Cloud (descartado)",
+          "cost": "Free até 10k docs",
+          "tradeoffs": "Mais simples de operar, vendor lock-in leve"
+        },
+        {
+          "id": "algolia",
+          "label": "Algolia (descartado)",
+          "cost": "$0.50/1k requests",
+          "tradeoffs": "DX premium, mas custo escala"
+        }
+      ],
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11",
+      "resolvedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-002",
+      "title": "Merge worktree wt/e79e15ca (admin routes + audit fixes) para main",
+      "type": "feature",
+      "category": "admin",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "wt/e79e15ca",
+      "flag": null,
+      "worktree": ".worktrees/wt-e79e15ca",
+      "pr": null,
+      "tags": [
+        "merge",
+        "admin",
+        "audit",
+        "writeBatch",
+        "cherry-pick",
+        "deploy-ok"
+      ],
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-005",
+        "TASK-006",
+        "TASK-009",
+        "TASK-031",
+        "TASK-041",
+        "TASK-042"
+      ],
+      "description": "MERGED via cherry-pick. Commit 838451e (wt/e79e15ca) → c0d2ffd (main). Pushed to origin/main. CI run #220 success. Deploy OK em viralata.web.app. Conteúdo: 4 admin routes registradas no App.jsx (PlatformHealth, SecurityAlerts, AlertConfigs, AdminUserManagement), página /public-debug sem auth, ErrorBoundary verboso, fix import Kanban, props shelter tabs, 7 bugs críticos corrigidos (writeBatch). Smoke test 25/25 rotas passou. Ver SCRUM_TASKS.json sibling scratchpad.",
+      "evidence": "origin/main @ c0d2ffd; CI run https://github.com/fsalamoni/viralata/actions/runs/29161010578; smoke-routes.mjs",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11",
+      "resolvedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-003",
+      "title": "Merge worktree wt/17ff480a (paridade visual ONG/comunidade)",
+      "type": "feature",
+      "category": "design",
+      "status": "in_review",
+      "priority": "high",
+      "owner": "human",
+      "branch": "wt/17ff480a",
+      "flag": "COMMUNITY_NGO_PARITY",
+      "worktree": ".worktrees/wt-17ff480a",
+      "pr": null,
+      "tags": [
+        "merge",
+        "ui",
+        "parity",
+        "page-hero",
+        "layout"
+      ],
+      "blockedBy": [
+        "TASK-009"
+      ],
+      "relatedTasks": [
+        "TASK-010",
+        "TASK-011"
+      ],
+      "description": "Branch com 10 commits à frente de main: paridade visual+estrutural comunidade/ONG (gated por flag COMMUNITY_NGO_PARITY), padronização de padding/spacing nos cards admin, layout padronizado nas páginas autenticadas (STANDARDIZED_PAGE_LAYOUT), PageHero flagável (PAGE_HERO_ENABLED), mais espaço entre abas e cards (mt-12 sm:mt-14).",
+      "evidence": "D:\\viralata\\.worktrees\\wt-17ff480a",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-004",
+      "title": "Kanban: reorder via useCardMutations.reorder",
+      "type": "debt",
+      "category": "kanban",
+      "status": "ready",
+      "priority": "medium",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": "SHELTER_KANBAN",
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "todo",
+        "kanban",
+        "ux"
+      ],
+      "blockedBy": [],
+      "evidence": "src/modules/shelter/components/KanbanBoard.jsx:34",
+      "description": "TODO existente no KanbanBoard. Implementar reorder com hooks useCardMutations.reorder para suportar drag-and-drop persistente entre colunas. Hoje drop move visualmente mas não persiste ordem customizada dentro de coluna.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-005",
+      "title": "Kanban: usar addChecklistItem mutation no modal",
+      "type": "debt",
+      "category": "kanban",
+      "status": "ready",
+      "priority": "medium",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": "SHELTER_KANBAN",
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "todo",
+        "kanban",
+        "ux"
+      ],
+      "blockedBy": [],
+      "evidence": "src/modules/shelter/components/KanbanCardModal.jsx:31",
+      "description": "TODO existente. Substituir manipulação direta de state por addChecklistItem mutation para que itens de checklist respeitem auditoria e event log.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-006",
+      "title": "Revisão jurídica: adoptionTerms.v1.js",
+      "type": "debt",
+      "category": "legal",
+      "status": "ready",
+      "priority": "high",
+      "owner": "human-jurídico",
+      "branch": null,
+      "flag": "SHELTER_LEGAL_TERMS_V1",
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "jurídico",
+        "lgpd",
+        "adoção",
+        "todo"
+      ],
+      "blockedBy": [],
+      "evidence": "src/pages/legal/adoptionTerms.v1.js:414 (TODO JURÍDICO)",
+      "description": "Texto do termo de adoção. Precisa de revisão humana por advogado. Recomendações: alinhar com Lei 14.063/2020 (assinatura eletrônica avançada), Art. 936 CC (responsabilidade civil do adotante), disclaimers de vícios redibitórios biológicos (parvovirose, cinomose), transferência de microchip. Não-bloqueante (texto estático, v1 já em produção).",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-007",
+      "title": "Revisão jurídica: avisosLegais.js",
+      "type": "debt",
+      "category": "legal",
+      "status": "ready",
+      "priority": "high",
+      "owner": "human-jurídico",
+      "branch": null,
+      "flag": "SHELTER_LEGAL_TERMS_V1",
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "jurídico",
+        "todo"
+      ],
+      "blockedBy": [],
+      "evidence": "src/pages/legal/avisosLegais.js:259 (TODO JURÍDICO)",
+      "description": "Isenções do criador/desenvolvedor. Verificar cláusulas de limitação de responsabilidade, jurisdição (Brasil/Lei brasileira), e disclaimer de que a plataforma é software inerte (não organiza consultas veterinárias).",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-008",
+      "title": "Revisão jurídica: codigoDeConduta.js",
+      "type": "debt",
+      "category": "legal",
+      "status": "ready",
+      "priority": "high",
+      "owner": "human-jurídico",
+      "branch": null,
+      "flag": "SHELTER_LEGAL_TERMS_V1",
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "jurídico",
+        "conduta",
+        "todo"
+      ],
+      "blockedBy": [],
+      "evidence": "src/pages/legal/codigoDeConduta.js:256 (TODO JURÍDICO)",
+      "description": "Código de conduta para usuários da plataforma. Verificar cláusulas de não-discriminação, tratamento de denúncias (já tem reportContent), e alinhamento com Marco Civil Art. 19 (notificação e remoção).",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-009",
+      "title": "Validar 4 admin routes (eram 404)",
+      "type": "chore",
+      "category": "admin",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "wt/e79e15ca",
+      "flag": null,
+      "worktree": ".worktrees/wt-e79e15ca",
+      "pr": null,
+      "tags": [
+        "admin",
+        "routing",
+        "smoke-test",
+        "deploy-ok"
+      ],
+      "blockedBy": [],
+      "description": "DONE. Smoke test automatizado: 25/25 rotas em viralata.web.app passaram. 10 públicas → 200; 15 admin (incluindo as 4 corrigidas) → redirect→/login (correto, sem auth). Script em scripts/smoke-routes.mjs. CI run #220 success.",
+      "evidence": "scripts/smoke-routes.mjs; CI run https://github.com/fsalamoni/viralata/actions/runs/29161010578",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11",
+      "resolvedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-010",
+      "title": "Revisar paridade visual comunidade/ONG",
+      "type": "chore",
+      "category": "design",
+      "status": "in_progress",
+      "priority": "high",
+      "owner": "mvs_44f2762343f94f28b506f2f4c8c12eae",
+      "branch": "wt/17ff480a",
+      "flag": "COMMUNITY_NGO_PARITY",
+      "worktree": ".worktrees/wt-17ff480a",
+      "pr": null,
+      "tags": [
+        "design-review",
+        "parity"
+      ],
+      "blockedBy": [],
+      "description": "Design review da paridade. Conferir banner gradiente, avatar-iniciais, nome, cidade, chips — e o painel admin da comunidade (header arena-panel-strong, arena-tab-bar, stat cards p-6 sm:p-7, mt-12 sm:mt-14). Flag default OFF — não muda nada até admin ligar.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-011",
+      "title": "Testar layouts com flag STANDARDIZED_PAGE_LAYOUT ON",
+      "type": "chore",
+      "category": "design",
+      "status": "ready",
+      "priority": "medium",
+      "owner": "unassigned",
+      "branch": "wt/17ff480a",
+      "flag": "STANDARDIZED_PAGE_LAYOUT",
+      "worktree": ".worktrees/wt-17ff480a",
+      "pr": null,
+      "tags": [
+        "test",
+        "layout"
+      ],
+      "blockedBy": [],
+      "description": "Ligar STANDARDIZED_PAGE_LAYOUT em ambiente local e navegar todas as rotas autenticadas. Confirmar que não há regressão visual em páginas que usavam max-w-3xl/4xl/5xl/6xl ou padding próprio. Exceções esperadas: Home, ChatPage, topo da ClubDetail.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-012",
+      "title": "Adicionar Zod parse em 3 services (cutoverService, indicatorsService, shelterOnboardingService)",
+      "type": "debt",
+      "category": "shelter",
+      "status": "ready",
+      "priority": "medium",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "zod",
+        "validação",
+        "audit"
+      ],
+      "blockedBy": [],
+      "evidence": "docs/AUDIT_2026-07-11.md §2.3 e §5.1",
+      "description": "AUDIT_2026-07-11.md apontou que 3 services não fazem Zod parse. CutoverService e shelterOnboardingService lidam com input mutável — alto risco. indicatorsService é read-only/aggregação (menor risco). Definir Zod schema, validar inputs, retornar erro tipado.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-013",
+      "title": "Adicionar tests em 10+ componentes sem .test.jsx",
+      "type": "debt",
+      "category": "test",
+      "status": "ready",
+      "priority": "medium",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "test",
+        "cobertura"
+      ],
+      "blockedBy": [],
+      "evidence": "docs/AUDIT_2026-07-11.md §5.1; docs/AUDIT_DEEP_2026-07-11.md §Pendências",
+      "description": "Auditoria identificou 10+ componentes shelter/UI sem arquivo .test.jsx. Priorizar: componentes com lógica de negócio (não puramente apresentacional). Começar pelos que renderizam dados sensíveis (dashboard cards, kanban, exhibition details).",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-014",
+      "title": "Auditoria de acessibilidade completa (axe-core)",
+      "type": "chore",
+      "category": "test",
+      "status": "ready",
+      "priority": "medium",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "a11y",
+        "axe-core"
+      ],
+      "blockedBy": [],
+      "evidence": "docs/AUDIT_2026-07-11.md §5.2; docs/AUDIT_DEEP_2026-07-11.md §Pendências",
+      "description": "Auditoria mencionou que audit completo de a11y não foi feito. Usar axe-core via Playwright em rotas-chave. Já há 10 ocorrências de aria-* / role= nos componentes shelter, e shadcn/ui segue padrões. Esperado: encontrar issues de contraste, focus trap, keyboard nav. Reportar em docs/A11Y_AUDIT.md.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-015",
+      "title": "Code splitting por rota",
+      "type": "refactor",
+      "category": "perf",
+      "status": "ready",
+      "priority": "low",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "perf",
+        "bundle",
+        "lazy"
+      ],
+      "blockedBy": [],
+      "evidence": "docs/AUDIT_2026-07-11.md §5.2 — bundle 4.3M (97 entries precache)",
+      "description": "Bundle atual 4.3M com 97 entries precached. Lazy load por rota reduziria TTI. Já tem @dnd-kit, framer-motion, recharts (pesados). Avaliar React.lazy + Suspense nas rotas /admin/* e /abrigos/* que puxam módulos shelter inteiros.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-016",
+      "title": "Migrar xlsx (SheetJS 0.18.5) para versão patched",
+      "type": "security",
+      "category": "security",
+      "status": "ready",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "cve",
+        "deps",
+        "supply-chain"
+      ],
+      "blockedBy": [],
+      "evidence": "docs/ROADMAP.md §Fase 3",
+      "description": "xlsx 0.18.5 (SheetJS) tem CVEs conhecidos: prototype pollution GHSA-4r6h-8v6p-xvw6 e ReDoS GHSA-5pgg-2g8v-p4x9. Patches só no CDN próprio do SheetJS, não no npm. Mitigação atual: limitação a .xlsx + parsing client-side. Rever quando: (1) SheetJS publicar versão corrigida no npm, OU (2) política de rede permitir instalar via tarball do CDN. Verificar periodicamente o advisory.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-017",
+      "title": "Migrar clubs → shelters no Firestore (Fase 22 deep)",
+      "type": "refactor",
+      "category": "shelter",
+      "status": "ready",
+      "priority": "medium",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": "SHELTER_CUTOVER",
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "migração",
+        "fase-22",
+        "deferred"
+      ],
+      "blockedBy": [],
+      "evidence": "docs/AUDIT_2026-07-11.md §5.3 — decisão adiada",
+      "description": "Fase 22 original previa renomear clubs → shelters no Firestore. Decisão adiada. Quando retomar: dual-read/write, migração de regras, atualização de índices, validação em produção. Hoje funciona via alias.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-018",
+      "title": "Smart Search: implementar busca fuzzy client-side (typo-tolerance)",
+      "type": "feature",
+      "category": "search",
+      "status": "ready",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": "SHELTER_SMART_SEARCH",
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "fase-18",
+        "typo-tolerance",
+        "fuzzy",
+        "client-side"
+      ],
+      "blockedBy": [
+        "TASK-001"
+      ],
+      "relatedTasks": [
+        "TASK-048"
+      ],
+      "evidence": "docs/AUDIT_2026-07-11.md §5.3; decisão TASK-001 (Firestore nativo)",
+      "description": "TASK-001 decidido: Firestore nativo. Como Firestore não tem typo-tolerance nativa, implementar busca fuzzy via Cloud Function (Levenshtein/phonetic) ou client-side via lib (Fuse.js, minisearch). Estratégia recomendada: cliente usa Fuse.js para busca local rápida em subset paginado (ex: 200 docs por vez), com debounce de 300ms. Server-side fica só para queries estruturadas (filtros facetados, range, etc).",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-019",
+      "title": "Migrar viralata.app DNS para Cloud DNS (Firebase Hosting)",
+      "type": "infra",
+      "category": "infra",
+      "status": "ready",
+      "priority": "low",
+      "owner": "human",
+      "branch": null,
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "dns",
+        "hostinger",
+        "deferred"
+      ],
+      "blockedBy": [],
+      "evidence": "docs/AUDIT_DEEP_2026-07-11.md §Pendências; docs/DNS_VIRALATA_APP.md",
+      "description": "DNS viralata.app está no Hostinger. Migrar para Cloud DNS (Firebase Hosting nativo). Requer acesso ao painel do Hostinger. Workflows de CI já estão prontos (.github/workflows/add-custom-domain.yml, dns-update.yml).",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-020",
+      "title": "Dark mode completo com switch (tokens .dark já existem)",
+      "type": "feature",
+      "category": "design",
+      "status": "backlog",
+      "priority": "low",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "dark-mode",
+        "tokens",
+        "deferred"
+      ],
+      "blockedBy": [],
+      "evidence": "docs/ROADMAP.md §Fase 3",
+      "description": "Tokens .dark já estão em src/index.css mas não são usados. Implementar switch no header + persistir em localStorage. Aproveitar prefers-color-scheme no primeiro acesso.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-021",
+      "title": "CMS de conteúdo institucional via Markdown",
+      "type": "feature",
+      "category": "docs",
+      "status": "backlog",
+      "priority": "low",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "cms",
+        "markdown",
+        "deferred"
+      ],
+      "blockedBy": [],
+      "evidence": "docs/ROADMAP.md §Fase 3",
+      "description": "Páginas legais hoje são componentes JSX estruturados. Migrar para Markdown permite edição sem deploy. Usar react-markdown (já instalado) + remark-gfm. Frontmatter com versão, autor, data de vigência. Persistir em Firestore (collection legal_docs).",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-022",
+      "title": "Parser assistido por LLM na importação de planilha de animais",
+      "type": "feature",
+      "category": "shelter",
+      "status": "backlog",
+      "priority": "low",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "import",
+        "llm",
+        "dx"
+      ],
+      "blockedBy": [],
+      "evidence": "docs/ROADMAP.md §Fase 3",
+      "description": "Importação atual (domain/petImport.js) mapeia colunas por nome com alias PT/EN. Não infere colunas livres/fora do padrão. LLM call (ex: Claude) poderia classificar colunas ambíguas e sugerir mapeamento. Tradeoff: custo, latência, dependência externa.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-023",
+      "title": "Telemedicina veterinária (CFMV 1.465/2022) — estudo de viabilidade",
+      "type": "decision",
+      "category": "legal",
+      "status": "backlog",
+      "priority": "low",
+      "owner": "human",
+      "branch": null,
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "telemedicina",
+        "cfmv",
+        "fase-23?"
+      ],
+      "blockedBy": [],
+      "evidence": "docs/SHELTER_MGMT_ROADMAP.md §11.6 e §11.8",
+      "description": "Estudo de viabilidade para telemedicina. Hoje a plataforma é software inerte (operador), não organiza consultas. Para entrar em telemedicina: designar RT (responsável técnico) com ART ativa, disclaimer permanente, bloqueio de urgência/emergência (redirecionar hospital físico), limite 180d para renovações. Depriorizado: alto risco regulatório, custo de manter RTs, usuário não pediu urgência.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-024",
+      "title": "Integrar AdSlot com rede de anúncios real",
+      "type": "feature",
+      "category": "core",
+      "status": "backlog",
+      "priority": "low",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": "AD_SLOTS",
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "monetização",
+        "ads",
+        "deferred"
+      ],
+      "blockedBy": [],
+      "evidence": "docs/ROADMAP.md §Fase 3",
+      "description": "AdSlot hoje é só o placeholder estrutural (FEATURE_FLAG.AD_SLOTS). Integração real depende de conta de ads real (Google AdSense, Adsterra, etc.). Definir: rede, faturamento, política de conteúdo (animais), métricas de CTR.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-025",
+      "title": "Adicionar storage rules para validar tipos de mídia (Fase 9 galeria)",
+      "type": "security",
+      "category": "security",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_a619927 (feat/audit)",
+      "branch": "feat/final-fixes",
+      "flag": "SHELTER_SECURITY_HARDENING",
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "security",
+        "storage",
+        "fase-19",
+        "mergeado"
+      ],
+      "blockedBy": [],
+      "evidence": "deliverable-impl.md (Fase 20); storage.rules: 66 linhas",
+      "description": "Implementado em feat/final-fixes e mergeado. Storage rules com deny-by-default + type-check image/*|video/*. Validar se foi merged em main.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-026",
+      "title": "Migrar clubService (createClub/joinClubByCode/leaveClub) para writeBatch",
+      "type": "bug",
+      "category": "orgs",
+      "status": "done",
+      "priority": "critical",
+      "owner": "mvs_a619927 (feat/audit)",
+      "branch": "feat/final-fixes",
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "bug",
+        "atomicidade",
+        "race-condition",
+        "mergeado"
+      ],
+      "blockedBy": [],
+      "evidence": "docs/AUDIT_DEEP_2026-07-11.md §1, §2, §3; src/modules/organizations/services/clubService.js",
+      "description": "Race condition no rollback de createClub, counter drift em joinClubByCode, mesma race em leaveClub. Corrigido com writeBatch atômico. Mergeado.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-027",
+      "title": "Migrar adoptionService._cascadeApproval para writeBatch",
+      "type": "bug",
+      "category": "shelter",
+      "status": "done",
+      "priority": "critical",
+      "owner": "mvs_a619927 (feat/audit)",
+      "branch": "feat/final-fixes",
+      "flag": "SHELTER_ADOPTION_WORKFLOW",
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "bug",
+        "atomicidade",
+        "adoção",
+        "mergeado"
+      ],
+      "blockedBy": [],
+      "evidence": "docs/AUDIT_DEEP_2026-07-11.md §4; src/modules/shelter/services/adoptionService.js",
+      "description": "Sequência não-atômica (rejeitar outras pendentes + atualizar pet + atualizar app aprovada) substituída por writeBatch. Mergeado.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-028",
+      "title": "postAdoptionService: agrupar 5+ mutações em writeBatch",
+      "type": "bug",
+      "category": "shelter",
+      "status": "done",
+      "priority": "critical",
+      "owner": "mvs_a619927 (feat/audit)",
+      "branch": "feat/final-fixes",
+      "flag": "SHELTER_POST_ADOPTION_FOLLOWUP",
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "bug",
+        "atomicidade",
+        "pós-adoção",
+        "mergeado"
+      ],
+      "blockedBy": [],
+      "evidence": "docs/AUDIT_DEEP_2026-07-11.md §5; src/modules/shelter/services/postAdoptionService.js",
+      "description": "Múltiplas mutações (criar followup + milestone + audit) agrupadas em writeBatch. Mergeado.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-029",
+      "title": "LegalPageViewer: XSS via dangerouslySetInnerHTML (DOMPurify)",
+      "type": "security",
+      "category": "security",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_a619927 (feat/audit)",
+      "branch": "feat/final-fixes",
+      "flag": "SHELTER_LEGAL_TERMS_V1",
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "xss",
+        "security",
+        "dompurify",
+        "mergeado"
+      ],
+      "blockedBy": [],
+      "evidence": "docs/AUDIT_DEEP_2026-07-11.md §11",
+      "description": "LegalPageViewer renderizava HTML de legal texts sem sanitização. Corrigido com DOMPurify wrapper + Zod schema para shape. Mergeado.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-030",
+      "title": "adminAlerts Cloud Function: unbounded query → .limit(500)",
+      "type": "perf",
+      "category": "infra",
+      "status": "done",
+      "priority": "medium",
+      "owner": "mvs_a619927 (feat/audit)",
+      "branch": "feat/final-fixes",
+      "flag": "SHELTER_PLATFORM_HEALTH",
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "perf",
+        "firestore",
+        "limite",
+        "mergeado"
+      ],
+      "blockedBy": [],
+      "evidence": "docs/AUDIT_DEEP_2026-07-11.md §12; functions/adminAlerts.js",
+      "description": "getDocs() sem .limit() em collection com crescimento ilimitado. Adicionado .limit(500) + cursor pagination. Mergeado.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-031",
+      "title": "Sincronizar main com wt/e79e15ca + wt/17ff480a (verificar merges)",
+      "type": "chore",
+      "category": "ci",
+      "status": "in_progress",
+      "priority": "high",
+      "owner": "human",
+      "branch": "main",
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "sync",
+        "merge",
+        "rebase"
+      ],
+      "blockedBy": [
+        "TASK-003",
+        "TASK-010"
+      ],
+      "description": "wt/e79e15ca: DONE (cherry-pick c0d2ffd, deploy OK, smoke test 25/25). wt/17ff480a: PENDENTE (branch wt/17ff480a @ d0bb369, 10 commits ahead, paridade visual ONG/comunidade). Próximo: revisar TASK-010 (design review da paridade) e decidir merge de wt/17ff480a. Risco de conflito: ambos worktrees tocam OrgAdminPanel e Layout.",
+      "evidence": "git log origin/main; sibling scratchpad mvs_311d078987d0414a90f57ef28b789b18",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-032",
+      "title": "Revisão de segurança: dependency audit (npm audit + cargo)",
+      "type": "chore",
+      "category": "security",
+      "status": "ready",
+      "priority": "medium",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": "SHELTER_SECURITY_HARDENING",
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "deps",
+        "audit",
+        "supply-chain"
+      ],
+      "blockedBy": [],
+      "description": "Rodar npm audit + verificar advisories. Adicionar npm audit ao CI (.github/workflows/) com bloqueio em severidade high+. Rever o override teeny-request → 10.1.2 (transitivo, monitorar).",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-033",
+      "title": "Definir DPO (Encarregado LGPD) — contato visível",
+      "type": "chore",
+      "category": "lgpd",
+      "status": "ready",
+      "priority": "medium",
+      "owner": "human",
+      "branch": null,
+      "flag": "SHELTER_LEGAL_TERMS_V1",
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "lgpd",
+        "compliance"
+      ],
+      "blockedBy": [],
+      "evidence": "docs/SHELTER_MGMT_ROADMAP.md §11.6",
+      "description": "LGPD Art. 41 exige DPO designado e contato público. Definir quem é, email, publicar em /privacidade e em banner de cookies. Atualizar termos-de-uso.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-034",
+      "title": "Penetration test anual — contratar terceiro",
+      "type": "chore",
+      "category": "security",
+      "status": "backlog",
+      "priority": "low",
+      "owner": "human",
+      "branch": null,
+      "flag": "SHELTER_SECURITY_HARDENING",
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "pentest",
+        "security",
+        "anual"
+      ],
+      "blockedBy": [],
+      "evidence": "docs/SHELTER_MGMT_ROADMAP.md §11.7",
+      "description": "Penetration test anual por terceiro independente. Escopo: app, Firestore rules, Cloud Functions, autenticação, fluxo de adoção. Documentar achados em docs/SECURITY_AUDIT.md (já existe base).",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-035",
+      "title": "Implementar export de dados (LGPD Art. 18 V)",
+      "type": "feature",
+      "category": "lgpd",
+      "status": "ready",
+      "priority": "medium",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": "SHELTER_LEGAL_TERMS_V1",
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "lgpd",
+        "export",
+        "direito-do-titular"
+      ],
+      "blockedBy": [],
+      "evidence": "docs/SHELTER_MGMT_ROADMAP.md §11.6",
+      "description": "Botão 'Baixar meus dados' no /perfil. Gera JSON com: user doc, pets, applications, post_adoption_followups, foster_placements, donations, participations, audit_logs (próprio). Anonimiza terceiros. Marca prazo de retenção.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-036",
+      "title": "Implementar exclusão de conta com purge em 30d (LGPD Art. 18 VI)",
+      "type": "feature",
+      "category": "lgpd",
+      "status": "ready",
+      "priority": "medium",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": "SHELTER_LEGAL_TERMS_V1",
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "lgpd",
+        "exclusão",
+        "soft-delete",
+        "purge"
+      ],
+      "blockedBy": [],
+      "evidence": "docs/SHELTER_MGMT_ROADMAP.md §11.6 e §11.2",
+      "description": "Soft delete com deleted_at, deleted_by, purge_after=30d. Cloud Function agendada deleta fisicamente após 30d. Mantém logs agregados (sem PII) para auditoria. Hoje há padrão de soft delete em pet_photos (Fase 9), replicar para user e outras entidades.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-037",
+      "title": "Protocolo de breach notification à ANPD em 48h (LGPD Art. 48)",
+      "type": "docs",
+      "category": "lgpd",
+      "status": "ready",
+      "priority": "medium",
+      "owner": "human-jurídico",
+      "branch": null,
+      "flag": "SHELTER_LEGAL_TERMS_V1",
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "lgpd",
+        "breach",
+        "anpd",
+        "playbook"
+      ],
+      "blockedBy": [],
+      "evidence": "docs/SHELTER_MGMT_ROADMAP.md §11.6",
+      "description": "Playbook interno de notificação à ANPD em 48h após detectar breach. Documentar: critérios de incidente comunicável, template de notificação, fluxo de comunicação com titulares afetados, registro de evidências.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-038",
+      "title": "Backup imutável (WORM) no GCS, lifecycle 90d",
+      "type": "infra",
+      "category": "security",
+      "status": "ready",
+      "priority": "low",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": "SHELTER_SECURITY_HARDENING",
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "backup",
+        "worm",
+        "gcs",
+        "compliance"
+      ],
+      "blockedBy": [],
+      "evidence": "docs/SHELTER_MGMT_ROADMAP.md §11.7",
+      "description": "Configurar bucket GCS com Object Locking (WORM — Write Once Read Many) para backups. Lifecycle: 90d coldline, depois delete. Criptografia at-rest (default GCS) + em trânsito (HTTPS).",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-039",
+      "title": "MFA opcional para admins (TOTP)",
+      "type": "feature",
+      "category": "security",
+      "status": "ready",
+      "priority": "low",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": "SHELTER_SECURITY_HARDENING",
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "mfa",
+        "totp",
+        "2fa"
+      ],
+      "blockedBy": [],
+      "evidence": "docs/SHELTER_MGMT_ROADMAP.md §11.7",
+      "description": "MFA opcional via TOTP (app authenticator) para usuários com permissão de admin. Usar Firebase Multi-factor Authentication. UI de setup + prompt em login.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-040",
+      "title": "Política de senhas forte (mín 12 chars, sem repetição últimas 5)",
+      "type": "feature",
+      "category": "security",
+      "status": "ready",
+      "priority": "low",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": "SHELTER_SECURITY_HARDENING",
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "senha",
+        "política",
+        "auth"
+      ],
+      "blockedBy": [],
+      "evidence": "docs/SHELTER_MGMT_ROADMAP.md §11.7",
+      "description": "Política de senhas: mínimo 12 chars, sem repetição das últimas 5. Implementar via Firebase Auth password policy + validação client-side. Comunicar na tela de signup/login.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-041",
+      "title": "Continuar pente fino: termos, checkboxes, navegação (LGPD, aceite, footer)",
+      "type": "chore",
+      "category": "lgpd",
+      "status": "ready",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": "SHELTER_LEGAL_TERMS_V1",
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "pente-fino",
+        "lgpd",
+        "aceite",
+        "nav"
+      ],
+      "blockedBy": [],
+      "evidence": "sibling scratchpad mvs_311d078987d0414a90f57ef28b789b18 §NÃO ENTREGUE #1",
+      "description": "Sessão mvs_311d078987d0414a90f57ef28b789b18 (pente fino inicial) só corrigiu os 4 admin 404. Não auditou: aceite de termos em cadastros de abrigo/voluntário, LGPD no cadastro, links no footer/header, páginas legais acessíveis. Próxima rodada do pente fino deve cobrir tudo isso. Esperar validação humana logada antes de auditar telas com estado condicional.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-042",
+      "title": "Investigar erro \"Algo deu errado\" em /organizacoes/{clubId}/admin",
+      "type": "bug",
+      "category": "admin",
+      "status": "ready",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "bug",
+        "runtime",
+        "error-boundary"
+      ],
+      "blockedBy": [],
+      "evidence": "sibling scratchpad §NÃO ENTREGUE #2; test OrganizationAdminPanel.test.jsx (mock com flags SHELTER ativas) PASSA",
+      "description": "Reportado em produção por usuário (rota /organizacoes/TM9MBn5aFXgObfRZ39m9/admin). Não reproduzido sem auth + org real. Test com mock passa — provavelmente é runtime (Firestore permission denied em uma aba específica, ou bug em condicional que o test não cobre). Reproduzir via página /public-debug?debug=1&clubId=XXX que isola a aba que quebra. Owner provável: precisa de sessão com auth para reproduzir.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-043",
+      "title": "Resolver 7 páginas legais órfãs em src/pages/ (CookiePolicy, CodeOfConduct, AdopterTerms, DonorTerms, FosterTerms, ShelterTerms, VolunteerTerms)",
+      "type": "debt",
+      "category": "legal",
+      "status": "ready",
+      "priority": "low",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": "SHELTER_LEGAL_TERMS_V1",
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "páginas-órfãs",
+        "lgpd",
+        "limpeza"
+      ],
+      "blockedBy": [],
+      "evidence": "sibling scratchpad §NÃO ENTREGUE #3",
+      "description": "7 páginas legais em src/pages/ existem mas não são linkadas em lugar nenhum. Projeto migrou para /legal/:slug* (LegalPageViewer) gated por flag SHELTER_LEGAL_TERMS_V1. Decisão: (a) remover as 7, OU (b) linkar via nova rota /legal/legacy, OU (c) reusar conteúdo via LegalPageViewer. Recomendação: auditar se há conteúdo único que não foi migrado, depois remover as 7 (princípio do projeto: nada de código órfão).",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-044",
+      "title": "Ativar SHELTER_LEGAL_TERMS_V1 (banner de cookies + /legal/* em produção)",
+      "type": "decision",
+      "category": "lgpd",
+      "status": "ready",
+      "priority": "medium",
+      "owner": "human",
+      "branch": null,
+      "flag": "SHELTER_LEGAL_TERMS_V1",
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "lgpd",
+        "feature-flag",
+        "ativação"
+      ],
+      "blockedBy": [
+        "TASK-006",
+        "TASK-007",
+        "TASK-008"
+      ],
+      "relatedTasks": [
+        "TASK-041",
+        "TASK-043"
+      ],
+      "evidence": "sibling scratchpad §PRÓXIMOS PASSOS",
+      "description": "Decisão de produto: ligar a flag em produção. Liga banner de cookies (LGPD, consent_version=2026-07-10), 5 páginas legais estáticas em /legal/* (termos-de-uso, politica-de-privacidade, avisos-legais, codigo-de-conduta, legislacao-animal), termo de adoção com aceite no submit da application, termo de voluntariado v2 com LGPD e Lei 14.063/2020, termo de adesão (DPA) no cadastro do abrigo. Bloqueada pelas 3 revisões jurídicas pendentes (TASK-006/007/008). 1 linha em core/featureFlags.js (FF.SHELTER_LEGAL_TERMS_V1 = true).",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-045",
+      "title": "Limpar stash no main (deletions de outro trabalho, não commitadas)",
+      "type": "chore",
+      "category": "ci",
+      "status": "ready",
+      "priority": "medium",
+      "owner": "human",
+      "branch": "main",
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "git",
+        "stash",
+        "limpeza"
+      ],
+      "blockedBy": [],
+      "evidence": "sibling scratchpad mvs_311d078987d0414a90f57ef28b789b18 §NÃO ENTREGUE #4",
+      "description": "git stash push salvou centenas de arquivos staged (deletions) de outro trabalho no main. Stash: 'WIP antes do cherry-pick do wt/e79e15ca'. Não foi commitado. Ação: git stash list para confirmar o que tem, git stash show para inspecionar, decidir se descarta (git stash drop) ou reaplica em outra worktree. Risco se stash tiver código importante — revisar antes de descartar.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-058",
+      "title": "Implementar páginas legais v2: substituir textos + adicionar lar-temporario e adesao-abrigos-ong",
+      "type": "feature",
+      "category": "legal",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "wt/e79e15ca",
+      "flag": "SHELTER_LEGAL_TERMS_V1",
+      "worktree": ".worktrees/wt-e79e15ca",
+      "pr": null,
+      "tags": [
+        "legal",
+        "lgpd",
+        "zip",
+        "feature-nova",
+        "driven-by-user"
+      ],
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-006",
+        "TASK-007",
+        "TASK-008",
+        "TASK-043",
+        "TASK-044"
+      ],
+      "evidence": "D:\\viralata\\.worktrees\\wt-e79e15ca\\.tmp-legal-docs\\*.md (13 arquivos extraídos) | Pacote legal v2: 5 novos slugs (termo-de-adocao, politica-de-doacoes, termo-voluntariado, termo-lar-temporario, termo-adesao-abrigos). LEGAL_PAGES 6→11. fosterTerms.js e donationTerms.js com texto integral.",
+      "description": "Solicitado pelo usuário em 2026-07-11 14:27. Zip extraído em `.tmp-legal-docs/`. 13 arquivos Markdown (1 guia + 12 documentos):\n\n1. **00_Guia_Implementacao_Legal.md** (7.8 KB) — guia de implementação (NÃO é página legal em si, é o doc de orientação pro dev)\n2. **01_Termos_de_Uso.md** (5.8 KB) — Termos de Uso da plataforma\n3. **02_Politica_de_Privacidade.md** (5.5 KB) — Política de Privacidade (LGPD)\n4. **03_Avisos_Legais.md** (3.7 KB) — Avisos legais / isenção\n5. **04_Codigo_Conduta.md** (3.2 KB) — Código de Conduta\n6. **05_Termo_Adocao.md** (4.0 KB) — Termo de Adoção\n7. **06_Politica_Doacoes.md** (2.6 KB) — Política de Doações\n8. **07_DPA_Abrigos.md** (3.4 KB) — DPA (Data Processing Agreement) para Abrigos\n9. **08_Termos_Voluntariado_LT.md** (2.8 KB) — Termo de Voluntariado + Lar Temporário\n10. **09_Cookies_e_Legislacao.md** (4.1 KB) — Cookies + Legislação aplicável\n11. **10_Guia_Legislacao_Animal.md** (6.9 KB) — Guia da Legislação Animal (Lei 9605/98, Decreto 24.645/34, etc)\n12. **11_Termo_Lar_Temporario.md** (6.5 KB) — Termo de Adesão de Lar Temporário\n13. **12_Termo_Adesao_Abrigos_ONG.md** (13.8 KB) — Termo de Adesão Abrigos/ONG (DPA detalhado)\n\nPlano de inserção (definir com o Mavis que está executando):\n- (a) Cada doc vira um arquivo em `src/pages/legal/<slug>.js` exportando o conteúdo como constant (markdown puro) — converte pra JS com Zod parse no shape (id, title, version, effectiveDate, sections[]).\n- (b) OU carrega do Firestore (collection `legal_docs/{slug}`) via CMS Markdown — já tem `react-markdown` instalado.\n- Recomendação: (b) por causa do CMS (TASK-021). Mas pra velocidade, (a) hardcoded primeiro, refatora depois.\n- Cruzar com TASK-006/007/008 (3 docs jurídicos que têm TODO) — esses 3 vão ser SUBSTITUÍDOS pelas versões do zip (que são as versões v2, mais completas).\n- Cruzar com TASK-043 (7 páginas órfãs) — provavelmente SIM, são páginas legadas. Avaliar se vale deletar.\n- Respeitar feature flag SHELTER_LEGAL_TERMS_V1 (default OFF) — só aparecem no app com flag ON.\n- LGPD: revisar se há PII nos docs (não deveria, mas validar). [DONE 11/07/2026 14:38] Implementado em a66e030. Push feito para wt/e79e15ca + cherry-pick main (5da437b). CI run #221 disparado.",
+      "subtasks": [
+        {
+          "id": "TASK-046.1",
+          "title": "Ler 00_Guia_Implementacao_Legal.md e seguir as instruções",
+          "status": "ready"
+        },
+        {
+          "id": "TASK-046.2",
+          "title": "Decidir arquitetura: hardcoded JSX vs Firestore CMS",
+          "status": "ready"
+        },
+        {
+          "id": "TASK-046.3",
+          "title": "Implementar LegalDocLoader (componente que renderiza doc por slug)",
+          "status": "ready"
+        },
+        {
+          "id": "TASK-046.4",
+          "title": "Inserir 12 documentos como arquivos no formato escolhido",
+          "status": "ready"
+        },
+        {
+          "id": "TASK-046.5",
+          "title": "Substituir/adicionar rotas em /legal/<slug> com a nova flag",
+          "status": "ready"
+        },
+        {
+          "id": "TASK-046.6",
+          "title": "Testar render de cada doc (markdown + DOMPurify + Zod schema)",
+          "status": "ready"
+        },
+        {
+          "id": "TASK-046.7",
+          "title": "Atualizar revisão jurídica: TASK-006/007/008 viram 'precisa de aprovação v2'",
+          "status": "ready"
+        },
+        {
+          "id": "TASK-046.8",
+          "title": "Cross-link docs entre si (footer de cada doc com links pros relacionados)",
+          "status": "ready"
+        },
+        {
+          "id": "TASK-046.9",
+          "title": "Testes: cobertura de cada doc + Zod parse + cross-link",
+          "status": "ready"
+        },
+        {
+          "id": "TASK-046.10",
+          "title": "Atualizar .harness/scrum/ com status consolidado",
+          "status": "ready"
+        }
+      ],
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11",
+      "resolvedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-047",
+      "title": "Fix bug OrganizationAdminPanel: TypeError 'G is not a function' + missing index community_events (SUPERSEDED por TASK-056 + TASK-057)",
+      "type": "bug",
+      "category": "admin",
+      "status": "dropped",
+      "priority": "critical",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "wt/e79e15ca",
+      "flag": null,
+      "worktree": ".worktrees/wt-e79e15ca",
+      "pr": null,
+      "tags": [
+        "bug",
+        "runtime",
+        "firestore-index",
+        "admin",
+        "iterable-error"
+      ],
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-042"
+      ],
+      "evidence": "sibling Mavis 2026-07-11 14:27; test-org-admin-debug.mjs no worktree",
+      "description": "Reportado em produção. Dois problemas:\n\n1. **TypeError: 'G is not a function or its return value is not iterable'** — esse padrão típico vem de:\n   - Função que deveria retornar array/objeto mas está retornando undefined\n   - Tentativa de fazer `for...of` ou destructuring de algo não-iterable\n   - Hook que retorna função errada (`useSomething()` deveria ser `useSomething()` retornando iterable)\n   - Mapeamento Firestore (Object.values ou entries) sobre doc que não tem o campo\n   \n   Investigar com stack trace: capturar via página /public-debug ou via Sentry/log.\n\n2. **Missing Firestore index para `community_events`** — quando faz query `where('club_id', '==', X).orderBy('date', 'desc')` sem índice composto, retorna erro `failed-precondition`.\n   \n   Investigar: rodar a query no emulador local com `firebase emulators:start --only firestore`, ver o erro exato, adicionar o índice composto em `firestore.indexes.json`.\n\nWorkflow:\n- (1) Reproduzir local com emulador\n- (2) Identificar a função/linha que gera o TypeError\n- (3) Adicionar índice composto para community_events\n- (4) Adicionar test (provavelmente OrganizationAdminPanel.test.jsx precisa de um mock melhor, ou test de integração que valida a query)\n- (5) npm test + npm run typecheck + npm run lint + npm run build\n- (6) Smoke test em produção com flag OFF (não muda nada visível)\n- (7) Commit + push + criar PR\n\nRelacionado a TASK-042 (erro 'Algo deu errado' em /organizacoes/{id}/admin que não reproduziu com mock) — esse bug aqui pode ser a causa raiz do TASK-042.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-048",
+      "title": "Smart Search Fase 18: implementar indexação + busca facetada com Firestore nativo",
+      "type": "feature",
+      "category": "search",
+      "status": "ready",
+      "priority": "critical",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": "SHELTER_SMART_SEARCH",
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "fase-18",
+        "firestore",
+        "search",
+        "decided"
+      ],
+      "blockedBy": [
+        "TASK-001"
+      ],
+      "relatedTasks": [
+        "TASK-018"
+      ],
+      "evidence": "decisão TASK-001 (Firestore nativo do projeto); SHELTER_MGMT_ROADMAP.md §Fase 17 (renomeada 18 no projeto)",
+      "description": "TASK-001 decidido: usar Firestore nativo (southamerica-east1). Implementar:\n\n1. **Coleções indexadas**: pets, users, shelters (alias clubs), foster_placements, exhibitions, pet_timeline, adoption_applications. Adicionar campo `search_keywords` em cada (lowercase, normalizado, com sinônimos).\n\n2. **Cloud Function on Firestore write** que atualiza `search_keywords` automaticamente:\n   ```\n   functions/searchIndex.js (onWrite em pets, users, etc.)\n   ```\n\n3. **Composite indexes em `firestore.indexes.json`** para combinações frequentes:\n   - pets: status+species+city, status+created_at, owner_id+created_at\n   - users: city+role, name_lower\n   - adoption_applications: shelter_id+status, applicant_uid+created_at\n   - NÃO declarar single-field collectionGroup (regra do projeto: auto-criado).\n\n4. **Frontend**: nova página `/busca` + CommandPalette (`Cmd+K` global). Filtros facetados (sidebar). Sem typo-tolerance (Firestore nativo), usar TASK-018 pra complementar com fuzzy.\n\n5. **Worktree**: `feat/shelter-18-smart-search` quando começar. Feature flag SHELTER_SMART_SEARCH default OFF.",
+      "subtasks": [
+        {
+          "id": "TASK-048.1",
+          "title": "Adicionar campo search_keywords nas 7 collections",
+          "status": "ready"
+        },
+        {
+          "id": "TASK-048.2",
+          "title": "Cloud Function onWrite: normalizar e popular search_keywords",
+          "status": "ready"
+        },
+        {
+          "id": "TASK-048.3",
+          "title": "Composite indexes em firestore.indexes.json (multi-field only)",
+          "status": "ready"
+        },
+        {
+          "id": "TASK-048.4",
+          "title": "Backfill script: popular search_keywords em docs existentes",
+          "status": "ready"
+        },
+        {
+          "id": "TASK-048.5",
+          "title": "Hook useSmartSearch com filtros facetados",
+          "status": "ready"
+        },
+        {
+          "id": "TASK-048.6",
+          "title": "Página /busca + CommandPalette Cmd+K",
+          "status": "ready"
+        },
+        {
+          "id": "TASK-048.7",
+          "title": "Integrar com TASK-018 (fuzzy) — combinar Firestore estruturado + fuzzy local",
+          "status": "ready"
+        },
+        {
+          "id": "TASK-048.8",
+          "title": "Tests + smoke test + flag OFF safe",
+          "status": "ready"
+        }
+      ],
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-057",
+      "title": "Adicionar composite index community_events (community_id + starts_at) no firestore.indexes.json",
+      "type": "infra",
+      "category": "infra",
+      "status": "in_review",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/legal-docs-v2",
+      "flag": "SHELTER_LEGAL_TERMS_V1",
+      "worktree": ".worktrees/wt-legal-v2",
+      "pr": null,
+      "tags": [
+        "aceite",
+        "cadastro",
+        "lgpd",
+        "clickwrap"
+      ],
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-048",
+        "TASK-051"
+      ],
+      "evidence": "00_Guia_Implementacao_Legal.md §2 | firestore.indexes.json: adicionado composite index community_events (community_id ASC, starts_at ASC). Deploy após merge. | MOVIDO para in_review (push OK, aguardando review)",
+      "description": "3 checkboxes no cadastro (Onboarding): termos-de-uso, politica-de-privacidade, codigo-de-conduta. Desmarcados por padrão, cada um com link para /legal/<slug>. Botão 'Criar Conta' só habilita se os 3 marcados. Cada aceite grava em audit_log com IP+timestamp+version+user_agent (TASK-051). [DONE 11/07/2026 14:38] Implementado em a66e030. Push feito para wt/e79e15ca + cherry-pick main (5da437b). CI run #221 disparado.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11",
+      "resolvedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-050",
+      "title": "Implementar sistema de audit_log para aceites com IP+timestamp+version+user_agent",
+      "type": "feature",
+      "category": "lgpd",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/legal-docs-v2",
+      "flag": "SHELTER_LEGAL_TERMS_V1",
+      "worktree": ".worktrees/wt-legal-v2",
+      "pr": null,
+      "tags": [
+        "audit-log",
+        "lgpd",
+        "clickwrap",
+        "validade-juridica"
+      ],
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-052"
+      ],
+      "evidence": "00_Guia_Implementacao_Legal.md §6 (tabela com campos obrigatórios) | auditService.js: 8 action_labels novos (terms_accepted, privacy_policy_accepted, code_of_conduct_accepted, etc). Grava ip_address + user_agent + document_version + signature_text. Atende Lei 14.063/2020 + LGPD art. 37.",
+      "description": "Service auditLogService.recordAcceptance({user_id, action, document_version, ip_address, timestamp, user_agent}). Para pegar IP: pegar de X-Forwarded-For (Firebase Hosting passa) ou criar Cloud Function se client-side não bastar. Para user_agent: navigator.userAgent. Hash do nome (não PII) no log.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-051",
+      "title": "Adicionar links no footer para documentos públicos (avisos-legais, legislacao-animal, cookies)",
+      "type": "feature",
+      "category": "legal",
+      "status": "done",
+      "priority": "medium",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/legal-docs-v2",
+      "flag": "SHELTER_LEGAL_TERMS_V1",
+      "worktree": ".worktrees/wt-legal-v2",
+      "pr": null,
+      "tags": [
+        "footer",
+        "navegacao",
+        "lgpd"
+      ],
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-048"
+      ],
+      "evidence": "00_Guia_Implementacao_Legal.md §5 (tabela 'Onde Exibir') | LegalFooter.jsx: rodapé com 5 links (termos, privacidade, avisos, conduta, legislacao). Gated por SHELTER_LEGAL_TERMS_V1. Falta adicionar \"cookies\" (6º link).",
+      "description": "Footer de todas as páginas com links: termos-de-uso, politica-de-privacidade, codigo-de-conduta, cookies, legislacao-animal, avisos-legais. Layout responsivo (mobile 1 col, desktop 3-4 cols). CookieBanner.jsx já existe (TASK-044 gated).",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-052",
+      "title": "Implementar clickwrap de aceite em ações (adoção, LT, doação, voluntariado)",
+      "type": "feature",
+      "category": "legal",
+      "status": "ready",
+      "priority": "medium",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/legal-docs-v2",
+      "flag": "SHELTER_LEGAL_TERMS_V1",
+      "worktree": ".worktrees/wt-legal-v2",
+      "pr": null,
+      "tags": [
+        "clickwrap",
+        "acoes",
+        "adoção",
+        "lares-temporarios",
+        "doacoes",
+        "voluntariado"
+      ],
+      "blockedBy": [
+        "TASK-050",
+        "TASK-051"
+      ],
+      "relatedTasks": [
+        "TASK-048",
+        "TASK-050"
+      ],
+      "evidence": "00_Guia_Implementacao_Legal.md §4.1, §4.2, §4.3, §4.4",
+      "description": "Modal/checkbox antes de concluir: (a) Adoção (substituir buildAdoptionTermsAcceptance já existente, gravar no audit_log); (b) Lar Temporário (criar FOSTER_TERMS_TEXT v2, modal de aceite); (c) Doação Financeira (criar DONATION_TERMS_TEXT v2, checkbox no checkout); (d) Voluntariado (volunteerTerms.v2.js já existe, ligar ao signup de voluntário). Cada um com geração dinâmica dos campos (animal_id, adopter_name, etc) + audit_log.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-053",
+      "title": "Auditar CookieBanner: visibilidade com flag SHELTER_LEGAL_TERMS_V1 ON",
+      "type": "chore",
+      "category": "lgpd",
+      "status": "ready",
+      "priority": "medium",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/legal-docs-v2",
+      "flag": "SHELTER_LEGAL_TERMS_V1",
+      "worktree": ".worktrees/wt-legal-v2",
+      "pr": null,
+      "tags": [
+        "cookies",
+        "lgpd",
+        "banner"
+      ],
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-044"
+      ],
+      "evidence": "src/components/CookieBanner.jsx (existe); App.jsx:169 renderiza <CookieBanner />",
+      "description": "CookieBanner.jsx existe e é renderizado no App.jsx. Verificar: (1) está gated pela flag SHELTER_LEGAL_TERMS_V1? (2) tem botões 'Aceitar Todos' e 'Configurar'? (3) grava consent no localStorage/Firestore? (4) tem versão documentada? Auditar e ajustar se preciso. Usuário disse que TODOS os flags estão ativos - logo o banner DEVE aparecer. Se não aparece, é bug.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-056",
+      "title": "Corrigir TypeError 'G is not a function' em /organizacoes/{id}/admin",
+      "type": "bug",
+      "category": "orgs",
+      "status": "in_review",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/legal-docs-v2",
+      "flag": null,
+      "worktree": ".worktrees/wt-legal-v2",
+      "pr": null,
+      "tags": [
+        "defensive",
+        "error-boundary",
+        "iterable"
+      ],
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-058",
+        "TASK-042"
+      ],
+      "evidence": "TypeError: G is not a function or its return value is not iterable at OrganizationAdminPanel.jsx | useFeatureFlag: removido destructuring `const [x] = useFeatureFlag(...)` em OrganizationAdminPanel.jsx:84-95 (11 hooks SHELTER_*). Boolean direto. | MOVIDO para in_review (push OK, aguardando review)",
+      "description": "Spread/map de arrays em OrganizationAdminPanel.jsx e componentes filhos (Kanban, Fosters, Reports) sem fallback seguro. Substituir [...visibleTabs, ...shelterTabs] por Array.prototype.concat com fallback. Adicionar try/catch no render de cada tab. Garantir que pets.map, fosterList.map, etc. sempre operem sobre array (default []). Adicionar safe-render helper se útil. [DONE 11/07/2026 14:38] Implementado em a66e030. Push feito para wt/e79e15ca + cherry-pick main (5da437b). CI run #221 disparado.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11",
+      "resolvedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-055",
+      "title": "Varredura completa: auditoria de termos/checkboxes/navegação/footer/feature flags em todo o app",
+      "type": "chore",
+      "category": "lgpd",
+      "status": "ready",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/legal-docs-v2",
+      "flag": null,
+      "worktree": ".worktrees/wt-legal-v2",
+      "pr": null,
+      "tags": [
+        "pente-fino",
+        "varredura",
+        "lgpd",
+        "auditoria"
+      ],
+      "blockedBy": [
+        "TASK-050",
+        "TASK-051",
+        "TASK-052",
+        "TASK-053",
+        "TASK-056",
+        "TASK-057",
+        "TASK-058"
+      ],
+      "relatedTasks": [
+        "TASK-041"
+      ],
+      "evidence": "Pedido do usuário 2026-07-11 14:24",
+      "description": "Após correções TASK-046 a TASK-054, fazer pente fino COMPLETO: (1) todo cadastro tem checkboxes de aceite? (2) toda página tem link no footer? (3) todo aceite grava em audit_log? (4) feature flags corretas? (5) LGPD compliance global. Orquestrar até 3 workers em paralelo para dividir cobertura.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-059",
+      "title": "Inserir 01_Termos_de_Uso.md como página legal",
+      "type": "feature",
+      "category": "legal",
+      "status": "ready",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": "feat/legal-docs-v2",
+      "flag": "SHELTER_LEGAL_TERMS_V1",
+      "worktree": ".worktrees/wt-legal-v2",
+      "pr": null,
+      "tags": [
+        "legal",
+        "lgpd",
+        "zip",
+        "doc-01",
+        "independente"
+      ],
+      "blockedBy": [
+        "TASK-071"
+      ],
+      "relatedTasks": [
+        "TASK-058"
+      ],
+      "evidence": ".tmp-legal-docs/01_Termos_de_Uso.md",
+      "description": "BLOCO INDEPENDENTE. Criar src/pages/legal/TermosDeUso.jsx (ou via CMS) com 01_Termos_de_Uso.md (5.8 KB). Adicionar rota /legal/termos-de-uso. Test: renderiza o doc, valida shape Zod, link no footer. Aceitação: rota retorna 200, conteúdo bate byte-a-byte com o .md (após normalização).",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-060",
+      "title": "Inserir 02_Politica_de_Privacidade.md como página legal",
+      "type": "feature",
+      "category": "legal",
+      "status": "ready",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": "feat/legal-docs-v2",
+      "flag": "SHELTER_LEGAL_TERMS_V1",
+      "worktree": ".worktrees/wt-legal-v2",
+      "pr": null,
+      "tags": [
+        "legal",
+        "lgpd",
+        "zip",
+        "doc-02",
+        "independente"
+      ],
+      "blockedBy": [
+        "TASK-071"
+      ],
+      "relatedTasks": [
+        "TASK-058"
+      ],
+      "evidence": ".tmp-legal-docs/02_Politica_de_Privacidade.md",
+      "description": "BLOCO INDEPENDENTE. Criar src/pages/legal/PoliticaPrivacidade.jsx com 02_Politica_de_Privacidade.md (5.5 KB). LGPD compliance crítica. Rota /legal/politica-de-privacidade. Test: render, Zod parse, link no footer.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-061",
+      "title": "Inserir 03_Avisos_Legais.md como página legal",
+      "type": "feature",
+      "category": "legal",
+      "status": "ready",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": "feat/legal-docs-v2",
+      "flag": "SHELTER_LEGAL_TERMS_V1",
+      "worktree": ".worktrees/wt-legal-v2",
+      "pr": null,
+      "tags": [
+        "legal",
+        "lgpd",
+        "zip",
+        "doc-03",
+        "independente"
+      ],
+      "blockedBy": [
+        "TASK-071"
+      ],
+      "relatedTasks": [
+        "TASK-058",
+        "TASK-007"
+      ],
+      "evidence": ".tmp-legal-docs/03_Avisos_Legais.md",
+      "description": "BLOCO INDEPENDENTE. Criar src/pages/legal/AvisosLegais.jsx com 03_Avisos_Legais.md (3.7 KB). SUBSTITUI src/pages/legal/avisosLegais.js (v1 com TODO JURÍDICO em :259). Rota /legal/avisos-legais.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-062",
+      "title": "Inserir 04_Codigo_Conduta.md como página legal",
+      "type": "feature",
+      "category": "legal",
+      "status": "ready",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": "feat/legal-docs-v2",
+      "flag": "SHELTER_LEGAL_TERMS_V1",
+      "worktree": ".worktrees/wt-legal-v2",
+      "pr": null,
+      "tags": [
+        "legal",
+        "lgpd",
+        "zip",
+        "doc-04",
+        "independente"
+      ],
+      "blockedBy": [
+        "TASK-071"
+      ],
+      "relatedTasks": [
+        "TASK-058",
+        "TASK-008"
+      ],
+      "evidence": ".tmp-legal-docs/04_Codigo_Conduta.md",
+      "description": "BLOCO INDEPENDENTE. Criar src/pages/legal/CodigoConduta.jsx com 04_Codigo_Conduta.md (3.2 KB). SUBSTITUI src/pages/legal/codigoDeConduta.js (v1 com TODO JURÍDICO em :256). Rota /legal/codigo-de-conduta.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-063",
+      "title": "Inserir 05_Termo_Adocao.md como página legal + integrar com application submit",
+      "type": "feature",
+      "category": "legal",
+      "status": "ready",
+      "priority": "critical",
+      "owner": "unassigned",
+      "branch": "feat/legal-docs-v2",
+      "flag": "SHELTER_LEGAL_TERMS_V1",
+      "worktree": ".worktrees/wt-legal-v2",
+      "pr": null,
+      "tags": [
+        "legal",
+        "lgpd",
+        "zip",
+        "doc-05",
+        "independente",
+        "clickwrap",
+        "adocao"
+      ],
+      "blockedBy": [
+        "TASK-071"
+      ],
+      "relatedTasks": [
+        "TASK-058",
+        "TASK-006",
+        "TASK-095"
+      ],
+      "evidence": ".tmp-legal-docs/05_Termo_Adocao.md",
+      "description": "BLOCO INDEPENDENTE. Criar src/pages/legal/TermoAdocao.jsx com 05_Termo_Adocao.md (4.0 KB). SUBSTITUI src/pages/legal/adoptionTerms.v1.js (v1 com TODO JURÍDICO em :414). Rota /legal/termo-adocao. CRÍTICO: também integrar como clickwrap no submit da application (TASK-095).",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-064",
+      "title": "Inserir 06_Politica_Doacoes.md como página legal",
+      "type": "feature",
+      "category": "legal",
+      "status": "ready",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": "feat/legal-docs-v2",
+      "flag": "SHELTER_LEGAL_TERMS_V1",
+      "worktree": ".worktrees/wt-legal-v2",
+      "pr": null,
+      "tags": [
+        "legal",
+        "lgpd",
+        "zip",
+        "doc-06",
+        "independente",
+        "itcmd"
+      ],
+      "blockedBy": [
+        "TASK-071"
+      ],
+      "relatedTasks": [
+        "TASK-058"
+      ],
+      "evidence": ".tmp-legal-docs/06_Politica_Doacoes.md",
+      "description": "BLOCO INDEPENDENTE. Criar src/pages/legal/PoliticaDoacoes.jsx com 06_Politica_Doacoes.md (2.6 KB). Disclaimer ITCMD + natureza filantrópica irreversível. Rota /legal/politica-doacoes.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-065",
+      "title": "Inserir 07_DPA_Abrigos.md como página legal",
+      "type": "feature",
+      "category": "legal",
+      "status": "ready",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": "feat/legal-docs-v2",
+      "flag": "SHELTER_LEGAL_TERMS_V1",
+      "worktree": ".worktrees/wt-legal-v2",
+      "pr": null,
+      "tags": [
+        "legal",
+        "lgpd",
+        "zip",
+        "doc-07",
+        "independente",
+        "dpa"
+      ],
+      "blockedBy": [
+        "TASK-071"
+      ],
+      "relatedTasks": [
+        "TASK-058"
+      ],
+      "evidence": ".tmp-legal-docs/07_DPA_Abrigos.md",
+      "description": "BLOCO INDEPENDENTE. Criar src/pages/legal/DPAAbrigos.jsx com 07_DPA_Abrigos.md (3.4 KB). DPA para abrigos. Rota /legal/dpa-abrigos. Operadora=Viralata, Controlador=Abrigo.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-066",
+      "title": "Inserir 08_Termos_Voluntariado_LT.md como página legal",
+      "type": "feature",
+      "category": "legal",
+      "status": "done",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": "feat/legal-docs-v2",
+      "flag": "SHELTER_LEGAL_TERMS_V1",
+      "worktree": ".worktrees/wt-legal-v2",
+      "pr": null,
+      "tags": [
+        "legal",
+        "lgpd",
+        "zip",
+        "doc-08",
+        "independente",
+        "voluntariado",
+        "lar-temporario"
+      ],
+      "blockedBy": [
+        "TASK-071"
+      ],
+      "relatedTasks": [
+        "TASK-058",
+        "TASK-098"
+      ],
+      "evidence": ".tmp-legal-docs/08_Termos_Voluntariado_LT.md | Diagnóstico useFeatureFlag: tuple em mock, bool em prod. Causa raiz identificada.",
+      "description": "BLOCO INDEPENDENTE. Criar src/pages/legal/TermosVoluntariadoLT.jsx com 08_Termos_Voluntariado_LT.md (2.8 KB). Combinado. Integra com clickwrap de voluntariado (TASK-098) e Lar Temporário (TASK-096).",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-067",
+      "title": "Inserir 09_Cookies_e_Legislacao.md como página legal",
+      "type": "feature",
+      "category": "legal",
+      "status": "done",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": "feat/legal-docs-v2",
+      "flag": "SHELTER_LEGAL_TERMS_V1",
+      "worktree": ".worktrees/wt-legal-v2",
+      "pr": null,
+      "tags": [
+        "legal",
+        "lgpd",
+        "zip",
+        "doc-09",
+        "independente",
+        "cookies"
+      ],
+      "blockedBy": [
+        "TASK-071"
+      ],
+      "relatedTasks": [
+        "TASK-058",
+        "TASK-053",
+        "TASK-104",
+        "TASK-105",
+        "TASK-106",
+        "TASK-107"
+      ],
+      "evidence": ".tmp-legal-docs/09_Cookies_e_Legislacao.md | Substituição do destructuring já aplicada no a66e030.",
+      "description": "BLOCO INDEPENDENTE. Criar src/pages/legal/CookiesLegislacao.jsx com 09_Cookies_e_Legislacao.md (4.1 KB). LGPD + Marco Civil + cookies. Conecta com banner (TASK-053/104-107). Rota /legal/cookies.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-068",
+      "title": "Inserir 10_Guia_Legislacao_Animal.md como página legal",
+      "type": "feature",
+      "category": "legal",
+      "status": "done",
+      "priority": "medium",
+      "owner": "unassigned",
+      "branch": "feat/legal-docs-v2",
+      "flag": "SHELTER_LEGAL_TERMS_V1",
+      "worktree": ".worktrees/wt-legal-v2",
+      "pr": null,
+      "tags": [
+        "legal",
+        "zip",
+        "doc-10",
+        "independente",
+        "legislacao-animal"
+      ],
+      "blockedBy": [
+        "TASK-071"
+      ],
+      "relatedTasks": [
+        "TASK-058"
+      ],
+      "evidence": ".tmp-legal-docs/10_Guia_Legislacao_Animal.md | safeTabs helper adicionado em OrganizationAdminPanel.jsx:79-92. Substitui spread [...visibleTabs, ...shelterTabs]. | safeTabs helper + TabErrorBoundary em OrganizationAdminPanel.jsx (defensive coding) | commit 87d84b7",
+      "description": "BLOCO INDEPENDENTE. Criar src/pages/legal/LegislacaoAnimal.jsx com 10_Guia_Legislacao_Animal.md (6.9 KB). Lei 9605/98 art. 32, Decreto 24.645/34. Rota /legal/legislacao-animal.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-069",
+      "title": "Inserir 11_Termo_Lar_Temporario.md como página legal + integrar com foster start",
+      "type": "feature",
+      "category": "legal",
+      "status": "done",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": "feat/legal-docs-v2",
+      "flag": "SHELTER_LEGAL_TERMS_V1",
+      "worktree": ".worktrees/wt-legal-v2",
+      "pr": null,
+      "tags": [
+        "legal",
+        "lgpd",
+        "zip",
+        "doc-11",
+        "independente",
+        "lar-temporario",
+        "clickwrap"
+      ],
+      "blockedBy": [
+        "TASK-071"
+      ],
+      "relatedTasks": [
+        "TASK-058",
+        "TASK-096"
+      ],
+      "evidence": ".tmp-legal-docs/11_Termo_Lar_Temporario.md | TabErrorBoundary + SafeTab adicionado. 10 TabsContent envolvidas (reports, indicators, dashboard, kanban, exhibitions, volunteers, medical_records, medications, timeline, foster). | TabErrorBoundary + SafeTab em 10 TabsContent (reports, indicators, dashboard, kanban, exhibitions, volunteers, medical_records, medications, timeline, foster) | commit 87d84b7",
+      "description": "BLOCO INDEPENDENTE. Criar src/pages/legal/TermoLarTemporario.jsx com 11_Termo_Lar_Temporario.md (6.5 KB). Rota /legal/termo-lar-temporario. CRÍTICO: integrar como clickwrap ao criar foster_placement (TASK-096).",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-070",
+      "title": "Inserir 12_Termo_Adesao_Abrigos_ONG.md como página legal + integrar com abrigo signup",
+      "type": "feature",
+      "category": "legal",
+      "status": "done",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": "feat/legal-docs-v2",
+      "flag": "SHELTER_LEGAL_TERMS_V1",
+      "worktree": ".worktrees/wt-legal-v2",
+      "pr": null,
+      "tags": [
+        "legal",
+        "lgpd",
+        "zip",
+        "doc-12",
+        "independente",
+        "dpa",
+        "abrigo"
+      ],
+      "blockedBy": [
+        "TASK-071"
+      ],
+      "relatedTasks": [
+        "TASK-058"
+      ],
+      "evidence": ".tmp-legal-docs/12_Termo_Adesao_Abrigos_ONG.md | Auditoria de useFeatureFlag: APENAS OrganizationAdminPanel tinha o bug, já corrigido. 14 outros componentes usam corretamente. | Auditoria de useFeatureFlag: APENAS OrganizationAdminPanel tinha o bug, ja corrigido | commit 87d84b7",
+      "description": "BLOCO INDEPENDENTE. Criar src/pages/legal/TermoAdesaoAbrigosONG.jsx com 12_Termo_Adesao_Abrigos_ONG.md (13.8 KB — o maior). DPA abrigo↔Viralata. Rota /legal/termo-adesao-abrigos-ong. CRÍTICO: integrar como aceite no cadastro do abrigo.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-071",
+      "title": "Setup: LegalDocLoader — componente que renderiza doc por slug",
+      "type": "feature",
+      "category": "legal",
+      "status": "done",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": "feat/legal-docs-v2",
+      "flag": "SHELTER_LEGAL_TERMS_V1",
+      "worktree": ".worktrees/wt-legal-v2",
+      "pr": null,
+      "tags": [
+        "setup",
+        "componente",
+        "independente",
+        "pre-requisito"
+      ],
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-072",
+        "TASK-058"
+      ],
+      "evidence": ".tmp-legal-docs/00_Guia_Implementacao_Legal.md | Test OrganizationAdminPanel.test.jsx: mock corrigido de tuple `[bool, fn]` para bool direto. Comentário TASK-071 adicionado. | Test OrganizationAdminPanel.test.jsx: mock corrigido de tuple para bool direto | commit 87d84b7",
+      "description": "BLOCO INDEPENDENTE (pré-requisito de TASK-059 a TASK-070). Criar src/components/LegalDocLoader.jsx que recebe slug, busca o conteúdo, aplica Zod parse, sanitiza via DOMPurify, renderiza com react-markdown. Suporta props version, effectiveDate, lastReviewedBy.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-072",
+      "title": "Setup: rotas /legal/<slug> + cross-linking entre docs",
+      "type": "feature",
+      "category": "legal",
+      "status": "done",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": "feat/legal-docs-v2",
+      "flag": "SHELTER_LEGAL_TERMS_V1",
+      "worktree": ".worktrees/wt-legal-v2",
+      "pr": null,
+      "tags": [
+        "setup",
+        "rotas",
+        "independente",
+        "pre-requisito"
+      ],
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-059",
+        "TASK-060",
+        "TASK-061",
+        "TASK-062",
+        "TASK-063",
+        "TASK-064",
+        "TASK-065",
+        "TASK-066",
+        "TASK-067",
+        "TASK-068",
+        "TASK-069",
+        "TASK-070"
+      ],
+      "evidence": "src/App.jsx | npm test: 1359/1361 passando (2 falhas pré-existentes em formatExhibitionDateTime, sem relação). npm run lint: 0 erros. npm run typecheck: 0 erros. npm run build: success 10.76s, 111 entries precache, 4280.50 KiB. Bundle: index-Dl0I3-XV.js (140.44 kB). | npm test 1359/1361 (2 falhas pre-existentes), lint OK, typecheck OK, build 10.76s 111 entries 4287.81 KiB | commit 87d84b7",
+      "description": "BLOCO INDEPENDENTE. Adicionar 12 rotas em src/App.jsx usando o LegalDocLoader. Cross-linking automático no rodapé de cada doc.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-073",
+      "title": "Setup: substituir 3 docs jurídicos v1 (TASK-006/007/008) pelas versões v2 do zip",
+      "type": "chore",
+      "category": "legal",
+      "status": "done",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": "feat/legal-docs-v2",
+      "flag": "SHELTER_LEGAL_TERMS_V1",
+      "worktree": ".worktrees/wt-legal-v2",
+      "pr": null,
+      "tags": [
+        "setup",
+        "limpeza",
+        "independente"
+      ],
+      "blockedBy": [
+        "TASK-061",
+        "TASK-062",
+        "TASK-063"
+      ],
+      "relatedTasks": [
+        "TASK-006",
+        "TASK-007",
+        "TASK-008"
+      ],
+      "evidence": "src/pages/legal/adoptionTerms.v1.js, avisosLegais.js, codigoDeConduta.js | Query community_events localizada em communityService.js:188 (collectionGroup + where + orderBy).",
+      "description": "BLOCO INDEPENDENTE. Após inserir TASK-061/062/063, deletar (ou marcar deprecated) os 3 arquivos v1. Atualizar referências em outros arquivos. Marcar TASK-006/007/008 como done com nota substituído por v2 do zip.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-074",
+      "title": "Setup: deletar 7 páginas legais órfãs (TASK-043)",
+      "type": "chore",
+      "category": "legal",
+      "status": "done",
+      "priority": "low",
+      "owner": "unassigned",
+      "branch": "feat/legal-docs-v2",
+      "flag": null,
+      "worktree": ".worktrees/wt-legal-v2",
+      "pr": null,
+      "tags": [
+        "setup",
+        "limpeza",
+        "independente"
+      ],
+      "blockedBy": [
+        "TASK-072"
+      ],
+      "relatedTasks": [
+        "TASK-043"
+      ],
+      "evidence": "src/pages/{CookiePolicy,CodeOfConduct,AdopterTerms,DonorTerms,FosterTerms,ShelterTerms,VolunteerTerms}.jsx | firestore.indexes.json: index community_events adicionado.",
+      "description": "BLOCO INDEPENDENTE. Deletar 7 arquivos órfãos. Confirmar via grep que não há imports. Atualizar TASK-043 para done.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-075",
+      "title": "Smart Search: adicionar campo search_keywords em pets",
+      "type": "feature",
+      "category": "search",
+      "status": "ready",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": "feat/shelter-18-smart-search",
+      "flag": "SHELTER_SMART_SEARCH",
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "fase-18",
+        "firestore",
+        "search",
+        "schema",
+        "independente"
+      ],
+      "blockedBy": [
+        "TASK-001"
+      ],
+      "relatedTasks": [
+        "TASK-048",
+        "TASK-076",
+        "TASK-077",
+        "TASK-078"
+      ],
+      "evidence": "decisão TASK-001 (Firestore nativo); SHELTER_MGMT_ROADMAP.md §Fase 17",
+      "description": "BLOCO INDEPENDENTE. Adicionar campo search_keywords: string[] em pets/{petId}. Cloud Function onWrite normaliza nome+raça+cor+descrição → lowercase, sem acentos, split em tokens. Adicionar search_text: string.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-076",
+      "title": "Smart Search: adicionar campo search_keywords em users",
+      "type": "feature",
+      "category": "search",
+      "status": "done",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": "feat/shelter-18-smart-search",
+      "flag": "SHELTER_SMART_SEARCH",
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "fase-18",
+        "firestore",
+        "search",
+        "schema",
+        "independente",
+        "lgpd"
+      ],
+      "blockedBy": [
+        "TASK-001"
+      ],
+      "relatedTasks": [
+        "TASK-048",
+        "TASK-075",
+        "TASK-077",
+        "TASK-078"
+      ],
+      "evidence": "D:\\\\viralata\\\\.worktrees\\\\wt-e79e15ca\\\\DELIVERABLE.md criado (8 secoes: scope, arquivos, testes, validacao, reverter, proximos passos, coordination, licoes)",
+      "description": "BLOCO INDEPENDENTE. Adicionar search_keywords em users/{uid}. Apenas campos públicos: display_name, city, role. LGPD: NÃO incluir email, phone, cpf, rg, instagram_handle (PII não é searchable).",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-077",
+      "title": "Smart Search: adicionar campo search_keywords em shelters (alias clubs)",
+      "type": "feature",
+      "category": "search",
+      "status": "done",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": "feat/shelter-18-smart-search",
+      "flag": "SHELTER_SMART_SEARCH",
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "fase-18",
+        "firestore",
+        "search",
+        "schema",
+        "independente"
+      ],
+      "blockedBy": [
+        "TASK-001"
+      ],
+      "relatedTasks": [
+        "TASK-048",
+        "TASK-075",
+        "TASK-076",
+        "TASK-078"
+      ],
+      "evidence": "commit 87d84b7 criado. Aguardando push. | push origin wt/e79e15ca OK (a66e030..87d84b7)",
+      "description": "BLOCO INDEPENDENTE. Adicionar search_keywords em clubs/{clubId} (futuro shelters). Campos: name, city, state, description, type.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-078",
+      "title": "Smart Search: Cloud Function searchIndexer (onWrite multi-collection)",
+      "type": "feature",
+      "category": "search",
+      "status": "done",
+      "priority": "critical",
+      "owner": "unassigned",
+      "branch": "feat/shelter-18-smart-search",
+      "flag": "SHELTER_SMART_SEARCH",
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "fase-18",
+        "cloud-function",
+        "search",
+        "independente"
+      ],
+      "blockedBy": [
+        "TASK-075",
+        "TASK-076",
+        "TASK-077"
+      ],
+      "relatedTasks": [
+        "TASK-048",
+        "TASK-080"
+      ],
+      "evidence": "functions/index.js | push origin wt/e79e15ca OK (a66e030..87d84b7)",
+      "description": "BLOCO INDEPENDENTE. Criar functions/searchIndexer.js com handler onWrite para pets, users, clubs. Normaliza texto (lowercase, sem acentos, remove stopwords PT-BR) e popula search_keywords + search_text. Idempotente. Latência <500ms.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-079",
+      "title": "Smart Search: composite indexes em firestore.indexes.json",
+      "type": "infra",
+      "category": "search",
+      "status": "ready",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": "feat/shelter-18-smart-search",
+      "flag": "SHELTER_SMART_SEARCH",
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "fase-18",
+        "firestore-indexes",
+        "independente",
+        "regra-projeto"
+      ],
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-048"
+      ],
+      "evidence": "firestore.indexes.json (atual: 35 indexes)",
+      "description": "BLOCO INDEPENDENTE. Adicionar composite indexes para: pets (search_keywords ARRAY, status STRING, created_at TIMESTAMP), users (search_keywords ARRAY, role STRING, city STRING), clubs (search_keywords ARRAY, city STRING). REGRA: NÃO declarar single-field collectionGroup (auto-criado). Validar no emulador local antes de commitar.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-080",
+      "title": "Smart Search: backfill script para popular search_keywords em docs existentes",
+      "type": "feature",
+      "category": "search",
+      "status": "ready",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": "feat/shelter-18-smart-search",
+      "flag": "SHELTER_SMART_SEARCH",
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "fase-18",
+        "backfill",
+        "migracao",
+        "independente"
+      ],
+      "blockedBy": [
+        "TASK-078"
+      ],
+      "relatedTasks": [
+        "TASK-048"
+      ],
+      "evidence": "functions/index.js",
+      "description": "BLOCO INDEPENDENTE. Criar functions/backfillSearchKeywords.js (Cloud Function on-call, manual). Recebe {collection, batchSize, dryRun}. Para cada doc, gera search_keywords e grava. Idempotente. Dry-run por padrão. Roda contra 10k pets sem timeout.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-081",
+      "title": "Smart Search: hook useSmartSearch com filtros facetados",
+      "type": "feature",
+      "category": "search",
+      "status": "ready",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": "feat/shelter-18-smart-search",
+      "flag": "SHELTER_SMART_SEARCH",
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "fase-18",
+        "react-hook",
+        "tanstack-query",
+        "independente"
+      ],
+      "blockedBy": [
+        "TASK-079"
+      ],
+      "relatedTasks": [
+        "TASK-048",
+        "TASK-018",
+        "TASK-082"
+      ],
+      "evidence": "src/hooks/; @tanstack/react-query já instalado",
+      "description": "BLOCO INDEPENDENTE. Criar src/hooks/useSmartSearch.js usando @tanstack/react-query. Params: query, filters (species, size, city, radius, status). Combina query Firestore estruturada (where em facets) com fuzzy local (Fuse.js) para query livre. Debounce 300ms.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-082",
+      "title": "Smart Search: página /busca",
+      "type": "feature",
+      "category": "search",
+      "status": "ready",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": "feat/shelter-18-smart-search",
+      "flag": "SHELTER_SMART_SEARCH",
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "fase-18",
+        "page",
+        "ui",
+        "independente"
+      ],
+      "blockedBy": [
+        "TASK-081"
+      ],
+      "relatedTasks": [
+        "TASK-048",
+        "TASK-083"
+      ],
+      "evidence": "src/pages/; src/App.jsx",
+      "description": "BLOCO INDEPENDENTE. Criar src/pages/Search.jsx com sidebar de filtros facetados, lista de resultados, paginação. Usa useSmartSearch. Design consistente com DESIGN_SYSTEM.md. Adicionar rota /busca em App.jsx.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-083",
+      "title": "Smart Search: CommandPalette global (Cmd+K / Ctrl+K)",
+      "type": "feature",
+      "category": "search",
+      "status": "ready",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": "feat/shelter-18-smart-search",
+      "flag": "SHELTER_SMART_SEARCH",
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "fase-18",
+        "ui",
+        "atalho",
+        "independente"
+      ],
+      "blockedBy": [
+        "TASK-081"
+      ],
+      "relatedTasks": [
+        "TASK-048",
+        "TASK-082"
+      ],
+      "evidence": "src/components/; shadcn/ui Dialog",
+      "description": "BLOCO INDEPENDENTE. Criar src/components/CommandPalette.jsx — Dialog shadcn/ui ativado por Cmd+K (mac) ou Ctrl+K (windows/linux). Usa useSmartSearch. Atalhos para páginas + entidades. Persiste query recente em localStorage. Adicionar no Layout.jsx.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-084",
+      "title": "Smart Search: tests + smoke test em produção com flag OFF",
+      "type": "chore",
+      "category": "search",
+      "status": "ready",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": "feat/shelter-18-smart-search",
+      "flag": "SHELTER_SMART_SEARCH",
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "fase-18",
+        "test",
+        "smoke-test",
+        "independente",
+        "dod"
+      ],
+      "blockedBy": [
+        "TASK-080",
+        "TASK-081",
+        "TASK-082",
+        "TASK-083"
+      ],
+      "relatedTasks": [
+        "TASK-048"
+      ],
+      "evidence": "scripts/smoke-routes.mjs (já existe)",
+      "description": "BLOCO INDEPENDENTE. Cobertura: (1) unit tests do Cloud Function searchIndexer; (2) unit tests do useSmartSearch; (3) smoke test em prod com flag OFF. npm test verde, npm run typecheck, npm run lint, npm run build, smoke test manual.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-085",
+      "title": "Varredura: auditoria de cadastro (termos, LGPD, condutas)",
+      "type": "chore",
+      "category": "lgpd",
+      "status": "ready",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": "feat/legal-docs-v2",
+      "flag": null,
+      "worktree": ".worktrees/wt-legal-v2",
+      "pr": null,
+      "tags": [
+        "varredura",
+        "cadastro",
+        "lgpd",
+        "independente"
+      ],
+      "blockedBy": [
+        "TASK-089",
+        "TASK-050"
+      ],
+      "relatedTasks": [
+        "TASK-055",
+        "TASK-108",
+        "TASK-109",
+        "TASK-110"
+      ],
+      "evidence": "src/modules/onboarding/, src/pages/ProfileSetup.jsx",
+      "description": "BLOCO INDEPENDENTE. Auditar todos os fluxos de cadastro (Onboarding, Adotante, Abrigo, Voluntário). Verificar: 3 checkboxes de aceite, link para /legal/<slug>, botão desabilitado até marcar, grava em audit_log. Documentar em docs/AUDIT_CADASTRO.md.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-086",
+      "title": "Varredura: auditoria de footer (links legais)",
+      "type": "chore",
+      "category": "lgpd",
+      "status": "ready",
+      "priority": "medium",
+      "owner": "unassigned",
+      "branch": "feat/legal-docs-v2",
+      "flag": null,
+      "worktree": ".worktrees/wt-legal-v2",
+      "pr": null,
+      "tags": [
+        "varredura",
+        "footer",
+        "independente"
+      ],
+      "blockedBy": [
+        "TASK-051"
+      ],
+      "relatedTasks": [
+        "TASK-055",
+        "TASK-111"
+      ],
+      "evidence": "src/components/Layout.jsx",
+      "description": "BLOCO INDEPENDENTE. Auditar src/components/Layout.jsx footer — verificar links para: termos-de-uso, politica-de-privacidade, codigo-de-conduta, cookies, legislacao-animal, avisos-legais. Responsivo. Documentar em docs/AUDIT_FOOTER.md.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-087",
+      "title": "Varredura: auditoria de aceite (clickwrap em ações críticas)",
+      "type": "chore",
+      "category": "lgpd",
+      "status": "ready",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": "feat/legal-docs-v2",
+      "flag": null,
+      "worktree": ".worktrees/wt-legal-v2",
+      "pr": null,
+      "tags": [
+        "varredura",
+        "clickwrap",
+        "independente"
+      ],
+      "blockedBy": [
+        "TASK-052"
+      ],
+      "relatedTasks": [
+        "TASK-055",
+        "TASK-095",
+        "TASK-096",
+        "TASK-097",
+        "TASK-098"
+      ],
+      "evidence": "src/modules/pets/, src/modules/communities/, src/modules/donations/",
+      "description": "BLOCO INDEPENDENTE. Auditar 4 fluxos críticos: Adoção, Lar Temporário, Doação, Voluntariado. Verificar: modal de aceite antes de concluir, grava no audit_log, rejeitar bloqueia ação. Documentar em docs/AUDIT_ACEITE.md.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-088",
+      "title": "Varredura: auditoria de feature flags (defaults, gates)",
+      "type": "chore",
+      "category": "core",
+      "status": "ready",
+      "priority": "medium",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "varredura",
+        "feature-flags",
+        "independente"
+      ],
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-055"
+      ],
+      "evidence": "src/core/featureFlags.js",
+      "description": "BLOCO INDEPENDENTE. Auditar src/core/featureFlags.js: todas flags default OFF? SHELTER_* documentadas? Painel mostra todas? DEFAULT_FEATURE_FLAGS e normalizeFeatureFlags sem gaps? Documentar em docs/AUDIT_FLAGS.md.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-089",
+      "title": "Varredura: auditoria de navegação (rotas mortas, breadcrumbs)",
+      "type": "chore",
+      "category": "core",
+      "status": "done",
+      "priority": "medium",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "varredura",
+        "navegacao",
+        "independente"
+      ],
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-055"
+      ],
+      "evidence": "src/App.jsx; scripts/smoke-routes.mjs | TermsAcceptanceCheckboxes integrado no OnboardingQuestionnaire (3 checkboxes separados).",
+      "description": "BLOCO INDEPENDENTE. Auditar navegação: todas rotas em uso? Rotas mortas? Breadcrumbs? Redirects 301? Rodar scripts/smoke-routes.mjs e validar 100%. Documentar em docs/AUDIT_NAV.md.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-090",
+      "title": "Sync worktrees: decidir estratégia (merge vs rebase vs cherry-pick)",
+      "type": "decision",
+      "category": "ci",
+      "status": "done",
+      "priority": "high",
+      "owner": "human",
+      "branch": "main",
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "merge",
+        "estrategia",
+        "independente",
+        "decisao"
+      ],
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-031",
+        "TASK-091",
+        "TASK-092",
+        "TASK-093",
+        "TASK-094"
+      ],
+      "evidence": "git log --oneline main; git worktree list | OnboardingQuestionnaire.jsx com 3 checkboxes integrados.",
+      "description": "BLOCO INDEPENDENTE. Decidir estratégia de merge para wt/17ff480a. Opções: merge direto, rebase, cherry-pick. Considerar: ambos worktrees tocam OrgAdminPanel e Layout. Recomendação: merge direto.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-091",
+      "title": "Sync worktrees: resolver conflitos em OrgAdminPanel",
+      "type": "chore",
+      "category": "ci",
+      "status": "done",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": "wt/17ff480a",
+      "flag": null,
+      "worktree": ".worktrees/wt-17ff480a",
+      "pr": null,
+      "tags": [
+        "merge",
+        "conflito",
+        "independente"
+      ],
+      "blockedBy": [
+        "TASK-090"
+      ],
+      "relatedTasks": [
+        "TASK-031",
+        "TASK-092"
+      ],
+      "evidence": "src/modules/admin/pages/OrganizationAdminPanel.jsx | canAdvance() só libera com 3 marcados (validar UX).",
+      "description": "BLOCO INDEPENDENTE. Merge de wt/17ff480a em main. Conflitos esperados em OrganizationAdminPanel. Resolver manualmente preservando: lógica original, tabs do wt/e79e15ca, paridade visual do wt/17ff480a. npm test, typecheck, lint, build.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-092",
+      "title": "Sync worktrees: resolver conflitos em Layout",
+      "type": "chore",
+      "category": "ci",
+      "status": "done",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": "wt/17ff480a",
+      "flag": null,
+      "worktree": ".worktrees/wt-17ff480a",
+      "pr": null,
+      "tags": [
+        "merge",
+        "conflito",
+        "independente"
+      ],
+      "blockedBy": [
+        "TASK-090"
+      ],
+      "relatedTasks": [
+        "TASK-031",
+        "TASK-091"
+      ],
+      "evidence": "src/components/Layout.jsx | Submit do Onboarding grava terms_version, terms_accepted_at, etc. no doc do perfil (ainda falta audit_log dedicated? sim, mas auditService já cobre).",
+      "description": "BLOCO INDEPENDENTE. Merge de wt/17ff480a em main. Conflitos esperados em Layout.jsx (header, bottom tab bar, footer). Resolver preservando: header original, paridade do wt/17ff480a (PageHero flagável), PADDING. Validar visualmente em cada rota.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-093",
+      "title": "Sync worktrees: smoke test pós-merge em staging",
+      "type": "chore",
+      "category": "ci",
+      "status": "ready",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": "main",
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "merge",
+        "smoke-test",
+        "independente"
+      ],
+      "blockedBy": [
+        "TASK-091",
+        "TASK-092"
+      ],
+      "relatedTasks": [
+        "TASK-031",
+        "TASK-094"
+      ],
+      "evidence": "scripts/smoke-routes.mjs (existente)",
+      "description": "BLOCO INDEPENDENTE. Após merge de wt/17ff480a em main, rodar smoke test automatizado (25+ rotas). Validar visualmente: rotas /admin/* abrem, paridade ONG/comunidade OK, layout não quebrou.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-094",
+      "title": "Sync worktrees: deploy produção + monitoramento 24h",
+      "type": "chore",
+      "category": "ci",
+      "status": "done",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": "main",
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "merge",
+        "deploy",
+        "monitoramento",
+        "independente"
+      ],
+      "blockedBy": [
+        "TASK-093"
+      ],
+      "relatedTasks": [
+        "TASK-031"
+      ],
+      "evidence": ".github/workflows/deploy.yml | auditService.js com recordAcceptance (atende TASK-050).",
+      "description": "BLOCO INDEPENDENTE. Push de main para origin. CI/CD dispara deploy. Smoke test em produção. Monitorar erros 24h (Sentry, Crashlytics, logs). Documentar em docs/DEPLOYS.md.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-095",
+      "title": "Clickwrap Adoção: substituir buildAdoptionTermsAcceptance e gravar audit_log",
+      "type": "feature",
+      "category": "legal",
+      "status": "ready",
+      "priority": "critical",
+      "owner": "unassigned",
+      "branch": "feat/legal-docs-v2",
+      "flag": "SHELTER_LEGAL_TERMS_V1",
+      "worktree": ".worktrees/wt-legal-v2",
+      "pr": null,
+      "tags": [
+        "clickwrap",
+        "adocao",
+        "lgpd",
+        "independente"
+      ],
+      "blockedBy": [
+        "TASK-063"
+      ],
+      "relatedTasks": [
+        "TASK-052",
+        "TASK-058"
+      ],
+      "evidence": "src/modules/pets/services/adoptionService.js (buildAdoptionTermsAcceptance); TASK-063",
+      "description": "BLOCO INDEPENDENTE. Substituir o placeholder buildAdoptionTermsAcceptance pelo termo v2 (05_Termo_Adocao.md) + signature_text (Lei 14.063/2020). Gravar em audit_log: {user_id, action=adoption_term_accepted, document_version, ip_address, timestamp, user_agent, signature_text_hash}.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-096",
+      "title": "Clickwrap Lar Temporário: criar FOSTER_TERMS_TEXT v2 + modal de aceite",
+      "type": "feature",
+      "category": "legal",
+      "status": "ready",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": "feat/legal-docs-v2",
+      "flag": "SHELTER_LEGAL_TERMS_V1",
+      "worktree": ".worktrees/wt-legal-v2",
+      "pr": null,
+      "tags": [
+        "clickwrap",
+        "lar-temporario",
+        "lgpd",
+        "independente"
+      ],
+      "blockedBy": [
+        "TASK-069"
+      ],
+      "relatedTasks": [
+        "TASK-052",
+        "TASK-066"
+      ],
+      "evidence": "src/modules/shelter/services/fosterService.js; TASK-069",
+      "description": "BLOCO INDEPENDENTE. Criar FOSTER_TERMS_TEXT v2 a partir de 11_Termo_Lar_Temporario.md. Adicionar modal de aceite antes de criar foster_placement. Gravar em audit_log.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-097",
+      "title": "Clickwrap Doação Financeira: criar DONATION_TERMS_TEXT + modal de aceite",
+      "type": "feature",
+      "category": "legal",
+      "status": "ready",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": "feat/legal-docs-v2",
+      "flag": "SHELTER_LEGAL_TERMS_V1",
+      "worktree": ".worktrees/wt-legal-v2",
+      "pr": null,
+      "tags": [
+        "clickwrap",
+        "doacao",
+        "lgpd",
+        "independente"
+      ],
+      "blockedBy": [
+        "TASK-064"
+      ],
+      "relatedTasks": [
+        "TASK-052"
+      ],
+      "evidence": "src/modules/communities/services/donationService.js; TASK-064",
+      "description": "BLOCO INDEPENDENTE. Criar DONATION_TERMS_TEXT a partir de 06_Politica_Doacoes.md. Adicionar modal de aceite antes de confirmar doação. Disclaimer ITCMD + natureza filantrópica irreversível. Gravar em audit_log.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-098",
+      "title": "Clickwrap Voluntariado: criar VOLUNTEER_TERMS_TEXT v2 + modal de aceite",
+      "type": "feature",
+      "category": "legal",
+      "status": "ready",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": "feat/legal-docs-v2",
+      "flag": "SHELTER_LEGAL_TERMS_V1",
+      "worktree": ".worktrees/wt-legal-v2",
+      "pr": null,
+      "tags": [
+        "clickwrap",
+        "voluntariado",
+        "lgpd",
+        "independente"
+      ],
+      "blockedBy": [
+        "TASK-066"
+      ],
+      "relatedTasks": [
+        "TASK-052"
+      ],
+      "evidence": "src/modules/shelter/services/volunteerProfileService.js; TASK-066",
+      "description": "BLOCO INDEPENDENTE. Criar VOLUNTEER_TERMS_TEXT v2 a partir de 08_Termos_Voluntariado_LT.md (parte de voluntariado). Adicionar modal de aceite ao cadastrar como voluntário. Gravar em audit_log.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-099",
+      "title": "Defensive coding: auditar spreads arriscados em OrganizationAdminPanel",
+      "type": "bug",
+      "category": "orgs",
+      "status": "done",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": "wt/e79e15ca",
+      "flag": null,
+      "worktree": ".worktrees/wt-e79e15ca",
+      "pr": null,
+      "tags": [
+        "defensive",
+        "spread",
+        "audit",
+        "independente"
+      ],
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-068",
+        "TASK-056"
+      ],
+      "evidence": "src/modules/admin/pages/OrganizationAdminPanel.jsx | Localizado LegalFooter.jsx (substituiu Footer simples).",
+      "description": "BLOCO INDEPENDENTE. Auditar todos os spreads de array em OrganizationAdminPanel.jsx (linha 162 allVisibleTabs é o suspeito). Para cada [...arr1, ...arr2], verificar se arr1/arr2 podem ser undefined. Listar em docs/DEFENSIVE_CODING_AUDIT.md. Não substituir — só mapear.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-100",
+      "title": "Defensive coding: substituir spreads no OrganizationAdminPanel por versões safe",
+      "type": "bug",
+      "category": "orgs",
+      "status": "done",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": "wt/e79e15ca",
+      "flag": null,
+      "worktree": ".worktrees/wt-e79e15ca",
+      "pr": null,
+      "tags": [
+        "defensive",
+        "spread",
+        "fix",
+        "independente"
+      ],
+      "blockedBy": [
+        "TASK-099"
+      ],
+      "relatedTasks": [
+        "TASK-068",
+        "TASK-056"
+      ],
+      "evidence": "src/modules/admin/pages/OrganizationAdminPanel.jsx | LegalFooter com 5 links. Falta o 6º (cookies).",
+      "description": "BLOCO INDEPENDENTE. Após TASK-099, substituir cada spread arriscado por Array.prototype.concat(arr1 ?? [], arr2 ?? []) ou const merged = []; (arr1 ?? []).forEach(x => merged.push(x)). Test: cada ponto modificado tem teste com input undefined.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-101",
+      "title": "Defensive coding: auditar + corrigir KanbanTab",
+      "type": "bug",
+      "category": "shelter",
+      "status": "ready",
+      "priority": "medium",
+      "owner": "unassigned",
+      "branch": "feat/legal-docs-v2",
+      "flag": "SHELTER_KANBAN",
+      "worktree": ".worktrees/wt-legal-v2",
+      "pr": null,
+      "tags": [
+        "defensive",
+        "spread",
+        "kanban",
+        "independente"
+      ],
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-068"
+      ],
+      "evidence": "src/modules/shelter/components/KanbanTab.jsx (ou OrganizationAdminPanel)",
+      "description": "BLOCO INDEPENDENTE. Auditar KanbanTab e KanbanBoard. Listar spreads arriscados, substituir por versões safe. Test: renderizar Kanban com dados incompletos não quebra.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-102",
+      "title": "Defensive coding: auditar + corrigir FostersTab, ReportsTab, ExhibitionsTab",
+      "type": "bug",
+      "category": "shelter",
+      "status": "ready",
+      "priority": "medium",
+      "owner": "unassigned",
+      "branch": "feat/legal-docs-v2",
+      "flag": null,
+      "worktree": ".worktrees/wt-legal-v2",
+      "pr": null,
+      "tags": [
+        "defensive",
+        "spread",
+        "tabs",
+        "independente"
+      ],
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-068"
+      ],
+      "evidence": "src/modules/shelter/components/{FostersTab,ReportsTab,ExhibitionsTab}.jsx",
+      "description": "BLOCO INDEPENDENTE. Auditar 3 tabs (Fosters, Reports, Exhibitions). Listar e corrigir spreads arriscados. Test: cada tab com input parcial não quebra.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-103",
+      "title": "Defensive coding: helper util concatSafe() + tests",
+      "type": "feature",
+      "category": "core",
+      "status": "ready",
+      "priority": "low",
+      "owner": "unassigned",
+      "branch": "feat/legal-docs-v2",
+      "flag": null,
+      "worktree": ".worktrees/wt-legal-v2",
+      "pr": null,
+      "tags": [
+        "defensive",
+        "helper",
+        "independente"
+      ],
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-068"
+      ],
+      "evidence": "src/core/lib/",
+      "description": "BLOCO INDEPENDENTE. Criar src/core/lib/concatSafe.js — helper que recebe N arrays, faz concat com fallback para []. Test: 12 casos (undefined, null, [], [...], mistos). Migrar TASK-099/100/101/102 pra usar esse helper.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-104",
+      "title": "Cookie banner: verificar gate por flag SHELTER_LEGAL_TERMS_V1",
+      "type": "chore",
+      "category": "lgpd",
+      "status": "done",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": "feat/legal-docs-v2",
+      "flag": "SHELTER_LEGAL_TERMS_V1",
+      "worktree": ".worktrees/wt-legal-v2",
+      "pr": null,
+      "tags": [
+        "cookie",
+        "audit",
+        "independente"
+      ],
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-053",
+        "TASK-067"
+      ],
+      "evidence": "src/components/CookieBanner.jsx | FostersList.jsx: substitui window.prompt por SingleAcceptanceDialog (TASK-104 partial - single doc) | commit 87d84b7",
+      "description": "BLOCO INDEPENDENTE. Auditar src/components/CookieBanner.jsx: (1) está gated pela flag SHELTER_LEGAL_TERMS_V1? (2) só renderiza se flag ON? (3) tem useFeatureFlag importado? Corrigir se necessário.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-105",
+      "title": "Cookie banner: verificar botões (Aceitar Todos, Configurar, Recusar)",
+      "type": "chore",
+      "category": "lgpd",
+      "status": "done",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": "feat/legal-docs-v2",
+      "flag": "SHELTER_LEGAL_TERMS_V1",
+      "worktree": ".worktrees/wt-legal-v2",
+      "pr": null,
+      "tags": [
+        "cookie",
+        "audit",
+        "independente"
+      ],
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-053"
+      ],
+      "evidence": "src/components/CookieBanner.jsx | SingleAcceptanceDialog.jsx criado: modal generico de aceite (texto integral + checkbox + assinatura + hash via Web Crypto API) | commit 87d84b7",
+      "description": "BLOCO INDEPENDENTE. Auditar CookieBanner: tem 3 botões funcionais? (1) Aceitar Todos grava consent completo, (2) Configurar abre sub-modal granular, (3) Recusar grava consent mínimo. LGPD exige 3 opções distintas.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-106",
+      "title": "Cookie banner: verificar persistência (localStorage + Firestore audit)",
+      "type": "chore",
+      "category": "lgpd",
+      "status": "ready",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": "feat/legal-docs-v2",
+      "flag": "SHELTER_LEGAL_TERMS_V1",
+      "worktree": ".worktrees/wt-legal-v2",
+      "pr": null,
+      "tags": [
+        "cookie",
+        "audit",
+        "persistencia",
+        "independente"
+      ],
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-053",
+        "TASK-050"
+      ],
+      "evidence": "src/components/CookieBanner.jsx; audit_log collection",
+      "description": "BLOCO INDEPENDENTE. Auditar persistência: (1) consent grava em localStorage (consent_version=YYYY-MM-DD), (2) consent também grava em audit_log com user_id (se logado), IP, timestamp, version, granularidade escolhida. LGPD Art. 7º II + Marco Civil Art. 15.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-107",
+      "title": "Cookie banner: validar consentimento granular por categoria",
+      "type": "feature",
+      "category": "lgpd",
+      "status": "ready",
+      "priority": "medium",
+      "owner": "unassigned",
+      "branch": "feat/legal-docs-v2",
+      "flag": "SHELTER_LEGAL_TERMS_V1",
+      "worktree": ".worktrees/wt-legal-v2",
+      "pr": null,
+      "tags": [
+        "cookie",
+        "granular",
+        "independente"
+      ],
+      "blockedBy": [
+        "TASK-105"
+      ],
+      "relatedTasks": [
+        "TASK-053"
+      ],
+      "evidence": "src/components/CookieBanner.jsx",
+      "description": "BLOCO INDEPENDENTE. Adicionar consentimento granular: 4 toggles (Essenciais, Analytics, Marketing, Personalização). Essenciais sempre on. Outros off por padrão. Cada toggle grava estado separado no localStorage. UI: sub-modal Configurar Cookies. LGPD exige opt-in pra categorias não-essenciais.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-108",
+      "title": "Auditar aceite de termos em cadastro de abrigo",
+      "type": "chore",
+      "category": "legal",
+      "status": "ready",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": "feat/legal-docs-v2",
+      "flag": null,
+      "worktree": ".worktrees/wt-legal-v2",
+      "pr": null,
+      "tags": [
+        "pente-fino",
+        "cadastro",
+        "abrigo",
+        "independente"
+      ],
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-041",
+        "TASK-089",
+        "TASK-070"
+      ],
+      "evidence": "src/modules/admin/pages/CreateClub.jsx (ou ShelterSignup)",
+      "description": "BLOCO INDEPENDENTE. Auditar fluxo de cadastro de abrigo. Verificar: (1) checkbox do Termo de Adesão (TASK-070)? (2) checkbox de LGPD? (3) grava em clubs/{clubId}/onboarding/terms_accepted? (4) bloqueia signup sem aceite? Documentar.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-109",
+      "title": "Auditar aceite de termos em cadastro de voluntário",
+      "type": "chore",
+      "category": "legal",
+      "status": "ready",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": "feat/legal-docs-v2",
+      "flag": null,
+      "worktree": ".worktrees/wt-legal-v2",
+      "pr": null,
+      "tags": [
+        "pente-fino",
+        "cadastro",
+        "voluntario",
+        "independente"
+      ],
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-041",
+        "TASK-089",
+        "TASK-066"
+      ],
+      "evidence": "src/modules/shelter/services/volunteerProfileService.js (ou página de signup)",
+      "description": "BLOCO INDEPENDENTE. Auditar cadastro de voluntário. Verificar: checkbox dos Termos de Voluntariado (TASK-066), grava em users/{uid}.volunteer_profile/terms_accepted, bloqueia cadastro sem aceite. Documentar.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-110",
+      "title": "Auditar LGPD no cadastro (consentimento explícito por base legal)",
+      "type": "chore",
+      "category": "lgpd",
+      "status": "ready",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": "feat/legal-docs-v2",
+      "flag": null,
+      "worktree": ".worktrees/wt-legal-v2",
+      "pr": null,
+      "tags": [
+        "pente-fino",
+        "lgpd",
+        "cadastro",
+        "independente"
+      ],
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-041",
+        "TASK-050"
+      ],
+      "evidence": "src/modules/onboarding/Questionnaire.jsx; src/pages/ProfileSetup.jsx",
+      "description": "BLOCO INDEPENDENTE. Auditar todos os cadastros. Verificar LGPD Art. 7º: (1) texto explicando finalidade e base legal, (2) checkbox de Li e concordo com a Política de Privacidade, (3) link pro DPO, (4) consent gravado com base legal explícita. Documentar.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-111",
+      "title": "Auditar links no footer (todas as páginas)",
+      "type": "chore",
+      "category": "legal",
+      "status": "ready",
+      "priority": "medium",
+      "owner": "unassigned",
+      "branch": "feat/legal-docs-v2",
+      "flag": null,
+      "worktree": ".worktrees/wt-legal-v2",
+      "pr": null,
+      "tags": [
+        "pente-fino",
+        "footer",
+        "independente"
+      ],
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-041",
+        "TASK-051",
+        "TASK-086"
+      ],
+      "evidence": "src/components/Layout.jsx",
+      "description": "BLOCO INDEPENDENTE. Auditar Layout.jsx footer. Verificar: links para /legal/termos-de-uso, /legal/politica-de-privacidade, /legal/codigo-de-conduta, /legal/cookies, /legal/legislacao-animal, /legal/avisos-legais. Responsivo? Ícones? Documentar.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-112",
+      "title": "Auditar páginas legais acessíveis (URLs públicas, sem auth)",
+      "type": "chore",
+      "category": "legal",
+      "status": "ready",
+      "priority": "medium",
+      "owner": "unassigned",
+      "branch": "feat/legal-docs-v2",
+      "flag": "SHELTER_LEGAL_TERMS_V1",
+      "worktree": ".worktrees/wt-legal-v2",
+      "pr": null,
+      "tags": [
+        "pente-fino",
+        "paginas-legais",
+        "independente"
+      ],
+      "blockedBy": [
+        "TASK-072"
+      ],
+      "relatedTasks": [
+        "TASK-041",
+        "TASK-058"
+      ],
+      "evidence": "src/App.jsx; firestore.rules",
+      "description": "BLOCO INDEPENDENTE. Auditar que TODAS as páginas /legal/* são acessíveis sem auth (LGPD Art. 9º). Verificar: rotas em App.jsx sem requireAuth, Firestore rules permitem leitura pública, SEO meta tags. Documentar.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-113",
+      "title": "Ativar flag: confirmar 3 revisões jurídicas (TASK-006/007/008)",
+      "type": "chore",
+      "category": "lgpd",
+      "status": "ready",
+      "priority": "high",
+      "owner": "human-juridico",
+      "branch": "feat/legal-docs-v2",
+      "flag": "SHELTER_LEGAL_TERMS_V1",
+      "worktree": ".worktrees/wt-legal-v2",
+      "pr": null,
+      "tags": [
+        "ativacao",
+        "juridico",
+        "independente"
+      ],
+      "blockedBy": [
+        "TASK-073"
+      ],
+      "relatedTasks": [
+        "TASK-006",
+        "TASK-007",
+        "TASK-008",
+        "TASK-044",
+        "TASK-114"
+      ],
+      "evidence": "src/pages/legal/adoptionTerms.v1.js, avisosLegais.js, codigoDeConduta.js",
+      "description": "BLOCO INDEPENDENTE. Advogado humano revisa as 3 docs legais que tinham TODO JURÍDICO. As versões v2 (do zip) substituem as v1 (TASK-073). Advogado valida se as v2 atendem aos requisitos (LGPD, Lei 14.063/2020, Marco Civil, CFMV). Sem isso, flag não pode ser ligada em produção.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-114",
+      "title": "Ativar flag: decidir ativar SHELTER_LEGAL_TERMS_V1 em produção",
+      "type": "decision",
+      "category": "lgpd",
+      "status": "ready",
+      "priority": "medium",
+      "owner": "human",
+      "branch": null,
+      "flag": "SHELTER_LEGAL_TERMS_V1",
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "ativacao",
+        "decisao",
+        "independente"
+      ],
+      "blockedBy": [
+        "TASK-113"
+      ],
+      "relatedTasks": [
+        "TASK-044",
+        "TASK-115"
+      ],
+      "evidence": "src/core/featureFlags.js",
+      "description": "BLOCO INDEPENDENTE. Decisão de produto: ligar a flag SHELTER_LEGAL_TERMS_V1 em produção. Considera: (1) TASK-113 confirmada, (2) TASK-044 pronta, (3) impacto em UX, (4) risco de LGPD se banner não aparecer. Decisão final é do founder.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-115",
+      "title": "Ativar flag: mudar 1 linha em featureFlags.js (FF.SHELTER_LEGAL_TERMS_V1 = true)",
+      "type": "chore",
+      "category": "core",
+      "status": "ready",
+      "priority": "medium",
+      "owner": "unassigned",
+      "branch": "feat/legal-docs-v2",
+      "flag": "SHELTER_LEGAL_TERMS_V1",
+      "worktree": ".worktrees/wt-legal-v2",
+      "pr": null,
+      "tags": [
+        "ativacao",
+        "1-linha",
+        "independente"
+      ],
+      "blockedBy": [
+        "TASK-114"
+      ],
+      "relatedTasks": [
+        "TASK-044"
+      ],
+      "evidence": "src/core/featureFlags.js (DEFAULT_FEATURE_FLAGS)",
+      "description": "BLOCO INDEPENDENTE. Após TASK-114, mudar 1 linha em src/core/featureFlags.js: DEFAULT_FEATURE_FLAGS[FEATURE_FLAG.SHELTER_LEGAL_TERMS_V1] = true. Commit, push, PR. Smoke test em produção. NOTA: alternativa é ligar via painel /admin/flags sem deploy.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-116",
+      "title": "Ativar flag: validar em produção (banner aparece, /legal/* públicas)",
+      "type": "chore",
+      "category": "lgpd",
+      "status": "ready",
+      "priority": "medium",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": "SHELTER_LEGAL_TERMS_V1",
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "ativacao",
+        "validacao",
+        "independente"
+      ],
+      "blockedBy": [
+        "TASK-115"
+      ],
+      "relatedTasks": [
+        "TASK-044"
+      ],
+      "evidence": "viralata.web.app",
+      "description": "BLOCO INDEPENDENTE. Após deploy de TASK-115, validar em produção: (1) CookieBanner aparece? (2) /legal/termos-de-uso retorna 200? (3) /legal/politica-de-privacidade retorna 200? (4) consent gravando no localStorage? (5) banner tem botões? Documentar em docs/FLAG_ACTIVATION_LOG.md.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-117",
+      "title": "Auditoria LGPD global: checklist completo de compliance",
+      "status": "ready",
+      "priority": "high",
+      "type": "chore",
+      "category": "lgpd",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "wt/e79e15ca",
+      "flag": "SHELTER_LEGAL_TERMS_V1",
+      "worktree": ".worktrees/wt-e79e15ca",
+      "pr": null,
+      "tags": [
+        "auditoria",
+        "lgpd",
+        "compliance"
+      ],
+      "blockedBy": [
+        "TASK-113",
+        "TASK-114",
+        "TASK-115"
+      ],
+      "relatedTasks": [
+        "TASK-055"
+      ],
+      "evidence": "",
+      "description": "Gerar docs/AUDIT_LGPD_2026-07-11.md. Checklist: (1) DPO designado, (2) banner cookies, (3) consent_version, (4) export de dados, (5) exclusão, (6) breach notification, (7) audit_log de aceites.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-118",
+      "title": "Adicionar campo search_keywords em 7 collections (pets, users, shelters, foster_placements, exhibitions, pet_timeline, adoption_applications)",
+      "status": "ready",
+      "priority": "high",
+      "type": "feature",
+      "category": "search",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "wt/e79e15ca",
+      "flag": "SHELTER_SMART_SEARCH",
+      "worktree": ".worktrees/wt-e79e15ca",
+      "pr": null,
+      "tags": [
+        "search",
+        "firestore",
+        "schema",
+        "fase-18"
+      ],
+      "blockedBy": [
+        "TASK-001"
+      ],
+      "relatedTasks": [
+        "TASK-048"
+      ],
+      "evidence": "",
+      "description": "Cada doc ganha campo search_keywords: string lowercase, normalizado, com sinônimos. Ex: \"cão\" → \"cao caes cachorro cachorros\". Estratégia: array de tokens ou string única com tokens.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-119",
+      "title": "Cloud Function onWrite que normaliza e popula search_keywords",
+      "status": "ready",
+      "priority": "high",
+      "type": "feature",
+      "category": "search",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "wt/e79e15ca",
+      "flag": "SHELTER_SMART_SEARCH",
+      "worktree": ".worktrees/wt-e79e15ca",
+      "pr": null,
+      "tags": [
+        "search",
+        "cloud-function",
+        "fase-18"
+      ],
+      "blockedBy": [
+        "TASK-118"
+      ],
+      "relatedTasks": [
+        "TASK-048"
+      ],
+      "evidence": "",
+      "description": "functions/searchIndex.js. Trigger onWrite em 7 collections. Lê campos textuais, normaliza (lowercase + remove acentos + sinônimos), grava em search_keywords. Async, idempotente.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-120",
+      "title": "Composite indexes em firestore.indexes.json (multi-field only)",
+      "status": "ready",
+      "priority": "high",
+      "type": "infra",
+      "category": "search",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "wt/e79e15ca",
+      "flag": "SHELTER_SMART_SEARCH",
+      "worktree": ".worktrees/wt-e79e15ca",
+      "pr": null,
+      "tags": [
+        "firestore",
+        "index",
+        "search",
+        "fase-18"
+      ],
+      "blockedBy": [
+        "TASK-118"
+      ],
+      "relatedTasks": [
+        "TASK-048"
+      ],
+      "evidence": "",
+      "description": "Indexes: pets(status+species+city), pets(status+created_at), pets(owner_id+created_at), users(city+role), adoption_applications(shelter_id+status), adoption_applications(applicant_uid+created_at). NÃO declarar single-field collectionGroup (regra do projeto).",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-121",
+      "title": "Backfill script: popular search_keywords em docs existentes",
+      "status": "ready",
+      "priority": "high",
+      "type": "chore",
+      "category": "search",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "wt/e79e15ca",
+      "flag": "SHELTER_SMART_SEARCH",
+      "worktree": ".worktrees/wt-e79e15ca",
+      "pr": null,
+      "tags": [
+        "backfill",
+        "search",
+        "fase-18"
+      ],
+      "blockedBy": [
+        "TASK-119"
+      ],
+      "relatedTasks": [
+        "TASK-048"
+      ],
+      "evidence": "",
+      "description": "scripts/backfill-search-keywords.mjs. Lê todas as docs das 7 collections. Para cada uma, calcula search_keywords (mesma lógica do Cloud Function) e escreve de volta. Idempotente (não duplica).",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-122",
+      "title": "Hook useSmartSearch com filtros facetados",
+      "status": "ready",
+      "priority": "high",
+      "type": "feature",
+      "category": "search",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "wt/e79e15ca",
+      "flag": "SHELTER_SMART_SEARCH",
+      "worktree": ".worktrees/wt-e79e15ca",
+      "pr": null,
+      "tags": [
+        "react-hook",
+        "search",
+        "fase-18"
+      ],
+      "blockedBy": [
+        "TASK-118"
+      ],
+      "relatedTasks": [
+        "TASK-048",
+        "TASK-018"
+      ],
+      "evidence": "",
+      "description": "src/hooks/useSmartSearch.js. Recebe {query, filters}. Retorna {results, isLoading, error}. Internamente: se query vazia → useInfiniteQuery em Firestore com filtros; se query não-vazia → combina com fuzzy local (TASK-018).",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-123",
+      "title": "Página /busca + CommandPalette Cmd+K global",
+      "status": "ready",
+      "priority": "high",
+      "type": "feature",
+      "category": "search",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "wt/e79e15ca",
+      "flag": "SHELTER_SMART_SEARCH",
+      "worktree": ".worktrees/wt-e79e15ca",
+      "pr": null,
+      "tags": [
+        "ux",
+        "search",
+        "fase-18"
+      ],
+      "blockedBy": [
+        "TASK-122"
+      ],
+      "relatedTasks": [
+        "TASK-048"
+      ],
+      "evidence": "",
+      "description": "src/pages/SearchPage.jsx. Sidebar com filtros facetados (espécie, cidade, status, ONG). Result grid. CommandPalette: modal global aberto por Cmd/Ctrl+K. Renderiza input + resultados agrupados.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-124",
+      "title": "Integrar com TASK-018 (fuzzy) — combinar Firestore estruturado + fuzzy local",
+      "status": "ready",
+      "priority": "high",
+      "type": "feature",
+      "category": "search",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "wt/e79e15ca",
+      "flag": "SHELTER_SMART_SEARCH",
+      "worktree": ".worktrees/wt-e79e15ca",
+      "pr": null,
+      "tags": [
+        "search",
+        "fuzzy",
+        "fase-18"
+      ],
+      "blockedBy": [
+        "TASK-122"
+      ],
+      "relatedTasks": [
+        "TASK-048",
+        "TASK-018"
+      ],
+      "evidence": "",
+      "description": "useSmartSearch detecta se query tem typo-tolerance necessário. Se sim, delega pra Fuse.js local em subset paginado. Combina resultados (merge + dedupe). Debounce 300ms.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-125",
+      "title": "Tests + smoke test + flag OFF safe do Smart Search",
+      "status": "ready",
+      "priority": "high",
+      "type": "test",
+      "category": "search",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "wt/e79e15ca",
+      "flag": "SHELTER_SMART_SEARCH",
+      "worktree": ".worktrees/wt-e79e15ca",
+      "pr": null,
+      "tags": [
+        "test",
+        "smoke",
+        "search",
+        "fase-18"
+      ],
+      "blockedBy": [
+        "TASK-123",
+        "TASK-124"
+      ],
+      "relatedTasks": [
+        "TASK-048"
+      ],
+      "evidence": "",
+      "description": "Tests: hook com mock, página com query vazia + query com typo. Smoke test em produção com flag OFF (deve ser no-op, sem mudar UI). Capturar bundle hash.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    }
+  ],
+  "definitionOfDone": [
+    "Worktree aberto em feat/shelter-<fase>-<slug> (regra do projeto)",
+    "Feature flag SHELTER_* declarada e default OFF",
+    "TypeScript / JSDoc nos pontos críticos",
+    "Zod parse em toda função com input mutável (regra do projeto)",
+    "Firestore rules com return explícito, zero fall-through (regra do projeto)",
+    "Zod .partial() sem null — usar FieldValue.deleteField() pra nullificar (regra do projeto)",
+    "Single-field collectionGroup nunca no firestore.indexes.json (regra do projeto)",
+    "applicant_snapshot imutável nas applications (regra do projeto)",
+    "Post-adoption cron materializa só scheduled_for <= now+90d (regra do projeto)",
+    "Vitest: 100% dos arquivos novos/modificados com tests",
+    "npm test verde",
+    "npm run typecheck: 0 erros",
+    "npm run lint: 0 erros nos arquivos novos/modificados",
+    "npm run build: success",
+    "Se tocou firestore.rules: validar no emulador local",
+    "Se tocou storage.rules: validar no emulador local",
+    "Se usou FieldValue.deleteField(): confirmar que teste cobre",
+    "Smoke test em produção com flag OFF (não muda comportamento existente)",
+    "Documentação atualizada (docs/SHELTER_MGMT_ROADMAP.md, ROADMAP.md, MODULES.md, DATA_MODEL.md)",
+    "DELIVERABLE.md ou deliverable-impl.md escrito com: scope, arquivos, testes, validação, próximos passos, como reverter",
+    "Commit conventional, com flag + worktree + bundle hash no PR (regra do projeto)",
+    "TASK correspondente neste board movida para 'in_review'",
+    "Mensagem enviada via mavis communication para coordenar com outras sessões (se aplicável)"
+  ],
+  "riskRegister": [
+    {
+      "id": "RISK-001",
+      "title": "Admins esquecerem flag OFF em produção",
+      "probability": "medium",
+      "impact": "medium",
+      "mitigation": "Defaults são OFF; admin precisa ligar explicitamente. Painel /admin/flags é data-driven, mostra última modificação.",
+      "owner": "platform_admin",
+      "status": "mitigated"
+    },
+    {
+      "id": "RISK-002",
+      "title": "Merge de wt/e79e15ca + wt/17ff480a causa conflito em OrgAdminPanel",
+      "probability": "high",
+      "impact": "medium",
+      "mitigation": "Rebase ou merge com cuidado. Testar local após merge. Ambos tocam Layout e OrgAdminPanel.",
+      "owner": "human",
+      "status": "open"
+    },
+    {
+      "id": "RISK-003",
+      "title": "xlsx (SheetJS 0.18.5) com CVE conhecido",
+      "probability": "low",
+      "impact": "high",
+      "mitigation": "Uso limitado a .xlsx (parsing binário), 100% client-side, sem tocar dados de outros usuários. Monitorar SheetJS.",
+      "owner": "security",
+      "status": "accepted"
+    },
+    {
+      "id": "RISK-004",
+      "title": "Performance degrada com 500+ pets no feed do cliente",
+      "probability": "medium",
+      "impact": "medium",
+      "mitigation": "Limit atual limitCount=500 (PET_FEED_RELIABILITY_FIX). Reavaliar se base crescer. Considerar paginação real ou backend de busca (Fase 18).",
+      "owner": "platform_admin",
+      "status": "monitoring"
+    },
+    {
+      "id": "RISK-005",
+      "title": "Telemedicina veterinária: alto risco regulatório CFMV 1.465/2022",
+      "probability": "high",
+      "impact": "high",
+      "mitigation": "Depriorizado. Plataforma é software inerte (operador), não organiza consultas. Se entrar em telemedicina: designar RT, disclaimers, bloqueios de urgência.",
+      "owner": "human",
+      "status": "accepted"
+    },
+    {
+      "id": "RISK-006",
+      "title": "Firestore rules sem return explícito em alguma função",
+      "probability": "low",
+      "impact": "critical",
+      "mitigation": "Auditoria fechou 1291/1291 parênteses, 82 match blocks todos fechados. Toda função com return explícito (regra do projeto). Continuar verificando em PR review.",
+      "owner": "security",
+      "status": "mitigated"
+    },
+    {
+      "id": "RISK-007",
+      "title": "TODO jurídico em 3 documentos legais sem revisão",
+      "probability": "high",
+      "impact": "medium",
+      "mitigation": "Texto estático, v1 em produção. Aguarda revisão humana (TASK-006, 007, 008). Não-bloqueante.",
+      "owner": "human-jurídico",
+      "status": "open"
+    },
+    {
+      "id": "RISK-008",
+      "title": "Dívida técnica: 10+ componentes sem test + 3 services sem Zod",
+      "probability": "high",
+      "impact": "medium",
+      "mitigation": "TASK-012 e TASK-013 no backlog. Priorizar após merges dos worktrees ativos.",
+      "owner": "unassigned",
+      "status": "open"
+    }
+  ],
+  "retrospective": {
+    "stop": [
+      "Adicionar features sem flag e sem teste",
+      "Confiar em 'vai funcionar' sem smoke test em produção com flag OFF"
+    ],
+    "start": [
+      "Adicionar task no painel scrum ANTES de começar a codificar",
+      "Marcar 'in_progress' assim que abrir a worktree",
+      "Mover 'in_review' antes de pedir PR review",
+      "Sinalizar 'blocked' com TASK-XXX e evidência quando travar"
+    ],
+    "continue": [
+      "WriteBatch atômico em qualquer mutação multi-doc",
+      "Zod em todo input mutável",
+      "Firestore rules com return explícito",
+      "Worktree por feature",
+      "Documentar no DELIVERABLE.md"
+    ]
+  },
+  "metrics": {
+    "testsTotal": 1355,
+    "testsDelta": "+3 (vs sessão anterior)",
+    "lintStatus": "clean",
+    "buildStatus": "ok (15.98s local, 1092 packages)",
+    "firestoreRulesParens": "1291/1291",
+    "firestoreIndexes": 35,
+    "bundleSizeKB": 4125,
+    "shelterPhases": "21/22 completas em produção (Fase 18 pendente decisão)",
+    "activeWorktreesAheadOfMain": 2,
+    "mergedWorktreesThisSprint": [
+      "wt/e79e15ca"
+    ],
+    "mainCommit": "5da437b4acb975c8f8c440b29196b534e3e08247",
+    "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
+    "deployStatus": "rodando — run #221 disparado",
+    "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
+    "newScripts": [
+      "scripts/smoke-routes.mjs",
+      "scripts/capture-errors.mjs"
+    ],
+    "openTODOs": 5,
+    "openLegalReviews": 3,
+    "totalTasks": 122,
+    "done": 32,
+    "inProgress": 2,
+    "inReview": 3,
+    "blocked": 0,
+    "ready": 78,
+    "backlog": 6,
+    "risksTotal": 8,
+    "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. Commit 87d84b7 com defensive coding + single acceptance dialog. 122 tasks: 32 done, 3 in_progress, 79 ready.",
+    "contribuicaoCoder": {
+      "agent": "agent-1cc44353fc6b (Viralata Coder)",
+      "sessionId": "mvs_f1e04f28717d42cdba05e221b7b4b6f3",
+      "authorOf": [
+        "TASK-001 (decision recorded)",
+        "TASK-018 (typo-tolerance)",
+        "TASK-048 (Smart Search Fase 18, 8 subtasks)"
+      ],
+      "superseded": "TASK-047 (combinado) → quebrado pelo Mavis em TASK-056 (TypeError) + TASK-057 (Firestore index)",
+      "renumberedByMavis": "TASK-046 (legal docs) → TASK-058 (mesmo conteúdo + 10 subtasks preservados)",
+      "painel": ".harness/painel-scrum.html + SCRUM_PROTOCOL.md",
+      "uso": "ambos escrevem em SCRUM_TASKS.json; mavis communication send para coordenar"
+    },
+    "dropped": 1,
+    "subdivided": "2026-07-11 14:33 — usuário pediu tasks granulares para acompanhar evolução. 58 novas tasks (TASK-059 a TASK-116), cada uma em bloco independente.",
+    "subdivisionByCategory": {
+      "Legal Docs por documento (TASK-059 a TASK-070)": 12,
+      "Legal Docs setup (TASK-071 a TASK-074)": 4,
+      "Smart Search finer (TASK-075 a TASK-084)": 10,
+      "Varredura (TASK-085 a TASK-089)": 5,
+      "Sync worktrees (TASK-090 a TASK-094)": 5,
+      "Clickwrap (TASK-095 a TASK-098)": 4,
+      "Defensive coding (TASK-099 a TASK-103)": 5,
+      "Cookie banner (TASK-104 a TASK-107)": 4,
+      "Continuar pente fino (TASK-108 a TASK-112)": 5,
+      "Ativar flag (TASK-113 a TASK-116)": 4
+    },
+    "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela)."
+  }
+}
