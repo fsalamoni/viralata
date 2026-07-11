@@ -70,6 +70,12 @@ const AdminAuditLog = lazy(() => import('@/modules/admin/pages/AdminAuditLog'));
 const AdminNotifications = lazy(() => import('@/modules/admin/pages/AdminNotifications'));
 const AdminPlatformSettings = lazy(() => import('@/modules/admin/pages/AdminPlatformSettings'));
 const AdminFlags = lazy(() => import('@/modules/admin/pages/AdminFlags'));
+// Fase 21: páginas de saúde, alertas de segurança, configuração de alertas e
+// gerenciamento de platform_admins. Cada uma é linkada no AdminDashboard.
+const PlatformHealth = lazy(() => import('@/modules/admin/pages/PlatformHealth'));
+const SecurityAlerts = lazy(() => import('@/modules/admin/pages/SecurityAlerts'));
+const AlertConfigs = lazy(() => import('@/modules/admin/pages/AlertConfigs'));
+const AdminUserManagement = lazy(() => import('@/modules/admin/pages/AdminUserManagement'));
 
 // ─── QueryClient ─────────────────────────────────────────────────────────────
 const queryClient = new QueryClient({
@@ -326,6 +332,22 @@ export default function App() {
                 <Route
                   path="/admin/flags"
                   element={<AdminRoute>{withLayout('AdminFlags', AdminFlags)}</AdminRoute>}
+                />
+                <Route
+                  path="/admin/saude"
+                  element={<AdminRoute>{withLayout('PlatformHealth', PlatformHealth)}</AdminRoute>}
+                />
+                <Route
+                  path="/admin/security-alerts"
+                  element={<AdminRoute>{withLayout('SecurityAlerts', SecurityAlerts)}</AdminRoute>}
+                />
+                <Route
+                  path="/admin/alertas"
+                  element={<AdminRoute>{withLayout('AlertConfigs', AlertConfigs)}</AdminRoute>}
+                />
+                <Route
+                  path="/admin/admins"
+                  element={<AdminRoute>{withLayout('AdminUserManagement', AdminUserManagement)}</AdminRoute>}
                 />
 
                 {/* ── Redirects legados ─────────────────────────────────── */}
