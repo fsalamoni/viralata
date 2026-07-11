@@ -1,0 +1,38 @@
+name: Add Custom Domain (viralata.app)
+
+on:
+  workflow_dispatch:
+    inputs:
+      domain:
+        description: 'Custom domain to add'
+        required: true
+        default: 'viralata.app'
+      site:
+        description: 'Firebase Hosting site ID'
+        required: true
+        default: 'viralata'
+
+jobs:
+  add-domain:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: Run script
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          DOMAIN: ${{ inputs.domain }}
+          SITE: ${{ inputs.site }}
+          FIREBASE_PROJECT_ID: viralata-4cf0b
+        run: bash .github/scripts/add-custom-domain.sh
