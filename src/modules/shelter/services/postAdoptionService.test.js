@@ -298,10 +298,34 @@ describe('markAsReturned', () => {
 // ─── pausePostAdoption ────────────────────────────────────────────────
 
 describe('pausePostAdoption', () => {
-  it('pausa sem exigir reason', async () => {
+  it('lança se doc não existe', async () => {
+    mockGetDoc.mockResolvedValue(missingSnap());
+    await expect(
+      pausePostAdoption('c1', 'pa-1', { uid: 'u1' }),
+    ).rejects.toThrow(/não encontrado/);
+  });
+
+  it('idempotente: não commita de novo se já está paused', async () => {
+    mockGetDoc.mockResolvedValue(postAdoptionSnap({ status: 'paused' }));
+    const r = await pausePostAdoption('c1', 'pa-1', { uid: 'u1' });
+    expect(r.ok).toBe(true);
+    expect(r.alreadyPaused).toBe(true);
+    expect(mockUpdateDoc).not.toHaveBeenCalled();
+  });
+
+  it('bloqueia pause a partir de status terminal', async () => {
+    mockGetDoc.mockResolvedValue(postAdoptionSnap({ status: 'returned' }));
+    await expect(
+      pausePostAdoption('c1', 'pa-1', { uid: 'u1' }),
+    ).rejects.toThrow(/Não é permitido pausar/);
+  });
+
+  it('pausa post-adoption active', async () => {
+    mockGetDoc.mockResolvedValue(postAdoptionSnap({ status: 'active' }));
     mockUpdateDoc.mockResolvedValue(null);
     const r = await pausePostAdoption('c1', 'pa-1', { uid: 'u1' });
     expect(r.ok).toBe(true);
+    expect(mockUpdateDoc).toHaveBeenCalledTimes(1);
   });
 });
 

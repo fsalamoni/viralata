@@ -14,7 +14,7 @@
 
 import {
   doc, getDoc, getDocs, addDoc, updateDoc, query, where, orderBy, limit,
-  collection, serverTimestamp, writeBatch, Timestamp,
+  collection, collectionGroup, serverTimestamp, writeBatch, Timestamp,
 } from 'firebase/firestore';
 import { db } from '@/core/config/firebase';
 import { logger } from '@/core/lib/logger';
@@ -154,29 +154,67 @@ export async function materializeDueMilestones(options = {}) {
   if (!db) throw new Error('Firebase não disponível');
   const { now = new Date(), maxAdoptions = 500 } = options;
 
-  // 1. Lista adoções ativas
+  // 1. Lista adoções ativas via collectionGroup em post_adoption
+  //    (cobre TODOS os abrigos em uma única query — independente do
+  //    shelter_club_id). Filtro adicional: post_adoption com
+  //    `next_milestone_at <= now` para evitar carregar tudo.
+  //    O índice single-field em `status` é auto-criado pelo Firestore.
   const adoptionsSnap = await getDocs(query(
-    collection(db, CLUBS_COLLECTION, '__materializer__'),  // placeholder
+    collectionGroup(db, POST_ADOPTION_SUBCOLLECTION),
     where('status', '==', 'active'),
+    where('next_milestone_at', '<=', now.toISOString()),
     limit(maxAdoptions),
-  )).catch(() => null);
-  // FIXME: listagem cross-collection. Por enquanto, vazio.
-  // O ideal é collectionGroup query em 'post_adoption'.
+  )).catch((err) => {
+    logger.warn('postAdoptionService.materializeDueMilestones', {
+      msg: 'collectionGroup query failed',
+      err: String(err),
+    });
+    return null;
+  });
 
-  // Para Fase 6, aceitamos que o CRON receba a lista de post_adoption_ids
-  // como parâmetro (o agendador já conhece os abrigos). Em produção
-  // substituímos por collectionGroup.
+  if (!adoptionsSnap || adoptionsSnap.empty) {
+    logger.info('postAdoptionService.materializeDueMilestones', {
+      msg: 'no adoptions with due milestones',
+      now: now.toISOString(),
+    });
+    return { materialized: 0, skipped: 0, errors: 0, scanned: 0 };
+  }
 
   let materialized = 0;
   let skipped = 0;
   const errors = [];
 
+  // Materializa em paralelo (cada doc tem sua própria transação
+  // atômica no Firestore via materializeForAdoption). Erros são
+  // isolados: um doc falhando não derruba o batch.
+  const results = await Promise.allSettled(
+    adoptionsSnap.docs.map((d) => {
+      // collectionGroup docs expõem o ref completo (path include o parent)
+      const segs = d.ref.path.split('/');
+      const shelterClubId = segs[1]; // 'clubs/{clubId}/post_adoption/{id}'
+      const postAdoptionId = d.id;
+      return materializeForAdoption(shelterClubId, postAdoptionId, { now });
+    }),
+  );
+  for (const r of results) {
+    if (r.status === 'fulfilled') {
+      materialized += r.value.materialized;
+      skipped += r.value.skipped;
+    } else {
+      errors.push(String(r.reason));
+    }
+  }
+
   logger.info('postAdoptionService.materializeDueMilestones', {
-    msg: 'starting materialization',
+    msg: 'materialization complete',
     now: now.toISOString(),
+    scanned: adoptionsSnap.size,
+    materialized,
+    skipped,
+    errors: errors.length,
   });
 
-  return { materialized, skipped, errors: errors.length };
+  return { materialized, skipped, errors: errors.length, scanned: adoptionsSnap.size };
 }
 
 /**
@@ -299,12 +337,27 @@ export async function pausePostAdoption(shelterClubId, postAdoptionId, actor) {
   if (!actor?.uid) throw new Error('actor.uid é obrigatório');
 
   const ref = doc(db, CLUBS_COLLECTION, shelterClubId, POST_ADOPTION_SUBCOLLECTION, postAdoptionId);
-  await updateDoc(ref, { status: 'paused', updated_at: serverTimestamp() });
+  const snap = await getDoc(ref);
+  if (!snap.exists()) throw new Error('Post-adoption não encontrado.');
+  const current = snap.data() || {};
+  if (current.status === 'paused') {
+    return { ok: true, alreadyPaused: true };
+  }
+  if (current.status !== 'active') {
+    throw new Error(`Não é permitido pausar post-adoption com status '${current.status}'.`);
+  }
+
+  await updateDoc(ref, {
+    status: 'paused',
+    paused_at: new Date().toISOString(),
+    paused_by_uid: actor.uid,
+    updated_at: serverTimestamp(),
+  });
 
   await createAuditLog({
     action: 'post_adoption_paused',
     actor,
-    details: { post_adoption_id: postAdoptionId },
+    details: { post_adoption_id: postAdoptionId, from: 'active' },
   }).catch(() => {});
 
   return { ok: true };

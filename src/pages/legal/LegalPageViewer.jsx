@@ -23,7 +23,7 @@
  * módulo legal). Slugs inválidos caem no 404.
  */
 
-import { useMemo, useState, useCallback } from 'react';
+import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { Copy, Check, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -57,28 +57,42 @@ export default function LegalPageViewer() {
   const [text, setText] = useState(null);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
+  const isMountedRef = useRef(true);
+  const copyResetTimerRef = useRef(null);
+
+  // Cleanup de timers no unmount (evita setState após unmount e leak)
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+      if (copyResetTimerRef.current) {
+        clearTimeout(copyResetTimerRef.current);
+        copyResetTimerRef.current = null;
+      }
+    };
+  }, []);
 
   // Lazy-load do texto integral
-  useMemo(() => {
-    let cancelled = false;
+  useEffect(() => {
     if (!textLoader) {
       setLoading(false);
-      return () => {};
+      return undefined;
     }
+    let cancelled = false;
     setLoading(true);
     Promise.resolve(textLoader())
       .then((t) => {
-        if (cancelled) return;
+        if (cancelled || !isMountedRef.current) return;
         setText(t);
       })
       .catch((err) => {
-        if (cancelled) return;
+        if (cancelled || !isMountedRef.current) return;
         // eslint-disable-next-line no-console
         console.error('LegalPageViewer: failed to load text', err);
         setText(null);
       })
       .finally(() => {
-        if (cancelled) return;
+        if (cancelled || !isMountedRef.current) return;
         setLoading(false);
       });
     return () => { cancelled = true; };
@@ -89,8 +103,13 @@ export default function LegalPageViewer() {
     try {
       if (typeof navigator !== 'undefined' && navigator.clipboard) {
         await navigator.clipboard.writeText(text);
+        if (!isMountedRef.current) return;
         setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+        if (copyResetTimerRef.current) clearTimeout(copyResetTimerRef.current);
+        copyResetTimerRef.current = setTimeout(() => {
+          copyResetTimerRef.current = null;
+          if (isMountedRef.current) setCopied(false);
+        }, 2000);
       }
     } catch {
       // ignore — clipboard unavailable
