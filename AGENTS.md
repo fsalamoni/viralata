@@ -124,7 +124,7 @@ Para validar a Regra A, a funcionalidade "voluntários" precisa ter:
 | Drop / descarte | `→ dropped` com nota explicativa | A própria sessão |
 | Dúvida / decisão do humano | `status` mantido, `owner = "human"`, nota em `description` ou `notes` | A própria sessão |
 
-### B.2 Local e formato
+### B.1.5 Local e formato
 
 - **Fonte de verdade**: `.harness/SCRUM_TASKS.json`
 - **Visualização**: `.harness/painel-scrum.html` (atualizar o `<script type="application/json" id="initial-data">` embedded)
