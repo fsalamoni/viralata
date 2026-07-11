@@ -167,11 +167,11 @@ Painel exclusivo de `platform_admin` (`/admin/*`).
 
 ## shelter/
 
-> **Status (2026-07-11)**: **14/22 fases concluídas (Fase 19 parcial via PR #59)** (Fases 0–13 + Fase 19 ✅, PRs #37–#57 + worktree `feat/shelter-19-legal-terms`).
+> **Status (2026-07-11)**: **15/22 fases concluídas (Fases 0–14 ✅)** (Fases 0–13 ✅, PRs #37–#57).
 > Roadmap completo em `docs/SHELTER_MGMT_ROADMAP.md`. Tracker operacional
 > em `.mavis/scratchpad/shelter-roadmap-tracker.md`. 22 fases planejadas.
 > Todas as 22 SHELTER_* flags default OFF (inclusive `SHELTER_FOUNDATION`).
-> Próximas fases: 20 (Segurança) e 21 (Plataforma).
+> Próximas fases: 15 (Kanban) e 19 (Legal).
 
 ### Estrutura interna
 

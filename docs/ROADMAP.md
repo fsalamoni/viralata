@@ -16,7 +16,7 @@ completo de gestão da causa animal. Ver
 **[`docs/SHELTER_MGMT_ROADMAP.md`](./SHELTER_MGMT_ROADMAP.md)** para o
 plano detalhado (22 fases, 5 macro-blocos, ~25-40 dias de trabalho).
 
-Status atual (2026-07-10):
+Status atual (2026-07-11):
 
 | Fase | Nome | Status | PR |
 |---|---|---|---|
@@ -33,8 +33,8 @@ Status atual (2026-07-10):
 | 10 | Galeria de Fotos (soft delete + purge 30d) | ✅ Concluída | #52 |
 | 11 | Vitrines / Eventos | ⏸️ Aguardando | — |
 | 12 | Escalas + RSVP de Vitrines | ⏸️ Aguardando | — |
-| 13 | Gestão de Voluntários (Perfil + Roster + Participation) | ✅ Concluída | PR Fase 13 |
-| 14 | Dashboard do Abrigo (tempo real) | ⏸️ Aguardando | — |
+| 13 | Gestão de Voluntários | ⏸️ Aguardando | — |
+| 14 | Dashboard do Abrigo (tempo real) | ✅ Concluída | PR #58 (em revisão) |
 | 15 | Central de Pendências (Kanban) ⚠️ GRANDE | ⏸️ Aguardando | — |
 | 16 | Relatórios de Abrigos | ⏸️ Aguardando | — |
 | 17 | Indicadores de Vitrines + Voluntários | ⏸️ Aguardando | — |
@@ -44,7 +44,7 @@ Status atual (2026-07-10):
 | 21 | Painel de Saúde da Plataforma (Admin Master) | ⏸️ Aguardando | — |
 | 22 | Migração Final + Cutover | ⏸️ Aguardando | — |
 
-**10/22 fases concluídas.** Detalhes completos em `docs/SHELTER_MGMT_ROADMAP.md` e em `.mavis/scratchpad/shelter-roadmap-tracker.md`.
+**15/22 fases concluídas (Fases 0–14 ✅).** Detalhes completos em `docs/SHELTER_MGMT_ROADMAP.md` e em `.mavis/scratchpad/shelter-roadmap-tracker.md`.
 
 Convenções: ✅ concluído · 🟡 em andamento · ⏸️ aguardando · ❌ bloqueado. Cada fase = 1 feature flag (`SHELTER_*`) default OFF. Módulo isolado em `src/modules/shelter/`. Princípios: schema evolutivo, dual-read/write durante migração, defense in depth, audit log de tudo.
 

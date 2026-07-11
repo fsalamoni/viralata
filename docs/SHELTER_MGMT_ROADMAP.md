@@ -1,7 +1,7 @@
 # Sistema de Gestão do Abrigo — Roadmap Detalhado
 
-> **Status**: Fases 0–8 concluídas (9/22). Próximas: Fase 9 (Medicamentos), Fase 10 (Galeria).
-> **Versão**: 0.2 — 2026-07-10 (atualizado pós-Fase 8)
+> **Status**: Fases 0–13 concluídas (14/22). Próximas: Fase 15 (Kanban) ou 19 (Legal).
+> **Versão**: 0.3 — 2026-07-11 (atualizado pós-Fase 14)
 > **Owner**: Mavis (sub-agente técnico do repo `fsalamoni/viralata`)
 > **Macro-blocos**: 5 (A fundação, B núcleo do animal, C operação, D busca, E legal/segurança/admin)
 >
@@ -45,7 +45,8 @@ Cada módulo é **isolado e autônomo**: falha em um módulo não derruba os dem
 │  BLOCO C — OPERAÇÃO DO ABRIGO (Fases 10-17) ~8 PRs      │
 │  • vitrines, RSVP, voluntários, dashboard, kanban,      │
 │    relatórios, indicadores                              │
-│  • Status (2026-07-10): Fases 10–17 ⏸️                 │
+│  • Status (2026-07-11): Fases 14 (dashboard) ✅,         │
+│    15–17 ⏸️                                              │
 ├──────────────────────────────────────────────────────────┤
 │  BLOCO D — BUSCA + DESCOBERTA (Fase 18)  ~1 PR grande   │
 │  • sistema de busca inteligente multi-filtro             │
@@ -60,8 +61,7 @@ Cada módulo é **isolado e autônomo**: falha em um módulo não derruba os dem
 └──────────────────────────────────────────────────────────┘
 ```
 
-**14/22 fases concluídas, 8/22 pendentes.**
-<!-- Atualizado em 2026-07-11 — Fase 21 entregue: Painel de Saúde da Plataforma (admin master). -->
+**15/22 fases concluídas, 7/22 pendentes.**
 ```
 
 ## 4. Dependências entre fases
@@ -81,10 +81,10 @@ Fase 0 (preparação)
   └→ Fase 11 (vitrines) ⏸️
        └→ Fase 12 (RSVP) ⏸️
        └→ Fase 13 (voluntários) ⏸️
-  └→ Fase 14 (dashboard) ⏸️
-       ├→ Fase 14 (kanban)
-       ├→ Fase 15 (relatórios)
-       └→ Fase 16 (indicadores)
+  └→ Fase 14 (dashboard) ✅
+       ├→ Fase 15 (kanban)
+       ├→ Fase 16 (relatórios)
+       └→ Fase 17 (indicadores)
   └→ Fase 17 (busca) — depende de TUDO acima
   └→ Fase 18 (legal) — pode ser feita em paralelo
   └→ Fase 19 (segurança) — pode ser feita em paralelo
@@ -816,43 +816,24 @@ Fase 0 (preparação)
 
 ### Fase 20 — Painel de Saúde da Plataforma (Admin Master) · flag `SHELTER_PLATFORM_HEALTH`
 
-**Objetivo**: dashboard de saúde da plataforma. ✅ **Entregue** em 2026-07-11.
+**Objetivo**: dashboard de saúde da plataforma.
 
-**Nova aba no `/admin/saude`**:
-- **Saúde**: latência Firestore (p50/p99), error rate, active users 24h,
-  signups 24h, function invocations 24h, errors 24h, uptime 30d, último deploy.
-- **Custos**: billing manual (reads/writes/deletes/storage/bandwidth/custo estimado)
-  por período. Roadmap: integração com Firebase Billing API.
-- **Capacidade**: top-N collections com `count()`, queries lentas registradas
-  (heurística MVP), fingerprints de queries repetidas (índice faltando).
-- **Movimentação**: reusa `AuditLogTable` (Fase 0).
-
-**Nova aba em `/admin/admins`**:
-- Lista `platform_admins` com promote/demote.
-- Apenas o **dono fixo** (`fsalamoni@gmail.com`) pode delegar.
-- Self-demote **bloqueado** (regra de segurança).
-- Audit log: `platform_admin_promoted` / `platform_admin_demoted`.
-
-**Nova aba em `/admin/alertas`**:
-- CRUD de `platform_alert_config` (type/channels/threshold/destination).
-- Tipos: error_rate, latency_p99, billing, uptime, slow_query.
-- Canais: Slack (webhook), Email (stub — SendGrid no roadmap).
-- Histórico de eventos em `platform_alert_events`.
+**Nova aba no `/admin`**:
+- **Saúde**: latência, error rate, deploys, uptime
+- **Custos**: Firebase billing API, breakdown por serviço, projeção
+- **Capacidade**: tamanho das collections, queries lentas, índices faltando
+- **Movimentação**: audit log centralizado de TUDO
+- **Gerenciamento de admins**: delegar admin a outros usuários
+- **Alertas**: configurar Slack/Email pra billing spike, error rate
 
 **Cloud Functions**:
-- `snapshotPlatformHealth` (scheduled, every 1h) — materializa
-  `platform_health_snapshots/{timestamp}` e avalia thresholds.
-- `onPlatformAlertEvent` (firestore trigger) — dispatch Slack/Email.
-- Logger injetado via `setLogger()` para testabilidade sem
-  `firebase-functions` instalado.
+- Scheduled que busca billing data
+- Alertas via SendGrid/email
 
 **Validação**:
 - typecheck/lint/build OK
-- +59 testes (37 admin services + 24 functions) — todos verdes
-- +3 firestore rules (`platform_health_snapshots`, `platform_alert_config`,
-  `platform_alert_events`, `platform_billing`, `function_invocations`,
-  `slow_queries`, `deploys`)
-- smoke test em produção com flag OFF (default)
+- +10 testes
+- smoke test em produção com flag OFF
 
 ### Fase 21 — Migração final + Cutover · flag `SHELTER_CUTOVER`
 
