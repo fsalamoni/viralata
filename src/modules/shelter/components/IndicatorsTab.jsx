@@ -397,7 +397,7 @@ export default function IndicatorsTab({ clubId }) {
       case 'exhibition_detail': return <ExhibitionDetail data={d} />;
       case 'volunteer_summary': return <VolunteerSummary data={d} />;
       case 'volunteer_detail': return <VolunteerDetail data={d} />;
-      default: return <p className="text-sm text-muted-foreground">Tipo "{type}" não implementado.</p>;
+      default: return <p className="text-sm text-muted-foreground">Tipo &ldquo;{type}&rdquo; não implementado.</p>;
     }
   };
 

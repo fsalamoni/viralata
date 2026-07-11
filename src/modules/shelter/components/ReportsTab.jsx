@@ -593,7 +593,7 @@ export default function ReportsTab({ clubId }) {
       case 'time_in_shelter': return <TimeInShelterReport data={reportData} />;
       case 'fosters': return <FostersReport data={reportData} />;
       case 'spay_neuter': return <SpayNeuterReport data={reportData} />;
-      default: return <p className="text-sm text-muted-foreground">Relatório "{type}" não implementado.</p>;
+      default: return <p className="text-sm text-muted-foreground">Relatório &ldquo;{type}&rdquo; não implementado.</p>;
     }
   };
 
