@@ -73,8 +73,10 @@ describe('legal/index — exports', () => {
 });
 
 describe('legal/index — LEGAL_PAGES', () => {
-  it('tem 6 páginas (termos, privacidade, avisos, conduta, cookies, legislacao-animal)', () => {
-    expect(LEGAL_PAGES).toHaveLength(6);
+  it('tem 11 páginas (pacote documental v2: 6 públicas + 5 por papel)', () => {
+    // 6 públicas (termos, privacidade, avisos, conduta, cookies, legislacao)
+    // + 5 por papel (adoção, doações, voluntariado, lar temporário, abrigo)
+    expect(LEGAL_PAGES).toHaveLength(11);
   });
 
   it('todas as páginas têm slug, title, description e version', () => {
@@ -83,6 +85,9 @@ describe('legal/index — LEGAL_PAGES', () => {
       expect(typeof p.title).toBe('string');
       expect(typeof p.description).toBe('string');
       expect(typeof p.version).toBe('string');
+      // Campo novo (Fase 19 / pacote v2): indica se a página exige aceite
+      // em algum fluxo. Default false (páginas públicas, sem aceite).
+      expect(typeof p.acceptance_required).toBe('boolean');
     });
   });
 
@@ -94,6 +99,27 @@ describe('legal/index — LEGAL_PAGES', () => {
     expect(slugs).toContain('codigo-de-conduta');
     expect(slugs).toContain('cookies');
     expect(slugs).toContain('legislacao-animal');
+    // Novos (pacote v2)
+    expect(slugs).toContain('termo-de-adocao');
+    expect(slugs).toContain('politica-de-doacoes');
+    expect(slugs).toContain('termo-voluntariado');
+    expect(slugs).toContain('termo-lar-temporario');
+    expect(slugs).toContain('termo-adesao-abrigos');
+  });
+
+  it('páginas públicas não exigem aceite; páginas por papel exigem', () => {
+    const bySlug = Object.fromEntries(LEGAL_PAGES.map((p) => [p.slug, p]));
+    expect(bySlug['avisos-legais'].acceptance_required).toBe(false);
+    expect(bySlug['cookies'].acceptance_required).toBe(false);
+    expect(bySlug['legislacao-animal'].acceptance_required).toBe(false);
+    expect(bySlug['termos-de-uso'].acceptance_required).toBe(true);
+    expect(bySlug['politica-de-privacidade'].acceptance_required).toBe(true);
+    expect(bySlug['codigo-de-conduta'].acceptance_required).toBe(true);
+    expect(bySlug['termo-de-adocao'].acceptance_required).toBe(true);
+    expect(bySlug['politica-de-doacoes'].acceptance_required).toBe(true);
+    expect(bySlug['termo-voluntariado'].acceptance_required).toBe(true);
+    expect(bySlug['termo-lar-temporario'].acceptance_required).toBe(true);
+    expect(bySlug['termo-adesao-abrigos'].acceptance_required).toBe(true);
   });
 
   it('getLegalPageBySlug retorna a página certa', () => {

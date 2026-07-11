@@ -84,18 +84,21 @@ export default function OrganizationAdminPanel() {
   const { data: membership, isLoading: loadingMembership } = useMyMembership(orgId);
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // Shelter feature flags
-  const [shelterFoundation] = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_FOUNDATION);
-  const [shelterDashboard] = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_DASHBOARD);
-  const [shelterKanban] = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_KANBAN);
-  const [shelterReports] = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_REPORTS);
-  const [shelterIndicators] = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_INDICATORS);
-  const [shelterExhibitions] = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_EXHIBITIONS);
-  const [shelterVolunteers] = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_VOLUNTEERS);
-  const [shelterHealthRecords] = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_HEALTH_RECORDS);
-  const [shelterMedication] = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_MEDICATION);
-  const [shelterPetTimeline] = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_PET_TIMELINE);
-  const [shelterFoster] = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_FOSTER);
+  // Shelter feature flags — `useFeatureFlag` retorna um booleano, NÃO um
+  // tuple. Versões anteriores faziam `const [x] = useFeatureFlag(...)` e
+  // crashavam em produção (boolean não é iterável) — o teste passava só
+  // porque o mock retornava `[bool, fn]`. Agora pega o bool direto.
+  const shelterFoundation = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_FOUNDATION);
+  const shelterDashboard = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_DASHBOARD);
+  const shelterKanban = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_KANBAN);
+  const shelterReports = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_REPORTS);
+  const shelterIndicators = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_INDICATORS);
+  const shelterExhibitions = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_EXHIBITIONS);
+  const shelterVolunteers = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_VOLUNTEERS);
+  const shelterHealthRecords = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_HEALTH_RECORDS);
+  const shelterMedication = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_MEDICATION);
+  const shelterPetTimeline = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_PET_TIMELINE);
+  const shelterFoster = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_FOSTER);
 
   const isLoading = loadingClub || loadingMembership;
   // Fallback por uid (ONG legada sem doc de membership) — sem isso o

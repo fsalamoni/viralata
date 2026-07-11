@@ -52,6 +52,19 @@ export const AUDIT_ACTION_LABELS = {
   community_deleted: 'Comunidade excluída',
   community_post_created: 'Post publicado na comunidade',
   community_post_deleted: 'Post removido da comunidade',
+  // ─── Fase 19: Termos legais (Guia de Implementação Legal v2) ─────
+  // Cada aceite é gravado com `document_version` + `signature_text`
+  // + `ip_address` (best-effort via header CF) + `user_agent`. Esses
+  // campos atendem ao requisito jurídico do art. 6º da Lei 14.063/2020
+  // (assinatura eletrônica) + art. 37 da LGPD (registro de operações).
+  terms_accepted: 'Termos de Uso aceitos (cadastro)',
+  privacy_policy_accepted: 'Política de Privacidade aceita (cadastro)',
+  code_of_conduct_accepted: 'Código de Conduta aceito (cadastro)',
+  adoption_terms_accepted: 'Termo de Adoção assinado',
+  donation_terms_accepted: 'Política de Doações aceita',
+  volunteer_terms_accepted: 'Termo de Voluntariado aceito',
+  foster_terms_accepted: 'Termo de Lar Temporário aceito',
+  shelter_terms_accepted: 'Termo de Adesão de Abrigo aceito (com DPA)',
   // ─── Fase 21: Platform health (admin master) ─────────────────────
   platform_admin_promoted: 'Platform admin promovido',
   platform_admin_demoted: 'Platform admin rebaixado',
@@ -75,6 +88,20 @@ export async function createAuditLog({
   const actorName = actor.displayName || actor.email || actor.uid;
   const createdAtMs = Date.now();
 
+  // IP best-effort. Em produção (Firebase Hosting), a plataforma
+  // recebe o IP real via cabeçalho CF-Connecting-IP, mas a função
+  // de auditoria roda no client e não tem acesso direto. Aqui
+  // ficamos com "client-unknown" e o IP real fica registrado no
+  // Cloud Function (Fase 19, fluxo de assinatura eletrônica). Para
+  // os aceites do cadastro (onboarding), o registro é suficiente
+  // para conformidade com a Lei 14.063/2020 nível básico, pois o
+  // UID do usuário + timestamp + user_agent + hash do nome são
+  // registrados.
+  const ip_address = (typeof window !== 'undefined' && window.__CF_CONNECTING_IP)
+    || (typeof globalThis !== 'undefined' && globalThis.__CF_CONNECTING_IP)
+    || 'client-unknown';
+  const user_agent = (typeof navigator !== 'undefined' && navigator.userAgent) || 'unknown';
+
   try {
     await addDoc(collection(db, 'audit_logs'), {
       log_number: Number(`${createdAtMs}${randomNumericSuffix()}`),
@@ -86,6 +113,8 @@ export async function createAuditLog({
       user_id: userId || actor.uid,
       user_name: userName || actorName,
       user_email: userEmail || actor.email || '',
+      ip_address,
+      user_agent,
       details,
       created_at_ms: createdAtMs,
       created_at: serverTimestamp(),

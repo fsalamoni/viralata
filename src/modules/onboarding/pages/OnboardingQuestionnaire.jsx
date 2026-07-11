@@ -104,6 +104,13 @@ export default function OnboardingQuestionnaire() {
     budget_level: '',
     city: userProfile?.city || '',
     state: userProfile?.state || '',
+    // 3 checkboxes de aceite legal (Guia de Implementação Legal v2, §2)
+    // — todos obrigatórios, desmarcados por padrão. O botão "Concluir"
+    // só habilita quando os 3 estão marcados.
+    accepted_terms_of_use: false,
+    accepted_privacy_policy: false,
+    accepted_code_of_conduct: false,
+    // Mantido por compatibilidade (campo legado no doc do perfil).
     lgpd_consent: false,
   });
   const [saving, setSaving] = useState(false);
@@ -125,16 +132,37 @@ export default function OnboardingQuestionnaire() {
   function canAdvance() {
     if (current.type === 'radio') return Boolean(answers[current.field]);
     if (current.type === 'location') return answers.city.length >= 2 && answers.state.length === 2;
-    if (current.type === 'consent') return answers.lgpd_consent === true;
+    if (current.type === 'consent') {
+      // Os 3 aceites do Guia Legal v2 §2 — todos obrigatórios.
+      return (
+        answers.accepted_terms_of_use === true
+        && answers.accepted_privacy_policy === true
+        && answers.accepted_code_of_conduct === true
+      );
+    }
     return true;
   }
 
   async function handleFinish() {
     setSaving(true);
     try {
+      const acceptedAt = new Date().toISOString();
+      // Persistimos cada aceite no doc do perfil para servir de prova
+      // de aceite (audit trail local). O audit_log canônico fica
+      // gravado no `createAuditLog` chamado pelos helpers do módulo
+      // legal quando o aceite for em outro fluxo (adoção, LT, etc.).
       await updateUserProfile({
         ...answers,
-        lgpd_consent_at: new Date().toISOString(),
+        // Mantido por compatibilidade (campo legado).
+        lgpd_consent: true,
+        lgpd_consent_at: acceptedAt,
+        // Guias de Implementação Legal v2 — 3 aceites obrigatórios.
+        terms_accepted_at: acceptedAt,
+        terms_version: '2026-07-10',
+        privacy_policy_accepted_at: acceptedAt,
+        privacy_policy_version: '2026-07-10',
+        code_of_conduct_accepted_at: acceptedAt,
+        code_of_conduct_version: '2026-07-10',
       });
       toast.success('Perfil concluído! Bem-vindo ao Viralata 🐾');
       navigate('/feed');
@@ -258,29 +286,52 @@ export default function OnboardingQuestionnaire() {
           {current.type === 'consent' && (
             <div className="flex flex-col gap-3.5">
               <p className="text-[13px] leading-[1.6] text-muted-foreground">
-                Usamos os dados deste questionário para sugerir pets compatíveis com a sua
-                realidade. Você pode revisar nossa{' '}
-                <Link to="/politica-privacidade" target="_blank" className="text-primary underline">
-                  Política de Privacidade
-                </Link>{' '}
-                e nossos{' '}
-                <Link to="/termos" target="_blank" className="text-primary underline">
-                  Termos de Uso
-                </Link>. A qualquer momento você pode baixar ou excluir seus dados na página de
-                perfil.
+                Para usar a Viralata, você precisa ler e aceitar os três documentos
+                abaixo. Todos eles ficam acessíveis no rodapé da plataforma a qualquer
+                momento, e você pode revogar ou exportar seus dados na página de perfil.
               </p>
-              <div className="flex items-start gap-3 rounded-2xl border-2 border-border p-3.5">
-                <Checkbox
-                  id="lgpd_consent"
-                  checked={answers.lgpd_consent}
-                  onCheckedChange={(v) => setField('lgpd_consent', v)}
-                  className="mt-0.5"
-                />
-                <Label htmlFor="lgpd_consent" className="cursor-pointer text-[13px] font-normal leading-[1.55]">
-                  Li e concordo com o uso dos meus dados conforme descrito acima, em conformidade
-                  com a LGPD.
-                </Label>
-              </div>
+              <LegalConsentRow
+                id="accepted_terms_of_use"
+                checked={answers.accepted_terms_of_use}
+                onChange={(v) => setField('accepted_terms_of_use', v)}
+                label={
+                  <>
+                    Li e aceito os{' '}
+                    <Link to="/legal/termos-de-uso" target="_blank" className="text-primary underline">
+                      Termos e Condições Gerais de Uso
+                    </Link>{' '}
+                    <span className="text-destructive">*</span>
+                  </>
+                }
+              />
+              <LegalConsentRow
+                id="accepted_privacy_policy"
+                checked={answers.accepted_privacy_policy}
+                onChange={(v) => setField('accepted_privacy_policy', v)}
+                label={
+                  <>
+                    Li e concordo com a{' '}
+                    <Link to="/legal/politica-de-privacidade" target="_blank" className="text-primary underline">
+                      Política de Privacidade e Proteção de Dados
+                    </Link>{' '}
+                    (LGPD) <span className="text-destructive">*</span>
+                  </>
+                }
+              />
+              <LegalConsentRow
+                id="accepted_code_of_conduct"
+                checked={answers.accepted_code_of_conduct}
+                onChange={(v) => setField('accepted_code_of_conduct', v)}
+                label={
+                  <>
+                    Li e aceito o{' '}
+                    <Link to="/legal/codigo-de-conduta" target="_blank" className="text-primary underline">
+                      Código de Conduta e Política de Tolerância Zero
+                    </Link>{' '}
+                    <span className="text-destructive">*</span>
+                  </>
+                }
+              />
             </div>
           )}
 
@@ -310,6 +361,32 @@ export default function OnboardingQuestionnaire() {
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+/**
+ * Linha de aceite legal no onboarding — checkbox + label com
+ * link para a página /legal/<slug> correspondente. Usada 3x:
+ * Termos de Uso, Política de Privacidade, Código de Conduta.
+ *
+ * Mantida no mesmo arquivo do OnboardingQuestionnaire porque é
+ * a única tela que renderiza os 3 aceites simultaneamente — não
+ * precisa virar componente público.
+ */
+function LegalConsentRow({ id, checked, onChange, label }) {
+  return (
+    <div className="flex items-start gap-3 rounded-2xl border-2 border-border p-3.5">
+      <Checkbox
+        id={id}
+        checked={checked}
+        onCheckedChange={(v) => onChange(v === true)}
+        className="mt-0.5"
+        aria-required="true"
+      />
+      <Label htmlFor={id} className="cursor-pointer text-[13px] font-normal leading-[1.55]">
+        {label}
+      </Label>
     </div>
   );
 }

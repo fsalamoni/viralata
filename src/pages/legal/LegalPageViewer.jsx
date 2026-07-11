@@ -43,6 +43,12 @@ const TEXT_BY_SLUG = {
   'codigo-de-conduta': () => import('@/modules/shelter/domain/legal/texts/codigoDeConduta').then((m) => m.CODE_OF_CONDUCT_TEXT),
   'cookies': () => import('@/modules/shelter/domain/legal/texts/cookies').then((m) => m.COOKIE_POLICY_TEXT),
   'legislacao-animal': () => import('@/modules/shelter/domain/legal/texts/legislacaoAnimal').then((m) => m.ANIMAL_LEGISLATION_TEXT),
+  // Pacote documental v2 (10/07/2026) — termos por papel
+  'termo-de-adocao': () => import('@/modules/shelter/domain/legal/texts/adoptionTerms.v1').then((m) => m.ADOPTION_TERMS_TEXT_V1),
+  'politica-de-doacoes': () => import('@/modules/shelter/domain/legal/donationTerms').then((m) => m.DONATION_TERMS_TEXT),
+  'termo-voluntariado': () => import('@/modules/shelter/domain/legal/texts/volunteerTerms.v2').then((m) => m.VOLUNTEER_TERMS_TEXT_V2),
+  'termo-lar-temporario': () => import('@/modules/shelter/domain/legal/fosterTerms').then((m) => m.FOSTER_TERMS_TEXT),
+  'termo-adesao-abrigos': () => import('@/modules/shelter/domain/legal/texts/shelterOnboardingTerms.v1').then((m) => m.SHELTER_ONBOARDING_TERMS_TEXT_V1),
 };
 
 export default function LegalPageViewer() {

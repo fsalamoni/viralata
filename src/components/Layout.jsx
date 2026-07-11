@@ -8,6 +8,7 @@ import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import NotificationsMenu from '@/modules/notifications/components/NotificationsMenu';
 import { Button } from '@/components/ui/button';
 import SwUpdateBanner from '@/components/SwUpdateBanner';
+import LegalFooter from '@/components/LegalFooter';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
@@ -221,6 +222,11 @@ export default function Layout({ children, currentPageName }) {
           detecta um deploy novo. Sem isso, mobile fica preso no bundle
           antigo mesmo com skipWaiting+clientsClaim. */}
       <SwUpdateBanner />
+
+      {/* Rodapé com links para documentos legais — exigido pelo Guia de
+          Implementação Legal v2 (10/07/2026) §5. Gated por flag dentro
+          do próprio componente. */}
+      <LegalFooter />
 
       {/* Bottom tab bar (mobile, autenticado) */}
       {isAuthenticated && (
