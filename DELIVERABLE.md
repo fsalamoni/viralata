@@ -1,167 +1,93 @@
-# Feature flags: Pet Feed reliability + Mural likes/comments
+# DELIVERABLE · wt/e79e15ca @ 87d84b7
 
-## Resumo
+> Fix crítico do OrganizationAdminPanel + defensive coding + pacote legal v2
+> Sessão: `mvs_311d078987d0414a90f57ef28b789b18` (Mavis root)
+> Data: 2026-07-11 14:43 (America/Sao_Paulo)
+> Worktree: `D:\viralata\.worktrees\wt-e79e15ca`
+> Branch: `wt/e79e15ca` (3 commits ahead of main c0d2ffd)
+> Push: OK (a66e030..87d84b7)
 
-Implementação aditiva de **duas features** no projeto `viralata`, ambas
-controladas por feature flags na página `AdminPlatformSettings` (default OFF).
+## 1. Scope
 
-Ambas as features **não alteram comportamento nenhum** quando a flag está
-desligada. Toda a lógica nova está atrás de `useFeatureFlag(...)`, com o
-código original preservado em arquivos `*.original.jsx`.
+Resolver 3 problemas críticos reportados em produção + preparar a casa pra um sprint de 122 tasks granulares:
 
----
+1. **TypeError "G is not a function"** em `/organizacoes/{id}/admin` (TASK-056)
+2. **FirebaseError "query requires an index"** em `/comunidade/{id}` aba Eventos (TASK-057)
+3. **Falta de defensive coding** no painel admin (TASK-068, TASK-069)
 
-## Feature 1 — `PET_FEED_RELIABILITY_FIX` (Fase 1)
+## 2. Arquivos modificados (628 inserções, 106 deleções)
 
-### O que faz
-- Move os filtros do feed (espécie, porte, cidade, raio) do servidor para o
-  cliente via novo módulo puro `feedFilters.js`.
-- Garante uma **única query Firestore** (`status == available + orderBy
-  created_at`), coberta por índice já existente — elimina erros
-  `failed-precondition` quando o usuário combina filtros.
-- Quando a geocoding é parcial (cidade fora da tabela), um **banner
-  "location fallback"** avisa o usuário que o feed está mostrando pets de
-  todas as cidades em vez de ficar vazio.
+| Arquivo | Mudança | Tasks |
+|---|---|---|
+| `src/modules/organizations/pages/OrganizationAdminPanel.jsx` | remove destructuring `useFeatureFlag`, adiciona `safeTabs` + `TabErrorBoundary` + `SafeTab` | 056, 068, 069 |
+| `src/modules/organizations/pages/OrganizationAdminPanel.test.jsx` | mock `useFeatureFlag` corrigido (bool direto, não tuple) | 071 |
+| `firestore.indexes.json` | composite index `community_events (community_id + starts_at)` | 057 |
+| `src/modules/shelter/components/legal/SingleAcceptanceDialog.jsx` (novo) | modal genérico de aceite (texto + checkbox + assinatura + hash via Web Crypto) | 105 |
+| `src/modules/organizations/pages/CreateClub.jsx` | integra SingleAcceptanceDialog + shelterOnboardingTerms no cadastro de abrigo | 104 partial |
+| `src/modules/shelter/components/FostersList.jsx` | substitui `window.prompt` por SingleAcceptanceDialog | 104 partial |
+| `src/modules/pets/components/AdoptionFormFill.jsx` | alinhamento com novo fluxo de aceite | 104 partial |
 
-### Arquivos novos
-- `src/modules/pets/domain/feedFilters.js` — `applyFeedFilters()` puro
-- `src/modules/pets/domain/feedFilters.test.js` — 12 testes
-- `src/modules/pets/pages/PetFeedEnhanced.jsx` — nova arquitetura
+**Outros commits (a66e030, 5da437b, 6bab531)** já traziam o pacote legal v2 (5 páginas legais novas, LEGAL_PAGES 6→11, auditService com 8 actions, Onboarding com 3 checkboxes). Veja `git log wt/e79e15ca`.
 
-### Arquivos modificados
-- `src/modules/pets/domain/geoDistance.js` — exports **aditivos**
-  (`normalizePlaceText`, `resolvePetCoords`, `filterByRadius`); nenhum
-  export removido
-- `src/core/featureFlags.js` — registro da flag + PT-BR metadata
-- `src/modules/pets/pages/PetFeed.jsx` — vira wrapper:
-  ```jsx
-  const useEnhanced = useFeatureFlag(FEATURE_FLAG.PET_FEED_RELIABILITY_FIX);
-  return useEnhanced ? <PetFeedEnhanced /> : <PetFeedOriginal />;
-  ```
+## 3. Testes
 
-### Arquivos preservados
-- `src/modules/pets/pages/PetFeed.original.jsx` (era o PetFeed.jsx antes)
-- `src/modules/pets/services/petService.js` — `getAvailablePets` original
-  mantido integralmente (usado pelo PetFeed.original)
-
----
-
-## Feature 2 — `MURAL_LIKES_AND_COMMENTS` (Fase 2)
-
-### O que faz
-- Adiciona UI de **curtidas** e **comentários** nos posts do Mural das
-  comunidades.
-- `PostCard` extraído como sub-componente (encapsulamento, lazy load de
-  comments, ConfirmDialog para delete, useCallback para perf).
-- As funções de service e as regras Firestore **já existiam** no main —
-  o Mural só não consumia. Agora consome.
-
-### Arquivos novos
-- `src/modules/communities/components/MuralTabEnhanced.jsx`
-
-### Arquivos modificados
-- `src/modules/communities/services/communityService.js` — função
-  **aditiva** `getMyLikedPostIds(userId)`; nenhuma função alterada
-- `src/core/featureFlags.js` — registro da flag
-- `src/modules/communities/components/MuralTab.jsx` — vira wrapper
-
-### Arquivos preservados
-- `src/modules/communities/components/MuralTab.original.jsx`
-- `src/modules/communities/domain/permissions.js` (granular permissions)
-- `src/modules/communities/domain/constants.js`
-- Toda a sub-árvore `src/modules/communities/components/forum/` (PollComponent,
-  CommentSection, AttachmentRenderer, etc.)
-
----
-
-## Validação
-
-| Check | Resultado |
-|-------|-----------|
-| `npm test` (vitest) | **17 arquivos · 165 testes · todos passam** |
+| Comando | Resultado |
+|---|---|
+| `npm test` | 1359 / 1361 passando |
+| Falhas pré-existentes | 2 em `formatExhibitionDateTime` (fuso horário) — não relacionadas |
+| `npm run lint` | 0 erros |
 | `npm run typecheck` | 0 erros |
-| `npm run lint` (arquivos novos/modificados) | 0 erros · 5 warnings (todas em código `.original.jsx` pré-existente) |
-| `git diff origin/main -- firestore.rules` | 0 linhas |
-| `git diff origin/main -- firestore.indexes.json` | 0 linhas |
-| `priority.test.js` preservado | ✅ |
-| `permissions.js` / `constants.js` preservados | ✅ |
-| `PetFeed.original.jsx` / `MuralTab.original.jsx` | ✅ ambos existem |
-| `AdminPlatformSettings.jsx` renderiza 2 flags | ✅ (data-driven via `FEATURE_FLAG_META`) |
+| `npm run build` | success em 10.76s, 111 entries precache, 4287.81 KiB |
+| Bundle hash | `index-BplvbLkP.js` (140.44 kB gzip 44.13 kB) |
 
-### Novos testes adicionados (12)
-- `feedFilters.test.js`:
-  - filtro por espécie
-  - filtro por porte
-  - filtro por cidade normalizada (case/accents)
-  - filtro por raio
-  - filtro por `hideOwnerId`
-  - `locationFallback` liga quando filtro zera mas há pets
-  - `locationFallback` false quando resultado direto funciona
-  - edge cases (array vazio, undefined inputs)
+## 4. Validação em produção
 
----
+**Smoke test manual** (a fazer com flag OFF, antes de ativar SHELTER_LEGAL_TERMS_V1):
 
-## Como testar
+- [ ] Acessar `/organizacoes/TM9MBn5aFXgObfRZ39m9/admin` autenticado como admin
+- [ ] Verificar que painel carrega sem erro de console
+- [ ] Clicar em cada aba (overview, general, animals, feed, donations, finance, team, settings)
+- [ ] Se `SHELTER_FOUNDATION + SHELTER_DASHBOARD/KANBAN/etc` ON, clicar nas tabs shelter
+- [ ] Verificar que se uma tab quebrar, as outras continuam funcionando (TestErrorBoundary)
 
-1. Subir o ambiente local (`npm run dev`).
-2. Entrar como **admin master** (`/admin/configuracoes`).
-3. Em **Configurações globais → Feature flags**:
-   - **Confiabilidade do Feed de Pets** → ligar → ir em `/feed` → ver
-     filtros funcionando e banner de fallback quando aplicável.
-   - **Curtidas e comentários no Mural** → ligar → abrir uma comunidade
-     → Mural → curtir/comentar posts.
-4. **Desligar as flags** = comportamento volta ao estado anterior
-   (idêntico ao main antes deste PR).
+## 5. Reverter
 
----
-
-## UX/UI
-
-### Banner de fallback do Feed
-- Aparece **acima da lista de pets** quando filtros de localização zeram
-  o resultado mas há pets na plataforma
-- Cor de destaque (high-contrast), ícone `Info` da lucide-react
-- Texto em PT-BR: "Nenhum pet encontrado em **{cidade}** num raio de
-  **{raio} km** — mostrando pets de todas as cidades da plataforma."
-- Sem fechar manualmente — some quando os filtros voltam a retornar
-  resultados diretamente
-
-### MuralTabEnhanced
-- `Heart` ícone com estado preenchido quando curtido
-- Botão de comentário abre thread inline (lazy load, não pesa o feed)
-- `ConfirmDialog` shadcn/ui antes de deletar post
-- `useCallback` em `fetchPosts` para performance
-- `Set` para lookup O(1) dos likes do usuário
-- Mesma paleta visual e spacing do resto do app
-
----
-
-## Riscos residuais
-
-| Risco | Mitigação |
-|-------|-----------|
-| Admin esquecer flag OFF em produção | Default é OFF; sem ação do admin, comportamento é idêntico ao main |
-| Edge cases em normalização de cidade | 12 testes cobrem cases; tabela de cidades documentada |
-| Performance com 500 pets no client | Limite atual `limitCount = 500`; pode ser re-avaliado se base crescer |
-| MuralTabEnhanced cresce em LOC | Encapsulado em PostCard; service layer intocado |
-
----
-
-## Próximos passos sugeridos (fora do escopo deste PR)
-
-- Adicionar e2e tests para os 2 fluxos flag ON/OFF (Playwright)
-- Métricas de uso: log quando `locationFallback` ativa para mapear gaps
-  de geocoding
-- Migrar a lógica de `useMyMembership` no ClubDetail pra mesma
-  arquitetura aditiva (se aplicável)
-- Aplicar o mesmo padrão em outras telas com bugs de query conhecidos
-
----
-
-## Como reverter
-
-Reverter o commit é seguro e completo:
 ```bash
-git revert 4705f96
+git revert 87d84b7
+# ou, para reverter todos os 3 commits à frente do main:
+git reset --hard c0d2ffd  # CUIDADO: perde 87d84b7, a66e030, 5da437b
 ```
-Nenhuma migração de dados é necessária (schema inalterado).
+
+## 6. Próximos passos
+
+| ID | Task | Status |
+|---|---|---|
+| TASK-073 a 075 | Deploy do firestore index `community_events` | ready |
+| TASK-076 | Este DELIVERABLE.md | done (agora) |
+| TASK-079 a 088 | Bloco E: legal docs v2 (12 docs completos, 5 já entregues) | 3 ready, 5 in_progress, 4 pending |
+| TASK-089 a 098 | Bloco F: checkboxes + audit_log | ready (90% já feito pelo a66e030) |
+| TASK-099 a 102 | Bloco H: footer links (5 de 6 prontos, falta "cookies") | ready |
+| TASK-103 a 107 | Bloco I: clickwrap em 4 ações (1 de 4 pronto via SingleAcceptanceDialog) | ready |
+| TASK-108 a 112 | Bloco J: CookieBanner audit | ready |
+| TASK-113 a 117 | Bloco K: varredura completa LGPD | ready |
+| TASK-118 a 125 | Bloco L: Smart Search Fase 18 | ready |
+
+## 7. Coordination
+
+- **Mensagem enviada a `mvs_f1e04f28717d42cdba05e221b7b4b6f3` (Viralata Coder)** confirmando subdivisão do board (122 tasks, 12 blocos). Coder mantém wt-legal-v2 em paralelo.
+- **Mensagem enviada a `mvs_44f2762343f94f28b506f2f4c8c12eae` (wt-17ff480a)** confirmando in-sync com main + RISK-002 reduzido (wt-17ff480a é o próximo merge candidate).
+- **RISK-002 atualizado**: probabilidade reduzida para medium (após cherry-pick de wt/e79e15ca em main).
+
+## 8. Lições aprendidas
+
+1. **Mock vs produção**: o test de OrgAdminPanel passou por meses porque o mock retornava tuple, mas produção retornava bool. Lição: contratos de hook DEVEM ser documentados e o mock deve refletir o contrato exato. TASK-071 mitigou com comentário inline.
+2. **Defensive coding é barato**: o `safeTabs` helper custa 14 linhas e evita o tipo de crash que só aparece em produção (não em test). Vale o investimento.
+3. **TabErrorBoundary > um único ErrorBoundary global**: erros em uma aba não devem derrubar o resto. Padrão a replicar em outros painéis (TASK-113).
+4. **Subdivisão granular do board**: 55 → 122 tasks com 12 blocos dá visibilidade real. O usuário pediu literalmente "uma a uma em blocos independentes" e isso é o que foi entregue.
+
+---
+
+**Refs**: TASK-056, TASK-057, TASK-068, TASK-069, TASK-070, TASK-071, TASK-072, TASK-104, TASK-105, TASK-076
+**FLAG**: SHELTER_LEGAL_TERMS_V1 (default OFF, não muda comportamento existente)
+**Worktree**: wt/e79e15ca
+**Bundle**: index-BplvbLkP.js
