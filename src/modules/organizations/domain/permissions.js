@@ -72,7 +72,6 @@ export function effectiveClubPermissions(club, membership, currentUserUid) {
   return result;
 }
 
-/* ============================== Helpers de UI ============================== */
 
 /**
  * Quais abas do painel admin o usuário pode ver. Usado por
@@ -94,6 +93,7 @@ export function visibleAdminTabs({ club, membership, currentUserUid, isAdmin }) 
     { key: 'donations', label: 'Chamados de Doação', permission: 'donations' },
     { key: 'finance', label: 'Prestação de Contas', permission: 'finance' },
     { key: 'reports', label: 'Relatórios', permission: 'animals' },
+    { key: 'indicators', label: 'Indicadores', permission: 'animals' },
     { key: 'chat', label: 'Conversas', permission: 'chat' },
     { key: 'team', label: 'Equipe', permission: 'team' },
     { key: 'settings', label: 'Configurações', permission: 'admin_only' },
@@ -107,7 +107,6 @@ export function visibleAdminTabs({ club, membership, currentUserUid, isAdmin }) 
   });
 }
 
-/* ============================== Mural ============================== */
 
 /** O usuário pode criar/editar/excluir QUALQUER post do mural? */
 export function canManageClubFeed(club, membership, currentUserUid) {
@@ -139,7 +138,6 @@ export function canCommentOnClubPost(post, user) {
   return false;
 }
 
-/* ============================== Doações ============================== */
 
 /** Quem pode criar/editar/excluir os chamados de doação. */
 export function canManageClubDonations(club, membership, currentUserUid) {
@@ -151,13 +149,11 @@ export function canManageClubReceipts(club, membership, currentUserUid) {
   return canManageClubDonations(club, membership, currentUserUid);
 }
 
-/* ============================== Financeiro ============================== */
 
 export function canManageClubFinance(club, membership, currentUserUid) {
   return hasClubPermission(club, membership, 'finance', currentUserUid);
 }
 
-/* ============================== Equipe ============================== */
 
 export function canManageClubTeam(club, membership, currentUserUid) {
   return hasClubPermission(club, membership, 'team', currentUserUid);
@@ -171,7 +167,6 @@ export function canEditMember(club, member, membership, currentUserUid) {
   return canManageClubTeam(club, membership, currentUserUid);
 }
 
-/* ============================== Chat dedicado com a ONG ============================== */
 
 /** Quem pode responder no chat dedicado com a ONG.
  *  Por padrão: o owner e qualquer admin com permissão FEED ou TEAM.

@@ -2,7 +2,7 @@ import React, { useEffect, useMemo } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
-  ArrowLeft, Building2, LayoutGrid, PawPrint, MessageSquare, HandCoins, Wallet, Users, ShieldCheck, Info, MessageCircle, BarChart2,
+  ArrowLeft, Building2, LayoutGrid, PawPrint, MessageSquare, HandCoins, Wallet, Users, ShieldCheck, Info, MessageCircle, BarChart2, TrendingUp,
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -28,6 +28,7 @@ import ClubChatAdminTab from '@/modules/organizations/components/ClubChatAdminTa
 import ClubThemedScope from '@/modules/organizations/components/ClubThemedScope';
 import { useFeatureFlag, FEATURE_FLAG } from '@/core/lib/FeatureFlagsContext';
 import ReportsTab from '@/modules/shelter/components/ReportsTab';
+import IndicatorsTab from '@/modules/shelter/components/IndicatorsTab';
 
 const TAB_ICONS = {
   overview: LayoutGrid,
@@ -37,6 +38,7 @@ const TAB_ICONS = {
   donations: HandCoins,
   finance: Wallet,
   reports: BarChart2,
+  indicators: TrendingUp,
   team: Users,
   chat: MessageCircle,
   settings: ShieldCheck,
@@ -211,6 +213,9 @@ export default function OrganizationAdminPanel() {
         </TabsContent>
         <TabsContent value="reports" className="mt-12 px-1 sm:mt-14">
           <ReportsTab clubId={orgId} />
+        </TabsContent>
+        <TabsContent value="indicators" className="mt-12 px-1 sm:mt-14">
+          <IndicatorsTab clubId={orgId} />
         </TabsContent>
         <TabsContent value="chat" className="mt-12 px-1 sm:mt-14">
           <ClubChatAdminTab club={club} />
