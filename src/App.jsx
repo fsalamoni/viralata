@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider, useAuth } from '@/core/lib/FirebaseAuthContext';
 import { FeatureFlagsProvider } from '@/core/lib/FeatureFlagsContext';
 import Layout from '@/components/Layout';
+import { CookieBanner } from '@/components/CookieBanner';
 import { Toaster } from '@/components/ui/sonner';
 import { recordPageView } from '@/core/services/observabilityService';
 
@@ -13,14 +14,9 @@ const Login = lazy(() => import('@/pages/Login'));
 const PrivacyPolicy = lazy(() => import('@/pages/PrivacyPolicy'));
 const Terms = lazy(() => import('@/pages/Terms'));
 const Legislation = lazy(() => import('@/pages/Legislation'));
-// ─── Páginas Legais expandidas (Fase 19) ──────────────────────────────
-const AdopterTerms = lazy(() => import('@/pages/AdopterTerms'));
-const ShelterTerms = lazy(() => import('@/pages/ShelterTerms'));
-const VolunteerTerms = lazy(() => import('@/pages/VolunteerTerms'));
-const FosterTerms = lazy(() => import('@/pages/FosterTerms'));
-const DonorTerms = lazy(() => import('@/pages/DonorTerms'));
-const CodeOfConduct = lazy(() => import('@/pages/CodeOfConduct'));
-const CookiePolicy = lazy(() => import('@/pages/CookiePolicy'));
+// Fase 19 (Legal Terms v1): visualizador único para todas as
+// 6 páginas legais integrais (rota /legal/:slug*).
+const LegalPageViewer = lazy(() => import('@/pages/legal/LegalPageViewer'));
 const PageNotFound = lazy(() => import('@/pages/PageNotFound'));
 const BannedNotice = lazy(() => import('@/pages/BannedNotice'));
 
@@ -64,7 +60,6 @@ const Profile = lazy(() => import('@/pages/Profile'));
 const AdminDashboard = lazy(() => import('@/modules/admin/pages/AdminDashboard'));
 const AdminPets = lazy(() => import('@/modules/admin/pages/AdminPets'));
 const AdminReports = lazy(() => import('@/modules/admin/pages/AdminReports'));
-const AdminUserManagement = lazy(() => import('@/modules/admin/pages/AdminUserManagement'));
 const AdminUsers = lazy(() => import('@/modules/admin/pages/AdminUsers'));
 const AdminOrganizations = lazy(() => import('@/modules/admin/pages/AdminOrganizations'));
 const AdminCommunities = lazy(() => import('@/modules/admin/pages/AdminCommunities'));
@@ -73,9 +68,6 @@ const AdminAuditLog = lazy(() => import('@/modules/admin/pages/AdminAuditLog'));
 const AdminNotifications = lazy(() => import('@/modules/admin/pages/AdminNotifications'));
 const AdminPlatformSettings = lazy(() => import('@/modules/admin/pages/AdminPlatformSettings'));
 const AdminFlags = lazy(() => import('@/modules/admin/pages/AdminFlags'));
-const PlatformHealth = lazy(() => import('@/modules/admin/pages/PlatformHealth'));
-const AlertConfigs = lazy(() => import('@/modules/admin/pages/AlertConfigs'));
-const AdminSecurityAlerts = lazy(() => import('@/modules/admin/pages/SecurityAlerts'));
 
 // ─── QueryClient ─────────────────────────────────────────────────────────────
 const queryClient = new QueryClient({
@@ -88,7 +80,7 @@ const queryClient = new QueryClient({
   },
 });
 
-const ONBOARDING_ALLOWED_PATHS = ['/onboarding', '/login', '/politica-privacidade', '/termos', '/legislacao', '/termos-adocao', '/termos-abrigo', '/termos-voluntario', '/termos-lar-temporario', '/termos-doador', '/codigo-conduta', '/politica-cookies'];
+const ONBOARDING_ALLOWED_PATHS = ['/onboarding', '/login', '/politica-privacidade', '/termos', '/legislacao'];
 
 // ─── Guards ───────────────────────────────────────────────────────────────────
 function ProtectedRoute({ children }) {
@@ -163,6 +155,10 @@ export default function App() {
         <FeatureFlagsProvider>
           <BrowserRouter basename={import.meta.env.BASE_URL}>
             <RouteTelemetry />
+            {/* Banner global de cookies — renderizado no nível mais
+                externo possível para cobrir todas as rotas. Gated por
+                feature flag dentro do componente. */}
+            <CookieBanner />
             <Suspense fallback={<FullScreenSpinner />}>
               <BannedGate>
               <OnboardingGate>
@@ -173,13 +169,10 @@ export default function App() {
                 <Route path="/politica-privacidade" element={withLayout('PrivacyPolicy', PrivacyPolicy)} />
                 <Route path="/termos" element={withLayout('Terms', Terms)} />
                 <Route path="/legislacao" element={withLayout('Legislation', Legislation)} />
-                <Route path="/termos-adocao" element={withLayout('AdopterTerms', AdopterTerms)} />
-                <Route path="/termos-abrigo" element={withLayout('ShelterTerms', ShelterTerms)} />
-                <Route path="/termos-voluntario" element={withLayout('VolunteerTerms', VolunteerTerms)} />
-                <Route path="/termos-lar-temporario" element={withLayout('FosterTerms', FosterTerms)} />
-                <Route path="/termos-doador" element={withLayout('DonorTerms', DonorTerms)} />
-                <Route path="/codigo-conduta" element={withLayout('CodeOfConduct', CodeOfConduct)} />
-                <Route path="/politica-cookies" element={withLayout('CookiePolicy', CookiePolicy)} />
+                {/* Fase 19: páginas legais integrais sob /legal/*.
+                    Flag-gated — se OFF, o viewer redireciona para a rota
+                    legada correspondente. */}
+                <Route path="/legal/:slug*" element={withLayout('LegalPageViewer', LegalPageViewer)} />
 
                 {/* ── Onboarding (auth obrigatória, perfil ainda não completo) ── */}
                 <Route
@@ -291,19 +284,7 @@ export default function App() {
                 />
                 <Route
                   path="/admin/usuarios"
-                  element={<AdminRoute>{withLayout('AdminUserManagement', AdminUserManagement)}</AdminRoute>}
-                />
-                <Route
-                  path="/admin/admins"
                   element={<AdminRoute>{withLayout('AdminUsers', AdminUsers)}</AdminRoute>}
-                />
-                <Route
-                  path="/admin/saude"
-                  element={<AdminRoute>{withLayout('PlatformHealth', PlatformHealth)}</AdminRoute>}
-                />
-                <Route
-                  path="/admin/alertas"
-                  element={<AdminRoute>{withLayout('AlertConfigs', AlertConfigs)}</AdminRoute>}
                 />
                 <Route
                   path="/admin/organizacoes"
@@ -332,10 +313,6 @@ export default function App() {
                 <Route
                   path="/admin/flags"
                   element={<AdminRoute>{withLayout('AdminFlags', AdminFlags)}</AdminRoute>}
-                />
-                <Route
-                  path="/admin/security-alerts"
-                  element={<AdminRoute>{withLayout('AdminSecurityAlerts', AdminSecurityAlerts)}</AdminRoute>}
                 />
 
                 {/* ── Redirects legados ─────────────────────────────────── */}

@@ -630,6 +630,44 @@ service cloud.firestore {
         allow delete: if isAuth() && isPlatformAdmin();
       }
 
+      // ─── Fase 19: Subcoleção `onboarding` (aceite do Termo de Adesão) ───
+      // Guarda o aceite do Termo de Adesão e DPA (Bloco 5) e potencialmente
+      // outros marcos do onboarding do abrigo. Multi-tenant.
+      //
+      // - read: abrigo dono (admin/owner/members) + platform_admin
+      // - create: abrigo owner/admin (sempre que cria a conta, grava o
+      //           aceite do termo) + platform_admin
+      // - update: plataforma admin (para correções) — abrigo NÃO pode
+      //           reescrever o aceite (é IMUTÁVEL)
+      // - delete: só platform_admin (hard delete)
+      match /onboarding/{onboardingDocId} {
+        allow read: if isAuth() && (
+          isPlatformAdmin() ||
+          isClubOwnerOrAdmin(clubId) ||
+          isClubMember(clubId)
+        );
+        allow create: if isAuth() && (
+          // O doc deve pertencer ao clubId da path
+          request.resource.data.shelter_club_id == clubId &&
+          // O criador precisa ser admin/owner do abrigo
+          (isPlatformAdmin() ||
+           isClubOwnerOrAdmin(clubId)) &&
+          // Campos obrigatórios do aceite do Termo de Adesão (LGPD)
+          request.resource.data.terms_accepted_at is string &&
+          request.resource.data.terms_accepted_at.size() > 0 &&
+          request.resource.data.terms_version is string &&
+          request.resource.data.terms_version.size() > 0 &&
+          request.resource.data.signature_text is string &&
+          request.resource.data.signature_text.size() >= 3 &&
+          request.resource.data.signature_cpf is string &&
+          request.resource.data.signature_cpf.size() == 11 &&
+          request.resource.data.signature_role is string &&
+          request.resource.data.signature_role.size() >= 2
+        );
+        allow update: if isAuth() && isPlatformAdmin();
+        allow delete: if isAuth() && isPlatformAdmin();
+      }
+
       // ─── Fase 3: Subcoleção `adoption_workflow` (multi-tenant) ──────
       // Cada application pertence a um abrigo (`shelter_club_id` redundante
       // com a path para defense-in-depth). Read/write controlado.
@@ -639,8 +677,16 @@ service cloud.firestore {
       //         + platform_admin
       // - create: applicant (qualquer user logado). `shelter_club_id`
       //           DEVE ser o clubId da path. Status só pode ser 'applied'.
+      //           FASE 19 (Bloco 4): se `terms_accepted_at` estiver presente,
+      //           então `terms_version` e `signature_text` também devem
+      //           estar (Termo de Adoção Responsável — Lei 14.063/2020).
+      //           A regra NÃO EXIGE os campos — deixa o caller decidir —
+      //           mas se algum deles for enviado, todos precisam estar
+      //           preenchidos, garantindo consistência do snapshot LGPD.
       // - update: abrigo (decisão) ou applicant (cancel/withdraw).
-      //           `shelter_club_id` e `applicant_uid` são IMUTÁVEIS.
+      //           `shelter_club_id`, `applicant_uid`, `terms_accepted_at`,
+      //           `terms_version` e `signature_text` são IMUTÁVEIS
+      //           (regra extra: o aceite é gravado uma única vez).
       // - delete: só platform_admin.
       match /adoption_workflow/{applicationId} {
         allow read: if isAuth() && (
@@ -660,12 +706,32 @@ service cloud.firestore {
           request.resource.data.status == 'applied' &&
           // pet_id é obrigatório
           request.resource.data.pet_id is string &&
-          request.resource.data.pet_id.size() > 0
+          request.resource.data.pet_id.size() > 0 &&
+          // FASE 19 (Bloco 4): se algum campo de aceite do termo
+          // estiver presente, todos os 3 precisam estar (consistência).
+          (
+            (!('terms_accepted_at' in request.resource.data) &&
+             !('terms_version' in request.resource.data) &&
+             !('signature_text' in request.resource.data)) ||
+            (request.resource.data.terms_accepted_at is string &&
+             request.resource.data.terms_accepted_at.size() > 0 &&
+             request.resource.data.terms_version is string &&
+             request.resource.data.terms_version.size() > 0 &&
+             request.resource.data.signature_text is string &&
+             request.resource.data.signature_text.size() >= 3)
+          )
         );
         allow update: if isAuth() && (
           // shelter_club_id e applicant_uid IMUTÁVEIS
           request.resource.data.shelter_club_id == resource.data.shelter_club_id &&
           request.resource.data.applicant_uid == resource.data.applicant_uid &&
+          // FASE 19 (Bloco 4): aceite do termo é IMUTÁVEL após create.
+          // Se o doc antigo tinha o campo, o novo precisa ter o MESMO
+          // valor. Se o doc antigo NÃO tinha (legado), o novo também
+          // não pode adicionar (imutabilidade retroativa).
+          request.resource.data.terms_accepted_at == resource.data.terms_accepted_at &&
+          request.resource.data.terms_version == resource.data.terms_version &&
+          request.resource.data.signature_text == resource.data.signature_text &&
           // abrigo OU applicant podem atualizar
           (isPlatformAdmin() ||
            isClubOwnerOrAdmin(clubId) ||

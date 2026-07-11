@@ -109,11 +109,20 @@ export const adoptionApplicationSchema = z.object({
 
 /**
  * Schema de "submit" (criação pelo adotante). Não inclui campos do abrigo.
+ *
+ * FASE 19 (Bloco 4): `terms_signature_text` é OPCIONAL para preservar
+ * backward-compat com a Fase 3 (já em produção). Quando presente,
+ * gera os campos imutáveis `terms_accepted_at` + `terms_version` +
+ * `signature_text` no doc da application. A UI gated pela feature
+ * flag `SHELTER_LEGAL_TERMS_V1` envia sempre que a flag está ON.
  */
 export const submitApplicationSchema = z.object({
   pet_id: z.string().min(1).max(128),
   shelter_club_id: z.string().min(1).max(128),
   applicant_form: applicantFormSchema,
+  // Fase 19: assinatura do Termo de Adoção (Lei 14.063/2020).
+  // Opcional para backward-compat.
+  terms_signature_text: z.string().min(3).max(120).optional(),
 }).strict();
 
 /**
