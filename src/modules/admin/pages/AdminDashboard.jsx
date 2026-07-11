@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Shield, PawPrint, Building2, AlertTriangle, Users, BarChart3, ScrollText, Bell, SlidersHorizontal, Flag, Activity, DollarSign, Database } from 'lucide-react';
+import { Shield, PawPrint, Building2, AlertTriangle, Users, BarChart3, ScrollText, Bell, SlidersHorizontal, Flag, Activity, DollarSign, Database, Siren } from 'lucide-react';
 import PageHero from '@/components/PageHero';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 
@@ -26,6 +26,7 @@ export default function AdminDashboard() {
     { icon: Flag, title: 'Flags de atualizações', desc: 'Ligar e desligar as feature flags que liberam novidades na plataforma', link: '/admin/flags', tone: 'bg-primary/10 text-primary' },
     { icon: Activity, title: 'Saúde da plataforma', desc: 'Latência, error rate, deploys, uptime, custos, capacidade, alertas', link: '/admin/saude', tone: 'bg-destructive/10 text-destructive' },
     { icon: Bell, title: 'Alertas', desc: 'Configurar thresholds de Slack/Email para billing, error rate, latência', link: '/admin/alertas', tone: 'bg-destructive/10 text-destructive' },
+    { icon: Siren, title: 'Alertas de segurança', desc: 'Logins suspeitos, alterações de regras, rate limit, billing — logados pela Cloud Function (Fase 20)', link: '/admin/security-alerts', tone: 'bg-destructive/10 text-destructive' },
   ];
 
   return (

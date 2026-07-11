@@ -82,11 +82,12 @@ exports.onPetCreatedNotifyRadar = onDocumentCreated(
 // submete uma resposta ao Form do abrigo. Cria um application na
 // subcoleção `adoption_workflow` do abrigo correspondente.
 //
-// Segurança:
+// Segurança (Fase 20 — Segurança Avançada):
 // - O abrigo configura um `secret_token` na config
 // - O Apps Script envia esse secret no payload
 // - Se não bater, rejeitamos (401)
-// - Cloud Function tem rate limit implícito do Cloud Run
+// - Rate limit em memória (functions/middleware/rateLimit) — Fase 20
+//   — configurável via RATE_LIMIT_WINDOW_MS / RATE_LIMIT_MAX
 //
 // Habilitar no abrigo: criar doc em
 // `clubs/{clubId}/integrations/google_forms` com `enabled=true` e
@@ -94,6 +95,7 @@ exports.onPetCreatedNotifyRadar = onDocumentCreated(
 
 const { onRequest } = require('firebase-functions/v2/https');
 const { getGoogleFormsConfigByFormId, processFormsWebhook } = require('./googleFormsWebhook');
+const { withRateLimit, applyRateLimit } = require('./middleware/rateLimit');
 
 exports.googleFormsWebhook = onRequest(
   {
@@ -101,7 +103,7 @@ exports.googleFormsWebhook = onRequest(
     cors: false, // chamado só pelo Apps Script (server-to-server)
     maxInstances: 10,
   },
-  async (req, res) => {
+  withRateLimit(async (req, res) => {
     if (req.method !== 'POST') {
       res.status(405).send('Method Not Allowed');
       return;
@@ -149,7 +151,7 @@ exports.googleFormsWebhook = onRequest(
       logger.error('googleFormsWebhook failed', { error: String(err) });
       res.status(500).send(String(err?.message || err));
     }
-  },
+  }),
 );
 
 // ─── Fase 6: Pós-adoção com CRON de materialização ──────────────────────
@@ -201,3 +203,17 @@ exports.onPlatformAlertEvent = onDocCreated(
     await runOnPlatformAlertEvent(event);
   },
 );
+// ─── Fase 20: Alertas de segurança (Security Alerts) ────────────────────
+//
+// Cloud Function onCall `triggerSecurityAlert` — chamada por
+// platform_admin (e, no futuro, por outros triggers automatizados) para
+// registrar eventos de segurança em `platform_security_alerts/{alertId}`.
+// O Firestore rules dessa coleção só permite leitura para platform_admin
+// e escrita apenas pelo Admin SDK (esta Cloud Function). Ver
+// firestore.rules (match /platform_security_alerts) e
+// src/core/services/securityAlertsService.js para o painel admin.
+const { triggerSecurityAlert } = require('./securityAlerts');
+exports.triggerSecurityAlert = triggerSecurityAlert;
+
+// Re-export do applyRateLimit para facilitar testes / composição.
+exports.__applyRateLimit = applyRateLimit;

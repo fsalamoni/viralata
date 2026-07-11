@@ -75,6 +75,7 @@ const AdminPlatformSettings = lazy(() => import('@/modules/admin/pages/AdminPlat
 const AdminFlags = lazy(() => import('@/modules/admin/pages/AdminFlags'));
 const PlatformHealth = lazy(() => import('@/modules/admin/pages/PlatformHealth'));
 const AlertConfigs = lazy(() => import('@/modules/admin/pages/AlertConfigs'));
+const AdminSecurityAlerts = lazy(() => import('@/modules/admin/pages/SecurityAlerts'));
 
 // ─── QueryClient ─────────────────────────────────────────────────────────────
 const queryClient = new QueryClient({
@@ -331,6 +332,10 @@ export default function App() {
                 <Route
                   path="/admin/flags"
                   element={<AdminRoute>{withLayout('AdminFlags', AdminFlags)}</AdminRoute>}
+                />
+                <Route
+                  path="/admin/security-alerts"
+                  element={<AdminRoute>{withLayout('AdminSecurityAlerts', AdminSecurityAlerts)}</AdminRoute>}
                 />
 
                 {/* ── Redirects legados ─────────────────────────────────── */}

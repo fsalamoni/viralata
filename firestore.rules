@@ -1512,5 +1512,21 @@ service cloud.firestore {
                'user_name', 'user_email', 'privacy_map', 'updated_at']
             ));
     }
+
+    // ─── Fase 20: Alertas de Segurança (platform_security_alerts) ──────────
+    //
+    // Coleção de eventos de segurança (logins suspeitos, alterações
+    // de regras, picos de billing, rate limit, RLS denied, manuais).
+    // Escrita SOMENTE pela Cloud Function `triggerSecurityAlert`
+    // (Admin SDK — o client não tem permissão de escrita).
+    // Leitura restrita ao platform_admin.
+    //
+    // Schema validado em functions/securityAlerts.js:
+    //   { type, severity, source, context, created_at, created_by,
+    //     resolved, resolved_by, resolved_at, notes }
+    match /platform_security_alerts/{alertId} {
+      allow read: if isAuth() && isPlatformAdmin();
+      allow create, update, delete: if false;  // só Admin SDK / Cloud Function
+    }
   }
 }
