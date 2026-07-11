@@ -1,6 +1,6 @@
 # Sistema de Gestão do Abrigo — Roadmap Detalhado
 
-> **Status**: 21/22 fases concluídas (0–17 ✅, 19 ✅, 20 ✅, 21 ✅, 22 ✅ PR #66 pendente; Fase 18 ⏸️ decisão backend pendente.
+> **Status**: 22/22 fases concluídas ✅ (Fase 18 entregue — Smart Search via Firestore nativo).
 > **Versão**: 0.9.1 — 2026-07-11 (Fase 22 PR #66 pendente; 21/22 concluídas)
 > **Owner**: Mavis (sub-agente técnico do repo `fsalamoni/viralata`)
 > **Macro-blocos**: 5 (A fundação, B núcleo do animal, C operação, D busca, E legal/segurança/admin)

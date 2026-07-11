@@ -291,6 +291,48 @@
         { "fieldPath": "assignees", "arrayConfig": "CONTAINS", "order": "ASCENDING" },
         { "fieldPath": "order", "order": "ASCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "pets",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "shelter_club_id", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "name", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "adoption_interests",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "created_at", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "clubs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "directory_status", "order": "ASCENDING" },
+        { "fieldPath": "name", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "volunteer_profiles",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "shelter_club_id", "order": "ASCENDING" },
+        { "fieldPath": "display_name", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "exhibitions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "shelter_club_id", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "start_date", "order": "DESCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []
