@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner';
 import {
   ArrowLeft, Building2, LayoutGrid, PawPrint, MessageSquare, HandCoins, Wallet, Users, ShieldCheck, Info, MessageCircle, BarChart2, TrendingUp,
+  LayoutDashboard, Kanban, Eye, Heart, Stethoscope, Pill, Clock, Home,
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -29,6 +30,15 @@ import ClubThemedScope from '@/modules/organizations/components/ClubThemedScope'
 import { useFeatureFlag, FEATURE_FLAG } from '@/core/lib/FeatureFlagsContext';
 import ReportsTab from '@/modules/shelter/components/ReportsTab';
 import IndicatorsTab from '@/modules/shelter/components/IndicatorsTab';
+import { DashboardPage } from '@/modules/shelter/components/DashboardPage';
+import { KanbanPage } from '@/modules/shelter/components/KanbanPage';
+import { ExhibitionsList } from '@/modules/shelter/components/ExhibitionsList';
+import { VolunteersRoster } from '@/modules/shelter/components/VolunteersRoster';
+import { MedicalRecordsList } from '@/modules/shelter/components/MedicalRecordsList';
+import { MedicationsList } from '@/modules/shelter/components/MedicationsList';
+import { TimelineList } from '@/modules/shelter/components/TimelineList';
+import { FostersList } from '@/modules/shelter/components/FostersList';
+import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
 
 const TAB_ICONS = {
   overview: LayoutGrid,
@@ -42,6 +52,15 @@ const TAB_ICONS = {
   team: Users,
   chat: MessageCircle,
   settings: ShieldCheck,
+  // Shelter tabs
+  dashboard: LayoutDashboard,
+  kanban: Kanban,
+  exhibitions: Eye,
+  volunteers: Heart,
+  medical_records: Stethoscope,
+  medications: Pill,
+  timeline: Clock,
+  foster: Home,
 };
 
 const TAB_PERMISSION = {
@@ -63,6 +82,19 @@ export default function OrganizationAdminPanel() {
   const { data: club, isLoading: loadingClub } = useClub(orgId);
   const { data: membership, isLoading: loadingMembership } = useMyMembership(orgId);
   const [searchParams, setSearchParams] = useSearchParams();
+
+  // Shelter feature flags
+  const [shelterFoundation] = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_FOUNDATION);
+  const [shelterDashboard] = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_DASHBOARD);
+  const [shelterKanban] = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_KANBAN);
+  const [shelterReports] = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_REPORTS);
+  const [shelterIndicators] = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_INDICATORS);
+  const [shelterExhibitions] = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_EXHIBITIONS);
+  const [shelterVolunteers] = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_VOLUNTEERS);
+  const [shelterHealthRecords] = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_HEALTH_RECORDS);
+  const [shelterMedication] = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_MEDICATION);
+  const [shelterPetTimeline] = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_PET_TIMELINE);
+  const [shelterFoster] = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_FOSTER);
 
   const isLoading = loadingClub || loadingMembership;
   // Fallback por uid (ONG legada sem doc de membership) — sem isso o
@@ -96,8 +128,40 @@ export default function OrganizationAdminPanel() {
     }));
   }, [club, membership, isAdmin, user?.uid]);
 
+  // Shelter tabs visíveis com feature flag gating
+  const shelterTabs = useMemo(() => {
+    const tabs = [];
+    if (shelterFoundation && shelterDashboard) {
+      tabs.push({ key: 'dashboard', label: 'Dashboard', icon: TAB_ICONS.dashboard, permission: 'animals' });
+    }
+    if (shelterFoundation && shelterKanban) {
+      tabs.push({ key: 'kanban', label: 'Pendências', icon: TAB_ICONS.kanban, permission: 'animals' });
+    }
+    if (shelterFoundation && shelterExhibitions) {
+      tabs.push({ key: 'exhibitions', label: 'Vitrines', icon: TAB_ICONS.exhibitions, permission: 'animals' });
+    }
+    if (shelterFoundation && shelterVolunteers) {
+      tabs.push({ key: 'volunteers', label: 'Voluntários', icon: TAB_ICONS.volunteers, permission: 'team' });
+    }
+    if (shelterFoundation && shelterHealthRecords) {
+      tabs.push({ key: 'medical_records', label: 'Prontuário', icon: TAB_ICONS.medical_records, permission: 'animals' });
+    }
+    if (shelterFoundation && shelterMedication) {
+      tabs.push({ key: 'medications', label: 'Medicação', icon: TAB_ICONS.medications, permission: 'animals' });
+    }
+    if (shelterFoundation && shelterPetTimeline) {
+      tabs.push({ key: 'timeline', label: 'Timeline', icon: TAB_ICONS.timeline, permission: 'animals' });
+    }
+    if (shelterFoundation && shelterFoster) {
+      tabs.push({ key: 'foster', label: 'Lares Temporários', icon: TAB_ICONS.foster, permission: 'animals' });
+    }
+    return tabs;
+  }, [shelterFoundation, shelterDashboard, shelterKanban, shelterExhibitions, shelterVolunteers, shelterHealthRecords, shelterMedication, shelterPetTimeline, shelterFoster]);
+
+  const allVisibleTabs = useMemo(() => [...visibleTabs, ...shelterTabs], [visibleTabs, shelterTabs]);
+
   const requestedTab = searchParams.get('tab') || 'overview';
-  const activeTab = visibleTabs.some((t) => t.key === requestedTab) ? requestedTab : (visibleTabs[0]?.key || 'overview');
+  const activeTab = allVisibleTabs.some((t) => t.key === requestedTab) ? requestedTab : (allVisibleTabs[0]?.key || 'overview');
 
   const setActiveTab = (tab) => {
     const next = new URLSearchParams(searchParams);
@@ -136,6 +200,10 @@ export default function OrganizationAdminPanel() {
   }
 
   if (!canAccess) return null; // useEffect acima já redireciona com o toast
+
+  // Feature flag para Reports e Indicators
+  const showReportsTab = shelterFoundation && shelterReports;
+  const showIndicatorsTab = shelterFoundation && shelterIndicators;
 
   const initials = (club.name || 'A').split(' ').filter(Boolean).slice(0, 2).map((w) => w[0]?.toUpperCase()).join('');
   const location = [club.city, club.state].filter(Boolean).join(', ');
@@ -186,7 +254,7 @@ export default function OrganizationAdminPanel() {
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="arena-tab-bar">
-          {visibleTabs.map((tab) => (
+          {allVisibleTabs.map((tab) => (
             <TabsTrigger key={tab.key} value={tab.key} className={cn('arena-tab-pill gap-1.5')}>
               <tab.icon className="h-4 w-4" /> {tab.label}
             </TabsTrigger>
@@ -211,12 +279,16 @@ export default function OrganizationAdminPanel() {
         <TabsContent value="finance" className="mt-12 px-1 sm:mt-14">
           <ClubFinanceTab clubId={orgId} canManage={canManageFinance} />
         </TabsContent>
-        <TabsContent value="reports" className="mt-12 px-1 sm:mt-14">
-          <ReportsTab clubId={orgId} />
-        </TabsContent>
-        <TabsContent value="indicators" className="mt-12 px-1 sm:mt-14">
-          <IndicatorsTab clubId={orgId} />
-        </TabsContent>
+        {showReportsTab && (
+          <TabsContent value="reports" className="mt-12 px-1 sm:mt-14">
+            <ReportsTab clubId={orgId} />
+          </TabsContent>
+        )}
+        {showIndicatorsTab && (
+          <TabsContent value="indicators" className="mt-12 px-1 sm:mt-14">
+            <IndicatorsTab clubId={orgId} />
+          </TabsContent>
+        )}
         <TabsContent value="chat" className="mt-12 px-1 sm:mt-14">
           <ClubChatAdminTab club={club} />
         </TabsContent>
@@ -226,6 +298,47 @@ export default function OrganizationAdminPanel() {
         <TabsContent value="settings" className="mt-12 px-1 sm:mt-14">
           <ClubAdminTab club={club} />
         </TabsContent>
+        {/* Shelter Tabs com Feature Flag Gating */}
+        {shelterFoundation && shelterDashboard && (
+          <TabsContent value="dashboard" className="mt-12 px-1 sm:mt-14">
+            <DashboardPage clubId={orgId} />
+          </TabsContent>
+        )}
+        {shelterFoundation && shelterKanban && (
+          <TabsContent value="kanban" className="mt-12 px-1 sm:mt-14">
+            <KanbanPage clubId={orgId} />
+          </TabsContent>
+        )}
+        {shelterFoundation && shelterExhibitions && (
+          <TabsContent value="exhibitions" className="mt-12 px-1 sm:mt-14">
+            <ExhibitionsList clubId={orgId} />
+          </TabsContent>
+        )}
+        {shelterFoundation && shelterVolunteers && (
+          <TabsContent value="volunteers" className="mt-12 px-1 sm:mt-14">
+            <VolunteersRoster clubId={orgId} />
+          </TabsContent>
+        )}
+        {shelterFoundation && shelterHealthRecords && (
+          <TabsContent value="medical_records" className="mt-12 px-1 sm:mt-14">
+            <MedicalRecordsList clubId={orgId} />
+          </TabsContent>
+        )}
+        {shelterFoundation && shelterMedication && (
+          <TabsContent value="medications" className="mt-12 px-1 sm:mt-14">
+            <MedicationsList clubId={orgId} />
+          </TabsContent>
+        )}
+        {shelterFoundation && shelterPetTimeline && (
+          <TabsContent value="timeline" className="mt-12 px-1 sm:mt-14">
+            <TimelineList clubId={orgId} />
+          </TabsContent>
+        )}
+        {shelterFoundation && shelterFoster && (
+          <TabsContent value="foster" className="mt-12 px-1 sm:mt-14">
+            <FostersList clubId={orgId} />
+          </TabsContent>
+        )}
       </Tabs>
     </ClubThemedScope>
   );

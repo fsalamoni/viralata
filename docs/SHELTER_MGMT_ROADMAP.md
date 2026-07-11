@@ -1,7 +1,7 @@
 # Sistema de Gestão do Abrigo — Roadmap Detalhado
 
-> **Status**: 20/22 fases concluídas (0–17 ✅, 19 ✅, 20 ✅, 21 ✅; 18 ⏸️, 22 ⏸️). Próxima: Fase 18 (Smart Search — aguarda decisão backend).
-> **Versão**: 0.9 — 2026-07-11 (Fases 16-17 mergeadas em main, PRs #64+65 fechados)
+> **Status**: 21/22 fases concluídas (0–17 ✅, 19 ✅, 20 ✅, 21 ✅, 22 ✅ PR #66 pendente; Fase 18 ⏸️ decisão backend pendente.
+> **Versão**: 0.9.1 — 2026-07-11 (Fase 22 PR #66 pendente; 21/22 concluídas)
 > **Owner**: Mavis (sub-agente técnico do repo `fsalamoni/viralata`)
 > **Macro-blocos**: 5 (A fundação, B núcleo do animal, C operação, D busca, E legal/segurança/admin)
 >
@@ -60,7 +60,7 @@ Cada módulo é **isolado e autônomo**: falha em um módulo não derruba os dem
 └──────────────────────────────────────────────────────────┘
 ```
 
-**20/22 fases concluídas, 2/22 pendentes** (18 ⏸️ decisão backend; 22 ⏸️ cutover).
+**21/22 fases concluídas, 1/22 pendente** (18 ⏸️ decisão backend; 22 ⏸️ PR #66 pendente).
 ```
 
 ## 4. Dependências entre fases
