@@ -13,6 +13,14 @@ const Login = lazy(() => import('@/pages/Login'));
 const PrivacyPolicy = lazy(() => import('@/pages/PrivacyPolicy'));
 const Terms = lazy(() => import('@/pages/Terms'));
 const Legislation = lazy(() => import('@/pages/Legislation'));
+// ─── Páginas Legais expandidas (Fase 19) ──────────────────────────────
+const AdopterTerms = lazy(() => import('@/pages/AdopterTerms'));
+const ShelterTerms = lazy(() => import('@/pages/ShelterTerms'));
+const VolunteerTerms = lazy(() => import('@/pages/VolunteerTerms'));
+const FosterTerms = lazy(() => import('@/pages/FosterTerms'));
+const DonorTerms = lazy(() => import('@/pages/DonorTerms'));
+const CodeOfConduct = lazy(() => import('@/pages/CodeOfConduct'));
+const CookiePolicy = lazy(() => import('@/pages/CookiePolicy'));
 const PageNotFound = lazy(() => import('@/pages/PageNotFound'));
 const BannedNotice = lazy(() => import('@/pages/BannedNotice'));
 
@@ -76,7 +84,7 @@ const queryClient = new QueryClient({
   },
 });
 
-const ONBOARDING_ALLOWED_PATHS = ['/onboarding', '/login', '/politica-privacidade', '/termos', '/legislacao'];
+const ONBOARDING_ALLOWED_PATHS = ['/onboarding', '/login', '/politica-privacidade', '/termos', '/legislacao', '/termos-adocao', '/termos-abrigo', '/termos-voluntario', '/termos-lar-temporario', '/termos-doador', '/codigo-conduta', '/politica-cookies'];
 
 // ─── Guards ───────────────────────────────────────────────────────────────────
 function ProtectedRoute({ children }) {
@@ -161,6 +169,13 @@ export default function App() {
                 <Route path="/politica-privacidade" element={withLayout('PrivacyPolicy', PrivacyPolicy)} />
                 <Route path="/termos" element={withLayout('Terms', Terms)} />
                 <Route path="/legislacao" element={withLayout('Legislation', Legislation)} />
+                <Route path="/termos-adocao" element={withLayout('AdopterTerms', AdopterTerms)} />
+                <Route path="/termos-abrigo" element={withLayout('ShelterTerms', ShelterTerms)} />
+                <Route path="/termos-voluntario" element={withLayout('VolunteerTerms', VolunteerTerms)} />
+                <Route path="/termos-lar-temporario" element={withLayout('FosterTerms', FosterTerms)} />
+                <Route path="/termos-doador" element={withLayout('DonorTerms', DonorTerms)} />
+                <Route path="/codigo-conduta" element={withLayout('CodeOfConduct', CodeOfConduct)} />
+                <Route path="/politica-cookies" element={withLayout('CookiePolicy', CookiePolicy)} />
 
                 {/* ── Onboarding (auth obrigatória, perfil ainda não completo) ── */}
                 <Route

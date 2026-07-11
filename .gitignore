@@ -22,3 +22,4 @@ functions/lib
 functions/node_modules
 .worktrees
 =
+.mavis
