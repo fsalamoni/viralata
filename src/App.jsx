@@ -56,6 +56,9 @@ const CreateReport = lazy(() => import('@/modules/reports/pages/CreateReport'));
 // ─── Perfil ───────────────────────────────────────────────────────────────────
 const Profile = lazy(() => import('@/pages/Profile'));
 
+// ─── Abrigos (Fases 1+) — kanban (Fase 15) ───────────────────────────────
+const KanbanPage = lazy(() => import('@/modules/shelter/components/KanbanPage'));
+
 // ─── Admin ────────────────────────────────────────────────────────────────────
 const AdminDashboard = lazy(() => import('@/modules/admin/pages/AdminDashboard'));
 const AdminPets = lazy(() => import('@/modules/admin/pages/AdminPets'));
@@ -267,6 +270,12 @@ export default function App() {
                 <Route
                   path="/perfil"
                   element={<ProtectedRoute>{withLayout('Profile', Profile)}</ProtectedRoute>}
+                />
+
+                {/* ── Abrigos (Fase 15 — Kanban) ─────────────────────────── */}
+                <Route
+                  path="/abrigos/:clubId/kanban"
+                  element={<ProtectedRoute>{withLayout('Kanban', KanbanPage)}</ProtectedRoute>}
                 />
 
                 {/* ── Admin ─────────────────────────────────────────────── */}

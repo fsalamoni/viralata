@@ -1035,6 +1035,68 @@ service cloud.firestore {
           hasClubPermission(clubId, 'dashboard')
         ) && request.resource.data.shelter_club_id == clubId;
       }
+
+      // ─── Fase 15: Coleção `kanban_boards` (customizável por abrigo) ───
+      // Boards da Central de Pendências. Sub-coleções kanban_columns e
+      // kanban_cards vivem em `kanban_boards/{boardId}/...` (rules aninhadas
+      // abaixo). Multi-tenant: cada board pertence a UM abrigo.
+      // Quem pode ler/escrever: platform admin, owner/admin do abrigo,
+      // membro com permissão `edit_pets` ou permissão granular `animals`.
+      match /kanban_boards/{boardId} {
+        allow read: if isAuth() && (
+          isPlatformAdmin() ||
+          isClubOwnerOrAdmin(clubId) ||
+          canEditClubPets(clubId) ||
+          hasClubPermission(clubId, 'animals')
+        );
+        allow create, update, delete: if isAuth() && (
+          isPlatformAdmin() ||
+          isClubOwnerOrAdmin(clubId) ||
+          canEditClubPets(clubId) ||
+          hasClubPermission(clubId, 'animals')
+        ) && request.resource.data.shelter_club_id == clubId;
+
+        // ─── Fase 15: Sub-coleção `kanban_columns` (per-board) ───
+        match /kanban_columns/{columnId} {
+          allow read: if isAuth() && (
+            isPlatformAdmin() ||
+            isClubOwnerOrAdmin(clubId) ||
+            canEditClubPets(clubId) ||
+            hasClubPermission(clubId, 'animals')
+          );
+          allow create, update, delete: if isAuth() && (
+            isPlatformAdmin() ||
+            isClubOwnerOrAdmin(clubId) ||
+            canEditClubPets(clubId) ||
+            hasClubPermission(clubId, 'animals')
+          ) && request.resource.data.shelter_club_id == clubId
+            && request.resource.data.board_id == boardId;
+        }
+
+        // ─── Fase 15: Sub-coleção `kanban_cards` (per-board) ───
+        // Assignees podem ler cards onde estão atribuídos. Para update,
+        // assignees podem atualizar (ex.: marcar checklist como done) mas
+        // o card precisa manter `shelter_club_id` imutável e `assignees`
+        // continua acessível para o próprio assignee.
+        match /kanban_cards/{cardId} {
+          allow read: if isAuth() && (
+            isPlatformAdmin() ||
+            isClubOwnerOrAdmin(clubId) ||
+            canEditClubPets(clubId) ||
+            hasClubPermission(clubId, 'animals') ||
+            request.auth.uid in resource.data.assignees
+          );
+          allow create, update, delete: if isAuth() && (
+            isPlatformAdmin() ||
+            isClubOwnerOrAdmin(clubId) ||
+            canEditClubPets(clubId) ||
+            hasClubPermission(clubId, 'animals') ||
+            // Assignees podem atualizar seus próprios cards
+            request.auth.uid in resource.data.assignees
+          ) && request.resource.data.shelter_club_id == clubId
+            && request.resource.data.board_id == boardId;
+        }
+      }
     }
 
     match /club_members/{memberId} {

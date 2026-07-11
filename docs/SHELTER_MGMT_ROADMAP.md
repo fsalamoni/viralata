@@ -1,6 +1,7 @@
 # Sistema de Gestão do Abrigo — Roadmap Detalhado
 
-> **Status**: Fases 0–15 concluídas (16/22). Próximas: Fase 15 (Kanban) ou 19 (Legal).
+> **Status**: Fases 0–15 concluídas (16/22). Próxima: Fase 16 (Relatórios) ou 19 (Legal).
+> **Versão**: 0.6 — 2026-07-11 (atualizado pós-Fase 15 (Kanban) concluída)
 > **Versão**: 0.5 — 2026-07-11 (atualizado pós-Fase 19 completa)
 > **Owner**: Mavis (sub-agente técnico do repo `fsalamoni/viralata`)
 > **Macro-blocos**: 5 (A fundação, B núcleo do animal, C operação, D busca, E legal/segurança/admin)
@@ -45,8 +46,8 @@ Cada módulo é **isolado e autônomo**: falha em um módulo não derruba os dem
 │  BLOCO C — OPERAÇÃO DO ABRIGO (Fases 10-17) ~8 PRs      │
 │  • vitrines, RSVP, voluntários, dashboard, kanban,      │
 │    relatórios, indicadores                              │
-│  • Status (2026-07-11): Fases 14 (dashboard) ✅,         │
-│    15–17 ⏸️                                              │
+│  • Status (2026-07-11): Fases 14 (dashboard) ✅, 15 (kanban) ✅,         │
+│    16–17 ⏸️                                              │
 ├──────────────────────────────────────────────────────────┤
 │  BLOCO D — BUSCA + DESCOBERTA (Fase 18)  ~1 PR grande   │
 │  • sistema de busca inteligente multi-filtro             │
@@ -650,7 +651,9 @@ Fase 0 (preparação)
 - +12 testes
 - smoke test em produção com flag OFF
 
-### Fase 14 — Central de Pendências (Kanban) · flag `SHELTER_KANBAN` (GRANDE)
+### Fase 15 — Central de Pendências (Kanban) · flag `SHELTER_KANBAN` (GRANDE)
+
+> **Nota de numeração**: este roadmap chama esta fase de "14"; no projeto ela é **Fase 15** (a Fase 14 = Dashboard foi adicionada depois). Em código (feature flag, PR, commits) usamos Fase 15.
 
 **Objetivo**: sistema de kanban com colunas customizáveis, tarefas, drag-and-drop.
 

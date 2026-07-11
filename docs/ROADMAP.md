@@ -35,7 +35,7 @@ Status atual (2026-07-11):
 | 12 | Escalas + RSVP de Vitrines | ✅ Concluída | (parte do #56) |
 | 13 | Gestão de Voluntários | ✅ Concluída | #54 |
 | 14 | Dashboard do Abrigo (tempo real) | ✅ Concluída | #61 |
-| 15 | Central de Pendências (Kanban) ⚠️ GRANDE | ⏸️ Aguardando | — |
+| 15 | Central de Pendências (Kanban) ⚠️ GRANDE | 🟡 Em andamento ([`feat/shelter-15-kanban`](../../tree/feat/shelter-15-kanban)) | — |
 | 16 | Relatórios de Abrigos | ⏸️ Aguardando | — |
 | 17 | Indicadores de Vitrines + Voluntários | ⏸️ Aguardando | — |
 | 18 | Busca Inteligente ⚠️ GRANDE | 🚨 Decisão pendente (Meilisearch vs Typesense vs Algolia vs Firestore) | — |
@@ -44,7 +44,7 @@ Status atual (2026-07-11):
 | 21 | Painel de Saúde da Plataforma (Admin Master) | 🟡 Parcial (security alerts faltando) | #60 |
 | 22 | Migração Final + Cutover | ⏸️ Aguardando | — |
 
-**16/22 fases concluídas (Fases 0–15 ✅, contando Fases 11–14 + 19 + 20).** Detalhes completos em `docs/SHELTER_MGMT_ROADMAP.md` e em `.mavis/scratchpad/shelter-roadmap-tracker.md`.
+**16/22 fases concluídas (Fases 0–15 ✅, contando Fases 11–14 + 19 + 20; Fase 15 em andamento).** Detalhes completos em `docs/SHELTER_MGMT_ROADMAP.md` e em `.mavis/scratchpad/shelter-roadmap-tracker.md`.
 
 Convenções: ✅ concluído · 🟡 em andamento · ⏸️ aguardando · ❌ bloqueado. Cada fase = 1 feature flag (`SHELTER_*`) default OFF. Módulo isolado em `src/modules/shelter/`. Princípios: schema evolutivo, dual-read/write durante migração, defense in depth, audit log de tudo.
 
