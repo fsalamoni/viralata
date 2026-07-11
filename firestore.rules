@@ -188,6 +188,8 @@ service cloud.firestore {
         allow create: if isOwner(userId) && request.resource.data.get('terms_accepted_at', null) is string;
         allow update: if isOwner(userId);
         allow delete: if isOwner(userId) || isPlatformAdmin();
+      }
+
       // ─── Fase 19: Subcoleção `terms_acceptances` (aceites legais) ──
       // Cada aceite é IMUTÁVEL (Lei 14.063/2020 — prova legal). Não pode
       // ser editado nem deletado pelo próprio usuário — apenas lido.
