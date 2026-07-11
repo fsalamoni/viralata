@@ -1,0 +1,33 @@
+name: Check Custom Domain
+
+on:
+  workflow_dispatch:
+    inputs:
+      domain:
+        description: 'Custom domain to check'
+        required: true
+        default: 'viralata.app'
+      site:
+        description: 'Firebase Hosting site ID'
+        required: true
+        default: 'viralata'
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run check
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          DOMAIN: ${{ inputs.domain }}
+          SITE: ${{ inputs.site }}
+          FIREBASE_PROJECT_ID: viralata-4cf0b
+        run: bash .github/scripts/check-custom-domain.sh
