@@ -54,14 +54,19 @@ vi.mock('@/modules/organizations/hooks/useClubs', () => ({
   }),
 }));
 
-// TODAS as flags ativas
+// TODAS as flags ativas.
+// `useFeatureFlag` em produção retorna um boolean direto, NÃO um tuple
+// [bool, fn]. Mock alinhado com o contrato real. Caso o componente
+// volte a fazer `const [x] = useFeatureFlag(...)`, este teste vai
+// falhar (boolean não é iterável) — exatamente o bug que derrubou
+// /organizacoes/{id}/admin em produção. TASK-071.
 vi.mock('@/core/lib/FeatureFlagsContext', () => ({
   useFeatureFlag: (key) => {
     if (typeof key === 'string') {
       // Ativa tudo que é SHELTER_
-      return [key.startsWith('SHELTER_'), () => {}];
+      return key.startsWith('SHELTER_');
     }
-    return [true, () => {}];
+    return true;
   },
   FEATURE_FLAG: new Proxy({}, { get: (_, k) => k }),
 }));

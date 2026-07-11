@@ -25,6 +25,11 @@ import {
   useEndFoster,
   useCancelFoster,
 } from '@/modules/shelter/hooks/useFosters';
+import SingleAcceptanceDialog from '@/modules/shelter/components/legal/SingleAcceptanceDialog';
+import {
+  FOSTER_TERMS_TEXT,
+  FOSTER_TERMS_VERSION,
+} from '@/modules/shelter/domain/legal/fosterTerms';
 
 const STATUS_LABELS = {
   pending: 'Aguardando aceite',
@@ -45,6 +50,7 @@ const STATUS_TONES = {
 
 export function FostersList({ shelterClubId, actor, canAbriho = false, isFoster = false }) {
   const [statusFilter, setStatusFilter] = useState(null);
+  const [acceptingFosterId, setAcceptingFosterId] = useState(null);
   const { data: fosterList = [], isLoading } = useFosters(shelterClubId, {
     status: statusFilter,
   });
@@ -59,18 +65,30 @@ export function FostersList({ shelterClubId, actor, canAbriho = false, isFoster 
   }
   if (isLoading) return <p className="text-sm text-muted-foreground">Carregando placements…</p>;
 
-  const handleAccept = async (fosterId) => {
-    const signature = window.prompt('Digite seu nome completo para assinar:');
-    if (!signature || signature.length < 2) return;
+  // Abre o modal de aceite do Termo de Lar Temporário (substitui o
+  // antigo window.prompt). Garante conformidade com a Lei 14.063/2020
+  // (assinatura eletrônica) + LGPD art. 37 (registro de operações).
+  const handleAcceptClick = (fosterId) => {
+    setAcceptingFosterId(fosterId);
+  };
+
+  const handleAcceptConfirm = async ({ signature, documentHash, documentVersion }) => {
+    if (!acceptingFosterId) return;
     try {
       await acceptMutation.mutateAsync({
-        fosterId,
-        acceptance: { terms_version: '2026-07-10', signature_text: signature },
+        fosterId: acceptingFosterId,
+        acceptance: {
+          terms_version: documentVersion,
+          signature_text: signature,
+          document_hash: documentHash,
+        },
         actor,
       });
-      toast({ title: '✓ Placement aceito. Termo registrado.' });
+      toast({ title: '✓ Placement aceito. Termo de Lar Temporário registrado.' });
+      setAcceptingFosterId(null);
     } catch (err) {
       toast({ title: 'Erro', description: String(err?.message || err), variant: 'destructive' });
+      throw err; // re-throw para o modal NAO fechar
     }
   };
 
@@ -121,6 +139,7 @@ export function FostersList({ shelterClubId, actor, canAbriho = false, isFoster 
   };
 
   return (
+    <>
     <Card>
       <CardHeader>
         <div className="flex flex-wrap items-center justify-between gap-2">
@@ -205,7 +224,7 @@ export function FostersList({ shelterClubId, actor, canAbriho = false, isFoster 
                     </div>
                     <div className="flex flex-col gap-1">
                       {f.status === 'pending' && isFoster && (
-                        <Button size="sm" onClick={() => handleAccept(f.id)}>
+                        <Button size="sm" onClick={() => handleAcceptClick(f.id)}>
                           Aceitar e assinar termo
                         </Button>
                       )}
@@ -233,5 +252,20 @@ export function FostersList({ shelterClubId, actor, canAbriho = false, isFoster 
         )}
       </CardContent>
     </Card>
+
+      {/* Modal do Termo de Lar Temporário — substitui o window.prompt.
+          Atende Guia de Implementação Legal v2 §4.2 e Lei 14.063/2020. */}
+      <SingleAcceptanceDialog
+        open={!!acceptingFosterId}
+        onOpenChange={(open) => { if (!open) setAcceptingFosterId(null); }}
+        title="Termo de Responsabilidade de Lar Temporário (LT)"
+        description="Antes de iniciar o acolhimento, leia integralmente o termo. Sua assinatura eletrônica será registrada no audit_log com hash do documento, IP, data e versão."
+        documentText={FOSTER_TERMS_TEXT}
+        documentVersion={FOSTER_TERMS_VERSION}
+        prefillSignature={actor?.displayName || ''}
+        acceptButtonLabel="Aceitar e iniciar acolhimento"
+        onAccept={handleAcceptConfirm}
+      />
+  </>
   );
 }

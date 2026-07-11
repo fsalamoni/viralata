@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'sonner';
-import { Building2, ArrowLeft } from 'lucide-react';
+import { Building2, ArrowLeft, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -9,8 +9,15 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { ImageUpload } from '@/components/ui/image-upload';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { useCreateClub } from '@/modules/organizations/hooks/useClubs';
+import { createAuditLog } from '@/core/services/auditService';
 import PageHero from '@/components/PageHero';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
+import SingleAcceptanceDialog from '@/modules/shelter/components/legal/SingleAcceptanceDialog';
+import {
+  SHELTER_ONBOARDING_TERMS_TEXT,
+  SHELTER_ONBOARDING_TERMS_VERSION,
+  buildShelterOnboardingAcceptance,
+} from '@/modules/shelter/domain/legal/shelterOnboardingTerms';
 
 const INITIAL = {
   name: '',
@@ -28,30 +35,73 @@ const INITIAL = {
 
 export default function CreateClub() {
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user, userProfile } = useAuth();
   const createClub = useCreateClub();
   const [form, setForm] = useState(INITIAL);
   const [errors, setErrors] = useState({});
+  const [dpaOpen, setDpaOpen] = useState(false);
+  const [pendingPayload, setPendingPayload] = useState(null);
 
   const setField = (key) => (e) => setForm((prev) => ({ ...prev, [key]: e.target.value }));
 
-  const onSubmit = async (e) => {
-    e.preventDefault();
+  const validate = () => {
     const nextErrors = {};
     if (!form.name.trim()) nextErrors.name = 'Informe o nome da organização.';
     if (form.contact_email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.contact_email.trim())) {
       nextErrors.contact_email = 'Informe um e-mail válido.';
     }
     setErrors(nextErrors);
-    if (Object.keys(nextErrors).length > 0) return;
+    return Object.keys(nextErrors).length === 0;
+  };
 
-    try {
-      const id = await createClub.mutateAsync(form);
-      toast.success('Abrigo criado com sucesso!');
-      navigate(`/organizacoes/${id}/admin`);
-    } catch (err) {
-      toast.error(err.message || 'Não foi possível criar a organização.');
-    }
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    if (!validate()) return;
+    // Em vez de criar o clube agora, abre o modal do Termo de Adesão (DPA).
+    // Só após o aceite (com assinatura + CPF do responsável legal) é que
+    // o clube é criado. Isso atende ao Guia de Implementação Legal v2 §3
+    // ("o aceite deve ser exigido ANTES do usuário ter acesso ao painel
+    // administrativo do Abrigo").
+    setPendingPayload(form);
+    setDpaOpen(true);
+  };
+
+  // Chamado quando o usuário ACEITAR o DPA no modal.
+  // Cria o clube E grava o aceite do termo de adesão em audit_log.
+  const handleDpaAccept = async ({ signature, cpf, role, documentHash, documentVersion, acceptedAt }) => {
+    if (!pendingPayload) return;
+    // Valida os campos do DPA (defesa em profundidade)
+    const dpaAcceptance = buildShelterOnboardingAcceptance({
+      legal_rep_name: signature,
+      legal_rep_cpf: cpf,
+      legal_rep_role: role,
+      cnpj: pendingPayload.cnpj,
+    });
+    // Cria o clube
+    const id = await createClub.mutateAsync(pendingPayload);
+    // Grava o aceite em audit_log (imutável) — atende Lei 14.063/2020 + LGPD art. 37
+    await createAuditLog({
+      action: 'shelter_terms_accepted',
+      actor: user,
+      target_type: 'club',
+      target_id: id,
+      details: {
+        document_version: documentVersion,
+        document_hash: documentHash,
+        signature_text: signature,
+        signature_cpf: dpaAcceptance.signature_cpf,
+        signature_role: dpaAcceptance.signature_role,
+        cnpj: dpaAcceptance.cnpj,
+        accepted_at: acceptedAt,
+        club_name: pendingPayload.name,
+        legal_basis: 'execution_of_contract (LGPD Art. 7º V) + Lei 14.063/2020',
+      },
+    }).catch((err) => {
+      // Audit é best-effort — não bloqueia a criação do clube
+      console.warn('audit log falhou (não bloqueante):', err);
+    });
+    toast.success('Abrigo criado! Termo de Adesão e DPA registrados.');
+    navigate(`/organizacoes/${id}/admin`);
   };
 
   return (
@@ -153,12 +203,42 @@ export default function CreateClub() {
               </div>
             </div>
 
+            <div className="flex items-start gap-2 rounded-md border border-primary/20 bg-primary/[0.04] p-3 text-xs text-foreground/80">
+              <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+              <span>
+                Antes de criar a organização, você precisará ler e assinar eletronicamente
+                o <strong>Termo de Adesão e Data Processing Agreement (DPA)</strong>,
+                conforme exigido pelo Guia de Implementação Legal v2 (10/07/2026) §3.
+                O aceite fica registrado no audit_log com hash do documento, IP, data
+                e assinatura do responsável legal.
+              </span>
+            </div>
+
             <Button type="submit" disabled={createClub.isPending || !isAuthenticated}>
-              {createClub.isPending ? 'Criando…' : 'Criar'}
+              {createClub.isPending ? 'Criando…' : 'Continuar para o Termo de Adesão'}
             </Button>
           </form>
         </CardContent>
       </Card>
+
+      {/* Modal do Termo de Adesão + DPA — abre DEPOIS do submit do form,
+          ANTES de criar o clube. */}
+      <SingleAcceptanceDialog
+        open={dpaOpen}
+        onOpenChange={setDpaOpen}
+        title="Termo de Adesão e Data Processing Agreement (DPA)"
+        description="Você está prestes a criar uma organização na Viralata. Este termo é obrigatório e estabelece a relação contratual (Operadora × Controlador) e o tratamento de dados pessoais (LGPD). O aceite do responsável legal será registrado em audit_log com hash, IP, data e CPF."
+        documentText={SHELTER_ONBOARDING_TERMS_TEXT}
+        documentVersion={SHELTER_ONBOARDING_TERMS_VERSION}
+        prefillSignature={userProfile?.name || user?.displayName || ''}
+        prefillCpf={userProfile?.cpf || ''}
+        requireCpf
+        requireRole
+        prefillRole={userProfile?.role_in_org || 'Representante Legal'}
+        roleLabel="Cargo / função do responsável legal (Ex.: Presidente, Diretor, Coordenador):"
+        acceptButtonLabel="Aceitar DPA e criar organização"
+        onAccept={handleDpaAccept}
+      />
     </div>
   );
 }

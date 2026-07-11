@@ -76,6 +76,51 @@ const TAB_PERMISSION = {
   settings: 'admin_only',
 };
 
+// Helper defensivo: garante array, descarta não-arrays, descarta entradas sem .key
+// TASK-068 — defensivo contra hooks retornando undefined (que crashava
+// em produção com "G is not a function or its return value is not iterable")
+// quando o array vinha de useMemo com dependência instável.
+function safeTabs(...sources) {
+  const out = [];
+  for (const src of sources) {
+    if (Array.isArray(src)) {
+      for (const t of src) {
+        if (t && typeof t === 'object' && t.key) out.push(t);
+      }
+    }
+  }
+  return out;
+}
+
+// ErrorBoundary local para isolar falhas de uma aba sem derrubar o painel
+// inteiro. TASK-069 — se ReportsTab ou KanbanPage lançar (ex: query falha),
+// as outras abas continuam funcionando.
+class TabErrorBoundary extends React.Component {
+  constructor(props) { super(props); this.state = { err: null }; }
+  static getDerivedStateFromError(err) { return { err }; }
+  componentDidCatch(err, info) {
+    // eslint-disable-next-line no-console
+    console.error('[TabErrorBoundary]', this.props.label, err, info);
+  }
+  render() {
+    if (this.state.err) {
+      return (
+        <div className="rounded-2xl border border-destructive/30 bg-destructive/5 p-6 text-sm">
+          <p className="font-semibold text-destructive">Não foi possível carregar esta aba.</p>
+          <p className="mt-1 text-muted-foreground">
+            O restante do painel continua funcionando. Tente recarregar a página.
+          </p>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+function SafeTab({ label, children }) {
+  return <TabErrorBoundary label={label}>{children}</TabErrorBoundary>;
+}
+
 export default function OrganizationAdminPanel() {
   const { orgId } = useParams();
   const navigate = useNavigate();
@@ -162,7 +207,7 @@ export default function OrganizationAdminPanel() {
     return tabs;
   }, [shelterFoundation, shelterDashboard, shelterKanban, shelterExhibitions, shelterVolunteers, shelterHealthRecords, shelterMedication, shelterPetTimeline, shelterFoster]);
 
-  const allVisibleTabs = useMemo(() => [...visibleTabs, ...shelterTabs], [visibleTabs, shelterTabs]);
+  const allVisibleTabs = useMemo(() => safeTabs(visibleTabs, shelterTabs), [visibleTabs, shelterTabs]);
 
   const requestedTab = searchParams.get('tab') || 'overview';
   const activeTab = allVisibleTabs.some((t) => t.key === requestedTab) ? requestedTab : (allVisibleTabs[0]?.key || 'overview');
@@ -285,12 +330,12 @@ export default function OrganizationAdminPanel() {
         </TabsContent>
         {showReportsTab && (
           <TabsContent value="reports" className="mt-12 px-1 sm:mt-14">
-            <ReportsTab clubId={orgId} />
+            <SafeTab label="reports"><ReportsTab clubId={orgId} /></SafeTab>
           </TabsContent>
         )}
         {showIndicatorsTab && (
           <TabsContent value="indicators" className="mt-12 px-1 sm:mt-14">
-            <IndicatorsTab clubId={orgId} />
+            <SafeTab label="indicators"><IndicatorsTab clubId={orgId} /></SafeTab>
           </TabsContent>
         )}
         <TabsContent value="chat" className="mt-12 px-1 sm:mt-14">
@@ -302,45 +347,46 @@ export default function OrganizationAdminPanel() {
         <TabsContent value="settings" className="mt-12 px-1 sm:mt-14">
           <ClubAdminTab club={club} />
         </TabsContent>
-        {/* Shelter Tabs com Feature Flag Gating */}
+        {/* Shelter Tabs com Feature Flag Gating. Envolvidos em SafeTab (ErrorBoundary
+            local) para isolar falhas de query/componente sem derrubar o painel. */}
         {shelterFoundation && shelterDashboard && (
           <TabsContent value="dashboard" className="mt-12 px-1 sm:mt-14">
-            <DashboardPage clubId={orgId} />
+            <SafeTab label="dashboard"><DashboardPage clubId={orgId} /></SafeTab>
           </TabsContent>
         )}
         {shelterFoundation && shelterKanban && (
           <TabsContent value="kanban" className="mt-12 px-1 sm:mt-14">
-            <KanbanPage clubId={orgId} />
+            <SafeTab label="kanban"><KanbanPage clubId={orgId} /></SafeTab>
           </TabsContent>
         )}
         {shelterFoundation && shelterExhibitions && (
           <TabsContent value="exhibitions" className="mt-12 px-1 sm:mt-14">
-            <ExhibitionsList shelterClubId={orgId} />
+            <SafeTab label="exhibitions"><ExhibitionsList shelterClubId={orgId} /></SafeTab>
           </TabsContent>
         )}
         {shelterFoundation && shelterVolunteers && (
           <TabsContent value="volunteers" className="mt-12 px-1 sm:mt-14">
-            <VolunteersRoster shelterClubId={orgId} />
+            <SafeTab label="volunteers"><VolunteersRoster shelterClubId={orgId} /></SafeTab>
           </TabsContent>
         )}
         {shelterFoundation && shelterHealthRecords && (
           <TabsContent value="medical_records" className="mt-12 px-1 sm:mt-14">
-            <ShelterPetScopedTab clubId={orgId} kind="medical" />
+            <SafeTab label="medical_records"><ShelterPetScopedTab clubId={orgId} kind="medical" /></SafeTab>
           </TabsContent>
         )}
         {shelterFoundation && shelterMedication && (
           <TabsContent value="medications" className="mt-12 px-1 sm:mt-14">
-            <ShelterPetScopedTab clubId={orgId} kind="medications" />
+            <SafeTab label="medications"><ShelterPetScopedTab clubId={orgId} kind="medications" /></SafeTab>
           </TabsContent>
         )}
         {shelterFoundation && shelterPetTimeline && (
           <TabsContent value="timeline" className="mt-12 px-1 sm:mt-14">
-            <ShelterPetScopedTab clubId={orgId} kind="timeline" />
+            <SafeTab label="timeline"><ShelterPetScopedTab clubId={orgId} kind="timeline" /></SafeTab>
           </TabsContent>
         )}
         {shelterFoundation && shelterFoster && (
           <TabsContent value="foster" className="mt-12 px-1 sm:mt-14">
-            <FostersList shelterClubId={orgId} canAbriho />
+            <SafeTab label="foster"><FostersList shelterClubId={orgId} canAbriho /></SafeTab>
           </TabsContent>
         )}
       </Tabs>
