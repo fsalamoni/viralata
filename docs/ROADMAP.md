@@ -35,9 +35,9 @@ Status atual (2026-07-11):
 | 12 | Escalas + RSVP de Vitrines | ✅ Concluída | (parte do #56) |
 | 13 | Gestão de Voluntários | ✅ Concluída | #54 |
 | 14 | Dashboard do Abrigo (tempo real) | ✅ Concluída | #61 |
-| 15 | Central de Pendências (Kanban) ⚠️ GRANDE | ⏸️ Aguardando | — |
-| 16 | Relatórios de Abrigos | ⏸️ Aguardando | — |
-| 17 | Indicadores de Vitrines + Voluntários | ⏸️ Aguardando | — |
+| 15 | Central de Pendências (Kanban) ⚠️ GRANDE | 🟡 PR aberto | #63 |
+| 16 | Relatórios de Abrigos | 🟡 PR aberto | #64 |
+| 17 | Indicadores de Vitrines + Voluntários | 🟡 PR aberto | #65 |
 | 18 | Busca Inteligente ⚠️ GRANDE | 🚨 Decisão pendente (Meilisearch vs Typesense vs Algolia vs Firestore) | — |
 | 19 | Termos e Políticas completos (Legal) ⚠️ GRANDE | ✅ Concluída | #58 |
 | 20 | Segurança Avançada | ✅ Concluída | #62 |
