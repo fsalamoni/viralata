@@ -168,6 +168,10 @@ exports.materializePostAdoptionTasks = materializePostAdoptionTasks;
 // mais antigas que o cutoff da sua categoria (Marco Civil 6m /
 // Lei 14.063 5a / Receita Federal 7a). Ver auditLogPurgeCron.js.
 exports.auditLogPurgeCron = require('./auditLogPurgeCron').auditLogPurgeCron;
+// TASK-186 (LGPD Art. 18 VI): purge definitivo de contas soft-deletadas >30d.
+exports.accountPurgeCron = require('./accountPurgeCron').accountPurgeCron;
+// TASK-137: alertas de saúde — follow-ups (vacina/retorno) nos próximos 7 dias.
+exports.healthAlertsCron = require('./healthAlerts').healthAlertsCron;
 
 // ─── TASK-240: Backup semanal do Firestore → GCS WORM ──────────────────
 //

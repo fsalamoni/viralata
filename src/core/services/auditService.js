@@ -92,6 +92,7 @@ export const AUDIT_ACTION_LABELS = {
   volunteer_check_out: 'Check-out de voluntário de turno',
   volunteer_consent_withdrawn: 'Consentimento de voluntariado revogado (LGPD)',
   cookie_consent_recorded: 'Consentimento de cookies registrado',
+  admin_broadcast_sent: 'Notificação segmentada enviada (admin)',
 };
 
 // ─── TASK-217: Categorias de retenção (auditLogPurgeCron) ──────────────

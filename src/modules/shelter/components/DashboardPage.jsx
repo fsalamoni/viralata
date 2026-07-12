@@ -19,6 +19,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useDashboard } from '@/modules/shelter/hooks/useDashboard';
 import { DashboardCard } from './DashboardCard';
+import MedicationsDueCard from './MedicationsDueCard';
 import { DashboardWidgetManager } from './DashboardWidgetManager';
 
 export function DashboardPage({ clubId: clubIdProp }) {
@@ -100,6 +101,9 @@ export function DashboardPage({ clubId: clubIdProp }) {
               />
             ))}
       </div>
+
+      {/* TASK-138: doses pendentes/atrasadas do abrigo inteiro */}
+      <MedicationsDueCard shelterClubId={clubId} />
 
       {data?.computedAt && (
         <p className="text-xs text-muted-foreground text-center pt-4">

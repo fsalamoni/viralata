@@ -20,6 +20,8 @@ export const NOTIFICATION_COLLECTION = 'notifications';
 
 /** Tipos de notificação conhecidos (para ícones/agrupamento futuro). */
 export const NOTIFICATION_TYPE = Object.freeze({
+  // TASK-174: broadcast segmentado do admin master
+  ADMIN_BROADCAST: 'admin_broadcast',
   // Chat
   CHAT_MESSAGE: 'chat_message',
   CHAT_INVITE: 'chat_invite',

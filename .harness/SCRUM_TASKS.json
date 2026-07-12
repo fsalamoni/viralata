@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-12T13:20:31.036Z",
+  "generatedAt": "2026-07-12T18:05:42.030Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -957,9 +957,9 @@
       "title": "Implementar export de dados (LGPD Art. 18 V)",
       "type": "feature",
       "category": "lgpd",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
-      "owner": "unassigned",
+      "owner": "claude_yxo02k",
       "branch": null,
       "flag": "SHELTER_LEGAL_TERMS_V1",
       "worktree": null,
@@ -970,20 +970,21 @@
         "direito-do-titular"
       ],
       "blockedBy": [],
-      "evidence": "docs/SHELTER_MGMT_ROADMAP.md §11.6",
+      "evidence": "Duplicata da TASK-185 — Auditoria: dataExportService.exportMyData cobre users/pets/interests/conversations etc. + botão Baixar meus dados no Profile (downloadDataExport). Art. 18 V atendido",
       "description": "Botão 'Baixar meus dados' no /perfil. Gera JSON com: user doc, pets, applications, post_adoption_followups, foster_placements, donations, participations, audit_logs (próprio). Anonimiza terceiros. Marca prazo de retenção.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-036",
       "title": "Implementar exclusão de conta com purge em 30d (LGPD Art. 18 VI)",
       "type": "feature",
       "category": "lgpd",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": "SHELTER_LEGAL_TERMS_V1",
       "worktree": null,
       "pr": null,
@@ -994,10 +995,11 @@
         "purge"
       ],
       "blockedBy": [],
-      "evidence": "docs/SHELTER_MGMT_ROADMAP.md §11.6 e §11.2",
+      "evidence": "Duplicata da TASK-186 — Soft-delete + cascade-anonymize já existiam (deleteAccountService); GAP fechado: functions/accountPurgeCron{,Core}.js — cron diário 04:30 BRT purga contas com deleted_at >30d via recursiveDelete (doc + subcoleções), 4 tests; exportado em functions/index.js; aceites de termos preservados em audit_logs; mergeado em main via PR #71 em 2026-07-12",
       "description": "Soft delete com deleted_at, deleted_by, purge_after=30d. Cloud Function agendada deleta fisicamente após 30d. Mantém logs agregados (sem PII) para auditoria. Hoje há padrão de soft delete em pet_photos (Fase 9), replicar para user e outras entidades.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-037",
@@ -4169,10 +4171,10 @@
       "title": "Saúde: alertas automáticos (vacina vencendo, retorno de exame)",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": [
         "saude",
         "notificacoes",
@@ -4183,20 +4185,21 @@
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
-      "evidence": "Regra A §1.5 (pós-deploy) + Regra A §1.3 (regras)",
+      "evidence": "functions/healthAlerts{,Core}.js — cron diário 08:00 BRT, collectionGroup medical com next_visit_date na janela 7d, notifica admins/owners do abrigo dono, dedup por id determinístico health_{rec}_{uid}_{dia}; 5 tests (121 functions verdes). Email fica com infra SendGrid (TASK-222/229); mergeado em main via PR #71 em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. Cloud Function scheduled (functions/healthAlerts.js) que varre medical_records, dispara notification 7 dias antes do vencimento. In-app + email.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-138",
       "title": "Saúde: dashboard de medicações pendentes no painel do abrigo",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": [
         "saude",
         "dashboard",
@@ -4207,10 +4210,11 @@
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
-      "evidence": "Regra A §1.4 (painel) + SHELTER_MGMT §Fase 8",
+      "evidence": "MedicationsDueCard no DashboardPage: listShelterActiveMedications (collectionGroup medications + rule read-por-tenant + índice shelter_club_id+status), doses due/overdue via domain runtime, botão Marcar administrada → recordDose idempotente. Notificações push ficam com TASK-139 (FCM); mergeado em main via PR #71 em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. Adicionar card no ShelterDashboard: medicações ativas, doses pendentes hoje, doses atrasadas. Click \"marcar administrada\" atualiza doses_administered. Notificações ao responsável.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-139",
@@ -5014,10 +5018,10 @@
       "title": "Admin Audit: política de retenção configurável (default 6m, Marco Civil)",
       "type": "feature",
       "category": "admin",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": [
         "admin",
         "audit",
@@ -5030,17 +5034,18 @@
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
-      "evidence": "Regra A §1.3 (LGPD) + Marco Civil Art. 15",
+      "evidence": "auditLogPurgeCron lê platform/settings.audit_retention_days; cutoffFor aplica override apenas ACIMA do piso legal (Marco Civil 180d / Lei 14.063 5a / RF 7a); purga gera trilha audit_retention_purged; 3 tests novos (116 functions verdes); mergeado em main via PR #71 em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. Cloud Function scheduled (audit_retention.js) que purga audit_logs > 6 meses. Configurável por abrigo (LGPD permite retenção maior com justificativa). Audit_log da própria retenção.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-172",
       "title": "Admin Metrics: gráficos temporais (30/90/365 dias) com recharts",
       "type": "feature",
       "category": "admin",
-      "status": "in_review",
+      "status": "done",
       "priority": "high",
       "owner": "claude_yxo02k",
       "branch": "claude/scrum-board-management-yxo02k",
@@ -5055,10 +5060,11 @@
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
-      "evidence": "AdminMetrics com seletor 30/90/365 dias (30/90 → agregação diária via groupByDay novo, 365 → mensal 12 buckets); 2 tests novos; recharts já era usado — gap era só a janela temporal",
+      "evidence": "AdminMetrics com seletor 30/90/365 dias (30/90 → agregação diária via groupByDay novo, 365 → mensal 12 buckets); 2 tests novos; recharts já era usado — gap era só a janela temporal; mergeado em main via PR #71 em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. Em AdminMetrics.jsx, adicionar séries temporais: cadastros/dia, adoções/semana, error rate/dia. Drilldown por 7d/30d/90d/365d.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-12"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-173",
@@ -5090,10 +5096,10 @@
       "title": "Admin Notifications: segmentação por papel + filtros demográficos",
       "type": "feature",
       "category": "admin",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": [
         "admin",
         "notificacoes",
@@ -5104,10 +5110,11 @@
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
-      "evidence": "Regra A §1.2 (papel)",
+      "evidence": "broadcastService (resolveSegmentUserIds: all/adopters/volunteers/shelter_admins/city, cap 500) + BroadcastComposer no AdminNotifications com preview de alcance + confirmação + audit admin_broadcast_sent + tipo ADMIN_BROADCAST; mergeado em main via PR #71 em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. Em AdminNotifications.jsx, adicionar select de segmento: \"Todos\", \"Adotantes ativos\", \"Voluntários\", \"Admins abrigo\", \"Por cidade\".",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-175",
@@ -5189,10 +5196,10 @@
       "title": "Admin Users: workflow de banning (motivo, prazo, recurso)",
       "type": "feature",
       "category": "admin",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": [
         "admin",
         "users",
@@ -5204,20 +5211,21 @@
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
-      "evidence": "Regra A §1.3 (LGPD) + Marco Civil",
+      "evidence": "BanUserSection no AdminUserManagement: dialog motivo obrigatório (min 5) + prazo perpétuo/7/30/90d (banned_until); expiração automática no isBanned do AuthContext; BannedNotice mostra prazo; audit user_banned com banned_until. Email automático anotado como dependência da infra de email (TASK-222/229); mergeado em main via PR #71 em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. Em AdminUserManagement.jsx, banir user: motivo (textarea), prazo (perpétuo/temporário), notificação por email. Audit_log. BannedNotice.jsx (já existe) renderiza.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-179",
       "title": "Admin Users: histórico de mudanças de role (audit trail)",
       "type": "feature",
       "category": "admin",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": [
         "admin",
         "users",
@@ -5229,10 +5237,11 @@
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
-      "evidence": "Regra A §1.3 (auditoria)",
+      "evidence": "promote/demote já auditavam; adicionada timeline por usuário — dialog Histórico com AuditLogTable filtrado por userId no BanUserSection; mergeado em main via PR #71 em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. Toda mudança de role grava audit_log. UI mostra timeline por usuário.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-180",
@@ -5366,9 +5375,9 @@
       "title": "LGPD: implementar exportação de dados do usuário (Art. 18 V)",
       "type": "feature",
       "category": "lgpd",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
-      "owner": "unassigned",
+      "owner": "claude_yxo02k",
       "branch": null,
       "flag": [
         "lgpd",
@@ -5380,20 +5389,21 @@
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
-      "evidence": "Regra A §1.3 (LGPD) + TASK-035",
+      "evidence": "Auditoria: dataExportService.exportMyData cobre users/pets/interests/conversations etc. + botão Baixar meus dados no Profile (downloadDataExport). Art. 18 V atendido",
       "description": "BLOCO INDEPENDENTE. Botão \"Baixar meus dados\" em Profile.jsx. Gera JSON com: user, pets, applications, post_adoption_followups, foster_placements, donations, participations, audit_logs do próprio user. Anonimiza terceiros. Email com link de download (expira 24h).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-186",
       "title": "LGPD: implementar exclusão com purge em 30d (Art. 18 VI)",
       "type": "feature",
       "category": "lgpd",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": [
         "lgpd",
         "exclusao",
@@ -5404,10 +5414,11 @@
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
-      "evidence": "Regra A §1.3 (LGPD) + TASK-036",
+      "evidence": "Soft-delete + cascade-anonymize já existiam (deleteAccountService); GAP fechado: functions/accountPurgeCron{,Core}.js — cron diário 04:30 BRT purga contas com deleted_at >30d via recursiveDelete (doc + subcoleções), 4 tests; exportado em functions/index.js; aceites de termos preservados em audit_logs; mergeado em main via PR #71 em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. Botão \"Excluir minha conta\" em Profile.jsx. Soft delete (deleted_at). Cloud Function scheduled (account_purge.js) que purga após 30d. Mantém logs agregados sem PII.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-187",
@@ -7092,11 +7103,11 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 254,
-    "done": 100,
+    "done": 111,
     "inProgress": 2,
-    "inReview": 7,
+    "inReview": 6,
     "blocked": 0,
-    "ready": 129,
+    "ready": 119,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",

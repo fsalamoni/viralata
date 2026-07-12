@@ -382,3 +382,24 @@ describe('auditLogPurgeCronCore — runAuditLogPurge', () => {
     expect(cutoffs).toContain(pay2555);
   });
 });
+
+// ─── TASK-171: retenção configurável (overrides com piso legal) ─────
+describe('cutoffFor com retentionOverrides (TASK-171)', () => {
+  const { cutoffFor, ONE_DAY_MS } = require('./auditLogPurgeCronCore');
+  const NOW = 1_800_000_000_000;
+
+  it('override MAIOR que o default é aplicado (LGPD permite reter mais)', () => {
+    const cutoff = cutoffFor('operational', NOW, { operational: 365 });
+    expect(cutoff).toBe(NOW - 365 * ONE_DAY_MS);
+  });
+
+  it('override MENOR que o piso legal é ignorado (Marco Civil 180d)', () => {
+    const cutoff = cutoffFor('operational', NOW, { operational: 30 });
+    expect(cutoff).toBe(NOW - 180 * ONE_DAY_MS);
+  });
+
+  it('override inválido (NaN/string) cai no default', () => {
+    expect(cutoffFor('operational', NOW, { operational: 'x' })).toBe(NOW - 180 * ONE_DAY_MS);
+    expect(cutoffFor('term_acceptance', NOW, {})).toBe(NOW - 1825 * ONE_DAY_MS);
+  });
+});
