@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-12T12:16:37.296Z",
+  "generatedAt": "2026-07-12T12:45:23.188Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -2764,10 +2764,10 @@
       "title": "Smart Search: CommandPalette global (Cmd+K / Ctrl+K)",
       "type": "feature",
       "category": "search",
-      "status": "ready",
+      "status": "in_review",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": "feat/shelter-18-smart-search",
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": "SHELTER_SMART_SEARCH",
       "worktree": null,
       "pr": null,
@@ -2784,10 +2784,10 @@
         "TASK-048",
         "TASK-082"
       ],
-      "evidence": "src/components/; shadcn/ui Dialog",
+      "evidence": "src/components/CommandPalette.jsx (Ctrl+K/Cmd+K, sem dependência nova, flag shelter_smart_search, a11y listbox/combobox) montado no App; /busca consome query inicial via location.state",
       "description": "BLOCO INDEPENDENTE. Criar src/components/CommandPalette.jsx — Dialog shadcn/ui ativado por Cmd+K (mac) ou Ctrl+K (windows/linux). Usa useSmartSearch. Atalhos para páginas + entidades. Persiste query recente em localStorage. Adicionar no Layout.jsx.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-084",
@@ -5280,10 +5280,10 @@
       "title": "Admin Flags: histórico de mudanças (quem ligou, quando, por quê)",
       "type": "feature",
       "category": "admin",
-      "status": "ready",
+      "status": "in_review",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": [
         "admin",
         "flags",
@@ -5295,10 +5295,10 @@
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
-      "evidence": "Regra A §1.3 (auditoria)",
+      "evidence": "setFeatureFlag captura from_value→to_value + reason no audit_log; AdminFlags exibe card Histórico de mudanças (últimas 20); índice audit_logs(action ASC, created_at_ms DESC)",
       "description": "BLOCO INDEPENDENTE. Toda mudança de flag grava audit_log com: user_id, action=flag_toggle, flag_name, from_value, to_value, reason, timestamp. UI mostra histórico na AdminFlags.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-168",
@@ -7442,9 +7442,9 @@
     "totalTasks": 254,
     "done": 62,
     "inProgress": 2,
-    "inReview": 38,
+    "inReview": 40,
     "blocked": 0,
-    "ready": 136,
+    "ready": 134,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
