@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-12T04:11:35.550Z",
+  "generatedAt": "2026-07-12T04:14:53.874Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -3190,9 +3190,9 @@
       "title": "Auditar links no footer (todas as páginas)",
       "type": "chore",
       "category": "legal",
-      "status": "ready",
+      "status": "in_review",
       "priority": "medium",
-      "owner": "unassigned",
+      "owner": "claude_yxo02k",
       "branch": "feat/legal-docs-v2",
       "flag": null,
       "worktree": ".worktrees/wt-legal-v2",
@@ -3208,19 +3208,19 @@
         "TASK-051",
         "TASK-086"
       ],
-      "evidence": "src/components/Layout.jsx",
+      "evidence": "Auditoria: LegalFooter renderizado via Layout em todas as páginas; corrigido gap — link Cookies adicionado (6 docs públicos agora)",
       "description": "BLOCO INDEPENDENTE. Auditar Layout.jsx footer. Verificar: links para /legal/termos-de-uso, /legal/politica-de-privacidade, /legal/codigo-de-conduta, /legal/cookies, /legal/legislacao-animal, /legal/avisos-legais. Responsivo? Ícones? Documentar.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-112",
       "title": "Auditar páginas legais acessíveis (URLs públicas, sem auth)",
       "type": "chore",
       "category": "legal",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
-      "owner": "unassigned",
+      "owner": "claude_yxo02k",
       "branch": "feat/legal-docs-v2",
       "flag": "SHELTER_LEGAL_TERMS_V1",
       "worktree": ".worktrees/wt-legal-v2",
@@ -3237,10 +3237,11 @@
         "TASK-041",
         "TASK-058"
       ],
-      "evidence": "src/App.jsx; firestore.rules",
+      "evidence": "Auditoria confirmou: /legal/:slug*, /termos, /politica-privacidade, /legislacao, /voluntarios são rotas públicas no App.jsx (sem ProtectedRoute); OnboardingGate não bloqueia anônimos",
       "description": "BLOCO INDEPENDENTE. Auditar que TODAS as páginas /legal/* são acessíveis sem auth (LGPD Art. 9º). Verificar: rotas em App.jsx sem requireAuth, Firestore rules permitem leitura pública, SEO meta tags. Documentar.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-113",
@@ -5916,10 +5917,10 @@
       "title": "Real Empty/Loading/Error states (Skeleton + EmptyState + inline retry)",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "in_review",
       "priority": "medium",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": null,
       "worktree": null,
       "pr": null,
@@ -5932,10 +5933,10 @@
       "relatedTasks": [
         "TASK-126"
       ],
-      "evidence": "D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_REGRA_A_AUDIT.md §Eixo 1 (empty/loading/error)",
+      "evidence": "Skeleton (aria-busy) + error state com retry em VolunteersRoster e ParticipationsList; EmptyState com CTA no roster; 1392 tests verdes, build OK",
       "description": "BLOCO INDEPENDENTE. Substituir \"Carregando voluntários…\" one-liner por Skeleton shadcn. Adicionar EmptyState com CTA (ex: \"Convide o primeiro voluntário\"). Adicionar error state inline com botão retry (não ErrorBoundary global). Aplicar em VolunteersRoster + ParticipationsList + VolunteerProfileForm. Regra A §A.1.1.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11 20:50"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-215",
@@ -7048,11 +7049,11 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 254,
-    "done": 56,
+    "done": 57,
     "inProgress": 2,
-    "inReview": 24,
+    "inReview": 26,
     "blocked": 0,
-    "ready": 156,
+    "ready": 153,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
