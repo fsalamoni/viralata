@@ -36,11 +36,17 @@ const ONE_DAY_MS = 24 * 60 * 60 * 1000;
  * @param {number} now - ms epoch (default Date.now())
  * @returns {number} cutoffMs
  */
-function cutoffFor(category, now = Date.now()) {
-  const days = RETENTION_DAYS[category];
-  if (typeof days !== 'number') {
+function cutoffFor(category, now = Date.now(), overrides = {}) {
+  const base = RETENTION_DAYS[category];
+  if (typeof base !== 'number') {
     throw new Error(`auditLogPurgeCronCore: unknown category "${category}"`);
   }
+  // TASK-171: retenção configurável (platform_settings.audit_retention_days).
+  // O override NUNCA reduz abaixo do piso legal da categoria — o Marco
+  // Civil (180d) e a Lei 14.063 (5a) são mínimos, não sugestões. LGPD
+  // permite retenção MAIOR com justificativa registrada.
+  const override = Number(overrides?.[category]);
+  const days = Number.isFinite(override) && override > base ? override : base;
   return now - days * ONE_DAY_MS;
 }
 
@@ -102,12 +108,13 @@ async function runAuditLogPurge(deps) {
     batchLimit = 500,
     now = Date.now(),
     logger = console,
+    retentionOverrides = {},
   } = deps;
 
   const counters = { operational: 0, term_acceptance: 0, payment: 0, errors: 0 };
 
   for (const [category, _days] of Object.entries(RETENTION_DAYS)) {
-    const cutoffMs = cutoffFor(category, now);
+    const cutoffMs = cutoffFor(category, now, retentionOverrides);
 
     try {
       const snap = await db.collection(collectionName)
