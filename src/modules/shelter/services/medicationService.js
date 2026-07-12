@@ -8,7 +8,7 @@
  */
 
 import {
-  collection, doc, getDoc, getDocs, addDoc, updateDoc,
+  collection, collectionGroup, doc, getDoc, getDocs, addDoc, updateDoc,
   query, where, orderBy, limit, serverTimestamp, writeBatch,
 } from 'firebase/firestore';
 import { db } from '@/core/config/firebase';
@@ -70,6 +70,25 @@ export async function listMedications(petId, shelterClubId, options = {}) {
   );
   const snap = await getDocs(q);
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
+/**
+ * TASK-138: medicações ativas do abrigo inteiro (cross-pet) para o
+ * card do dashboard. CollectionGroup em `medications` filtrado pelo
+ * tenant. Requer rule de collection-group (read por membro do abrigo)
+ * e índice composto shelter_club_id + status.
+ */
+export async function listShelterActiveMedications(shelterClubId, { maxResults = 100 } = {}) {
+  if (!db || !shelterClubId) return [];
+  const q = query(
+    collectionGroup(db, MEDICATIONS_SUBCOLLECTION),
+    where('shelter_club_id', '==', shelterClubId),
+    where('status', '==', 'active'),
+    limit(maxResults),
+  );
+  const snap = await getDocs(q);
+  // pet_id vem da path: pets/{petId}/medications/{medId}
+  return snap.docs.map((d) => ({ id: d.id, pet_id: d.ref.path.split('/')[1], ...d.data() }));
 }
 
 export async function getMedication(petId, medId, shelterClubId) {

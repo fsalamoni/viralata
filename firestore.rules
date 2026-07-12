@@ -1651,6 +1651,19 @@ service cloud.firestore {
     // Regras: admin/owner do abrigo. Card assignees podem atualizar
     // SOMENTE o campo status.
 
+    // ─── TASK-138: dashboard de medicações (collectionGroup) ────────
+    // Query de grupo em `medications` filtrada por shelter_club_id.
+    // Leitura apenas para quem gerencia o abrigo dono do doc (o
+    // filtro do cliente é obrigatório; docs de outros tenants negam).
+    match /{path=**}/medications/{medId} {
+      allow read: if isAuth() && (
+        isPlatformAdmin() ||
+        (resource.data.shelter_club_id != null &&
+          (isClubOwnerOrAdmin(resource.data.shelter_club_id) ||
+           hasClubPermission(resource.data.shelter_club_id, 'animals')))
+      );
+    }
+
     // ─── TASK-129: "Minhas adoções" no perfil ───────────────────────
     // CollectionGroup query em `adoption_workflow` (cross-abrigo). O
     // wildcard {path=**} cobre a query de grupo; a leitura é liberada
