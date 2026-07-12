@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
-import { Search } from 'lucide-react';
+import { Search, Download } from 'lucide-react';
 import { db } from '@/core/config/firebase';
 import { AUDIT_ACTION_LABELS, formatAuditDate } from '@/core/services/auditService';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -8,21 +9,86 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
 const PAGE_SIZES = [10, 50, 100];
+
+// TASK-169: módulo derivado do prefixo da action. Mantém a taxonomia
+// dos módulos do app (shelter/community/admin/core).
+const MODULE_LABELS = Object.freeze({
+  all: 'Todos',
+  shelter: 'Abrigo',
+  community: 'Comunidade/ONG',
+  admin: 'Admin master',
+  core: 'Conta & legal',
+});
+export function classifyAuditModule(action = '') {
+  if (/^(volunteer|adoption|pet|foster|exhibition|shelter|medication|interest)_/.test(action)) return 'shelter';
+  if (/^(community|club)_/.test(action)) return 'community';
+  if (/^(platform|admin)_/.test(action) || /^user_(banned|unbanned)$/.test(action)) return 'admin';
+  return 'core';
+}
+
+// TASK-170: CSV com os logs filtrados. Escapa aspas e força o Excel a
+// tratar tudo como texto (evita injeção de fórmula =cmd).
+function exportLogsCsv(rows) {
+  const header = ['data', 'acao', 'modulo', 'ator', 'alvo', 'detalhes'];
+  const esc = (v) => {
+    let s = String(v ?? '');
+    if (/^[=+\-@]/.test(s)) s = `'${s}`;
+    return `"${s.replace(/"/g, '""')}"`;
+  };
+  const lines = [header.join(';')];
+  for (const log of rows) {
+    lines.push([
+      formatAuditDate(log),
+      log.action_label || AUDIT_ACTION_LABELS[log.action] || log.action || '',
+      MODULE_LABELS[classifyAuditModule(log.action)] || '',
+      log.actor_name || log.actor_email || log.actor_id || '',
+      log.user_name || log.user_email || log.user_id || '',
+      JSON.stringify(log.details || {}),
+    ].map(esc).join(';'));
+  }
+  const blob = new Blob([`\ufeff${lines.join('\n')}`], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `audit-log-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
 const DATE_BOUNDARY = Object.freeze({
   START: 'start',
   END: 'end',
 });
 
+const FILTER_KEYS = ['actor', 'target', 'action', 'module', 'startDate', 'endDate', 'search'];
+
 export function AuditLogTable({ title, description, userId, className = '' }) {
   const [logs, setLogs] = useState([]);
-  const [filters, setFilters] = useState({
-    actor: '',
-    target: '',
-    action: 'all',
-    startDate: '',
-    endDate: '',
-    search: '',
-  });
+  // TASK-169: filtros persistidos na URL (?actor=&action=&module=&…) —
+  // permite compartilhar o link da investigação.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [filters, setFilters] = useState(() => ({
+    actor: searchParams.get('actor') || '',
+    target: searchParams.get('target') || '',
+    action: searchParams.get('action') || 'all',
+    module: searchParams.get('module') || 'all',
+    startDate: searchParams.get('startDate') || '',
+    endDate: searchParams.get('endDate') || '',
+    search: searchParams.get('search') || '',
+  }));
+
+  useEffect(() => {
+    const next = new URLSearchParams(searchParams);
+    for (const key of FILTER_KEYS) {
+      const value = filters[key];
+      const isDefault = value === '' || value === 'all';
+      if (isDefault) next.delete(key);
+      else next.set(key, value);
+    }
+    if (next.toString() !== searchParams.toString()) {
+      setSearchParams(next, { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters]);
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
   const [error, setError] = useState(null);
@@ -78,6 +144,8 @@ export function AuditLogTable({ title, description, userId, className = '' }) {
       const matchesActor = !actorTerm || actorText.includes(actorTerm);
       const matchesTarget = !targetTerm || targetText.includes(targetTerm);
       const matchesAction = filters.action === 'all' || action === filters.action;
+      const matchesModule = filters.module === 'all' || classifyAuditModule(action) === filters.module;
+      if (!matchesModule) return false;
       const matchesStart = startMs === null || createdAtMs >= startMs;
       const matchesEnd = endMs === null || createdAtMs <= endMs;
       const matchesSearch = !term || genericText.includes(term);
@@ -115,7 +183,7 @@ export function AuditLogTable({ title, description, userId, className = '' }) {
       </CardHeader>
       <CardContent className="space-y-4 p-6 sm:p-7">
         {error && <p className="text-sm text-destructive">{error}</p>}
-        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-6">
           <FilterInput label="Ator" value={filters.actor} onChange={(value) => updateFilter(setFilters, 'actor', value)} placeholder="Nome, e-mail ou UID" />
           <FilterInput label="Alvo" value={filters.target} onChange={(value) => updateFilter(setFilters, 'target', value)} placeholder="Usuário afetado" />
           <label className="space-y-1 text-xs font-medium text-muted-foreground">
@@ -130,6 +198,18 @@ export function AuditLogTable({ title, description, userId, className = '' }) {
                 <option key={action} value={action}>
                   {AUDIT_ACTION_LABELS[action] || action}
                 </option>
+              ))}
+            </select>
+          </label>
+          <label className="space-y-1 text-xs font-medium text-muted-foreground">
+            <span>Módulo</span>
+            <select
+              className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+              value={filters.module}
+              onChange={(e) => updateFilter(setFilters, 'module', e.target.value)}
+            >
+              {Object.entries(MODULE_LABELS).map(([value, label]) => (
+                <option key={value} value={value}>{label}</option>
               ))}
             </select>
           </label>
@@ -153,12 +233,22 @@ export function AuditLogTable({ title, description, userId, className = '' }) {
                 actor: '',
                 target: '',
                 action: 'all',
+                module: 'all',
                 startDate: '',
                 endDate: '',
                 search: '',
               })}
             >
               Limpar filtros
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className="ml-2 w-full md:w-auto"
+              onClick={() => exportLogsCsv(filteredLogs)}
+              disabled={filteredLogs.length === 0}
+            >
+              <Download className="mr-1.5 h-4 w-4" /> Exportar CSV
             </Button>
           </div>
         </div>
