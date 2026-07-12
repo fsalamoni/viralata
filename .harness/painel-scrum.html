@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-12T03:55:30.865Z",
+  "generatedAt": "2026-07-12T04:01:12.103Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -1529,10 +1529,10 @@
       "title": "Resolver 7 páginas legais órfãs em src/pages/ (CookiePolicy, CodeOfConduct, AdopterTerms, DonorTerms, FosterTerms, ShelterTerms, VolunteerTerms)",
       "type": "debt",
       "category": "legal",
-      "status": "ready",
+      "status": "in_review",
       "priority": "low",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": "SHELTER_LEGAL_TERMS_V1",
       "worktree": null,
       "pr": null,
@@ -1542,10 +1542,10 @@
         "limpeza"
       ],
       "blockedBy": [],
-      "evidence": "sibling scratchpad §NÃO ENTREGUE #3",
+      "evidence": "7 páginas órfãs removidas de src/pages/ (conteúdo coberto por /legal/:slug); npm test + build verdes",
       "description": "7 páginas legais em src/pages/ existem mas não são linkadas em lugar nenhum. Projeto migrou para /legal/:slug* (LegalPageViewer) gated por flag SHELTER_LEGAL_TERMS_V1. Decisão: (a) remover as 7, OU (b) linkar via nova rota /legal/legacy, OU (c) reusar conteúdo via LegalPageViewer. Recomendação: auditar se há conteúdo único que não foi migrado, depois remover as 7 (princípio do projeto: nada de código órfão).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-044",
@@ -6274,10 +6274,10 @@
       "title": "Trocar window.confirm por ConfirmDialog em todas ações destrutivas",
       "type": "refactor",
       "category": "shelter",
-      "status": "ready",
+      "status": "in_review",
       "priority": "medium",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": null,
       "worktree": null,
       "pr": null,
@@ -6290,10 +6290,10 @@
       "relatedTasks": [
         "TASK-126"
       ],
-      "evidence": "D:\\viralata\\src\\modules\\shelter\\components\\VolunteersRoster.jsx:82 (window.confirm); D:\\viralata\\src\\modules\\shelter\\components\\ParticipationsList.jsx:60; D:\\viralata\\src\\components\\ConfirmDialog.jsx (existe mas não é usado)",
+      "evidence": "src/components/ui/confirm-provider.jsx (ConfirmProvider + useConfirm + confirmDialog imperativo) montado no App.jsx; 30 call sites migrados em 25 arquivos; 1392 tests verdes, build OK",
       "description": "BLOCO INDEPENDENTE. Substituir window.confirm() por ConfirmDialog shadcn em todas ações destrutivas (pause/resume/block/leave/delete/check-in/out). Já existe ConfirmDialog — falta wiring. Regra A §A.1.1 (modais) + a11y focus trap.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11 20:50"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-214",
@@ -7434,9 +7434,9 @@
     "totalTasks": 254,
     "done": 54,
     "inProgress": 2,
-    "inReview": 17,
+    "inReview": 19,
     "blocked": 0,
-    "ready": 165,
+    "ready": 163,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
