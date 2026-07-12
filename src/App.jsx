@@ -14,6 +14,12 @@ const Login = lazy(() => import('@/pages/Login'));
 const PrivacyPolicy = lazy(() => import('@/pages/PrivacyPolicy'));
 const Terms = lazy(() => import('@/pages/Terms'));
 const Legislation = lazy(() => import('@/pages/Legislation'));
+
+// TASK-235: páginas públicas do programa de voluntariado
+// (/voluntarios, /voluntarios/seja, /voluntarios/termo).
+const VolunteerProgram = lazy(() => import('@/pages/VolunteerProgram'));
+const VolunteerSignup = lazy(() => import('@/pages/VolunteerSignup'));
+const VolunteerTermPreview = lazy(() => import('@/pages/VolunteerTermPreview'));
 // Fase 19 (Legal Terms v1): visualizador único para todas as
 // 6 páginas legais integrais (rota /legal/:slug*).
 const LegalPageViewer = lazy(() => import('@/pages/legal/LegalPageViewer'));
@@ -177,6 +183,14 @@ export default function App() {
                 <Route path="/politica-privacidade" element={withLayout('PrivacyPolicy', PrivacyPolicy)} />
                 <Route path="/termos" element={withLayout('Terms', Terms)} />
                 <Route path="/legislacao" element={withLayout('Legislation', Legislation)} />
+
+                {/* TASK-235: programa de voluntariado (público, com auth opcional).
+                    /voluntarios        — landing institucional
+                    /voluntarios/seja   — inscrição (4 passos; redireciona pra /login se anônimo)
+                    /voluntarios/termo  — texto integral do termo v2 */}
+                <Route path="/voluntarios" element={withLayout('VolunteerProgram', VolunteerProgram)} />
+                <Route path="/voluntarios/seja" element={withLayout('VolunteerSignup', VolunteerSignup)} />
+                <Route path="/voluntarios/termo" element={withLayout('VolunteerTermPreview', VolunteerTermPreview)} />
 
                 {/* Debug page pública — sem auth. Use ?debug=1 para ativar */}
                 <Route

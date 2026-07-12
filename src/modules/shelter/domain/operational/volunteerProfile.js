@@ -57,6 +57,21 @@ export const VOLUNTEER_SHELTER_STATUS = Object.freeze([
   'left',       // Saiu do abrigo (terminal)
 ]);
 
+/** Motivos canônicos de saída da rostagem (TASK-242, LGPD Art. 18 IX). */
+export const VOLUNTEER_EXIT_REASONS = Object.freeze([
+  'city_change',     // Mudança de cidade
+  'time',            // Falta de tempo
+  'personal',        // Problemas pessoais
+  'other',           // Outro abrigo / Outra atividade / Outros
+]);
+
+export const VOLUNTEER_EXIT_REASON_LABELS = Object.freeze({
+  city_change: 'Mudança de cidade',
+  time: 'Falta de tempo',
+  personal: 'Problemas pessoais',
+  other: 'Outro abrigo / Outra atividade',
+});
+
 const TERMINAL_SHELTER_STATUSES = Object.freeze(['left']);
 
 const VALID_SHELTER_STATUS_TRANSITIONS = Object.freeze({
@@ -204,6 +219,10 @@ export const shelterVolunteerRosterSchema = z.object({
   status: z.enum(VOLUNTEER_SHELTER_STATUS).default('active'),
   joined_at: z.string().datetime().optional(),
   left_at: z.string().datetime().optional(),
+  // Exit feedback (TASK-242) — preenchido quando status='left'
+  exit_reason: z.enum(VOLUNTEER_EXIT_REASONS).optional(),
+  exit_note: z.string().max(500).optional(),
+  exit_at: z.string().datetime().optional(),
   // Background check (per-shelter, não portável)
   background_check_status: z.enum(VOLUNTEER_BG_CHECK_STATUS).default('not_required'),
   background_check_at: z.string().datetime().optional(),
@@ -242,11 +261,15 @@ export const joinShelterAsVolunteerSchema = z.object({
 /**
  * Schema para o abrigo atualizar o status do background check
  * (pending → approved/rejected) e/ou mudar o status da rostagem.
+ * Também aceita o feedback de saída (TASK-242, LGPD Art. 18 IX):
+ * `exit_reason` + `exit_note` quando `status` muda para 'left'.
  */
 export const updateShelterVolunteerSchema = z.object({
   status: z.enum(VOLUNTEER_SHELTER_STATUS).optional(),
   background_check_status: z.enum(VOLUNTEER_BG_CHECK_STATUS).optional(),
   background_check_notes: z.string().max(1000).optional(),
+  exit_reason: z.enum(VOLUNTEER_EXIT_REASONS).optional(),
+  exit_note: z.string().max(500).optional(),
 }).strict();
 
 /**
@@ -376,6 +399,34 @@ export function isParticipationInProgress(participation) {
 export function isParticipationCompleted(participation) {
   return Boolean(participation?.check_in) && Boolean(participation?.check_out);
 }
+
+// ─── Consent withdrawal (TASK-242, LGPD Art. 18 IX) ───────────────────
+
+/**
+ * Escopos válidos para revogação do consentimento de voluntariado.
+ *
+ *  - 'profile': revoga apenas o aceite do termo (mantém vínculo com abrigos)
+ *  - 'roster':  sai de TODOS os abrigos mas mantém perfil global
+ *  - 'all':     revoga tudo (perfil + roster)
+ */
+export const VOLUNTEER_CONSENT_WITHDRAW_SCOPES = Object.freeze([
+  'profile', 'roster', 'all',
+]);
+
+export const VOLUNTEER_CONSENT_WITHDRAW_SCOPE_LABELS = Object.freeze({
+  profile: 'Apenas o aceite do termo',
+  roster: 'Sair de todos os abrigos',
+  all: 'Encerrar voluntariado completamente',
+});
+
+/**
+ * Schema de input para `withdrawVolunteerConsent`. O `note` é opcional
+ * (LGPD não exige, mas melhora a UX de feedback de saída).
+ */
+export const withdrawVolunteerConsentSchema = z.object({
+  scope: z.enum(VOLUNTEER_CONSENT_WITHDRAW_SCOPES),
+  note: z.string().max(500).optional(),
+}).strict();
 
 /**
  * Formata uma lista de availability items para exibição curta

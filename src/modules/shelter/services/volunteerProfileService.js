@@ -15,8 +15,8 @@
  */
 
 import {
-  collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc,
-  query, where, orderBy, limit, serverTimestamp,
+  collection, collectionGroup, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc,
+  query, where, orderBy, limit, serverTimestamp, writeBatch,
 } from 'firebase/firestore';
 import { db } from '@/core/config/firebase';
 import { logger } from '@/core/lib/logger';
@@ -26,6 +26,7 @@ import {
   acceptVolunteerTermsSchema,
   joinShelterAsVolunteerSchema,
   updateShelterVolunteerSchema,
+  withdrawVolunteerConsentSchema,
   assertValidVolunteerStatusTransition,
   assertValidBgCheckTransition,
 } from '@/modules/shelter/domain/operational/volunteerProfile';
@@ -364,8 +365,17 @@ export async function updateShelterVolunteer(shelterClubId, volunteerUid, input,
     assertValidVolunteerStatusTransition(prev.status, parsed.status);
     update.status = parsed.status;
     if (parsed.status === 'left') {
-      update.left_at = new Date().toISOString();
+      const now = new Date().toISOString();
+      update.left_at = now;
+      update.exit_at = now;
     }
+  }
+
+  if (parsed.exit_reason !== undefined) {
+    update.exit_reason = parsed.exit_reason;
+  }
+  if (parsed.exit_note !== undefined) {
+    update.exit_note = parsed.exit_note;
   }
 
   if (parsed.background_check_status && parsed.background_check_status !== prev.background_check_status) {
@@ -405,14 +415,145 @@ export async function updateShelterVolunteer(shelterClubId, volunteerUid, input,
 
 /**
  * Voluntário sai do abrigo (ou abrigo o remove). Status → 'left'.
+ * Aceita feedback de saída opcional (TASK-242, LGPD Art. 18 IX):
+ * `exit_reason` (city_change | time | personal | other) e `exit_note`.
  */
-export async function leaveShelter(shelterClubId, volunteerUid, actor) {
+export async function leaveShelter(shelterClubId, volunteerUid, actor, feedback = {}) {
+  const { exit_reason, exit_note } = feedback || {};
   return updateShelterVolunteer(
     shelterClubId,
     volunteerUid,
-    { status: 'left' },
+    {
+      status: 'left',
+      ...(exit_reason ? { exit_reason } : {}),
+      ...(exit_note ? { exit_note } : {}),
+    },
     actor,
   );
+}
+
+/**
+ * Lista todas as rostagens (per-shelter) nas quais o voluntário está
+ * presente, independente do status. Usa `collectionGroup('volunteers')`
+ * com `where('volunteer_uid', '==', uid)` — a query precisa do índice
+ * composto `volunteer_uid ASC + volunteer_name ASC` declarado em
+ * `firestore.indexes.json` (single-field NÃO é suficiente aqui).
+ */
+export async function listUserVolunteerRosters(uid, options = {}) {
+  if (!db || !uid) return [];
+  const { status, maxResults = 200 } = options;
+
+  const constraints = [where('volunteer_uid', '==', uid)];
+  if (status) constraints.push(where('status', '==', status));
+  constraints.push(orderBy('volunteer_name', 'asc'));
+  constraints.push(limit(maxResults));
+
+  const q = query(
+    collectionGroup(db, 'volunteers'),
+    ...constraints,
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => {
+    const data = d.data();
+    // collectionGroup docs não trazem o path do parent — extraímos
+    // o clubId do path (`clubs/{clubId}/volunteers/{uid}`)
+    const segs = d.ref.path.split('/');
+    return {
+      id: d.id,
+      ...data,
+      shelter_club_id: data.shelter_club_id || (segs.length >= 2 ? segs[1] : null),
+    };
+  });
+}
+
+/**
+ * Revoga o consentimento de voluntariado do usuário. LGPD Art. 18 IX
+ * ("direito de revogação do consentimento a qualquer momento").
+ *
+ * Escopos:
+ *  - 'profile': revoga aceite do termo; mantém vínculo com abrigos
+ *  - 'roster':  sai de TODOS os abrigos; mantém perfil global
+ *  - 'all':     revoga tudo (perfil + roster)
+ *
+ * @param {string} uid - voluntário
+ * @param {object} input - { scope: 'profile' | 'roster' | 'all', note?: string }
+ * @param {object} actor - {uid} deve == uid
+ */
+export async function withdrawVolunteerConsent(uid, input, actor) {
+  if (!db) throw new Error('Firebase não disponível');
+  if (!uid) throw new Error('uid é obrigatório');
+  if (!actor?.uid) throw new Error('actor.uid é obrigatório');
+  // Defesa: só o próprio voluntário pode revogar (não há admin
+  // legítimo que precise disso — se houver, é caso de plataforma,
+  // não de consentimento individual).
+  if (actor.uid !== uid) {
+    throw new Error('Apenas o próprio voluntário pode revogar o consentimento.');
+  }
+
+  const parsed = withdrawVolunteerConsentSchema.parse(input);
+  const { scope, note } = parsed;
+  const now = new Date().toISOString();
+
+  let profileTouched = false;
+  let rostersUpdated = 0;
+
+  // 1. Perfil global (revoga aceite do termo) — scopes 'profile' ou 'all'
+  if (scope === 'profile' || scope === 'all') {
+    const profileRef = volunteerProfileRef(uid);
+    await setDoc(profileRef, {
+      terms_accepted_at: null,
+      terms_version: null,
+      consent_withdrawn_at: now,
+      consent_withdrawn_scope: scope,
+      consent_withdrawn_note: note || null,
+      deleted_at: now,
+      updated_at: serverTimestamp(),
+    }, { merge: true });
+    profileTouched = true;
+  }
+
+  // 2. Rosters per-shelter (sai de todos) — scopes 'roster' ou 'all'
+  if (scope === 'roster' || scope === 'all') {
+    const rostersSnap = await getDocs(
+      query(collectionGroup(db, 'volunteers'), where('volunteer_uid', '==', uid)),
+    );
+    if (!rostersSnap.empty) {
+      const batch = writeBatch(db);
+      rostersSnap.docs.forEach((d) => {
+        const prev = d.data();
+        if (prev.status === 'left') return; // já saiu, não reescreve
+        batch.update(d.ref, {
+          status: 'left',
+          left_reason: 'consent_withdrawn',
+          left_at: now,
+          left_by: actor.uid,
+          updated_at: serverTimestamp(),
+        });
+      });
+      await batch.commit();
+      rostersUpdated = rostersSnap.size;
+    }
+  }
+
+  await safeCreateAuditLog({
+    action: 'volunteer_consent_withdrawn',
+    actor,
+    details: {
+      uid,
+      scope,
+      profile_touched: profileTouched,
+      rosters_updated: rostersUpdated,
+      note: note || null,
+      timestamp: now,
+    },
+  }).catch((err) => {
+    logger.warn('volunteerProfileService.withdrawVolunteerConsent', {
+      msg: 'audit failed (non-blocking — see [AUDIT_FAILURE] in logger.error)',
+      err: String(err),
+    });
+  });
+
+  return { ok: true, scope, profileTouched, rostersUpdated, timestamp: now };
 }
 
 /**

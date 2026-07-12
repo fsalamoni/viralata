@@ -169,6 +169,15 @@ exports.materializePostAdoptionTasks = materializePostAdoptionTasks;
 // Lei 14.063 5a / Receita Federal 7a). Ver auditLogPurgeCron.js.
 exports.auditLogPurgeCron = require('./auditLogPurgeCron').auditLogPurgeCron;
 
+// ─── TASK-240: Backup semanal do Firestore → GCS WORM ──────────────────
+//
+// Cloud Function scheduled (semanal, domingo 02:00 BRT) que dispara
+// `firestoreAdminClient.exportDocuments` para
+// `gs://<BACKUP_BUCKET>/<YYYY-MM-DD>/`. WORM + lifecycle 90d enforced
+// via bucket policy (ver docs/DR_PLAN.md). Restore runbook em
+// docs/DR_PLAN.md. Compliance: AGENTS.md §LGPD, Lei 14.063/2020 art. 6º.
+exports.scheduledFirestoreBackup = require('./backupCron').scheduledFirestoreBackup;
+
 // ─── Fase 21: Painel de Saúde da Plataforma ─────────────────────────────
 //
 // Duas Cloud Functions:

@@ -3,18 +3,24 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useQuery } from '@tanstack/react-query';
 import {
-  User, Download, ShieldAlert, PawPrint, Star, ArrowLeft,
-  Home as HomeIcon, Trees, Building2, Tractor, Sofa, Footprints, Wind, Wallet, Bird,
+  User, Download, ShieldAlert, PawPrint, Star, ArrowLeft, LogOut, Building2,
+  Home as HomeIcon, Trees, Tractor, Bird, AlertTriangle,
 } from 'lucide-react';
+import { db } from '@/core/config/firebase';
+import { doc, getDoc } from 'firebase/firestore';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { ImageUpload } from '@/components/ui/image-upload';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import {
+  Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription,
+} from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 import { getRatingsForUser, summarizeRatings } from '@/modules/pets/services/ratingService';
@@ -23,9 +29,18 @@ import { deleteMyAccount } from '@/core/services/deleteAccountService';
 import PageHero from '@/components/PageHero';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import { VolunteerProfileForm } from '@/modules/shelter/components/VolunteerProfileForm';
-import { useVolunteerProfile } from '@/modules/shelter/hooks/useVolunteerProfile';
+import {
+  useVolunteerProfile,
+  useUserVolunteerRosters,
+  useLeaveShelter,
+  useWithdrawVolunteerConsent,
+} from '@/modules/shelter/hooks/useVolunteerProfile';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
+import {
+  VOLUNTEER_EXIT_REASONS,
+  VOLUNTEER_EXIT_REASON_LABELS,
+} from '@/modules/shelter/domain/operational/volunteerProfile';
 import { Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -113,6 +128,32 @@ function buildProfileForm(userProfile, user) {
   };
 }
 
+/**
+ * Hook: busca o nome público de um clube (abrigo) a partir do id.
+ * Pequeno cache in-memory por sessão para evitar refetch repetido.
+ */
+const _clubNameCache = new Map();
+function useClubName(clubId) {
+  return useQuery({
+    queryKey: ['club-name', clubId],
+    queryFn: async () => {
+      if (!clubId) return null;
+      if (_clubNameCache.has(clubId)) return _clubNameCache.get(clubId);
+      const snap = await getDoc(doc(db, 'clubs', clubId));
+      if (!snap.exists()) {
+        _clubNameCache.set(clubId, null);
+        return null;
+      }
+      const data = snap.data();
+      const name = data.name || data.title || data.display_name || null;
+      _clubNameCache.set(clubId, name);
+      return name;
+    },
+    enabled: Boolean(clubId),
+    staleTime: 1000 * 60 * 5,
+  });
+}
+
 export default function Profile() {
   const navigate = useNavigate();
   const { user, userProfile, updateUserProfile, signOut } = useAuth();
@@ -139,6 +180,37 @@ export default function Profile() {
   const { data: volunteerProfile, isLoading: isVPLoading } = useVolunteerProfile(
     volunteerProfileV1 && user?.uid ? user.uid : null,
   );
+
+  // TASK-242: lista de rostagens do voluntário + offboarding.
+  // (LGPD Art. 18 IX — revogação de consentimento)
+  const { data: myRosters = [], isLoading: isRostersLoading } = useUserVolunteerRosters(
+    volunteerProfileV1 && user?.uid ? user.uid : null,
+  );
+  const withdrawConsent = useWithdrawVolunteerConsent(user?.uid);
+  const [exitState, setExitState] = useState({
+    roster: null,           // { shelterClubId, volunteerName }
+    reason: 'time',
+    note: '',
+    allShelters: false,     // "Sair de todos os abrigos"
+    allVolunteering: false, // "Encerrar voluntariado completamente"
+    typeConfirm: '',
+  });
+  const openLeaveOne = useCallback((roster) => {
+    setExitState({
+      roster: {
+        shelterClubId: roster.shelter_club_id,
+        volunteerName: roster.volunteer_name || 'este abrigo',
+      },
+      reason: 'time',
+      note: '',
+      allShelters: false,
+      allVolunteering: false,
+      typeConfirm: '',
+    });
+  }, []);
+  const closeLeaveDialog = useCallback(() => {
+    setExitState((prev) => ({ ...prev, roster: null, typeConfirm: '' }));
+  }, []);
 
   const [form, setForm] = useState(() => buildProfileForm(userProfile, user));
   const [busy, setBusy] = useState(false);
@@ -491,6 +563,199 @@ export default function Profile() {
         </Card>
       )}
 
+      {/* TASK-242: Minhas voluntariadas (offboarding · LGPD Art. 18 IX).
+          Renderiza apenas se a flag `shelter_volunteer_profile_v1` estiver ON.
+          Lista todas as rostagens (per-shelter) do voluntário, com botão
+          "Sair deste abrigo" + ações globais de revogação de consentimento. */}
+      {volunteerProfileV1 && (
+        <Card className="rounded-[24px] p-6 lg:p-7">
+          <CardHeader className="p-0 pb-4">
+            <CardTitle className="flex items-center gap-2 text-base font-bold">
+              <Building2 className="w-[19px] h-[19px] text-primary" /> Minhas voluntariadas
+            </CardTitle>
+            <CardDescription className="text-[12.5px] leading-[1.6]">
+              Abrigos onde você é voluntário. Conforme a LGPD (Art. 18, IX), você pode revogar seu consentimento a qualquer momento.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4 p-0">
+            {isRostersLoading ? (
+              <div className="space-y-2">
+                <Skeleton className="h-16 w-full" />
+                <Skeleton className="h-16 w-full" />
+              </div>
+            ) : myRosters.length === 0 ? (
+              <EmptyState
+                icon={Building2}
+                title="Você ainda não está na rostagem de nenhum abrigo"
+                description="Conheça o programa de voluntariado e candidate-se a um abrigo."
+                action={(
+                  <Button asChild variant="outline">
+                    <Link to="/voluntarios">Conhecer o programa</Link>
+                  </Button>
+                )}
+              />
+            ) : (
+              <ul className="space-y-2.5">
+                {myRosters.map((r) => (
+                  <VolunteerRosterRow
+                    key={`${r.shelter_club_id}::${r.id}`}
+                    roster={r}
+                    onLeave={openLeaveOne}
+                  />
+                ))}
+              </ul>
+            )}
+
+            {myRosters.length > 0 && (
+              <div className="mt-4 space-y-2.5 rounded-2xl border border-destructive/20 bg-destructive/[0.04] p-3.5">
+                <div className="flex items-center gap-2 text-[12px] font-bold uppercase tracking-wider text-destructive/80">
+                  <AlertTriangle className="h-3.5 w-3.5" /> Ações irreversíveis
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setExitState((prev) => ({ ...prev, allShelters: true, typeConfirm: '' }))}
+                  className="h-[44px] w-full gap-2 border-destructive/30 bg-card text-[13px] font-bold text-destructive hover:bg-destructive/10 hover:text-destructive"
+                  disabled={withdrawConsent.isPending}
+                >
+                  <LogOut className="w-[17px] h-[17px]" />
+                  Sair de todos os abrigos
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setExitState((prev) => ({ ...prev, allVolunteering: true, typeConfirm: '' }))}
+                  className="h-[44px] w-full gap-2 border-destructive/30 bg-card text-[13px] font-bold text-destructive hover:bg-destructive/10 hover:text-destructive"
+                  disabled={withdrawConsent.isPending}
+                >
+                  <ShieldAlert className="w-[17px] h-[17px]" />
+                  Encerrar voluntariado completamente
+                </Button>
+                <p className="text-[11.5px] leading-relaxed text-muted-foreground">
+                  &ldquo;Sair de todos&rdquo; remove você das rostagens mas mantém seu perfil global. &ldquo;Encerrar voluntariado&rdquo; revoga também o consentimento do termo (LGPD Art. 18, IX). Para reativar, será necessário aceitar o termo novamente.
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* TASK-242: Diálogo de saída por abrigo (com feedback opcional). */}
+      <LeaveOneShelterDialog
+        state={exitState}
+        setState={setExitState}
+        onClose={closeLeaveDialog}
+      />
+
+      {/* TASK-242: Diálogos de revogação em massa (Lei 14.063/2020 — 2-step
+          via type-confirm). Usa Dialog plain para permitir campo de input. */}
+      <Dialog
+        open={exitState.allShelters}
+        onOpenChange={(open) => !open && setExitState((prev) => ({ ...prev, allShelters: false, typeConfirm: '' }))}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-destructive" /> Sair de todos os abrigos
+            </DialogTitle>
+            <DialogDescription asChild>
+              <div className="space-y-2 text-[13px]">
+                <p>Você deixará de fazer parte de <strong>todas as rostagens</strong> onde é voluntário.</p>
+                <p>Seu perfil global e o histórico de participações serão preservados. Para voltar, peça para um abrigo te convidar novamente.</p>
+              </div>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-1.5">
+            <Label htmlFor="confirm-sair" className="text-[12px]">Por segurança, digite <span className="font-bold text-destructive">SAIR</span> abaixo</Label>
+            <Input
+              id="confirm-sair"
+              value={exitState.typeConfirm}
+              onChange={(e) => setExitState((prev) => ({ ...prev, typeConfirm: e.target.value }))}
+              placeholder="SAIR"
+              autoComplete="off"
+              disabled={withdrawConsent.isPending}
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setExitState((prev) => ({ ...prev, allShelters: false, typeConfirm: '' }))} disabled={withdrawConsent.isPending}>
+              Cancelar
+            </Button>
+            <Button
+              variant="destructive"
+              disabled={withdrawConsent.isPending || exitState.typeConfirm.trim().toUpperCase() !== 'SAIR'}
+              onClick={async () => {
+                try {
+                  const res = await withdrawConsent.mutateAsync({
+                    input: { scope: 'roster' },
+                    actor: { uid: user.uid, email: user.email, displayName: user.displayName },
+                  });
+                  toast.success(`Você saiu de ${res.rostersUpdated} abrigo(s).`);
+                  setExitState((prev) => ({ ...prev, allShelters: false, typeConfirm: '' }));
+                } catch (err) {
+                  toast.error('Não foi possível sair de todos os abrigos. Tente novamente.');
+                }
+              }}
+            >
+              {withdrawConsent.isPending ? 'Aguarde…' : 'Confirmar saída'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={exitState.allVolunteering}
+        onOpenChange={(open) => !open && setExitState((prev) => ({ ...prev, allVolunteering: false, typeConfirm: '' }))}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-destructive" /> Encerrar voluntariado completamente
+            </DialogTitle>
+            <DialogDescription asChild>
+              <div className="space-y-2 text-[13px]">
+                <p>Esta ação <strong>revoga seu consentimento</strong> de voluntariado (LGPD Art. 18, IX) e remove você de todas as rostagens.</p>
+                <p>O registro do aceite do termo permanece como prova legal (Lei 14.063/2020) por prazo indeterminado. Seu perfil global será marcado como inativo.</p>
+                <p>Para voltar a ser voluntário, será necessário aceitar o termo novamente do zero.</p>
+              </div>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-1.5">
+            <Label htmlFor="confirm-encerrar" className="text-[12px]">Por segurança, digite <span className="font-bold text-destructive">ENCERRAR</span> abaixo</Label>
+            <Input
+              id="confirm-encerrar"
+              value={exitState.typeConfirm}
+              onChange={(e) => setExitState((prev) => ({ ...prev, typeConfirm: e.target.value }))}
+              placeholder="ENCERRAR"
+              autoComplete="off"
+              disabled={withdrawConsent.isPending}
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setExitState((prev) => ({ ...prev, allVolunteering: false, typeConfirm: '' }))} disabled={withdrawConsent.isPending}>
+              Cancelar
+            </Button>
+            <Button
+              variant="destructive"
+              disabled={withdrawConsent.isPending || exitState.typeConfirm.trim().toUpperCase() !== 'ENCERRAR'}
+              onClick={async () => {
+                try {
+                  await withdrawConsent.mutateAsync({
+                    input: { scope: 'all' },
+                    actor: { uid: user.uid, email: user.email, displayName: user.displayName },
+                  });
+                  toast.success('Voluntariado encerrado. Sentiremos sua falta!');
+                  setExitState((prev) => ({ ...prev, allVolunteering: false, typeConfirm: '' }));
+                } catch (err) {
+                  toast.error('Não foi possível encerrar o voluntariado. Tente novamente.');
+                }
+              }}
+            >
+              {withdrawConsent.isPending ? 'Aguarde…' : 'Encerrar definitivamente'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Privacidade e dados (LGPD) */}
       <Card className="rounded-[24px] p-6">
         <CardHeader className="p-0 pb-1">
@@ -526,5 +791,169 @@ export default function Profile() {
         onConfirm={handleDeleteAccount}
       />
     </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// TASK-242 — Offboarding UI (LGPD Art. 18 IX)
+// ═══════════════════════════════════════════════════════════════════════
+
+const STATUS_LABEL = {
+  active: 'Ativo',
+  paused: 'Pausado',
+  blocked: 'Bloqueado',
+  left: 'Saiu',
+};
+
+const STATUS_BADGE_CLASS = {
+  active: 'border-emerald-200 bg-emerald-50 text-emerald-700',
+  paused: 'border-amber-200 bg-amber-50 text-amber-700',
+  blocked: 'border-rose-200 bg-rose-50 text-rose-700',
+  left: 'border-slate-200 bg-slate-50 text-slate-600',
+};
+
+/**
+ * Linha de uma rostagem (per-shelter) na seção "Minhas voluntariadas".
+ * Mostra o nome do abrigo (resolvido lazy), o status e um botão
+ * "Sair deste abrigo" que abre o diálogo de feedback.
+ */
+function VolunteerRosterRow({ roster, onLeave }) {
+  const { data: clubName } = useClubName(roster.shelter_club_id);
+  const status = roster.status || 'active';
+  const isLeft = status === 'left';
+  return (
+    <li className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-card p-3.5">
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-2">
+          <p className="truncate text-[14px] font-bold text-foreground">
+            {clubName || 'Abrigo'}
+          </p>
+          <span className={`shrink-0 rounded-full border px-2 py-0.5 text-[10.5px] font-bold uppercase tracking-wider ${STATUS_BADGE_CLASS[status] || STATUS_BADGE_CLASS.active}`}>
+            {STATUS_LABEL[status] || status}
+          </span>
+        </div>
+        {roster.volunteer_name && (
+          <p className="mt-0.5 truncate text-[12px] text-muted-foreground">
+            Você entrou como {roster.volunteer_name}
+            {roster.joined_at ? ` em ${new Date(roster.joined_at).toLocaleDateString('pt-BR')}` : ''}
+          </p>
+        )}
+        {isLeft && roster.exit_reason && (
+          <p className="mt-1 text-[11.5px] text-muted-foreground">
+            Motivo registrado: {VOLUNTEER_EXIT_REASON_LABELS[roster.exit_reason] || roster.exit_reason}
+          </p>
+        )}
+      </div>
+      {!isLeft && (
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => onLeave(roster)}
+          className="h-9 gap-1.5 border-destructive/30 bg-destructive/[0.04] text-[12.5px] font-bold text-destructive hover:bg-destructive/10 hover:text-destructive"
+        >
+          <LogOut className="h-3.5 w-3.5" />
+          Sair deste abrigo
+        </Button>
+      )}
+    </li>
+  );
+}
+
+/**
+ * Diálogo de saída de UM abrigo específico, com feedback opcional
+ * (motivo canônico + nota livre). Persiste via `useLeaveShelter`.
+ */
+function LeaveOneShelterDialog({ state, setState, onClose }) {
+  const { user } = useAuth();
+  const open = Boolean(state.roster);
+  const leave = useLeaveShelter(state.roster?.shelterClubId);
+
+  const reason = state.reason || 'time';
+  const note = state.note || '';
+
+  const submit = useCallback(async () => {
+    if (!state.roster || !user?.uid) return;
+    try {
+      await leave.mutateAsync({
+        volunteerUid: user.uid,
+        actor: { uid: user.uid, email: user.email, displayName: user.displayName },
+        exit_reason: reason,
+        exit_note: note.trim() || undefined,
+      });
+      toast.success(`Você saiu do abrigo ${state.roster.volunteerName}.`);
+      onClose();
+    } catch (err) {
+      toast.error('Não foi possível sair do abrigo. Tente novamente.');
+    }
+  }, [state.roster, user, leave, reason, note, onClose]);
+
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={(o) => !o && onClose()}
+    >
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <LogOut className="w-5 h-5 text-destructive" /> Sair deste abrigo
+          </DialogTitle>
+          <DialogDescription asChild>
+            <div className="space-y-2 text-[13px]">
+              <p>Você deixará a rostagem de <strong>{state.roster?.volunteerName || 'este abrigo'}</strong>.</p>
+              <p>Seu perfil global de voluntário será mantido e o histórico de participações preservado. Para voltar, peça para o abrigo te convidar novamente.</p>
+              <p className="text-[11.5px] text-muted-foreground">O motivo é opcional e nos ajuda a melhorar o programa (LGPD Art. 18, IX).</p>
+            </div>
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-3">
+          <div className="space-y-1.5">
+            <Label className="text-[12px]">Motivo</Label>
+            <div className="grid gap-1.5">
+              {VOLUNTEER_EXIT_REASONS.map((value) => (
+                <label
+                  key={value}
+                  className={`flex cursor-pointer items-center gap-2.5 rounded-xl border-2 px-3 py-2.5 text-[13px] transition-colors ${
+                    reason === value
+                      ? 'border-primary bg-primary/[0.08] font-bold text-foreground'
+                      : 'border-border bg-card hover:border-primary/40'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="volunteer-exit-reason"
+                    value={value}
+                    checked={reason === value}
+                    onChange={() => setState((prev) => ({ ...prev, reason: value }))}
+                    className="h-3.5 w-3.5 accent-[hsl(14,55%,26%)]"
+                  />
+                  {VOLUNTEER_EXIT_REASON_LABELS[value]}
+                </label>
+              ))}
+            </div>
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="exit-note" className="text-[12px]">Observação (opcional, até 500 caracteres)</Label>
+            <Textarea
+              id="exit-note"
+              value={note}
+              onChange={(e) => setState((prev) => ({ ...prev, note: e.target.value }))}
+              maxLength={500}
+              rows={3}
+              placeholder="Compartilhe algo que possa ajudar (opcional)..."
+            />
+            <p className="text-right text-[10.5px] text-muted-foreground">{note.length}/500</p>
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose} disabled={leave.isPending}>
+            Cancelar
+          </Button>
+          <Button variant="destructive" onClick={submit} disabled={leave.isPending}>
+            {leave.isPending ? 'Aguarde…' : 'Sair do abrigo'}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
