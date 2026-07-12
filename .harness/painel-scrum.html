@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-12T18:31:43.541Z",
+  "generatedAt": "2026-07-12T18:40:09.266Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -6147,7 +6147,7 @@
       "title": "A11y automatizado (axe-core) na página da comunidade (gap Regra A Eixos 1 e 5)",
       "type": "chore",
       "category": "community",
-      "status": "in_review",
+      "status": "done",
       "priority": "medium",
       "owner": "claude_yxo02k",
       "branch": "claude/scrum-board-management-yxo02k",
@@ -6167,10 +6167,11 @@
         "TASK-196",
         "TASK-014"
       ],
-      "evidence": "tests/e2e/a11y.spec.js — @axe-core/playwright (wcag2a+aa) em 7 rotas públicas incl. /comunidades; política critical/serious bloqueiam, moderate/minor warning; violações reais encontradas viraram TASK-249 (KNOWN_ISSUES documentado); 7/7 verde local; PW_CHROMIUM_PATH no playwright.config para o ambiente remoto",
+      "evidence": "tests/e2e/a11y.spec.js — @axe-core/playwright (wcag2a+aa) em 7 rotas públicas incl. /comunidades; política critical/serious bloqueiam, moderate/minor warning; violações reais encontradas viraram TASK-249 (KNOWN_ISSUES documentado); 7/7 verde local; PW_CHROMIUM_PATH no playwright.config para o ambiente remoto; mergeado em main via PR #72",
       "description": "BLOCO INDEPENDENTE. Adicionar @axe-core/playwright ao smoke test (ou criar suite dedicada) para /comunidade/:id com flag ON. Cobrir: capa, painel admin (4 abas), modais, empty states. Reportar achados em docs/A11Y_AUDIT.md. Regra A §1.1 (a11y) + §1.5 (pós-deploy smoke test).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-12"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-200",
@@ -7327,7 +7328,7 @@
       "title": "A11y: corrigir contraste terracotta/cream (color-contrast + link-in-text-block em /feed, /organizacoes, /voluntarios)",
       "type": "bug",
       "category": "design",
-      "status": "in_review",
+      "status": "done",
       "priority": "medium",
       "owner": "claude_yxo02k",
       "branch": "claude/scrum-board-management-yxo02k",
@@ -7345,10 +7346,11 @@
         "TASK-191",
         "TASK-014"
       ],
-      "evidence": "Tokens ajustados em src/index.css: --primary 17 72% 43% (4.81:1) e --muted-foreground 20 12% 37%; link mailto com underline permanente; text-muted-foreground/80 removido nos 3 PetFeed; KNOWN_ISSUES do a11y.spec.js esvaziado — suite estrita 7/7 verde",
+      "evidence": "Tokens ajustados em src/index.css: --primary 17 72% 43% (4.81:1) e --muted-foreground 20 12% 37%; link mailto com underline permanente; text-muted-foreground/80 removido nos 3 PetFeed; KNOWN_ISSUES do a11y.spec.js esvaziado — suite estrita 7/7 verde; mergeado em main via PR #72",
       "description": "Detectado pela suite a11y automatizada (TASK-199). Ajustar a paleta (primary sobre background) e o estilo de links para WCAG AA. Ao corrigir, esvaziar KNOWN_ISSUES no spec — a suite volta a bloquear regressões.",
       "createdAt": "2026-07-12",
-      "updatedAt": "2026-07-12"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     }
   ],
   "definitionOfDone": [
@@ -7517,9 +7519,9 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 254,
-    "done": 111,
+    "done": 113,
     "inProgress": 2,
-    "inReview": 8,
+    "inReview": 6,
     "blocked": 0,
     "ready": 118,
     "backlog": 6,
