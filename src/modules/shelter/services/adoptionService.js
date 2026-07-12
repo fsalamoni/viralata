@@ -13,7 +13,7 @@
  */
 
 import {
-  collection, doc, getDoc, getDocs, addDoc, updateDoc,
+  collection, collectionGroup, doc, getDoc, getDocs, addDoc, updateDoc,
   query, where, orderBy, serverTimestamp, writeBatch, limit,
 } from 'firebase/firestore';
 import { db } from '@/core/config/firebase';
@@ -145,6 +145,26 @@ export async function listApplications(shelterClubId, options = {}) {
   const q = query(
     collection(db, CLUBS_COLLECTION, shelterClubId, APPS_SUBCOLLECTION),
     ...constraints,
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
+/**
+ * Lista TODAS as applications do usuário logado, cross-abrigo
+ * (TASK-129 — bloco "Minhas adoções" no perfil). CollectionGroup em
+ * `adoption_workflow` filtrado por `applicant_uid`; as rules liberam
+ * leitura apenas dos docs onde `applicant_uid == request.auth.uid`.
+ * Índice composto declarado em firestore.indexes.json
+ * (applicant_uid ASC + created_at DESC, scope COLLECTION_GROUP).
+ */
+export async function listMyApplications(applicantUid, { maxResults = 50 } = {}) {
+  if (!db || !applicantUid) return [];
+  const q = query(
+    collectionGroup(db, APPS_SUBCOLLECTION),
+    where('applicant_uid', '==', applicantUid),
+    orderBy('created_at', 'desc'),
+    limit(maxResults),
   );
   const snap = await getDocs(q);
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }));

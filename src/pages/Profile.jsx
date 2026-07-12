@@ -27,6 +27,7 @@ import { getRatingsForUser, summarizeRatings } from '@/modules/pets/services/rat
 import { exportMyData, downloadDataExport } from '@/core/services/dataExportService';
 import { deleteMyAccount } from '@/core/services/deleteAccountService';
 import PageHero from '@/components/PageHero';
+import MyAdoptionsSection from '@/modules/shelter/components/MyAdoptionsSection';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import { VolunteerProfileForm } from '@/modules/shelter/components/VolunteerProfileForm';
 import {
@@ -562,6 +563,9 @@ export default function Profile() {
           </CardContent>
         </Card>
       )}
+
+      {/* TASK-129: Minhas adoções — histórico cross-abrigo de applications */}
+      <MyAdoptionsSection userUid={user?.uid} />
 
       {/* TASK-242: Minhas voluntariadas (offboarding · LGPD Art. 18 IX).
           Renderiza apenas se a flag `shelter_volunteer_profile_v1` estiver ON.

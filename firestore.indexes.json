@@ -4,342 +4,645 @@
       "collectionGroup": "pets",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "status", "order": "ASCENDING" },
-        { "fieldPath": "created_at", "order": "DESCENDING" }
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "created_at",
+          "order": "DESCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "pets",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "status", "order": "ASCENDING" },
-        { "fieldPath": "species", "order": "ASCENDING" },
-        { "fieldPath": "created_at", "order": "DESCENDING" }
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "species",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "created_at",
+          "order": "DESCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "pets",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "owner_id", "order": "ASCENDING" },
-        { "fieldPath": "created_at", "order": "DESCENDING" }
+        {
+          "fieldPath": "owner_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "created_at",
+          "order": "DESCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "pets",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "shelter_owner_club_id", "order": "ASCENDING" },
-        { "fieldPath": "status", "order": "ASCENDING" },
-        { "fieldPath": "rescue_date", "order": "DESCENDING" }
+        {
+          "fieldPath": "shelter_owner_club_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "rescue_date",
+          "order": "DESCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "pets",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "shelter_owner_club_id", "order": "ASCENDING" },
-        { "fieldPath": "intake_type", "order": "ASCENDING" },
-        { "fieldPath": "rescue_date", "order": "DESCENDING" }
+        {
+          "fieldPath": "shelter_owner_club_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "intake_type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "rescue_date",
+          "order": "DESCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "pets",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "shelter_owner_club_id", "order": "ASCENDING" },
-        { "fieldPath": "asilomar_status", "order": "ASCENDING" }
+        {
+          "fieldPath": "shelter_owner_club_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "asilomar_status",
+          "order": "ASCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "adoption_interests",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "pet_id", "order": "ASCENDING" },
-        { "fieldPath": "created_at", "order": "ASCENDING" }
+        {
+          "fieldPath": "pet_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "created_at",
+          "order": "ASCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "adoption_interests",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "user_id", "order": "ASCENDING" },
-        { "fieldPath": "created_at", "order": "DESCENDING" }
+        {
+          "fieldPath": "user_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "created_at",
+          "order": "DESCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "organization_members",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "org_id", "order": "ASCENDING" },
-        { "fieldPath": "joined_at", "order": "ASCENDING" }
+        {
+          "fieldPath": "org_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "joined_at",
+          "order": "ASCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "abuse_reports",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "reporter_uid", "order": "ASCENDING" },
-        { "fieldPath": "created_at", "order": "DESCENDING" }
+        {
+          "fieldPath": "reporter_uid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "created_at",
+          "order": "DESCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "notifications",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "user_id", "order": "ASCENDING" },
-        { "fieldPath": "created_at", "order": "DESCENDING" }
+        {
+          "fieldPath": "user_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "created_at",
+          "order": "DESCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "community_posts",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "community_id", "order": "ASCENDING" },
-        { "fieldPath": "created_at", "order": "DESCENDING" }
+        {
+          "fieldPath": "community_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "created_at",
+          "order": "DESCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "community_post_comments",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "post_id", "order": "ASCENDING" },
-        { "fieldPath": "created_at", "order": "ASCENDING" }
+        {
+          "fieldPath": "post_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "created_at",
+          "order": "ASCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "community_forum_threads",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "community_id", "order": "ASCENDING" },
-        { "fieldPath": "updated_at", "order": "DESCENDING" }
+        {
+          "fieldPath": "community_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "updated_at",
+          "order": "DESCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "community_forum_messages",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "thread_id", "order": "ASCENDING" },
-        { "fieldPath": "created_at", "order": "ASCENDING" }
+        {
+          "fieldPath": "thread_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "created_at",
+          "order": "ASCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "timeline",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "shelter_club_id", "order": "ASCENDING" },
-        { "fieldPath": "event_date", "order": "DESCENDING" }
+        {
+          "fieldPath": "shelter_club_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "event_date",
+          "order": "DESCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "timeline",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "shelter_club_id", "order": "ASCENDING" },
-        { "fieldPath": "type", "order": "ASCENDING" },
-        { "fieldPath": "event_date", "order": "DESCENDING" }
+        {
+          "fieldPath": "shelter_club_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "event_date",
+          "order": "DESCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "adoption_workflow",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "shelter_club_id", "order": "ASCENDING" },
-        { "fieldPath": "status", "order": "ASCENDING" },
-        { "fieldPath": "created_at", "order": "DESCENDING" }
+        {
+          "fieldPath": "shelter_club_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "created_at",
+          "order": "DESCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "adoption_workflow",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "shelter_club_id", "order": "ASCENDING" },
-        { "fieldPath": "pet_id", "order": "ASCENDING" },
-        { "fieldPath": "created_at", "order": "DESCENDING" }
+        {
+          "fieldPath": "shelter_club_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "pet_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "created_at",
+          "order": "DESCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "medical",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "shelter_club_id", "order": "ASCENDING" },
-        { "fieldPath": "exam_date", "order": "DESCENDING" }
+        {
+          "fieldPath": "shelter_club_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "exam_date",
+          "order": "DESCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "medical",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "shelter_club_id", "order": "ASCENDING" },
-        { "fieldPath": "type", "order": "ASCENDING" },
-        { "fieldPath": "exam_date", "order": "DESCENDING" }
+        {
+          "fieldPath": "shelter_club_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "exam_date",
+          "order": "DESCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "medications",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "shelter_club_id", "order": "ASCENDING" },
-        { "fieldPath": "start_date", "order": "DESCENDING" }
+        {
+          "fieldPath": "shelter_club_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "start_date",
+          "order": "DESCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "medications",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "shelter_club_id", "order": "ASCENDING" },
-        { "fieldPath": "status", "order": "ASCENDING" },
-        { "fieldPath": "start_date", "order": "DESCENDING" }
+        {
+          "fieldPath": "shelter_club_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "start_date",
+          "order": "DESCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "pet_photos",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "pet_id", "order": "ASCENDING" },
-        { "fieldPath": "shelter_club_id", "order": "ASCENDING" },
-        { "fieldPath": "created_at", "order": "DESCENDING" }
+        {
+          "fieldPath": "pet_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "shelter_club_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "created_at",
+          "order": "DESCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "pet_photos",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "pet_id", "order": "ASCENDING" },
-        { "fieldPath": "shelter_club_id", "order": "ASCENDING" },
-        { "fieldPath": "category", "order": "ASCENDING" },
-        { "fieldPath": "created_at", "order": "DESCENDING" }
+        {
+          "fieldPath": "pet_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "shelter_club_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "category",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "created_at",
+          "order": "DESCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "pet_photos",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "pet_id", "order": "ASCENDING" },
-        { "fieldPath": "shelter_club_id", "order": "ASCENDING" },
-        { "fieldPath": "deleted_at", "order": "DESCENDING" }
+        {
+          "fieldPath": "pet_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "shelter_club_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "deleted_at",
+          "order": "DESCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "exhibitions",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "status", "order": "ASCENDING" },
-        { "fieldPath": "datetime_start", "order": "DESCENDING" }
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "datetime_start",
+          "order": "DESCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "exhibitions",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "organizer_uid", "order": "ASCENDING" },
-        { "fieldPath": "datetime_start", "order": "DESCENDING" }
+        {
+          "fieldPath": "organizer_uid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "datetime_start",
+          "order": "DESCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "volunteers",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "status", "order": "ASCENDING" },
-        { "fieldPath": "volunteer_name", "order": "ASCENDING" }
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "volunteer_name",
+          "order": "ASCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "volunteer_participations",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "volunteer_uid", "order": "ASCENDING" },
-        { "fieldPath": "event_date", "order": "DESCENDING" }
+        {
+          "fieldPath": "volunteer_uid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "event_date",
+          "order": "DESCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "volunteer_participations",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "exhibition_id", "order": "ASCENDING" },
-        { "fieldPath": "event_date", "order": "DESCENDING" }
+        {
+          "fieldPath": "exhibition_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "event_date",
+          "order": "DESCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "kanban_columns",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "board_id", "order": "ASCENDING" },
-        { "fieldPath": "order", "order": "ASCENDING" }
+        {
+          "fieldPath": "board_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "order",
+          "order": "ASCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "kanban_cards",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "column_id", "order": "ASCENDING" },
-        { "fieldPath": "order", "order": "ASCENDING" }
+        {
+          "fieldPath": "column_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "order",
+          "order": "ASCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "kanban_cards",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "board_id", "order": "ASCENDING" },
-        { "fieldPath": "order", "order": "ASCENDING" }
+        {
+          "fieldPath": "board_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "order",
+          "order": "ASCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "kanban_cards",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "assignees", "arrayConfig": "CONTAINS", "order": "ASCENDING" },
-        { "fieldPath": "order", "order": "ASCENDING" }
+        {
+          "fieldPath": "assignees",
+          "arrayConfig": "CONTAINS",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "order",
+          "order": "ASCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "pets",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "shelter_club_id", "order": "ASCENDING" },
-        { "fieldPath": "status", "order": "ASCENDING" },
-        { "fieldPath": "name", "order": "ASCENDING" }
+        {
+          "fieldPath": "shelter_club_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "name",
+          "order": "ASCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "adoption_interests",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "status", "order": "ASCENDING" },
-        { "fieldPath": "created_at", "order": "DESCENDING" }
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "created_at",
+          "order": "DESCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "clubs",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "directory_status", "order": "ASCENDING" },
-        { "fieldPath": "name", "order": "ASCENDING" }
+        {
+          "fieldPath": "directory_status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "name",
+          "order": "ASCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "volunteer_profiles",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "shelter_club_id", "order": "ASCENDING" },
-        { "fieldPath": "display_name", "order": "ASCENDING" }
+        {
+          "fieldPath": "shelter_club_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "display_name",
+          "order": "ASCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "exhibitions",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "shelter_club_id", "order": "ASCENDING" },
-        { "fieldPath": "status", "order": "ASCENDING" },
-        { "fieldPath": "start_date", "order": "DESCENDING" }
+        {
+          "fieldPath": "shelter_club_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "start_date",
+          "order": "DESCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "community_events",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "community_id", "order": "ASCENDING" },
-        { "fieldPath": "starts_at", "order": "ASCENDING" }
+        {
+          "fieldPath": "community_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "starts_at",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "adoption_workflow",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [
+        {
+          "fieldPath": "applicant_uid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "created_at",
+          "order": "DESCENDING"
+        }
       ]
     }
   ],

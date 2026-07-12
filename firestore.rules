@@ -1651,6 +1651,19 @@ service cloud.firestore {
     // Regras: admin/owner do abrigo. Card assignees podem atualizar
     // SOMENTE o campo status.
 
+    // ─── TASK-129: "Minhas adoções" no perfil ───────────────────────
+    // CollectionGroup query em `adoption_workflow` (cross-abrigo). O
+    // wildcard {path=**} cobre a query de grupo; a leitura é liberada
+    // APENAS para o próprio applicant (a query DEVE filtrar por
+    // applicant_uid == uid, senão as rules negam o resultado inteiro)
+    // ou platform_admin. Escrita continua só pela rota tenant.
+    match /{path=**}/adoption_workflow/{applicationId} {
+      allow read: if isAuth() && (
+        isPlatformAdmin() ||
+        resource.data.applicant_uid == request.auth.uid
+      );
+    }
+
     match /clubs/{clubId}/kanban_boards/{boardId} {
       allow read: if shelterCanAccess(clubId);
       allow write: if shelterCanManage(clubId);
