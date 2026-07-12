@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo } from 'react';
+import { concatSafe } from '@/core/lib/concatSafe';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
@@ -81,15 +82,7 @@ const TAB_PERMISSION = {
 // em produção com "G is not a function or its return value is not iterable")
 // quando o array vinha de useMemo com dependência instável.
 function safeTabs(...sources) {
-  const out = [];
-  for (const src of sources) {
-    if (Array.isArray(src)) {
-      for (const t of src) {
-        if (t && typeof t === 'object' && t.key) out.push(t);
-      }
-    }
-  }
-  return out;
+  return concatSafe(...sources).filter((t) => t && typeof t === 'object' && t.key);
 }
 
 // ErrorBoundary local para isolar falhas de uma aba sem derrubar o painel
