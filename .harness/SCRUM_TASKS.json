@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-12T01:02:12.364Z",
+  "generatedAt": "2026-07-12T01:08:00.709Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -14,11 +14,11 @@
     {
       "id": "fix-autosync-race",
       "branch": "fix/autosync-race",
-      "head": "882d47dc02bd226358066a21ef24ba2017b975ee",
-      "headTitle": "feat(harness+scrum): TASK-261 in_progress + TASK-372..375 (scrum.cjs migration, autosync race fix)",
+      "head": "79d30818dd6fcef727a8f5e1a530427ddfa53e4c",
+      "headTitle": "chore(infra+harness): TASK-372 done (proper-lockfile devDep) + TASK-376 ready (legal docs migration)",
       "path": "D:/viralata/.worktrees/fix-autosync-race",
       "status": "ahead-of-main",
-      "commitsAhead": 3,
+      "commitsAhead": 4,
       "commitsBehind": 7,
       "primarySession": null,
       "sessionTitle": null,
@@ -28,10 +28,10 @@
       "id": "seed-mock-data",
       "branch": "feat/seed-mock-data",
       "head": "03f6a5c2f8444cf55dd46712d48769509263e435",
-      "headTitle": "feat(harness+scrum): TASK-261 in_progress + TASK-372..375 (scrum.cjs migration, autosync race fix)",
+      "headTitle": "chore(infra+harness): TASK-372 done (proper-lockfile devDep) + TASK-376 ready (legal docs migration)",
       "path": "D:/viralata/.worktrees/seed-mock-data",
       "status": "ahead-of-main",
-      "commitsAhead": 3,
+      "commitsAhead": 4,
       "commitsBehind": 7,
       "primarySession": null,
       "sessionTitle": null,
@@ -41,10 +41,10 @@
       "id": "wt-17ff480a",
       "branch": "wt/17ff480a",
       "head": "d0bb369efb7b9546e954dde47e5f40596d01ca93",
-      "headTitle": "feat(harness+scrum): TASK-261 in_progress + TASK-372..375 (scrum.cjs migration, autosync race fix)",
+      "headTitle": "chore(infra+harness): TASK-372 done (proper-lockfile devDep) + TASK-376 ready (legal docs migration)",
       "path": "D:/viralata/.worktrees/wt-17ff480a",
       "status": "ahead-of-main",
-      "commitsAhead": 3,
+      "commitsAhead": 4,
       "commitsBehind": 7,
       "primarySession": "mvs_44f2762343f94f28b506f2f4c8c12eae",
       "sessionTitle": "Sync local repo with web",
@@ -59,10 +59,10 @@
       "id": "wt-auto-import",
       "branch": "feat/harness-auto-import",
       "head": "a6445ed1ea4835a41ddab2fac375595637857b75",
-      "headTitle": "feat(harness+scrum): TASK-261 in_progress + TASK-372..375 (scrum.cjs migration, autosync race fix)",
+      "headTitle": "chore(infra+harness): TASK-372 done (proper-lockfile devDep) + TASK-376 ready (legal docs migration)",
       "path": "D:/viralata/.worktrees/wt-auto-import",
       "status": "ahead-of-main",
-      "commitsAhead": 3,
+      "commitsAhead": 4,
       "commitsBehind": 7,
       "primarySession": null,
       "sessionTitle": null,
@@ -71,11 +71,11 @@
     {
       "id": "wt-e79e15ca",
       "branch": "wt/e79e15ca",
-      "head": "b8780928435c1b3235abab435f7631d0f2fd500e",
-      "headTitle": "feat(harness+scrum): TASK-261 in_progress + TASK-372..375 (scrum.cjs migration, autosync race fix)",
+      "head": "25146f220b4d384f0fed69440c7055d379d1668c",
+      "headTitle": "chore(infra+harness): TASK-372 done (proper-lockfile devDep) + TASK-376 ready (legal docs migration)",
       "path": "D:/viralata/.worktrees/wt-e79e15ca",
       "status": "ahead-of-main",
-      "commitsAhead": 3,
+      "commitsAhead": 4,
       "commitsBehind": 7,
       "primarySession": null,
       "sessionTitle": null,
@@ -85,10 +85,10 @@
       "id": "wt-legal-v2",
       "branch": "feat/legal-docs-v2",
       "head": "ce916dfa9afa1f04a7fe20704ddd45f2524e6555",
-      "headTitle": "feat(harness+scrum): TASK-261 in_progress + TASK-372..375 (scrum.cjs migration, autosync race fix)",
+      "headTitle": "chore(infra+harness): TASK-372 done (proper-lockfile devDep) + TASK-376 ready (legal docs migration)",
       "path": "D:/viralata/.worktrees/wt-legal-v2",
       "status": "ahead-of-main",
-      "commitsAhead": 3,
+      "commitsAhead": 4,
       "commitsBehind": 7,
       "primarySession": "mvs_311d078987d0414a90f57ef28b789b18",
       "sessionTitle": "Legal docs v2 + bug fix org panel + varredura completa",
@@ -106,10 +106,10 @@
       "id": "wt-volunteer-critical",
       "branch": "feat/volunteer-critical-fixes",
       "head": "9f495f56dc9384fee6317ecb303a1a2d3011be0a",
-      "headTitle": "feat(harness+scrum): TASK-261 in_progress + TASK-372..375 (scrum.cjs migration, autosync race fix)",
+      "headTitle": "chore(infra+harness): TASK-372 done (proper-lockfile devDep) + TASK-376 ready (legal docs migration)",
       "path": "D:/viralata/.worktrees/wt-volunteer-critical",
       "status": "ahead-of-main",
-      "commitsAhead": 3,
+      "commitsAhead": 4,
       "commitsBehind": 7,
       "primarySession": null,
       "sessionTitle": null,
@@ -124,7 +124,7 @@
       "status": "started",
       "workspace": "D:\\viralata\\.worktrees\\wt-e79e15ca",
       "branch": "wt/e79e15ca",
-      "lastActiveAt": "2026-07-12T01:02:12.364Z",
+      "lastActiveAt": "2026-07-12T01:08:00.709Z",
       "deliverable": "wt-e79e15ca @ 67a4c7a (5 commits ahead of main 5da437b). Pacote original: TASK-056/057/058/049/050/051 + TASK-068/069/070/071/072 (defensive coding, single acceptance dialog, safeTabs, TabErrorBoundary) + TASK-073/074 (setup) + TASK-075/076/077 (DELIVERABLE + sync.cjs + protocol §13). NEW: TASK-126/127/128/129 (3 MRs de navigation polish) + TASK-130 (auditoria FAIL pendente)."
     },
     {
@@ -7033,7 +7033,7 @@
         "infra"
       ],
       "blockedBy": [],
-      "evidence": ".harness/SCRUM_TASKS.json + package.json + package-lock.json — proper-lockfile@4.1.2 declared em devDeps (saiu de extraneous), npm install verde, sync.cjs --check 0 issues, proper-lockfile require() OK",
+      "evidence": ".harness/SCRUM_TASKS.json + package.json + package-lock.json — proper-lockfile@4.1.2 declared em devDeps (saiu de extraneous), npm install verde, sync.cjs --check 0 issues, proper-lockfile require() OK | +25146f2",
       "description": "**Origem:** Avaliacao de scrum.cjs (Regra B canonical CLI) em 2026-07-11 22:00.\n\n**Problema:** `proper-lockfile@4.1.2` esta extraneous no npm (nao declarado em devDeps nem dependencies do package.json). Fragil - qualquer npm install --production remove.\n\n**Fix (1 linha):** Adicionar em devDependencies do package.json: `\"proper-lockfile\": \"^4.1.2\"`\n\n**Validacao:**\n- npm install (deve sair de extraneous => dependencies tree)\n- node .harness/scrum.cjs list => deve funcionar (ja funciona, mas vira declaradamente estavel)\n- Smoke test: 2 processos simultaneos fazendo start/done (race test)\n\n**Impacto:** scrum.cjs (TASK-373), autosync race fix (TASK-375), AGENTS.md Regra B (TASK-374).\n\n**Origem coord:** mvs_44f2762343f94f28b506f2f4c8c12eae (wt-auto-import peer) pingou em 2026-07-11 21:58 pedindo assessment de scrum.cjs.",
       "createdAt": "2026-07-11",
       "updatedAt": "2026-07-12",
@@ -7048,6 +7048,17 @@
           "subject": "feat(harness+scrum): TASK-261 in_progress + TASK-372..375 (scrum.cjs migration, autosync race fix)",
           "author": "Mavis",
           "category": "implementation"
+        },
+        {
+          "ts": "2026-07-11 22:07:58 -0300",
+          "type": "commit",
+          "worktree": "fix-autosync-race",
+          "branch": "fix/autosync-race",
+          "commit": "25146f220b4d384f0fed69440c7055d379d1668c",
+          "short": "25146f2",
+          "subject": "chore(infra+harness): TASK-372 done (proper-lockfile devDep) + TASK-376 ready (legal docs migration)",
+          "author": "Mavis",
+          "category": "polish"
         }
       ],
       "startedAt": "2026-07-12",
@@ -7140,11 +7151,11 @@
       "title": "Migrar .tmp-legal-docs/ (13 .md ~70KB) para docs/legal/ canonico",
       "type": "chore",
       "category": "docs",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
-      "owner": "unassigned",
-      "branch": null,
-      "worktree": null,
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "wt/e79e15ca",
+      "worktree": ".worktrees/wt-e79e15ca",
       "flag": null,
       "pr": null,
       "tags": [
@@ -7154,10 +7165,25 @@
         "wt/e79e15ca"
       ],
       "blockedBy": [],
-      "evidence": ".tmp-legal-docs/ contem 13 arquivos .md (~70KB) de termos/condutas/avisos. NAO foram migrados para docs/legal/ (pasta nao existe). Decisao A 2026-07-11: MANTER tmp ate migracao proper.",
+      "evidence": "docs/legal/ criado com 13 .md (~70KB) + README.md indice. .tmp-legal-docs/ removido. sync.cjs --check 0 issues.",
       "description": "**Contexto:** A pasta .tmp-legal-docs/ (13 arquivos .md, ~70KB) contem a documentacao legal da plataforma (termos de uso, politica de privacidade, codigo de conduta, etc.) que foi gerada em um worktree anterior (provavelmente wt-legal-v2). Ate 2026-07-11 22:00, os docs NAO foram migrados para o local canonico docs/legal/ (que ainda nao existe). **Decisao A** (2026-07-11): MANTER .tmp-legal-docs/ ate migracao proper, NAO deletar (decisao logica baseada em evidencia: docs/01_Termos_de_Uso.md NAO existe, mas .tmp-legal-docs/01_Termos_de_Uso.md existe).\n\n**Escopo da migracao:**\n1. Criar docs/legal/ no repo\n2. Mover 13 .md de .tmp-legal-docs/ para docs/legal/ (com renomeacao se necessario)\n3. Adicionar index/README.md listando todos os documentos\n4. Atualizar AGENTS.md (Regra A) referenciando docs/legal/\n5. Adicionar entrada no DELIVERABLE.md (Fase Legal)\n6. Smoke test: links de termo/privacidade no app (footer?) apontam para docs/legal/ correto\n7. Commitar com tag legal-docs para facil rollback\n\n**Origem coord:** Decisao do orquestrador root session (mvs_311d078987d0414a90f57ef28b789b18) em 2026-07-11 22:00.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-11",
+      "history": [
+        {
+          "ts": "2026-07-11 22:07:58 -0300",
+          "type": "commit",
+          "worktree": "fix-autosync-race",
+          "branch": "fix/autosync-race",
+          "commit": "25146f220b4d384f0fed69440c7055d379d1668c",
+          "short": "25146f2",
+          "subject": "chore(infra+harness): TASK-372 done (proper-lockfile devDep) + TASK-376 ready (legal docs migration)",
+          "author": "Mavis",
+          "category": "polish"
+        }
+      ],
+      "startedAt": "2026-07-11",
+      "resolvedAt": "2026-07-11"
     }
   ],
   "definitionOfDone": [
@@ -7381,11 +7407,11 @@
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
     "lastIngest": {
-      "ts": "2026-07-12T01:02:12.364Z",
-      "taskHits": 28,
+      "ts": "2026-07-12T01:08:00.709Z",
+      "taskHits": 42,
       "riskHits": 0,
       "mrHits": 0,
-      "commitsScanned": 21
+      "commitsScanned": 28
     },
     "semanticEvents": [
       {
