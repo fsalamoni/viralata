@@ -35,6 +35,12 @@ import {
   useDeleteReceipt,
 } from '../hooks/useClubDonations';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
+import { Checkbox } from '@/components/ui/checkbox';
+import { createAuditLog } from '@/core/services/auditService';
+import {
+  DONATION_TERMS_VERSION,
+  DONATION_TERMS_SHORT_LABEL,
+} from '@/modules/shelter/domain/legal/donationTerms';
 import { uploadImage } from '@/core/services/storageService';
 import { CAMPAIGN_STATUS, RECEIPT_STATUS, RECEIPT_STATUS_LABELS, ORG_DONATION_LIMITS } from '../domain/constants';
 import { confirmDialog } from '@/components/ui/confirm-provider';
@@ -447,15 +453,19 @@ function AddFundsDialog({ donation, onOpenChange, amount, setAmount }) {
 /* ============================== Diálogo de enviar comprovante ============================== */
 
 function ReceiptDialog({ open, onOpenChange, donation }) {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const createReceipt = useCreateReceipt(donation?.id);
   const fileInputRef = useRef(null);
   const [form, setForm] = useState(EMPTY_RECEIPT);
   const [uploading, setUploading] = useState(false);
   const [sending, setSending] = useState(false);
+  // TASK-097: clickwrap da Política de Doações Financeiras. O envio do
+  // comprovante é o momento de confirmação da doação na plataforma —
+  // exige aceite explícito (LGPD Art. 8º §1º + Lei 14.063/2020).
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   React.useEffect(() => {
-    if (open) setForm(EMPTY_RECEIPT);
+    if (open) { setForm(EMPTY_RECEIPT); setTermsAccepted(false); }
   }, [open]);
 
   const handleFile = async (e) => {
@@ -489,9 +499,27 @@ function ReceiptDialog({ open, onOpenChange, donation }) {
       toast.error('Anexe o comprovante antes de enviar.');
       return;
     }
+    if (!termsAccepted) {
+      toast.error('É necessário aceitar a Política de Doações Financeiras.');
+      return;
+    }
     setSending(true);
     try {
-      await createReceipt.mutateAsync(form);
+      await createReceipt.mutateAsync({
+        ...form,
+        donation_terms_version: DONATION_TERMS_VERSION,
+        donation_terms_accepted_at: new Date().toISOString(),
+      });
+      await createAuditLog({
+        action: 'donation_terms_accepted',
+        actor: { uid: user?.uid, email: user?.email },
+        details: {
+          club_id: donation?.club_id || null,
+          donation_id: donation?.id || null,
+          terms_version: DONATION_TERMS_VERSION,
+          terms_label: DONATION_TERMS_SHORT_LABEL,
+        },
+      }).catch(() => {});
       toast.success('Comprovante enviado. A ONG irá analisar.');
       onOpenChange(false);
     } catch (err) {
@@ -563,9 +591,29 @@ function ReceiptDialog({ open, onOpenChange, donation }) {
                 placeholder="Ex.: 'Doação feita em nome da família Silva'"
               />
             </div>
+            {/* TASK-097: clickwrap Política de Doações Financeiras */}
+            <div className="space-y-2 rounded-lg border border-border bg-secondary/20 p-3">
+              <div className="flex items-start gap-2">
+                <Checkbox
+                  id="r_terms"
+                  checked={termsAccepted}
+                  onCheckedChange={(v) => setTermsAccepted(v === true)}
+                  className="mt-0.5"
+                />
+                <Label htmlFor="r_terms" className="text-xs font-normal leading-snug text-muted-foreground">
+                  Li e aceito a{' '}
+                  <a href="/legal/politica-de-doacoes" target="_blank" rel="noreferrer" className="underline text-primary">
+                    Política de Doações Financeiras
+                  </a>{' '}
+                  (versão {DONATION_TERMS_VERSION}). Estou ciente de que a doação tem
+                  natureza filantrópica e é <strong>irreversível</strong>, e de que pode
+                  haver incidência de ITCMD conforme a legislação do meu estado.
+                </Label>
+              </div>
+            </div>
             <DialogFooter>
               <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>Cancelar</Button>
-              <Button type="submit" disabled={sending || uploading || !form.file_url}>
+              <Button type="submit" disabled={sending || uploading || !form.file_url || !termsAccepted}>
                 {sending ? 'Enviando…' : 'Enviar comprovante'}
               </Button>
             </DialogFooter>
