@@ -43,6 +43,11 @@ vi.mock('@/core/services/auditService', () => ({
   createAuditLog: (...args) => mockCreateAuditLog(...args),
 }));
 
+const mockRecordAcceptance = vi.fn().mockResolvedValue({ id: 'acc-1' });
+vi.mock('@/modules/shelter/services/termsAcceptanceService', () => ({
+  recordAcceptance: (...args) => mockRecordAcceptance(...args),
+}));
+
 const mockCreateAuditLog = vi.fn().mockResolvedValue(null);
 
 const {
@@ -85,6 +90,7 @@ beforeEach(() => {
   mockUpdateDoc.mockReset();
   mockDeleteDoc.mockReset();
   mockCreateAuditLog.mockReset().mockResolvedValue(null);
+  mockRecordAcceptance.mockReset().mockResolvedValue({ id: 'acc-1' });
 });
 
 function snap(data, id = 'main') {
@@ -372,7 +378,7 @@ describe('upsertVolunteerProfile', () => {
 // ════════════════════════════════════════════════════════════════════
 
 describe('acceptVolunteerTerms', () => {
-  it('grava terms_accepted_at + version', async () => {
+  it('grava terms_accepted_at + version + document_hash (sha256)', async () => {
     mockGetDoc.mockResolvedValueOnce(missingSnap());
     const result = await acceptVolunteerTerms(
       'u-1',
@@ -382,7 +388,49 @@ describe('acceptVolunteerTerms', () => {
     expect(mockSetDoc).toHaveBeenCalled();
     expect(result.terms_version).toBe(VOLUNTEER_TERMS_VERSION);
     expect(result.terms_accepted_at).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+    // SHA-256 hex = 64 chars; prefixado com "sha256:" (Lei 14.063/2020).
+    expect(result.document_hash).toMatch(/^sha256:[a-f0-9]{64}$/);
   });
+
+  it('usa SHA-256 (não djb2) para o document_hash', async () => {
+    mockGetDoc.mockResolvedValueOnce(missingSnap());
+    const result = await acceptVolunteerTerms(
+      'u-1',
+      { terms_version: VOLUNTEER_TERMS_VERSION, signature_text: 'Maria Silva' },
+      { uid: 'u-1' },
+    );
+    // djb2 antigo produzia "sig_<hex_curto>". SHA-256 produz "sha256:<64 hex>".
+    expect(result.document_hash.startsWith('sig_')).toBe(false);
+    expect(result.document_hash.startsWith('sha256:')).toBe(true);
+  });
+
+  it('registra aceite canônico via termsAcceptanceService.recordAcceptance', async () => {
+    mockGetDoc.mockResolvedValueOnce(missingSnap());
+    const result = await acceptVolunteerTerms(
+      'u-1',
+      {
+        terms_version: VOLUNTEER_TERMS_VERSION,
+        signature_text: 'Maria Silva',
+        ip_address: '127.0.0.1',
+        user_agent: 'vitest',
+        liveness_verified: true,
+      },
+      { uid: 'u-1' },
+    );
+    expect(mockRecordAcceptance).toHaveBeenCalledTimes(1);
+    const [calledUid, calledInput] = mockRecordAcceptance.mock.calls[0];
+    expect(calledUid).toBe('u-1');
+    expect(calledInput.terms_type).toBe('volunteer');
+    expect(calledInput.terms_version).toBe(VOLUNTEER_TERMS_VERSION);
+    expect(calledInput.signature_text).toBe('Maria Silva');
+    expect(calledInput.document_hash).toBe(result.document_hash);
+    expect(calledInput.document_hash).toMatch(/^sha256:[a-f0-9]{64}$/);
+    expect(calledInput.ip_address).toBe('127.0.0.1');
+    expect(calledInput.user_agent).toBe('vitest');
+    expect(calledInput.liveness_verified).toBe(true);
+    expect(calledInput.legal_basis).toMatch(/LGPD/);
+  });
+
   it('rejeita versão errada do termo', async () => {
     await expect(
       acceptVolunteerTerms(

@@ -30,6 +30,11 @@ import {
   assertValidBgCheckTransition,
 } from '@/modules/shelter/domain/operational/volunteerProfile';
 import { VOLUNTEER_TERMS_VERSION } from '@/modules/shelter/domain/legal/volunteerTerms';
+import {
+  computeDocumentHash,
+  TERMS_TYPE,
+} from '@/modules/shelter/domain/legal/terms';
+import { recordAcceptance } from '@/modules/shelter/services/termsAcceptanceService';
 
 const USERS_COLLECTION = 'users';
 const VOLUNTEER_PROFILE_SUBCOLLECTION = 'volunteer_profile';
@@ -109,9 +114,25 @@ export async function upsertVolunteerProfile(uid, input, actor) {
  * Grava o aceite do termo de voluntariado. Idempotente: se a versão
  * já foi aceita, apenas atualiza o timestamp.
  *
+ * Conformidade: Lei 14.063/2020 (assinatura eletrônica avançada).
+ *
+ *  1. Computa `document_hash` = SHA-256(`signature_text` + terms_version + accepted_at)
+ *     via `computeDocumentHash` (canônico, browser/node compatível).
+ *  2. Persiste o aceite em `users/{uid}/volunteer_profile/main` (cópia
+ *     desnormalizada para queries simples).
+ *  3. Registra o aceite canônico em `users/{uid}/terms_acceptances/{id}`
+ *     via `termsAcceptanceService.recordAcceptance` (prova legal
+ *     imutável, com `document_hash` + `ip_address` + `user_agent` +
+ *     `liveness_verified` + `legal_basis`).
+ *  4. Audit log com o hash do documento (não o nome em claro — LGPD).
+ *
+ * O Cloud Function `recomputeAcceptanceHash` (ver
+ * `functions/recomputeAcceptanceHash.js`) recomputa o hash
+ * server-side ao final pra detectar adulteração do payload client.
+ *
  * @param {string} uid
- * @param {object} acceptance - {terms_version, signature_text}
- * @param {object} actor - {uid} deve == uid
+ * @param {object} acceptance - {terms_version, signature_text, liveness_verified?, ip_address?, user_agent?, legal_basis?}
+ * @param {object} actor - {uid, displayName?} deve == uid
  */
 export async function acceptVolunteerTerms(uid, acceptance, actor) {
   if (!db) throw new Error('Firebase não disponível');
@@ -123,6 +144,12 @@ export async function acceptVolunteerTerms(uid, acceptance, actor) {
   const parsed = acceptVolunteerTermsSchema.parse(acceptance);
   const now = new Date().toISOString();
 
+  // Hash canônico SHA-256 (Lei 14.063/2020). Combina signature +
+  // versão + timestamp para tornar o hash único por aceite.
+  const document_hash = await computeDocumentHash(
+    `${parsed.signature_text}|${parsed.terms_version}|${now}`,
+  );
+
   const ref = volunteerProfileRef(uid);
   const current = await getDoc(ref);
   const prev = current.exists() ? current.data() : null;
@@ -130,6 +157,7 @@ export async function acceptVolunteerTerms(uid, acceptance, actor) {
   const update = {
     terms_accepted_at: now,
     terms_version: parsed.terms_version,
+    document_hash,
     updated_at: serverTimestamp(),
   };
   if (!current.exists()) {
@@ -138,13 +166,35 @@ export async function acceptVolunteerTerms(uid, acceptance, actor) {
 
   await setDoc(ref, update, { merge: true });
 
+  // Grava o aceite canônico imutável em users/{uid}/terms_acceptances/
+  // (Firestore rules: update bloqueado após criação).
+  await recordAcceptance(
+    uid,
+    {
+      terms_type: TERMS_TYPE.VOLUNTEER,
+      terms_version: parsed.terms_version,
+      document_hash,
+      signature_text: parsed.signature_text,
+      ip_address: acceptance.ip_address || 'unknown',
+      user_agent: acceptance.user_agent || '',
+      liveness_verified: Boolean(acceptance.liveness_verified),
+      legal_basis: acceptance.legal_basis || 'execução de contrato de voluntário (LGPD Art. 7º V)',
+    },
+    actor,
+  ).catch((err) => {
+    logger.warn('volunteerProfileService.acceptVolunteerTerms', {
+      msg: 'recordAcceptance failed (non-blocking — perfil atualizado)',
+      err: String(err),
+    });
+  });
+
   await createAuditLog({
     action: 'volunteer_terms_accepted',
     actor,
     details: {
       uid,
       terms_version: parsed.terms_version,
-      signature_text_hash: hashString(parsed.signature_text),
+      document_hash,
     },
   }).catch((err) => {
     logger.warn('volunteerProfileService.acceptVolunteerTerms', {
@@ -157,21 +207,9 @@ export async function acceptVolunteerTerms(uid, acceptance, actor) {
     id: VOLUNTEER_PROFILE_DOC_ID,
     terms_accepted_at: now,
     terms_version: parsed.terms_version,
+    document_hash,
     prev_terms_version: prev?.terms_version || null,
   };
-}
-
-/**
- * Hash simples (não-criptográfico) da assinatura para o audit log.
- * Não armazena o nome em claro no log (LGPD — minimização).
- */
-function hashString(s) {
-  let h = 0;
-  for (let i = 0; i < s.length; i++) {
-    h = ((h << 5) - h) + s.charCodeAt(i);
-    h |= 0;
-  }
-  return `sig_${Math.abs(h).toString(16)}`;
 }
 
 // ════════════════════════════════════════════════════════════════════

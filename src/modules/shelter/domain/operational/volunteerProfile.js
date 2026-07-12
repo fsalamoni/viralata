@@ -13,6 +13,7 @@
 
 import { z } from 'zod';
 import { VOLUNTEER_TERMS_VERSION } from '@/modules/shelter/domain/legal/volunteerTerms';
+import { signatureTextSchema } from '@/modules/shelter/domain/legal/terms';
 
 // ─── Enums compartilhados ─────────────────────────────────────────────
 
@@ -163,13 +164,28 @@ export const upsertVolunteerProfileSchema = z.object({
 /**
  * Schema do aceite do termo. Chamado uma vez (no primeiro create do
  * perfil ou quando o usuário quer re-aceitar uma nova versão).
+ *
+ * Conformidade: Lei 14.063/2020 — assinatura eletrônica avançada.
+ * O `signature_text` é a fonte primária do hash do documento (ver
+ * `volunteerProfileService.acceptVolunteerTerms` + `termsAcceptanceService.recordAcceptance`).
+ * O `terms_version` deve bater com a versão canônica (drift-fix: v2
+ * tem sufixo `-v2` para distinguir do stub v1).
+ *
+ * Campos opcionais `ip_address`, `user_agent`, `liveness_verified` e
+ * `legal_basis` são metadados de contexto Lei 14.063/2020 — propagados
+ * ao aceite canônico em `terms_acceptances/`. Não são estritamente
+ * obrigatórios no client (defaults aplicados no service).
  */
 export const acceptVolunteerTermsSchema = z.object({
-  terms_version: z.string().min(1).max(20)
+  terms_version: z.string().min(1).max(30)
     .refine((v) => v === VOLUNTEER_TERMS_VERSION, {
       message: `Apenas a versão ${VOLUNTEER_TERMS_VERSION} do termo é aceita neste momento`,
     }),
-  signature_text: z.string().min(2).max(120), // nome digitado (substitui e-assinatura da Fase 18)
+  signature_text: signatureTextSchema,
+  ip_address: z.string().max(64).optional(),
+  user_agent: z.string().max(500).optional(),
+  liveness_verified: z.boolean().optional(),
+  legal_basis: z.string().max(120).optional(),
 }).strict();
 
 /**
@@ -216,11 +232,11 @@ export const joinShelterAsVolunteerSchema = z.object({
   volunteer_photo_url: z.string().url().optional(),
   // Aceite do termo (obrigatório). Defense-in-depth: a versão deve
   // ser a atualmente aceita (mesma checagem do `acceptVolunteerTermsSchema`).
-  terms_version: z.string().min(1).max(20)
+  terms_version: z.string().min(1).max(30)
     .refine((v) => v === VOLUNTEER_TERMS_VERSION, {
       message: `Apenas a versão ${VOLUNTEER_TERMS_VERSION} do termo é aceita neste momento`,
     }),
-  signature_text: z.string().min(2).max(120),
+  signature_text: signatureTextSchema,
 }).strict();
 
 /**

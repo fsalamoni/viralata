@@ -73,6 +73,10 @@ export const AUDIT_ACTION_LABELS = {
   platform_alert_config_deleted: 'Configuração de alerta removida',
   platform_alert_triggered: 'Alerta da plataforma disparado',
   platform_billing_summary_updated: 'Resumo de billing da plataforma atualizado',
+  // ─── LGPD Art. 18 VI: cascade-anonymize de dados de voluntário ────
+  // Disparado por deleteAccountService ao excluir conta. Mantém
+  // terms_accepted_at/terms_version (Lei 14.063/2020) e remove demais PII.
+  volunteer_data_anonymized: 'Dados de voluntário anonimizados (LGPD)',
 };
 
 export async function createAuditLog({
