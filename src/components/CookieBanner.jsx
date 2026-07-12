@@ -24,6 +24,8 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
+import { useAuth } from '@/core/lib/FirebaseAuthContext';
+import { createAuditLog } from '@/core/services/auditService';
 import { FEATURE_FLAG } from '@/core/featureFlags';
 import {
   CONSENT_VERSION,
@@ -71,6 +73,7 @@ function clearStoredConsent() {
  */
 export function CookieBanner() {
   const enabled = useFeatureFlag(FEATURE_FLAG.SHELTER_LEGAL_TERMS_V1);
+  const { user } = useAuth();
   const [visible, setVisible] = useState(false);
   const [hydrated, setHydrated] = useState(false);
 
@@ -87,17 +90,29 @@ export function CookieBanner() {
     return undefined;
   }, [enabled]);
 
-  const handleAccept = useCallback(() => {
-    const record = buildConsentRecord(true, typeof navigator !== 'undefined' ? navigator.userAgent : null);
+  // TASK-106: além do localStorage (persistência local, vale para
+  // anônimos), grava trilha em audit_log quando há usuário logado —
+  // prova de consentimento LGPD Art. 8º §2º. Best-effort: falha de
+  // rede não bloqueia a decisão do usuário.
+  const persistDecision = useCallback((accepted) => {
+    const record = buildConsentRecord(accepted, typeof navigator !== 'undefined' ? navigator.userAgent : null);
     writeStoredConsent(record);
     setVisible(false);
-  }, []);
+    if (user?.uid) {
+      createAuditLog({
+        action: 'cookie_consent_recorded',
+        actor: { uid: user.uid, email: user.email },
+        details: {
+          consent: record.consent,
+          version: record.version,
+          categories: record.categories,
+        },
+      }).catch(() => {});
+    }
+  }, [user]);
 
-  const handleReject = useCallback(() => {
-    const record = buildConsentRecord(false, typeof navigator !== 'undefined' ? navigator.userAgent : null);
-    writeStoredConsent(record);
-    setVisible(false);
-  }, []);
+  const handleAccept = useCallback(() => persistDecision(true), [persistDecision]);
+  const handleReject = useCallback(() => persistDecision(false), [persistDecision]);
 
   // API helper para "Configurações > Privacidade" — exposto em
   // window para que outras UIs possam reabrir o banner.
