@@ -5,7 +5,8 @@ import {
 } from 'recharts';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { fetchMetricsData, groupByMonth, groupByField } from '../services/metricsService';
+import { Button } from '@/components/ui/button';
+import { fetchMetricsData, groupByMonth, groupByDay, groupByField } from '../services/metricsService';
 import PageHero from '@/components/PageHero';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 
@@ -13,6 +14,8 @@ export default function AdminMetrics() {
   const { isPlatformAdmin } = useAuth();
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState({ pets: [], users: [], reports: [] });
+  // TASK-172: janela temporal dos gráficos (30/90/365 dias).
+  const [rangeDays, setRangeDays] = useState(365);
 
   useEffect(() => {
     if (!isPlatformAdmin) return;
@@ -26,9 +29,13 @@ export default function AdminMetrics() {
   if (!isPlatformAdmin) return null;
   if (loading) return <div className={loadingClass}>Carregando métricas...</div>;
 
-  const adoptionsByMonth = groupByMonth(data.pets.filter((p) => p.status === 'adopted'), 'adopted_at');
-  const usersByMonth = groupByMonth(data.users, 'created_at');
-  const reportsByMonth = groupByMonth(data.reports, 'created_at');
+  // 30/90 dias → agregação diária; 365 dias → mensal (12 buckets).
+  const groupSeries = (docs, field) => (rangeDays === 365
+    ? groupByMonth(docs, field, 12)
+    : groupByDay(docs, field, rangeDays));
+  const adoptionsByMonth = groupSeries(data.pets.filter((p) => p.status === 'adopted'), 'adopted_at');
+  const usersByMonth = groupSeries(data.users, 'created_at');
+  const reportsByMonth = groupSeries(data.reports, 'created_at');
   const petsByState = groupByField(data.pets, 'state');
 
   return (
@@ -38,6 +45,20 @@ export default function AdminMetrics() {
         title="Métricas da Plataforma"
         description="Visão geral do crescimento: pets cadastrados, adoções concluídas, usuários e denúncias. Cada card abre o detalhe."
       />
+
+      {/* TASK-172: seletor de janela temporal */}
+      <div className="flex justify-end gap-2">
+        {[[30, '30 dias'], [90, '90 dias'], [365, '12 meses']].map(([days, label]) => (
+          <Button
+            key={days}
+            size="sm"
+            variant={rangeDays === days ? 'default' : 'outline'}
+            onClick={() => setRangeDays(days)}
+          >
+            {label}
+          </Button>
+        ))}
+      </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <SummaryCard label="Pets cadastrados" value={data.pets.length} />
