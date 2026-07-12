@@ -16,7 +16,7 @@
  */
 
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   HeartHandshake, ScrollText, ClipboardList, Building2, CheckCircle2,
   ChevronRight, ChevronLeft, ShieldCheck, AlertCircle, Loader2,
@@ -226,7 +226,11 @@ export default function VolunteerSignup() {
   const [signatureText, setSignatureText] = useState('');
   const [scrolledToEnd, setScrolledToEnd] = useState(false);
   const [accepted, setAccepted] = useState(false);
-  const [selectedShelter, setSelectedShelter] = useState(null);
+  // TASK-205: ?abrigo=<clubId> pré-seleciona o abrigo (CTA vindo da
+  // página pública do abrigo). Validado contra a lista de clubs abaixo.
+  const [searchParams] = useSearchParams();
+  const preselectedShelter = searchParams.get('abrigo');
+  const [selectedShelter, setSelectedShelter] = useState(preselectedShelter || null);
   const [captchaToken, setCaptchaToken] = useState(null);
 
   const { data: profile, isLoading: isProfileLoading } = useVolunteerProfile(
