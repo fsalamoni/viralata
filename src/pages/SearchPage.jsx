@@ -13,6 +13,7 @@
  */
 
 import { useMemo, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { Search, Building2, PawPrint } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
@@ -59,7 +60,10 @@ function ResultCard({ result }) {
 export default function SearchPage() {
   const wrapperClass = useArenaPageClasses('arena-page mx-auto w-full max-w-3xl px-4 py-6 sm:px-6');
   const enabled = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_SMART_SEARCH);
-  const [query, setQuery] = useState('');
+  // TASK-083: o CommandPalette navega para /busca passando o texto
+  // digitado em location.state.q — usado como query inicial.
+  const location = useLocation();
+  const [query, setQuery] = useState(location.state?.q || '');
   const [selectedShelter, setSelectedShelter] = useState(null); // {id, title}
 
   const filters = useMemo(() => {
@@ -99,6 +103,7 @@ export default function SearchPage() {
         <>
           <div className="flex items-center gap-2">
             <SmartSearchBar
+              initialValue={query}
               onSearch={setQuery}
               placeholder={selectedShelter ? 'Buscar animais neste abrigo…' : 'Buscar abrigos…'}
               autoFocus

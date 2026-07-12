@@ -6,6 +6,7 @@ import { FeatureFlagsProvider } from '@/core/lib/FeatureFlagsContext';
 import { ConfirmProvider } from '@/components/ui/confirm-provider';
 import Layout from '@/components/Layout';
 import { CookieBanner } from '@/components/CookieBanner';
+import CommandPalette from '@/components/CommandPalette';
 import { Toaster } from '@/components/ui/sonner';
 import { recordPageView } from '@/core/services/observabilityService';
 
@@ -177,6 +178,8 @@ export default function App() {
           <ConfirmProvider>
           <BrowserRouter basename={import.meta.env.BASE_URL}>
             <RouteTelemetry />
+            {/* TASK-083: paleta global Cmd+K (flag shelter_smart_search) */}
+            <CommandPalette />
             {/* Banner global de cookies — renderizado no nível mais
                 externo possível para cobrir todas as rotas. Gated por
                 feature flag dentro do componente. */}
