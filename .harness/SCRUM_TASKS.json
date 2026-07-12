@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-12T02:41:51.436Z",
+  "generatedAt": "2026-07-12T02:42:21.828Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -5659,9 +5659,9 @@
       "title": "Auditar useDeleteCommunity — garantir entrada em audit_log (gap Regra A Eixo 3)",
       "type": "chore",
       "category": "community",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
-      "owner": "unassigned",
+      "owner": "claude_yxo02k",
       "branch": "wt/17ff480a",
       "flag": null,
       "worktree": ".worktrees/wt-17ff480a",
@@ -5678,10 +5678,11 @@
         "TASK-196",
         "TASK-211"
       ],
-      "evidence": "COVERAGE_AUDIT.md Eixo 3 — auditoria explícita de exclusão de comunidade; src/modules/communities/hooks/useCommunities.js",
+      "evidence": "Auditoria confirmou gap já fechado — src/modules/communities/hooks/useCommunities.js:52-56 (passa user como actor) → communityService.js:127 createAuditLog(community_deleted, detached_clubs) + label em auditService.js:52",
       "description": "BLOCO INDEPENDENTE. Confirmar se useDeleteCommunity (hook em useCommunities.js) chama auditService.log com action=community.delete incluindo user_id, document_version, ip_address, timestamp, user_agent. Marco Civil Art. 15 = 6 meses retenção do log. Se faltar, adicionar createAuditLog. Regra A §1.3 (auditoria).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-198",
@@ -7045,11 +7046,11 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 254,
-    "done": 53,
+    "done": 54,
     "inProgress": 2,
     "inReview": 15,
     "blocked": 0,
-    "ready": 168,
+    "ready": 167,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
