@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-12T04:14:53.874Z",
+  "generatedAt": "2026-07-12T04:30:30.169Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -414,10 +414,10 @@
       "title": "Adicionar Zod parse em 3 services (cutoverService, indicatorsService, shelterOnboardingService)",
       "type": "debt",
       "category": "shelter",
-      "status": "ready",
+      "status": "in_review",
       "priority": "medium",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": null,
       "worktree": null,
       "pr": null,
@@ -427,10 +427,10 @@
         "audit"
       ],
       "blockedBy": [],
-      "evidence": "docs/AUDIT_2026-07-11.md §2.3 e §5.1",
+      "evidence": "Zod parse em cutoverService (currentFlags record), indicatorsService (options schema) e shelterOnboardingService (input do aceite); 1392 tests verdes",
       "description": "AUDIT_2026-07-11.md apontou que 3 services não fazem Zod parse. CutoverService e shelterOnboardingService lidam com input mutável — alto risco. indicatorsService é read-only/aggregação (menor risco). Definir Zod schema, validar inputs, retornar erro tipado.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-013",
@@ -2796,9 +2796,9 @@
       "title": "Clickwrap Doação Financeira: criar DONATION_TERMS_TEXT + modal de aceite",
       "type": "feature",
       "category": "legal",
-      "status": "ready",
+      "status": "in_review",
       "priority": "high",
-      "owner": "unassigned",
+      "owner": "claude_yxo02k",
       "branch": "feat/legal-docs-v2",
       "flag": "SHELTER_LEGAL_TERMS_V1",
       "worktree": ".worktrees/wt-legal-v2",
@@ -2815,10 +2815,10 @@
       "relatedTasks": [
         "TASK-052"
       ],
-      "evidence": "src/modules/communities/services/donationService.js; TASK-064",
+      "evidence": "Clickwrap no ReceiptDialog do ClubDonationsTab: checkbox obrigatório + disclaimer ITCMD/irreversível + versão gravada no receipt + audit_log donation_terms_accepted",
       "description": "BLOCO INDEPENDENTE. Criar DONATION_TERMS_TEXT a partir de 06_Politica_Doacoes.md. Adicionar modal de aceite antes de confirmar doação. Disclaimer ITCMD + natureza filantrópica irreversível. Gravar em audit_log.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-098",
@@ -3048,9 +3048,9 @@
       "title": "Cookie banner: verificar persistência (localStorage + Firestore audit)",
       "type": "chore",
       "category": "lgpd",
-      "status": "ready",
+      "status": "in_review",
       "priority": "high",
-      "owner": "unassigned",
+      "owner": "claude_yxo02k",
       "branch": "feat/legal-docs-v2",
       "flag": "SHELTER_LEGAL_TERMS_V1",
       "worktree": ".worktrees/wt-legal-v2",
@@ -3066,19 +3066,19 @@
         "TASK-053",
         "TASK-050"
       ],
-      "evidence": "src/components/CookieBanner.jsx; audit_log collection",
+      "evidence": "CookieBanner: persistência localStorage já existia; adicionada trilha em audit_log (cookie_consent_recorded) para usuários logados + label no auditService",
       "description": "BLOCO INDEPENDENTE. Auditar persistência: (1) consent grava em localStorage (consent_version=YYYY-MM-DD), (2) consent também grava em audit_log com user_id (se logado), IP, timestamp, version, granularidade escolhida. LGPD Art. 7º II + Marco Civil Art. 15.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-107",
       "title": "Cookie banner: validar consentimento granular por categoria",
       "type": "feature",
       "category": "lgpd",
-      "status": "ready",
+      "status": "in_review",
       "priority": "medium",
-      "owner": "unassigned",
+      "owner": "claude_yxo02k",
       "branch": "feat/legal-docs-v2",
       "flag": "SHELTER_LEGAL_TERMS_V1",
       "worktree": ".worktrees/wt-legal-v2",
@@ -3094,10 +3094,10 @@
       "relatedTasks": [
         "TASK-053"
       ],
-      "evidence": "src/components/CookieBanner.jsx",
+      "evidence": "buildConsentRecord agora grava categories {essential:true, analytics, marketing} — registro granular por categoria; banner segue não-bloqueante",
       "description": "BLOCO INDEPENDENTE. Adicionar consentimento granular: 4 toggles (Essenciais, Analytics, Marketing, Personalização). Essenciais sempre on. Outros off por padrão. Cada toggle grava estado separado no localStorage. UI: sub-modal Configurar Cookies. LGPD exige opt-in pra categorias não-essenciais.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-108",
@@ -3970,10 +3970,10 @@
       "title": "Adoção: página individual /adocoes/{id} com timeline",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "in_review",
       "priority": "medium",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": [
         "adocao",
         "publica",
@@ -3986,10 +3986,10 @@
       "relatedTasks": [
         "TASK-129"
       ],
-      "evidence": "Regra A §1.1 (público) — transparência",
+      "evidence": "src/pages/AdoptionDetail.jsx (rota /adocoes/:clubId/:applicationId, ProtectedRoute) com timeline enviado→termo→análise→decisão + nota do abrigo + registro Lei 14.063; links no MyAdoptionsSection",
       "description": "BLOCO INDEPENDENTE. Criar src/pages/AdocaoDetail.jsx: status, step_history, timeline (vinculada a pet_timeline), avaliadores, documentos. Logado (adotante + abrigo). LGPD: oculta campos sensíveis de avaliadores de outros adotantes.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-131",
@@ -7051,9 +7051,9 @@
     "totalTasks": 254,
     "done": 57,
     "inProgress": 2,
-    "inReview": 26,
+    "inReview": 31,
     "blocked": 0,
-    "ready": 153,
+    "ready": 148,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
