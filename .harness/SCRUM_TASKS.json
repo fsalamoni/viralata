@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-12T18:41:20.319Z",
+  "generatedAt": "2026-07-12T23:48:18.886Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -4298,10 +4298,10 @@
       "title": "Galeria: galeria pública do abrigo (read-only)",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "in_review",
       "priority": "medium",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": [
         "galeria",
         "publica",
@@ -4312,10 +4312,10 @@
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
-      "evidence": "Regra A §1.1 (público) — fotos do abrigo",
+      "evidence": "Rule pet_photos: read anônimo apenas deleted_at==null e category in [rescue,profile,adoption,exhibition] (health/foster seguem restritas — sem dados clínicos públicos); índice composto shelter+deleted_at+category+created_at; listPublicShelterPhotos; PublicGallerySection (grid + lightbox acessível) na aba Geral do ClubDetail; test/lint/build verdes",
       "description": "BLOCO INDEPENDENTE. Em /abrigos/{id}: galeria pública das fotos (categories: rescue, profile, health). Sem clinical_notes. Sem bot de upload (apenas abrigo pode postar).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-143",
@@ -7139,9 +7139,9 @@
     "totalTasks": 254,
     "done": 117,
     "inProgress": 2,
-    "inReview": 2,
+    "inReview": 3,
     "blocked": 0,
-    "ready": 118,
+    "ready": 117,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
