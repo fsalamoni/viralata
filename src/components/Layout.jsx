@@ -265,6 +265,13 @@ export default function Layout({ children, currentPageName }) {
           })}
         </nav>
       )}
+
+      {/* Rodapé com links legais (TASK-051). Gated por
+          SHELTER_LEGAL_TERMS_V1 — quando OFF, o componente
+          se oculta sozinho. Renderizado depois da bottom tab
+          bar (mobile) para garantir ordem visual
+          [tab bar] [conteúdo] [footer]. */}
+      <LegalFooter />
     </div>
   );
 }

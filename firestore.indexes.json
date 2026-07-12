@@ -690,6 +690,14 @@
           "order": "ASCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "community_events",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "community_id", "order": "ASCENDING" },
+        { "fieldPath": "starts_at", "order": "ASCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []
