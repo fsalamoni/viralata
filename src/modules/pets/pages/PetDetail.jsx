@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import Seo from '@/components/Seo';
 import { useParams, useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
@@ -196,6 +197,11 @@ export default function PetDetail() {
 
   return (
     <div className={wrapperClass}>
+      <Seo
+        title={pet?.name ? `${pet.name} para adoção` : 'Pet para adoção'}
+        description={pet?.description?.slice(0, 160) || 'Conheça este pet disponível para adoção responsável no Viralata.'}
+        image={pet?.photos?.[0]}
+      />
       <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
         <ArrowLeft className="w-4 h-4 mr-1" /> Voltar
       </Button>

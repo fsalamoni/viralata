@@ -13,6 +13,7 @@
  */
 
 import { Link } from 'react-router-dom';
+import Seo from '@/components/Seo';
 import {
   HeartHandshake, ClipboardList, Building2, HelpCircle,
   CalendarCheck, ShieldCheck, ScrollText,
@@ -74,6 +75,7 @@ export default function VolunteerProgram() {
 
   return (
     <div className={wrapperClass}>
+      <Seo title="Seja voluntário" description="Programa de voluntariado do Viralata: ajude abrigos com passeios, transporte, eventos e muito mais." />
       {/* Hero */}
       <PageHero
         eyebrow="Programa de Voluntariado"

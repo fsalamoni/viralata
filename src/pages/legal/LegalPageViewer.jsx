@@ -24,6 +24,7 @@
  */
 
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
+import Seo from '@/components/Seo';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { Copy, Check, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -143,6 +144,7 @@ export default function LegalPageViewer() {
       description={page.description}
       meta={`Versão ${page.version} · Texto integral`}
     >
+      <Seo title={page.title} description={page.description} />
       <LegalSection
         title="Texto integral"
         description="Documento legal completo, na versão vigente. Você pode copiar e arquivar para consulta."

@@ -25,7 +25,8 @@
     "scrum:done": "node .harness/scrum.cjs done",
     "scrum:review": "node .harness/scrum.cjs review",
     "scrum:list": "node .harness/scrum.cjs list",
-    "scrum:show": "node .harness/scrum.cjs show"
+    "scrum:show": "node .harness/scrum.cjs show",
+    "prebuild": "node scripts/generate-sitemap.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
