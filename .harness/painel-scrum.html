@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-12T04:31:19.297Z",
+  "generatedAt": "2026-07-12T04:58:13.535Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -4281,10 +4281,10 @@
       "title": "Adoção: wizard público de \"Quero adotar\" (5 steps)",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "in_review",
       "priority": "critical",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": [
         "adocao",
         "publica",
@@ -4297,20 +4297,20 @@
       "relatedTasks": [
         "TASK-128"
       ],
-      "evidence": "Regra A §1.1 (público) — fluxo de adoção",
+      "evidence": "src/pages/AdoptionWizard.jsx — 5 steps (pet→adotante→questionário→termo clickwrap scroll-to-end+assinatura→confirmação com protocolo); rota /quero-adotar/:petId (ProtectedRoute); CTA no PetDetail para pets de organização; submit via submitAdoptionApplication",
       "description": "BLOCO INDEPENDENTE. Criar src/pages/AdocaoWizard.jsx público (acessível logado). 5 steps: (1) Confirmar pet, (2) Adotante, (3) Questionário comportamental, (4) Termo de adoção (v2 com clickwrap), (5) Confirmação. Submit gera adoption_application + audit_log.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-128",
       "title": "Adoção: substituir buildAdoptionTermsAcceptance por termo v2 (Lei 14.063/2020)",
       "type": "feature",
       "category": "legal",
-      "status": "ready",
+      "status": "in_review",
       "priority": "critical",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": [
         "adocao",
         "clickwrap",
@@ -4324,10 +4324,10 @@
       "relatedTasks": [
         "TASK-209"
       ],
-      "evidence": "Regra A §1.3 (LGPD) — clickwrap formal",
+      "evidence": "buildAdoptionTermsAcceptanceV2 (document_hash SHA-256 via computeDocumentHash) usado no submitAdoptionApplication + audit dedicado adoption_terms_accepted (categoria term_acceptance, retenção 5 anos) com assinatura+hash+versão",
       "description": "BLOCO INDEPENDENTE. Substituir o placeholder buildAdoptionTermsAcceptance em src/modules/pets/services/adoptionService.js pelo termo v2 (05_Termo_Adocao.md) com signature_text + SHA-256 hash. Gravar em audit_log completo.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-129",
@@ -7441,9 +7441,9 @@
     "totalTasks": 254,
     "done": 61,
     "inProgress": 2,
-    "inReview": 31,
+    "inReview": 33,
     "blocked": 0,
-    "ready": 144,
+    "ready": 142,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
