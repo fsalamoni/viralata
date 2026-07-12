@@ -28,6 +28,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, Heart, MapPin, Trash2, Share2, MessageCircle, FileText, Info, ShieldAlert } from 'lucide-react';
 import { toast } from 'sonner';
+import { confirmDialog } from '@/components/ui/confirm-provider';
 
 function useOwnerProfile(ownerId, enabled) {
   return useQuery({
@@ -183,7 +184,7 @@ export default function PetDetail() {
   }
 
   async function handleDelete() {
-    if (!confirm('Tem certeza que deseja remover este pet?')) return;
+    if (!(await confirmDialog({ title: 'Tem certeza que deseja remover este pet?' }))) return;
     try {
       await deletePet.mutateAsync(petId);
       toast.success('Pet removido.');

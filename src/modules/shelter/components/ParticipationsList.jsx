@@ -25,6 +25,7 @@ import {
 } from '@/modules/shelter/hooks/useVolunteerParticipations';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
+import { confirmDialog } from '@/components/ui/confirm-provider';
 
 function formatDate(iso) {
   if (!iso) return '—';
@@ -61,7 +62,7 @@ export function ParticipationsList({
   };
 
   const handleDelete = async (participationId) => {
-    if (!window.confirm('Remover esta participation?')) return;
+    if (!(await confirmDialog({ title: 'Remover esta participation?' }))) return;
     try {
       await deleteMutation.mutateAsync({ participationId, actor });
       toast({ title: 'Participation removida.' });

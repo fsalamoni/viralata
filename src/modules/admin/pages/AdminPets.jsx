@@ -9,6 +9,7 @@ import { Trash2, Eye, CheckCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import PageHero from '@/components/PageHero';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
+import { confirmDialog } from '@/components/ui/confirm-provider';
 
 export default function AdminPets() {
   const { isPlatformAdmin } = useAuth();
@@ -24,7 +25,7 @@ export default function AdminPets() {
   }, [isPlatformAdmin]);
 
   async function handleDelete(petId) {
-    if (!confirm('Remover este pet?')) return;
+    if (!(await confirmDialog({ title: 'Remover este pet?' }))) return;
     await deleteDoc(doc(db, 'pets', petId));
     setPets((p) => p.filter((x) => x.id !== petId));
     toast.success('Pet removido.');

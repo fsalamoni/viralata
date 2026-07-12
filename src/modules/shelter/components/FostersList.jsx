@@ -7,6 +7,7 @@
  * Feature flag: `shelter_foster` (default OFF).
  */
 
+import { confirmDialog } from '@/components/ui/confirm-provider';
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -114,7 +115,12 @@ export function FostersList({ shelterClubId, actor, canAbriho = false, isFoster 
   const handleEnd = async (fosterId) => {
     const reason = window.prompt('Motivo do término:');
     if (!reason || reason.length < 3) return;
-    const healthy = window.confirm('Animal voltou saudável?');
+    const healthy = await confirmDialog({
+      title: 'Animal voltou saudável?',
+      destructive: false,
+      confirmLabel: 'Sim',
+      cancelLabel: 'Não',
+    });
     try {
       await endMutation.mutateAsync({
         fosterId,

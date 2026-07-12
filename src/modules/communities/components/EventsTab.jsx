@@ -13,6 +13,7 @@ import { hasCommunityPermission } from '../domain/permissions';
 import { COMMUNITY_PERMISSION } from '../domain/constants';
 
 import { ptBR } from 'date-fns/locale';
+import { confirmDialog } from '@/components/ui/confirm-provider';
 
 export default function EventsTab({ communityId, isAdmin, membership, community }) {
   const { user } = useAuth();
@@ -37,7 +38,7 @@ export default function EventsTab({ communityId, isAdmin, membership, community 
 
   const handleDelete = async (eventId, e) => {
     e.stopPropagation();
-    if (!confirm('Deseja excluir este evento?')) return;
+    if (!(await confirmDialog({ title: 'Deseja excluir este evento?' }))) return;
     try {
       await deleteCommunityEvent(eventId);
       toast.success('Evento excluído');

@@ -29,6 +29,7 @@ import { toast } from 'sonner';
 import { ShieldCheck, ShieldOff, Search, ShieldAlert, Lock } from 'lucide-react';
 import PageHero from '@/components/PageHero';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
+import { confirmDialog } from '@/components/ui/confirm-provider';
 
 export default function AdminUsers() {
   const { user, isPlatformAdmin, userProfile } = useAuth();
@@ -63,7 +64,7 @@ export default function AdminUsers() {
   }
 
   async function handlePromote(target) {
-    if (!confirm(`Promover ${target.full_name || target.email} a platform_admin?`)) return;
+    if (!(await confirmDialog({ title: `Promover ${target.full_name || target.email} a platform_admin?` }))) return;
     setActing(target.id);
     try {
       const r = await promoteToAdmin(target.id, user);
@@ -78,7 +79,7 @@ export default function AdminUsers() {
   }
 
   async function handleDemote(target) {
-    if (!confirm(`Rebaixar ${target.full_name || target.email} para user comum?`)) return;
+    if (!(await confirmDialog({ title: `Rebaixar ${target.full_name || target.email} para user comum?` }))) return;
     setActing(target.id);
     try {
       const r = await demoteFromAdmin(target.id, user);

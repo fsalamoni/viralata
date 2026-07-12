@@ -11,6 +11,7 @@ import { hasCommunityPermission } from '../domain/permissions';
 import { COMMUNITY_PERMISSION } from '../domain/constants';
 
 import { ptBR } from 'date-fns/locale';
+import { confirmDialog } from '@/components/ui/confirm-provider';
 
 export default function MuralTab({ communityId, isMember, isAdmin, membership, community }) {
   const { user } = useAuth();
@@ -54,7 +55,7 @@ export default function MuralTab({ communityId, isMember, isAdmin, membership, c
   };
 
   const handleDelete = async (postId) => {
-    if (!confirm('Deseja excluir este post?')) return;
+    if (!(await confirmDialog({ title: 'Deseja excluir este post?' }))) return;
     try {
       await deletePost(postId, user.uid);
       fetchPosts();

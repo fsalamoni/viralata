@@ -37,6 +37,7 @@ import {
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { uploadImage } from '@/core/services/storageService';
 import { CAMPAIGN_STATUS, RECEIPT_STATUS, RECEIPT_STATUS_LABELS, ORG_DONATION_LIMITS } from '../domain/constants';
+import { confirmDialog } from '@/components/ui/confirm-provider';
 
 const brl = (value) => Number(value || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
@@ -654,7 +655,7 @@ function ClubReceiptsSection({ clubId }) {
                   variant="ghost"
                   className="h-7 w-7 text-destructive"
                   onClick={async () => {
-                    if (!confirm('Excluir este comprovante?')) return;
+                    if (!(await confirmDialog({ title: 'Excluir este comprovante?' }))) return;
                     try {
                       await deleteReceipt.mutateAsync(r.id);
                       toast.success('Comprovante excluído.');

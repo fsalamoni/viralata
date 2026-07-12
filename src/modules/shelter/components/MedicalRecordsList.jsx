@@ -24,6 +24,7 @@ import {
   useDeleteMedicalRecord,
 } from '@/modules/shelter/hooks/useMedicalRecords';
 import { MedicalRecordForm } from './MedicalRecordForm';
+import { confirmDialog } from '@/components/ui/confirm-provider';
 
 export function MedicalRecordsList({ petId, shelterClubId, canEdit = false, actor }) {
   const [typeFilter, setTypeFilter] = useState(null);
@@ -51,7 +52,7 @@ export function MedicalRecordsList({ petId, shelterClubId, canEdit = false, acto
   };
 
   const handleDelete = async (recordId) => {
-    if (!window.confirm('Remover este registro?')) return;
+    if (!(await confirmDialog({ title: 'Remover este registro?' }))) return;
     try {
       await deleteMutation.mutateAsync({ recordId, actor });
       toast({ title: 'Registro removido.' });

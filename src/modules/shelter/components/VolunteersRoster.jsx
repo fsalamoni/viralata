@@ -7,6 +7,7 @@
  * Feature flag: `shelter_volunteer_profile_v1` (default OFF, ENFORCED at runtime).
  */
 
+import { confirmDialog } from '@/components/ui/confirm-provider';
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -100,7 +101,7 @@ export function VolunteersRoster({ shelterClubId, actor, canAbriho }) {
   };
 
   const handleRemove = async (volunteerUid) => {
-    if (!window.confirm('Remover este voluntário da rostagem? (hard delete, use com cuidado)')) return;
+    if (!(await confirmDialog({ title: 'Remover este voluntário da rostagem? (hard delete, use com cuidado)' }))) return;
     try {
       await deleteMutation.mutateAsync({ volunteerUid, actor });
       toast({ title: 'Voluntário removido.' });

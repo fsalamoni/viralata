@@ -10,6 +10,7 @@
  * @see docs/SHELTER_MGMT_ROADMAP.md § Fase 5
  */
 
+import { confirmDialog } from '@/components/ui/confirm-provider';
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -89,7 +90,7 @@ export function GoogleFormsConfigPanel({ shelterClubId, canAdmin = false, actor 
   };
 
   const handleRotate = async () => {
-    if (!window.confirm('Rotacionar o secret invalida o webhook imediatamente. Continuar?')) return;
+    if (!(await confirmDialog({ title: 'Rotacionar o secret invalida o webhook imediatamente. Continuar?' }))) return;
     try {
       await rotateMutation.mutateAsync({ actor });
       toast({ title: 'Secret rotacionado.' });

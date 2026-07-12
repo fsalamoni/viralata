@@ -7,6 +7,7 @@
  * Feature flag: `shelter_exhibition_workflow_v1` (default OFF).
  */
 
+import { confirmDialog } from '@/components/ui/confirm-provider';
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -76,7 +77,7 @@ export function ExhibitionsList({ shelterClubId, actor, onSelect, onCreate }) {
   };
 
   const handleComplete = async (exhibitionId) => {
-    if (!window.confirm('Marcar vitrine como concluída?')) return;
+    if (!(await confirmDialog({ title: 'Marcar vitrine como concluída?' }))) return;
     try {
       await completeMutation.mutateAsync({ exhibitionId, actor });
       toast({ title: '✓ Vitrine concluída.' });

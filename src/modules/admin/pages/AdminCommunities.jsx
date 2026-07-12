@@ -15,6 +15,7 @@ import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import { useAdminCommunities, useCreateCommunity, useDeleteCommunity, useUpdateCommunity } from '@/modules/communities/hooks/useCommunities';
 import { COMMUNITY_VISIBILITY, COMMUNITY_VISIBILITY_LABELS } from '@/modules/communities/domain/constants';
 import { sortCommunities } from '@/modules/communities/domain/directory';
+import { confirmDialog } from '@/components/ui/confirm-provider';
 
 const COMMUNITY_INITIAL = {
   name: '',
@@ -50,7 +51,7 @@ export default function AdminCommunities() {
   }
 
   async function handleDeleteCommunity(community) {
-    if (!window.confirm(`Excluir a comunidade "${community.name}"? As organizações vinculadas ficarão sem comunidade.`)) return;
+    if (!(await confirmDialog({ title: `Excluir a comunidade "${community.name}"? As organizações vinculadas ficarão sem comunidade.` }))) return;
     try {
       await deleteCommunity.mutateAsync(community.id);
       toast.success('Comunidade removida.');

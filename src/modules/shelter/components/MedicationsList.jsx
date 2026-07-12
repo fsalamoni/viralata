@@ -29,6 +29,7 @@ import {
   useCompleteMedication,
 } from '@/modules/shelter/hooks/useMedications';
 import { MedicationForm } from './MedicationForm';
+import { confirmDialog } from '@/components/ui/confirm-provider';
 
 const STATUS_TONES = {
   active: 'bg-green-100 text-green-900',
@@ -86,7 +87,7 @@ export function MedicationsList({ petId, shelterClubId, canEdit = false, actor }
   };
 
   const handleCancel = async (medId) => {
-    if (!window.confirm('Cancelar medicação?')) return;
+    if (!(await confirmDialog({ title: 'Cancelar medicação?' }))) return;
     const reason = window.prompt('Motivo do cancelamento:');
     if (!reason) return;
     try {
@@ -98,7 +99,7 @@ export function MedicationsList({ petId, shelterClubId, canEdit = false, actor }
   };
 
   const handleComplete = async (medId) => {
-    if (!window.confirm('Marcar como concluída (ciclo finalizado)?')) return;
+    if (!(await confirmDialog({ title: 'Marcar como concluída (ciclo finalizado)?' }))) return;
     try {
       await completeMutation.mutateAsync({ medId, actor });
       toast({ title: 'Medicação concluída.' });

@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-route
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider, useAuth } from '@/core/lib/FirebaseAuthContext';
 import { FeatureFlagsProvider } from '@/core/lib/FeatureFlagsContext';
+import { ConfirmProvider } from '@/components/ui/confirm-provider';
 import Layout from '@/components/Layout';
 import { CookieBanner } from '@/components/CookieBanner';
 import { Toaster } from '@/components/ui/sonner';
@@ -167,6 +168,7 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <FeatureFlagsProvider>
+          <ConfirmProvider>
           <BrowserRouter basename={import.meta.env.BASE_URL}>
             <RouteTelemetry />
             {/* Banner global de cookies — renderizado no nível mais
@@ -376,6 +378,7 @@ export default function App() {
               </BannedGate>
             </Suspense>
           </BrowserRouter>
+          </ConfirmProvider>
           <Toaster />
         </FeatureFlagsProvider>
       </AuthProvider>
