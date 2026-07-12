@@ -1,5 +1,5 @@
 /**
- * @fileoverview Componente: VolunteerProfileForm (Fase 13).
+ * @fileoverview Componente: VolunteerProfileForm (Fase 13 + TASK-236).
  *
  * Formulário para o voluntário editar seu perfil global
  * (skills, availability, radius, transporte) E aceitar o termo
@@ -7,7 +7,22 @@
  * — se o usuário ainda não aceitou, o form mostra o texto
  * resumido e exige signature_text antes de permitir o save.
  *
- * Feature flag: `shelter_volunteer_profile_v1` (default OFF, ENFORCED at runtime).
+ * Mount points (TASK-236):
+ *  1. `/perfil` (src/pages/Profile.jsx) — perfil global do usuário, com
+ *     section "Voluntariado". Use `existing` para pular o refetch e
+ *     reusar o resultado de `useVolunteerProfile()`.
+ *  2. (Futuro) Modal/drawer de contexto onde o componente precisa
+ *     renderizar de forma standalone para um uid arbitrário.
+ *
+ * Props:
+ *  - `uid`      — uid do voluntário (default = atual via useAuth quando ausente)
+ *  - `actor`    — identidade do caller (usado nos mutates de auditoria)
+ *  - `existing` — opcional, profile já carregado pelo pai. Se fornecido,
+ *                 o componente não dispara o refetch interno.
+ *  - `readOnly` — se true, esconde os botões de save/aceite.
+ *  - `onSaved`  — callback após save bem-sucedido.
+ *
+ * Feature flag: `shelter_volunteer_profile_v1` (default OFF).
  */
 
 import { useState, useEffect } from 'react';
@@ -43,23 +58,25 @@ const EMPTY_AVAILABILITY = {
   end_time: '12:00',
 };
 
-export function VolunteerProfileForm({ uid, actor, onSaved }) {
+export function VolunteerProfileForm({ uid, actor, existing, readOnly = false, onSaved }) {
   const isV1Enabled = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_VOLUNTEER_PROFILE_V1);
-  const { data: profile, isLoading } = useVolunteerProfile(uid);
+  const fetchFromHook = useVolunteerProfile(existing ? null : uid);
+  const profile = existing ?? fetchFromHook.data;
+  const isLoading = existing ? false : fetchFromHook.isLoading;
   const upsertMutation = useUpsertVolunteerProfile(uid);
   const acceptTermsMutation = useAcceptVolunteerTerms(uid);
   const { toast } = useToast();
 
-  const [skills, setSkills] = useState([]);
-  const [availability, setAvailability] = useState([]);
-  const [radiusKm, setRadiusKm] = useState('');
-  const [transportAvailable, setTransportAvailable] = useState(false);
-  const [hasVehicle, setHasVehicle] = useState(false);
-  const [notes, setNotes] = useState('');
+  const [skills, setSkills] = useState(() => existing?.skills || []);
+  const [availability, setAvailability] = useState(() => existing?.availability || []);
+  const [radiusKm, setRadiusKm] = useState(() => (existing?.radius_km != null ? String(existing.radius_km) : ''));
+  const [transportAvailable, setTransportAvailable] = useState(() => Boolean(existing?.transport_available));
+  const [hasVehicle, setHasVehicle] = useState(() => Boolean(existing?.has_vehicle));
+  const [notes, setNotes] = useState(() => existing?.notes || '');
   const [signatureText, setSignatureText] = useState('');
 
   useEffect(() => {
-    if (profile) {
+    if (!existing && profile) {
       setSkills(profile.skills || []);
       setAvailability(profile.availability || []);
       setRadiusKm(profile.radius_km != null ? String(profile.radius_km) : '');
@@ -67,7 +84,7 @@ export function VolunteerProfileForm({ uid, actor, onSaved }) {
       setHasVehicle(Boolean(profile.has_vehicle));
       setNotes(profile.notes || '');
     }
-  }, [profile]);
+  }, [profile, existing]);
 
   const hasAcceptedTerms = Boolean(profile?.terms_accepted_at)
     && profile?.terms_version === VOLUNTEER_TERMS_VERSION;
@@ -130,7 +147,7 @@ export function VolunteerProfileForm({ uid, actor, onSaved }) {
 
   return (
     <form onSubmit={handleSave} className="space-y-6">
-      {!hasAcceptedTerms && (
+      {!readOnly && !hasAcceptedTerms && (
         <Card className="border-amber-300 bg-amber-50">
           <CardHeader>
             <CardTitle className="text-amber-900">{getVolunteerTermsLabel()}</CardTitle>
@@ -267,9 +284,11 @@ export function VolunteerProfileForm({ uid, actor, onSaved }) {
       </Card>
 
       <div className="flex items-center gap-3">
-        <Button type="submit" disabled={upsertMutation.isPending || !hasAcceptedTerms}>
-          {upsertMutation.isPending ? 'Salvando…' : 'Salvar perfil'}
-        </Button>
+        {!readOnly && (
+          <Button type="submit" disabled={upsertMutation.isPending || !hasAcceptedTerms}>
+            {upsertMutation.isPending ? 'Salvando…' : 'Salvar perfil'}
+          </Button>
+        )}
         {hasAcceptedTerms && (
           <Badge className="bg-green-100 text-green-900">
             ✓ Termo aceito (v{VOLUNTEER_TERMS_VERSION})

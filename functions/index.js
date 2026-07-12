@@ -162,6 +162,13 @@ exports.googleFormsWebhook = onRequest(
 const { materializePostAdoptionTasks } = require('./postAdoptionCron');
 exports.materializePostAdoptionTasks = materializePostAdoptionTasks;
 
+// ─── TASK-217: Cron de retenção de audit_logs ──────────────────────────
+//
+// Cloud Function scheduled que varre `audit_logs/` e purga entries
+// mais antigas que o cutoff da sua categoria (Marco Civil 6m /
+// Lei 14.063 5a / Receita Federal 7a). Ver auditLogPurgeCron.js.
+exports.auditLogPurgeCron = require('./auditLogPurgeCron').auditLogPurgeCron;
+
 // ─── Fase 21: Painel de Saúde da Plataforma ─────────────────────────────
 //
 // Duas Cloud Functions:

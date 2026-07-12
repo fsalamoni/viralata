@@ -15,11 +15,19 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { ImageUpload } from '@/components/ui/image-upload';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { Skeleton } from '@/components/ui/skeleton';
+import { EmptyState } from '@/components/ui/empty-state';
 import { getRatingsForUser, summarizeRatings } from '@/modules/pets/services/ratingService';
 import { exportMyData, downloadDataExport } from '@/core/services/dataExportService';
 import { deleteMyAccount } from '@/core/services/deleteAccountService';
 import PageHero from '@/components/PageHero';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
+import { VolunteerProfileForm } from '@/modules/shelter/components/VolunteerProfileForm';
+import { useVolunteerProfile } from '@/modules/shelter/hooks/useVolunteerProfile';
+import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
+import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
+import { Heart } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const GENDER_OPTIONS = [
   { value: 'male', label: 'Masculino' },
@@ -123,6 +131,14 @@ export default function Profile() {
   const memberSinceYear = user?.metadata?.creationTime
     ? new Date(user.metadata.creationTime).getFullYear()
     : null;
+
+  // TASK-236: gate + dados do perfil de voluntário.
+  // `useVolunteerProfile(uid)` aceita `null`/`undefined` quando o gate está OFF,
+  // evitando refetch. Quando o gate é ON, o hook busca o profile global do user.
+  const volunteerProfileV1 = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_VOLUNTEER_PROFILE_V1);
+  const { data: volunteerProfile, isLoading: isVPLoading } = useVolunteerProfile(
+    volunteerProfileV1 && user?.uid ? user.uid : null,
+  );
 
   const [form, setForm] = useState(() => buildProfileForm(userProfile, user));
   const [busy, setBusy] = useState(false);
@@ -430,6 +446,50 @@ export default function Profile() {
           </Button>
         </CardContent>
       </Card>
+
+      {/* TASK-236: Perfil de voluntário (Fase 13).
+          Renderiza apenas se a feature flag `shelter_volunteer_profile_v1`
+          estiver ON. Quando o user já tem profile, mostra o form em modo
+          edit; quando não tem, mostra empty state com CTA para /voluntarios. */}
+      {volunteerProfileV1 && (
+        <Card className="rounded-[24px] p-6 lg:p-7">
+          <CardHeader className="p-0 pb-4">
+            <CardTitle className="flex items-center gap-2 text-base font-bold">
+              <Heart className="w-[19px] h-[19px] text-primary" /> Voluntariado
+            </CardTitle>
+            <CardDescription className="text-[12.5px]">
+              Cadastre suas habilidades, disponibilidade e logística para participar de ações nos abrigos.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="p-0">
+            {isVPLoading ? (
+              <div className="space-y-3">
+                <Skeleton className="h-20 w-full" />
+                <Skeleton className="h-32 w-full" />
+                <Skeleton className="h-20 w-full" />
+              </div>
+            ) : volunteerProfile ? (
+              <VolunteerProfileForm
+                uid={user?.uid}
+                actor={{ uid: user?.uid, email: user?.email }}
+                existing={volunteerProfile}
+                readOnly={false}
+              />
+            ) : (
+              <EmptyState
+                icon={Heart}
+                title="Você ainda não é voluntário"
+                description="Veja como participar do programa de voluntariado da sua cidade."
+                action={
+                  <Button asChild>
+                    <Link to="/voluntarios">Conhecer o programa</Link>
+                  </Button>
+                }
+              />
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Privacidade e dados (LGPD) */}
       <Card className="rounded-[24px] p-6">

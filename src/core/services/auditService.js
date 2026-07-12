@@ -79,6 +79,48 @@ export const AUDIT_ACTION_LABELS = {
   volunteer_data_anonymized: 'Dados de voluntário anonimizados (LGPD)',
 };
 
+// ─── TASK-217: Categorias de retenção (auditLogPurgeCron) ──────────────
+//
+// Cada audit log recebe `category` derivado de `action`. A categoria
+// determina o prazo de retenção aplicado pelo cron de purge no
+// server (functions/auditLogPurgeCronCore.js):
+//   - operational:     180 dias (Marco Civil Art. 15)
+//   - term_acceptance: 1825 dias (Lei 14.063/2020 art. 6º — prova legal)
+//   - payment:         2555 dias (Receita Federal)
+//
+// Os sets DEVEM ficar em sync com os do server. Mudanças aqui
+// exigem rodar functions/auditLogPurgeCron.test.js para validar o
+// lado server.
+//
+// Não exportamos um audit service unificado client/server porque o
+// functions/ runtime é CommonJS/Admin SDK e este arquivo roda no
+// browser via Firebase Web SDK — boundary incompatível.
+export const AUDIT_TERM_ACCEPTANCE_ACTIONS = new Set([
+  'terms_accepted',
+  'privacy_policy_accepted',
+  'code_of_conduct_accepted',
+  'adoption_terms_accepted',
+  'donation_terms_accepted',
+  'volunteer_terms_accepted',
+  'foster_terms_accepted',
+  'shelter_terms_accepted',
+  'terms_acceptance_recorded',
+]);
+
+export const AUDIT_PAYMENT_ACTIONS = new Set([
+  'donation_received',
+  'donation_failed',
+  'subscription_started',
+  'subscription_cancelled',
+  'payment_refunded',
+]);
+
+export function classifyAuditCategory(action) {
+  if (AUDIT_TERM_ACCEPTANCE_ACTIONS.has(action)) return 'term_acceptance';
+  if (AUDIT_PAYMENT_ACTIONS.has(action)) return 'payment';
+  return 'operational';
+}
+
 export async function createAuditLog({
   action,
   actor,
@@ -111,6 +153,7 @@ export async function createAuditLog({
       log_number: Number(`${createdAtMs}${randomNumericSuffix()}`),
       action,
       action_label: AUDIT_ACTION_LABELS[action] || action,
+      category: classifyAuditCategory(action),
       actor_id: actor.uid,
       actor_name: actorName,
       actor_email: actor.email || '',
