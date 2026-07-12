@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-12T04:05:14.858Z",
+  "generatedAt": "2026-07-12T04:09:11.164Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -481,10 +481,10 @@
       "title": "Code splitting por rota",
       "type": "refactor",
       "category": "perf",
-      "status": "ready",
+      "status": "done",
       "priority": "low",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": null,
       "worktree": null,
       "pr": null,
@@ -494,10 +494,11 @@
         "lazy"
       ],
       "blockedBy": [],
-      "evidence": "docs/AUDIT_2026-07-11.md §5.2 — bundle 4.3M (97 entries precache)",
+      "evidence": "Duplicata de TASK-190 — code splitting por rota já implementado (48 lazy routes no App.jsx)",
       "description": "Bundle atual 4.3M com 97 entries precached. Lazy load por rota reduziria TTI. Já tem @dnd-kit, framer-motion, recharts (pesados). Avaliar React.lazy + Suspense nas rotas /admin/* e /abrigos/* que puxam módulos shelter inteiros.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-016",
@@ -3942,10 +3943,10 @@
       "title": "Adoção: bloco \"Minhas adoções\" no perfil do usuário",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "in_review",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": [
         "adocao",
         "perfil",
@@ -3958,10 +3959,10 @@
       "relatedTasks": [
         "TASK-127"
       ],
-      "evidence": "Regra A §1.4 (perfil) — adotante",
+      "evidence": "MyAdoptionsSection.jsx montado no Profile; listMyApplications (collectionGroup) + useMyApplications + rule {path=**}/adoption_workflow read-own + índice composto applicant_uid+created_at; test/lint/build verdes",
       "description": "BLOCO INDEPENDENTE. Adicionar seção \"Minhas adoções\" em Profile.jsx: applications (pendente/aprovada/rejeitada/finalizada), timeline de cada uma, próximos acompanhamentos pós-adoção.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-130",
@@ -5457,10 +5458,10 @@
       "title": "Performance: code splitting por rota (lazy load)",
       "type": "feature",
       "category": "perf",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": [
         "perf",
         "lazy",
@@ -5471,10 +5472,11 @@
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
-      "evidence": "Regra A §1.5 (performance) + TASK-015",
+      "evidence": "Já implementado: App.jsx com 48 rotas React.lazy + Suspense/FullScreenSpinner; bundle vendor 1.7MB (<3MB), chunks por rota em dist/assets",
       "description": "BLOCO INDEPENDENTE. React.lazy + Suspense nas rotas /admin/*, /abrigos/*, /shelter/*. Bundle target: <3MB. Skeleton loaders em cada rota.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-191",
@@ -7046,11 +7048,11 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 254,
-    "done": 54,
+    "done": 56,
     "inProgress": 2,
-    "inReview": 20,
+    "inReview": 21,
     "blocked": 0,
-    "ready": 162,
+    "ready": 159,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
