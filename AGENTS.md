@@ -131,6 +131,13 @@ Para validar a Regra A, a funcionalidade "voluntários" precisa ter:
 - **Coordenação**: `mavis communication send --to <root>` pra sinalizar mudança
 - **Sincronização**: ao final de cada task, **re-rodar o embed** (re-extrair o JSON e re-injetar no HTML)
 - **Métricas**: recalcular `metrics.done/inProgress/...` automaticamente
+- **Como atualizar** (recomendado): use `.harness/scrum.cjs` (CLI canônica com `proper-lockfile` + atomic write, previne race condition). Atalhos npm: `npm run scrum:start`, `npm run scrum:done`, `npm run scrum:review`, `npm run scrum:block`, `npm run scrum:list`, `npm run scrum:show`. Exemplo:
+  ```bash
+  npm run scrum:start -- TASK-XXX --owner $(mavis communication peers --self)
+  # ... trabalha ...
+  npm run scrum:done -- TASK-XXX --pr "#N" --evidence "link do PR"
+  ```
+  A CLI valida transições, atualiza métricas, e lock-a o JSON (single-instance). **Use a CLI em vez de editar o JSON manualmente.**
 
 ### B.2 Auto-import do painel-scrum.html (OBRIGATÓRIO)
 
@@ -168,14 +175,28 @@ Atalhos npm (no `package.json`): `npm run sync`, `npm run sync:watch`, `npm run 
 
 ### B.3 Script de sincronização (referência)
 
+**Workflow recomendado (via CLI):**
 ```bash
-# 1. Editar .harness/SCRUM_TASKS.json (preservar ordem, IDs únicos, formato)
-# 2. Atualizar .harness/painel-scrum.html embedded data
-node .harness/sync.cjs   # ou fazer via Edit tool no script tag
-# OU melhor:
-node .harness/sync.cjs --watch   # re-embed automático a cada mudança
+# 1. Transição de status (lock + atomic write nativos)
+npm run scrum:start -- TASK-XXX --owner $(mavis communication peers --self) --branch feat/...
+# ... trabalha ...
+npm run scrum:done -- TASK-XXX --pr "#N" --evidence "link do PR"
+
+# 2. Re-embed automático do painel (sync.cjs --watch roda no root, nao precisa do worker)
+#    Se nao tiver watcher rodando, dispara one-shot:
+node .harness/sync.cjs --fix
+
 # 3. Notificar root
 mavis communication send --to <rootSessionId> --command prompt --content "[Scrum] TASK-XXX → done. Resumo: ..."
+```
+
+**Workflow manual (legado, NAO recomendado):** Só pra debug ou ajustes pontuais. **Sempre** sinalize lock antes (ver B.4) e use a CLI quando possível.
+```bash
+# 1. Sinalizar lock ao root: mavis communication send --to <root> --content "vou editar o JSON, trava 30s"
+# 2. Editar .harness/SCRUM_TASKS.json (preservar ordem, IDs únicos, formato)
+# 3. node .harness/sync.cjs --fix   # re-embed
+# 4. Liberar lock: mavis communication send --to <root> --content "liberei"
+# 5. Notificar root
 ```
 
 ### B.4 Lock pra evitar race condition
