@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-12T17:34:19.212Z",
+  "generatedAt": "2026-07-12T17:37:03.245Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -4170,10 +4170,10 @@
       "title": "Saúde: alertas automáticos (vacina vencendo, retorno de exame)",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "in_review",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": [
         "saude",
         "notificacoes",
@@ -4184,10 +4184,10 @@
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
-      "evidence": "Regra A §1.5 (pós-deploy) + Regra A §1.3 (regras)",
+      "evidence": "functions/healthAlerts{,Core}.js — cron diário 08:00 BRT, collectionGroup medical com next_visit_date na janela 7d, notifica admins/owners do abrigo dono, dedup por id determinístico health_{rec}_{uid}_{dia}; 5 tests (121 functions verdes). Email fica com infra SendGrid (TASK-222/229)",
       "description": "BLOCO INDEPENDENTE. Cloud Function scheduled (functions/healthAlerts.js) que varre medical_records, dispara notification 7 dias antes do vencimento. In-app + email.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-138",
@@ -7096,9 +7096,9 @@
     "totalTasks": 254,
     "done": 102,
     "inProgress": 2,
-    "inReview": 14,
+    "inReview": 15,
     "blocked": 0,
-    "ready": 120,
+    "ready": 119,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
