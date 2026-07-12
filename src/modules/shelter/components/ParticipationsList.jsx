@@ -4,7 +4,7 @@
  * Lista de participations do abrigo, com badges, totais de horas,
  * ações de check-in/out (abrigoo OU self-service do voluntário).
  *
- * Feature flag: `shelter_volunteer_profile_v1` (default OFF).
+ * Feature flag: `shelter_volunteer_profile_v1` (default OFF, ENFORCED at runtime).
  */
 
 import { useState } from 'react';
@@ -23,6 +23,8 @@ import {
   useCheckInOut,
   useDeleteParticipation,
 } from '@/modules/shelter/hooks/useVolunteerParticipations';
+import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
+import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
 
 function formatDate(iso) {
   if (!iso) return '—';
@@ -34,12 +36,14 @@ export function ParticipationsList({
   shelterClubId, actor, canAbriho = false,
   isVolunteer = false, selfVolunteerUid = null,
 }) {
+  const isV1Enabled = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_VOLUNTEER_PROFILE_V1);
   const [filter, setFilter] = useState({ volunteerUid: selfVolunteerUid || null });
   const { data: participations = [], isLoading } = useParticipations(shelterClubId, filter);
   const checkMutation = useCheckInOut(shelterClubId, null);
   const deleteMutation = useDeleteParticipation(shelterClubId);
   const { toast } = useToast();
 
+  if (!isV1Enabled) return null;
   if (!shelterClubId) return <p className="text-sm text-muted-foreground">Selecione um abrigo.</p>;
   if (isLoading) return <p className="text-sm text-muted-foreground">Carregando participations…</p>;
 

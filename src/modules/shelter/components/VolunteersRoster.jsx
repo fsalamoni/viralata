@@ -4,7 +4,7 @@
  * Lista de voluntários do abrigo, com filtros por status, badges de
  * background check, ações (pausar, retomar, bloquear, aprovar BG check).
  *
- * Feature flag: `shelter_volunteer_profile_v1` (default OFF).
+ * Feature flag: `shelter_volunteer_profile_v1` (default OFF, ENFORCED at runtime).
  */
 
 import { useState } from 'react';
@@ -23,6 +23,8 @@ import {
   useLeaveShelter,
   useDeleteShelterVolunteer,
 } from '@/modules/shelter/hooks/useVolunteerProfile';
+import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
+import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
 
 const SHELTER_STATUS_LABELS = {
   active: 'Ativo', paused: 'Pausado', blocked: 'Bloqueado', left: 'Saiu',
@@ -47,6 +49,7 @@ const BG_CHECK_TONES = {
 };
 
 export function VolunteersRoster({ shelterClubId, actor, canAbriho = false }) {
+  const isV1Enabled = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_VOLUNTEER_PROFILE_V1);
   const [statusFilter, setStatusFilter] = useState(null);
   const { data: volunteers = [], isLoading } = useShelterVolunteers(shelterClubId, { status: statusFilter });
   const updateMutation = useUpdateShelterVolunteer(shelterClubId, null); // sobrescrito por item
@@ -54,6 +57,7 @@ export function VolunteersRoster({ shelterClubId, actor, canAbriho = false }) {
   const deleteMutation = useDeleteShelterVolunteer(shelterClubId);
   const { toast } = useToast();
 
+  if (!isV1Enabled) return null;
   if (!shelterClubId) return <p className="text-sm text-muted-foreground">Selecione um abrigo.</p>;
   if (isLoading) return <p className="text-sm text-muted-foreground">Carregando voluntários…</p>;
 

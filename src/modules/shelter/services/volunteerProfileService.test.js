@@ -41,6 +41,7 @@ vi.mock('@/core/lib/logger', () => ({
 }));
 vi.mock('@/core/services/auditService', () => ({
   createAuditLog: (...args) => mockCreateAuditLog(...args),
+  safeCreateAuditLog: (...args) => mockSafeCreateAuditLog(...args),
 }));
 
 const mockRecordAcceptance = vi.fn().mockResolvedValue({ id: 'acc-1' });
@@ -49,6 +50,7 @@ vi.mock('@/modules/shelter/services/termsAcceptanceService', () => ({
 }));
 
 const mockCreateAuditLog = vi.fn().mockResolvedValue(null);
+const mockSafeCreateAuditLog = vi.fn().mockResolvedValue(null);
 
 const {
   getVolunteerProfile,
@@ -90,6 +92,7 @@ beforeEach(() => {
   mockUpdateDoc.mockReset();
   mockDeleteDoc.mockReset();
   mockCreateAuditLog.mockReset().mockResolvedValue(null);
+  mockSafeCreateAuditLog.mockReset().mockResolvedValue(null);
   mockRecordAcceptance.mockReset().mockResolvedValue({ id: 'acc-1' });
 });
 

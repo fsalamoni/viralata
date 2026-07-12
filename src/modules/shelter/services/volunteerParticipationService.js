@@ -18,7 +18,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '@/core/config/firebase';
 import { logger } from '@/core/lib/logger';
-import { createAuditLog } from '@/core/services/auditService';
+import { safeCreateAuditLog } from '@/core/services/auditService';
 import {
   createVolunteerParticipationSchema,
   participationCheckSchema,
@@ -116,7 +116,7 @@ export async function createParticipation(input, actor) {
 
   const ref = await addDoc(participationsCollection(parsed.shelter_club_id), doc_data);
 
-  await createAuditLog({
+  await safeCreateAuditLog({
     action: 'volunteer_participation_created',
     actor,
     details: {
@@ -128,7 +128,7 @@ export async function createParticipation(input, actor) {
     },
   }).catch((err) => {
     logger.warn('volunteerParticipationService.createParticipation', {
-      msg: 'audit failed (non-blocking)',
+      msg: 'audit failed (non-blocking — see [AUDIT_FAILURE] in logger.error)',
       err: String(err),
     });
   });
@@ -168,11 +168,16 @@ export async function updateParticipation(shelterClubId, participationId, input,
 
   await updateDoc(ref, update);
 
-  await createAuditLog({
+  await safeCreateAuditLog({
     action: 'volunteer_participation_updated',
     actor,
     details: { participation_id: participationId, changes: Object.keys(update).filter((k) => k !== 'updated_at') },
-  }).catch(() => {});
+  }).catch((err) => {
+    logger.warn('volunteerParticipationService.updateParticipation', {
+      msg: 'audit failed (non-blocking — see [AUDIT_FAILURE] in logger.error)',
+      err: String(err),
+    });
+  });
 
   return { id: participationId, ...prev, ...update };
 }
@@ -239,11 +244,16 @@ export async function checkInOut(shelterClubId, participationId, input, actor) {
     });
   }
 
-  await createAuditLog({
+  await safeCreateAuditLog({
     action: parsed.action === 'check_in' ? 'volunteer_check_in' : 'volunteer_check_out',
     actor,
     details: { participation_id: participationId, at },
-  }).catch(() => {});
+  }).catch((err) => {
+    logger.warn('volunteerParticipationService.checkInOut', {
+      msg: 'audit failed (non-blocking — see [AUDIT_FAILURE] in logger.error)',
+      err: String(err),
+    });
+  });
 
   return {
     id: participationId,
@@ -274,11 +284,16 @@ export async function deleteParticipation(shelterClubId, participationId, actor)
 
   await deleteDoc(ref);
 
-  await createAuditLog({
+  await safeCreateAuditLog({
     action: 'volunteer_participation_deleted',
     actor,
     details: { participation_id: participationId, volunteer_uid: prev.volunteer_uid },
-  }).catch(() => {});
+  }).catch((err) => {
+    logger.warn('volunteerParticipationService.deleteParticipation', {
+      msg: 'audit failed (non-blocking — see [AUDIT_FAILURE] in logger.error)',
+      err: String(err),
+    });
+  });
 
   return { id: participationId, deleted: true };
 }

@@ -123,9 +123,103 @@ export async function createAuditLog({
       created_at_ms: createdAtMs,
       created_at: serverTimestamp(),
     });
+    return { ok: true };
   } catch (err) {
+    // Inner try/catch: createAuditLog is the low-level writer and NEVER
+    // throws (audit must not break business operations). Returns
+    // { ok: false, error } so wrappers (safeCreateAuditLog) can detect
+    // failure and re-throw. Visibility is delegated to safeCreateAuditLog
+    // for callers that opt in. We still log here as a last-resort sink.
     logger.error('Audit log failed:', err);
+    return { ok: false, error: err };
   }
+}
+
+/**
+ * Counter local (in-memory) de falhas de auditoria. Reseta a cada page
+ * load — serve apenas como sinal de smoke em runtime. Quando o Sentry
+ * SDK for wireado (TASK-239), este contador vira um gauge exposto lá.
+ *
+ * Estrutura: { total: number, byAction: Record<string, number> }
+ */
+const auditFailureCounter = { total: 0, byAction: {} };
+
+/** Snapshot do contador — útil pra healthchecks e dashboards futuros. */
+export function getAuditFailureStats() {
+  return {
+    total: auditFailureCounter.total,
+    byAction: { ...auditFailureCounter.byAction },
+  };
+}
+
+/**
+ * Reset do contador — apenas para testes.
+ * @internal
+ */
+export function __resetAuditFailureCounter() {
+  auditFailureCounter.total = 0;
+  auditFailureCounter.byAction = {};
+}
+
+/**
+ * Wrapper para `createAuditLog` que NUNCA falha em silêncio.
+ *
+ * LGPD Art. 37 ("registro das operações de tratamento") + Marco Civil
+ * Art. 10 (§2º) exigem que o registro de tratamento seja observável.
+ * Uma falha de auditoria engolida via `.catch(() => {})` é uma lacuna
+ * de proteção de dados — equivale a apagar o registro sem justificativa.
+ *
+ * Comportamento:
+ *  1. Tenta gravar o log via `createAuditLog`.
+ *  2. Em caso de falha: registra via `logger.error` (visível em console
+ *     e em qualquer sink de log futuro), incrementa `auditFailureCounter`
+ *     (sinal de smoke observável em runtime), e re-lança o erro.
+ *  3. O re-throw permite que o caller ESCOLHA entre:
+ *      a) deixar borbulhar (operação de negócio falha — estrito);
+ *      b) capturar com `.catch` para manter não-bloqueante (caso
+ *         comum: a operação já commitou e reverter seria pior que
+ *         um log faltando — mas o log da falha fica visível).
+ *  4. Quando o Sentry SDK for wireado (TASK-239), adicionar:
+ *      `Sentry.captureException(err, { tags: { audit_failure: true, action } })`
+ *      neste mesmo ponto.
+ *
+ * Por que NÃO `.catch(() => {})`: viola o requisito de "registro
+ * das operações de tratamento" — uma falha silenciosa é um gap de
+ * proteção de dados.
+ *
+ * @param {object} payload - mesmo payload de `createAuditLog`
+ * @returns {Promise<void>} resolve em sucesso; rejeita com o erro
+ *   original se a gravação falhar
+ *
+ * @example
+ *   // Não-bloqueante (audit falha não derruba a operação):
+ *   safeCreateAuditLog({ action: 'volunteer_joined_shelter', actor, details })
+ *     .catch(err => logger.warn('audit_log', { err: String(err) }));
+ *
+ *   // Estrito (audit falha derruba a operação):
+ *   await safeCreateAuditLog({ action: 'terms_accepted', actor, details });
+ */
+export function safeCreateAuditLog(payload) {
+  return Promise.resolve(createAuditLog(payload)).then((result) => {
+    if (result && result.ok === false) {
+      const err = result.error || new Error('audit_log_failed');
+      auditFailureCounter.total += 1;
+      const actionTag = payload?.action || 'unknown';
+      auditFailureCounter.byAction[actionTag] = (auditFailureCounter.byAction[actionTag] || 0) + 1;
+
+      logger.error('[AUDIT_FAILURE]', {
+        action: actionTag,
+        err: err?.message || String(err),
+        stack: err?.stack,
+      });
+
+      // TODO: Wire Sentry.captureException once Sentry SDK is added (TASK-239).
+      // Sentry.captureException(err, { tags: { audit_failure: true, action: actionTag } });
+
+      throw err;
+    }
+    return result;
+  });
 }
 
 /**

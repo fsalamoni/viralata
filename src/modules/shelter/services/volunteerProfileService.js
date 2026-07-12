@@ -20,7 +20,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '@/core/config/firebase';
 import { logger } from '@/core/lib/logger';
-import { createAuditLog } from '@/core/services/auditService';
+import { safeCreateAuditLog } from '@/core/services/auditService';
 import {
   upsertVolunteerProfileSchema,
   acceptVolunteerTermsSchema,
@@ -96,13 +96,13 @@ export async function upsertVolunteerProfile(uid, input, actor) {
 
   await setDoc(ref, update, { merge: true });
 
-  await createAuditLog({
+  await safeCreateAuditLog({
     action: prev ? 'volunteer_profile_updated' : 'volunteer_profile_created',
     actor,
     details: { uid, fields: Object.keys(parsed) },
   }).catch((err) => {
     logger.warn('volunteerProfileService.upsertVolunteerProfile', {
-      msg: 'audit failed (non-blocking)',
+      msg: 'audit failed (non-blocking — see [AUDIT_FAILURE] in logger.error)',
       err: String(err),
     });
   });
@@ -188,7 +188,7 @@ export async function acceptVolunteerTerms(uid, acceptance, actor) {
     });
   });
 
-  await createAuditLog({
+  await safeCreateAuditLog({
     action: 'volunteer_terms_accepted',
     actor,
     details: {
@@ -198,7 +198,7 @@ export async function acceptVolunteerTerms(uid, acceptance, actor) {
     },
   }).catch((err) => {
     logger.warn('volunteerProfileService.acceptVolunteerTerms', {
-      msg: 'audit failed (non-blocking)',
+      msg: 'audit failed (non-blocking — see [AUDIT_FAILURE] in logger.error)',
       err: String(err),
     });
   });
@@ -314,7 +314,7 @@ export async function joinShelterAsVolunteer(input, actor) {
 
   await setDoc(ref, doc_data);
 
-  await createAuditLog({
+  await safeCreateAuditLog({
     action: 'volunteer_joined_shelter',
     actor,
     details: {
@@ -324,7 +324,7 @@ export async function joinShelterAsVolunteer(input, actor) {
     },
   }).catch((err) => {
     logger.warn('volunteerProfileService.joinShelterAsVolunteer', {
-      msg: 'audit failed (non-blocking)',
+      msg: 'audit failed (non-blocking — see [AUDIT_FAILURE] in logger.error)',
       err: String(err),
     });
   });
@@ -385,7 +385,7 @@ export async function updateShelterVolunteer(shelterClubId, volunteerUid, input,
 
   await updateDoc(ref, update);
 
-  await createAuditLog({
+  await safeCreateAuditLog({
     action: 'volunteer_roster_updated',
     actor,
     details: {
@@ -393,7 +393,12 @@ export async function updateShelterVolunteer(shelterClubId, volunteerUid, input,
       volunteer_uid: volunteerUid,
       changes: Object.keys(update).filter((k) => k !== 'updated_at'),
     },
-  }).catch(() => {});
+  }).catch((err) => {
+    logger.warn('volunteerProfileService.updateShelterVolunteer', {
+      msg: 'audit failed (non-blocking — see [AUDIT_FAILURE] in logger.error)',
+      err: String(err),
+    });
+  });
 
   return { id: volunteerUid, ...prev, ...update };
 }
@@ -427,11 +432,16 @@ export async function deleteShelterVolunteer(shelterClubId, volunteerUid, actor)
 
   await deleteDoc(ref);
 
-  await createAuditLog({
+  await safeCreateAuditLog({
     action: 'volunteer_roster_deleted',
     actor,
     details: { shelter_club_id: shelterClubId, volunteer_uid: volunteerUid },
-  }).catch(() => {});
+  }).catch((err) => {
+    logger.warn('volunteerProfileService.deleteShelterVolunteer', {
+      msg: 'audit failed (non-blocking — see [AUDIT_FAILURE] in logger.error)',
+      err: String(err),
+    });
+  });
 
   return { id: volunteerUid, deleted: true };
 }

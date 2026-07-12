@@ -7,7 +7,7 @@
  * — se o usuário ainda não aceitou, o form mostra o texto
  * resumido e exige signature_text antes de permitir o save.
  *
- * Feature flag: `shelter_volunteer_profile_v1` (default OFF).
+ * Feature flag: `shelter_volunteer_profile_v1` (default OFF, ENFORCED at runtime).
  */
 
 import { useState, useEffect } from 'react';
@@ -34,6 +34,8 @@ import {
   useUpsertVolunteerProfile,
   useAcceptVolunteerTerms,
 } from '@/modules/shelter/hooks/useVolunteerProfile';
+import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
+import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
 
 const EMPTY_AVAILABILITY = {
   day_of_week: 'mon',
@@ -42,6 +44,7 @@ const EMPTY_AVAILABILITY = {
 };
 
 export function VolunteerProfileForm({ uid, actor, onSaved }) {
+  const isV1Enabled = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_VOLUNTEER_PROFILE_V1);
   const { data: profile, isLoading } = useVolunteerProfile(uid);
   const upsertMutation = useUpsertVolunteerProfile(uid);
   const acceptTermsMutation = useAcceptVolunteerTerms(uid);
@@ -122,6 +125,7 @@ export function VolunteerProfileForm({ uid, actor, onSaved }) {
     }
   };
 
+  if (!isV1Enabled) return null;
   if (isLoading) return <p className="text-sm text-muted-foreground">Carregando perfil…</p>;
 
   return (

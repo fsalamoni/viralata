@@ -34,7 +34,7 @@ import IndicatorsTab from '@/modules/shelter/components/IndicatorsTab';
 import { DashboardPage } from '@/modules/shelter/components/DashboardPage';
 import { KanbanPage } from '@/modules/shelter/components/KanbanPage';
 import { ExhibitionsList } from '@/modules/shelter/components/ExhibitionsList';
-import { VolunteersRoster } from '@/modules/shelter/components/VolunteersRoster';
+import { VolunteersAdminTab } from '@/modules/shelter/components/VolunteersAdminTab';
 import { MedicalRecordsList } from '@/modules/shelter/components/MedicalRecordsList';
 import { MedicationsList } from '@/modules/shelter/components/MedicationsList';
 import { TimelineList } from '@/modules/shelter/components/TimelineList';
@@ -95,6 +95,7 @@ export default function OrganizationAdminPanel() {
   const shelterIndicators = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_INDICATORS);
   const shelterExhibitions = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_EXHIBITIONS);
   const shelterVolunteers = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_VOLUNTEERS);
+  const shelterVolunteerProfileV1 = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_VOLUNTEER_PROFILE_V1);
   const shelterHealthRecords = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_HEALTH_RECORDS);
   const shelterMedication = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_MEDICATION);
   const shelterPetTimeline = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_PET_TIMELINE);
@@ -148,7 +149,7 @@ export default function OrganizationAdminPanel() {
     if (shelterFoundation && shelterExhibitions) {
       tabs.push({ key: 'exhibitions', label: 'Vitrines', icon: TAB_ICONS.exhibitions, permission: 'animals' });
     }
-    if (shelterFoundation && shelterVolunteers && canViewVolunteers) {
+    if (shelterFoundation && shelterVolunteers && shelterVolunteerProfileV1 && canViewVolunteers) {
       tabs.push({ key: 'volunteers', label: 'Voluntários', icon: TAB_ICONS.volunteers, permission: 'volunteers' });
     }
     if (shelterFoundation && shelterHealthRecords) {
@@ -164,7 +165,7 @@ export default function OrganizationAdminPanel() {
       tabs.push({ key: 'foster', label: 'Lares Temporários', icon: TAB_ICONS.foster, permission: 'animals' });
     }
     return tabs;
-  }, [shelterFoundation, shelterDashboard, shelterKanban, shelterExhibitions, shelterVolunteers, shelterHealthRecords, shelterMedication, shelterPetTimeline, shelterFoster, canViewVolunteers]);
+  }, [shelterFoundation, shelterDashboard, shelterKanban, shelterExhibitions, shelterVolunteers, shelterVolunteerProfileV1, shelterHealthRecords, shelterMedication, shelterPetTimeline, shelterFoster, canViewVolunteers]);
 
   const allVisibleTabs = useMemo(() => [...visibleTabs, ...shelterTabs], [visibleTabs, shelterTabs]);
 
@@ -322,9 +323,14 @@ export default function OrganizationAdminPanel() {
             <ExhibitionsList shelterClubId={orgId} />
           </TabsContent>
         )}
-        {shelterFoundation && shelterVolunteers && canViewVolunteers && (
+        {shelterFoundation && shelterVolunteers && shelterVolunteerProfileV1 && canViewVolunteers && (
           <TabsContent value="volunteers" className="mt-12 px-1 sm:mt-14">
-            <VolunteersRoster shelterClubId={orgId} />
+            <VolunteersAdminTab
+              shelterClubId={orgId}
+              club={club}
+              membership={membership}
+              currentUserUid={user?.uid}
+            />
           </TabsContent>
         )}
         {shelterFoundation && shelterHealthRecords && (
