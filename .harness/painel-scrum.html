@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-12T02:42:21.828Z",
+  "generatedAt": "2026-07-12T03:55:30.865Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -3354,10 +3354,10 @@
       "title": "Defensive coding: helper util concatSafe() + tests",
       "type": "feature",
       "category": "core",
-      "status": "ready",
+      "status": "in_review",
       "priority": "low",
-      "owner": "unassigned",
-      "branch": "feat/legal-docs-v2",
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": null,
       "worktree": ".worktrees/wt-legal-v2",
       "pr": null,
@@ -3370,10 +3370,10 @@
       "relatedTasks": [
         "TASK-068"
       ],
-      "evidence": "src/core/lib/",
+      "evidence": "src/core/lib/concatSafe.js + concatSafe.test.js (12 casos) + safeTabs migrado no OrganizationAdminPanel.jsx",
       "description": "BLOCO INDEPENDENTE. Criar src/core/lib/concatSafe.js — helper que recebe N arrays, faz concat com fallback para []. Test: 12 casos (undefined, null, [], [...], mistos). Migrar TASK-099/100/101/102 pra usar esse helper.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-104",
@@ -6075,10 +6075,10 @@
       "title": "Adicionar Zod parse em communityService (postar, comentar, curtir — gap Regra A Eixo 3)",
       "type": "feature",
       "category": "community",
-      "status": "ready",
+      "status": "in_review",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": "wt/17ff480a",
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": null,
       "worktree": ".worktrees/wt-17ff480a",
       "pr": null,
@@ -6095,10 +6095,10 @@
         "TASK-196",
         "TASK-012"
       ],
-      "evidence": "COVERAGE_AUDIT.md Eixo 3; src/modules/communities/services/communityService.js",
+      "evidence": "src/modules/communities/domain/contentSchemas.js + parse em createPost/addPostComment/createForumThread/addThreadMessage; 12 tests novos, npm test 1392 verde",
       "description": "BLOCO INDEPENDENTE. Adicionar Zod schemas em communityService.js para createPost, addPostComment, togglePostLike. Validar: tamanho máximo do texto, presença de campos obrigatórios, formato do ID. TASK-012 (Zod em services) lista outros services mas NÃO communityService — gap de cobertura a tratar. Regra A §1.3 (validações).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-199",
@@ -7434,9 +7434,9 @@
     "totalTasks": 254,
     "done": 54,
     "inProgress": 2,
-    "inReview": 15,
+    "inReview": 17,
     "blocked": 0,
-    "ready": 167,
+    "ready": 165,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
