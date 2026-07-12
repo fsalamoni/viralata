@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-12T17:31:37.834Z",
+  "generatedAt": "2026-07-12T17:34:19.212Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -4580,10 +4580,10 @@
       "title": "Saúde: dashboard de medicações pendentes no painel do abrigo",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "in_review",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": [
         "saude",
         "dashboard",
@@ -4594,10 +4594,10 @@
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
-      "evidence": "Regra A §1.4 (painel) + SHELTER_MGMT §Fase 8",
+      "evidence": "MedicationsDueCard no DashboardPage: listShelterActiveMedications (collectionGroup medications + rule read-por-tenant + índice shelter_club_id+status), doses due/overdue via domain runtime, botão Marcar administrada → recordDose idempotente. Notificações push ficam com TASK-139 (FCM)",
       "description": "BLOCO INDEPENDENTE. Adicionar card no ShelterDashboard: medicações ativas, doses pendentes hoje, doses atrasadas. Click \"marcar administrada\" atualiza doses_administered. Notificações ao responsável.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-139",
@@ -7482,9 +7482,9 @@
     "totalTasks": 254,
     "done": 102,
     "inProgress": 2,
-    "inReview": 13,
+    "inReview": 14,
     "blocked": 0,
-    "ready": 121,
+    "ready": 120,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
