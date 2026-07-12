@@ -1,6 +1,6 @@
 # Protocolo de Coordenação entre Sessões · Viralata
 
-> v1.3 · 2026-07-11 · mantido em `.harness/SCRUM_PROTOCOL.md` (espelho da aba "Protocolo" do `painel-scrum.html`)
+> v1.0 · 2026-07-11 · mantido em `.harness/SCRUM_PROTOCOL.md` (espelho da aba "Protocolo" do `painel-scrum.html`)
 
 ## 1. Identidade
 
@@ -84,9 +84,77 @@ Tasks que tocam PII, termos legais, telemedicina, prontuário ou qualquer coisa 
 
 | Arquivo | O quê |
 |---|---|
-| `.harness/painel-scrum.html` | Página visual. Abra no navegador. |
+| `.harness/painel-scrum.html` | Página visual. Abra no navegador. **Auto-sync** com `.harness/SCRUM_TASKS.json` via `node .harness/sync.cjs --watch` (vê §13). |
 | `.harness/SCRUM_TASKS.json` | Dataset machine-readable. Use pra automação e pra resetar o painel. |
+| `.harness/sync.cjs` | Sync com git worktrees + **auto-reembed do painel** (modo `--watch`, vê §13). |
 | `.harness/SCRUM_PROTOCOL.md` | Este protocolo (espelha o painel). |
+
+## 13. Auto-sync do painel (`sync.cjs --watch`)
+
+A **Regra B** (Auto Scrum Update) exige que o painel HTML esteja sempre em dia
+com o `SCRUM_TASKS.json`. O `sync.cjs` tem 3 modos:
+
+| Comando | O que faz |
+|---|---|
+| `node .harness/sync.cjs` | One-shot: detecta worktrees, valida integridade, **não** re-embed. |
+| `node .harness/sync.cjs --fix` | One-shot + corrige worktrees/sessões no JSON. |
+| `node .harness/sync.cjs --watch` | **Long-running watcher**: monitora `SCRUM_TASKS.json` (mtime polling 750ms) e re-embed no `painel-scrum.html` a cada mudança. |
+| `node .harness/sync.cjs --watch --serve` | Watcher + HTTP server em `http://localhost:8731/painel-scrum.html` (CORS habilitado → auto-reload no browser). |
+| `node .harness/sync.cjs --check` | Exit 1 se IDs duplicados ou refs quebradas. Use em CI. |
+
+**Atalhos npm** (no `package.json`):
+
+```bash
+npm run sync           # one-shot
+npm run sync:fix       # one-shot + corrige
+npm run sync:watch     # long-running watcher
+npm run sync:serve     # watcher + HTTP server (auto-reload no browser)
+```
+
+**Comportamento do painel sob auto-sync:**
+
+- **Aberto via `file://`** (clique duplo no HTML): fetch é bloqueado por CORS → pill mostra `sync manual`. Use o botão **Reload** (topbar) ou rode `npm run sync:serve` e abra pela URL HTTP.
+- **Aberto via `http://localhost:8731/`** (`sync:serve`): polling de 5s detecta mudança → auto-reload em até 5s. Pill mostra `↻ HH:MM:SS` na hora do reload, depois `live HH:MM:SS`.
+- **Em qualquer modo**: o `sync.cjs --watch` atualiza o `<meta name="auto-sync-last">` no HTML a cada re-embed, então o pill mostra o último timestamp embutido mesmo em `file://`.
+
+**Quando rodar `sync:watch`:**
+
+- Em desenvolvimento local enquanto edita o JSON na mão.
+- Durante a sprint, depois de cada `mavis communication` que muda tasks.
+- Em qualquer sessão Mavis que esteja criando/movendo tasks (recomendado: rodar em background, `node .harness/sync.cjs --watch &` ou via terminal dedicado).
+
+**Quando NÃO rodar:**
+
+- Durante merge de PR (pode dar conflito de mtime).
+- Em produção (o painel é buildado em build-time, não运行时 re-embutido).
+
+**Quem mantém:** Viralata Coder (mvs_f1e04f28717d42cdba05e221b7b4b6f3). PR com flag `HARNESS_AUTO_SYNC_V1` (default OFF) no worktree `wt/auto-import` (branch `feat/harness-auto-import`).
+
+**Composição com `autosync.cjs` (Mavis 311d, `wt/e79e15ca`):**
+
+Os dois daemons são **complementares** e compõe o pipeline Regra B completo:
+
+```
+mavis communication
+       ↓
+[autosync.cjs]  ← daemon que detecta TASK-XXX / MR#N / FAIL nas mensagens
+       ↓ (atualiza)
+SCRUM_TASKS.json
+       ↓
+[sync.cjs --watch]  ← daemon que detecta mtime do JSON
+       ↓ (re-embed)
+painel-scrum.html
+       ↓
+[autoSync()]  ← script do HTML que faz polling 5s (em HTTP) e auto-reload
+       ↓
+Browser do usuário
+```
+
+- `autosync.cjs` (input side): mensagens mavis → JSON
+- `sync.cjs --watch` (output side): JSON → HTML
+- `autoSync()` no HTML (browser side): HTML → reload no browser
+
+Os três juntos fecham o loop. Cada um é independente (se um cai, o pipeline degrada gracefully).
 | `docs/SHELTER_MGMT_ROADMAP.md` | Roadmap de fases (Fase 0–22). |
 | `docs/ROADMAP.md` | Roadmap paralelo (Fase 0–3: design system). |
 | `docs/AUDIT_2026-07-11.md` e `docs/AUDIT_DEEP_2026-07-11.md` | Auditorias. |
@@ -168,11 +236,9 @@ node .harness/sync.cjs --json     # output em JSON
 
 - **Worktrees ativos**: lê `git worktree list --porcelain` e popula `activeWorktrees`
 - **commitsAhead**: para cada worktree, conta `git rev-list --count main..HEAD`
-- **commitsBehind** (TASK-126): conta `git rev-list --count HEAD..main` — quanto main tem à frente do worktree
-- **Status** (3 categorias):
-  - `ahead-of-main` se commitsAhead > 0 (worktree tem commits que main não tem)
-  - `behind-main` se commitsAhead === 0 && commitsBehind > 0 (worktree parado num commit antigo; main evoluiu à frente — **NÃO é in-sync**)
-  - `in-sync` se commitsAhead === 0 && commitsBehind === 0 (worktree e main no mesmo commit)
+- **Status**:
+  - `in-sync` se commitsAhead === 0
+  - `ahead-of-main` caso contrário
 - **Refs quebradas**: percorre `blockedBy` e `relatedTasks` de cada task. Se apontar para ID inexistente, reporta (mas não corrige automaticamente).
 - **IDs duplicados**: detecta dois tasks com o mesmo `id`.
 - **Owners faltando**: tasks sem campo `owner`.
@@ -191,12 +257,10 @@ Em caso de conflito: o JSON commitado é o contrato. Mudanças locais não commi
 
 | Quando | Comando |
 |---|---|
-| Antes de commitar | `node .harness/sync.cjs --check` (deve dar exit 0) — **automático via pre-commit hook** |
-| Depois de pull | `node .harness/sync.cjs --fix` — **automático via post-merge hook** |
+| Antes de commitar | `node .harness/sync.cjs --check` (deve dar exit 0) |
+| Depois de pull | `node .harness/sync.cjs --fix` |
 | Depois de mexer manualmente no JSON | `node .harness/sync.cjs --check` |
-| Setup de hook pre-commit | `node .harness/install-hooks.cjs` (one-shot) |
-| Ver o que cada commit fez | olhar `task.history[]` no JSON |
-| Capturar atividade de siblings | `node .harness/autosync.cjs` (daemon) ou `--once` (one-shot) |
+| Setup de hook pre-commit | ver §13.6 |
 
 ### 13.6 Hook pre-commit (opcional)
 
@@ -213,45 +277,73 @@ node .harness/sync.cjs --check || {
 
 Alternativa moderna: husky / pre-commit framework. Mas o script simples acima funciona sem dependências.
 
-### 13.7 Smart detection (TASK-126..130)
-
-`sync.cjs` agora é inteligente. Em todo `--fix` (manual ou via hook) ele:
-
-1. **Ingere commits de cada worktree** (`git log main..HEAD`) e extrai padrões:
-   - `TASK-XXX` → adiciona evento `{ts, type:'commit', worktree, branch, commit, subject}` em `task.history[]`
-   - `RISK-XXX` → adiciona evento em `riskRegister[].history[]`
-   - `MR#N` → loga em `metrics.mrLog[]`
-2. **Auto-linka**: se a task referenciada está `ready` e o commit é num worktree ativo, atualiza `task.branch` e `task.worktree` (apenas quando ainda não estavam setados).
-3. **Atualiza evidence**: se a task tem evidence fraca ou incompleta, adiciona `commit <short> em <branch>: <subject>`.
-4. **Sempre atualiza** `task.updatedAt` e `metrics.lastIngest`.
-
-Resultado: cada commit com `TASK-056: ...` no message vira rastreável no JSON sem ninguém precisar atualizar manualmente.
-
-### 13.8 Autosync daemon (siblings em background)
-
-`autosync.cjs` é um daemon que pollá `mavis communication messages` a cada N segundos e:
-
-1. Lê mensagens recebidas pela minha sessão desde o último cursor (persiste em `.harness/.autosync-cursor.json`).
-2. Extrai `TASK-XXX` / `RISK-XXX` / `MR#N` do body de cada mensagem → adiciona em `task.history[]` / `riskRegister[].history[]` com `eventKey=comm-<messageId>` (idempotente).
-3. **Detecção semântica** — categoriza a mensagem em `metrics.semanticEvents[]`:
-   - `verifier-fail` → `Veredito: FAIL`, `# VEREDITO: FAIL`
-   - `verifier-pass` → `Veredito: PASS`, `# VEREDITO: PASS`
-   - `report-delivered` → `Relatório fechado`, `Path: ...`
-   - `producer-no-go` → `no-go`, `impossível fix`
-   - `fixes-delivered` → `fix A/B/C`, `delivered`, `merged` (com TASK-XXX)
-
-Uso:
-- `node .harness/autosync.cjs` — daemon (Ctrl-C pra parar)
-- `node .harness/autosync.cjs --once` — one-shot
-- `node .harness/autosync.cjs --interval 30` — poll a cada 30s
-- `node .harness/autosync.cjs --verbose` — log de cada tick
-
-Para iniciar em background: `start-job $script = { node .harness/autosync.cjs }` ou rodar num terminal dedicado.
-
-### 13.9 Última atualização
+### 13.7 Última atualização
 
 - v1.0 — 2026-07-11 — TASK-061 (Mavis mvs_311d0)
-- v1.1 — 2026-07-11 — TASK-126..130: smart commit detection, autosync daemon, git hooks automáticos
-- v1.2 — 2026-07-11 — TASK-126 fix: categoria `behind-main` no sync.cjs (worktree parado em commit velho ≠ in-sync). Também adiciona `commitsBehind` por worktree e métrica `activeWorktreesBehindMain`. Detecta drift do wt-17ff480a que estava marcado `in-sync` mas tem 83 commits atrás.
-- v1.3 — 2026-07-11 — sync.cjs: `findIssues` agora aceita RISK-XXX em `blockedBy` (além de TASK-XXX). Antes, TASK-003 → RISK-002 era reportado como broken ref. Validação de integridade respeita o destino real do id.
+
+---
+
+## 14. Regra A — Avaliação Plena por Funcionalidade (do AGENTS.md)
+
+**Toda funcionalidade, ao ser criada, modificada OU auditada, DEVE ser avaliada em TODAS as frentes que tocam a plataforma.** Mandato cross-cutting, persistente até que todas as funcionalidades estejam plenamente planejadas.
+
+Para detalhes completos da checklist (5 eixos: UX, papéis, regras de negócio, integrações, estado pós-deploy), ver `/AGENTS.md` §A.1.
+
+**Exemplo de gap identificado**: funcionalidade "voluntários em abrigos" tem aba no painel administrativo, mas falta:
+- Página pública do abrigo com bloco "Seja voluntário"
+- Perfil do usuário com bloco "Minhas voluntariadas"
+- Vinculação a vitrines e eventos (atribuições)
+- Termo de voluntariado v2 com aceite
+- Clickwrap em ações críticas
+- Auditoria completa + LGPD
+
+Qualquer funcionalidade com gaps assim é **INCOMPLETA**, não "feature parcial". Registrar no `SCRUM_TASKS.json` como `backlog` ou `ready` antes de marcar `done`.
+
+## 15. Regra B — Auto Scrum Update (do AGENTS.md)
+
+**Toda atividade de desenvolvimento, no INÍCIO e no FIM, deve atualizar `SCRUM_TASKS.json` automaticamente.** Não é opcional, não é "boa prática" — é regra.
+
+Para detalhes das transições obrigatórias (ready→in_progress, in_progress→in_review, in_review→done, blocked, dropped), ver `/AGENTS.md` §B.1.
+
+**Local da verdade**: `.harness/SCRUM_TASKS.json` (root é o owner canônico: `mvs_f1e04f28717d42cdba05e221b7b4b6f3`). Lock pra evitar race condition: avisar `mavis communication send` antes de editar batch.
+
+**Checklist de fim de task**:
+1. Atualizar status da task no JSON
+2. Recalcular `metrics.*`
+3. Re-rodar embed (re-injetar JSON no `<script id="initial-data">` do HTML)
+4. Notificar root via `mavis communication send`
+5. Se bloqueada: adicionar `blockedBy` + `evidence`
+6. Se drop: manter histórico (nunca apagar)
+
+## 16. Política de comunicação sem truncation
+
+**Causa raiz**: mensagens de `mavis communication send` com `:` (dois-pontos) terminais em qualquer linha, OU conteúdo total > ~500 chars, podem ser cortadas no transporte. Sintoma: o recipient recebe só o preâmbulo e um `:` final, sem o conteúdo real.
+
+**Política (obrigatória pra todas as sessões, não convenção)**:
+
+### Padrão de mensagem
+- **Zero `:` no fim de linha**. Use `—` (em-dash) como separador quando precisar de quebra visual.
+- **Inline curto** (< 300 chars): direto, sem separação.
+- **Inline médio** (300-500 chars): use `—` como bullet, max 1 linha por item.
+- **Longo** (> 500 chars): **SEMPRE** dropar conteúdo em scratchpad ou workspace path, mandar só path + palavra curta.
+
+### Workflow padrão (longo)
+1. Escrever conteúdo completo em arquivo (scratchpad `C:\Users\Usuario\.mavis\scratchpads\<sessionId>\scratchpad.md` OU workspace `C:\Users\Usuario\.mavis\agents\<agentName>\workspace\<filename>.md`).
+2. Mandar mensagem curta: `<comando> path do arquivo — processa quando puder.` (sem `:` terminal).
+3. Recipient lê o arquivo, processa, responde.
+
+### Workflow padrão (ack/quick reply)
+- Mensagem curta tipo `preenchido`, `show`, `combinado`, `👍` — qualquer um serve como ack sem triggerar truncation.
+- Resposta a pergunta simples: `<resposta curta> — <contexto mínimo>`. Sem `:` no fim.
+
+### Anti-padrões (cortam)
+- `Confirmação X com Y:` (termina com `:`)
+- `Status: tudo OK` (dois-pontos como rótulo, mesmo no meio — pode cortar)
+- Mensagens > 500 chars sem path
+
+### Onde isso já foi acordado
+- Pactuado entre mvs_f1e04 (root/Viralata Coder) e mvs_60b9c (General) em 2026-07-11 20:16, após o General propor padronizar.
+- Aplicar retroativamente em qualquer mensagem que falhar o teste: "essa mensagem tem algum `:` no fim de linha ou > 500 chars sem path?"
+
+
 

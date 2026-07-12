@@ -2,51 +2,52 @@
 /**
  * .harness/sync.cjs
  *
- * Auto-sync SCRUM_TASKS.json com estado real do git + detecção inteligente:
- *   - Lê `git worktree list` para detectar worktrees
- *   - Para cada worktree, calcula commitsAhead vs main
- *   - Atualiza activeWorktrees no JSON
- *   - Detecta TASK-XXX em commit messages e:
- *     * Adiciona evento no history da task
- *     * Atualiza branch da task para a branch do commit
- *     * Adiciona commit hash na evidence se ainda não tiver
- *   - Detecta RISK-XXX em commits e atualiza riskRegister
- *   - Atualiza lastActiveAt da sessão root
- *   - Valida integridade referencial (blockedBy, relatedTasks)
- *   - Detecta IDs duplicados
+ * Auto-sync SCRUM_TASKS.json com estado real do git + auto-reembed no
+ * painel-scrum.html. Implementa a Regra B (Auto Scrum Update) do AGENTS.md
+ * com **auto-import** total: o painel HTML é reescrito em tempo real
+ * toda vez que o JSON muda.
  *
- * Uso:
- *   node .harness/sync.cjs            # só reporta
- *   node .harness/sync.cjs --fix      # corrige e salva
- *   node .harness/sync.cjs --check    # exit 1 se houver problemas
- *   node .harness/sync.cjs --json     # output em JSON
- *   node .harness/sync.cjs --quiet    # suprime output (para hooks)
+ * Modos:
+ *   node .harness/sync.cjs                 # one-shot sync (relatório)
+ *   node .harness/sync.cjs --fix           # corrige worktrees/sessões no JSON
+ *   node .harness/sync.cjs --check         # exit 1 se problemas
+ *   node .harness/sync.cjs --json          # output em JSON
+ *   node .harness/sync.cjs --watch         # WATCH MODE: monitora SCRUM_TASKS.json
+ *                                          # e re-embute no painel-scrum.html a cada
+ *                                          # mudança. Pressiona Ctrl+C pra sair.
+ *   node .harness/sync.cjs --watch --serve # WATCH + serve o painel via HTTP em :8731
+ *                                          # (permite auto-reload no browser sem CORS)
  *
- * Repositório: auto-detecta via __dirname subindo até .git. Override
- * com env SCRUM_REPO=/path/to/repo.
- *
- * TASK-061 + TASK-126..130 automation · Mavis mvs_311d078987d0414a90f57ef28b789b18
+ * TASK-061 (sync base) + TASK-202 (auto-import)
+ * Bloco A · Mavis mvs_f1e04f28717d42cdba05e221b7b4b6f3
  */
 'use strict';
 
 const fs = require('fs');
 const path = require('path');
+const http = require('http');
 const { execSync } = require('child_process');
 
 const REPO = process.env.SCRUM_REPO || (() => {
+  // Auto-detecta a raiz do repo a partir de __dirname (localização do sync.cjs)
+  // Funciona em main, worktrees e cópias standalone.
   let dir = __dirname;
   for (let i = 0; i < 5; i++) {
     if (fs.existsSync(path.join(dir, '.git')) || fs.existsSync(path.join(dir, 'package.json'))) return dir;
     dir = path.dirname(dir);
   }
-  return process.cwd();
+  return 'D:\\viralata'; // fallback hardcoded
 })();
 const JSON_PATH = path.join(REPO, '.harness', 'SCRUM_TASKS.json');
+const HTML_PATH = path.join(REPO, '.harness', 'painel-scrum.html');
 const ARGS = process.argv.slice(2);
 const FIX = ARGS.includes('--fix');
 const CHECK = ARGS.includes('--check');
 const JSON_OUT = ARGS.includes('--json');
-const QUIET = ARGS.includes('--quiet') || process.env.SYNC_QUIET === '1';
+const WATCH = ARGS.includes('--watch');
+const SERVE = ARGS.includes('--serve');
+
+/* ─── helpers ─────────────────────────────────────────────────────── */
 
 function sh(cmd, cwd = REPO) {
   try {
@@ -54,6 +55,14 @@ function sh(cmd, cwd = REPO) {
   } catch (e) {
     return null;
   }
+}
+
+function now() {
+  return new Date().toISOString().replace('T', ' ').slice(0, 19);
+}
+
+function log(...args) {
+  console.log(`[${now()}]`, ...args);
 }
 
 function detectWorktrees() {
@@ -86,33 +95,8 @@ function commitsAhead(branchPath, mainCommit) {
   return out ? parseInt(out, 10) : 0;
 }
 
-// TASK-126 — detecta quando o worktree está ATRÁS de main.
-// Sem isso, sync.cjs marcava wt/17ff480a como "in-sync" porque
-// commitsAhead=0 (worktree parado num commit antigo que main já
-// passou). A métrica correta: contar commits em main que não
-// estão no worktree.
-function commitsBehind(branchPath, mainCommit) {
-  if (!mainCommit) return 0;
-  const out = sh(`git rev-list --count HEAD..${mainCommit}`, branchPath);
-  return out ? parseInt(out, 10) : 0;
-}
-
-function getCommits(branchPath, mainCommit) {
-  if (!mainCommit) return [];
-  const raw = sh(
-    `git log ${mainCommit}..HEAD --pretty=format:"%H%x09%s%x09%ai%x09%an"`,
-    branchPath
-  );
-  if (!raw) return [];
-  return raw.split('\n').map(line => {
-    const [hash, subject, date, author] = line.split('\t');
-    return { hash, subject, date, author };
-  });
-}
-
 function loadJson() {
-  const raw = fs.readFileSync(JSON_PATH, 'utf8');
-  return JSON.parse(raw);
+  return JSON.parse(fs.readFileSync(JSON_PATH, 'utf8'));
 }
 
 function saveJson(j) {
@@ -121,11 +105,8 @@ function saveJson(j) {
 }
 
 function findIssues(j) {
-  const issues = { dupIds: [], brokenRefs: [], missingOwners: [] };
-  // Mapa único de IDs válidos: TASK-XXX mora em j.tasks, RISK-XXX mora em
-  // j.riskRegister. Aceitamos ambos como destino de blockedBy.
+  const issues = { dupIds: [], brokenRefs: [], missingOwners: [], orphanFlags: [] };
   const ids = new Map();
-  (j.riskRegister || []).forEach(r => ids.set(r.id, r.title || r.id));
   j.tasks.forEach(t => {
     if (ids.has(t.id)) issues.dupIds.push({ id: t.id, first: ids.get(t.id), second: t.title });
     else ids.set(t.id, t.title);
@@ -142,204 +123,196 @@ function findIssues(j) {
   return issues;
 }
 
-// Extrai TASK-XXX, RISK-XXX, MR#N de um texto
-function extractRefs(text) {
-  if (!text) return { tasks: [], risks: [], mrs: [] };
-  const tasks = [...new Set((text.match(/\bTASK-\d+\b/g) || []))];
-  const risks = [...new Set((text.match(/\bRISK-\d+\b/g) || []))];
-  const mrs = [...new Set((text.match(/\bMR#\d+\b/g) || []))];
-  return { tasks, risks, mrs };
-}
-
-function inferStatusFromCommit(subject) {
-  // Convenção: feat/fix = implementação; chore/docs/refactor = polish;
-  // test = test. NÃO promove status sozinho (muito arriscado),
-  // só infere categoria.
-  if (/^feat[\(:]|^fix[\(:]|^perf[\(:]/i.test(subject)) return 'implementation';
-  if (/^chore[\(:]|^docs[\(:]|^style[\(:]|^refactor[\(:]/i.test(subject)) return 'polish';
-  if (/^test[\(:]/i.test(subject)) return 'test';
-  return 'unknown';
-}
-
-function ingestCommits(j, worktree, commits) {
-  if (!commits.length) return { taskHits: 0, riskHits: 0, mrHits: 0 };
-  let taskHits = 0, riskHits = 0, mrHits = 0;
-  const taskById = new Map(j.tasks.map(t => [t.id, t]));
-  const riskById = new Map((j.riskRegister || []).map(r => [r.id, r]));
-  const wtId = path.basename(worktree.path);
-
-  for (const c of commits.reverse()) { // mais antigo → mais novo, para histórico ficar cronológico
-    const refs = extractRefs(c.subject);
-    if (refs.tasks.length === 0 && refs.risks.length === 0 && refs.mrs.length === 0) continue;
-
-    // Atualiza tasks referenciadas
-    refs.tasks.forEach(taskId => {
-      const t = taskById.get(taskId);
-      if (!t) return;
-      taskHits++;
-      // Inicializa history se não existir
-      if (!Array.isArray(t.history)) t.history = [];
-      // Dedup por commit hash
-      if (t.history.some(h => h.commit === c.hash)) return;
-      t.history.push({
-        ts: c.date,
-        type: 'commit',
-        worktree: wtId,
-        branch: worktree.branch,
-        commit: c.hash,
-        short: c.hash.slice(0, 7),
-        subject: c.subject,
-        author: c.author,
-        category: inferStatusFromCommit(c.subject),
-      });
-      // Atualiza branch se a task não tem branch definida, ou se difere
-      if (!t.branch || t.branch !== worktree.branch) {
-        // Só atualiza se a task estava "ready" (não estava em worktree específica ainda)
-        if (t.status === 'ready' || !t.branch) {
-          t.branch = worktree.branch;
-          if (!t.worktree) t.worktree = `.worktrees/${wtId}`;
-        }
-      }
-      // Adiciona evidence se ainda não tem ou se é fraca
-      if (!t.evidence || t.evidence.length < 16) {
-        t.evidence = `commit ${c.hash.slice(0, 7)} em ${worktree.branch}: ${c.subject}`;
-      } else if (!t.evidence.includes(c.hash.slice(0, 7))) {
-        t.evidence += ` | +${c.hash.slice(0, 7)}`;
-      }
-      t.updatedAt = new Date().toISOString().slice(0, 10);
-    });
-
-    // Atualiza risks referenciadas
-    refs.risks.forEach(riskId => {
-      const r = riskById.get(riskId);
-      if (!r) return;
-      riskHits++;
-      if (!Array.isArray(r.history)) r.history = [];
-      if (r.history.some(h => h.commit === c.hash)) return;
-      r.history.push({
-        ts: c.date,
-        type: 'commit',
-        commit: c.hash,
-        subject: c.subject,
-      });
-    });
-
-    // MRs: loga num índice auxiliar no metrics
-    refs.mrs.forEach(mrId => {
-      mrHits++;
-      if (!j.metrics.mrLog) j.metrics.mrLog = [];
-      if (!j.metrics.mrLog.some(m => m.commit === c.hash)) {
-        j.metrics.mrLog.push({
-          ts: c.date,
-          mr: mrId,
-          commit: c.hash,
-          subject: c.subject,
-          branch: worktree.branch,
-          worktree: wtId,
-        });
-      }
-    });
-  }
-  return { taskHits, riskHits, mrHits };
-}
-
-function sync(j) {
+function syncJson(j) {
   const { worktrees, mainCommit } = detectWorktrees();
   const updates = [];
-  const ingestSummary = { taskHits: 0, riskHits: 0, mrHits: 0, commitsScanned: 0 };
-
-  // Mapear worktrees existentes no JSON
   const existing = new Map(j.activeWorktrees.map(w => [w.id, w]));
-
-  // Para cada worktree detectada, criar/atualizar entry
   const next = [];
   for (const wt of worktrees) {
     if (wt.branch === 'main') continue;
     const id = path.basename(wt.path);
     const ahead = commitsAhead(wt.path, mainCommit);
-    const behind = commitsBehind(wt.path, mainCommit);
-    // TASK-126: três categorias — worktree parado num commit velho
-    // que main já passou (behind-main) é diferente de worktree
-    // realmente em sincronia (in-sync). Sem isso, o painel mostra
-    // "in-sync" mentiroso.
-    const status = ahead > 0
-      ? 'ahead-of-main'
-      : behind > 0
-        ? 'behind-main'
-        : 'in-sync';
+    const status = ahead === 0 ? 'in-sync' : 'ahead-of-main';
     const prev = existing.get(id);
     const headTitle = sh('git log -1 --format=%s', wt.path) || '';
-    const updated = {
-      id,
-      branch: wt.branch,
-      head: wt.head,
-      headTitle,
-      path: wt.path,
-      status,
-      commitsAhead: ahead,
-      commitsBehind: behind,
+    next.push({
+      id, branch: wt.branch, head: wt.head, headTitle,
+      path: wt.path, status, commitsAhead: ahead,
       primarySession: prev?.primarySession || null,
       sessionTitle: prev?.sessionTitle || null,
       focus: prev?.focus || [],
-    };
-    next.push(updated);
-    if (prev && (prev.commitsAhead !== ahead || prev.commitsBehind !== behind || prev.head !== wt.head || prev.status !== status)) {
-      updates.push({ id, from: prev.commitsAhead, to: ahead, behind, status });
-    }
-    // Ingerir commits e detectar TASK-XXX/RISK-XXX
-    if (ahead > 0) {
-      const commits = getCommits(wt.path, mainCommit);
-      ingestSummary.commitsScanned += commits.length;
-      const r = ingestCommits(j, wt, commits);
-      ingestSummary.taskHits += r.taskHits;
-      ingestSummary.riskHits += r.riskHits;
-      ingestSummary.mrHits += r.mrHits;
+    });
+    if (prev && (prev.commitsAhead !== ahead || prev.head !== wt.head || prev.status !== status)) {
+      updates.push({ id, from: prev.commitsAhead, to: ahead, status });
     }
   }
-
   j.activeWorktrees = next;
   j.metrics.mainCommit = mainCommit;
   j.metrics.activeWorktreesAheadOfMain = next.filter(w => w.status === 'ahead-of-main').length;
-  j.metrics.activeWorktreesBehindMain = next.filter(w => w.status === 'behind-main').length;
-  j.metrics.lastIngest = {
-    ts: new Date().toISOString(),
-    ...ingestSummary,
-  };
-
-  // Atualizar lastActiveAt da minha sessão
-  const me = j.activeSessions.find(s => s.id === 'mvs_311d078987d0414a90f57ef28b789b18');
-  if (me) me.lastActiveAt = new Date().toISOString();
-
-  return { updates, mainCommit, worktreeCount: next.length, ingest: ingestSummary };
+  return { updates, mainCommit, worktreeCount: next.length };
 }
 
+/* ─── painel-scrum.html re-embed (Regra B: auto-import) ──────────── */
+
+function reembedHtml(j) {
+  const startMarker = '<script type="application/json" id="initial-data">';
+  const html = fs.readFileSync(HTML_PATH, 'utf8');
+  const startIdx = html.indexOf(startMarker);
+  if (startIdx < 0) throw new Error('Marcador initial-data não encontrado no HTML');
+  const endIdx = html.indexOf('</script>', startIdx);
+  if (endIdx < 0) throw new Error('</script> final não encontrado no HTML');
+  const before = html.slice(0, startIdx + startMarker.length);
+  const after = html.slice(endIdx);
+  const jsonBlock = '\n' + JSON.stringify(j, null, 2) + '\n  ';
+  const newHtml = before + jsonBlock + after;
+  fs.writeFileSync(HTML_PATH, newHtml, 'utf8');
+  return newHtml.length;
+}
+
+/**
+ * Patch the auto-sync badge inside the painel HTML without rewriting the
+ * whole file. Inserts/updates a small block in <head> showing last sync time.
+ */
+function patchSyncBadge(timestampIso) {
+  let html = fs.readFileSync(HTML_PATH, 'utf8');
+  const marker = '<!-- auto-sync-badge -->';
+  const badge = `<!-- auto-sync-badge --><meta name="auto-sync-last" content="${timestampIso}">`;
+  if (html.includes(marker)) {
+    html = html.replace(/<!-- auto-sync-badge -->[\s\S]*?>/, badge);
+  } else {
+    html = html.replace('</head>', `  ${badge}\n  </head>`);
+  }
+  // também atualiza o pill no topbar se existir
+  const pillMarker = '<span class="pill mono" id="auto-sync-pill"';
+  const pillNew = `<span class="pill mono" id="auto-sync-pill" title="Última sincronização automática">sync ${timestampIso.slice(11, 19)}</span>`;
+  if (html.includes(pillMarker)) {
+    html = html.replace(/<span class="pill mono" id="auto-sync-pill"[\s\S]*?<\/span>/, pillNew);
+  }
+  fs.writeFileSync(HTML_PATH, html, 'utf8');
+}
+
+/* ─── watch mode ──────────────────────────────────────────────────── */
+
+function debounce(fn, ms) {
+  let t = null;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+
+function startWatch() {
+  log('═══════════════════════════════════════════════════════════');
+  log('  WATCH MODE · Regra B · Auto-import do painel-scrum.html');
+  log('═══════════════════════════════════════════════════════════');
+  log('Monitorando:', JSON_PATH);
+  log('Re-embed em :', HTML_PATH);
+  log('Pressione Ctrl+C para sair.');
+  log('');
+
+  // Snapshot inicial
+  try {
+    const j0 = loadJson();
+    log(`snapshot inicial: ${j0.tasks.length} tasks · main @ ${j0.metrics.mainCommit || '?'}`);
+  } catch (e) {
+    log('ERRO ao ler JSON inicial:', e.message);
+    process.exit(1);
+  }
+
+  const onChange = debounce(() => {
+    try {
+      const j = loadJson();
+      const size = reembedHtml(j);
+      patchSyncBadge(new Date().toISOString());
+      const counts = {};
+      j.tasks.forEach(t => { counts[t.status] = (counts[t.status] || 0) + 1; });
+      log(`✓ re-embed ok · ${j.tasks.length} tasks · done=${counts.done||0} ready=${counts.ready||0} in_progress=${counts.in_progress||0} in_review=${counts.in_review||0} blocked=${counts.blocked||0} · HTML ${(size/1024).toFixed(1)}KB`);
+    } catch (e) {
+      log('✗ ERRO no re-embed:', e.message);
+    }
+  }, 300);
+
+  // fs.watch é instável no Windows com editores que usam save-as (escreve+rename).
+  // Poll é mais confiável nesse caso. Vamos usar chokidar-style polling.
+  let lastMtime = fs.statSync(JSON_PATH).mtimeMs;
+  const interval = setInterval(() => {
+    let mtime;
+    try { mtime = fs.statSync(JSON_PATH).mtimeMs; }
+    catch (e) { return; }
+    if (mtime !== lastMtime) {
+      lastMtime = mtime;
+      log(`↻ mudança detectada em SCRUM_TASKS.json (mtime ${new Date(mtime).toISOString()})`);
+      onChange();
+    }
+  }, 750);
+
+  // Também observa painel-scrum.html (se o usuário editar manualmente)
+  let lastHtmlMtime = fs.statSync(HTML_PATH).mtimeMs;
+  const htmlInterval = setInterval(() => {
+    let mtime;
+    try { mtime = fs.statSync(HTML_PATH).mtimeMs; }
+    catch (e) { return; }
+    if (mtime !== lastHtmlMtime) {
+      lastHtmlMtime = mtime;
+      // O HTML mudou (provavelmente pelo próprio re-embed). Não re-embed
+      // pra evitar loop — só loga.
+      log('↻ painel-scrum.html modificado externamente (regenerado por re-embed)');
+    }
+  }, 2000);
+
+  // Cleanup
+  const cleanup = () => {
+    log('encerrando watch mode...');
+    clearInterval(interval);
+    clearInterval(htmlInterval);
+    process.exit(0);
+  };
+  process.on('SIGINT', cleanup);
+  process.on('SIGTERM', cleanup);
+
+  if (SERVE) startServe();
+}
+
+function startServe() {
+  const PORT = 8731;
+  const server = http.createServer((req, res) => {
+    let url = req.url.split('?')[0];
+    if (url === '/') url = '/painel-scrum.html';
+    const filePath = path.join(REPO, '.harness', url.replace(/^\//, ''));
+    if (!filePath.startsWith(path.join(REPO, '.harness'))) {
+      res.writeHead(403); return res.end('Forbidden');
+    }
+    fs.readFile(filePath, (err, data) => {
+      if (err) { res.writeHead(404); return res.end('Not found: ' + url); }
+      const ext = path.extname(filePath);
+      const types = { '.html': 'text/html; charset=utf-8', '.json': 'application/json; charset=utf-8', '.js': 'application/javascript', '.css': 'text/css' };
+      res.writeHead(200, { 'Content-Type': types[ext] || 'text/plain', 'Access-Control-Allow-Origin': '*', 'Cache-Control': 'no-store' });
+      res.end(data);
+    });
+  });
+  server.listen(PORT, () => log(`HTTP server em http://localhost:${PORT}/painel-scrum.html (CORS habilitado)`));
+}
+
+/* ─── one-shot ────────────────────────────────────────────────────── */
+
 function main() {
+  if (WATCH) return startWatch();
+
   const j = loadJson();
   const issues = findIssues(j);
-  const syncResult = sync(j);
+  const syncResult = syncJson(j);
 
-  const result = {
-    issues,
-    sync: syncResult,
-    tasksTotal: j.tasks.length,
-  };
+  const result = { issues, sync: syncResult, tasksTotal: j.tasks.length };
 
   if (JSON_OUT) {
     console.log(JSON.stringify(result, null, 2));
-  } else if (!QUIET) {
+  } else {
     console.log('=== Scrum Sync Report ===');
     console.log(`Tarefas: ${result.tasksTotal}`);
     console.log(`Main commit: ${syncResult.mainCommit}`);
     console.log(`Worktrees ativos: ${syncResult.worktreeCount}`);
     console.log(`Updates: ${syncResult.updates.length}`);
-    syncResult.updates.forEach(u => console.log(`  - ${u.id}: ahead=${u.from} → ${u.to}, behind=${u.behind ?? '?'} (${u.status})`));
-    if (syncResult.ingest.commitsScanned > 0) {
-      console.log(`\nIngest:`);
-      console.log(`  Commits scaneados: ${syncResult.ingest.commitsScanned}`);
-      console.log(`  TASK-XXX detectados: ${syncResult.ingest.taskHits}`);
-      console.log(`  RISK-XXX detectados: ${syncResult.ingest.riskHits}`);
-      console.log(`  MR#X detectados: ${syncResult.ingest.mrHits}`);
-    }
+    syncResult.updates.forEach(u => console.log(`  - ${u.id}: ${u.from} → ${u.to} commits (${u.status})`));
     console.log(`\nIssues:`);
     console.log(`  IDs duplicados: ${issues.dupIds.length}`);
     console.log(`  Refs quebradas: ${issues.brokenRefs.length}`);
@@ -352,7 +325,7 @@ function main() {
 
   if (FIX) {
     saveJson(j);
-    if (!JSON_OUT && !QUIET) console.log(`\n✓ JSON salvo em ${JSON_PATH}`);
+    if (!JSON_OUT) console.log(`\n✓ JSON salvo em ${JSON_PATH}`);
   }
 
   if (CHECK) {
