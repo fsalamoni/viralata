@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-12T17:04:28.433Z",
+  "generatedAt": "2026-07-12T17:31:37.834Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -5401,10 +5401,10 @@
       "title": "Admin Audit: política de retenção configurável (default 6m, Marco Civil)",
       "type": "feature",
       "category": "admin",
-      "status": "ready",
+      "status": "in_review",
       "priority": "medium",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": [
         "admin",
         "audit",
@@ -5417,10 +5417,10 @@
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
-      "evidence": "Regra A §1.3 (LGPD) + Marco Civil Art. 15",
+      "evidence": "auditLogPurgeCron lê platform/settings.audit_retention_days; cutoffFor aplica override apenas ACIMA do piso legal (Marco Civil 180d / Lei 14.063 5a / RF 7a); purga gera trilha audit_retention_purged; 3 tests novos (116 functions verdes)",
       "description": "BLOCO INDEPENDENTE. Cloud Function scheduled (audit_retention.js) que purga audit_logs > 6 meses. Configurável por abrigo (LGPD permite retenção maior com justificativa). Audit_log da própria retenção.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-172",
@@ -7482,9 +7482,9 @@
     "totalTasks": 254,
     "done": 102,
     "inProgress": 2,
-    "inReview": 12,
+    "inReview": 13,
     "blocked": 0,
-    "ready": 122,
+    "ready": 121,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
