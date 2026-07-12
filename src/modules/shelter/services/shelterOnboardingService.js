@@ -27,6 +27,7 @@
  * @see docs/SHELTER_MGMT_ROADMAP.md § Fase 19
  */
 
+import { z } from 'zod';
 import {
   doc, getDoc, setDoc, serverTimestamp,
 } from 'firebase/firestore';
@@ -74,12 +75,23 @@ export async function getShelterOnboardingAcceptance(shelterClubId) {
  * }
  * @param {object} actor - {uid, displayName}
  */
+
+// TASK-012: validação Zod do input mutável (defesa antes do builder,
+// que também valida — Zod dá mensagens estruturadas e trim).
+const onboardingInputSchema = z.object({
+  legal_rep_name: z.string().trim().min(3, 'Nome do responsável legal deve ter no mínimo 3 caracteres.'),
+  legal_rep_cpf: z.string().refine((v) => v.replace(/\D/g, '').length === 11, 'CPF do responsável legal é obrigatório (11 dígitos).'),
+  legal_rep_role: z.string().trim().min(2, 'Cargo do responsável legal é obrigatório.'),
+  cnpj: z.string().optional().nullable(),
+});
+
 export async function acceptShelterOnboardingTerms(shelterClubId, input, actor) {
   if (!db) throw new Error('Firebase não disponível');
   if (!shelterClubId) throw new Error('shelterClubId é obrigatório (multi-tenant)');
   if (!actor?.uid) throw new Error('actor.uid é obrigatório');
 
-  const acceptance = buildShelterOnboardingAcceptance(input);
+  const parsedInput = onboardingInputSchema.parse(input ?? {});
+  const acceptance = buildShelterOnboardingAcceptance(parsedInput);
 
   const ref = onboardingRef(shelterClubId);
   const current = await getDoc(ref);

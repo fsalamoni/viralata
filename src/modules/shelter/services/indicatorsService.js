@@ -13,6 +13,7 @@
  * @see docs/SHELTER_MGMT_ROADMAP.md § Fase 17 (SHELTER_INDICATORS)
  */
 
+import { z } from 'zod';
 import {
   collection, doc, getDocs, query as fsQuery, where, limit,
 } from 'firebase/firestore';
@@ -95,17 +96,28 @@ async function fetchParticipations(clubId) {
  * @param {string[]} [options.indicatorTypes]
  * @returns {Promise<object>}
  */
+
+// TASK-012: validação Zod das options (evita periodType inválido
+// virar range NaN e indicatorTypes desconhecido virar objeto vazio
+// silencioso).
+const indicatorsOptionsSchema = z.object({
+  periodType: z.enum(['month', 'quarter', 'year']).default('year'),
+  referenceDate: z.union([z.string(), z.date()]).optional(),
+  indicatorTypes: z.array(z.enum([
+    'exhibition_summary', 'exhibition_detail', 'volunteer_summary', 'volunteer_detail',
+  ])).optional(),
+}).default({});
+
 export async function getIndicatorsSummary(clubId, options = {}) {
   if (!db) {
     return { errors: { _init: 'db_unavailable' } };
   }
 
-  const periodType = options.periodType || 'year';
-  const referenceDate = options.referenceDate
-    ? new Date(options.referenceDate)
-    : new Date();
+  const opts = indicatorsOptionsSchema.parse(options ?? {});
+  const periodType = opts.periodType;
+  const referenceDate = opts.referenceDate ? new Date(opts.referenceDate) : new Date();
   const { start, end } = periodRangeInd(periodType, referenceDate);
-  const indicatorTypes = new Set(options.indicatorTypes || [
+  const indicatorTypes = new Set(opts.indicatorTypes || [
     'exhibition_summary', 'exhibition_detail', 'volunteer_summary', 'volunteer_detail',
   ]);
 
