@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import BroadcastComposer from '../components/BroadcastComposer';
 import { collection, limit, onSnapshot, orderBy, query } from 'firebase/firestore';
 import { Bell, Search, ExternalLink } from 'lucide-react';
 import { db } from '@/core/config/firebase';
@@ -86,6 +87,9 @@ export default function AdminNotifications() {
           </span>
         )}
       />
+
+      {/* TASK-174: broadcast segmentado */}
+      <BroadcastComposer />
 
       <Card>
         <CardHeader className="border-b border-border">
