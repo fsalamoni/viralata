@@ -25,17 +25,18 @@ import {
   getSearchableEntities,
 } from '@/modules/shelter/services/searchService';
 import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
-import { isFeatureEnabled } from '@/core/featureFlags';
+import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 
 const STALE_TIME_MS = 30_000;
 const DEBOUNCE_MS_FOR_QUERY = 250;
 
+// Fix TASK-082: o import original (`isFeatureEnabled`) não existe em
+// core/featureFlags — o bug ficou latente porque o hook não tinha
+// consumidores. Como todos os call sites são hooks React, usamos o
+// hook oficial do FeatureFlagsContext.
 function _featureEnabled() {
-  try {
-    return isFeatureEnabled(SHELTER_FEATURE_FLAG.SHELTER_SMART_SEARCH);
-  } catch {
-    return false;
-  }
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  return useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_SMART_SEARCH);
 }
 
 // ─── Query Keys ─────────────────────────────────────────────────────────

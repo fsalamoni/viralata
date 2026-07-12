@@ -24,6 +24,8 @@ const VolunteerTermPreview = lazy(() => import('@/pages/VolunteerTermPreview'));
 // Fase 19 (Legal Terms v1): visualizador único para todas as
 // 6 páginas legais integrais (rota /legal/:slug*).
 const LegalPageViewer = lazy(() => import('@/pages/legal/LegalPageViewer'));
+// TASK-082 (Fase 18): página pública /busca (flag shelter_smart_search).
+const SearchPage = lazy(() => import('@/pages/SearchPage'));
 const PageNotFound = lazy(() => import('@/pages/PageNotFound'));
 const BannedNotice = lazy(() => import('@/pages/BannedNotice'));
 const AdminDebugPage = lazy(() => import('@/pages/AdminDebugPage'));
@@ -212,6 +214,7 @@ export default function App() {
                     Flag-gated — se OFF, o viewer redireciona para a rota
                     legada correspondente. */}
                 <Route path="/legal/:slug*" element={withLayout('LegalPageViewer', LegalPageViewer)} />
+                <Route path="/busca" element={withLayout('SearchPage', SearchPage)} />
 
                 {/* ── Onboarding (auth obrigatória, perfil ainda não completo) ── */}
                 <Route
