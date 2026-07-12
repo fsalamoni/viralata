@@ -102,6 +102,19 @@ export const CLUB_PERMISSION = Object.freeze({
   DONATIONS: 'donations',
   FEED: 'feed',
   TEAM: 'team',
+  // TASK-231: granular volunteer permissions. O escopo raiz é
+  // `volunteers` (chave usada em firestore.rules via hasClubPermission).
+  // As sub-permissões (`:read`, `:manage_status`, `:bg_check`, `:bulk`,
+  // `:delete`) são consultadas apenas client-side via hasClubPermission(
+  // membership, 'volunteers:manage_status') e similares — Firestore
+  // rules tratam a chave raiz `volunteers` como booleana única
+  // (granularidade extra fica para o painel de equipe, não para rules).
+  VOLUNTEERS: 'volunteers',
+  VOLUNTEERS_READ: 'volunteers:read',
+  VOLUNTEERS_MANAGE_STATUS: 'volunteers:manage_status',
+  VOLUNTEERS_BG_CHECK: 'volunteers:bg_check',
+  VOLUNTEERS_BULK: 'volunteers:bulk',
+  VOLUNTEERS_DELETE: 'volunteers:delete',
 });
 
 export const CLUB_PERMISSION_KEYS = Object.freeze(Object.values(CLUB_PERMISSION));
@@ -112,6 +125,12 @@ export const CLUB_PERMISSION_LABELS = Object.freeze({
   [CLUB_PERMISSION.DONATIONS]: 'Chamados de doação',
   [CLUB_PERMISSION.FEED]: 'Publicar no mural',
   [CLUB_PERMISSION.TEAM]: 'Gerenciar equipe',
+  [CLUB_PERMISSION.VOLUNTEERS]: 'Voluntários (geral)',
+  [CLUB_PERMISSION.VOLUNTEERS_READ]: 'Voluntários — apenas ler',
+  [CLUB_PERMISSION.VOLUNTEERS_MANAGE_STATUS]: 'Voluntários — pausar/retomar/bloquear',
+  [CLUB_PERMISSION.VOLUNTEERS_BG_CHECK]: 'Voluntários — aprovar/rejeitar background check',
+  [CLUB_PERMISSION.VOLUNTEERS_BULK]: 'Voluntários — importação/exportação em massa',
+  [CLUB_PERMISSION.VOLUNTEERS_DELETE]: 'Voluntários — remover definitivamente',
 });
 
 /** Estado de um pedido de ingresso (não-membro pede para entrar na organização). */

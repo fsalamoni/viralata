@@ -6,6 +6,41 @@ service firebase.storage {
     // quanto em escrita. Mantém o default seguro (Firestore/Storage
     // já negam por padrão) explícito para auditoria — qualquer novo
     // bucket/path precisa adicionar uma regra explícita aqui.
+
+    // Storage rules — Volunteers module (TASK-227)
+    // Why: storage.rules previously prohibited application/pdf, blocking:
+    //   1. BG check document upload (voluntário sobe RG/certidão)
+    //   2. Termo assinado PDF (Lei 14.063/2020 art. 4º §1º prova legal)
+    //   3. Certificado de horas PDF (Lei 9.608/1998 + termo v2 §6.1e)
+    // Decision: volunteer uploads go in /volunteers/{uid}/ (any auth user uploads, owner reads).
+    //            Cloud Functions write to /term_signed/ and /volunteer_certificates/ (immutable).
+
+    // ─── Helpers (TASK-227) ──────────────────────────────────────────
+    function isAuth() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    function isPlatformAdmin() {
+      return request.auth != null && request.auth.token.admin == true;
+    }
+
+    function isClubMemberOfVolunteer(volunteerUid) {
+      // TODO(TASK-231): replace with real check via Firestore read.
+      // Storage rules cannot do cross-service reads, so for now we
+      // allow any authenticated user. Will be tightened once
+      // granular volunteer permissions (TASK-219/231) ship.
+      return request.auth != null;
+    }
+
+    function isClubAdminForUser(volunteerUid) {
+      // TODO(TASK-231): same caveat as isClubMemberOfVolunteer above.
+      return request.auth != null;
+    }
+
     match /{allPaths=**} {
       allow read, write: if false;
     }
@@ -61,6 +96,42 @@ service firebase.storage {
         && request.resource.size < 5 * 1024 * 1024
         && (request.resource.contentType.matches('image/.*')
             || request.resource.contentType.matches('video/.*'));
+    }
+
+    // ─── Voluntários (TASK-227) ─────────────────────────────────────
+    // /volunteers/{uid}/**: uploads do próprio voluntário (foto perfil,
+    // docs complementares). Aceita image/* + application/pdf (RG/certidão).
+    match /volunteers/{userId}/{allPaths=**} {
+      allow read: if isOwner(userId) || isClubMemberOfVolunteer(userId) || isPlatformAdmin();
+      allow create, update: if isAuth() && isOwner(userId)
+        && request.resource.size < 10 * 1024 * 1024
+        && (request.resource.contentType.matches('image/.*')
+            || request.resource.contentType.matches('application/pdf'));
+      allow delete: if isOwner(userId) || isPlatformAdmin();
+    }
+
+    // /bg_check/{uid}/{fileName}: Background check (PDF único).
+    // Voluntário sobe; admin do clube valida visualmente.
+    match /bg_check/{userId}/{fileName} {
+      allow read: if isAuth() && (isOwner(userId) || isClubAdminForUser(userId) || isPlatformAdmin());
+      allow create, update: if isAuth() && isOwner(userId)
+        && request.resource.contentType.matches('application/pdf');
+      allow delete: if isPlatformAdmin();
+    }
+
+    // /term_signed/{uid}/{fileName}: termo assinado (Cloud Function only).
+    // Mutações travadas para usuários; somente platform_admin pode remover.
+    match /term_signed/{userId}/{fileName} {
+      allow read: if isAuth() && isOwner(userId);
+      allow create: if false;
+      allow update, delete: if isPlatformAdmin();
+    }
+
+    // /volunteer_certificates/{uid}/{fileName}: certificado de horas (CF only).
+    match /volunteer_certificates/{userId}/{fileName} {
+      allow read: if isAuth() && (isOwner(userId) || isClubMemberOfVolunteer(userId) || isPlatformAdmin());
+      allow create, update: if false;
+      allow delete: if isPlatformAdmin();
     }
   }
 }

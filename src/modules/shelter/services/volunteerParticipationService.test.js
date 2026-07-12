@@ -42,9 +42,11 @@ vi.mock('@/core/lib/logger', () => ({
 }));
 vi.mock('@/core/services/auditService', () => ({
   createAuditLog: (...args) => mockCreateAuditLog(...args),
+  safeCreateAuditLog: (...args) => mockSafeCreateAuditLog(...args),
 }));
 
 const mockCreateAuditLog = vi.fn().mockResolvedValue(null);
+const mockSafeCreateAuditLog = vi.fn().mockResolvedValue(null);
 
 const {
   listParticipations,
@@ -72,6 +74,7 @@ beforeEach(() => {
   mockUpdateDoc.mockReset();
   mockDeleteDoc.mockReset();
   mockCreateAuditLog.mockReset().mockResolvedValue(null);
+  mockSafeCreateAuditLog.mockReset().mockResolvedValue(null);
 });
 
 function snap(data, id = 'p-1') {

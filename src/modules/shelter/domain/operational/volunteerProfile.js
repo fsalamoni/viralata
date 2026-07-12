@@ -13,6 +13,7 @@
 
 import { z } from 'zod';
 import { VOLUNTEER_TERMS_VERSION } from '@/modules/shelter/domain/legal/volunteerTerms';
+import { signatureTextSchema } from '@/modules/shelter/domain/legal/terms';
 
 // ─── Enums compartilhados ─────────────────────────────────────────────
 
@@ -55,6 +56,21 @@ export const VOLUNTEER_SHELTER_STATUS = Object.freeze([
   'blocked',    // Bloqueado pelo abrigo
   'left',       // Saiu do abrigo (terminal)
 ]);
+
+/** Motivos canônicos de saída da rostagem (TASK-242, LGPD Art. 18 IX). */
+export const VOLUNTEER_EXIT_REASONS = Object.freeze([
+  'city_change',     // Mudança de cidade
+  'time',            // Falta de tempo
+  'personal',        // Problemas pessoais
+  'other',           // Outro abrigo / Outra atividade / Outros
+]);
+
+export const VOLUNTEER_EXIT_REASON_LABELS = Object.freeze({
+  city_change: 'Mudança de cidade',
+  time: 'Falta de tempo',
+  personal: 'Problemas pessoais',
+  other: 'Outro abrigo / Outra atividade',
+});
 
 const TERMINAL_SHELTER_STATUSES = Object.freeze(['left']);
 
@@ -163,13 +179,28 @@ export const upsertVolunteerProfileSchema = z.object({
 /**
  * Schema do aceite do termo. Chamado uma vez (no primeiro create do
  * perfil ou quando o usuário quer re-aceitar uma nova versão).
+ *
+ * Conformidade: Lei 14.063/2020 — assinatura eletrônica avançada.
+ * O `signature_text` é a fonte primária do hash do documento (ver
+ * `volunteerProfileService.acceptVolunteerTerms` + `termsAcceptanceService.recordAcceptance`).
+ * O `terms_version` deve bater com a versão canônica (drift-fix: v2
+ * tem sufixo `-v2` para distinguir do stub v1).
+ *
+ * Campos opcionais `ip_address`, `user_agent`, `liveness_verified` e
+ * `legal_basis` são metadados de contexto Lei 14.063/2020 — propagados
+ * ao aceite canônico em `terms_acceptances/`. Não são estritamente
+ * obrigatórios no client (defaults aplicados no service).
  */
 export const acceptVolunteerTermsSchema = z.object({
-  terms_version: z.string().min(1).max(20)
+  terms_version: z.string().min(1).max(30)
     .refine((v) => v === VOLUNTEER_TERMS_VERSION, {
       message: `Apenas a versão ${VOLUNTEER_TERMS_VERSION} do termo é aceita neste momento`,
     }),
-  signature_text: z.string().min(2).max(120), // nome digitado (substitui e-assinatura da Fase 18)
+  signature_text: signatureTextSchema,
+  ip_address: z.string().max(64).optional(),
+  user_agent: z.string().max(500).optional(),
+  liveness_verified: z.boolean().optional(),
+  legal_basis: z.string().max(120).optional(),
 }).strict();
 
 /**
@@ -188,6 +219,10 @@ export const shelterVolunteerRosterSchema = z.object({
   status: z.enum(VOLUNTEER_SHELTER_STATUS).default('active'),
   joined_at: z.string().datetime().optional(),
   left_at: z.string().datetime().optional(),
+  // Exit feedback (TASK-242) — preenchido quando status='left'
+  exit_reason: z.enum(VOLUNTEER_EXIT_REASONS).optional(),
+  exit_note: z.string().max(500).optional(),
+  exit_at: z.string().datetime().optional(),
   // Background check (per-shelter, não portável)
   background_check_status: z.enum(VOLUNTEER_BG_CHECK_STATUS).default('not_required'),
   background_check_at: z.string().datetime().optional(),
@@ -216,21 +251,25 @@ export const joinShelterAsVolunteerSchema = z.object({
   volunteer_photo_url: z.string().url().optional(),
   // Aceite do termo (obrigatório). Defense-in-depth: a versão deve
   // ser a atualmente aceita (mesma checagem do `acceptVolunteerTermsSchema`).
-  terms_version: z.string().min(1).max(20)
+  terms_version: z.string().min(1).max(30)
     .refine((v) => v === VOLUNTEER_TERMS_VERSION, {
       message: `Apenas a versão ${VOLUNTEER_TERMS_VERSION} do termo é aceita neste momento`,
     }),
-  signature_text: z.string().min(2).max(120),
+  signature_text: signatureTextSchema,
 }).strict();
 
 /**
  * Schema para o abrigo atualizar o status do background check
  * (pending → approved/rejected) e/ou mudar o status da rostagem.
+ * Também aceita o feedback de saída (TASK-242, LGPD Art. 18 IX):
+ * `exit_reason` + `exit_note` quando `status` muda para 'left'.
  */
 export const updateShelterVolunteerSchema = z.object({
   status: z.enum(VOLUNTEER_SHELTER_STATUS).optional(),
   background_check_status: z.enum(VOLUNTEER_BG_CHECK_STATUS).optional(),
   background_check_notes: z.string().max(1000).optional(),
+  exit_reason: z.enum(VOLUNTEER_EXIT_REASONS).optional(),
+  exit_note: z.string().max(500).optional(),
 }).strict();
 
 /**
@@ -360,6 +399,34 @@ export function isParticipationInProgress(participation) {
 export function isParticipationCompleted(participation) {
   return Boolean(participation?.check_in) && Boolean(participation?.check_out);
 }
+
+// ─── Consent withdrawal (TASK-242, LGPD Art. 18 IX) ───────────────────
+
+/**
+ * Escopos válidos para revogação do consentimento de voluntariado.
+ *
+ *  - 'profile': revoga apenas o aceite do termo (mantém vínculo com abrigos)
+ *  - 'roster':  sai de TODOS os abrigos mas mantém perfil global
+ *  - 'all':     revoga tudo (perfil + roster)
+ */
+export const VOLUNTEER_CONSENT_WITHDRAW_SCOPES = Object.freeze([
+  'profile', 'roster', 'all',
+]);
+
+export const VOLUNTEER_CONSENT_WITHDRAW_SCOPE_LABELS = Object.freeze({
+  profile: 'Apenas o aceite do termo',
+  roster: 'Sair de todos os abrigos',
+  all: 'Encerrar voluntariado completamente',
+});
+
+/**
+ * Schema de input para `withdrawVolunteerConsent`. O `note` é opcional
+ * (LGPD não exige, mas melhora a UX de feedback de saída).
+ */
+export const withdrawVolunteerConsentSchema = z.object({
+  scope: z.enum(VOLUNTEER_CONSENT_WITHDRAW_SCOPES),
+  note: z.string().max(500).optional(),
+}).strict();
 
 /**
  * Formata uma lista de availability items para exibição curta

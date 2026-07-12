@@ -41,9 +41,9 @@ describe('TERMS_TYPE enum + versões canônicas', () => {
     );
   });
 
-  it('cada tipo tem uma versão canônica no formato YYYY-MM-DD', () => {
+  it('cada tipo tem uma versão canônica no formato YYYY-MM-DD (com sufixo -vN opcional)', () => {
     for (const type of TERMS_TYPE_VALUES) {
-      expect(CURRENT_TERMS_VERSION[type]).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+      expect(CURRENT_TERMS_VERSION[type]).toMatch(/^\d{4}-\d{2}-\d{2}(-v\d+)?$/);
     }
   });
 
