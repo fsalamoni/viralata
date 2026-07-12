@@ -29,16 +29,12 @@ const PUBLIC_ROUTES = [
 ];
 
 /**
- * Violações conhecidas (TASK-249 no painel scrum): contraste do design
- * system (terracotta/cream) abaixo de 4.5:1 em botões outline e links
- * em bloco de texto. Ficam como WARNING até o ajuste de paleta — a
- * suite continua falhando para qualquer violação NOVA.
+ * Violações conhecidas por rota (id → warning em vez de fail).
+ * TASK-249 corrigiu o contraste do token primary (17 72% 43%) e o
+ * link de e-mail do /voluntarios — mapa vazio; adicionar entradas
+ * apenas com task de correção correspondente aberta.
  */
-const KNOWN_ISSUES = {
-  '/feed': ['color-contrast', 'link-in-text-block'],
-  '/organizacoes': ['color-contrast', 'link-in-text-block'],
-  '/voluntarios': ['color-contrast', 'link-in-text-block'],
-};
+const KNOWN_ISSUES = {};
 
 for (const route of PUBLIC_ROUTES) {
   test(`a11y: ${route} sem violações critical/serious`, async ({ page }) => {
