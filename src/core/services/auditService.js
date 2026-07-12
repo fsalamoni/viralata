@@ -77,6 +77,20 @@ export const AUDIT_ACTION_LABELS = {
   // Disparado por deleteAccountService ao excluir conta. Mantém
   // terms_accepted_at/terms_version (Lei 14.063/2020) e remove demais PII.
   volunteer_data_anonymized: 'Dados de voluntário anonimizados (LGPD)',
+  // ─── TASK-233: ações de voluntariado disparadas por volunteerProfileService
+  // e volunteerParticipationService. Sem label, o admin audit exibe o slug
+  // cru (fallback `action`), o que dificulta a leitura da trilha.
+  volunteer_joined_shelter: 'Voluntário ingressou no abrigo',
+  volunteer_profile_created: 'Perfil de voluntário criado',
+  volunteer_profile_updated: 'Perfil de voluntário atualizado',
+  volunteer_roster_updated: 'Vínculo de voluntário atualizado',
+  volunteer_roster_deleted: 'Vínculo de voluntário removido',
+  volunteer_participation_created: 'Participação de voluntário criada',
+  volunteer_participation_updated: 'Participação de voluntário atualizada',
+  volunteer_participation_deleted: 'Participação de voluntário removida',
+  volunteer_check_in: 'Check-in de voluntário em turno',
+  volunteer_check_out: 'Check-out de voluntário de turno',
+  volunteer_consent_withdrawn: 'Consentimento de voluntariado revogado (LGPD)',
 };
 
 // ─── TASK-217: Categorias de retenção (auditLogPurgeCron) ──────────────
