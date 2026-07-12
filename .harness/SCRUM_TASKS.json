@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-11T21:50:00-03:00",
+  "generatedAt": "2026-07-11T21:55:00-03:00",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -15,10 +15,10 @@
       "id": "wt-17ff480a",
       "branch": "wt/17ff480a",
       "head": "d0bb369efb7b9546e954dde47e5f40596d01ca93",
-      "headTitle": "feat(harness+legal+shelter): TASK-126..130 (autosync, smart detection, hooks) + TASK-201 polish",
+      "headTitle": "feat(harness+scrum): AGENTS.md (Regra A+B) + 105 tasks consolidadas (TASK-256..360)",
       "path": "D:/viralata/.worktrees/wt-17ff480a",
       "status": "ahead-of-main",
-      "commitsAhead": 4,
+      "commitsAhead": 1,
       "commitsBehind": 0,
       "primarySession": "mvs_44f2762343f94f28b506f2f4c8c12eae",
       "sessionTitle": "Sync local repo with web",
@@ -32,11 +32,11 @@
     {
       "id": "wt-auto-import",
       "branch": "feat/harness-auto-import",
-      "head": "5da437b4acb975c8f8c440b29196b534e3e08247",
-      "headTitle": "feat(harness+legal+shelter): TASK-126..130 (autosync, smart detection, hooks) + TASK-201 polish",
+      "head": "a6445ed1ea4835a41ddab2fac375595637857b75",
+      "headTitle": "feat(harness+scrum): AGENTS.md (Regra A+B) + 105 tasks consolidadas (TASK-256..360)",
       "path": "D:/viralata/.worktrees/wt-auto-import",
       "status": "ahead-of-main",
-      "commitsAhead": 4,
+      "commitsAhead": 1,
       "commitsBehind": 0,
       "primarySession": null,
       "sessionTitle": null,
@@ -45,11 +45,11 @@
     {
       "id": "wt-e79e15ca",
       "branch": "wt/e79e15ca",
-      "head": "03f6a5c2f8444cf55dd46712d48769509263e435",
-      "headTitle": "feat(harness+legal+shelter): TASK-126..130 (autosync, smart detection, hooks) + TASK-201 polish",
+      "head": "d0e3e55e26098dd0815001b9a52791c84b614632",
+      "headTitle": "feat(harness+scrum): AGENTS.md (Regra A+B) + 105 tasks consolidadas (TASK-256..360)",
       "path": "D:/viralata/.worktrees/wt-e79e15ca",
       "status": "ahead-of-main",
-      "commitsAhead": 4,
+      "commitsAhead": 1,
       "commitsBehind": 0,
       "primarySession": null,
       "sessionTitle": null,
@@ -59,10 +59,10 @@
       "id": "wt-legal-v2",
       "branch": "feat/legal-docs-v2",
       "head": "ce916dfa9afa1f04a7fe20704ddd45f2524e6555",
-      "headTitle": "feat(harness+legal+shelter): TASK-126..130 (autosync, smart detection, hooks) + TASK-201 polish",
+      "headTitle": "feat(harness+scrum): AGENTS.md (Regra A+B) + 105 tasks consolidadas (TASK-256..360)",
       "path": "D:/viralata/.worktrees/wt-legal-v2",
       "status": "ahead-of-main",
-      "commitsAhead": 4,
+      "commitsAhead": 1,
       "commitsBehind": 0,
       "primarySession": "mvs_311d078987d0414a90f57ef28b789b18",
       "sessionTitle": "Legal docs v2 + bug fix org panel + varredura completa",
@@ -75,6 +75,19 @@
         "Adicionar índice community_events composite (community_id + starts_at)",
         "Banner cookies + links footer p/avisos-legais, legislacao-animal, cookies"
       ]
+    },
+    {
+      "id": "wt-volunteer-critical",
+      "branch": "feat/volunteer-critical-fixes",
+      "head": "9101902ae59626397b8745e78b887520a25d648f",
+      "headTitle": "feat(harness+scrum): AGENTS.md (Regra A+B) + 105 tasks consolidadas (TASK-256..360)",
+      "path": "D:/viralata/.worktrees/wt-volunteer-critical",
+      "status": "ahead-of-main",
+      "commitsAhead": 1,
+      "commitsBehind": 0,
+      "primarySession": null,
+      "sessionTitle": null,
+      "focus": []
     }
   ],
   "activeSessions": [
@@ -85,7 +98,7 @@
       "status": "started",
       "workspace": "D:\\viralata\\.worktrees\\wt-e79e15ca",
       "branch": "wt/e79e15ca",
-      "lastActiveAt": "2026-07-11T23:34:25.102Z",
+      "lastActiveAt": "2026-07-12T00:51:19.459Z",
       "deliverable": "wt-e79e15ca @ 67a4c7a (5 commits ahead of main 5da437b). Pacote original: TASK-056/057/058/049/050/051 + TASK-068/069/070/071/072 (defensive coding, single acceptance dialog, safeTabs, TabErrorBoundary) + TASK-073/074 (setup) + TASK-075/076/077 (DELIVERABLE + sync.cjs + protocol §13). NEW: TASK-126/127/128/129 (3 MRs de navigation polish) + TASK-130 (auditoria FAIL pendente)."
     },
     {
@@ -4077,10 +4090,23 @@
       ],
       "description": "Gravar AGENTS.md como mandamento permanente: Regra A (avaliação plena por funcionalidade nos 5 eixos UX/Papéis/Regras/Integrações/Pós-deploy) + Regra B (auto SCRUM update em toda task, início e fim, com lock em batch). Inclui processo de 5 passos (planejar→pesquisar→reavaliar→polish→persistir), anti-patterns proibidos, e schema de task com auto-campos. Atende pedido do usuário 2026-07-11 21:30.\n\n**DONE 2026-07-11 21:35:** AGENTS.md gravado como mandamento permanente. Inclui §0 Identidade, §1 Regra A (5 eixos com anti-patterns), §2 Regra B (auto SCRUM update com auto-import do painel), §3 Onde tudo vive, §4 Comunicação inter-sessão, §5 Mudanças neste arquivo (BREAKING), §6 Histórico de versões. Mudanças futuras exigem decisão humana (PR com tag agents-md-change + entrada em docs/AGENTS_CHANGELOG.md).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11",
+      "updatedAt": "2026-07-12",
       "startedAt": "2026-07-11",
       "resolvedAt": "2026-07-11",
-      "evidence": "AGENTS.md criado em D:\\viralata\\.worktrees\\wt-e79e15ca\\AGENTS.md (245 linhas, ~9KB) — Regra A 5 eixos + Regra B auto SCRUM update + stack + worktree + comandos + protocolo de mudança"
+      "evidence": "AGENTS.md criado em D:\\viralata\\.worktrees\\wt-e79e15ca\\AGENTS.md (245 linhas, ~9KB) — Regra A 5 eixos + Regra B auto SCRUM update + stack + worktree + comandos + protocolo de mudança | +d0e3e55",
+      "history": [
+        {
+          "ts": "2026-07-11 21:51:17 -0300",
+          "type": "commit",
+          "worktree": "wt-17ff480a",
+          "branch": "wt/17ff480a",
+          "commit": "d0e3e55e26098dd0815001b9a52791c84b614632",
+          "short": "d0e3e55",
+          "subject": "feat(harness+scrum): AGENTS.md (Regra A+B) + 105 tasks consolidadas (TASK-256..360)",
+          "author": "Mavis",
+          "category": "implementation"
+        }
+      ]
     },
     {
       "id": "TASK-257",
@@ -6682,6 +6708,256 @@
       "description": "Adicionar logEvent Firebase Analytics em pontos chave: adotante_clicou_interesse, application_enviada, match, adocao_finalizada, evento_visto, rsvp_confirmado, evento_compareceu, feed_visto, post_curtido, post_comentado.",
       "createdAt": "2026-07-11",
       "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-361",
+      "title": "Decisão: destino de .tmp-legal-docs/ (13 files, 71KB, untracked)",
+      "type": "chore",
+      "category": "docs",
+      "status": "ready",
+      "priority": "high",
+      "owner": "human",
+      "branch": null,
+      "worktree": null,
+      "tags": [
+        "hold",
+        "tmp-legal-docs",
+        "decisao-humana",
+        "housekeeping"
+      ],
+      "blockedBy": [],
+      "description": "Estado: 13 files, 70883 bytes (~71KB), untracked em D:\\viralata\\worktrees\\wt-e79e15ca\\.tmp-legal-docs\\. Range: 00_Guia_Implementacao_Legal.md → 12_Termo_Adesao_Abrigos_ONG.md. Gerados pelo auto-import do Google Forms na fase legal v2, ficaram fora do commit cdaac20.\n\n**3 caminhos (origem do transcript lock 174):**\n(a) commit + push — `git add .tmp-legal-docs && git commit && git push` — polui o PR, dificulta review\n(b) descartar — `mavis-trash .tmp-legal-docs` — recuperável via OS Trash\n(c) archive — `mv .tmp-legal-docs .harness/archive/legal-v2-raw/` — mantém audit trail\n\n**Recomendação:** (b) — mavis-trash é recuperável, LEGL-201 v2 já está na main via wt-e79e15ca, a fonte raw provavelmente não agrega.\n\nOrigem: discussão no transcript lock do wt/e79e15ca, registrada no AGENTS.md §3.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-362",
+      "title": "[D-01] Decisão: Foster = Voluntário com capability especial?",
+      "type": "decision",
+      "category": "shelter",
+      "status": "ready",
+      "priority": "high",
+      "owner": "human",
+      "branch": null,
+      "worktree": null,
+      "tags": [
+        "decisao-humana",
+        "D-01",
+        "foster",
+        "voluntario",
+        "schema"
+      ],
+      "blockedBy": [],
+      "description": "Origem: INT-AB-02 (Agente A) + INT-BA-04 (Agente B). Foster (clubs/{clubId}/fosters/{fosterId}) tem foster_uid. Pergunta em aberto: o foster é modelado como VOLUNTÁRIO + papel adicional, ou é uma entidade separada?\n\n**Opções:**\n(a) Foster = Voluntário com `is_foster: true` no roster + entry separada em fosters (overlap mínimo)\n(b) Foster = entidade totalmente separada (atual, com `foster_uid` próprio)\n(c) Forking — voluntário pode ter flag `foster_eligible`, mas foster é sempre doc separado\n\n**Impacto:** Schema de `clubs/{clubId}/volunteers/{uid}`, schema de `clubs/{clubId}/fosters/{fosterId}`, UI no painel do abrigo (mesclar ou separar abas), Cloud Functions de notify (FCM ao LT vs voluntário), permissões granulares (TASK-267 + TASK-280).\n\n**Recomendação:** (c) — mais flexível, evita retrabalho em TASK-243 (atribuições finas de voluntários) e TASK-274 (capability matrix). Decisão bloqueia implementação de TASK-274, TASK-275 e TASK-326.\n\nOrigem: .harness/_consolidation-2026-07-11.md §1.4 D-01.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-363",
+      "title": "[D-02] Decisão: Aba Voluntários vs Equipe (mesclar ou separar)?",
+      "type": "decision",
+      "category": "shelter",
+      "status": "ready",
+      "priority": "medium",
+      "owner": "human",
+      "branch": null,
+      "worktree": null,
+      "tags": [
+        "decisao-humana",
+        "D-02",
+        "ux",
+        "painel-abrigo",
+        "mesclar-separar"
+      ],
+      "blockedBy": [],
+      "description": "Origem: INT-AB-10 (Agente A). ClubTeamTab.jsx (linha 99) mostra useClubMembers (membros da ONG). Voluntários (TASK-263..287) é lista separada. Decisão UX: mesclar em uma única aba \"Pessoas\" (sub-tabs: Equipe / Voluntários) ou manter separadas?\n\n**Opções:**\n(a) Separar — abas distintas \"Equipe\" e \"Voluntários\" (UX mais limpo, fácil de entender pra cada papel)\n(b) Mesclar — aba \"Pessoas\" com sub-tabs \"Equipe\" e \"Voluntários\" (visão unificada, mais cliques pra chegar)\n(c) Mesclar mas sem sub-tabs — lista única filtrável por tipo (poder e complexidade)\n\n**Impacto:** TASK-263 (CTA público), TASK-264 (JoinVolunteerModal), TASK-274 (atribuições finas), OrganizationAdminPanel.jsx (estrutura de tabs).\n\n**Recomendação:** (a) — separação clara, especialmente porque voluntário pode também ser membro (papel duplo INT-AB-03) e mesclar confunde. Decisão bloqueia implementação de TASK-263 e TASK-274.\n\nOrigem: .harness/_consolidation-2026-07-11.md §1.4 D-02.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-364",
+      "title": "[D-03] Decisão: Reputação de voluntário (horas → score) ou sem gamificação?",
+      "type": "decision",
+      "category": "community",
+      "status": "ready",
+      "priority": "low",
+      "owner": "human",
+      "branch": null,
+      "worktree": null,
+      "tags": [
+        "decisao-humana",
+        "D-03",
+        "gamificacao",
+        "reputacao",
+        "produto"
+      ],
+      "blockedBy": [],
+      "description": "Origem: INT-AB-09 (Agente A). Após adoção, o adotante tem rating (adoption_ratings). Pergunta: voluntário que ajudou na adoption deveria ter bônus de reputação? Métrica: \"horas_voluntariadas\".\n\n**Opções:**\n(a) Sem score — voluntário não tem reputação, apenas log de horas\n(b) Score simples — `volunteer_reputation: 0-100` baseado em horas_logged_total + participations_count + bg_check_status\n(c) Score com badges — same as (b) + badges de \"Voluntário Bronze/Prata/Ouro\" + leaderboard\n\n**Impacto:** Schema de clubs/{clubId}/volunteers/{uid} (campo `reputation_score`), UI (badge no roster), Cloud Function para atualizar score (cron?), gamificação (pode ser feature, não obrigação).\n\n**Recomendação:** (b) — score simples sem leaderboard, LGPD-friendly (não expõe ranking). Decisão de produto + DPO. NÃO bloqueia nenhum trabalho de TASK-263..287 (que já tem estrutura sem reputation).\n\nOrigem: .harness/_consolidation-2026-07-11.md §1.4 D-03.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-365",
+      "title": "[D-04] Decisão: Email transacional — SendGrid vs Resend (LGPD + data center BR)",
+      "type": "decision",
+      "category": "infra",
+      "status": "ready",
+      "priority": "critical",
+      "owner": "human",
+      "branch": null,
+      "worktree": null,
+      "tags": [
+        "decisao-humana",
+        "D-04",
+        "email",
+        "sendgrid",
+        "resend",
+        "lgpd",
+        "blocker"
+      ],
+      "blockedBy": [
+        "TASK-291"
+      ],
+      "description": "Origem: TASK-291 (Agente B). Cloud Function sendEmail precisa de provedor.\n\n**Comparação:**\n- **SendGrid** (Twilio): Madura, tier grátis limitado (100/dia), data center EUA default (LGPD exige BAA/adequação), preço $19.95/mês Essentials.\n- **Resend**: Mais nova (2023), DX excelente, data center EU (Frankfurt default — adequado LGPD), preço $20/mês Pro, foco em transacional.\n- **Amazon SES**: Barato ($0.10/1000), maduro, mas configuração complexa, sandbox mode irritante.\n- **Mailgun**: Similar SendGrid, $35/mês Foundation.\n\n**Recomendação:** **Resend** — DX moderna, data center EU (mais próximo LGPD BR que EUA), preço similar. Mas DPO precisa validar a adequação à LGPD.\n\n**Impacto:** Bloqueia TASK-291 (EMAIL-001) e por consequência TASK-292 (FCM-001), TASK-268, TASK-269, TASK-270, TASK-276 (todas as Cloud Functions que usam email).\n\n**Severidade:** CRITICAL — sem email, sem notificações de adoption/match/milestone, que são LGPD compliance (Marco Civil Art. 15 + Lei 14.063/2020).\n\nOrigem: .harness/_consolidation-2026-07-11.md §1.4 D-04.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-366",
+      "title": "[D-05] Decisão: Payment gateway pra eventos pagos (Pix obrigatório)",
+      "type": "decision",
+      "category": "events",
+      "status": "ready",
+      "priority": "low",
+      "owner": "human-jurídico",
+      "branch": null,
+      "worktree": null,
+      "tags": [
+        "decisao-humana",
+        "D-05",
+        "pagamento",
+        "pix",
+        "compliance",
+        "pci",
+        "lgpd"
+      ],
+      "blockedBy": [],
+      "description": "Origem: GAP-REG-05.1..05.4 (Agente C). club_events sem is_paid, price_cents, currency. Hoje tudo é gratuito. Tipos novos incluem FUNDRAISING (que pode ser pago).\n\n**Opções:**\n(a) **Stripe** — global, PCI DSS Level 1, suporta Pix BR, mas taxa 4% + R$0,39.\n(b) **Mercado Pago** — líder LATAM, taxa 4.99% + Pix grátis, checkout pro split, sandbox fácil.\n(c) **Pagar.me** — BR puro, taxa 4.99% + Pix 0.99%, foco em recorrência, Bunzl/Pagar.me group.\n(d) **Pagar com Pix direto (sem gateway)** — gerar QR Pix dinâmico, sem split. Requer PSP (Stripe Connect, MP, Pagar.me).\n(e) **Sem pagamento por enquanto** — eventos continuam gratuitos, fundraising via Doação normal (TASK-313 + club_donations).\n\n**Decisão de arquitetura:** Pricing/payment é blocker pra FUNDRAISING como tipo de evento?\n\n**Impacto:** Compliance PCI (LGPD), contrato jurídico, integração com Cloud Functions, schema de club_events (is_paid, price_cents, currency, payment_intent_id), reconciliação com club_ledger, UX (checkout flow), nota fiscal.\n\n**Severidade:** LOW se eventos pagos não forem requisito imediato. CRITICAL se a Fase 23 incluir eventos pagos. Decisão do user + DPO + Jurídico.\n\nOrigem: .harness/_consolidation-2026-07-11.md §1.4 D-05.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-367",
+      "title": "[D-06] Decisão: FCM push real (depende de app nativo?)",
+      "type": "decision",
+      "category": "infra",
+      "status": "ready",
+      "priority": "high",
+      "owner": "human",
+      "branch": null,
+      "worktree": null,
+      "tags": [
+        "decisao-humana",
+        "D-06",
+        "fcm",
+        "push",
+        "app-nativo",
+        "pwa"
+      ],
+      "blockedBy": [],
+      "description": "Origem: GAP-INT-04.5 (Agente C) + TASK-292 (Agente B). FCM push real exige configuração no Firebase Console + App Check + service worker. **Push só funciona com app nativo OU service worker registrado**.\n\n**Opções:**\n(a) **Sem FCM push por enquanto** — usar só in-app (sino, notifications/) + email (TASK-291). Mais simples, sem dependência de app nativo.\n(b) **FCM em PWA** — service worker registra token, push funciona no Chrome/Edge desktop + Android. iOS Safari só a partir de iOS 16.4+ (2023).\n(c) **FCM em app nativo** — exige Capacitor/Ionic wrapper ou app nativo, custo de manutenção alto.\n\n**Recomendação:** (b) se user quiser push real agora (a PWA é web responsive, funciona em mobile via browser). (a) se preferir simplicidade primeiro.\n\n**Impacto:** Bloqueia TASK-292 (FCM-001), TASK-345 (FCM push não in-app), TASK-268/269/270/276 (FCM admin/voluntário/BG/digest).\n\nOrigem: .harness/_consolidation-2026-07-11.md §1.4 D-06.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-368",
+      "title": "[D-07] Decisão: DPO sign-off antes de qualquer canário em prod",
+      "type": "decision",
+      "category": "lgpd",
+      "status": "ready",
+      "priority": "critical",
+      "owner": "human-jurídico",
+      "branch": null,
+      "worktree": null,
+      "tags": [
+        "decisao-humana",
+        "D-07",
+        "dpo",
+        "lgpd",
+        "compliance",
+        "blocker"
+      ],
+      "blockedBy": [],
+      "description": "Origem: Múltiplas tasks LGPD (TASK-241, 248, 272, 287, 294, 295, 331, 332). Marco Civil Art. 15 (retenção 6 meses) + Lei 14.063/2020 (assinatura eletrônica) + LGPD Art. 18 (export/delete) exigem sign-off de DPO antes de qualquer feature de PII em produção, mesmo com flag OFF em abrigo canário.\n\n**Bloqueios:** TASK-241, 248, 272, 287, 294, 295, 331, 332 — todas precisam de DPO sign-off antes de canário.\n\n**Quem:** DPO humano. Pode ser o user + consultor externo, ou user sozinho se for DPO certificado.\n\n**Severidade:** CRITICAL — sem sign-off, plataforma ilegal por LGPD.\n\nOrigem: .harness/_consolidation-2026-07-11.md §1.4 D-07.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-369",
+      "title": "[D-08] Decisão: Corte da Fase 22 → 23 — priorização Q3 das 98 tasks",
+      "type": "decision",
+      "category": "docs",
+      "status": "ready",
+      "priority": "high",
+      "owner": "human",
+      "branch": null,
+      "worktree": null,
+      "tags": [
+        "decisao-humana",
+        "D-08",
+        "roadmap",
+        "q3",
+        "priorizacao"
+      ],
+      "blockedBy": [],
+      "description": "Origem: .harness/_consolidation-2026-07-11.md §1.6 — estimativa de 6 sprints (12-15 semanas) pra cobrir os 12 blockers + 30 high + medium.\n\n**Pergunta:** Quais tasks entram no roadmap Q3 2026?\n\n**Opções:**\n(a) **Só os 12 blockers CRITICAL** (TASK-263-265, 288-292, 329, 331, 332) — 12 tasks, ~1 sprint.\n(b) **Blockers + high UX** (todos os 12 blockers + 18 high de UX público/mobile/a11y) — ~30 tasks, 3 sprints.\n(c) **Sprint 1 do roadmap sugerido** (TASK-141-148 do Agente B + TASK-141-145 do Agente C) — foco em LGPD + segurança + smoke.\n(d) **Tudo** — 6 sprints, 12-15 semanas. Cobre o backlog completo.\n\n**Recomendação:** Começar com (a) — 1 sprint de blockers, depois expandir. DPO sign-off (D-07) bloqueia vários.\n\n**Impacto:** Roadmap Q3, alocação de devs, priorização de MRs.\n\nOrigem: .harness/_consolidation-2026-07-11.md §1.4 D-08.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-370",
+      "title": "[D-09] Decisão: Validação CPF (algoritmo local vs API)",
+      "type": "decision",
+      "category": "shelter",
+      "status": "ready",
+      "priority": "medium",
+      "owner": "human",
+      "branch": null,
+      "worktree": null,
+      "tags": [
+        "decisao-humana",
+        "D-09",
+        "cpf",
+        "validacao",
+        "custo"
+      ],
+      "blockedBy": [],
+      "description": "Origem: GAP-INT-8.1 (Agente B) + TASK-321. Campo cpf é livre hoje (sem validação).\n\n**Opções:**\n(a) **Algoritmo local** — validar dígitos verificadores (Módulo 11), zero custo, offline. Não verifica se CPF é real/ativo, só formato.\n(b) **API Receita Federal** — oficial, mas não tem API pública gratuita. Alternativa: serpro.gov.br (pago, R$0.10/consulta em lote).\n(c) **API third-party (BrasilAPI, Invertexto, etc)** — grátis ou baixo custo, mas dependência externa e LGPD (compartilhar PII com terceiro).\n(d) **Sem validação** — manter campo livre, confiar no usuário.\n\n**Recomendação:** (a) + audit log se campo preenchido. Cobertura: 100% formato válido, mas 30-40% CPFs \"válidos\" podem ser fictícios (problema conhecido de validação só por DV). Para matching real com bases públicas, exige (b) ou (c).\n\n**Impacto:** TASK-321, schema de adopter_profile, Zod schema, audit log.\n\nOrigem: .harness/_consolidation-2026-07-11.md §1.4 D-09.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-371",
+      "title": "[D-10] Decisão: Calendar integration — Google Calendar API vs Cal.com vs nada",
+      "type": "decision",
+      "category": "shelter",
+      "status": "ready",
+      "priority": "medium",
+      "owner": "human",
+      "branch": null,
+      "worktree": null,
+      "tags": [
+        "decisao-humana",
+        "D-10",
+        "calendar",
+        "google-calendar",
+        "oauth",
+        "cal-com"
+      ],
+      "blockedBy": [],
+      "description": "Origem: TASK-170/317 (Agente B) + GAP-INT-5.1 (Agente B). Entrevistas e home checks precisam de scheduling.\n\n**Opções:**\n(a) **Google Calendar API** — OAuth2, sync bidirecional, ubiquitous. Complexidade: OAuth client setup + token refresh + handling.\n(b) **Cal.com** (ou similar) — open source, self-hosted, embed widget. Self-hosted exige infra, hosted tem tier grátis limitado.\n(c) **.ics download** (TASK-344 do Agente C) — usuário baixa, importa no calendar deles. Zero OAuth, simples, mas UX pior.\n(d) **Sem calendar** — coordenação manual (email + chat). Funciona pra MVP, escala ruim.\n\n**Recomendação:** (c) pra MVP (já tá no TASK-344 do Agente C), (a) quando entrevistas virarem volume.\n\n**Impacto:** TASK-317 (Agente B), TASK-170 (B), TASK-344 (C), OAuth flow, schema de interview.\n\nOrigem: .harness/_consolidation-2026-07-11.md §1.4 D-10.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
     }
   ],
   "definitionOfDone": [
@@ -6834,11 +7110,11 @@
     "firestoreIndexes": 35,
     "bundleSizeKB": 4125,
     "shelterPhases": "21/22 completas em produção (Fase 18 pendente decisão)",
-    "activeWorktreesAheadOfMain": 4,
+    "activeWorktreesAheadOfMain": 5,
     "mergedWorktreesThisSprint": [
       "wt/e79e15ca"
     ],
-    "mainCommit": "5da437b4acb975c8f8c440b29196b534e3e08247",
+    "mainCommit": "03f6a5c2f8444cf55dd46712d48769509263e435",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -6905,11 +7181,11 @@
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
     "lastIngest": {
-      "ts": "2026-07-11T23:34:25.102Z",
-      "taskHits": 16,
+      "ts": "2026-07-12T00:51:19.459Z",
+      "taskHits": 5,
       "riskHits": 0,
       "mrHits": 0,
-      "commitsScanned": 16
+      "commitsScanned": 5
     },
     "semanticEvents": [
       {
