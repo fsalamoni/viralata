@@ -462,6 +462,12 @@ service cloud.firestore {
     // Multi-tenant via shelter_club_id em cada foto. A foto é do pet
     // mas pertence ao abrigo que a subiu.
     match /pet_photos/{photoId} {
+      // TASK-142: galeria PÚBLICA do abrigo — visitante anônimo lê
+      // apenas fotos não-deletadas de categorias não-sensíveis. As
+      // demais categorias (health/foster/post_adoption/other) seguem
+      // restritas ao time do abrigo.
+      allow read: if resource.data.deleted_at == null &&
+        resource.data.category in ['rescue', 'profile', 'adoption', 'exhibition'];
       allow read: if isAuth() && (
         isPlatformAdmin() ||
         (resource.data.shelter_club_id != null &&
