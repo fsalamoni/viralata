@@ -5,7 +5,7 @@
  * sempre com fallback seguro para os padrões locais.
  */
 
-import { doc, getDoc, onSnapshot, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, getDocs, onSnapshot, setDoc, serverTimestamp, collection, query, where, orderBy, limit } from 'firebase/firestore';
 import { db } from '@/core/config/firebase';
 import { createAuditLog } from '@/core/services/auditService';
 import {
@@ -106,10 +106,13 @@ export async function markFlagsMigrationApplied(actor = null) {
   }
 }
 
-export async function setFeatureFlag(flagKey, enabled, actor) {
+export async function setFeatureFlag(flagKey, enabled, actor, reason = null) {
   if (!Object.values(FEATURE_FLAG).includes(flagKey)) {
     throw new Error(`Feature flag desconhecida: ${flagKey}`);
   }
+  // TASK-167: captura o valor anterior para a trilha from→to.
+  const current = await getPlatformSettings().catch(() => null);
+  const fromValue = current?.feature_flags?.[flagKey] ?? null;
   await setDoc(
     settingsRef(),
     {
@@ -122,7 +125,13 @@ export async function setFeatureFlag(flagKey, enabled, actor) {
   await createAuditLog({
     action: 'platform_feature_flag_changed',
     actor,
-    details: { flag: flagKey, enabled: Boolean(enabled) },
+    details: {
+      flag: flagKey,
+      enabled: Boolean(enabled),
+      from_value: fromValue,
+      to_value: Boolean(enabled),
+      reason: reason || null,
+    },
   });
 }
 
@@ -150,4 +159,21 @@ export async function updatePlatformSettingsSection(section, value, actor) {
     },
   });
   return normalized[section];
+}
+
+/**
+ * TASK-167: histórico de mudanças de feature flags (quem, quando,
+ * de→para, motivo). Lê audit_logs filtrado pela action. Requer
+ * platform_admin (rules do audit_logs já restringem leitura).
+ */
+export async function listFeatureFlagHistory(maxResults = 20) {
+  if (!db) return [];
+  const q = query(
+    collection(db, 'audit_logs'),
+    where('action', '==', 'platform_feature_flag_changed'),
+    orderBy('created_at_ms', 'desc'),
+    limit(maxResults),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 }

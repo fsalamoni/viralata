@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { FEATURE_FLAG_META } from '@/core/featureFlags';
 import { usePlatformSettings } from '@/core/lib/FeatureFlagsContext';
-import { setFeatureFlag, markFlagsMigrationApplied } from '@/core/services/platformSettingsService';
+import { setFeatureFlag, listFeatureFlagHistory, markFlagsMigrationApplied } from '@/core/services/platformSettingsService';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
@@ -22,6 +23,13 @@ export default function AdminFlags() {
   const { isPlatformAdmin, user } = useAuth();
   const { settings } = usePlatformSettings();
   const [savingFlag, setSavingFlag] = useState('');
+  const qc = useQueryClient();
+  // TASK-167: histórico de mudanças de flags (audit_logs).
+  const { data: flagHistory = [] } = useQuery({
+    queryKey: ['admin', 'flag-history'],
+    queryFn: () => listFeatureFlagHistory(20),
+    staleTime: 30_000,
+  });
 
   // Hooks de classe dos wrappers. Devem ficar ANTES dos early-returns.
   const deniedClass = useArenaPageClasses('arena-page mx-auto max-w-3xl py-16 text-center');
@@ -58,6 +66,7 @@ export default function AdminFlags() {
     try {
       await setFeatureFlag(flagKey, enabled, user);
       toast.success(`Flag ${enabled ? 'ativada' : 'desativada'}.`);
+      qc.invalidateQueries({ queryKey: ['admin', 'flag-history'] });
     } catch (err) {
       toast.error(err.message || 'Não foi possível atualizar a flag.');
     } finally {
@@ -137,6 +146,36 @@ export default function AdminFlags() {
               </div>
             );
           })}
+        </CardContent>
+      </Card>
+
+      {/* TASK-167: histórico de mudanças (quem ligou, quando, de→para, motivo) */}
+      <Card>
+        <CardContent className="p-5">
+          <h3 className="mb-3 text-sm font-bold">Histórico de mudanças</h3>
+          {flagHistory.length === 0 ? (
+            <p className="text-sm text-muted-foreground">Nenhuma mudança registrada ainda.</p>
+          ) : (
+            <ol className="space-y-2">
+              {flagHistory.map((h) => (
+                <li key={h.id} className="rounded-lg border border-border p-2.5 text-xs">
+                  <span className="font-semibold">{h.details?.flag}</span>{' '}
+                  <span className="text-muted-foreground">
+                    {String(h.details?.from_value ?? '—')} → {String(h.details?.to_value ?? h.details?.enabled)}
+                  </span>
+                  {' · '}
+                  <span className="text-muted-foreground">{h.actor_name || h.actor_id}</span>
+                  {' · '}
+                  <span className="text-muted-foreground">
+                    {h.created_at_ms ? new Date(h.created_at_ms).toLocaleString('pt-BR') : ''}
+                  </span>
+                  {h.details?.reason && (
+                    <p className="mt-1 text-muted-foreground">Motivo: {h.details.reason}</p>
+                  )}
+                </li>
+              ))}
+            </ol>
+          )}
         </CardContent>
       </Card>
 
