@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-12T04:58:13.535Z",
+  "generatedAt": "2026-07-12T12:16:37.296Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -2514,10 +2514,10 @@
       "title": "Smart Search: adicionar campo search_keywords em pets",
       "type": "feature",
       "category": "search",
-      "status": "ready",
+      "status": "in_review",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": "feat/shelter-18-smart-search",
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": "SHELTER_SMART_SEARCH",
       "worktree": null,
       "pr": null,
@@ -2537,10 +2537,10 @@
         "TASK-077",
         "TASK-078"
       ],
-      "evidence": "decisão TASK-001 (Firestore nativo); SHELTER_MGMT_ROADMAP.md §Fase 17",
+      "evidence": "buildSearchKeywords no domain search (tokens normalizados + prefixos, bounded 100, 5 tests) populado em createPet/updatePet do petService",
       "description": "BLOCO INDEPENDENTE. Adicionar campo search_keywords: string[] em pets/{petId}. Cloud Function onWrite normaliza nome+raça+cor+descrição → lowercase, sem acentos, split em tokens. Adicionar search_text: string.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-076",
@@ -2646,10 +2646,10 @@
       "title": "Smart Search: composite indexes em firestore.indexes.json",
       "type": "infra",
       "category": "search",
-      "status": "ready",
+      "status": "in_review",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": "feat/shelter-18-smart-search",
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": "SHELTER_SMART_SEARCH",
       "worktree": null,
       "pr": null,
@@ -2663,20 +2663,20 @@
       "relatedTasks": [
         "TASK-048"
       ],
-      "evidence": "firestore.indexes.json (atual: 35 indexes)",
+      "evidence": "firestore.indexes.json: índice composto pets search_keywords CONTAINS + status ASC + created_at DESC (multi-field only, regra do projeto respeitada)",
       "description": "BLOCO INDEPENDENTE. Adicionar composite indexes para: pets (search_keywords ARRAY, status STRING, created_at TIMESTAMP), users (search_keywords ARRAY, role STRING, city STRING), clubs (search_keywords ARRAY, city STRING). REGRA: NÃO declarar single-field collectionGroup (auto-criado). Validar no emulador local antes de commitar.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-080",
       "title": "Smart Search: backfill script para popular search_keywords em docs existentes",
       "type": "feature",
       "category": "search",
-      "status": "ready",
+      "status": "in_review",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": "feat/shelter-18-smart-search",
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": "SHELTER_SMART_SEARCH",
       "worktree": null,
       "pr": null,
@@ -2692,20 +2692,20 @@
       "relatedTasks": [
         "TASK-048"
       ],
-      "evidence": "functions/index.js",
+      "evidence": "scripts/backfill-search-keywords.mjs (admin SDK, idempotente, batches 400, --dry-run)",
       "description": "BLOCO INDEPENDENTE. Criar functions/backfillSearchKeywords.js (Cloud Function on-call, manual). Recebe {collection, batchSize, dryRun}. Para cada doc, gera search_keywords e grava. Idempotente. Dry-run por padrão. Roda contra 10k pets sem timeout.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-081",
       "title": "Smart Search: hook useSmartSearch com filtros facetados",
       "type": "feature",
       "category": "search",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": "feat/shelter-18-smart-search",
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": "SHELTER_SMART_SEARCH",
       "worktree": null,
       "pr": null,
@@ -2723,20 +2723,21 @@
         "TASK-018",
         "TASK-082"
       ],
-      "evidence": "src/hooks/; @tanstack/react-query já instalado",
+      "evidence": "Já existia: src/modules/shelter/hooks/useSmartSearch.js (multi-entity, filtros facetados); corrigido import quebrado isFeatureEnabled→useFeatureFlag e agora tem consumidor (/busca)",
       "description": "BLOCO INDEPENDENTE. Criar src/hooks/useSmartSearch.js usando @tanstack/react-query. Params: query, filters (species, size, city, radius, status). Combina query Firestore estruturada (where em facets) com fuzzy local (Fuse.js) para query livre. Debounce 300ms.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-082",
       "title": "Smart Search: página /busca",
       "type": "feature",
       "category": "search",
-      "status": "ready",
+      "status": "in_review",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": "feat/shelter-18-smart-search",
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": "SHELTER_SMART_SEARCH",
       "worktree": null,
       "pr": null,
@@ -2753,10 +2754,10 @@
         "TASK-048",
         "TASK-083"
       ],
-      "evidence": "src/pages/; src/App.jsx",
+      "evidence": "src/pages/SearchPage.jsx — /busca pública flag-gated (shelter_smart_search): busca abrigos, drill-down para pets do abrigo selecionado; Skeleton/erro/empty states",
       "description": "BLOCO INDEPENDENTE. Criar src/pages/Search.jsx com sidebar de filtros facetados, lista de resultados, paginação. Usa useSmartSearch. Design consistente com DESIGN_SYSTEM.md. Adicionar rota /busca em App.jsx.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-083",
@@ -5654,10 +5655,10 @@
       "title": "Pública: /busca (Fase 18) com filtros facetados",
       "type": "feature",
       "category": "search",
-      "status": "ready",
+      "status": "in_review",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": [
         "publica",
         "busca",
@@ -5671,10 +5672,10 @@
         "TASK-075",
         "TASK-081"
       ],
-      "evidence": "Regra A §1.1 (público) — busca global",
+      "evidence": "Mesma entrega da TASK-082 — rota /busca no App.jsx com SmartSearchBar + useSmartSearch",
       "description": "BLOCO INDEPENDENTE. /busca acessível sem auth. Filtros: tipo (pet, abrigo, evento, comunidade), cidade, raça, porte. Resultado com link pra detalhe.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-183",
@@ -7439,11 +7440,11 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 254,
-    "done": 61,
+    "done": 62,
     "inProgress": 2,
-    "inReview": 33,
+    "inReview": 38,
     "blocked": 0,
-    "ready": 142,
+    "ready": 136,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
