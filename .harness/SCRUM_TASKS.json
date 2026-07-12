@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-12T13:20:31.036Z",
+  "generatedAt": "2026-07-12T13:41:53.711Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -5090,10 +5090,10 @@
       "title": "Admin Notifications: segmentação por papel + filtros demográficos",
       "type": "feature",
       "category": "admin",
-      "status": "ready",
+      "status": "in_review",
       "priority": "medium",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": [
         "admin",
         "notificacoes",
@@ -5104,10 +5104,10 @@
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
-      "evidence": "Regra A §1.2 (papel)",
+      "evidence": "broadcastService (resolveSegmentUserIds: all/adopters/volunteers/shelter_admins/city, cap 500) + BroadcastComposer no AdminNotifications com preview de alcance + confirmação + audit admin_broadcast_sent + tipo ADMIN_BROADCAST",
       "description": "BLOCO INDEPENDENTE. Em AdminNotifications.jsx, adicionar select de segmento: \"Todos\", \"Adotantes ativos\", \"Voluntários\", \"Admins abrigo\", \"Por cidade\".",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-175",
@@ -5189,10 +5189,10 @@
       "title": "Admin Users: workflow de banning (motivo, prazo, recurso)",
       "type": "feature",
       "category": "admin",
-      "status": "ready",
+      "status": "in_review",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": [
         "admin",
         "users",
@@ -5204,20 +5204,20 @@
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
-      "evidence": "Regra A §1.3 (LGPD) + Marco Civil",
+      "evidence": "BanUserSection no AdminUserManagement: dialog motivo obrigatório (min 5) + prazo perpétuo/7/30/90d (banned_until); expiração automática no isBanned do AuthContext; BannedNotice mostra prazo; audit user_banned com banned_until. Email automático anotado como dependência da infra de email (TASK-222/229)",
       "description": "BLOCO INDEPENDENTE. Em AdminUserManagement.jsx, banir user: motivo (textarea), prazo (perpétuo/temporário), notificação por email. Audit_log. BannedNotice.jsx (já existe) renderiza.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-179",
       "title": "Admin Users: histórico de mudanças de role (audit trail)",
       "type": "feature",
       "category": "admin",
-      "status": "ready",
+      "status": "in_review",
       "priority": "medium",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": [
         "admin",
         "users",
@@ -5229,10 +5229,10 @@
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
-      "evidence": "Regra A §1.3 (auditoria)",
+      "evidence": "promote/demote já auditavam; adicionada timeline por usuário — dialog Histórico com AuditLogTable filtrado por userId no BanUserSection",
       "description": "BLOCO INDEPENDENTE. Toda mudança de role grava audit_log. UI mostra timeline por usuário.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-180",
@@ -7094,9 +7094,9 @@
     "totalTasks": 254,
     "done": 100,
     "inProgress": 2,
-    "inReview": 7,
+    "inReview": 10,
     "blocked": 0,
-    "ready": 129,
+    "ready": 126,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
