@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-12T12:45:23.188Z",
+  "generatedAt": "2026-07-12T12:55:01.227Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -4552,10 +4552,10 @@
       "title": "Dashboard: estatísticas globais (soma de todos os abrigos) em Home",
       "type": "feature",
       "category": "core",
-      "status": "ready",
+      "status": "in_review",
       "priority": "low",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": [
         "dashboard",
         "publica",
@@ -4566,10 +4566,10 @@
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
-      "evidence": "Regra A §1.1 (público) — transparência plataforma",
+      "evidence": "src/components/HomeStats.jsx na Home — 3 contadores via getCountFromServer (pets, adoções, organizações), flag home_stats_v1 default OFF, some silenciosamente em erro",
       "description": "BLOCO INDEPENDENTE. Em Home.jsx, adicionar bloco \"Viralata em números\": # animais resgatados, # adoções concretizadas, # abrigos ativos, # voluntários. Cloud Function agregada atualizada diariamente.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-154",
@@ -4944,10 +4944,10 @@
       "title": "Admin Audit: filtros avançados (por user, ação, range, módulo)",
       "type": "feature",
       "category": "admin",
-      "status": "ready",
+      "status": "in_review",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": [
         "admin",
         "audit",
@@ -4959,20 +4959,20 @@
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
-      "evidence": "Regra A §1.4 (admin)",
+      "evidence": "AuditLogTable: filtro por módulo (classifyAuditModule + 4 tests) + filtros persistidos na URL via useSearchParams (compartilháveis)",
       "description": "BLOCO INDEPENDENTE. Em AdminAuditLog.jsx, adicionar filtros: usuário, action type, date range, módulo (shelter/community/admin/core). Persistir filtros em URL.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-170",
       "title": "Admin Audit: exportação CSV com filtro aplicado",
       "type": "feature",
       "category": "admin",
-      "status": "ready",
+      "status": "in_review",
       "priority": "medium",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": [
         "admin",
         "audit",
@@ -4984,10 +4984,10 @@
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
-      "evidence": "Regra A §1.4 (admin) + LGPD Art. 18 V",
+      "evidence": "Botão Exportar CSV no AuditLogTable — exporta os logs filtrados com BOM UTF-8, separador ; e proteção contra formula injection",
       "description": "BLOCO INDEPENDENTE. Botão \"Exportar\" gera CSV com os mesmos filtros aplicados. Limit 10k rows + warning se maior.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-171",
@@ -7056,9 +7056,9 @@
     "totalTasks": 254,
     "done": 62,
     "inProgress": 2,
-    "inReview": 40,
+    "inReview": 43,
     "blocked": 0,
-    "ready": 134,
+    "ready": 131,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
