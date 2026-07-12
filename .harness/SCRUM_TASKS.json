@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-11T23:26:55.182Z",
+  "generatedAt": "2026-07-12T02:40:20.641Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -10,7 +10,20 @@
     "endsAt": "2026-07-18",
     "goal": "Estabilizar produção pós-deploy das 22 fases, fechar 3 worktrees em paralelo, decidir backend da Fase 18, priorizar débitos técnicos"
   },
-  "activeWorktrees": [],
+  "activeWorktrees": [
+    {
+      "id": "viralata",
+      "branch": "claude/scrum-board-management-yxo02k",
+      "head": "aeb3aa76996ce8c1da3260deddc4ccf654b4ec20",
+      "headTitle": "fix(layout): HandHeartshake → HeartHandshake (icone inexistente no lucide-react quebrava build)",
+      "path": "/home/user/viralata",
+      "status": "in-sync",
+      "commitsAhead": 0,
+      "primarySession": null,
+      "sessionTitle": null,
+      "focus": []
+    }
+  ],
   "activeSessions": [
     {
       "id": "mvs_311d078987d0414a90f57ef28b789b18",
@@ -5984,10 +5997,10 @@
       "title": "auditLogPurgeCron — 6 meses Marco Civil Art. 15 (delete automático audit_logs)",
       "type": "infra",
       "category": "infra",
-      "status": "ready",
+      "status": "in_review",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "mvs_f1e04f28717d42cdba05e221b7b4b6f3",
+      "branch": "feat/volunteer-critical-fixes",
       "flag": null,
       "worktree": null,
       "pr": null,
@@ -6001,10 +6014,10 @@
         "TASK-126",
         "TASK-008"
       ],
-      "evidence": "D:\\viralata\\src\\core\\services\\auditService.js:78-125 (sem retention); D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_REGRA_A_AUDIT.md §LGPD Marco Civil",
+      "evidence": "D:\\viralata\\src\\core\\services\\auditService.js:78-125 (sem retention); D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_REGRA_A_AUDIT.md §LGPD Marco Civil; commits em origin/feat/volunteer-critical-fixes, integrado+validado em claude/scrum-board-management-yxo02k (npm test 1368 verde, build OK, lint OK) em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. audit_logs cresce indefinidamente, viola Marco Civil Art. 15 (6 meses). Criar Cloud Function onSchedule (daily) que deleta audit_logs com created_at_ms < now - 6*30*24*60*60*1000. Idem ao galleryPurgeCron.js. Regra A §A.1.3 + LGPD.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11 20:50"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-218",
@@ -6233,10 +6246,10 @@
       "title": "Wire Firebase App Check (reCAPTCHA Enterprise) + hCaptcha no /voluntarios/seja (defesa bot)",
       "type": "security",
       "category": "infra",
-      "status": "ready",
+      "status": "in_review",
       "priority": "critical",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "mvs_f1e04f28717d42cdba05e221b7b4b6f3",
+      "branch": "feat/volunteer-critical-fixes",
       "flag": null,
       "worktree": null,
       "pr": null,
@@ -6250,20 +6263,20 @@
         "TASK-126",
         "TASK-008"
       ],
-      "evidence": "D:\\viralata\\src\\core\\config\\firebase.js (zero initializeAppCheck); D:\\viralata\\docs\\SECURITY_AUDIT.md:41,57; D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §Critical",
+      "evidence": "D:\\viralata\\src\\core\\config\\firebase.js (zero initializeAppCheck); D:\\viralata\\docs\\SECURITY_AUDIT.md:41,57; D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §Critical; commits em origin/feat/volunteer-critical-fixes, integrado+validado em claude/scrum-board-management-yxo02k (npm test 1368 verde, build OK, lint OK) em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. CRÍTICO — /voluntarios/seja público pós-auth com FCM tokens expostos. Bot pode se inscrever 1000x com CPFs fake. (1) Wire initializeAppCheck + ReCaptchaEnterpriseProvider. (2) Enforcement em firestore.rules para collections volunteer_profile e volunteers create. (3) hCaptcha visível como fallback. Compliance Fase 20 (SHELTER_SECURITY_HARDENING).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11 21:00"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-227",
       "title": "Storage paths volunteers/{uid}/ + accept PDF (BG check, term_signed, certificados)",
       "type": "feature",
       "category": "infra",
-      "status": "ready",
+      "status": "in_review",
       "priority": "critical",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "mvs_f1e04f28717d42cdba05e221b7b4b6f3",
+      "branch": "feat/volunteer-critical-fixes",
       "flag": null,
       "worktree": null,
       "pr": null,
@@ -6277,20 +6290,20 @@
         "TASK-126",
         "TASK-220"
       ],
-      "evidence": "D:\\viralata\\storage.rules:20-26 (proíbe PDF); D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §Critical",
+      "evidence": "D:\\viralata\\storage.rules:20-26 (proíbe PDF); D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §Critical; commits em origin/feat/volunteer-critical-fixes, integrado+validado em claude/scrum-board-management-yxo02k (npm test 1368 verde, build OK, lint OK) em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. CRÍTICO — storage.rules proíbe application/pdf, bloqueia BG check document + termo assinado PDF + certificado de horas (todos prometidos em Lei 14.063/2020 art. 4º + termo v2). (1) Adicionar match volunteers/{userId}/{allPaths=**} com accept application/pdf+image/*, (2) bucket bg_check/{docId}.pdf, (3) bucket term_signed/{termId}.pdf, (4) bucket volunteer_certificates/ (read: voluntário+abrigo, write: Cloud Function only).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11 21:00"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-228",
       "title": "Cloud Functions expand: 5 triggers + cron aggregation + reminder + DLQ + idempotency + anomaly",
       "type": "feature",
       "category": "infra",
-      "status": "ready",
+      "status": "in_review",
       "priority": "critical",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "mvs_f1e04f28717d42cdba05e221b7b4b6f3",
+      "branch": "feat/volunteer-critical-fixes",
       "flag": null,
       "worktree": null,
       "pr": null,
@@ -6304,20 +6317,20 @@
         "TASK-220",
         "TASK-126"
       ],
-      "evidence": "D:\\viralata\\functions\\index.js (1 trigger só); D:\\viralata\\src\\core\\services\\firebase.js:12; D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §Critical",
+      "evidence": "D:\\viralata\\functions\\index.js (1 trigger só); D:\\viralata\\src\\core\\services\\firebase.js:12; D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §Critical; commits em origin/feat/volunteer-critical-fixes, integrado+validado em claude/scrum-board-management-yxo02k (npm test 1368 verde, build OK, lint OK) em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. CRÍTICO. Expandir TASK-220: (1) onUpdate users/{uid}/volunteer_profile/main → propagar snapshot pra rostagens, (2) onCreate clubs/*/volunteers → notify admin, (3) onCreate clubs/*/volunteer_participations → notify admin, (4) onUpdate check_in/check_out → notify admin + 360° eval trigger, (5) onDelete volunteer → cleanup participations, (6) cron hours_logged_total (FieldValue.increment), (7) cron reminder shift 24h, (8) DLQ collection, (9) idempotency keys, (10) anomaly detection cron (50h/semana, check-in 1min).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11 21:00"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-229",
       "title": "Email SendGrid + FCM + Event Webhook + token rotation (welcome/shift/BG/milestone)",
       "type": "feature",
       "category": "infra",
-      "status": "ready",
+      "status": "in_review",
       "priority": "critical",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "mvs_f1e04f28717d42cdba05e221b7b4b6f3",
+      "branch": "feat/volunteer-critical-fixes",
       "flag": null,
       "worktree": null,
       "pr": null,
@@ -6332,10 +6345,10 @@
         "TASK-126",
         "TASK-008"
       ],
-      "evidence": "D:\\viralata\\functions\\adminAlerts.js:10-11,163 (STUB 9 meses); D:\\viralata\\functions\\package.json (zero deps email); D:\\viralata\\src\\core\\services\\firebase.js:12 (messagingSenderId só); D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §Critical",
+      "evidence": "D:\\viralata\\functions\\adminAlerts.js:10-11,163 (STUB 9 meses); D:\\viralata\\functions\\package.json (zero deps email); D:\\viralata\\src\\core\\services\\firebase.js:12 (messagingSenderId só); D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §Critical; commits em origin/feat/volunteer-critical-fixes, integrado+validado em claude/scrum-board-management-yxo02k (npm test 1368 verde, build OK, lint OK) em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. CRÍTICO. Expandir TASK-222: (1) adapter emailProviderAdapter (StubProvider + SendGridProvider via EMAIL_PROVIDER env), (2) @sendgrid/mail + retry + DLQ + bounce handling, (3) SendGrid Event Webhook (signature validation) → email_events/{messageId}, (4) wire getMessaging(app) + registerServiceWorker + permission request UX, (5) users/{uid}.fcm_tokens[] + fcmTokenPurgeCron 60d, (6) transactional vs promotional consent (email_consent_promotional gate), (7) CAN-SPAM List-Unsubscribe, (8) iOS Safari PWA limitation fallback, (9) SendGrid Dynamic Templates versioned.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11 21:00"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-230",
@@ -6454,7 +6467,7 @@
       "title": "Audit fail visibility — .catch(() => {}) → Sentry.captureException em todos createAuditLog",
       "type": "security",
       "category": "infra",
-      "status": "in_progress",
+      "status": "in_review",
       "priority": "critical",
       "owner": "mvs_f1e04f28717d42cdba05e221b7b4b6f3",
       "branch": "feat/volunteer-critical-fixes",
@@ -6472,20 +6485,20 @@
         "TASK-193",
         "TASK-243"
       ],
-      "evidence": "D:\\viralata\\src\\modules\\shelter\\services\\volunteerProfileService.js:97,287,357,396 (audit fail .catch silencioso); D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §Critical",
+      "evidence": "D:\\viralata\\src\\modules\\shelter\\services\\volunteerProfileService.js:97,287,357,396 (audit fail .catch silencioso); D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §Critical; commits em origin/feat/volunteer-critical-fixes, integrado+validado em claude/scrum-board-management-yxo02k (npm test 1368 verde, build OK, lint OK) em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. CRÍTICO — LGPD Art. 37: falha de auditoria NÃO pode ser silenciosa. Substituir todos .catch(() => {}) por .catch(err => Sentry.captureException(err, { tags: { audit_failure: true, action, club_id } })) em todos os services que chamam createAuditLog. Alertar em PagerDuty se audit_failure > 5/hora. Combinar com TASK-243 (Sentry+Crashlytics).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11 21:30"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-235",
       "title": "Página /voluntarios + /voluntarios/seja + /voluntarios/termo (preview) — wire useJoinShelterAsVolunteer",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "in_review",
       "priority": "critical",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "mvs_f1e04f28717d42cdba05e221b7b4b6f3",
+      "branch": "feat/volunteer-critical-fixes",
       "flag": null,
       "worktree": null,
       "pr": null,
@@ -6501,20 +6514,20 @@
         "TASK-206",
         "TASK-126"
       ],
-      "evidence": "D:\\viralata\\src\\modules\\shelter\\hooks\\useVolunteerProfile.js:81-90 (useJoinShelterAsVolunteer zero consumidores); D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §UX",
+      "evidence": "D:\\viralata\\src\\modules\\shelter\\hooks\\useVolunteerProfile.js:81-90 (useJoinShelterAsVolunteer zero consumidores); D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §UX; commits em origin/feat/volunteer-critical-fixes, integrado+validado em claude/scrum-board-management-yxo02k (npm test 1368 verde, build OK, lint OK) em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. CRÍTICO. (1) Página institucional /voluntarios (programa + FAQ + link termo + 3 CTAs: seja-voluntário, ver termo, ver abrigo). (2) /voluntarios/termo (preview integral do termo v2 com table of contents). (3) /voluntarios/seja (auth required, clickwrap aceite, chama useJoinShelterAsVolunteer no submit). (4) Sucesso redireciona para /perfil#voluntariados. (5) Link \"Voluntários\" no menu Layout (footer). Combinar com TASK-204+205+206.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11 21:00"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-236",
       "title": "Wire VolunteerProfileForm no /perfil + corrigir canAbriho (1 de 3 dead code)",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "in_review",
       "priority": "critical",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "mvs_f1e04f28717d42cdba05e221b7b4b6f3",
+      "branch": "feat/volunteer-critical-fixes",
       "flag": null,
       "worktree": null,
       "pr": null,
@@ -6529,17 +6542,17 @@
         "TASK-126",
         "TASK-235"
       ],
-      "evidence": "D:\\viralata\\src\\modules\\shelter\\components\\VolunteerProfileForm.jsx (NÃO MONTADO); D:\\viralata\\src\\modules\\organizations\\pages\\OrganizationAdminPanel.jsx:323 (canAbriho hardcoded false); D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §UX",
+      "evidence": "D:\\viralata\\src\\modules\\shelter\\components\\VolunteerProfileForm.jsx (NÃO MONTADO); D:\\viralata\\src\\modules\\organizations\\pages\\OrganizationAdminPanel.jsx:323 (canAbriho hardcoded false); D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §UX; commits em origin/feat/volunteer-critical-fixes, integrado+validado em claude/scrum-board-management-yxo02k (npm test 1368 verde, build OK, lint OK) em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. CRÍTICO. (1) Montar VolunteerProfileForm no /perfil#voluntariados como edit. (2) Criar prop canManageVolunteers real (derivado de hasClubPermission(clubId,\"volunteers\")). (3) Corrigir default canAbriho=false no VolunteersRoster (admin consegue pausar/retomar/bloquear/excluir). (4) Corrigir default canAbriho em ParticipationsList. Combinar com TASK-210.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11 21:00"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-237",
       "title": "Wire ParticipationForm + ParticipationsList no painel admin (2 e 3 de 3 dead code)",
       "type": "feature",
       "category": "shelter",
-      "status": "in_progress",
+      "status": "in_review",
       "priority": "critical",
       "owner": "mvs_f1e04f28717d42cdba05e221b7b4b6f3",
       "branch": "feat/volunteer-critical-fixes",
@@ -6557,17 +6570,17 @@
         "TASK-236",
         "TASK-126"
       ],
-      "evidence": "D:\\viralata\\src\\modules\\shelter\\components\\ParticipationForm.jsx (NÃO MONTADO); D:\\viralata\\src\\modules\\shelter\\components\\ParticipationsList.jsx (NÃO MONTADO); D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §UX",
+      "evidence": "D:\\viralata\\src\\modules\\shelter\\components\\ParticipationForm.jsx (NÃO MONTADO); D:\\viralata\\src\\modules\\shelter\\components\\ParticipationsList.jsx (NÃO MONTADO); D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §UX; commits em origin/feat/volunteer-critical-fixes, integrado+validado em claude/scrum-board-management-yxo02k (npm test 1368 verde, build OK, lint OK) em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. CRÍTICO. (1) Adicionar sub-tab \"Participações\" na aba Voluntários do painel admin. (2) Admin pode criar participation (select dropdown puxando roster, NÃO input livre volunteer_uid=volunteer_name — bug latente). (3) Lista com check-in/out. (4) Filtros (pending/in_progress/completed/cancelled). (5) Corrigir bug latente em ParticipationForm.jsx:88-99 (volunteer_name muda volunteer_uid). Combinar com TASK-211.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11 21:30"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-238",
       "title": "Wire SHELTER_VOLUNTEER_PROFILE_V1 nos 4 components (gate real, não só document)",
       "type": "chore",
       "category": "infra",
-      "status": "in_progress",
+      "status": "in_review",
       "priority": "critical",
       "owner": "mvs_f1e04f28717d42cdba05e221b7b4b6f3",
       "branch": "feat/volunteer-critical-fixes",
@@ -6585,10 +6598,10 @@
         "TASK-126",
         "TASK-235"
       ],
-      "evidence": "D:\\viralata\\src\\modules\\shelter\\components\\VolunteersRoster.jsx:7 (flag documentada, NÃO checada); D:\\viralata\\src\\modules\\shelter\\components\\VolunteerProfileForm.jsx:10; D:\\viralata\\src\\modules\\shelter\\components\\ParticipationForm.jsx:7; D:\\viralata\\src\\modules\\shelter\\components\\ParticipationsList.jsx:7; D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §Critical",
+      "evidence": "D:\\viralata\\src\\modules\\shelter\\components\\VolunteersRoster.jsx:7 (flag documentada, NÃO checada); D:\\viralata\\src\\modules\\shelter\\components\\VolunteerProfileForm.jsx:10; D:\\viralata\\src\\modules\\shelter\\components\\ParticipationForm.jsx:7; D:\\viralata\\src\\modules\\shelter\\components\\ParticipationsList.jsx:7; D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §Critical; commits em origin/feat/volunteer-critical-fixes, integrado+validado em claude/scrum-board-management-yxo02k (npm test 1368 verde, build OK, lint OK) em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. CRÍTICO — sem gate real nos 4 components, UI vaza dados mesmo com flag off. Adicionar useFeatureFlag(SHELTER_VOLUNTEER_PROFILE_V1) em todos. Tambem corrigir OrganizationAdminPanel.jsx:97 que checa SHELTER_VOLUNTEERS (guarda-chuva) e não v1. Combinar com TASK-223.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11 21:30"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-239",
@@ -6622,10 +6635,10 @@
       "title": "scheduledFirestoreBackup semanal (Firestore export → GCS WORM 90d + runbook restore)",
       "type": "infra",
       "category": "infra",
-      "status": "ready",
+      "status": "in_review",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "mvs_f1e04f28717d42cdba05e221b7b4b6f3",
+      "branch": "feat/volunteer-critical-fixes",
       "flag": null,
       "worktree": null,
       "pr": null,
@@ -6640,10 +6653,10 @@
         "TASK-126",
         "TASK-008"
       ],
-      "evidence": "D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §Post-deploy; AGENTS.md §LGPD",
+      "evidence": "D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §Post-deploy; AGENTS.md §LGPD; commits em origin/feat/volunteer-critical-fixes, integrado+validado em claude/scrum-board-management-yxo02k (npm test 1368 verde, build OK, lint OK) em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. (1) Cloud Function scheduledFirestoreBackup (semanal, domingo 02:00 BRT), (2) firestore.exportDocuments Admin SDK, (3) gs://viralata-backups/{date}/ com lifecycle 90d, (4) WORM (write-once-read-many) imutável, (5) runbook de restore em docs/DR_PLAN.md + teste mensal. Lei 14.063/2020 art. 6º exige prova legal íntegra em disaster.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11 21:00"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-241",
@@ -6678,10 +6691,10 @@
       "title": "withdrawVolunteerConsent (parcial vs total) + UI \"Sair deste abrigo\" + Exit feedback opt-in",
       "type": "feature",
       "category": "legal",
-      "status": "ready",
+      "status": "in_review",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "mvs_f1e04f28717d42cdba05e221b7b4b6f3",
+      "branch": "feat/volunteer-critical-fixes",
       "flag": null,
       "worktree": null,
       "pr": null,
@@ -6695,10 +6708,10 @@
         "TASK-126",
         "TASK-193"
       ],
-      "evidence": "D:\\viralata\\src\\modules\\shelter\\services\\volunteerProfileService.js (sem withdrawVolunteerConsent); termo v2 §5.1(c)+10.1; LGPD Art. 18 IX; D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §LGPD",
+      "evidence": "D:\\viralata\\src\\modules\\shelter\\services\\volunteerProfileService.js (sem withdrawVolunteerConsent); termo v2 §5.1(c)+10.1; LGPD Art. 18 IX; D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §LGPD; commits em origin/feat/volunteer-critical-fixes, integrado+validado em claude/scrum-board-management-yxo02k (npm test 1368 verde, build OK, lint OK) em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. (1) withdrawVolunteerConsent(uid, scope: profile|roster|all) service, (2) UI \"Sair deste abrigo\" no /perfil#minhas-rosterings (botão por roster + confirm), (3) Exit feedback opt-in (modal 1-click, 4 opções, salva em clubs/{id}/volunteers/{uid}.exit_reason), (4) \"Sair de todos os abrigos\" / \"Encerrar voluntariado\" (com confirmação textual + 2FA), (5) Cloud Function cascade: status=left, left_reason=consent_withdrawn. Requer TASK-235 wired.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11 21:00"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-243",
@@ -7021,7 +7034,7 @@
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": "5da437b",
+    "mainCommit": null,
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -7033,10 +7046,10 @@
     "openLegalReviews": 3,
     "totalTasks": 254,
     "done": 53,
-    "inProgress": 7,
-    "inReview": 2,
+    "inProgress": 2,
+    "inReview": 14,
     "blocked": 0,
-    "ready": 187,
+    "ready": 169,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -7094,6 +7107,7 @@
         },
         "body": "Relatório fechado. Path: C:\\Users\\Usuario\\.mavis\\agents\\general\\workspace\\rel..."
       }
-    ]
+    ],
+    "total": 245
   }
 }
