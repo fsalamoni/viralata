@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-12T18:18:50.921Z",
+  "generatedAt": "2026-07-12T18:31:43.541Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -7327,10 +7327,10 @@
       "title": "A11y: corrigir contraste terracotta/cream (color-contrast + link-in-text-block em /feed, /organizacoes, /voluntarios)",
       "type": "bug",
       "category": "design",
-      "status": "ready",
+      "status": "in_review",
       "priority": "medium",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": null,
       "worktree": null,
       "pr": null,
@@ -7345,7 +7345,7 @@
         "TASK-191",
         "TASK-014"
       ],
-      "evidence": "tests/e2e/a11y.spec.js KNOWN_ISSUES — axe-core: color-contrast (serious, botões outline/badges sobre cream) e link-in-text-block (links sem underline) nas 3 rotas; corrigir tokens de cor p/ ratio ≥4.5:1 e sublinhar links em texto corrido, depois remover as entradas do KNOWN_ISSUES",
+      "evidence": "Tokens ajustados em src/index.css: --primary 17 72% 43% (4.81:1) e --muted-foreground 20 12% 37%; link mailto com underline permanente; text-muted-foreground/80 removido nos 3 PetFeed; KNOWN_ISSUES do a11y.spec.js esvaziado — suite estrita 7/7 verde",
       "description": "Detectado pela suite a11y automatizada (TASK-199). Ajustar a paleta (primary sobre background) e o estilo de links para WCAG AA. Ao corrigir, esvaziar KNOWN_ISSUES no spec — a suite volta a bloquear regressões.",
       "createdAt": "2026-07-12",
       "updatedAt": "2026-07-12"
@@ -7519,9 +7519,9 @@
     "totalTasks": 254,
     "done": 111,
     "inProgress": 2,
-    "inReview": 7,
+    "inReview": 8,
     "blocked": 0,
-    "ready": 119,
+    "ready": 118,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
