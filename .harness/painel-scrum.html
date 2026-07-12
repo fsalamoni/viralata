@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-12T04:30:30.169Z",
+  "generatedAt": "2026-07-12T04:31:19.297Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -2859,9 +2859,9 @@
       "title": "Varredura: auditoria de footer (links legais)",
       "type": "chore",
       "category": "lgpd",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
-      "owner": "unassigned",
+      "owner": "claude_yxo02k",
       "branch": "feat/legal-docs-v2",
       "flag": null,
       "worktree": ".worktrees/wt-legal-v2",
@@ -2878,10 +2878,11 @@
         "TASK-055",
         "TASK-111"
       ],
-      "evidence": "src/components/Layout.jsx",
+      "evidence": "Auditoria: LegalFooter em todas as páginas via Layout; 6 docs públicos após fix do link Cookies (TASK-111)",
       "description": "BLOCO INDEPENDENTE. Auditar src/components/Layout.jsx footer — verificar links para: termos-de-uso, politica-de-privacidade, codigo-de-conduta, cookies, legislacao-animal, avisos-legais. Responsivo. Documentar em docs/AUDIT_FOOTER.md.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-087",
@@ -3490,9 +3491,9 @@
       "title": "Auditar aceite de termos em cadastro de abrigo",
       "type": "chore",
       "category": "legal",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
-      "owner": "unassigned",
+      "owner": "claude_yxo02k",
       "branch": "feat/legal-docs-v2",
       "flag": null,
       "worktree": ".worktrees/wt-legal-v2",
@@ -3509,19 +3510,20 @@
         "TASK-089",
         "TASK-070"
       ],
-      "evidence": "src/modules/admin/pages/CreateClub.jsx (ou ShelterSignup)",
+      "evidence": "Auditoria: CreateClub.jsx exige aceite do Termo de Adesão (DPA) com assinatura+CPF do responsável ANTES do acesso ao painel; audit_log shelter_terms_accepted com hash/versão (Lei 14.063/2020)",
       "description": "BLOCO INDEPENDENTE. Auditar fluxo de cadastro de abrigo. Verificar: (1) checkbox do Termo de Adesão (TASK-070)? (2) checkbox de LGPD? (3) grava em clubs/{clubId}/onboarding/terms_accepted? (4) bloqueia signup sem aceite? Documentar.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-109",
       "title": "Auditar aceite de termos em cadastro de voluntário",
       "type": "chore",
       "category": "legal",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
-      "owner": "unassigned",
+      "owner": "claude_yxo02k",
       "branch": "feat/legal-docs-v2",
       "flag": null,
       "worktree": ".worktrees/wt-legal-v2",
@@ -3538,19 +3540,20 @@
         "TASK-089",
         "TASK-066"
       ],
-      "evidence": "src/modules/shelter/services/volunteerProfileService.js (ou página de signup)",
+      "evidence": "Auditoria: VolunteerSignup.jsx (fluxo /voluntarios/seja) grava terms_accepted_at + VOLUNTEER_TERMS_VERSION v2 + assinatura; clickwrap com scroll-to-end e checkbox",
       "description": "BLOCO INDEPENDENTE. Auditar cadastro de voluntário. Verificar: checkbox dos Termos de Voluntariado (TASK-066), grava em users/{uid}.volunteer_profile/terms_accepted, bloqueia cadastro sem aceite. Documentar.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-110",
       "title": "Auditar LGPD no cadastro (consentimento explícito por base legal)",
       "type": "chore",
       "category": "lgpd",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
-      "owner": "unassigned",
+      "owner": "claude_yxo02k",
       "branch": "feat/legal-docs-v2",
       "flag": null,
       "worktree": ".worktrees/wt-legal-v2",
@@ -3566,10 +3569,11 @@
         "TASK-041",
         "TASK-050"
       ],
-      "evidence": "src/modules/onboarding/Questionnaire.jsx; src/pages/ProfileSetup.jsx",
+      "evidence": "Auditoria: OnboardingQuestionnaire.jsx grava terms/privacy/code_of_conduct accepted_at + versões com checkboxes explícitos por documento (consentimento LGPD Art. 8º)",
       "description": "BLOCO INDEPENDENTE. Auditar todos os cadastros. Verificar LGPD Art. 7º: (1) texto explicando finalidade e base legal, (2) checkbox de Li e concordo com a Política de Privacidade, (3) link pro DPO, (4) consent gravado com base legal explícita. Documentar.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-111",
@@ -7435,11 +7439,11 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 254,
-    "done": 57,
+    "done": 61,
     "inProgress": 2,
     "inReview": 31,
     "blocked": 0,
-    "ready": 148,
+    "ready": 144,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
