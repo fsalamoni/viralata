@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-12T17:01:56.576Z",
+  "generatedAt": "2026-07-12T17:04:28.433Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -981,10 +981,10 @@
       "title": "Implementar exclusão de conta com purge em 30d (LGPD Art. 18 VI)",
       "type": "feature",
       "category": "lgpd",
-      "status": "in_progress",
+      "status": "in_review",
       "priority": "medium",
       "owner": "claude_yxo02k",
-      "branch": null,
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": "SHELTER_LEGAL_TERMS_V1",
       "worktree": null,
       "pr": null,
@@ -995,7 +995,7 @@
         "purge"
       ],
       "blockedBy": [],
-      "evidence": "Duplicata da TASK-186 — Auditoria: deleteAccountService faz soft-delete (deleted_at) + cascade-anonymize voluntariado (4 coleções) + audit; GAP: falta cron de purge definitivo após 30d (só existem auditLogPurgeCron/galleryPurgeCron) — permanece aberto para o cron",
+      "evidence": "Duplicata da TASK-186 — Soft-delete + cascade-anonymize já existiam (deleteAccountService); GAP fechado: functions/accountPurgeCron{,Core}.js — cron diário 04:30 BRT purga contas com deleted_at >30d via recursiveDelete (doc + subcoleções), 4 tests; exportado em functions/index.js; aceites de termos preservados em audit_logs",
       "description": "Soft delete com deleted_at, deleted_by, purge_after=30d. Cloud Function agendada deleta fisicamente após 30d. Mantém logs agregados (sem PII) para auditoria. Hoje há padrão de soft delete em pet_photos (Fase 9), replicar para user e outras entidades.",
       "createdAt": "2026-07-11",
       "updatedAt": "2026-07-12"
@@ -5392,10 +5392,10 @@
       "title": "LGPD: implementar exclusão com purge em 30d (Art. 18 VI)",
       "type": "feature",
       "category": "lgpd",
-      "status": "in_progress",
+      "status": "in_review",
       "priority": "high",
       "owner": "claude_yxo02k",
-      "branch": null,
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": [
         "lgpd",
         "exclusao",
@@ -5406,7 +5406,7 @@
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
-      "evidence": "Auditoria: deleteAccountService faz soft-delete (deleted_at) + cascade-anonymize voluntariado (4 coleções) + audit; GAP: falta cron de purge definitivo após 30d (só existem auditLogPurgeCron/galleryPurgeCron) — permanece aberto para o cron",
+      "evidence": "Soft-delete + cascade-anonymize já existiam (deleteAccountService); GAP fechado: functions/accountPurgeCron{,Core}.js — cron diário 04:30 BRT purga contas com deleted_at >30d via recursiveDelete (doc + subcoleções), 4 tests; exportado em functions/index.js; aceites de termos preservados em audit_logs",
       "description": "BLOCO INDEPENDENTE. Botão \"Excluir minha conta\" em Profile.jsx. Soft delete (deleted_at). Cloud Function scheduled (account_purge.js) que purga após 30d. Mantém logs agregados sem PII.",
       "createdAt": "2026-07-11",
       "updatedAt": "2026-07-12"
@@ -7095,8 +7095,8 @@
     "openLegalReviews": 3,
     "totalTasks": 254,
     "done": 102,
-    "inProgress": 4,
-    "inReview": 10,
+    "inProgress": 2,
+    "inReview": 12,
     "blocked": 0,
     "ready": 122,
     "backlog": 6,
