@@ -17,9 +17,15 @@
  *   node .harness/autosync.cjs              # roda contínuo (a cada 60s)
  *   node .harness/autosync.cjs --once       # varre uma vez e sai
  *   node .harness/autosync.cjs --interval 30 # custom interval (segundos)
+ *   node .harness/autosync.cjs --force      # skip lock (debug only)
  *
  * Estado: persiste cursor em .harness/.autosync-cursor.json (offset de
  * mensagens já processadas). Idempotente — não duplica eventos.
+ *
+ * TASK-300 — race condition fix:
+ *   - Single-instance lock via .harness/_lock.cjs (cross-platform, sem deps)
+ *   - Auto-detect session ID via mavis communication peers (NÃO fallback hardcoded)
+ *   - Atomic write: tmp file + fs.renameSync
  *
  * Requisito: `mavis communication messages` precisa estar disponível no PATH.
  */
@@ -27,7 +33,8 @@
 
 const fs = require('fs');
 const path = require('path');
-const { execSync, spawn } = require('child_process');
+const { execSync } = require('child_process');
+const { acquireLock, releaseLock, atomicWrite } = require('./_lock.cjs');
 
 const REPO = process.env.SCRUM_REPO || (() => {
   let dir = __dirname;
@@ -39,14 +46,20 @@ const REPO = process.env.SCRUM_REPO || (() => {
 })();
 const JSON_PATH = path.join(REPO, '.harness', 'SCRUM_TASKS.json');
 const CURSOR_PATH = path.join(REPO, '.harness', '.autosync-cursor.json');
+const LOCK_PATH = path.join(REPO, '.harness', '.autosync.lock');
 const ARGS = process.argv.slice(2);
 const ONCE = ARGS.includes('--once');
 const intervalArg = ARGS.indexOf('--interval');
 const INTERVAL = (intervalArg >= 0 ? parseInt(ARGS[intervalArg + 1], 10) : 60) * 1000;
 const VERBOSE = ARGS.includes('--verbose') || process.env.AUTOSYNC_VERBOSE === '1';
+const FORCE = ARGS.includes('--force');
 
 function log(...args) {
   if (VERBOSE) console.log(`[${new Date().toISOString()}]`, ...args);
+}
+
+function warn(...args) {
+  console.warn(`[autosync ${new Date().toISOString().slice(11, 19)}]`, ...args);
 }
 
 function loadCursor() {
@@ -59,7 +72,7 @@ function loadCursor() {
 }
 
 function saveCursor(c) {
-  fs.writeFileSync(CURSOR_PATH, JSON.stringify(c, null, 2));
+  atomicWrite(CURSOR_PATH, JSON.stringify(c, null, 2));
 }
 
 function loadJson() {
@@ -68,7 +81,7 @@ function loadJson() {
 
 function saveJson(j) {
   j.generatedAt = new Date().toISOString();
-  fs.writeFileSync(JSON_PATH, JSON.stringify(j, null, 2) + '\n');
+  atomicWrite(JSON_PATH, JSON.stringify(j, null, 2) + '\n');
 }
 
 function extractRefs(text) {
@@ -86,12 +99,10 @@ function fetchMessages(mySessionId) {
       `mavis communication messages --to ${mySessionId} --limit 50 -H`,
       { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }
     );
-    // Formato human: "Messages (N):\n  #ID status \n    body\n..."
     const lines = out.split('\n');
     const messages = [];
     let current = null;
     for (const line of lines) {
-      // Formato: "  #75 prompt done" (id + status_1 + status_2)
       const m = line.match(/^  #(\d+)\s+(\S+)(?:\s+(\S+))?\s*$/);
       if (m) {
         if (current) messages.push(current);
@@ -153,7 +164,6 @@ function ingestMessages(j, messages, cursor) {
       changes++;
     });
 
-    // Detecção semântica: FAIL, DONE, MERGED, no-go
     const sem = m.body.toLowerCase();
     if (!j.metrics.semanticEvents) j.metrics.semanticEvents = [];
     const evtKey = `semantic-${m.id}`;
@@ -182,41 +192,102 @@ function ingestMessages(j, messages, cursor) {
 }
 
 async function tick(mySessionId) {
-  const cursor = loadCursor();
-  const messages = fetchMessages(mySessionId);
-  if (messages.length === 0) {
-    log('no messages');
-    return { changes: 0 };
+  // Single-instance lock — se outro daemon tem, skip silenciosamente
+  const lockResult = acquireLock(LOCK_PATH, FORCE);
+  if (!lockResult.acquired) {
+    log(`lock busy (holder PID ${lockResult.holder}) — skipping tick`);
+    return { changes: 0, skipped: true };
   }
-  const j = loadJson();
-  const r = ingestMessages(j, messages, cursor);
-  if (r.changes > 0) {
-    saveJson(j);
-    log(`saved ${r.changes} changes (max msg id: ${cursor.lastMessageId} → ${r.newMaxId})`);
-  } else {
-    log(`no new changes (max msg id: ${cursor.lastMessageId})`);
+  if (lockResult.reason && FORCE) {
+    log(`lock: ${lockResult.reason}`);
   }
-  saveCursor({ lastMessageId: r.newMaxId, lastTs: new Date().toISOString() });
-  return r;
+
+  try {
+    const cursor = loadCursor();
+    const messages = fetchMessages(mySessionId);
+    if (messages.length === 0) {
+      log('no messages');
+      return { changes: 0 };
+    }
+    const j = loadJson();
+    const r = ingestMessages(j, messages, cursor);
+    if (r.changes > 0) {
+      saveJson(j);
+      log(`saved ${r.changes} changes (max msg id: ${cursor.lastMessageId} → ${r.newMaxId})`);
+    } else {
+      log(`no new changes (max msg id: ${cursor.lastMessageId})`);
+    }
+    saveCursor({ lastMessageId: r.newMaxId, lastTs: new Date().toISOString() });
+    return r;
+  } finally {
+    releaseLock(LOCK_PATH);
+  }
+}
+
+/**
+ * Auto-detect session ID via `mavis communication peers`.
+ * Fallback: MAVIS_SESSION_ID env. Erro fatal se nenhum disponível
+ * (NÃO usar fallback hardcoded — foi o bug original de 2026-07-11).
+ */
+function detectSessionId() {
+  if (process.env.MAVIS_SESSION_ID) {
+    return process.env.MAVIS_SESSION_ID;
+  }
+
+  try {
+    const out = execSync('mavis communication peers --json', {
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    });
+    const peers = JSON.parse(out);
+    if (Array.isArray(peers) && peers.length > 0) {
+      const self = peers.find(p => p.agentName === 'mavis') || peers[0];
+      if (self.sessionId) {
+        log(`auto-detected sessionId: ${self.sessionId} (agentName=${self.agentName})`);
+        return self.sessionId;
+      }
+    }
+  } catch (e) {
+    log(`mavis communication peers failed: ${e.message}`);
+  }
+
+  throw new Error(
+    'Cannot auto-detect session ID. Set MAVIS_SESSION_ID env or run from within Mavis runtime. ' +
+    'Refusing to use hardcoded fallback (was the source of the 2026-07-11 race condition).'
+  );
 }
 
 function main() {
-  // Detecta minha session ID via mavis communication peers ou env
-  let mySessionId = process.env.MAVIS_SESSION_ID || 'mvs_311d078987d0414a90f57ef28b789b18';
+  let mySessionId;
+  try {
+    mySessionId = detectSessionId();
+  } catch (e) {
+    console.error(`autosync: ${e.message}`);
+    process.exit(1);
+  }
+
+  // Cleanup lock se processo for morto (best-effort)
+  const cleanupOnExit = () => releaseLock(LOCK_PATH);
+  process.on('exit', cleanupOnExit);
+  process.on('SIGINT', () => { cleanupOnExit(); process.exit(0); });
+  process.on('SIGTERM', () => { cleanupOnExit(); process.exit(0); });
 
   if (ONCE) {
     tick(mySessionId).then(r => {
-      console.log(`autosync --once: ${r.changes} changes`);
+      console.log(`autosync --once: ${r.changes} changes${r.skipped ? ' (skipped, lock busy)' : ''}`);
       process.exit(0);
+    }).catch(e => {
+      console.error(`autosync --once: ${e.message}`);
+      process.exit(1);
     });
     return;
   }
 
   console.log(`autosync daemon started · interval=${INTERVAL}ms · session=${mySessionId}`);
   console.log(`  Cursor: ${CURSOR_PATH}`);
+  console.log(`  Lock: ${LOCK_PATH} (single-instance)`);
   console.log(`  Ctrl-C to stop.\n`);
 
-  // Primeira tick imediato
   tick(mySessionId);
 
   setInterval(() => {

@@ -27,6 +27,7 @@ const fs = require('fs');
 const path = require('path');
 const http = require('http');
 const { execSync } = require('child_process');
+const { acquireLock, releaseLock, atomicWrite } = require('./_lock.cjs');
 
 const REPO = process.env.SCRUM_REPO || (() => {
   // Auto-detecta a raiz do repo a partir de __dirname (localização do sync.cjs)
@@ -40,10 +41,13 @@ const REPO = process.env.SCRUM_REPO || (() => {
 })();
 const JSON_PATH = path.join(REPO, '.harness', 'SCRUM_TASKS.json');
 const HTML_PATH = path.join(REPO, '.harness', 'painel-scrum.html');
+const LOCK_PATH = path.join(REPO, '.harness', '.sync.lock');
 const ARGS = process.argv.slice(2);
 const FIX = ARGS.includes('--fix');
 const CHECK = ARGS.includes('--check');
 const JSON_OUT = ARGS.includes('--json');
+const QUIET = ARGS.includes('--quiet') || process.env.SYNC_QUIET === '1';
+const FORCE = ARGS.includes('--force');
 const WATCH = ARGS.includes('--watch');
 const SERVE = ARGS.includes('--serve');
 
@@ -101,7 +105,8 @@ function loadJson() {
 
 function saveJson(j) {
   j.generatedAt = new Date().toISOString();
-  fs.writeFileSync(JSON_PATH, JSON.stringify(j, null, 2) + '\n', 'utf8');
+  // TASK-300 — atomic write (tmp + rename) previne corrupção se interrompido
+  atomicWrite(JSON_PATH, JSON.stringify(j, null, 2) + '\n');
 }
 
 function findIssues(j) {
@@ -296,41 +301,68 @@ function startServe() {
 /* ─── one-shot ────────────────────────────────────────────────────── */
 
 function main() {
-  if (WATCH) return startWatch();
+  // TASK-300 — single-instance lock. Se outro sync.cjs (one-shot OU watch)
+  // está rodando, skip silenciosamente. Sem lock, dois daemons podem
+  // sobrescrever SCRUM_TASKS.json simultaneamente e perder tasks.
+  const lockResult = acquireLock(LOCK_PATH, FORCE);
+  if (!lockResult.acquired) {
+    if (!QUIET) console.log(`sync: lock busy (holder PID ${lockResult.holder}) — skipping`);
+    process.exit(0);
+  }
 
-  const j = loadJson();
-  const issues = findIssues(j);
-  const syncResult = syncJson(j);
+  // Cleanup lock se processo for morto (best-effort, em adição ao exit/cleanup do watch)
+  const cleanupLock = () => releaseLock(LOCK_PATH);
+  process.on('exit', cleanupLock);
 
-  const result = { issues, sync: syncResult, tasksTotal: j.tasks.length };
+  if (WATCH) {
+    // Watch mode: precisa liberar lock em SIGINT/SIGTERM (startWatch já
+    // tem cleanup, mas adicionamos release explicit)
+    const oldCleanup = () => {
+      cleanupLock();
+      process.exit(0);
+    };
+    process.on('SIGINT', oldCleanup);
+    process.on('SIGTERM', oldCleanup);
+    return startWatch();
+  }
 
-  if (JSON_OUT) {
-    console.log(JSON.stringify(result, null, 2));
-  } else {
-    console.log('=== Scrum Sync Report ===');
-    console.log(`Tarefas: ${result.tasksTotal}`);
-    console.log(`Main commit: ${syncResult.mainCommit}`);
-    console.log(`Worktrees ativos: ${syncResult.worktreeCount}`);
-    console.log(`Updates: ${syncResult.updates.length}`);
-    syncResult.updates.forEach(u => console.log(`  - ${u.id}: ${u.from} → ${u.to} commits (${u.status})`));
-    console.log(`\nIssues:`);
-    console.log(`  IDs duplicados: ${issues.dupIds.length}`);
-    console.log(`  Refs quebradas: ${issues.brokenRefs.length}`);
-    console.log(`  Sem owner: ${issues.missingOwners.length}`);
-    if (issues.brokenRefs.length > 0) {
-      console.log('  Detalhes:');
-      issues.brokenRefs.forEach(b => console.log(`    - ${b.task} → ${b.points_to || b.related_to} (${b.type})`));
+  try {
+    const j = loadJson();
+    const issues = findIssues(j);
+    const syncResult = syncJson(j);
+
+    const result = { issues, sync: syncResult, tasksTotal: j.tasks.length };
+
+    if (JSON_OUT) {
+      console.log(JSON.stringify(result, null, 2));
+    } else if (!QUIET) {
+      console.log('=== Scrum Sync Report ===');
+      console.log(`Tarefas: ${result.tasksTotal}`);
+      console.log(`Main commit: ${syncResult.mainCommit}`);
+      console.log(`Worktrees ativos: ${syncResult.worktreeCount}`);
+      console.log(`Updates: ${syncResult.updates.length}`);
+      syncResult.updates.forEach(u => console.log(`  - ${u.id}: ${u.from} → ${u.to} commits (${u.status})`));
+      console.log(`\nIssues:`);
+      console.log(`  IDs duplicados: ${issues.dupIds.length}`);
+      console.log(`  Refs quebradas: ${issues.brokenRefs.length}`);
+      console.log(`  Sem owner: ${issues.missingOwners.length}`);
+      if (issues.brokenRefs.length > 0) {
+        console.log('  Detalhes:');
+        issues.brokenRefs.forEach(b => console.log(`    - ${b.task} → ${b.points_to || b.related_to} (${b.type})`));
+      }
     }
-  }
 
-  if (FIX) {
-    saveJson(j);
-    if (!JSON_OUT) console.log(`\n✓ JSON salvo em ${JSON_PATH}`);
-  }
+    if (FIX) {
+      saveJson(j);
+      if (!JSON_OUT && !QUIET) console.log(`\n✓ JSON salvo em ${JSON_PATH}`);
+    }
 
-  if (CHECK) {
-    const hasProblems = issues.dupIds.length > 0 || issues.brokenRefs.length > 0;
-    process.exit(hasProblems ? 1 : 0);
+    if (CHECK) {
+      const hasProblems = issues.dupIds.length > 0 || issues.brokenRefs.length > 0;
+      process.exit(hasProblems ? 1 : 0);
+    }
+  } finally {
+    releaseLock(LOCK_PATH);
   }
 }
 
