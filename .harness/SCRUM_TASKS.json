@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-12T00:56:52.142Z",
+  "generatedAt": "2026-07-12T01:02:12.364Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -12,14 +12,27 @@
   },
   "activeWorktrees": [
     {
+      "id": "fix-autosync-race",
+      "branch": "fix/autosync-race",
+      "head": "882d47dc02bd226358066a21ef24ba2017b975ee",
+      "headTitle": "feat(harness+scrum): TASK-261 in_progress + TASK-372..375 (scrum.cjs migration, autosync race fix)",
+      "path": "D:/viralata/.worktrees/fix-autosync-race",
+      "status": "ahead-of-main",
+      "commitsAhead": 3,
+      "commitsBehind": 7,
+      "primarySession": null,
+      "sessionTitle": null,
+      "focus": []
+    },
+    {
       "id": "seed-mock-data",
       "branch": "feat/seed-mock-data",
       "head": "03f6a5c2f8444cf55dd46712d48769509263e435",
-      "headTitle": "feat(harness+scrum): 11 tasks de decisão humana pendente (TASK-361..371) + housekeeping",
+      "headTitle": "feat(harness+scrum): TASK-261 in_progress + TASK-372..375 (scrum.cjs migration, autosync race fix)",
       "path": "D:/viralata/.worktrees/seed-mock-data",
       "status": "ahead-of-main",
-      "commitsAhead": 2,
-      "commitsBehind": 0,
+      "commitsAhead": 3,
+      "commitsBehind": 7,
       "primarySession": null,
       "sessionTitle": null,
       "focus": []
@@ -28,11 +41,11 @@
       "id": "wt-17ff480a",
       "branch": "wt/17ff480a",
       "head": "d0bb369efb7b9546e954dde47e5f40596d01ca93",
-      "headTitle": "feat(harness+scrum): 11 tasks de decisão humana pendente (TASK-361..371) + housekeeping",
+      "headTitle": "feat(harness+scrum): TASK-261 in_progress + TASK-372..375 (scrum.cjs migration, autosync race fix)",
       "path": "D:/viralata/.worktrees/wt-17ff480a",
       "status": "ahead-of-main",
-      "commitsAhead": 2,
-      "commitsBehind": 0,
+      "commitsAhead": 3,
+      "commitsBehind": 7,
       "primarySession": "mvs_44f2762343f94f28b506f2f4c8c12eae",
       "sessionTitle": "Sync local repo with web",
       "focus": [
@@ -46,11 +59,11 @@
       "id": "wt-auto-import",
       "branch": "feat/harness-auto-import",
       "head": "a6445ed1ea4835a41ddab2fac375595637857b75",
-      "headTitle": "feat(harness+scrum): 11 tasks de decisão humana pendente (TASK-361..371) + housekeeping",
+      "headTitle": "feat(harness+scrum): TASK-261 in_progress + TASK-372..375 (scrum.cjs migration, autosync race fix)",
       "path": "D:/viralata/.worktrees/wt-auto-import",
       "status": "ahead-of-main",
-      "commitsAhead": 2,
-      "commitsBehind": 0,
+      "commitsAhead": 3,
+      "commitsBehind": 7,
       "primarySession": null,
       "sessionTitle": null,
       "focus": []
@@ -58,12 +71,12 @@
     {
       "id": "wt-e79e15ca",
       "branch": "wt/e79e15ca",
-      "head": "166bd11e4906dac177cd9bd72c45c8b8ef8e502f",
-      "headTitle": "feat(harness+scrum): 11 tasks de decisão humana pendente (TASK-361..371) + housekeeping",
+      "head": "b8780928435c1b3235abab435f7631d0f2fd500e",
+      "headTitle": "feat(harness+scrum): TASK-261 in_progress + TASK-372..375 (scrum.cjs migration, autosync race fix)",
       "path": "D:/viralata/.worktrees/wt-e79e15ca",
       "status": "ahead-of-main",
-      "commitsAhead": 2,
-      "commitsBehind": 0,
+      "commitsAhead": 3,
+      "commitsBehind": 7,
       "primarySession": null,
       "sessionTitle": null,
       "focus": []
@@ -72,11 +85,11 @@
       "id": "wt-legal-v2",
       "branch": "feat/legal-docs-v2",
       "head": "ce916dfa9afa1f04a7fe20704ddd45f2524e6555",
-      "headTitle": "feat(harness+scrum): 11 tasks de decisão humana pendente (TASK-361..371) + housekeeping",
+      "headTitle": "feat(harness+scrum): TASK-261 in_progress + TASK-372..375 (scrum.cjs migration, autosync race fix)",
       "path": "D:/viralata/.worktrees/wt-legal-v2",
       "status": "ahead-of-main",
-      "commitsAhead": 2,
-      "commitsBehind": 0,
+      "commitsAhead": 3,
+      "commitsBehind": 7,
       "primarySession": "mvs_311d078987d0414a90f57ef28b789b18",
       "sessionTitle": "Legal docs v2 + bug fix org panel + varredura completa",
       "focus": [
@@ -93,11 +106,11 @@
       "id": "wt-volunteer-critical",
       "branch": "feat/volunteer-critical-fixes",
       "head": "9f495f56dc9384fee6317ecb303a1a2d3011be0a",
-      "headTitle": "feat(harness+scrum): 11 tasks de decisão humana pendente (TASK-361..371) + housekeeping",
+      "headTitle": "feat(harness+scrum): TASK-261 in_progress + TASK-372..375 (scrum.cjs migration, autosync race fix)",
       "path": "D:/viralata/.worktrees/wt-volunteer-critical",
       "status": "ahead-of-main",
-      "commitsAhead": 2,
-      "commitsBehind": 0,
+      "commitsAhead": 3,
+      "commitsBehind": 7,
       "primarySession": null,
       "sessionTitle": null,
       "focus": []
@@ -111,7 +124,7 @@
       "status": "started",
       "workspace": "D:\\viralata\\.worktrees\\wt-e79e15ca",
       "branch": "wt/e79e15ca",
-      "lastActiveAt": "2026-07-12T00:56:52.142Z",
+      "lastActiveAt": "2026-07-12T01:02:12.364Z",
       "deliverable": "wt-e79e15ca @ 67a4c7a (5 commits ahead of main 5da437b). Pacote original: TASK-056/057/058/049/050/051 + TASK-068/069/070/071/072 (defensive coding, single acceptance dialog, safeTabs, TabErrorBoundary) + TASK-073/074 (setup) + TASK-075/076/077 (DELIVERABLE + sync.cjs + protocol §13). NEW: TASK-126/127/128/129 (3 MRs de navigation polish) + TASK-130 (auditoria FAIL pendente)."
     },
     {
@@ -4235,9 +4248,22 @@
       ],
       "description": "O wt-auto-import (branch feat/harness-auto-import @ a6445ed) tem 4 commits ahead de main com auto-import do SCRUM_TASKS no painel-scrum.html (TASK-202, sync.cjs --watch --serve, pill de status, botão reload, script autoSync()). Coordenar com mvs_44f2762343f94f28b506f2f4c8c12eae (peer wt-auto-import) o merge. Caminhos: (a) peer faz merge próprio dele (preferido), (b) cherry-pick dos 4 commits em main local, (c) rebase wt-auto-import em main. Smoke test após merge. Atualizar esta task → done quando mergeado.\n\n**Fix 2026-07-11 21:50:** Removido blockedBy [TASK-202] porque TASK-202 está no main (merge do wt-auto-import) mas não no worktree wt-e79e15ca (já merged em main, worktree não tem a task). Coordenação direta sem dependência.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11",
+      "updatedAt": "2026-07-12",
       "startedAt": "2026-07-11",
-      "evidence": " | 2026-07-11 22:00 - respondendo assessment de scrum.cjs pra mvs_44f2762343f94f28b506f2f4c8c12eae (wt-auto-import peer). TASK-372..375 criadas pra trackear."
+      "evidence": " | 2026-07-11 22:00 - respondendo assessment de scrum.cjs pra mvs_44f2762343f94f28b506f2f4c8c12eae (wt-auto-import peer). TASK-372..375 criadas pra trackear. | +b878092",
+      "history": [
+        {
+          "ts": "2026-07-11 22:02:09 -0300",
+          "type": "commit",
+          "worktree": "fix-autosync-race",
+          "branch": "fix/autosync-race",
+          "commit": "b8780928435c1b3235abab435f7631d0f2fd500e",
+          "short": "b878092",
+          "subject": "feat(harness+scrum): TASK-261 in_progress + TASK-372..375 (scrum.cjs migration, autosync race fix)",
+          "author": "Mavis",
+          "category": "implementation"
+        }
+      ]
     },
     {
       "id": "TASK-262",
@@ -6993,11 +7019,11 @@
       "title": "Adicionar proper-lockfile como devDep do package.json (extraneous, scrum.cjs dependency)",
       "type": "chore",
       "category": "infra",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": null,
-      "worktree": null,
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "wt/e79e15ca",
+      "worktree": ".worktrees/wt-e79e15ca",
       "flag": null,
       "pr": null,
       "tags": [
@@ -7007,10 +7033,25 @@
         "infra"
       ],
       "blockedBy": [],
-      "evidence": "npm ls proper-lockfile --prefix D:\\viralata => extraneous (nao declarado)",
+      "evidence": ".harness/SCRUM_TASKS.json + package.json + package-lock.json — proper-lockfile@4.1.2 declared em devDeps (saiu de extraneous), npm install verde, sync.cjs --check 0 issues, proper-lockfile require() OK",
       "description": "**Origem:** Avaliacao de scrum.cjs (Regra B canonical CLI) em 2026-07-11 22:00.\n\n**Problema:** `proper-lockfile@4.1.2` esta extraneous no npm (nao declarado em devDeps nem dependencies do package.json). Fragil - qualquer npm install --production remove.\n\n**Fix (1 linha):** Adicionar em devDependencies do package.json: `\"proper-lockfile\": \"^4.1.2\"`\n\n**Validacao:**\n- npm install (deve sair de extraneous => dependencies tree)\n- node .harness/scrum.cjs list => deve funcionar (ja funciona, mas vira declaradamente estavel)\n- Smoke test: 2 processos simultaneos fazendo start/done (race test)\n\n**Impacto:** scrum.cjs (TASK-373), autosync race fix (TASK-375), AGENTS.md Regra B (TASK-374).\n\n**Origem coord:** mvs_44f2762343f94f28b506f2f4c8c12eae (wt-auto-import peer) pingou em 2026-07-11 21:58 pedindo assessment de scrum.cjs.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "history": [
+        {
+          "ts": "2026-07-11 22:02:09 -0300",
+          "type": "commit",
+          "worktree": "fix-autosync-race",
+          "branch": "fix/autosync-race",
+          "commit": "b8780928435c1b3235abab435f7631d0f2fd500e",
+          "short": "b878092",
+          "subject": "feat(harness+scrum): TASK-261 in_progress + TASK-372..375 (scrum.cjs migration, autosync race fix)",
+          "author": "Mavis",
+          "category": "implementation"
+        }
+      ],
+      "startedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-373",
@@ -7091,6 +7132,30 @@
       ],
       "evidence": null,
       "description": "**Origem:** Avaliacao de scrum.cjs (Regra B canonical CLI) em 2026-07-11 22:00.\n\n**Smoke test plan:**\n1. **7 transicoes** (cada uma cria + deleta task dummy):\n   - `scrum.cjs start TASK-999 --owner mvs_test` => status=in_progress\n   - `scrum.cjs review TASK-999` => status=in_review\n   - `scrum.cjs done TASK-999` => status=done (com resolvedAt)\n   - Validar `scrum.cjs show TASK-999` retorna objeto correto\n2. **Race test** (2 processos simultaneos):\n   - Terminal 1: `for i in 1..10; do scrum.cjs start TASK-99$i; done` (rapido)\n   - Terminal 2: `for i in 1..10; do scrum.cjs done TASK-99$i; done` (rapido)\n   - Verificar: 0 tasks corrompidas, 0 IDs duplicados, 0 transitions invalidas, metricas batem\n3. **Kill autosync daemon:**\n   - `ps aux | grep autosync.cjs` (Windows: `Get-Process node | Select-String autosync`)\n   - `Stop-Process` ou `kill <pid>`\n   - Re-rodar smoke test => history ainda atualiza (via TASK-373 sync.cjs)\n4. **Validacao final:**\n   - `npm run sync:check` => 0 duplicados, 0 refs quebradas\n   - `painel-scrum.html` mostra metricas atualizadas\n   - 3 worktrees ativos fazendo start/done => sem race\n\n**Entrega:** `.harness/smoke/scrum-cjs-2026-07-11.log` com output completo + diff do SCRUM_TASKS.json antes/depois.\n\n**Impacto:** TASK-374 (AGENTS.md update) so avanca apos smoke verde.",
+      "createdAt": "2026-07-11",
+      "updatedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-376",
+      "title": "Migrar .tmp-legal-docs/ (13 .md ~70KB) para docs/legal/ canonico",
+      "type": "chore",
+      "category": "docs",
+      "status": "ready",
+      "priority": "medium",
+      "owner": "unassigned",
+      "branch": null,
+      "worktree": null,
+      "flag": null,
+      "pr": null,
+      "tags": [
+        "legal",
+        "docs",
+        "housekeeping",
+        "wt/e79e15ca"
+      ],
+      "blockedBy": [],
+      "evidence": ".tmp-legal-docs/ contem 13 arquivos .md (~70KB) de termos/condutas/avisos. NAO foram migrados para docs/legal/ (pasta nao existe). Decisao A 2026-07-11: MANTER tmp ate migracao proper.",
+      "description": "**Contexto:** A pasta .tmp-legal-docs/ (13 arquivos .md, ~70KB) contem a documentacao legal da plataforma (termos de uso, politica de privacidade, codigo de conduta, etc.) que foi gerada em um worktree anterior (provavelmente wt-legal-v2). Ate 2026-07-11 22:00, os docs NAO foram migrados para o local canonico docs/legal/ (que ainda nao existe). **Decisao A** (2026-07-11): MANTER .tmp-legal-docs/ ate migracao proper, NAO deletar (decisao logica baseada em evidencia: docs/01_Termos_de_Uso.md NAO existe, mas .tmp-legal-docs/01_Termos_de_Uso.md existe).\n\n**Escopo da migracao:**\n1. Criar docs/legal/ no repo\n2. Mover 13 .md de .tmp-legal-docs/ para docs/legal/ (com renomeacao se necessario)\n3. Adicionar index/README.md listando todos os documentos\n4. Atualizar AGENTS.md (Regra A) referenciando docs/legal/\n5. Adicionar entrada no DELIVERABLE.md (Fase Legal)\n6. Smoke test: links de termo/privacidade no app (footer?) apontam para docs/legal/ correto\n7. Commitar com tag legal-docs para facil rollback\n\n**Origem coord:** Decisao do orquestrador root session (mvs_311d078987d0414a90f57ef28b789b18) em 2026-07-11 22:00.",
       "createdAt": "2026-07-11",
       "updatedAt": "2026-07-11"
     }
@@ -7245,11 +7310,11 @@
     "firestoreIndexes": 35,
     "bundleSizeKB": 4125,
     "shelterPhases": "21/22 completas em produção (Fase 18 pendente decisão)",
-    "activeWorktreesAheadOfMain": 6,
+    "activeWorktreesAheadOfMain": 7,
     "mergedWorktreesThisSprint": [
       "wt/e79e15ca"
     ],
-    "mainCommit": "03f6a5c2f8444cf55dd46712d48769509263e435",
+    "mainCommit": "2b4462458f864487412f696ec0fae42f5a465078",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -7316,11 +7381,11 @@
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
     "lastIngest": {
-      "ts": "2026-07-12T00:56:52.142Z",
-      "taskHits": 12,
+      "ts": "2026-07-12T01:02:12.364Z",
+      "taskHits": 28,
       "riskHits": 0,
       "mrHits": 0,
-      "commitsScanned": 12
+      "commitsScanned": 21
     },
     "semanticEvents": [
       {
