@@ -8,6 +8,9 @@
  */
 
 import { confirmDialog } from '@/components/ui/confirm-provider';
+import { Users } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { EmptyState } from '@/components/ui/empty-state';
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -60,7 +63,7 @@ const BG_CHECK_TONES = {
 export function VolunteersRoster({ shelterClubId, actor, canAbriho }) {
   const isV1Enabled = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_VOLUNTEER_PROFILE_V1);
   const [statusFilter, setStatusFilter] = useState(null);
-  const { data: volunteers = [], isLoading } = useShelterVolunteers(shelterClubId, { status: statusFilter });
+  const { data: volunteers = [], isLoading, isError, refetch } = useShelterVolunteers(shelterClubId, { status: statusFilter });
   const updateMutation = useUpdateShelterVolunteer(shelterClubId, null); // sobrescrito por item
   const leaveMutation = useLeaveShelter(shelterClubId);
   const deleteMutation = useDeleteShelterVolunteer(shelterClubId);
@@ -77,7 +80,23 @@ export function VolunteersRoster({ shelterClubId, actor, canAbriho }) {
 
   if (!isV1Enabled) return null;
   if (!shelterClubId) return <p className="text-sm text-muted-foreground">Selecione um abrigo.</p>;
-  if (isLoading) return <p className="text-sm text-muted-foreground">Carregando voluntários…</p>;
+  if (isLoading) {
+    return (
+      <div className="space-y-2" aria-busy="true" aria-label="Carregando voluntários">
+        <Skeleton className="h-16 w-full rounded-lg" />
+        <Skeleton className="h-16 w-full rounded-lg" />
+        <Skeleton className="h-16 w-full rounded-lg" />
+      </div>
+    );
+  }
+  if (isError) {
+    return (
+      <p className="text-sm text-muted-foreground">
+        Não foi possível carregar os voluntários.{' '}
+        <button type="button" className="underline" onClick={() => refetch()}>Tentar de novo</button>
+      </p>
+    );
+  }
 
   const handleBgCheck = async (volunteerUid, newStatus) => {
     try {
@@ -136,7 +155,11 @@ export function VolunteersRoster({ shelterClubId, actor, canAbriho }) {
       </CardHeader>
       <CardContent>
         {volunteers.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Nenhum voluntário na rostagem.</p>
+          <EmptyState
+            icon={Users}
+            title="Nenhum voluntário ainda"
+            description="Compartilhe a página do abrigo ou o link /voluntarios/seja para receber as primeiras inscrições."
+          />
         ) : (
           <ul className="space-y-3">
             {volunteers.map((v) => (
