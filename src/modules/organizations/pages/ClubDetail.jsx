@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import VolunteerCtaCard from '@/modules/shelter/components/VolunteerCtaCard';
+import PublicGallerySection from '@/modules/shelter/components/PublicGallerySection';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { ArrowLeft, Building2, PawPrint, MessageSquare, HandCoins, Wallet, Users, Info } from 'lucide-react';
@@ -224,6 +225,8 @@ export default function ClubDetail() {
             {/* TASK-205: CTA "Seja voluntário" (flag-gated, some se OFF) */}
             <VolunteerCtaCard clubId={orgId} clubName={club?.name} />
             <ClubGeneralTab club={club} stats={stats} />
+            {/* TASK-142: galeria pública (some sem fotos) */}
+            <PublicGallerySection clubId={orgId} />
           </TabsContent>
 
           <TabsContent value="pets" className="mt-6 outline-none sm:mt-8">

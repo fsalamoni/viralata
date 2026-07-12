@@ -67,6 +67,28 @@ export async function listPetPhotos(petId, shelterClubId, options = {}) {
 /**
  * Lista fotos DELETADAS (lixeira) de um pet — para a aba "Lixeira".
  */
+/**
+ * TASK-142: galeria PÚBLICA do abrigo — fotos não-deletadas das
+ * categorias liberadas nas rules para leitura anônima. A query
+ * PRECISA repetir os filtros da rule (deleted_at == null + category
+ * in [...]), senão o Firestore nega o resultado inteiro.
+ */
+export const PUBLIC_PHOTO_CATEGORIES = Object.freeze(['rescue', 'profile', 'adoption', 'exhibition']);
+
+export async function listPublicShelterPhotos(shelterClubId, { maxResults = 24 } = {}) {
+  if (!db || !shelterClubId) return [];
+  const q = query(
+    collection(db, PHOTOS_COLLECTION),
+    where('shelter_club_id', '==', shelterClubId),
+    where('deleted_at', '==', null),
+    where('category', 'in', [...PUBLIC_PHOTO_CATEGORIES]),
+    orderBy('created_at', 'desc'),
+    limit(maxResults),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
 export async function listDeletedPhotos(petId, shelterClubId) {
   if (!db) return [];
   if (!petId || !shelterClubId) throw new Error('petId e shelterClubId obrigatórios');
