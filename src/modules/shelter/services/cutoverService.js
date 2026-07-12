@@ -11,6 +11,7 @@
  * @see docs/SHELTER_MGMT_ROADMAP.md § Fase 22
  */
 
+import { z } from 'zod';
 import {
   collectionGroup,
   getDocs,
@@ -162,8 +163,15 @@ export async function validateShelterReadiness() {
  * @param {Object.<string, boolean>} currentFlags - Flags atuais
  * @returns {Promise<{canCutover: boolean, status: CutoverStatus, readiness: ShelterReadinessResult, messages: string[]}>}
  */
+
+// TASK-012: currentFlags deve ser um mapa nome→boolean. Valores não
+// booleanos (ex.: strings 'true' vindas de env) seriam avaliados de
+// forma enganosa no getCutoverStatus.
+const currentFlagsSchema = z.record(z.string(), z.boolean()).default({});
+
 export async function checkCutoverReadiness(currentFlags = {}) {
-  const status = getCutoverStatus(currentFlags);
+  const parsedFlags = currentFlagsSchema.parse(currentFlags ?? {});
+  const status = getCutoverStatus(parsedFlags);
   const readiness = await validateShelterReadiness();
   const messages = [];
 

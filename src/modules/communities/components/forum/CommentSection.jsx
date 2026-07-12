@@ -13,6 +13,7 @@ import PollComponent from './PollComponent';
 import AttachmentRenderer from './AttachmentRenderer';
 import { uploadAttachment } from '@/core/services/storageService';
 import MarkdownContent from '@/components/ui/markdown-content';
+import { confirmDialog } from '@/components/ui/confirm-provider';
 
 function MessageItem({ message, threadId, onDeleted }) {
   const { user } = useAuth();
@@ -40,7 +41,7 @@ function MessageItem({ message, threadId, onDeleted }) {
   };
 
   const handleDelete = async () => {
-    if (!confirm('Excluir este comentário?')) return;
+    if (!(await confirmDialog({ title: 'Excluir este comentário?' }))) return;
     try {
       await deleteThreadMessage(message.id, threadId);
       onDeleted();

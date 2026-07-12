@@ -27,6 +27,7 @@ import {
   useDeleteTimelineEvent,
 } from '@/modules/shelter/hooks/useTimeline';
 import { TimelineEventForm } from './TimelineEventForm';
+import { confirmDialog } from '@/components/ui/confirm-provider';
 
 /**
  * @param {object} props
@@ -90,7 +91,7 @@ export function TimelineList({
   };
 
   const handleDelete = async (eventId) => {
-    if (!window.confirm('Remover este evento do histórico?')) return;
+    if (!(await confirmDialog({ title: 'Remover este evento do histórico?' }))) return;
     try {
       await deleteMutation.mutateAsync(eventId);
       toast({ title: 'Evento removido.' });

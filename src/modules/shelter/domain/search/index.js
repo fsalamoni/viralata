@@ -16,6 +16,7 @@ export {
   // Helpers de texto
   normalizeText,
   tokenize,
+  buildSearchKeywords,
   matchPrefix,
   matchContains,
   // Builders

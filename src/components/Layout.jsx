@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   PawPrint, Heart, Building2, MessageCircle, User, Menu, X, BookHeart,
-  Plus, Shield, ShieldCheck, AlertTriangle, LogOut, Radar, Users
+  Plus, Shield, ShieldCheck, AlertTriangle, LogOut, Radar, Users, HeartHandshake
 } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import NotificationsMenu from '@/modules/notifications/components/NotificationsMenu';
@@ -25,6 +25,7 @@ const STANDALONE_PAGES = ['Home', 'Login', 'OnboardingQuestionnaire'];
 const NAV_ITEMS = [
   { label: 'Feed', icon: PawPrint, to: '/feed' },
   { label: 'Abrigos', icon: Building2, to: '/organizacoes', auth: true },
+  { label: 'Voluntários', icon: HeartHandshake, to: '/voluntarios' },
   { label: 'Comunidade', icon: Users, to: '/comunidade' },
   { label: 'Chat', icon: MessageCircle, to: '/chat', auth: true },
 ];

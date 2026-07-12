@@ -10,6 +10,7 @@ import PollComponent from './PollComponent';
 import CommentSection from './CommentSection';
 import AttachmentRenderer from './AttachmentRenderer';
 import { toast } from 'sonner';
+import { confirmDialog } from '@/components/ui/confirm-provider';
 
 export default function ThreadDetail({ thread, communityId, onBack }) {
   const { user } = useAuth();
@@ -38,7 +39,7 @@ export default function ThreadDetail({ thread, communityId, onBack }) {
   };
 
   const handleDelete = async () => {
-    if (!confirm('Excluir este tópico?')) return;
+    if (!(await confirmDialog({ title: 'Excluir este tópico?' }))) return;
     try {
       await deleteForumThread(thread.id);
       toast.success('Tópico excluído');

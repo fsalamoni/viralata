@@ -28,6 +28,7 @@ import {
   useRestorePetPhoto,
 } from '@/modules/shelter/hooks/useGallery';
 import { PhotoUploadForm } from './PhotoUploadForm';
+import { confirmDialog } from '@/components/ui/confirm-provider';
 
 export function PhotoGallery({ petId, shelterClubId, canEdit = false, actor }) {
   const [tab, setTab] = useState('gallery');   // 'gallery' | 'trash'
@@ -59,7 +60,7 @@ export function PhotoGallery({ petId, shelterClubId, canEdit = false, actor }) {
   };
 
   const handleDelete = async (photoId) => {
-    if (!window.confirm('Enviar foto para a lixeira? (pode restaurar em até 30 dias)')) return;
+    if (!(await confirmDialog({ title: 'Enviar foto para a lixeira? (pode restaurar em até 30 dias)' }))) return;
     try {
       await deleteMutation.mutateAsync({ photoId, shelterClubId, actor });
       toast({ title: 'Foto movida para a lixeira.' });

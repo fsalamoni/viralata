@@ -208,6 +208,34 @@ export function tokenize(text) {
  * @param {string} prefix
  * @returns {boolean}
  */
+/**
+ * TASK-075: gera o array `search_keywords` gravado no doc (pets e,
+ * futuramente, outras entities). Tokens normalizados (sem acento,
+ * lowercase) + prefixos de 3..N chars do nome, permitindo
+ * `array-contains` no Firestore para busca por prefixo server-side.
+ * Bounded a 100 keywords para não estourar o limite de índice.
+ *
+ * @param {object} fields - mapa campo→valor (ex.: {name, breed, description})
+ * @returns {string[]} keywords únicos, ordenados
+ */
+export function buildSearchKeywords(fields = {}) {
+  const keywords = new Set();
+  const values = Object.values(fields).filter((v) => typeof v === 'string' && v);
+  for (const value of values) {
+    for (const token of tokenize(value)) {
+      if (token.length < 2) continue;
+      keywords.add(token);
+      // Prefixos do token (3..len-1) — busca incremental
+      for (let i = 3; i < token.length && keywords.size < 100; i += 1) {
+        keywords.add(token.slice(0, i));
+      }
+      if (keywords.size >= 100) break;
+    }
+    if (keywords.size >= 100) break;
+  }
+  return Array.from(keywords).sort();
+}
+
 export function matchPrefix(text, prefix) {
   if (!prefix) return true;
   if (text == null) return false;

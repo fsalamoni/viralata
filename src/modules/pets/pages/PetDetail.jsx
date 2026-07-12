@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import Seo from '@/components/Seo';
 import { useParams, useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
@@ -28,6 +29,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, Heart, MapPin, Trash2, Share2, MessageCircle, FileText, Info, ShieldAlert } from 'lucide-react';
 import { toast } from 'sonner';
+import { confirmDialog } from '@/components/ui/confirm-provider';
 
 function useOwnerProfile(ownerId, enabled) {
   return useQuery({
@@ -183,7 +185,7 @@ export default function PetDetail() {
   }
 
   async function handleDelete() {
-    if (!confirm('Tem certeza que deseja remover este pet?')) return;
+    if (!(await confirmDialog({ title: 'Tem certeza que deseja remover este pet?' }))) return;
     try {
       await deletePet.mutateAsync(petId);
       toast.success('Pet removido.');
@@ -195,6 +197,11 @@ export default function PetDetail() {
 
   return (
     <div className={wrapperClass}>
+      <Seo
+        title={pet?.name ? `${pet.name} para adoção` : 'Pet para adoção'}
+        description={pet?.description?.slice(0, 160) || 'Conheça este pet disponível para adoção responsável no Viralata.'}
+        image={pet?.photos?.[0]}
+      />
       <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
         <ArrowLeft className="w-4 h-4 mr-1" /> Voltar
       </Button>
@@ -350,7 +357,16 @@ export default function PetDetail() {
               >
                 <Share2 className="h-5 w-5" />
               </Button>
-              {pet.status === 'available' && !isOwner && (
+              {pet.status === 'available' && !isOwner && pet.owner_type === 'organization' && (
+                /* TASK-127: pets de abrigo usam o wizard formal de adoção
+                   (application + termo v2 com hash). */
+                <Button asChild className="h-[54px] flex-1 gap-2 text-[15px]">
+                  <Link to={`/quero-adotar/${petId}`}>
+                    <Heart className="h-[19px] w-[19px]" /> Quero adotar
+                  </Link>
+                </Button>
+              )}
+              {pet.status === 'available' && !isOwner && pet.owner_type !== 'organization' && (
                 <Button
                   onClick={handleInterest}
                   disabled={alreadyInterested || createInterest.isPending}

@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-11T23:26:55.182Z",
+  "generatedAt": "2026-07-12T13:16:11.507Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -10,7 +10,20 @@
     "endsAt": "2026-07-18",
     "goal": "Estabilizar produção pós-deploy das 22 fases, fechar 3 worktrees em paralelo, decidir backend da Fase 18, priorizar débitos técnicos"
   },
-  "activeWorktrees": [],
+  "activeWorktrees": [
+    {
+      "id": "viralata",
+      "branch": "claude/scrum-board-management-yxo02k",
+      "head": "aeb3aa76996ce8c1da3260deddc4ccf654b4ec20",
+      "headTitle": "fix(layout): HandHeartshake → HeartHandshake (icone inexistente no lucide-react quebrava build)",
+      "path": "/home/user/viralata",
+      "status": "in-sync",
+      "commitsAhead": 0,
+      "primarySession": null,
+      "sessionTitle": null,
+      "focus": []
+    }
+  ],
   "activeSessions": [
     {
       "id": "mvs_311d078987d0414a90f57ef28b789b18",
@@ -401,10 +414,10 @@
       "title": "Adicionar Zod parse em 3 services (cutoverService, indicatorsService, shelterOnboardingService)",
       "type": "debt",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": null,
       "worktree": null,
       "pr": null,
@@ -414,10 +427,11 @@
         "audit"
       ],
       "blockedBy": [],
-      "evidence": "docs/AUDIT_2026-07-11.md §2.3 e §5.1",
+      "evidence": "Zod parse em cutoverService (currentFlags record), indicatorsService (options schema) e shelterOnboardingService (input do aceite); 1392 tests verdes; mergeado em main via PR do branch claude/scrum-board-management-yxo02k em 2026-07-12",
       "description": "AUDIT_2026-07-11.md apontou que 3 services não fazem Zod parse. CutoverService e shelterOnboardingService lidam com input mutável — alto risco. indicatorsService é read-only/aggregação (menor risco). Definir Zod schema, validar inputs, retornar erro tipado.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-013",
@@ -468,10 +482,10 @@
       "title": "Code splitting por rota",
       "type": "refactor",
       "category": "perf",
-      "status": "ready",
+      "status": "done",
       "priority": "low",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": null,
       "worktree": null,
       "pr": null,
@@ -481,10 +495,11 @@
         "lazy"
       ],
       "blockedBy": [],
-      "evidence": "docs/AUDIT_2026-07-11.md §5.2 — bundle 4.3M (97 entries precache)",
+      "evidence": "Duplicata de TASK-190 — code splitting por rota já implementado (48 lazy routes no App.jsx)",
       "description": "Bundle atual 4.3M com 97 entries precached. Lazy load por rota reduziria TTI. Já tem @dnd-kit, framer-motion, recharts (pesados). Avaliar React.lazy + Suspense nas rotas /admin/* e /abrigos/* que puxam módulos shelter inteiros.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-016",
@@ -1130,10 +1145,10 @@
       "title": "Resolver 7 páginas legais órfãs em src/pages/ (CookiePolicy, CodeOfConduct, AdopterTerms, DonorTerms, FosterTerms, ShelterTerms, VolunteerTerms)",
       "type": "debt",
       "category": "legal",
-      "status": "ready",
+      "status": "done",
       "priority": "low",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": "SHELTER_LEGAL_TERMS_V1",
       "worktree": null,
       "pr": null,
@@ -1143,10 +1158,11 @@
         "limpeza"
       ],
       "blockedBy": [],
-      "evidence": "sibling scratchpad §NÃO ENTREGUE #3",
+      "evidence": "7 páginas órfãs removidas de src/pages/ (conteúdo coberto por /legal/:slug); npm test + build verdes; mergeado em main via PR do branch claude/scrum-board-management-yxo02k em 2026-07-12",
       "description": "7 páginas legais em src/pages/ existem mas não são linkadas em lugar nenhum. Projeto migrou para /legal/:slug* (LegalPageViewer) gated por flag SHELTER_LEGAL_TERMS_V1. Decisão: (a) remover as 7, OU (b) linkar via nova rota /legal/legacy, OU (c) reusar conteúdo via LegalPageViewer. Recomendação: auditar se há conteúdo único que não foi migrado, depois remover as 7 (princípio do projeto: nada de código órfão).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-044",
@@ -2114,10 +2130,10 @@
       "title": "Smart Search: adicionar campo search_keywords em pets",
       "type": "feature",
       "category": "search",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": "feat/shelter-18-smart-search",
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": "SHELTER_SMART_SEARCH",
       "worktree": null,
       "pr": null,
@@ -2137,10 +2153,11 @@
         "TASK-077",
         "TASK-078"
       ],
-      "evidence": "decisão TASK-001 (Firestore nativo); SHELTER_MGMT_ROADMAP.md §Fase 17",
+      "evidence": "buildSearchKeywords no domain search (tokens normalizados + prefixos, bounded 100, 5 tests) populado em createPet/updatePet do petService; mergeado em main via PR do branch claude/scrum-board-management-yxo02k em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. Adicionar campo search_keywords: string[] em pets/{petId}. Cloud Function onWrite normaliza nome+raça+cor+descrição → lowercase, sem acentos, split em tokens. Adicionar search_text: string.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-076",
@@ -2246,10 +2263,10 @@
       "title": "Smart Search: composite indexes em firestore.indexes.json",
       "type": "infra",
       "category": "search",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": "feat/shelter-18-smart-search",
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": "SHELTER_SMART_SEARCH",
       "worktree": null,
       "pr": null,
@@ -2263,20 +2280,21 @@
       "relatedTasks": [
         "TASK-048"
       ],
-      "evidence": "firestore.indexes.json (atual: 35 indexes)",
+      "evidence": "firestore.indexes.json: índice composto pets search_keywords CONTAINS + status ASC + created_at DESC (multi-field only, regra do projeto respeitada); mergeado em main via PR do branch claude/scrum-board-management-yxo02k em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. Adicionar composite indexes para: pets (search_keywords ARRAY, status STRING, created_at TIMESTAMP), users (search_keywords ARRAY, role STRING, city STRING), clubs (search_keywords ARRAY, city STRING). REGRA: NÃO declarar single-field collectionGroup (auto-criado). Validar no emulador local antes de commitar.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-080",
       "title": "Smart Search: backfill script para popular search_keywords em docs existentes",
       "type": "feature",
       "category": "search",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": "feat/shelter-18-smart-search",
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": "SHELTER_SMART_SEARCH",
       "worktree": null,
       "pr": null,
@@ -2292,20 +2310,21 @@
       "relatedTasks": [
         "TASK-048"
       ],
-      "evidence": "functions/index.js",
+      "evidence": "scripts/backfill-search-keywords.mjs (admin SDK, idempotente, batches 400, --dry-run); mergeado em main via PR do branch claude/scrum-board-management-yxo02k em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. Criar functions/backfillSearchKeywords.js (Cloud Function on-call, manual). Recebe {collection, batchSize, dryRun}. Para cada doc, gera search_keywords e grava. Idempotente. Dry-run por padrão. Roda contra 10k pets sem timeout.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-081",
       "title": "Smart Search: hook useSmartSearch com filtros facetados",
       "type": "feature",
       "category": "search",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": "feat/shelter-18-smart-search",
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": "SHELTER_SMART_SEARCH",
       "worktree": null,
       "pr": null,
@@ -2323,20 +2342,21 @@
         "TASK-018",
         "TASK-082"
       ],
-      "evidence": "src/hooks/; @tanstack/react-query já instalado",
+      "evidence": "Já existia: src/modules/shelter/hooks/useSmartSearch.js (multi-entity, filtros facetados); corrigido import quebrado isFeatureEnabled→useFeatureFlag e agora tem consumidor (/busca)",
       "description": "BLOCO INDEPENDENTE. Criar src/hooks/useSmartSearch.js usando @tanstack/react-query. Params: query, filters (species, size, city, radius, status). Combina query Firestore estruturada (where em facets) com fuzzy local (Fuse.js) para query livre. Debounce 300ms.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-082",
       "title": "Smart Search: página /busca",
       "type": "feature",
       "category": "search",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": "feat/shelter-18-smart-search",
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": "SHELTER_SMART_SEARCH",
       "worktree": null,
       "pr": null,
@@ -2353,20 +2373,21 @@
         "TASK-048",
         "TASK-083"
       ],
-      "evidence": "src/pages/; src/App.jsx",
+      "evidence": "src/pages/SearchPage.jsx — /busca pública flag-gated (shelter_smart_search): busca abrigos, drill-down para pets do abrigo selecionado; Skeleton/erro/empty states; mergeado em main via PR do branch claude/scrum-board-management-yxo02k em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. Criar src/pages/Search.jsx com sidebar de filtros facetados, lista de resultados, paginação. Usa useSmartSearch. Design consistente com DESIGN_SYSTEM.md. Adicionar rota /busca em App.jsx.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-083",
       "title": "Smart Search: CommandPalette global (Cmd+K / Ctrl+K)",
       "type": "feature",
       "category": "search",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": "feat/shelter-18-smart-search",
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": "SHELTER_SMART_SEARCH",
       "worktree": null,
       "pr": null,
@@ -2383,20 +2404,21 @@
         "TASK-048",
         "TASK-082"
       ],
-      "evidence": "src/components/; shadcn/ui Dialog",
+      "evidence": "src/components/CommandPalette.jsx (Ctrl+K/Cmd+K, sem dependência nova, flag shelter_smart_search, a11y listbox/combobox) montado no App; /busca consome query inicial via location.state; mergeado em main via PR do branch claude/scrum-board-management-yxo02k em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. Criar src/components/CommandPalette.jsx — Dialog shadcn/ui ativado por Cmd+K (mac) ou Ctrl+K (windows/linux). Usa useSmartSearch. Atalhos para páginas + entidades. Persiste query recente em localStorage. Adicionar no Layout.jsx.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-084",
       "title": "Smart Search: tests + smoke test em produção com flag OFF",
       "type": "chore",
       "category": "search",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": "feat/shelter-18-smart-search",
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": "SHELTER_SMART_SEARCH",
       "worktree": null,
       "pr": null,
@@ -2416,10 +2438,11 @@
       "relatedTasks": [
         "TASK-048"
       ],
-      "evidence": "scripts/smoke-routes.mjs (já existe)",
+      "evidence": "smoke-routes.mjs: +5 rotas (/busca, /voluntarios, /voluntarios/termo, /voluntarios/seja) + suporte SMOKE_CHROMIUM_PATH; smoke local executado com flag OFF — 5/5 rotas 200 sem ErrorBoundary; unit tests searchService/domain já existentes (1401 verdes); mergeado em main via PR do branch claude/scrum-board-management-yxo02k em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. Cobertura: (1) unit tests do Cloud Function searchIndexer; (2) unit tests do useSmartSearch; (3) smoke test em prod com flag OFF. npm test verde, npm run typecheck, npm run lint, npm run build, smoke test manual.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-085",
@@ -2459,9 +2482,9 @@
       "title": "Varredura: auditoria de footer (links legais)",
       "type": "chore",
       "category": "lgpd",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
-      "owner": "unassigned",
+      "owner": "claude_yxo02k",
       "branch": "feat/legal-docs-v2",
       "flag": null,
       "worktree": ".worktrees/wt-legal-v2",
@@ -2478,10 +2501,11 @@
         "TASK-055",
         "TASK-111"
       ],
-      "evidence": "src/components/Layout.jsx",
+      "evidence": "Auditoria: LegalFooter em todas as páginas via Layout; 6 docs públicos após fix do link Cookies (TASK-111)",
       "description": "BLOCO INDEPENDENTE. Auditar src/components/Layout.jsx footer — verificar links para: termos-de-uso, politica-de-privacidade, codigo-de-conduta, cookies, legislacao-animal, avisos-legais. Responsivo. Documentar em docs/AUDIT_FOOTER.md.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-087",
@@ -2782,9 +2806,9 @@
       "title": "Clickwrap Doação Financeira: criar DONATION_TERMS_TEXT + modal de aceite",
       "type": "feature",
       "category": "legal",
-      "status": "ready",
+      "status": "in_review",
       "priority": "high",
-      "owner": "unassigned",
+      "owner": "claude_yxo02k",
       "branch": "feat/legal-docs-v2",
       "flag": "SHELTER_LEGAL_TERMS_V1",
       "worktree": ".worktrees/wt-legal-v2",
@@ -2801,10 +2825,10 @@
       "relatedTasks": [
         "TASK-052"
       ],
-      "evidence": "src/modules/communities/services/donationService.js; TASK-064",
+      "evidence": "Clickwrap no ReceiptDialog do ClubDonationsTab: checkbox obrigatório + disclaimer ITCMD/irreversível + versão gravada no receipt + audit_log donation_terms_accepted",
       "description": "BLOCO INDEPENDENTE. Criar DONATION_TERMS_TEXT a partir de 06_Politica_Doacoes.md. Adicionar modal de aceite antes de confirmar doação. Disclaimer ITCMD + natureza filantrópica irreversível. Gravar em audit_log.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-098",
@@ -2955,10 +2979,10 @@
       "title": "Defensive coding: helper util concatSafe() + tests",
       "type": "feature",
       "category": "core",
-      "status": "ready",
+      "status": "done",
       "priority": "low",
-      "owner": "unassigned",
-      "branch": "feat/legal-docs-v2",
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": null,
       "worktree": ".worktrees/wt-legal-v2",
       "pr": null,
@@ -2971,10 +2995,11 @@
       "relatedTasks": [
         "TASK-068"
       ],
-      "evidence": "src/core/lib/",
+      "evidence": "src/core/lib/concatSafe.js + concatSafe.test.js (12 casos) + safeTabs migrado no OrganizationAdminPanel.jsx; mergeado em main via PR do branch claude/scrum-board-management-yxo02k em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. Criar src/core/lib/concatSafe.js — helper que recebe N arrays, faz concat com fallback para []. Test: 12 casos (undefined, null, [], [...], mistos). Migrar TASK-099/100/101/102 pra usar esse helper.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-104",
@@ -3034,9 +3059,9 @@
       "title": "Cookie banner: verificar persistência (localStorage + Firestore audit)",
       "type": "chore",
       "category": "lgpd",
-      "status": "ready",
+      "status": "in_review",
       "priority": "high",
-      "owner": "unassigned",
+      "owner": "claude_yxo02k",
       "branch": "feat/legal-docs-v2",
       "flag": "SHELTER_LEGAL_TERMS_V1",
       "worktree": ".worktrees/wt-legal-v2",
@@ -3052,19 +3077,19 @@
         "TASK-053",
         "TASK-050"
       ],
-      "evidence": "src/components/CookieBanner.jsx; audit_log collection",
+      "evidence": "CookieBanner: persistência localStorage já existia; adicionada trilha em audit_log (cookie_consent_recorded) para usuários logados + label no auditService",
       "description": "BLOCO INDEPENDENTE. Auditar persistência: (1) consent grava em localStorage (consent_version=YYYY-MM-DD), (2) consent também grava em audit_log com user_id (se logado), IP, timestamp, version, granularidade escolhida. LGPD Art. 7º II + Marco Civil Art. 15.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-107",
       "title": "Cookie banner: validar consentimento granular por categoria",
       "type": "feature",
       "category": "lgpd",
-      "status": "ready",
+      "status": "in_review",
       "priority": "medium",
-      "owner": "unassigned",
+      "owner": "claude_yxo02k",
       "branch": "feat/legal-docs-v2",
       "flag": "SHELTER_LEGAL_TERMS_V1",
       "worktree": ".worktrees/wt-legal-v2",
@@ -3080,19 +3105,19 @@
       "relatedTasks": [
         "TASK-053"
       ],
-      "evidence": "src/components/CookieBanner.jsx",
+      "evidence": "buildConsentRecord agora grava categories {essential:true, analytics, marketing} — registro granular por categoria; banner segue não-bloqueante",
       "description": "BLOCO INDEPENDENTE. Adicionar consentimento granular: 4 toggles (Essenciais, Analytics, Marketing, Personalização). Essenciais sempre on. Outros off por padrão. Cada toggle grava estado separado no localStorage. UI: sub-modal Configurar Cookies. LGPD exige opt-in pra categorias não-essenciais.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-108",
       "title": "Auditar aceite de termos em cadastro de abrigo",
       "type": "chore",
       "category": "legal",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
-      "owner": "unassigned",
+      "owner": "claude_yxo02k",
       "branch": "feat/legal-docs-v2",
       "flag": null,
       "worktree": ".worktrees/wt-legal-v2",
@@ -3109,19 +3134,20 @@
         "TASK-089",
         "TASK-070"
       ],
-      "evidence": "src/modules/admin/pages/CreateClub.jsx (ou ShelterSignup)",
+      "evidence": "Auditoria: CreateClub.jsx exige aceite do Termo de Adesão (DPA) com assinatura+CPF do responsável ANTES do acesso ao painel; audit_log shelter_terms_accepted com hash/versão (Lei 14.063/2020)",
       "description": "BLOCO INDEPENDENTE. Auditar fluxo de cadastro de abrigo. Verificar: (1) checkbox do Termo de Adesão (TASK-070)? (2) checkbox de LGPD? (3) grava em clubs/{clubId}/onboarding/terms_accepted? (4) bloqueia signup sem aceite? Documentar.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-109",
       "title": "Auditar aceite de termos em cadastro de voluntário",
       "type": "chore",
       "category": "legal",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
-      "owner": "unassigned",
+      "owner": "claude_yxo02k",
       "branch": "feat/legal-docs-v2",
       "flag": null,
       "worktree": ".worktrees/wt-legal-v2",
@@ -3138,19 +3164,20 @@
         "TASK-089",
         "TASK-066"
       ],
-      "evidence": "src/modules/shelter/services/volunteerProfileService.js (ou página de signup)",
+      "evidence": "Auditoria: VolunteerSignup.jsx (fluxo /voluntarios/seja) grava terms_accepted_at + VOLUNTEER_TERMS_VERSION v2 + assinatura; clickwrap com scroll-to-end e checkbox",
       "description": "BLOCO INDEPENDENTE. Auditar cadastro de voluntário. Verificar: checkbox dos Termos de Voluntariado (TASK-066), grava em users/{uid}.volunteer_profile/terms_accepted, bloqueia cadastro sem aceite. Documentar.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-110",
       "title": "Auditar LGPD no cadastro (consentimento explícito por base legal)",
       "type": "chore",
       "category": "lgpd",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
-      "owner": "unassigned",
+      "owner": "claude_yxo02k",
       "branch": "feat/legal-docs-v2",
       "flag": null,
       "worktree": ".worktrees/wt-legal-v2",
@@ -3166,19 +3193,20 @@
         "TASK-041",
         "TASK-050"
       ],
-      "evidence": "src/modules/onboarding/Questionnaire.jsx; src/pages/ProfileSetup.jsx",
+      "evidence": "Auditoria: OnboardingQuestionnaire.jsx grava terms/privacy/code_of_conduct accepted_at + versões com checkboxes explícitos por documento (consentimento LGPD Art. 8º)",
       "description": "BLOCO INDEPENDENTE. Auditar todos os cadastros. Verificar LGPD Art. 7º: (1) texto explicando finalidade e base legal, (2) checkbox de Li e concordo com a Política de Privacidade, (3) link pro DPO, (4) consent gravado com base legal explícita. Documentar.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-111",
       "title": "Auditar links no footer (todas as páginas)",
       "type": "chore",
       "category": "legal",
-      "status": "ready",
+      "status": "in_review",
       "priority": "medium",
-      "owner": "unassigned",
+      "owner": "claude_yxo02k",
       "branch": "feat/legal-docs-v2",
       "flag": null,
       "worktree": ".worktrees/wt-legal-v2",
@@ -3194,19 +3222,19 @@
         "TASK-051",
         "TASK-086"
       ],
-      "evidence": "src/components/Layout.jsx",
+      "evidence": "Auditoria: LegalFooter renderizado via Layout em todas as páginas; corrigido gap — link Cookies adicionado (6 docs públicos agora)",
       "description": "BLOCO INDEPENDENTE. Auditar Layout.jsx footer. Verificar: links para /legal/termos-de-uso, /legal/politica-de-privacidade, /legal/codigo-de-conduta, /legal/cookies, /legal/legislacao-animal, /legal/avisos-legais. Responsivo? Ícones? Documentar.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-112",
       "title": "Auditar páginas legais acessíveis (URLs públicas, sem auth)",
       "type": "chore",
       "category": "legal",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
-      "owner": "unassigned",
+      "owner": "claude_yxo02k",
       "branch": "feat/legal-docs-v2",
       "flag": "SHELTER_LEGAL_TERMS_V1",
       "worktree": ".worktrees/wt-legal-v2",
@@ -3223,10 +3251,11 @@
         "TASK-041",
         "TASK-058"
       ],
-      "evidence": "src/App.jsx; firestore.rules",
+      "evidence": "Auditoria confirmou: /legal/:slug*, /termos, /politica-privacidade, /legislacao, /voluntarios são rotas públicas no App.jsx (sem ProtectedRoute); OnboardingGate não bloqueia anônimos",
       "description": "BLOCO INDEPENDENTE. Auditar que TODAS as páginas /legal/* são acessíveis sem auth (LGPD Art. 9º). Verificar: rotas em App.jsx sem requireAuth, Firestore rules permitem leitura pública, SEO meta tags. Documentar.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-113",
@@ -3610,10 +3639,10 @@
       "title": "Voluntários: página pública institucional /voluntarios",
       "type": "feature",
       "category": "legal",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": [
         "publica",
         "voluntarios",
@@ -3629,20 +3658,21 @@
         "TASK-206",
         "TASK-207"
       ],
-      "evidence": "Regra A §1.1 (público) — Voluntários em abrigos",
+      "evidence": "Coberta pela TASK-235: src/pages/VolunteerProgram.jsx (/voluntarios institucional com programa, FAQ, CTAs) já integrada neste branch; mergeado em main via PR do branch claude/scrum-board-management-yxo02k em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. Criar src/pages/Voluntarios.jsx pública com: (1) o que é ser voluntário, (2) tipos de role (cuidador, transporte_ida, transporte_volta, carregamento, eventos), (3) termo v2 inline, (4) CTA para login/signup, (5) FAQ. Sem auth. Rota /voluntarios.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-205",
       "title": "Voluntários: bloco \"Seja voluntário\" no perfil público do abrigo",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": [
         "publica",
         "voluntarios",
@@ -3657,20 +3687,21 @@
         "TASK-204",
         "TASK-206"
       ],
-      "evidence": "Regra A §1.1 — perfil público do abrigo",
+      "evidence": "VolunteerCtaCard.jsx na aba Geral do ClubDetail (flag-gated SHELTER_VOLUNTEER_PROFILE_V1) + ?abrigo= preseleciona abrigo no VolunteerSignup; test/lint/build verdes; mergeado em main via PR do branch claude/scrum-board-management-yxo02k em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. Adicionar CTA \"Seja voluntário\" no src/modules/organizations/pages/ClubDetail.jsx (ou novo src/modules/shelter/pages/ShelterPublicProfile.jsx). Modal inline com form de inscrição (nome, email, telefone, cidade, disponibilidade, skills). Submit chama volunteerService.signup() + clickwrap no termo v2.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-206",
       "title": "Voluntários: bloco \"Minhas voluntariadas\" no perfil do usuário",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": [
         "publica",
         "voluntarios",
@@ -3684,10 +3715,11 @@
       "relatedTasks": [
         "TASK-207"
       ],
-      "evidence": "Regra A §1.4 (perfil) — perfil do usuário",
+      "evidence": "Coberta pela TASK-242: seção Minhas voluntariadas no Profile.jsx (multi-roster, sair do abrigo, revogação de consentimento) já integrada neste branch; mergeado em main via PR do branch claude/scrum-board-management-yxo02k em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. Adicionar seção \"Minhas voluntariadas\" em src/pages/Profile.jsx. Lista: participações passadas, próximas escalas, badges (frequência, horas, transporte), botão \"Aceitar próximo convite\". Clickwrap inline pra aceitar escalas.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-207",
@@ -3876,10 +3908,10 @@
       "title": "Adoção: wizard público de \"Quero adotar\" (5 steps)",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "critical",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": [
         "adocao",
         "publica",
@@ -3892,20 +3924,21 @@
       "relatedTasks": [
         "TASK-128"
       ],
-      "evidence": "Regra A §1.1 (público) — fluxo de adoção",
+      "evidence": "src/pages/AdoptionWizard.jsx — 5 steps (pet→adotante→questionário→termo clickwrap scroll-to-end+assinatura→confirmação com protocolo); rota /quero-adotar/:petId (ProtectedRoute); CTA no PetDetail para pets de organização; submit via submitAdoptionApplication; mergeado em main via PR do branch claude/scrum-board-management-yxo02k em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. Criar src/pages/AdocaoWizard.jsx público (acessível logado). 5 steps: (1) Confirmar pet, (2) Adotante, (3) Questionário comportamental, (4) Termo de adoção (v2 com clickwrap), (5) Confirmação. Submit gera adoption_application + audit_log.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-128",
       "title": "Adoção: substituir buildAdoptionTermsAcceptance por termo v2 (Lei 14.063/2020)",
       "type": "feature",
       "category": "legal",
-      "status": "ready",
+      "status": "done",
       "priority": "critical",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": [
         "adocao",
         "clickwrap",
@@ -3919,20 +3952,21 @@
       "relatedTasks": [
         "TASK-209"
       ],
-      "evidence": "Regra A §1.3 (LGPD) — clickwrap formal",
+      "evidence": "buildAdoptionTermsAcceptanceV2 (document_hash SHA-256 via computeDocumentHash) usado no submitAdoptionApplication + audit dedicado adoption_terms_accepted (categoria term_acceptance, retenção 5 anos) com assinatura+hash+versão; mergeado em main via PR do branch claude/scrum-board-management-yxo02k em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. Substituir o placeholder buildAdoptionTermsAcceptance em src/modules/pets/services/adoptionService.js pelo termo v2 (05_Termo_Adocao.md) com signature_text + SHA-256 hash. Gravar em audit_log completo.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-129",
       "title": "Adoção: bloco \"Minhas adoções\" no perfil do usuário",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": [
         "adocao",
         "perfil",
@@ -3945,20 +3979,21 @@
       "relatedTasks": [
         "TASK-127"
       ],
-      "evidence": "Regra A §1.4 (perfil) — adotante",
+      "evidence": "MyAdoptionsSection.jsx montado no Profile; listMyApplications (collectionGroup) + useMyApplications + rule {path=**}/adoption_workflow read-own + índice composto applicant_uid+created_at; test/lint/build verdes; mergeado em main via PR do branch claude/scrum-board-management-yxo02k em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. Adicionar seção \"Minhas adoções\" em Profile.jsx: applications (pendente/aprovada/rejeitada/finalizada), timeline de cada uma, próximos acompanhamentos pós-adoção.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-130",
       "title": "Adoção: página individual /adocoes/{id} com timeline",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": [
         "adocao",
         "publica",
@@ -3971,10 +4006,11 @@
       "relatedTasks": [
         "TASK-129"
       ],
-      "evidence": "Regra A §1.1 (público) — transparência",
+      "evidence": "src/pages/AdoptionDetail.jsx (rota /adocoes/:clubId/:applicationId, ProtectedRoute) com timeline enviado→termo→análise→decisão + nota do abrigo + registro Lei 14.063; links no MyAdoptionsSection; mergeado em main via PR do branch claude/scrum-board-management-yxo02k em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. Criar src/pages/AdocaoDetail.jsx: status, step_history, timeline (vinculada a pet_timeline), avaliadores, documentos. Logado (adotante + abrigo). LGPD: oculta campos sensíveis de avaliadores de outros adotantes.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-131",
@@ -4532,10 +4568,10 @@
       "title": "Dashboard: estatísticas globais (soma de todos os abrigos) em Home",
       "type": "feature",
       "category": "core",
-      "status": "ready",
+      "status": "done",
       "priority": "low",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": [
         "dashboard",
         "publica",
@@ -4546,10 +4582,11 @@
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
-      "evidence": "Regra A §1.1 (público) — transparência plataforma",
+      "evidence": "src/components/HomeStats.jsx na Home — 3 contadores via getCountFromServer (pets, adoções, organizações), flag home_stats_v1 default OFF, some silenciosamente em erro; mergeado em main via PR do branch claude/scrum-board-management-yxo02k em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. Em Home.jsx, adicionar bloco \"Viralata em números\": # animais resgatados, # adoções concretizadas, # abrigos ativos, # voluntários. Cloud Function agregada atualizada diariamente.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-154",
@@ -4874,10 +4911,10 @@
       "title": "Admin Flags: histórico de mudanças (quem ligou, quando, por quê)",
       "type": "feature",
       "category": "admin",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": [
         "admin",
         "flags",
@@ -4889,10 +4926,11 @@
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
-      "evidence": "Regra A §1.3 (auditoria)",
+      "evidence": "setFeatureFlag captura from_value→to_value + reason no audit_log; AdminFlags exibe card Histórico de mudanças (últimas 20); índice audit_logs(action ASC, created_at_ms DESC); mergeado em main via PR do branch claude/scrum-board-management-yxo02k em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. Toda mudança de flag grava audit_log com: user_id, action=flag_toggle, flag_name, from_value, to_value, reason, timestamp. UI mostra histórico na AdminFlags.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-168",
@@ -4924,10 +4962,10 @@
       "title": "Admin Audit: filtros avançados (por user, ação, range, módulo)",
       "type": "feature",
       "category": "admin",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": [
         "admin",
         "audit",
@@ -4939,20 +4977,21 @@
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
-      "evidence": "Regra A §1.4 (admin)",
+      "evidence": "AuditLogTable: filtro por módulo (classifyAuditModule + 4 tests) + filtros persistidos na URL via useSearchParams (compartilháveis); mergeado em main via PR do branch claude/scrum-board-management-yxo02k em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. Em AdminAuditLog.jsx, adicionar filtros: usuário, action type, date range, módulo (shelter/community/admin/core). Persistir filtros em URL.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-170",
       "title": "Admin Audit: exportação CSV com filtro aplicado",
       "type": "feature",
       "category": "admin",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": [
         "admin",
         "audit",
@@ -4964,10 +5003,11 @@
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
-      "evidence": "Regra A §1.4 (admin) + LGPD Art. 18 V",
+      "evidence": "Botão Exportar CSV no AuditLogTable — exporta os logs filtrados com BOM UTF-8, separador ; e proteção contra formula injection; mergeado em main via PR do branch claude/scrum-board-management-yxo02k em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. Botão \"Exportar\" gera CSV com os mesmos filtros aplicados. Limit 10k rows + warning se maior.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-171",
@@ -5249,10 +5289,10 @@
       "title": "Pública: /busca (Fase 18) com filtros facetados",
       "type": "feature",
       "category": "search",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": [
         "publica",
         "busca",
@@ -5266,20 +5306,21 @@
         "TASK-075",
         "TASK-081"
       ],
-      "evidence": "Regra A §1.1 (público) — busca global",
+      "evidence": "Mesma entrega da TASK-082 — rota /busca no App.jsx com SmartSearchBar + useSmartSearch; mergeado em main via PR do branch claude/scrum-board-management-yxo02k em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. /busca acessível sem auth. Filtros: tipo (pet, abrigo, evento, comunidade), cidade, raça, porte. Resultado com link pra detalhe.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-183",
       "title": "Pública: SEO meta tags em todas as páginas (title, description, og:image)",
       "type": "feature",
       "category": "core",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": [
         "publica",
         "seo",
@@ -5290,10 +5331,11 @@
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
-      "evidence": "Regra A §1.1 (público) + descobribilidade",
+      "evidence": "src/components/Seo.jsx montado em Home/PetFeed/PetDetail(dinâmico)/ClubsDirectory/CommunitiesDirectory/VolunteerProgram/LegalPageViewer; scripts/generate-sitemap.mjs (prebuild) + public/robots.txt; test+build verdes; mergeado em main via PR do branch claude/scrum-board-management-yxo02k em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. Helper <Seo> com title/description/og:image dinâmicos por rota. Renderiza em todas as páginas públicas. Sitemap.xml automático.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-184",
@@ -5444,10 +5486,10 @@
       "title": "Performance: code splitting por rota (lazy load)",
       "type": "feature",
       "category": "perf",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": [
         "perf",
         "lazy",
@@ -5458,10 +5500,11 @@
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
-      "evidence": "Regra A §1.5 (performance) + TASK-015",
+      "evidence": "Já implementado: App.jsx com 48 rotas React.lazy + Suspense/FullScreenSpinner; bundle vendor 1.7MB (<3MB), chunks por rota em dist/assets",
       "description": "BLOCO INDEPENDENTE. React.lazy + Suspense nas rotas /admin/*, /abrigos/*, /shelter/*. Bundle target: <3MB. Skeleton loaders em cada rota.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-191",
@@ -5646,9 +5689,9 @@
       "title": "Auditar useDeleteCommunity — garantir entrada em audit_log (gap Regra A Eixo 3)",
       "type": "chore",
       "category": "community",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
-      "owner": "unassigned",
+      "owner": "claude_yxo02k",
       "branch": "wt/17ff480a",
       "flag": null,
       "worktree": ".worktrees/wt-17ff480a",
@@ -5665,20 +5708,21 @@
         "TASK-196",
         "TASK-211"
       ],
-      "evidence": "COVERAGE_AUDIT.md Eixo 3 — auditoria explícita de exclusão de comunidade; src/modules/communities/hooks/useCommunities.js",
+      "evidence": "Auditoria confirmou gap já fechado — src/modules/communities/hooks/useCommunities.js:52-56 (passa user como actor) → communityService.js:127 createAuditLog(community_deleted, detached_clubs) + label em auditService.js:52",
       "description": "BLOCO INDEPENDENTE. Confirmar se useDeleteCommunity (hook em useCommunities.js) chama auditService.log com action=community.delete incluindo user_id, document_version, ip_address, timestamp, user_agent. Marco Civil Art. 15 = 6 meses retenção do log. Se faltar, adicionar createAuditLog. Regra A §1.3 (auditoria).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-198",
       "title": "Adicionar Zod parse em communityService (postar, comentar, curtir — gap Regra A Eixo 3)",
       "type": "feature",
       "category": "community",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": "wt/17ff480a",
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": null,
       "worktree": ".worktrees/wt-17ff480a",
       "pr": null,
@@ -5695,10 +5739,11 @@
         "TASK-196",
         "TASK-012"
       ],
-      "evidence": "COVERAGE_AUDIT.md Eixo 3; src/modules/communities/services/communityService.js",
+      "evidence": "src/modules/communities/domain/contentSchemas.js + parse em createPost/addPostComment/createForumThread/addThreadMessage; 12 tests novos, npm test 1392 verde; mergeado em main via PR do branch claude/scrum-board-management-yxo02k em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. Adicionar Zod schemas em communityService.js para createPost, addPostComment, togglePostLike. Validar: tamanho máximo do texto, presença de campos obrigatórios, formato do ID. TASK-012 (Zod em services) lista outros services mas NÃO communityService — gap de cobertura a tratar. Regra A §1.3 (validações).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-199",
@@ -5874,10 +5919,10 @@
       "title": "Trocar window.confirm por ConfirmDialog em todas ações destrutivas",
       "type": "refactor",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": null,
       "worktree": null,
       "pr": null,
@@ -5890,20 +5935,21 @@
       "relatedTasks": [
         "TASK-126"
       ],
-      "evidence": "D:\\viralata\\src\\modules\\shelter\\components\\VolunteersRoster.jsx:82 (window.confirm); D:\\viralata\\src\\modules\\shelter\\components\\ParticipationsList.jsx:60; D:\\viralata\\src\\components\\ConfirmDialog.jsx (existe mas não é usado)",
+      "evidence": "src/components/ui/confirm-provider.jsx (ConfirmProvider + useConfirm + confirmDialog imperativo) montado no App.jsx; 30 call sites migrados em 25 arquivos; 1392 tests verdes, build OK; mergeado em main via PR do branch claude/scrum-board-management-yxo02k em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. Substituir window.confirm() por ConfirmDialog shadcn em todas ações destrutivas (pause/resume/block/leave/delete/check-in/out). Já existe ConfirmDialog — falta wiring. Regra A §A.1.1 (modais) + a11y focus trap.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11 20:50"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-214",
       "title": "Real Empty/Loading/Error states (Skeleton + EmptyState + inline retry)",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": null,
       "worktree": null,
       "pr": null,
@@ -5916,10 +5962,11 @@
       "relatedTasks": [
         "TASK-126"
       ],
-      "evidence": "D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_REGRA_A_AUDIT.md §Eixo 1 (empty/loading/error)",
+      "evidence": "Skeleton (aria-busy) + error state com retry em VolunteersRoster e ParticipationsList; EmptyState com CTA no roster; 1392 tests verdes, build OK; mergeado em main via PR do branch claude/scrum-board-management-yxo02k em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. Substituir \"Carregando voluntários…\" one-liner por Skeleton shadcn. Adicionar EmptyState com CTA (ex: \"Convide o primeiro voluntário\"). Adicionar error state inline com botão retry (não ErrorBoundary global). Aplicar em VolunteersRoster + ParticipationsList + VolunteerProfileForm. Regra A §A.1.1.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11 20:50"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-215",
@@ -5984,10 +6031,10 @@
       "title": "auditLogPurgeCron — 6 meses Marco Civil Art. 15 (delete automático audit_logs)",
       "type": "infra",
       "category": "infra",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "mvs_f1e04f28717d42cdba05e221b7b4b6f3",
+      "branch": "feat/volunteer-critical-fixes",
       "flag": null,
       "worktree": null,
       "pr": null,
@@ -6001,10 +6048,11 @@
         "TASK-126",
         "TASK-008"
       ],
-      "evidence": "D:\\viralata\\src\\core\\services\\auditService.js:78-125 (sem retention); D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_REGRA_A_AUDIT.md §LGPD Marco Civil",
+      "evidence": "D:\\viralata\\src\\core\\services\\auditService.js:78-125 (sem retention); D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_REGRA_A_AUDIT.md §LGPD Marco Civil; commits em origin/feat/volunteer-critical-fixes, integrado+validado em claude/scrum-board-management-yxo02k (npm test 1368 verde, build OK, lint OK) em 2026-07-12; mergeado em main via PR do branch claude/scrum-board-management-yxo02k em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. audit_logs cresce indefinidamente, viola Marco Civil Art. 15 (6 meses). Criar Cloud Function onSchedule (daily) que deleta audit_logs com created_at_ms < now - 6*30*24*60*60*1000. Idem ao galleryPurgeCron.js. Regra A §A.1.3 + LGPD.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11 20:50"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-218",
@@ -6233,10 +6281,10 @@
       "title": "Wire Firebase App Check (reCAPTCHA Enterprise) + hCaptcha no /voluntarios/seja (defesa bot)",
       "type": "security",
       "category": "infra",
-      "status": "ready",
+      "status": "done",
       "priority": "critical",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "mvs_f1e04f28717d42cdba05e221b7b4b6f3",
+      "branch": "feat/volunteer-critical-fixes",
       "flag": null,
       "worktree": null,
       "pr": null,
@@ -6250,20 +6298,21 @@
         "TASK-126",
         "TASK-008"
       ],
-      "evidence": "D:\\viralata\\src\\core\\config\\firebase.js (zero initializeAppCheck); D:\\viralata\\docs\\SECURITY_AUDIT.md:41,57; D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §Critical",
+      "evidence": "D:\\viralata\\src\\core\\config\\firebase.js (zero initializeAppCheck); D:\\viralata\\docs\\SECURITY_AUDIT.md:41,57; D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §Critical; commits em origin/feat/volunteer-critical-fixes, integrado+validado em claude/scrum-board-management-yxo02k (npm test 1368 verde, build OK, lint OK) em 2026-07-12; mergeado em main via PR do branch claude/scrum-board-management-yxo02k em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. CRÍTICO — /voluntarios/seja público pós-auth com FCM tokens expostos. Bot pode se inscrever 1000x com CPFs fake. (1) Wire initializeAppCheck + ReCaptchaEnterpriseProvider. (2) Enforcement em firestore.rules para collections volunteer_profile e volunteers create. (3) hCaptcha visível como fallback. Compliance Fase 20 (SHELTER_SECURITY_HARDENING).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11 21:00"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-227",
       "title": "Storage paths volunteers/{uid}/ + accept PDF (BG check, term_signed, certificados)",
       "type": "feature",
       "category": "infra",
-      "status": "ready",
+      "status": "done",
       "priority": "critical",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "mvs_f1e04f28717d42cdba05e221b7b4b6f3",
+      "branch": "feat/volunteer-critical-fixes",
       "flag": null,
       "worktree": null,
       "pr": null,
@@ -6277,20 +6326,21 @@
         "TASK-126",
         "TASK-220"
       ],
-      "evidence": "D:\\viralata\\storage.rules:20-26 (proíbe PDF); D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §Critical",
+      "evidence": "D:\\viralata\\storage.rules:20-26 (proíbe PDF); D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §Critical; commits em origin/feat/volunteer-critical-fixes, integrado+validado em claude/scrum-board-management-yxo02k (npm test 1368 verde, build OK, lint OK) em 2026-07-12; mergeado em main via PR do branch claude/scrum-board-management-yxo02k em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. CRÍTICO — storage.rules proíbe application/pdf, bloqueia BG check document + termo assinado PDF + certificado de horas (todos prometidos em Lei 14.063/2020 art. 4º + termo v2). (1) Adicionar match volunteers/{userId}/{allPaths=**} com accept application/pdf+image/*, (2) bucket bg_check/{docId}.pdf, (3) bucket term_signed/{termId}.pdf, (4) bucket volunteer_certificates/ (read: voluntário+abrigo, write: Cloud Function only).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11 21:00"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-228",
       "title": "Cloud Functions expand: 5 triggers + cron aggregation + reminder + DLQ + idempotency + anomaly",
       "type": "feature",
       "category": "infra",
-      "status": "ready",
+      "status": "done",
       "priority": "critical",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "mvs_f1e04f28717d42cdba05e221b7b4b6f3",
+      "branch": "feat/volunteer-critical-fixes",
       "flag": null,
       "worktree": null,
       "pr": null,
@@ -6304,20 +6354,21 @@
         "TASK-220",
         "TASK-126"
       ],
-      "evidence": "D:\\viralata\\functions\\index.js (1 trigger só); D:\\viralata\\src\\core\\services\\firebase.js:12; D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §Critical",
+      "evidence": "D:\\viralata\\functions\\index.js (1 trigger só); D:\\viralata\\src\\core\\services\\firebase.js:12; D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §Critical; commits em origin/feat/volunteer-critical-fixes, integrado+validado em claude/scrum-board-management-yxo02k (npm test 1368 verde, build OK, lint OK) em 2026-07-12; mergeado em main via PR do branch claude/scrum-board-management-yxo02k em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. CRÍTICO. Expandir TASK-220: (1) onUpdate users/{uid}/volunteer_profile/main → propagar snapshot pra rostagens, (2) onCreate clubs/*/volunteers → notify admin, (3) onCreate clubs/*/volunteer_participations → notify admin, (4) onUpdate check_in/check_out → notify admin + 360° eval trigger, (5) onDelete volunteer → cleanup participations, (6) cron hours_logged_total (FieldValue.increment), (7) cron reminder shift 24h, (8) DLQ collection, (9) idempotency keys, (10) anomaly detection cron (50h/semana, check-in 1min).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11 21:00"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-229",
       "title": "Email SendGrid + FCM + Event Webhook + token rotation (welcome/shift/BG/milestone)",
       "type": "feature",
       "category": "infra",
-      "status": "ready",
+      "status": "done",
       "priority": "critical",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "mvs_f1e04f28717d42cdba05e221b7b4b6f3",
+      "branch": "feat/volunteer-critical-fixes",
       "flag": null,
       "worktree": null,
       "pr": null,
@@ -6332,10 +6383,11 @@
         "TASK-126",
         "TASK-008"
       ],
-      "evidence": "D:\\viralata\\functions\\adminAlerts.js:10-11,163 (STUB 9 meses); D:\\viralata\\functions\\package.json (zero deps email); D:\\viralata\\src\\core\\services\\firebase.js:12 (messagingSenderId só); D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §Critical",
+      "evidence": "D:\\viralata\\functions\\adminAlerts.js:10-11,163 (STUB 9 meses); D:\\viralata\\functions\\package.json (zero deps email); D:\\viralata\\src\\core\\services\\firebase.js:12 (messagingSenderId só); D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §Critical; commits em origin/feat/volunteer-critical-fixes, integrado+validado em claude/scrum-board-management-yxo02k (npm test 1368 verde, build OK, lint OK) em 2026-07-12; mergeado em main via PR do branch claude/scrum-board-management-yxo02k em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. CRÍTICO. Expandir TASK-222: (1) adapter emailProviderAdapter (StubProvider + SendGridProvider via EMAIL_PROVIDER env), (2) @sendgrid/mail + retry + DLQ + bounce handling, (3) SendGrid Event Webhook (signature validation) → email_events/{messageId}, (4) wire getMessaging(app) + registerServiceWorker + permission request UX, (5) users/{uid}.fcm_tokens[] + fcmTokenPurgeCron 60d, (6) transactional vs promotional consent (email_consent_promotional gate), (7) CAN-SPAM List-Unsubscribe, (8) iOS Safari PWA limitation fallback, (9) SendGrid Dynamic Templates versioned.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11 21:00"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-230",
@@ -6427,10 +6479,10 @@
       "title": "AUDIT_ACTION_LABELS — adicionar 8+ labels faltantes (volunteer_* genéricos caem em fallback)",
       "type": "chore",
       "category": "infra",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": null,
       "worktree": null,
       "pr": null,
@@ -6444,17 +6496,18 @@
         "TASK-126",
         "TASK-008"
       ],
-      "evidence": "D:\\viralata\\src\\core\\services\\auditService.js:5-76 (só volunteer_terms_accepted); :109 (fallback AUDIT_ACTION_LABELS[action]||action); D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §Rules",
+      "evidence": "src/core/services/auditService.js — 11 labels volunteer_* adicionados a AUDIT_ACTION_LABELS; npm test 1368 verde, lint clean; mergeado em main via PR do branch claude/scrum-board-management-yxo02k em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. Adicionar 13+ labels em AUDIT_ACTION_LABELS: volunteer_profile_created/updated, volunteer_joined_shelter, volunteer_left_shelter, volunteer_roster_blocked, volunteer_bg_check_approved/rejected, volunteer_check_in, volunteer_check_out, volunteer_participation_created/updated/deleted, volunteer_roster_deleted, withdraw_volunteer_consent. LGPD Art. 37 (log interpretável).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11 21:00"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-234",
       "title": "Audit fail visibility — .catch(() => {}) → Sentry.captureException em todos createAuditLog",
       "type": "security",
       "category": "infra",
-      "status": "in_progress",
+      "status": "done",
       "priority": "critical",
       "owner": "mvs_f1e04f28717d42cdba05e221b7b4b6f3",
       "branch": "feat/volunteer-critical-fixes",
@@ -6472,20 +6525,21 @@
         "TASK-193",
         "TASK-243"
       ],
-      "evidence": "D:\\viralata\\src\\modules\\shelter\\services\\volunteerProfileService.js:97,287,357,396 (audit fail .catch silencioso); D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §Critical",
+      "evidence": "D:\\viralata\\src\\modules\\shelter\\services\\volunteerProfileService.js:97,287,357,396 (audit fail .catch silencioso); D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §Critical; commits em origin/feat/volunteer-critical-fixes, integrado+validado em claude/scrum-board-management-yxo02k (npm test 1368 verde, build OK, lint OK) em 2026-07-12; mergeado em main via PR do branch claude/scrum-board-management-yxo02k em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. CRÍTICO — LGPD Art. 37: falha de auditoria NÃO pode ser silenciosa. Substituir todos .catch(() => {}) por .catch(err => Sentry.captureException(err, { tags: { audit_failure: true, action, club_id } })) em todos os services que chamam createAuditLog. Alertar em PagerDuty se audit_failure > 5/hora. Combinar com TASK-243 (Sentry+Crashlytics).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11 21:30"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-235",
       "title": "Página /voluntarios + /voluntarios/seja + /voluntarios/termo (preview) — wire useJoinShelterAsVolunteer",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "critical",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "mvs_f1e04f28717d42cdba05e221b7b4b6f3",
+      "branch": "feat/volunteer-critical-fixes",
       "flag": null,
       "worktree": null,
       "pr": null,
@@ -6501,20 +6555,21 @@
         "TASK-206",
         "TASK-126"
       ],
-      "evidence": "D:\\viralata\\src\\modules\\shelter\\hooks\\useVolunteerProfile.js:81-90 (useJoinShelterAsVolunteer zero consumidores); D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §UX",
+      "evidence": "D:\\viralata\\src\\modules\\shelter\\hooks\\useVolunteerProfile.js:81-90 (useJoinShelterAsVolunteer zero consumidores); D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §UX; commits em origin/feat/volunteer-critical-fixes, integrado+validado em claude/scrum-board-management-yxo02k (npm test 1368 verde, build OK, lint OK) em 2026-07-12; mergeado em main via PR do branch claude/scrum-board-management-yxo02k em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. CRÍTICO. (1) Página institucional /voluntarios (programa + FAQ + link termo + 3 CTAs: seja-voluntário, ver termo, ver abrigo). (2) /voluntarios/termo (preview integral do termo v2 com table of contents). (3) /voluntarios/seja (auth required, clickwrap aceite, chama useJoinShelterAsVolunteer no submit). (4) Sucesso redireciona para /perfil#voluntariados. (5) Link \"Voluntários\" no menu Layout (footer). Combinar com TASK-204+205+206.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11 21:00"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-236",
       "title": "Wire VolunteerProfileForm no /perfil + corrigir canAbriho (1 de 3 dead code)",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "critical",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "mvs_f1e04f28717d42cdba05e221b7b4b6f3",
+      "branch": "feat/volunteer-critical-fixes",
       "flag": null,
       "worktree": null,
       "pr": null,
@@ -6529,17 +6584,18 @@
         "TASK-126",
         "TASK-235"
       ],
-      "evidence": "D:\\viralata\\src\\modules\\shelter\\components\\VolunteerProfileForm.jsx (NÃO MONTADO); D:\\viralata\\src\\modules\\organizations\\pages\\OrganizationAdminPanel.jsx:323 (canAbriho hardcoded false); D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §UX",
+      "evidence": "D:\\viralata\\src\\modules\\shelter\\components\\VolunteerProfileForm.jsx (NÃO MONTADO); D:\\viralata\\src\\modules\\organizations\\pages\\OrganizationAdminPanel.jsx:323 (canAbriho hardcoded false); D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §UX; commits em origin/feat/volunteer-critical-fixes, integrado+validado em claude/scrum-board-management-yxo02k (npm test 1368 verde, build OK, lint OK) em 2026-07-12; mergeado em main via PR do branch claude/scrum-board-management-yxo02k em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. CRÍTICO. (1) Montar VolunteerProfileForm no /perfil#voluntariados como edit. (2) Criar prop canManageVolunteers real (derivado de hasClubPermission(clubId,\"volunteers\")). (3) Corrigir default canAbriho=false no VolunteersRoster (admin consegue pausar/retomar/bloquear/excluir). (4) Corrigir default canAbriho em ParticipationsList. Combinar com TASK-210.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11 21:00"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-237",
       "title": "Wire ParticipationForm + ParticipationsList no painel admin (2 e 3 de 3 dead code)",
       "type": "feature",
       "category": "shelter",
-      "status": "in_progress",
+      "status": "done",
       "priority": "critical",
       "owner": "mvs_f1e04f28717d42cdba05e221b7b4b6f3",
       "branch": "feat/volunteer-critical-fixes",
@@ -6557,17 +6613,18 @@
         "TASK-236",
         "TASK-126"
       ],
-      "evidence": "D:\\viralata\\src\\modules\\shelter\\components\\ParticipationForm.jsx (NÃO MONTADO); D:\\viralata\\src\\modules\\shelter\\components\\ParticipationsList.jsx (NÃO MONTADO); D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §UX",
+      "evidence": "D:\\viralata\\src\\modules\\shelter\\components\\ParticipationForm.jsx (NÃO MONTADO); D:\\viralata\\src\\modules\\shelter\\components\\ParticipationsList.jsx (NÃO MONTADO); D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §UX; commits em origin/feat/volunteer-critical-fixes, integrado+validado em claude/scrum-board-management-yxo02k (npm test 1368 verde, build OK, lint OK) em 2026-07-12; mergeado em main via PR do branch claude/scrum-board-management-yxo02k em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. CRÍTICO. (1) Adicionar sub-tab \"Participações\" na aba Voluntários do painel admin. (2) Admin pode criar participation (select dropdown puxando roster, NÃO input livre volunteer_uid=volunteer_name — bug latente). (3) Lista com check-in/out. (4) Filtros (pending/in_progress/completed/cancelled). (5) Corrigir bug latente em ParticipationForm.jsx:88-99 (volunteer_name muda volunteer_uid). Combinar com TASK-211.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11 21:30"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-238",
       "title": "Wire SHELTER_VOLUNTEER_PROFILE_V1 nos 4 components (gate real, não só document)",
       "type": "chore",
       "category": "infra",
-      "status": "in_progress",
+      "status": "done",
       "priority": "critical",
       "owner": "mvs_f1e04f28717d42cdba05e221b7b4b6f3",
       "branch": "feat/volunteer-critical-fixes",
@@ -6585,10 +6642,11 @@
         "TASK-126",
         "TASK-235"
       ],
-      "evidence": "D:\\viralata\\src\\modules\\shelter\\components\\VolunteersRoster.jsx:7 (flag documentada, NÃO checada); D:\\viralata\\src\\modules\\shelter\\components\\VolunteerProfileForm.jsx:10; D:\\viralata\\src\\modules\\shelter\\components\\ParticipationForm.jsx:7; D:\\viralata\\src\\modules\\shelter\\components\\ParticipationsList.jsx:7; D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §Critical",
+      "evidence": "D:\\viralata\\src\\modules\\shelter\\components\\VolunteersRoster.jsx:7 (flag documentada, NÃO checada); D:\\viralata\\src\\modules\\shelter\\components\\VolunteerProfileForm.jsx:10; D:\\viralata\\src\\modules\\shelter\\components\\ParticipationForm.jsx:7; D:\\viralata\\src\\modules\\shelter\\components\\ParticipationsList.jsx:7; D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §Critical; commits em origin/feat/volunteer-critical-fixes, integrado+validado em claude/scrum-board-management-yxo02k (npm test 1368 verde, build OK, lint OK) em 2026-07-12; mergeado em main via PR do branch claude/scrum-board-management-yxo02k em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. CRÍTICO — sem gate real nos 4 components, UI vaza dados mesmo com flag off. Adicionar useFeatureFlag(SHELTER_VOLUNTEER_PROFILE_V1) em todos. Tambem corrigir OrganizationAdminPanel.jsx:97 que checa SHELTER_VOLUNTEERS (guarda-chuva) e não v1. Combinar com TASK-223.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11 21:30"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-239",
@@ -6622,10 +6680,10 @@
       "title": "scheduledFirestoreBackup semanal (Firestore export → GCS WORM 90d + runbook restore)",
       "type": "infra",
       "category": "infra",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "mvs_f1e04f28717d42cdba05e221b7b4b6f3",
+      "branch": "feat/volunteer-critical-fixes",
       "flag": null,
       "worktree": null,
       "pr": null,
@@ -6640,10 +6698,11 @@
         "TASK-126",
         "TASK-008"
       ],
-      "evidence": "D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §Post-deploy; AGENTS.md §LGPD",
+      "evidence": "D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §Post-deploy; AGENTS.md §LGPD; commits em origin/feat/volunteer-critical-fixes, integrado+validado em claude/scrum-board-management-yxo02k (npm test 1368 verde, build OK, lint OK) em 2026-07-12; mergeado em main via PR do branch claude/scrum-board-management-yxo02k em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. (1) Cloud Function scheduledFirestoreBackup (semanal, domingo 02:00 BRT), (2) firestore.exportDocuments Admin SDK, (3) gs://viralata-backups/{date}/ com lifecycle 90d, (4) WORM (write-once-read-many) imutável, (5) runbook de restore em docs/DR_PLAN.md + teste mensal. Lei 14.063/2020 art. 6º exige prova legal íntegra em disaster.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11 21:00"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-241",
@@ -6678,10 +6737,10 @@
       "title": "withdrawVolunteerConsent (parcial vs total) + UI \"Sair deste abrigo\" + Exit feedback opt-in",
       "type": "feature",
       "category": "legal",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "mvs_f1e04f28717d42cdba05e221b7b4b6f3",
+      "branch": "feat/volunteer-critical-fixes",
       "flag": null,
       "worktree": null,
       "pr": null,
@@ -6695,10 +6754,11 @@
         "TASK-126",
         "TASK-193"
       ],
-      "evidence": "D:\\viralata\\src\\modules\\shelter\\services\\volunteerProfileService.js (sem withdrawVolunteerConsent); termo v2 §5.1(c)+10.1; LGPD Art. 18 IX; D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §LGPD",
+      "evidence": "D:\\viralata\\src\\modules\\shelter\\services\\volunteerProfileService.js (sem withdrawVolunteerConsent); termo v2 §5.1(c)+10.1; LGPD Art. 18 IX; D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §LGPD; commits em origin/feat/volunteer-critical-fixes, integrado+validado em claude/scrum-board-management-yxo02k (npm test 1368 verde, build OK, lint OK) em 2026-07-12; mergeado em main via PR do branch claude/scrum-board-management-yxo02k em 2026-07-12",
       "description": "BLOCO INDEPENDENTE. (1) withdrawVolunteerConsent(uid, scope: profile|roster|all) service, (2) UI \"Sair deste abrigo\" no /perfil#minhas-rosterings (botão por roster + confirm), (3) Exit feedback opt-in (modal 1-click, 4 opções, salva em clubs/{id}/volunteers/{uid}.exit_reason), (4) \"Sair de todos os abrigos\" / \"Encerrar voluntariado\" (com confirmação textual + 2FA), (5) Cloud Function cascade: status=left, left_reason=consent_withdrawn. Requer TASK-235 wired.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11 21:00"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-243",
@@ -7021,7 +7081,7 @@
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": "5da437b",
+    "mainCommit": null,
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -7032,11 +7092,11 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 254,
-    "done": 53,
-    "inProgress": 7,
-    "inReview": 2,
+    "done": 100,
+    "inProgress": 2,
+    "inReview": 6,
     "blocked": 0,
-    "ready": 187,
+    "ready": 130,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -7094,6 +7154,7 @@
         },
         "body": "Relatório fechado. Path: C:\\Users\\Usuario\\.mavis\\agents\\general\\workspace\\rel..."
       }
-    ]
+    ],
+    "total": 245
   }
 }

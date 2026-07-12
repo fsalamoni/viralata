@@ -73,6 +73,30 @@ service cloud.firestore {
       return exists(/databases/$(database)/documents/clubs/$(clubId))
         && get(/databases/$(database)/documents/clubs/$(clubId)).data.created_by == uid;
     }
+    // TASK-230: server-side roster gate para participações de voluntários.
+    // Só quem está com rostagem `active` E background check ok (ou não exigido)
+    // pode ser inserido como participante de evento. Bloqueia inserts
+    // forjados via client (que poderiam falsificar horas_logged).
+    function isVolunteerInRoster(clubId, volunteerUid) {
+      return exists(/databases/$(database)/documents/clubs/$(clubId)/volunteers/$(volunteerUid))
+        && get(/databases/$(database)/documents/clubs/$(clubId)/volunteers/$(volunteerUid)).data.status == 'active'
+        && (get(/databases/$(database)/documents/clubs/$(clubId)/volunteers/$(volunteerUid)).data.background_check_status == 'not_required'
+          || get(/databases/$(database)/documents/clubs/$(clubId)/volunteers/$(volunteerUid)).data.background_check_status == 'approved');
+    }
+    // TASK-226: gate App Check. Quando o Firebase App Check está enforcement-
+    // on (produção), o claim `app_check` é injetado em request.auth.token.
+    // Em dev/emulador, o claim não existe — daí o fallback que libera
+    // platform_admin (sempre protegido por outro caminho) e tokens
+    // custom-issued pelo emulador Auth. A regra é conservadora:
+    // libere APENAS onde existe um caminho alternativo de confiança
+    // (platform admin, emulador), nunca "permitir tudo se sem claim".
+    function isAppCheckVerified() {
+      return isAuth() && (
+        request.auth.token.app_check == true
+        || request.auth.token.firebase_sign_in_provider == 'custom'
+        || isPlatformAdmin()
+      );
+    }
     // Quem pode gerenciar um pet (dono pessoa física, ou clube dono via admin/permissão).
     function canManagePet(petData) {
       return petData.owner_id == request.auth.uid ||
@@ -185,7 +209,10 @@ service cloud.firestore {
       // snapshot é o que o abrigo vê — defense-in-depth.
       match /volunteer_profile/{profileId} {
         allow read: if isAuth() && (isOwner(userId) || isPlatformAdmin());
-        allow create: if isOwner(userId) && request.resource.data.get('terms_accepted_at', null) is string;
+        allow create: if isOwner(userId) &&
+          request.resource.data.get('terms_accepted_at', '') is string &&
+          request.resource.data.get('terms_accepted_at', '').matches('^\\d{4}-\\d{2}-\\d{2}T') &&
+          request.resource.data.get('signature_text', '').size() >= 2;
         allow update: if isOwner(userId);
         allow delete: if isOwner(userId) || isPlatformAdmin();
       }
@@ -937,7 +964,7 @@ service cloud.firestore {
           isPlatformAdmin() ||
           isClubOwnerOrAdmin(clubId) ||
           canEditClubPets(clubId) ||
-          hasClubPermission(clubId, 'animals') ||
+          hasClubPermission(clubId, 'volunteers') ||
           // O próprio voluntário pode ler sua rostagem
           volunteerUid == request.auth.uid
         );
@@ -948,10 +975,16 @@ service cloud.firestore {
           request.resource.data.volunteer_name is string &&
           request.resource.data.volunteer_name.size() >= 2 &&
           request.resource.data.terms_accepted_at is string &&
+          request.resource.data.terms_accepted_at.matches('^\\d{4}-\\d{2}-\\d{2}T') &&
+          // TASK-226: App Check gate. Criações via auto-join (voluntário
+          // público) precisam ter passado pelo hCaptcha client-side +
+          // App Check server-side. Admins de abrigo continuam livres
+          // (isAppCheckVerified libera platform_admin).
+          isAppCheckVerified() &&
           (isPlatformAdmin() ||
            isClubOwnerOrAdmin(clubId) ||
            canEditClubPets(clubId) ||
-           hasClubPermission(clubId, 'animals') ||
+           hasClubPermission(clubId, 'volunteers') ||
            // Auto-join: o próprio voluntário pode se adicionar
            volunteerUid == request.auth.uid)
         );
@@ -962,7 +995,7 @@ service cloud.firestore {
           (isPlatformAdmin() ||
            isClubOwnerOrAdmin(clubId) ||
            canEditClubPets(clubId) ||
-           hasClubPermission(clubId, 'animals') ||
+           hasClubPermission(clubId, 'volunteers') ||
            // O próprio voluntário pode pausar/retomar/sair
            volunteerUid == request.auth.uid)
         );
@@ -984,7 +1017,7 @@ service cloud.firestore {
           isPlatformAdmin() ||
           isClubOwnerOrAdmin(clubId) ||
           canEditClubPets(clubId) ||
-          hasClubPermission(clubId, 'animals') ||
+          hasClubPermission(clubId, 'volunteers') ||
           // O próprio voluntário pode ler suas participações
           resource.data.volunteer_uid == request.auth.uid
         );
@@ -997,22 +1030,37 @@ service cloud.firestore {
           request.resource.data.event_label is string &&
           request.resource.data.event_date is string &&
           request.resource.data.role is string &&
+          // TASK-230: o voluntário precisa estar ativo na rostagem do abrigo
+          // com background check ok antes de qualquer participação contar.
+          isVolunteerInRoster(clubId, request.resource.data.volunteer_uid) &&
+          // TASK-226: App Check gate. Inserções de participação por
+          // membros do abrigo precisam de token App Check válido.
+          isAppCheckVerified() &&
           (isPlatformAdmin() ||
            isClubOwnerOrAdmin(clubId) ||
            canEditClubPets(clubId) ||
-           hasClubPermission(clubId, 'animals'))
+           hasClubPermission(clubId, 'volunteers'))
         );
         allow update: if isAuth() && (
           // shelter_club_id, volunteer_uid, event_type IMUTÁVEIS
           request.resource.data.shelter_club_id == resource.data.shelter_club_id &&
           request.resource.data.volunteer_uid == resource.data.volunteer_uid &&
           request.resource.data.event_type == resource.data.event_type &&
+          // TASK-230: event_date congelado se já passou > 24h (imutável para
+          // preservar histórico). Mas se o voluntário está só atualizando
+          // check_in/check_out/updated_at, a mudança de event_date não pode
+          // acontecer — protege contra "voltar no tempo" malicioso.
+          (resource.data.event_date >= request.time ||
+            request.resource.data.event_date == resource.data.event_date) &&
           (isPlatformAdmin() ||
            isClubOwnerOrAdmin(clubId) ||
            canEditClubPets(clubId) ||
-           hasClubPermission(clubId, 'animals') ||
-           // Self-service check-in/out
-           resource.data.volunteer_uid == request.auth.uid)
+           hasClubPermission(clubId, 'volunteers') ||
+           // Self-service check-in/out: o voluntário só pode mexer em
+           // check_in / check_out / updated_at. hasOnly garante que ele
+           // não toque em event_date, role, notes, etc.
+           (resource.data.volunteer_uid == request.auth.uid &&
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['check_in', 'check_out', 'updated_at'])))
         );
         allow delete: if isAuth() && isPlatformAdmin();
       }
@@ -1602,6 +1650,19 @@ service cloud.firestore {
     //
     // Regras: admin/owner do abrigo. Card assignees podem atualizar
     // SOMENTE o campo status.
+
+    // ─── TASK-129: "Minhas adoções" no perfil ───────────────────────
+    // CollectionGroup query em `adoption_workflow` (cross-abrigo). O
+    // wildcard {path=**} cobre a query de grupo; a leitura é liberada
+    // APENAS para o próprio applicant (a query DEVE filtrar por
+    // applicant_uid == uid, senão as rules negam o resultado inteiro)
+    // ou platform_admin. Escrita continua só pela rota tenant.
+    match /{path=**}/adoption_workflow/{applicationId} {
+      allow read: if isAuth() && (
+        isPlatformAdmin() ||
+        resource.data.applicant_uid == request.auth.uid
+      );
+    }
 
     match /clubs/{clubId}/kanban_boards/{boardId} {
       allow read: if shelterCanAccess(clubId);

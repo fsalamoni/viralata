@@ -6,7 +6,7 @@
  * a qualquer visitante, com links no rodapé de todas as páginas."
  *
  * - 03 Avisos Legais → /legal/avisos-legais
- * - 09 Cookies (banner separado via CookieBanner)
+ * - 09 Cookies → /legal/cookies (banner separado via CookieBanner)
  * - 10 Guia de Legislação Animal → /legal/legislacao-animal
  * - 01 Termos de Uso → /legal/termos-de-uso
  * - 02 Política de Privacidade → /legal/politica-de-privacidade
@@ -22,6 +22,7 @@ import { FEATURE_FLAG } from '@/core/featureFlags';
 import { LEGAL_PAGES } from '@/modules/shelter/domain/legal';
 
 const PUBLIC_SLUGS = new Set([
+  'cookies',
   'avisos-legais',
   'legislacao-animal',
   'politica-de-privacidade',

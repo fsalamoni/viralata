@@ -4,10 +4,11 @@
  * Lista de participations do abrigo, com badges, totais de horas,
  * ações de check-in/out (abrigoo OU self-service do voluntário).
  *
- * Feature flag: `shelter_volunteer_profile_v1` (default OFF).
+ * Feature flag: `shelter_volunteer_profile_v1` (default OFF, ENFORCED at runtime).
  */
 
 import { useState } from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -23,6 +24,9 @@ import {
   useCheckInOut,
   useDeleteParticipation,
 } from '@/modules/shelter/hooks/useVolunteerParticipations';
+import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
+import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
+import { confirmDialog } from '@/components/ui/confirm-provider';
 
 function formatDate(iso) {
   if (!iso) return '—';
@@ -34,14 +38,31 @@ export function ParticipationsList({
   shelterClubId, actor, canAbriho = false,
   isVolunteer = false, selfVolunteerUid = null,
 }) {
+  const isV1Enabled = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_VOLUNTEER_PROFILE_V1);
   const [filter, setFilter] = useState({ volunteerUid: selfVolunteerUid || null });
-  const { data: participations = [], isLoading } = useParticipations(shelterClubId, filter);
+  const { data: participations = [], isLoading, isError, refetch } = useParticipations(shelterClubId, filter);
   const checkMutation = useCheckInOut(shelterClubId, null);
   const deleteMutation = useDeleteParticipation(shelterClubId);
   const { toast } = useToast();
 
+  if (!isV1Enabled) return null;
   if (!shelterClubId) return <p className="text-sm text-muted-foreground">Selecione um abrigo.</p>;
-  if (isLoading) return <p className="text-sm text-muted-foreground">Carregando participations…</p>;
+  if (isLoading) {
+    return (
+      <div className="space-y-2" aria-busy="true" aria-label="Carregando participações">
+        <Skeleton className="h-14 w-full rounded-lg" />
+        <Skeleton className="h-14 w-full rounded-lg" />
+      </div>
+    );
+  }
+  if (isError) {
+    return (
+      <p className="text-sm text-muted-foreground">
+        Não foi possível carregar as participações.{' '}
+        <button type="button" className="underline" onClick={() => refetch()}>Tentar de novo</button>
+      </p>
+    );
+  }
 
   const totalHours = participations.reduce((sum, p) => sum + (p.hours_logged || 0), 0);
   const inProgress = participations.filter(isParticipationInProgress).length;
@@ -57,7 +78,7 @@ export function ParticipationsList({
   };
 
   const handleDelete = async (participationId) => {
-    if (!window.confirm('Remover esta participation?')) return;
+    if (!(await confirmDialog({ title: 'Remover esta participation?' }))) return;
     try {
       await deleteMutation.mutateAsync({ participationId, actor });
       toast({ title: 'Participation removida.' });

@@ -1,4 +1,6 @@
 import React from 'react';
+import HomeStats from '@/components/HomeStats';
+import Seo from '@/components/Seo';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -49,6 +51,9 @@ export default function Home() {
 
   return (
     <div className="arena-page arena-hero-glow min-h-screen">
+      <Seo title="Adoção responsável de pets" description="Encontre pets para adoção, converse com ONGs e cadastre pets com segurança. Plataforma gratuita." />
+      {/* TASK-153: contadores agregados (flag home_stats_v1, some se OFF) */}
+      <HomeStats />
       {/* Hero */}
       <section className="relative overflow-hidden px-6 pb-16 pt-14">
         <div className="relative mx-auto grid max-w-[1180px] items-center gap-12 lg:grid-cols-[1.05fr,0.95fr]">

@@ -17,11 +17,17 @@
  * (Espelha o comportamento do módulo de comunidades.)
  *
  * Permissões disponíveis (CLUB_PERMISSION):
- *  - ANIMALS   → gerenciar pets (planilha)
- *  - FINANCE   → prestação de contas (lançamentos, categorias)
- *  - DONATIONS → chamados de doação (criar, editar, excluir, ver comprovantes)
- *  - FEED      → publicar/editar/excluir posts do mural
- *  - TEAM      → gerenciar equipe (admitir, atribuir permissões, remover)
+ *  - ANIMALS                 → gerenciar pets (planilha)
+ *  - FINANCE                 → prestação de contas (lançamentos, categorias)
+ *  - DONATIONS               → chamados de doação (criar, editar, excluir, ver comprovantes)
+ *  - FEED                    → publicar/editar/excluir posts do mural
+ *  - TEAM                    → gerenciar equipe (admitir, atribuir permissões, remover)
+ *  - VOLUNTEERS (raiz)       → acesso ao painel de voluntários (default ON para owner/admin)
+ *  - VOLUNTEERS:read         → apenas ver a aba de voluntários
+ *  - VOLUNTEERS:manage_status→ pausar / retomar / bloquear voluntário
+ *  - VOLUNTEERS:bg_check     → aprovar / rejeitar background check
+ *  - VOLUNTEERS:bulk         → CSV import / export
+ *  - VOLUNTEERS:delete       → remover voluntário definitivamente (além de platform_admin)
  *
  * Cada permissão é consultável independentemente em qualquer camada da UI.
  */
@@ -157,6 +163,47 @@ export function canManageClubFinance(club, membership, currentUserUid) {
 
 export function canManageClubTeam(club, membership, currentUserUid) {
   return hasClubPermission(club, membership, 'team', currentUserUid);
+}
+
+/**
+ * TASK-231: helpers granulares para voluntários. A aba de voluntários
+ * usa `canViewVolunteersRoster` como gate padrão (lê apenas). As ações
+ * de mutação (pausar, aprovar BG, bulk, delete) consultam suas sub-
+ * permissions correspondentes. Owner sempre passa (herdado via
+ * hasClubPermission/isClubOwner).
+ */
+export function canViewVolunteersRoster(club, membership, currentUserUid) {
+  return hasClubPermission(club, membership, 'volunteers', currentUserUid)
+    || hasClubPermission(club, membership, 'volunteers:read', currentUserUid);
+}
+
+export function canManageVolunteers(club, membership, currentUserUid) {
+  return hasClubPermission(club, membership, 'volunteers', currentUserUid);
+}
+
+export function canManageVolunteerStatus(club, membership, currentUserUid) {
+  return hasClubPermission(club, membership, 'volunteers:manage_status', currentUserUid)
+    || canManageClubTeam(club, membership, currentUserUid);
+}
+
+export function canManageVolunteerBG(club, membership, currentUserUid) {
+  return hasClubPermission(club, membership, 'volunteers:bg_check', currentUserUid)
+    || isClubOwner(club, membership, currentUserUid)
+    || isClubAdminFromPerms(membership);
+}
+
+export function canBulkManageVolunteers(club, membership, currentUserUid) {
+  return hasClubPermission(club, membership, 'volunteers:bulk', currentUserUid)
+    || isClubOwner(club, membership, currentUserUid)
+    || isClubAdminFromPerms(membership);
+}
+
+export function canDeleteVolunteer(club, membership, currentUserUid) {
+  return hasClubPermission(club, membership, 'volunteers:delete', currentUserUid);
+}
+
+function isClubAdminFromPerms(membership) {
+  return membership?.role === 'admin' && !membership?.permissions;
 }
 
 /** O owner pode promover/rebaixar/excluir, e qualquer admin com permissão team

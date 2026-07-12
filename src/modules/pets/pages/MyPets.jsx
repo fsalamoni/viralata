@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { cn } from '@/core/lib/utils';
 import PageHero from '@/components/PageHero';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
+import { confirmDialog } from '@/components/ui/confirm-provider';
 
 const STATUS_STYLE = {
   available: { label: 'Disponível', className: 'bg-secondary text-secondary-foreground' },
@@ -64,7 +65,7 @@ export default function MyPets() {
   const deletePet = useDeletePet();
 
   async function handleDelete(petId) {
-    if (!confirm('Tem certeza que deseja remover este pet?')) return;
+    if (!(await confirmDialog({ title: 'Tem certeza que deseja remover este pet?' }))) return;
     try {
       await deletePet.mutateAsync(petId);
       toast.success('Pet removido.');

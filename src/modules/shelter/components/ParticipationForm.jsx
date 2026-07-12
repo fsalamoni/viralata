@@ -4,7 +4,7 @@
  * Formulário para o abrigo registrar uma participation de voluntário
  * em um evento/feira/transporte. Valida event_date, role, volunteer.
  *
- * Feature flag: `shelter_volunteer_profile_v1` (default OFF).
+ * Feature flag: `shelter_volunteer_profile_v1` (default OFF, ENFORCED at runtime).
  */
 
 import { useState } from 'react';
@@ -14,12 +14,23 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
   VOLUNTEER_PARTICIPATION_ROLES,
   VOLUNTEER_PARTICIPATION_ROLE_LABELS,
   VOLUNTEER_PARTICIPATION_EVENT_TYPES,
   VOLUNTEER_PARTICIPATION_EVENT_TYPE_LABELS,
 } from '@/modules/shelter/domain/operational/volunteerProfile';
 import { useCreateParticipation } from '@/modules/shelter/hooks/useVolunteerParticipations';
+import { useShelterVolunteers } from '@/modules/shelter/hooks/useVolunteerProfile';
+import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
+import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
+
 
 function defaultForm(volunteerUid, volunteerName) {
   return {
@@ -36,11 +47,25 @@ function defaultForm(volunteerUid, volunteerName) {
 }
 
 export function ParticipationForm({ shelterClubId, actor, defaultVolunteer, onSaved }) {
+  const isV1Enabled = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_VOLUNTEER_PROFILE_V1);
   const [form, setForm] = useState(() => defaultForm(defaultVolunteer?.uid, defaultVolunteer?.name));
   const createMutation = useCreateParticipation();
   const { toast } = useToast();
+  const { data: roster = [], isLoading: isLoadingRoster, error: rosterError } = useShelterVolunteers(
+    shelterClubId,
+    { status: 'active' },
+  );
 
   const update = (field, value) => setForm((prev) => ({ ...prev, [field]: value }));
+
+  const handleVolunteerChange = (volunteerUid) => {
+    const v = roster.find((r) => r.id === volunteerUid || r.volunteer_uid === volunteerUid);
+    setForm((prev) => ({
+      ...prev,
+      volunteer_uid: volunteerUid,
+      volunteer_name: v?.volunteer_name || prev.volunteer_name,
+    }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -74,6 +99,7 @@ export function ParticipationForm({ shelterClubId, actor, defaultVolunteer, onSa
     }
   };
 
+  if (!isV1Enabled) return null;
   if (!shelterClubId) {
     return <p className="text-sm text-muted-foreground">Selecione um abrigo.</p>;
   }
@@ -85,17 +111,35 @@ export function ParticipationForm({ shelterClubId, actor, defaultVolunteer, onSa
         <form onSubmit={handleSubmit} className="space-y-3">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <Label htmlFor="volunteer_name">Voluntário</Label>
-              <Input
-                id="volunteer_name"
-                value={form.volunteer_name}
-                onChange={(e) => {
-                  update('volunteer_name', e.target.value);
-                  update('volunteer_uid', e.target.value);
-                }}
-                placeholder="Maria Silva"
-                required
-              />
+              <Label htmlFor="volunteer_uid">Voluntário</Label>
+              {rosterError ? (
+                <p className="text-sm text-red-700">Erro ao carregar rostagem.</p>
+              ) : (
+                <Select
+                  value={form.volunteer_uid || undefined}
+                  onValueChange={handleVolunteerChange}
+                  disabled={isLoadingRoster}
+                >
+                  <SelectTrigger id="volunteer_uid">
+                    <SelectValue placeholder={isLoadingRoster ? 'Carregando…' : 'Selecione um voluntário'} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {roster.length === 0 && !isLoadingRoster && (
+                      <SelectItem value="__empty__" disabled>
+                        Nenhum voluntário ativo na rostagem
+                      </SelectItem>
+                    )}
+                    {roster.map((v) => {
+                      const vid = v.id || v.volunteer_uid;
+                      return (
+                        <SelectItem key={vid} value={vid}>
+                          {v.volunteer_name}
+                        </SelectItem>
+                      );
+                    })}
+                  </SelectContent>
+                </Select>
+              )}
             </div>
             <div>
               <Label htmlFor="event_type">Tipo de evento</Label>

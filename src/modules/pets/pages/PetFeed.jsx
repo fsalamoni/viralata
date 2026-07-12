@@ -1,4 +1,5 @@
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
+import Seo from '@/components/Seo';
 import { FEATURE_FLAG } from '@/core/featureFlags';
 import PetFeedOriginal from './PetFeed.v1';
 import PetFeedEnhanced from './PetFeedEnhanced';
@@ -11,5 +12,10 @@ import PetFeedEnhanced from './PetFeedEnhanced';
  */
 export default function PetFeed() {
   const useEnhanced = useFeatureFlag(FEATURE_FLAG.PET_FEED_RELIABILITY_FIX);
-  return useEnhanced ? <PetFeedEnhanced /> : <PetFeedOriginal />;
+  return (
+    <>
+      <Seo title="Pets para adoção" description="Feed de pets disponíveis para adoção responsável perto de você." />
+      {useEnhanced ? <PetFeedEnhanced /> : <PetFeedOriginal />}
+    </>
+  );
 }

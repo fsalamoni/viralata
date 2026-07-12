@@ -195,5 +195,15 @@ export function buildConsentRecord(accepted, userAgent) {
     version: CONSENT_VERSION,
     at: new Date().toISOString(),
     userAgent: userAgent || null,
+    // TASK-107: consentimento granular por categoria. Essenciais são
+    // sempre true (base legal: execução de contrato / legítimo
+    // interesse). Analytics e marketing seguem a escolha do usuário —
+    // hoje a plataforma não usa nenhum dos dois, mas o registro já
+    // fica granular para quando usar.
+    categories: {
+      essential: true,
+      analytics: Boolean(accepted),
+      marketing: Boolean(accepted),
+    },
   };
 }

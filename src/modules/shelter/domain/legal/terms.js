@@ -50,7 +50,7 @@ export const CURRENT_TERMS_VERSION = Object.freeze({
   [TERMS_TYPE.CONDUCT]: '2026-07-10',
   [TERMS_TYPE.ADOPTER]: '2026-07-10',
   [TERMS_TYPE.SHELTER]: '2026-07-10',
-  [TERMS_TYPE.VOLUNTEER]: '2026-07-10',
+  [TERMS_TYPE.VOLUNTEER]: '2026-07-10-v2',
   [TERMS_TYPE.FOSTER]: '2026-07-10',
   [TERMS_TYPE.DONOR]: '2026-07-10',
   [TERMS_TYPE.COOKIES]: '2026-07-10',
@@ -214,11 +214,18 @@ export const signatureTextSchema = z
 /**
  * Schema do doc `terms_acceptances/{acceptanceId}` na subcoleção
  * `users/{userId}/terms_acceptances/`.
+ *
+ * `terms_version` aceita `YYYY-MM-DD` ou `YYYY-MM-DD-vN` (caso do
+ * Termo de Voluntariado v2 — Lei 14.063/2020 exige versionamento
+ * inequívoco, então sufixos semânticos são permitidos).
  */
 export const termsAcceptanceSchema = z.object({
   terms_version: z
     .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, 'Versão deve ser ISO date YYYY-MM-DD'),
+    .regex(
+      /^\d{4}-\d{2}-\d{2}(-v\d+)?$/,
+      'Versão deve ser YYYY-MM-DD ou YYYY-MM-DD-vN',
+    ),
   terms_type: z.enum(TERMS_TYPE_VALUES),
   accepted_at: z.any(), // Firestore Timestamp ou Date (validado no service)
   ip_address: ipAddressSchema,
@@ -236,7 +243,10 @@ export const recordAcceptanceInputSchema = z.object({
   terms_type: z.enum(TERMS_TYPE_VALUES),
   terms_version: z
     .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, 'Versão deve ser ISO date YYYY-MM-DD'),
+    .regex(
+      /^\d{4}-\d{2}-\d{2}(-v\d+)?$/,
+      'Versão deve ser YYYY-MM-DD ou YYYY-MM-DD-vN',
+    ),
   document_hash: documentHashSchema,
   signature_text: signatureTextSchema,
   user_agent: z.string().max(500).default(''),

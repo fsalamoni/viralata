@@ -34,6 +34,7 @@ import {
   useDeleteWidget,
 } from '@/modules/shelter/hooks/useDashboard';
 import { DASHBOARD_COLLECTIONS, WIDGET_TYPES } from '@/modules/shelter/domain/operational/dashboard';
+import { confirmDialog } from '@/components/ui/confirm-provider';
 
 const COLLECTION_OPTIONS = Object.values(DASHBOARD_COLLECTIONS);
 const TYPE_OPTIONS = WIDGET_TYPES;
@@ -171,7 +172,7 @@ export function DashboardWidgetManager({ clubId, trigger }) {
   }
 
   async function handleDelete(widgetId) {
-    if (!confirm('Excluir este widget?')) return;
+    if (!(await confirmDialog({ title: 'Excluir este widget?' }))) return;
     try {
       await deleteMut.mutateAsync({ widgetId, actor: { uid: user?.uid } });
     } catch (err) {

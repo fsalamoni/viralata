@@ -13,6 +13,10 @@ const ROUTES = [
   '/termos',
   '/legislacao',
   '/feed',
+  '/busca',
+  '/voluntarios',
+  '/voluntarios/termo',
+  '/voluntarios/seja',
   '/organizacoes',
   '/comunidade',
   '/public-debug',
@@ -46,7 +50,10 @@ function classify({ status, redirected, url, bodyText, route }) {
 }
 
 (async () => {
-  const browser = await chromium.launch();
+  // Ambiente remoto: chromium pré-instalado em /opt/pw-browsers/chromium
+  // (pode divergir da versão pinada do @playwright/test). Override via env.
+  const executablePath = process.env.SMOKE_CHROMIUM_PATH || undefined;
+  const browser = await chromium.launch(executablePath ? { executablePath } : {});
   const context = await browser.newContext();
   const page = await context.newPage();
 

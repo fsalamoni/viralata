@@ -7,6 +7,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   listApplications,
+  listMyApplications,
   getApplication,
   submitAdoptionApplication,
   decideApplication,
@@ -14,6 +15,19 @@ import {
 } from '@/modules/shelter/services/adoptionService';
 
 const STALE_TIME_MS = 30_000;
+
+/**
+ * Todas as applications do usuário logado, cross-abrigo (TASK-129 —
+ * bloco "Minhas adoções" no perfil).
+ */
+export function useMyApplications(applicantUid) {
+  return useQuery({
+    queryKey: ['applications', 'mine', applicantUid],
+    queryFn: () => listMyApplications(applicantUid),
+    enabled: Boolean(applicantUid),
+    staleTime: STALE_TIME_MS,
+  });
+}
 
 export function useApplications(shelterClubId, options = {}) {
   return useQuery({

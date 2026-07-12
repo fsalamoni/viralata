@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import { getOrCreateDirectConversation } from '@/modules/chat/services/chatService';
 import { useNavigate } from 'react-router-dom';
 import { hasQuestions, summarizeAnswers } from '../domain/adoptionForm';
+import { confirmDialog } from '@/components/ui/confirm-provider';
 
 const STATUS_BADGE = {
   pending: <Badge variant="secondary">Aguardando</Badge>,
@@ -65,7 +66,7 @@ export default function InterestPanel({ petId, pet }) {
   }
 
   async function handleComplete(interest) {
-    if (!confirm(`Confirmar adoção para ${interest.user_name}?`)) return;
+    if (!(await confirmDialog({ title: `Confirmar adoção para ${interest.user_name}?` }))) return;
     try {
       await completeAdoption.mutateAsync({ petId, adoptedByUid: interest.user_id });
       toast.success('Adoção concluída! 🎉');

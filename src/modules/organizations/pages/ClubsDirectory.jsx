@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import Seo from '@/components/Seo';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
@@ -160,6 +161,7 @@ export default function ClubsDirectory() {
 
   return (
     <div className={useArenaPageClasses('arena-page mx-auto max-w-6xl space-y-8 px-5 py-6 pb-12')}>
+      <Seo title="ONGs e abrigos" description="Diretório de ONGs, abrigos e protetores de animais parceiros do Viralata." />
       {pageHeroEnabled ? (
         <>
           <PageHero

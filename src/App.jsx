@@ -3,8 +3,10 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-route
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider, useAuth } from '@/core/lib/FirebaseAuthContext';
 import { FeatureFlagsProvider } from '@/core/lib/FeatureFlagsContext';
+import { ConfirmProvider } from '@/components/ui/confirm-provider';
 import Layout from '@/components/Layout';
 import { CookieBanner } from '@/components/CookieBanner';
+import CommandPalette from '@/components/CommandPalette';
 import { Toaster } from '@/components/ui/sonner';
 import { recordPageView } from '@/core/services/observabilityService';
 
@@ -14,9 +16,17 @@ const Login = lazy(() => import('@/pages/Login'));
 const PrivacyPolicy = lazy(() => import('@/pages/PrivacyPolicy'));
 const Terms = lazy(() => import('@/pages/Terms'));
 const Legislation = lazy(() => import('@/pages/Legislation'));
+
+// TASK-235: páginas públicas do programa de voluntariado
+// (/voluntarios, /voluntarios/seja, /voluntarios/termo).
+const VolunteerProgram = lazy(() => import('@/pages/VolunteerProgram'));
+const VolunteerSignup = lazy(() => import('@/pages/VolunteerSignup'));
+const VolunteerTermPreview = lazy(() => import('@/pages/VolunteerTermPreview'));
 // Fase 19 (Legal Terms v1): visualizador único para todas as
 // 6 páginas legais integrais (rota /legal/:slug*).
 const LegalPageViewer = lazy(() => import('@/pages/legal/LegalPageViewer'));
+// TASK-082 (Fase 18): página pública /busca (flag shelter_smart_search).
+const SearchPage = lazy(() => import('@/pages/SearchPage'));
 const PageNotFound = lazy(() => import('@/pages/PageNotFound'));
 const BannedNotice = lazy(() => import('@/pages/BannedNotice'));
 const AdminDebugPage = lazy(() => import('@/pages/AdminDebugPage'));
@@ -57,6 +67,10 @@ const CreateReport = lazy(() => import('@/modules/reports/pages/CreateReport'));
 
 // ─── Perfil ───────────────────────────────────────────────────────────────────
 const Profile = lazy(() => import('@/pages/Profile'));
+// TASK-130: página individual do pedido de adoção (timeline).
+const AdoptionDetail = lazy(() => import('@/pages/AdoptionDetail'));
+// TASK-127: wizard "Quero adotar" (5 steps, pets de abrigo).
+const AdoptionWizard = lazy(() => import('@/pages/AdoptionWizard'));
 
 // ─── Admin ────────────────────────────────────────────────────────────────────
 const AdminDashboard = lazy(() => import('@/modules/admin/pages/AdminDashboard'));
@@ -161,8 +175,11 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <FeatureFlagsProvider>
+          <ConfirmProvider>
           <BrowserRouter basename={import.meta.env.BASE_URL}>
             <RouteTelemetry />
+            {/* TASK-083: paleta global Cmd+K (flag shelter_smart_search) */}
+            <CommandPalette />
             {/* Banner global de cookies — renderizado no nível mais
                 externo possível para cobrir todas as rotas. Gated por
                 feature flag dentro do componente. */}
@@ -178,6 +195,14 @@ export default function App() {
                 <Route path="/termos" element={withLayout('Terms', Terms)} />
                 <Route path="/legislacao" element={withLayout('Legislation', Legislation)} />
 
+                {/* TASK-235: programa de voluntariado (público, com auth opcional).
+                    /voluntarios        — landing institucional
+                    /voluntarios/seja   — inscrição (4 passos; redireciona pra /login se anônimo)
+                    /voluntarios/termo  — texto integral do termo v2 */}
+                <Route path="/voluntarios" element={withLayout('VolunteerProgram', VolunteerProgram)} />
+                <Route path="/voluntarios/seja" element={withLayout('VolunteerSignup', VolunteerSignup)} />
+                <Route path="/voluntarios/termo" element={withLayout('VolunteerTermPreview', VolunteerTermPreview)} />
+
                 {/* Debug page pública — sem auth. Use ?debug=1 para ativar */}
                 <Route
                   path="/public-debug"
@@ -192,6 +217,7 @@ export default function App() {
                     Flag-gated — se OFF, o viewer redireciona para a rota
                     legada correspondente. */}
                 <Route path="/legal/:slug*" element={withLayout('LegalPageViewer', LegalPageViewer)} />
+                <Route path="/busca" element={withLayout('SearchPage', SearchPage)} />
 
                 {/* ── Onboarding (auth obrigatória, perfil ainda não completo) ── */}
                 <Route
@@ -287,6 +313,14 @@ export default function App() {
                   path="/perfil"
                   element={<ProtectedRoute>{withLayout('Profile', Profile)}</ProtectedRoute>}
                 />
+                <Route
+                  path="/adocoes/:clubId/:applicationId"
+                  element={<ProtectedRoute>{withLayout('AdoptionDetail', AdoptionDetail)}</ProtectedRoute>}
+                />
+                <Route
+                  path="/quero-adotar/:petId"
+                  element={<ProtectedRoute>{withLayout('AdoptionWizard', AdoptionWizard)}</ProtectedRoute>}
+                />
 
                 {/* ── Admin ─────────────────────────────────────────────── */}
                 <Route
@@ -362,6 +396,7 @@ export default function App() {
               </BannedGate>
             </Suspense>
           </BrowserRouter>
+          </ConfirmProvider>
           <Toaster />
         </FeatureFlagsProvider>
       </AuthProvider>

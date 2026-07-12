@@ -3,6 +3,7 @@ import { getAuth, GoogleAuthProvider, connectAuthEmulator } from 'firebase/auth'
 import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
 import { getFunctions, connectFunctionsEmulator } from 'firebase/functions';
 import { getStorage, connectStorageEmulator } from 'firebase/storage';
+import { initializeAppCheck, ReCaptchaEnterpriseProvider } from 'firebase/app-check';
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -34,6 +35,34 @@ export const db = app ? getFirestore(app, firestoreDatabaseId) : null;
 export const functions = app ? getFunctions(app, 'southamerica-east1') : null;
 export const storage = app ? getStorage(app) : null;
 
+let _messaging = null;
+let _messagingInit = null;
+
+/**
+ * Retorna a instância do Firebase Messaging (FCM) se suportada pelo browser.
+ *
+ * Por que lazy: FCM só funciona em browsers com Service Worker + Push API
+ * (Chrome, Firefox, Edge). Safari iOS só suporta em PWAs instaladas na home
+ * screen. Retornar `null` em ambientes não suportados permite fallback para
+ * email no caller.
+ *
+ * @returns {Promise<Messaging|null>}
+ */
+export async function getMessagingInstance() {
+  if (!app) return null;
+  if (_messaging) return _messaging;
+  if (_messagingInit) return _messagingInit;
+  if (typeof window === 'undefined') return null;
+  _messagingInit = (async () => {
+    const { getMessaging, isSupported } = await import('firebase/messaging');
+    const supported = await isSupported();
+    if (!supported) return null;
+    _messaging = getMessaging(app);
+    return _messaging;
+  })();
+  return _messagingInit;
+}
+
 export const googleProvider = auth ? new GoogleAuthProvider() : null;
 googleProvider?.setCustomParameters({ prompt: 'select_account' });
 
@@ -63,4 +92,39 @@ if (app && auth && db && functions && import.meta.env.VITE_FIREBASE_USE_EMULATOR
   } catch {
     // already connected
   }
+}
+
+// ─── App Check (Fase 20 — TASK-226) ────────────────────────────────────
+// Bot defense global. reCAPTCHA Enterprise como provedor primário;
+// o provider consome o site key do env. Se o key não estiver configurado,
+// App Check é desabilitado (modo permissivo) e a defesa fica por conta
+// das Cloud Functions e do hCaptcha client-side (VolunteerSignupCaptcha).
+//
+// Bypass: DEV e emulador (App Check quebra testes locais). Em produção,
+// o firestore.rules checa `request.auth.token.app_check == true`.
+let appCheckInstance = null;
+export function getAppCheckInstance() {
+  if (appCheckInstance) return appCheckInstance;
+  if (typeof window === 'undefined') return null;
+  if (!app) return null;
+  if (import.meta.env.DEV) {
+    return null;
+  }
+  const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
+  if (!siteKey) {
+    return null;
+  }
+  try {
+    appCheckInstance = initializeAppCheck(app, {
+      provider: new ReCaptchaEnterpriseProvider(siteKey),
+      isTokenAutoRefreshEnabled: true,
+    });
+  } catch (err) {
+    // initializeAppCheck lança se já foi inicializado (HMR) — ignora.
+    if (err?.code !== 'appCheck/already-initialized') {
+      // eslint-disable-next-line no-console
+      console.warn('[appCheck] failed to initialize:', err?.message ?? err);
+    }
+  }
+  return appCheckInstance;
 }

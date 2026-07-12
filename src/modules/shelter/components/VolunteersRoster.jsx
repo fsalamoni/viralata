@@ -4,9 +4,13 @@
  * Lista de voluntários do abrigo, com filtros por status, badges de
  * background check, ações (pausar, retomar, bloquear, aprovar BG check).
  *
- * Feature flag: `shelter_volunteer_profile_v1` (default OFF).
+ * Feature flag: `shelter_volunteer_profile_v1` (default OFF, ENFORCED at runtime).
  */
 
+import { confirmDialog } from '@/components/ui/confirm-provider';
+import { Users } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { EmptyState } from '@/components/ui/empty-state';
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -23,6 +27,16 @@ import {
   useLeaveShelter,
   useDeleteShelterVolunteer,
 } from '@/modules/shelter/hooks/useVolunteerProfile';
+import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
+import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
+import { useClub, useMyMembership } from '@/modules/organizations/hooks/useClubs';
+import { useAuth } from '@/core/lib/FirebaseAuthContext';
+import {
+  canManageVolunteers,
+  canManageVolunteerStatus,
+  canManageVolunteerBG,
+  canDeleteVolunteer,
+} from '@/modules/organizations/domain/permissions';
 
 const SHELTER_STATUS_LABELS = {
   active: 'Ativo', paused: 'Pausado', blocked: 'Bloqueado', left: 'Saiu',
@@ -46,16 +60,43 @@ const BG_CHECK_TONES = {
   rejected: 'bg-red-100 text-red-900',
 };
 
-export function VolunteersRoster({ shelterClubId, actor, canAbriho = false }) {
+export function VolunteersRoster({ shelterClubId, actor, canAbriho }) {
+  const isV1Enabled = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_VOLUNTEER_PROFILE_V1);
   const [statusFilter, setStatusFilter] = useState(null);
-  const { data: volunteers = [], isLoading } = useShelterVolunteers(shelterClubId, { status: statusFilter });
+  const { data: volunteers = [], isLoading, isError, refetch } = useShelterVolunteers(shelterClubId, { status: statusFilter });
   const updateMutation = useUpdateShelterVolunteer(shelterClubId, null); // sobrescrito por item
   const leaveMutation = useLeaveShelter(shelterClubId);
   const deleteMutation = useDeleteShelterVolunteer(shelterClubId);
   const { toast } = useToast();
 
+  const { data: club } = useClub(shelterClubId);
+  const { data: membership } = useMyMembership(shelterClubId);
+  const { user } = useAuth();
+  const uid = user?.uid;
+  const perm = canAbriho === undefined ? canManageVolunteers(club, membership, uid) : Boolean(canAbriho);
+  const canManageStatus = canManageVolunteerStatus(club, membership, uid);
+  const canManageBG = canManageVolunteerBG(club, membership, uid);
+  const canDeleteVol = canDeleteVolunteer(club, membership, uid);
+
+  if (!isV1Enabled) return null;
   if (!shelterClubId) return <p className="text-sm text-muted-foreground">Selecione um abrigo.</p>;
-  if (isLoading) return <p className="text-sm text-muted-foreground">Carregando voluntários…</p>;
+  if (isLoading) {
+    return (
+      <div className="space-y-2" aria-busy="true" aria-label="Carregando voluntários">
+        <Skeleton className="h-16 w-full rounded-lg" />
+        <Skeleton className="h-16 w-full rounded-lg" />
+        <Skeleton className="h-16 w-full rounded-lg" />
+      </div>
+    );
+  }
+  if (isError) {
+    return (
+      <p className="text-sm text-muted-foreground">
+        Não foi possível carregar os voluntários.{' '}
+        <button type="button" className="underline" onClick={() => refetch()}>Tentar de novo</button>
+      </p>
+    );
+  }
 
   const handleBgCheck = async (volunteerUid, newStatus) => {
     try {
@@ -79,7 +120,7 @@ export function VolunteersRoster({ shelterClubId, actor, canAbriho = false }) {
   };
 
   const handleRemove = async (volunteerUid) => {
-    if (!window.confirm('Remover este voluntário da rostagem? (hard delete, use com cuidado)')) return;
+    if (!(await confirmDialog({ title: 'Remover este voluntário da rostagem? (hard delete, use com cuidado)' }))) return;
     try {
       await deleteMutation.mutateAsync({ volunteerUid, actor });
       toast({ title: 'Voluntário removido.' });
@@ -114,7 +155,11 @@ export function VolunteersRoster({ shelterClubId, actor, canAbriho = false }) {
       </CardHeader>
       <CardContent>
         {volunteers.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Nenhum voluntário na rostagem.</p>
+          <EmptyState
+            icon={Users}
+            title="Nenhum voluntário ainda"
+            description="Compartilhe a página do abrigo ou o link /voluntarios/seja para receber as primeiras inscrições."
+          />
         ) : (
           <ul className="space-y-3">
             {volunteers.map((v) => (
@@ -143,9 +188,9 @@ export function VolunteersRoster({ shelterClubId, actor, canAbriho = false }) {
                     </p>
                   )}
                 </div>
-                {canAbriho && v.status !== 'left' && (
+                {perm && v.status !== 'left' && (
                   <div className="flex gap-1 flex-wrap">
-                    {v.background_check_status === 'pending' && (
+                    {canManageBG && v.background_check_status === 'pending' && (
                       <>
                         <Button size="sm" variant="outline" onClick={() => handleBgCheck(v.id, 'approved')}>
                           Aprovar BG
@@ -155,27 +200,31 @@ export function VolunteersRoster({ shelterClubId, actor, canAbriho = false }) {
                         </Button>
                       </>
                     )}
-                    {v.status === 'active' && (
+                    {canManageStatus && v.status === 'active' && (
                       <Button size="sm" variant="outline" onClick={() => handleStatusChange(v.id, 'paused')}>
                         Pausar
                       </Button>
                     )}
-                    {v.status === 'paused' && (
+                    {canManageStatus && v.status === 'paused' && (
                       <Button size="sm" variant="outline" onClick={() => handleStatusChange(v.id, 'active')}>
                         Retomar
                       </Button>
                     )}
-                    {v.status === 'active' && (
+                    {canManageStatus && v.status === 'active' && (
                       <Button size="sm" variant="outline" onClick={() => handleStatusChange(v.id, 'blocked')}>
                         Bloquear
                       </Button>
                     )}
-                    <Button size="sm" variant="ghost" onClick={() => handleStatusChange(v.id, 'left')}>
-                      Marcar saída
-                    </Button>
-                    <Button size="sm" variant="ghost" className="text-red-700" onClick={() => handleRemove(v.id)}>
-                      Excluir
-                    </Button>
+                    {canManageStatus && (
+                      <Button size="sm" variant="ghost" onClick={() => handleStatusChange(v.id, 'left')}>
+                        Marcar saída
+                      </Button>
+                    )}
+                    {canDeleteVol && (
+                      <Button size="sm" variant="ghost" className="text-red-700" onClick={() => handleRemove(v.id)}>
+                        Excluir
+                      </Button>
+                    )}
                   </div>
                 )}
               </li>

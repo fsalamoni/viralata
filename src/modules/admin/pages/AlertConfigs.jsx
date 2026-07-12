@@ -30,6 +30,7 @@ import { toast } from 'sonner';
 import { Bell, Trash2, Power, PowerOff, Pencil, Plus, AlertTriangle } from 'lucide-react';
 import PageHero from '@/components/PageHero';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
+import { confirmDialog } from '@/components/ui/confirm-provider';
 
 const TYPE_LABELS = {
   error_rate: 'Error rate (Firestore)',
@@ -145,7 +146,7 @@ export default function AlertConfigs() {
   }
 
   async function handleDelete(cfg) {
-    if (!confirm(`Excluir a configuração de ${TYPE_LABELS[cfg.type] || cfg.type}?`)) return;
+    if (!(await confirmDialog({ title: `Excluir a configuração de ${TYPE_LABELS[cfg.type] || cfg.type}?` }))) return;
     try {
       await deleteAlert(cfg.id, user);
       toast.success('Configuração excluída.');

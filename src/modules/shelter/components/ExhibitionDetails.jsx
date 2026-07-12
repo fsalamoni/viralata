@@ -10,6 +10,7 @@
  * Feature flag: `shelter_exhibition_workflow_v1` (default OFF).
  */
 
+import { confirmDialog } from '@/components/ui/confirm-provider';
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -57,7 +58,7 @@ function PetRow({ pet, origin, exhibitionId, shelterClubId, actor, disabled }) {
   const { toast } = useToast();
 
   const handleRemove = async () => {
-    if (!window.confirm(`Remover ${pet.name || pet.pet_id} da vitrine?`)) return;
+    if (!(await confirmDialog({ title: `Remover ${pet.name || pet.pet_id} da vitrine?` }))) return;
     try {
       if (isExternal) {
         await removeExternal.mutateAsync({ exhibitionId, input: { pet_id: pet.pet_id }, actor });
@@ -116,7 +117,7 @@ function ShiftRow({ shift, exhibitionId, shelterClubId, actor, disabled }) {
   };
 
   const handleDelete = async () => {
-    if (!window.confirm('Remover esta escala?')) return;
+    if (!(await confirmDialog({ title: 'Remover esta escala?' }))) return;
     try {
       await deleteMutation.mutateAsync({ exhibitionId, shiftId: shift.id, actor });
       toast({ title: '✓ Escala removida.' });
@@ -223,7 +224,7 @@ export function ExhibitionDetails({ shelterClubId, exhibitionId, actor, onBack }
   };
 
   const handleComplete = async () => {
-    if (!window.confirm('Marcar vitrine como concluída?')) return;
+    if (!(await confirmDialog({ title: 'Marcar vitrine como concluída?' }))) return;
     try {
       await completeMutation.mutateAsync({ exhibitionId, actor });
       toast({ title: '✓ Vitrine concluída.' });

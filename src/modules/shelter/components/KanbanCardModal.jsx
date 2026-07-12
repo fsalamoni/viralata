@@ -1,6 +1,7 @@
 /**
  * KanbanCardModal — modal de visualização/edição de card
  */
+import { confirmDialog } from '@/components/ui/confirm-provider';
 import { useState } from 'react';
 import { useCardMutations } from '../hooks/useKanban';
 import {
@@ -39,7 +40,7 @@ export function KanbanCardModal({ card, clubId, boardId, onClose }) {
   };
 
   const handleDelete = async () => {
-    if (!window.confirm('Deletar este card?')) return;
+    if (!(await confirmDialog({ title: 'Deletar este card?' }))) return;
     await deleteCard.mutateAsync(card.id);
     onClose();
   };

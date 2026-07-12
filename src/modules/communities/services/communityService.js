@@ -19,6 +19,13 @@ import { db } from '@/core/config/firebase';
 import { createAuditLog } from '@/core/services/auditService';
 import { COMMUNITY_COLLECTION, COMMUNITY_VISIBILITY, normalizeCommunityVisibility } from '@/modules/communities/domain/constants';
 import { sortCommunities } from '@/modules/communities/domain/directory';
+import {
+  postInputSchema,
+  commentInputSchema,
+  threadInputSchema,
+  threadMessageInputSchema,
+  parseOrThrow,
+} from '@/modules/communities/domain/contentSchemas';
 
 function trimmed(value) {
   return String(value ?? '').trim();
@@ -223,11 +230,12 @@ export async function getCommunityPosts(communityId) {
  * (evita 1 GET por post só pra mostrar o nome do autor).
  */
 export async function createPost(communityId, authorId, text, attachments = [], authorMeta = {}) {
+  const input = parseOrThrow(postInputSchema, { text, attachments });
   const postRef = await addDoc(collection(db, 'community_posts'), {
     community_id: communityId,
     author_id: authorId,
-    text,
-    attachments,
+    text: input.text,
+    attachments: input.attachments,
     likes_count: 0,
     comments_count: 0,
     author_name: authorMeta?.author_name || null,
@@ -369,10 +377,11 @@ export async function getPostComments(postId) {
 }
 
 export async function addPostComment(postId, text, user, profile) {
+   const input = parseOrThrow(commentInputSchema, { text });
    const ref = doc(collection(db, 'community_post_comments'));
    await setDoc(ref, {
      post_id: postId,
-     text,
+     text: input.text,
      author_id: user.uid,
      author_name: profile?.platform_name || user.displayName || user.email || 'Usuário',
      author_photo: profile?.photo_url || user.photoURL || '',
@@ -394,13 +403,14 @@ export async function getForumThreads(communityId) {
 }
 
 export async function createForumThread(communityId, title, text, user, profile, attachments = [], poll = null) {
+   const input = parseOrThrow(threadInputSchema, { title, text, attachments, poll });
    const ref = doc(collection(db, 'community_forum_threads'));
    await setDoc(ref, {
      community_id: communityId,
-     title,
-     text,
-     attachments,
-     poll,
+     title: input.title,
+     text: input.text,
+     attachments: input.attachments,
+     poll: input.poll,
      author_id: user.uid,
      author_name: profile?.platform_name || user.displayName || user.email || 'Usuário',
      author_photo: profile?.photo_url || user.photoURL || '',
@@ -423,12 +433,13 @@ export async function getThreadMessages(threadId) {
 }
 
 export async function addThreadMessage(threadId, text, user, profile, attachments = [], poll = null) {
+   const input = parseOrThrow(threadMessageInputSchema, { text, attachments, poll });
    const ref = doc(collection(db, 'community_forum_messages'));
    await setDoc(ref, {
      thread_id: threadId,
-     text,
-     attachments,
-     poll,
+     text: input.text,
+     attachments: input.attachments,
+     poll: input.poll,
      author_id: user.uid,
      author_name: profile?.platform_name || user.displayName || user.email || 'Usuário',
      author_photo: profile?.photo_url || user.photoURL || '',

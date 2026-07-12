@@ -22,6 +22,12 @@ export const FEATURE_FLAG = Object.freeze({
    * nenhum card aparece.
    */
   AD_SLOTS: 'ad_slots',
+  /**
+   * Bloco "Viralata em números" na Home: contadores agregados públicos
+   * (pets cadastrados, adoções, abrigos). Usa getCountFromServer —
+   * barato, sem Cloud Function. Aditivo — desligado, o bloco some.
+   */
+  HOME_STATS_V1: 'home_stats_v1',
 
   /**
    * Correção de confiabilidade do Feed de pets: aplica filtros de espécie,
@@ -120,6 +126,13 @@ export const FEATURE_FLAG = Object.freeze({
 
 /** Metadados de exibição para o painel de flags (admin master). */
 export const FEATURE_FLAG_META = Object.freeze({
+  [FEATURE_FLAG.HOME_STATS_V1]: {
+    label: 'Home · Viralata em números',
+    description:
+      'Exibe na Home os contadores agregados da plataforma (pets '
+      + 'cadastrados, adoções concretizadas, abrigos ativos). Contagem via '
+      + 'aggregate query do Firestore. Desligado, o bloco não aparece.',
+  },
   [FEATURE_FLAG.AD_SLOTS]: {
     label: 'Espaço de anúncios',
     description:
@@ -224,6 +237,7 @@ export const FEATURE_FLAG_META = Object.freeze({
  */
 export const DEFAULT_FEATURE_FLAGS = Object.freeze({
   [FEATURE_FLAG.AD_SLOTS]: false,
+  [FEATURE_FLAG.HOME_STATS_V1]: false,
   [FEATURE_FLAG.PET_FEED_RELIABILITY_FIX]: true,
   [FEATURE_FLAG.MURAL_LIKES_AND_COMMENTS]: true,
   [FEATURE_FLAG.PET_ADOPTION_GATING]: true,

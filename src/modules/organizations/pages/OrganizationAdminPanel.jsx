@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo } from 'react';
+import { concatSafe } from '@/core/lib/concatSafe';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
@@ -17,7 +18,7 @@ import { CLUB_DIRECTORY_STATUS, CLUB_DIRECTORY_STATUS_LABELS } from '@/modules/c
 import { useMyPets } from '@/modules/pets/hooks/usePets';
 import { useClub, useMyMembership } from '@/modules/organizations/hooks/useClubs';
 import { CLUB_ROLE, CLUB_PERMISSION } from '@/modules/organizations/domain/constants';
-import { isClubOwner, hasAnyClubPermission, visibleAdminTabs, hasClubPermission } from '@/modules/organizations/domain/permissions';
+import { isClubOwner, hasAnyClubPermission, visibleAdminTabs, hasClubPermission, canViewVolunteersRoster } from '@/modules/organizations/domain/permissions';
 import ClubAdminTab from '@/modules/organizations/components/ClubAdminTab';
 import ClubTeamTab from '@/modules/organizations/components/ClubTeamTab';
 import ClubPetsDataGrid from '@/modules/organizations/components/ClubPetsDataGrid';
@@ -34,7 +35,7 @@ import IndicatorsTab from '@/modules/shelter/components/IndicatorsTab';
 import { DashboardPage } from '@/modules/shelter/components/DashboardPage';
 import { KanbanPage } from '@/modules/shelter/components/KanbanPage';
 import { ExhibitionsList } from '@/modules/shelter/components/ExhibitionsList';
-import { VolunteersRoster } from '@/modules/shelter/components/VolunteersRoster';
+import { VolunteersAdminTab } from '@/modules/shelter/components/VolunteersAdminTab';
 import { MedicalRecordsList } from '@/modules/shelter/components/MedicalRecordsList';
 import { MedicationsList } from '@/modules/shelter/components/MedicationsList';
 import { TimelineList } from '@/modules/shelter/components/TimelineList';
@@ -81,15 +82,7 @@ const TAB_PERMISSION = {
 // em produção com "G is not a function or its return value is not iterable")
 // quando o array vinha de useMemo com dependência instável.
 function safeTabs(...sources) {
-  const out = [];
-  for (const src of sources) {
-    if (Array.isArray(src)) {
-      for (const t of src) {
-        if (t && typeof t === 'object' && t.key) out.push(t);
-      }
-    }
-  }
-  return out;
+  return concatSafe(...sources).filter((t) => t && typeof t === 'object' && t.key);
 }
 
 // ErrorBoundary local para isolar falhas de uma aba sem derrubar o painel
@@ -140,6 +133,7 @@ export default function OrganizationAdminPanel() {
   const shelterIndicators = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_INDICATORS);
   const shelterExhibitions = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_EXHIBITIONS);
   const shelterVolunteers = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_VOLUNTEERS);
+  const shelterVolunteerProfileV1 = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_VOLUNTEER_PROFILE_V1);
   const shelterHealthRecords = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_HEALTH_RECORDS);
   const shelterMedication = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_MEDICATION);
   const shelterPetTimeline = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_PET_TIMELINE);
@@ -166,6 +160,10 @@ export default function OrganizationAdminPanel() {
   const canManageDonations = hasClubPermission(club, membership, CLUB_PERMISSION.DONATIONS, user?.uid);
   const canManageFinance = hasClubPermission(club, membership, CLUB_PERMISSION.FINANCE, user?.uid);
   const canManageTeam = hasClubPermission(club, membership, CLUB_PERMISSION.TEAM, user?.uid);
+  // TASK-231: gate da aba Voluntários — exige `volunteers` (raiz) OU
+  // `volunteers:read` (sub-permissão de leitura). canViewVolunteersRoster
+  // cobre ambos e respeita o owner.
+  const canViewVolunteers = canViewVolunteersRoster(club, membership, user?.uid);
 
   const visibleTabs = useMemo(() => {
     const list = visibleAdminTabs({ club, membership, currentUserUid: user?.uid, isAdmin });
@@ -189,8 +187,8 @@ export default function OrganizationAdminPanel() {
     if (shelterFoundation && shelterExhibitions) {
       tabs.push({ key: 'exhibitions', label: 'Vitrines', icon: TAB_ICONS.exhibitions, permission: 'animals' });
     }
-    if (shelterFoundation && shelterVolunteers) {
-      tabs.push({ key: 'volunteers', label: 'Voluntários', icon: TAB_ICONS.volunteers, permission: 'team' });
+    if (shelterFoundation && shelterVolunteers && shelterVolunteerProfileV1 && canViewVolunteers) {
+      tabs.push({ key: 'volunteers', label: 'Voluntários', icon: TAB_ICONS.volunteers, permission: 'volunteers' });
     }
     if (shelterFoundation && shelterHealthRecords) {
       tabs.push({ key: 'medical_records', label: 'Prontuário', icon: TAB_ICONS.medical_records, permission: 'animals' });
@@ -205,7 +203,7 @@ export default function OrganizationAdminPanel() {
       tabs.push({ key: 'foster', label: 'Lares Temporários', icon: TAB_ICONS.foster, permission: 'animals' });
     }
     return tabs;
-  }, [shelterFoundation, shelterDashboard, shelterKanban, shelterExhibitions, shelterVolunteers, shelterHealthRecords, shelterMedication, shelterPetTimeline, shelterFoster]);
+  }, [shelterFoundation, shelterDashboard, shelterKanban, shelterExhibitions, shelterVolunteers, shelterVolunteerProfileV1, shelterHealthRecords, shelterMedication, shelterPetTimeline, shelterFoster, canViewVolunteers]);
 
   const allVisibleTabs = useMemo(() => safeTabs(visibleTabs, shelterTabs), [visibleTabs, shelterTabs]);
 
@@ -364,9 +362,16 @@ export default function OrganizationAdminPanel() {
             <SafeTab label="exhibitions"><ExhibitionsList shelterClubId={orgId} /></SafeTab>
           </TabsContent>
         )}
-        {shelterFoundation && shelterVolunteers && (
+        {shelterFoundation && shelterVolunteers && shelterVolunteerProfileV1 && canViewVolunteers && (
           <TabsContent value="volunteers" className="mt-12 px-1 sm:mt-14">
-            <SafeTab label="volunteers"><VolunteersRoster shelterClubId={orgId} /></SafeTab>
+            <SafeTab label="volunteers">
+              <VolunteersAdminTab
+                shelterClubId={orgId}
+                club={club}
+                membership={membership}
+                currentUserUid={user?.uid}
+              />
+            </SafeTab>
           </TabsContent>
         )}
         {shelterFoundation && shelterHealthRecords && (

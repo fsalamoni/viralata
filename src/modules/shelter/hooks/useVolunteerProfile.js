@@ -17,6 +17,8 @@ import {
   getShelterVolunteer,
   updateShelterVolunteer,
   leaveShelter,
+  listUserVolunteerRosters,
+  withdrawVolunteerConsent,
   deleteShelterVolunteer,
 } from '@/modules/shelter/services/volunteerProfileService';
 
@@ -104,9 +106,40 @@ export function useUpdateShelterVolunteer(shelterClubId, volunteerUid) {
 export function useLeaveShelter(shelterClubId) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ volunteerUid, actor }) => leaveShelter(shelterClubId, volunteerUid, actor),
+    mutationFn: ({ volunteerUid, actor, exit_reason, exit_note }) =>
+      leaveShelter(shelterClubId, volunteerUid, actor, { exit_reason, exit_note }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['shelter-volunteers', shelterClubId] });
+      qc.invalidateQueries({ queryKey: ['user-volunteer-rosters'] });
+    },
+  });
+}
+
+/**
+ * Lista todas as rostagens per-shelter nas quais o voluntário está
+ * presente. Útil para /perfil → "Minhas voluntariadas".
+ */
+export function useUserVolunteerRosters(uid, options = {}) {
+  return useQuery({
+    queryKey: ['user-volunteer-rosters', uid, options],
+    queryFn: () => listUserVolunteerRosters(uid, options),
+    enabled: Boolean(uid),
+    staleTime: STALE_TIME_MS,
+  });
+}
+
+/**
+ * Revoga o consentimento de voluntariado (LGPD Art. 18 IX). Aceita
+ * scope 'profile' | 'roster' | 'all' via input.scope.
+ */
+export function useWithdrawVolunteerConsent(uid) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ input, actor }) => withdrawVolunteerConsent(uid, input, actor),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['volunteer-profile', uid] });
+      qc.invalidateQueries({ queryKey: ['user-volunteer-rosters', uid] });
+      qc.invalidateQueries({ queryKey: ['shelter-volunteers'] });
     },
   });
 }

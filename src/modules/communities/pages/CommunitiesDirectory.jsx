@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import Seo from '@/components/Seo';
 import { Link } from 'react-router-dom';
 import { Search, Hash, Plus, Users, Sparkles, MapPin, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -40,6 +41,7 @@ export default function CommunitiesDirectory() {
 
   return (
     <div className={useArenaPageClasses('arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8 space-y-8')}>
+      <Seo title="Comunidades" description="Comunidades de proteção animal: murais, fóruns e eventos." />
       {pageHeroEnabled ? (
         <>
           <PageHero
