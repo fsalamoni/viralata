@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-12T04:09:11.164Z",
+  "generatedAt": "2026-07-12T04:11:35.550Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -3624,10 +3624,10 @@
       "title": "Voluntários: página pública institucional /voluntarios",
       "type": "feature",
       "category": "legal",
-      "status": "ready",
+      "status": "in_review",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": [
         "publica",
         "voluntarios",
@@ -3643,20 +3643,20 @@
         "TASK-206",
         "TASK-207"
       ],
-      "evidence": "Regra A §1.1 (público) — Voluntários em abrigos",
+      "evidence": "Coberta pela TASK-235: src/pages/VolunteerProgram.jsx (/voluntarios institucional com programa, FAQ, CTAs) já integrada neste branch",
       "description": "BLOCO INDEPENDENTE. Criar src/pages/Voluntarios.jsx pública com: (1) o que é ser voluntário, (2) tipos de role (cuidador, transporte_ida, transporte_volta, carregamento, eventos), (3) termo v2 inline, (4) CTA para login/signup, (5) FAQ. Sem auth. Rota /voluntarios.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-205",
       "title": "Voluntários: bloco \"Seja voluntário\" no perfil público do abrigo",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "in_review",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": [
         "publica",
         "voluntarios",
@@ -3671,20 +3671,20 @@
         "TASK-204",
         "TASK-206"
       ],
-      "evidence": "Regra A §1.1 — perfil público do abrigo",
+      "evidence": "VolunteerCtaCard.jsx na aba Geral do ClubDetail (flag-gated SHELTER_VOLUNTEER_PROFILE_V1) + ?abrigo= preseleciona abrigo no VolunteerSignup; test/lint/build verdes",
       "description": "BLOCO INDEPENDENTE. Adicionar CTA \"Seja voluntário\" no src/modules/organizations/pages/ClubDetail.jsx (ou novo src/modules/shelter/pages/ShelterPublicProfile.jsx). Modal inline com form de inscrição (nome, email, telefone, cidade, disponibilidade, skills). Submit chama volunteerService.signup() + clickwrap no termo v2.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-206",
       "title": "Voluntários: bloco \"Minhas voluntariadas\" no perfil do usuário",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "in_review",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": [
         "publica",
         "voluntarios",
@@ -3698,10 +3698,10 @@
       "relatedTasks": [
         "TASK-207"
       ],
-      "evidence": "Regra A §1.4 (perfil) — perfil do usuário",
+      "evidence": "Coberta pela TASK-242: seção Minhas voluntariadas no Profile.jsx (multi-roster, sair do abrigo, revogação de consentimento) já integrada neste branch",
       "description": "BLOCO INDEPENDENTE. Adicionar seção \"Minhas voluntariadas\" em src/pages/Profile.jsx. Lista: participações passadas, próximas escalas, badges (frequência, horas, transporte), botão \"Aceitar próximo convite\". Clickwrap inline pra aceitar escalas.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-207",
@@ -7050,9 +7050,9 @@
     "totalTasks": 254,
     "done": 56,
     "inProgress": 2,
-    "inReview": 21,
+    "inReview": 24,
     "blocked": 0,
-    "ready": 159,
+    "ready": 156,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
