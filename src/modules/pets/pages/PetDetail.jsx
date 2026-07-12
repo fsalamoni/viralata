@@ -357,7 +357,16 @@ export default function PetDetail() {
               >
                 <Share2 className="h-5 w-5" />
               </Button>
-              {pet.status === 'available' && !isOwner && (
+              {pet.status === 'available' && !isOwner && pet.owner_type === 'organization' && (
+                /* TASK-127: pets de abrigo usam o wizard formal de adoção
+                   (application + termo v2 com hash). */
+                <Button asChild className="h-[54px] flex-1 gap-2 text-[15px]">
+                  <Link to={`/quero-adotar/${petId}`}>
+                    <Heart className="h-[19px] w-[19px]" /> Quero adotar
+                  </Link>
+                </Button>
+              )}
+              {pet.status === 'available' && !isOwner && pet.owner_type !== 'organization' && (
                 <Button
                   onClick={handleInterest}
                   disabled={alreadyInterested || createInterest.isPending}

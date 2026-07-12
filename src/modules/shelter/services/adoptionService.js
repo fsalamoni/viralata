@@ -26,7 +26,7 @@ import {
   isTerminal,
 } from '@/modules/shelter/domain/operational/adoption';
 import {
-  buildAdoptionTermsAcceptance,
+  buildAdoptionTermsAcceptanceV2,
 } from '@/modules/shelter/domain/legal/adoptionTerms';
 import { addTimelineEvent } from '@/modules/shelter/services/timelineService';
 import { getAdopterProfile } from '@/modules/shelter/services/adopterProfileService';
@@ -92,10 +92,13 @@ export async function submitAdoptionApplication(input, actor) {
   // feature flag estiver ON — o caller (UI) é quem decide.
   if (parsed.terms_signature_text) {
     try {
-      const termsAcceptance = buildAdoptionTermsAcceptance(parsed.terms_signature_text);
+      const termsAcceptance = await buildAdoptionTermsAcceptanceV2(parsed.terms_signature_text);
       payload.terms_accepted_at = termsAcceptance.terms_accepted_at;
       payload.terms_version = termsAcceptance.terms_version;
       payload.signature_text = termsAcceptance.signature_text;
+      // TASK-128: hash SHA-256 do texto integral — prova de integridade
+      // do documento assinado (Lei 14.063/2020).
+      payload.document_hash = termsAcceptance.document_hash;
     } catch (err) {
       // Re-raise para que a UI saiba que a assinatura é inválida
       throw new Error(`Termo de Adoção: ${err.message}`);
@@ -106,6 +109,30 @@ export async function submitAdoptionApplication(input, actor) {
     collection(db, CLUBS_COLLECTION, parsed.shelter_club_id, APPS_SUBCOLLECTION),
     payload,
   );
+
+  // TASK-128: audit dedicado do aceite do termo (categoria
+  // term_acceptance → retenção 5 anos), separado do audit operacional
+  // do submit (retenção 6 meses).
+  if (payload.terms_accepted_at) {
+    await createAuditLog({
+      action: 'adoption_terms_accepted',
+      actor,
+      details: {
+        application_id: ref.id,
+        pet_id: parsed.pet_id,
+        shelter_club_id: parsed.shelter_club_id,
+        terms_version: payload.terms_version,
+        signature_text: payload.signature_text,
+        document_hash: payload.document_hash || null,
+        accepted_at: payload.terms_accepted_at,
+      },
+    }).catch((err) => {
+      logger.warn('adoptionService.submitAdoptionApplication', {
+        msg: 'terms audit failed (non-blocking)',
+        err: String(err),
+      });
+    });
+  }
 
   await createAuditLog({
     action: 'adoption_application_submitted',

@@ -46,6 +46,23 @@ export function isCurrentAdoptionTermsVersion(acceptedVersion) {
  *   signature_text: string,
  * }}
  */
+/**
+ * TASK-128: versão assíncrona com hash SHA-256 do texto integral do
+ * termo (Lei 14.063/2020 art. 4º §2º — integridade do documento
+ * assinado). Preferir esta em novos fluxos; a síncrona permanece por
+ * backward-compat.
+ *
+ * @param {string} signatureText
+ * @returns {Promise<{terms_accepted_at: string, terms_version: string,
+ *   signature_text: string, document_hash: string}>}
+ */
+export async function buildAdoptionTermsAcceptanceV2(signatureText) {
+  const base = buildAdoptionTermsAcceptance(signatureText);
+  const { computeDocumentHash } = await import('@/modules/shelter/domain/legal/terms');
+  const document_hash = await computeDocumentHash(ADOPTION_TERMS_TEXT);
+  return { ...base, document_hash };
+}
+
 export function buildAdoptionTermsAcceptance(signatureText) {
   if (!signatureText || typeof signatureText !== 'string' || signatureText.trim().length < 3) {
     throw new Error('Assinatura (signature_text) deve ter no mínimo 3 caracteres.');

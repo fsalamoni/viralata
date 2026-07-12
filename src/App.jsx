@@ -66,6 +66,8 @@ const CreateReport = lazy(() => import('@/modules/reports/pages/CreateReport'));
 const Profile = lazy(() => import('@/pages/Profile'));
 // TASK-130: página individual do pedido de adoção (timeline).
 const AdoptionDetail = lazy(() => import('@/pages/AdoptionDetail'));
+// TASK-127: wizard "Quero adotar" (5 steps, pets de abrigo).
+const AdoptionWizard = lazy(() => import('@/pages/AdoptionWizard'));
 
 // ─── Admin ────────────────────────────────────────────────────────────────────
 const AdminDashboard = lazy(() => import('@/modules/admin/pages/AdminDashboard'));
@@ -308,6 +310,10 @@ export default function App() {
                 <Route
                   path="/adocoes/:clubId/:applicationId"
                   element={<ProtectedRoute>{withLayout('AdoptionDetail', AdoptionDetail)}</ProtectedRoute>}
+                />
+                <Route
+                  path="/quero-adotar/:petId"
+                  element={<ProtectedRoute>{withLayout('AdoptionWizard', AdoptionWizard)}</ProtectedRoute>}
                 />
 
                 {/* ── Admin ─────────────────────────────────────────────── */}
