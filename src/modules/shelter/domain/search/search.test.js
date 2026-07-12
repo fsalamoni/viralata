@@ -437,3 +437,37 @@ describe('Entity lookups', () => {
     expect(Object.keys(SEARCH_ENTITIES).length).toBe(5);
   });
 });
+
+// ─── TASK-075: buildSearchKeywords ──────────────────────────────────
+import { buildSearchKeywords } from './search';
+
+describe('buildSearchKeywords (TASK-075)', () => {
+  it('gera tokens normalizados sem acento e lowercase', () => {
+    const kw = buildSearchKeywords({ name: 'Café Órfão' });
+    expect(kw).toContain('cafe');
+    expect(kw).toContain('orfao');
+  });
+
+  it('inclui prefixos de 3+ chars', () => {
+    const kw = buildSearchKeywords({ name: 'Belinha' });
+    expect(kw).toEqual(expect.arrayContaining(['bel', 'beli', 'belin', 'belinh', 'belinha']));
+  });
+
+  it('ignora tokens de 1 char e valores não-string', () => {
+    const kw = buildSearchKeywords({ name: 'a', breed: null, city: 42 });
+    expect(kw).toEqual([]);
+  });
+
+  it('deduplica entre campos e é bounded a 100', () => {
+    const kw = buildSearchKeywords({ name: 'rex', breed: 'rex' });
+    expect(kw.filter((k) => k === 'rex')).toHaveLength(1);
+    const big = buildSearchKeywords({ description: Array.from({ length: 80 }, (_, i) => `palavra${i}extra`).join(' ') });
+    expect(big.length).toBeLessThanOrEqual(100);
+  });
+
+  it('retorna array ordenado e vazio para input vazio', () => {
+    expect(buildSearchKeywords({})).toEqual([]);
+    const kw = buildSearchKeywords({ name: 'Zeca', breed: 'Akita' });
+    expect(kw).toEqual([...kw].sort());
+  });
+});

@@ -1,6 +1,7 @@
 /**
  * @fileoverview Serviço de Pets — CRUD na coleção `pets`
  */
+import { buildSearchKeywords } from '@/modules/shelter/domain/search';
 import {
   collection, doc, getDoc, getDocs, addDoc, updateDoc,
   deleteDoc, query, where, orderBy, limit, serverTimestamp, writeBatch,
@@ -75,6 +76,14 @@ export async function createPet(petData, actor) {
     photos: normalizePetPhotoUrls(petData?.photos),
     status: petData.status || 'available',
     priority_score: priorityScore,
+    // TASK-075 (Fase 18): keywords normalizados p/ Smart Search
+    // (array-contains server-side).
+    search_keywords: buildSearchKeywords({
+      name: petData?.name,
+      title: petData?.title,
+      breed: petData?.breed,
+      city: petData?.city,
+    }),
     created_at: serverTimestamp(),
     updated_at: serverTimestamp(),
   };
@@ -118,6 +127,15 @@ export async function updatePet(petId, updates, actor) {
   };
   if (Object.prototype.hasOwnProperty.call(updates || {}, 'photos')) {
     normalizedUpdates.photos = normalizePetPhotoUrls(updates?.photos);
+  }
+  // TASK-075: se algum campo pesquisável mudou, recomputa search_keywords.
+  const searchable = ['name', 'title', 'breed', 'city'];
+  if (searchable.some((k) => Object.prototype.hasOwnProperty.call(updates || {}, k))) {
+    const current = await getPetById(petId).catch(() => null);
+    const merged = { ...current, ...updates };
+    normalizedUpdates.search_keywords = buildSearchKeywords({
+      name: merged?.name, title: merged?.title, breed: merged?.breed, city: merged?.city,
+    });
   }
   await updateDoc(doc(db, PETS_COLLECTION, petId), normalizedUpdates);
   await createAuditLog({ action: 'pet_updated', actor, details: { pet_id: petId, changed_fields: Object.keys(updates) } });
