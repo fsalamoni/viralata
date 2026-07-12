@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-12T23:48:18.886Z",
+  "generatedAt": "2026-07-12T23:55:24.197Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -4298,7 +4298,7 @@
       "title": "Galeria: galeria pública do abrigo (read-only)",
       "type": "feature",
       "category": "shelter",
-      "status": "in_review",
+      "status": "done",
       "priority": "medium",
       "owner": "claude_yxo02k",
       "branch": "claude/scrum-board-management-yxo02k",
@@ -4312,10 +4312,11 @@
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
-      "evidence": "Rule pet_photos: read anônimo apenas deleted_at==null e category in [rescue,profile,adoption,exhibition] (health/foster seguem restritas — sem dados clínicos públicos); índice composto shelter+deleted_at+category+created_at; listPublicShelterPhotos; PublicGallerySection (grid + lightbox acessível) na aba Geral do ClubDetail; test/lint/build verdes",
+      "evidence": "Rule pet_photos: read anônimo apenas deleted_at==null e category in [rescue,profile,adoption,exhibition] (health/foster seguem restritas — sem dados clínicos públicos); índice composto shelter+deleted_at+category+created_at; listPublicShelterPhotos; PublicGallerySection (grid + lightbox acessível) na aba Geral do ClubDetail; test/lint/build verdes; mergeado via PR #73",
       "description": "BLOCO INDEPENDENTE. Em /abrigos/{id}: galeria pública das fotos (categories: rescue, profile, health). Sem clinical_notes. Sem bot de upload (apenas abrigo pode postar).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-12"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-143",
@@ -5827,7 +5828,7 @@
       "title": "LegalPageViewer Navigate→PageNotFound + PetFeed v1 rename (Mavis 311d — \"TASK-126 MR#1\")",
       "type": "refactor",
       "category": "community",
-      "status": "in_review",
+      "status": "done",
       "priority": "medium",
       "owner": "mvs_311d078987d0414a90f57ef28b789b18",
       "branch": "feat/legal-docs-v2",
@@ -5848,10 +5849,10 @@
         "TASK-194",
         "TASK-195"
       ],
-      "evidence": "Mensagem mvs_311d 20:24 — typecheck/lint/build verdes, 1359/1361 testes (2 falhas pré-existentes timezone). Src: D:\\viralata\\.worktrees\\wt-e79e15ca\\src\\pages\\legal\\LegalPageViewer.jsx + PetFeed.v1.jsx rename.",
+      "evidence": "Mensagem mvs_311d 20:24 — typecheck/lint/build verdes, 1359/1361 testes (2 falhas pré-existentes timezone). Src: D:\\viralata\\.worktrees\\wt-e79e15ca\\src\\pages\\legal\\LegalPageViewer.jsx + PetFeed.v1.jsx rename.; branch feat/legal-docs-v2 mergeado via PR #73 (resoluções preferindo main onde já reimplementado)",
       "description": "Mavis 311d reportou \"TASK-126 MR#1\" em wt/e79e15ca (colisão de ID — TASK-126 na board do root é \"Voluntários: métricas globais\"). Trabalho: (1) LegalPageViewer.jsx: trocar <Navigate to=PageNotFound /> por render direto do <PageNotFound /> — menos indireção, melhor UX. (2) PetFeed.original.jsx → PetFeed.v1.jsx rename — versionamento explícito em vez de \"original\" ambíguo. AGUARDANDO número real do MR da Mavis 311d para preencher pr field. Regra A §A.2 (4 olhos — defensive coding complementa o trabalho da Mavis).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11 20:25",
+      "updatedAt": "2026-07-12",
       "history": [
         {
           "ts": "2026-07-11T23:26:55.182Z",
@@ -5862,14 +5863,15 @@
           "body": "TASK-201 criada (colisão ID). in_review. Aguardo número real do MR pra preenc...",
           "status": "prompt done"
         }
-      ]
+      ],
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-202",
       "title": "Auto-sync do painel-scrum.html (Regra B: auto-import em tempo real)",
       "type": "feature",
       "category": "infra",
-      "status": "in_review",
+      "status": "done",
       "priority": "high",
       "owner": "mvs_311d078987d0414a90f57ef28b789b18",
       "branch": "feat/harness-auto-import",
@@ -5888,10 +5890,11 @@
         "TASK-061",
         "TASK-062"
       ],
-      "evidence": "D:\\viralata\\AGENTS.md §B.2 · D:\\viralata\\.worktrees\\wt-auto-import\\.harness\\sync.cjs (--watch + --watch --serve) · D:\\viralata\\.worktrees\\wt-auto-import\\.harness\\painel-scrum.html (auto-sync-pill + btn-reload + autoSync IIFE) · D:\\viralata\\.worktrees\\wt-auto-import\\package.json · D:\\viralata\\.worktrees\\wt-auto-import\\.harness\\SCRUM_PROTOCOL.md §13. Smoke 16.4s verde (typecheck ✓, build ✓, test ⚠️ 2/1361 fail — TZ off-by-3h pré-existente, mesma raiz dos outros worktrees). Pushed to origin feat/harness-auto-import @ cdaac20 (cdaac20 = nit fix renomeia antigo B.2 → B.1.5). 6 files / +14598 / -1.",
+      "evidence": "D:\\viralata\\AGENTS.md §B.2 · D:\\viralata\\.worktrees\\wt-auto-import\\.harness\\sync.cjs (--watch + --watch --serve) · D:\\viralata\\.worktrees\\wt-auto-import\\.harness\\painel-scrum.html (auto-sync-pill + btn-reload + autoSync IIFE) · D:\\viralata\\.worktrees\\wt-auto-import\\package.json · D:\\viralata\\.worktrees\\wt-auto-import\\.harness\\SCRUM_PROTOCOL.md §13. Smoke 16.4s verde (typecheck ✓, build ✓, test ⚠️ 2/1361 fail — TZ off-by-3h pré-existente, mesma raiz dos outros worktrees). Pushed to origin feat/harness-auto-import @ cdaac20 (cdaac20 = nit fix renomeia antigo B.2 → B.1.5). 6 files / +14598 / -1.; feat/harness-auto-import já estava em main (commit 1736e3e); branch remoto limpo",
       "description": "Implementa auto-import do SCRUM_TASKS.json no painel-scrum.html conforme pedido do usuário 2026-07-11. Componentes: (1) sync.cjs ganhou modo --watch com polling de mtime (750ms) e re-embed automático no painel HTML. (2) sync.cjs --watch --serve roda HTTP server em :8731 com CORS habilitado para o browser fazer polling e auto-reload. (3) painel-scrum.html ganhou pill #auto-sync-pill mostrando último sync + botão #btn-reload manual + script autoSync() que faz polling 5s e auto-reload em modo HTTP. (4) SCRUM_PROTOCOL.md §13 documenta os modos e atalhos npm. (5) package.json expõe scripts: sync, sync:fix, sync:check, sync:watch, sync:serve. (6) AGENTS.md já cita Regra B — este worktree materializa a parte de auto-import. Worktree: D:\\viralata\\.worktrees\\wt-auto-import (branch feat/harness-auto-import).\n\n**Status 2026-07-11 20:43 (mvs_311d)**: smoke verde, pushed to origin, nit ### B.2 resolvido. Aguarda gh auth path do user pra abrir MR (PAT/browser/manual).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11 20:43"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-203",
@@ -10224,9 +10227,9 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 254,
-    "done": 125,
+    "done": 128,
     "inProgress": 3,
-    "inReview": 3,
+    "inReview": 0,
     "blocked": 0,
     "ready": 229,
     "backlog": 6,
