@@ -199,7 +199,7 @@ export default function VolunteerProgram() {
           </h2>
           <p className="text-sm text-muted-foreground">
             Se a sua dúvida não estiver aqui, escreva para{' '}
-            <a className="text-primary underline-offset-2 hover:underline" href="mailto:voluntarios@viralata.org">
+            <a className="text-primary underline underline-offset-2" href="mailto:voluntarios@viralata.org">
               voluntarios@viralata.org
             </a>
             .

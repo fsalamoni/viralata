@@ -257,7 +257,7 @@ function FeedEmpty({ fetchedCount, hasFilters }) {
         <p className="text-[13.5px] text-muted-foreground">
           Ainda não há pets disponíveis para adoção na plataforma.
         </p>
-        <p className="text-sm text-muted-foreground/80">
+        <p className="text-sm text-muted-foreground">
           Seja o primeiro: cadastre um pet e ajude ele a encontrar um novo lar.
         </p>
       </div>
@@ -266,7 +266,7 @@ function FeedEmpty({ fetchedCount, hasFilters }) {
   return (
     <div className="space-y-3 py-16 text-center">
       <p className="text-[13.5px] text-muted-foreground">Nenhum pet encontrado com esses filtros.</p>
-      <p className="text-sm text-muted-foreground/80">
+      <p className="text-sm text-muted-foreground">
         {hasFilters
           ? 'Limpe os filtros de espécie e porte para ver todos os pets da plataforma.'
           : 'Tente novamente em alguns instantes.'}

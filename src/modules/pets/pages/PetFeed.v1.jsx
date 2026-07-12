@@ -359,7 +359,7 @@ export default function PetFeed() {
         {!isLoading && !isError && pets.length === 0 && (
           <div className="space-y-3 py-16 text-center">
             <p className="text-[13.5px] text-muted-foreground">Nenhum pet encontrado com esses filtros.</p>
-            <p className="text-sm text-muted-foreground/80">
+            <p className="text-sm text-muted-foreground">
               Tente ampliar o raio, mudar a cidade ou limpar os filtros para ver todos os pets da plataforma.
             </p>
           </div>

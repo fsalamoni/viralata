@@ -13,12 +13,16 @@
     --card-foreground: 20 25% 13%;
     --popover: 30 45% 99%;
     --popover-foreground: 20 25% 13%;
-    --primary: 17 72% 45%;
+    /* TASK-249: L 45%→43% — contraste WCAG AA (4.81:1 vs primary-foreground,
+       4.70:1 vs background; antes 4.49, reprovava por 0.01). */
+    --primary: 17 72% 43%;
     --primary-foreground: 40 45% 98%;
     --secondary: 38 42% 91%;
     --secondary-foreground: 20 30% 20%;
     --muted: 32 20% 92%;
-    --muted-foreground: 20 12% 40%;
+    /* TASK-249: 40%→37% — com blends/opacidade o computed caía a 4.42:1
+       sobre o cream; 37% garante ≥4.5 mesmo com /90. */
+    --muted-foreground: 20 12% 37%;
     --accent: 86 30% 32%;
     --accent-foreground: 86 34% 24%;
     --highlight: 40 88% 54%;
