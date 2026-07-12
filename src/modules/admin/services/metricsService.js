@@ -36,6 +36,31 @@ export function groupByMonth(docs, dateField, months = 6, now = new Date()) {
   return buckets;
 }
 
+/**
+ * TASK-172: agrupa por dia dentro de uma janela de N dias — usado
+ * pelas janelas 30/90 dias do AdminMetrics (por mês seria grosseiro).
+ */
+export function groupByDay(docs, dateField, days = 30, now = new Date()) {
+  const buckets = [];
+  const dayKey = (d) => d.toISOString().slice(0, 10);
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
+    buckets.push({
+      day: dayKey(d),
+      label: d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }),
+      count: 0,
+    });
+  }
+  const byKey = Object.fromEntries(buckets.map((b) => [b.day, b]));
+  (docs || []).forEach((entry) => {
+    const date = toDate(entry?.[dateField]);
+    if (!date) return;
+    const bucket = byKey[dayKey(date)];
+    if (bucket) bucket.count += 1;
+  });
+  return buckets;
+}
+
 /** Agrupa uma lista de documentos por um campo categórico (ex.: estado), do maior para o menor. */
 export function groupByField(docs, field, limitCount = 10) {
   const counts = {};
