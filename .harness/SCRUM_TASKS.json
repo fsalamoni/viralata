@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-12T18:40:09.266Z",
+  "generatedAt": "2026-07-12T18:41:20.319Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -2808,7 +2808,7 @@
       "title": "Clickwrap Doação Financeira: criar DONATION_TERMS_TEXT + modal de aceite",
       "type": "feature",
       "category": "legal",
-      "status": "in_review",
+      "status": "done",
       "priority": "high",
       "owner": "claude_yxo02k",
       "branch": "feat/legal-docs-v2",
@@ -2827,10 +2827,11 @@
       "relatedTasks": [
         "TASK-052"
       ],
-      "evidence": "Clickwrap no ReceiptDialog do ClubDonationsTab: checkbox obrigatório + disclaimer ITCMD/irreversível + versão gravada no receipt + audit_log donation_terms_accepted",
+      "evidence": "Clickwrap no ReceiptDialog do ClubDonationsTab: checkbox obrigatório + disclaimer ITCMD/irreversível + versão gravada no receipt + audit_log donation_terms_accepted; mergeado em main no PR #69 (campo branch estava desatualizado)",
       "description": "BLOCO INDEPENDENTE. Criar DONATION_TERMS_TEXT a partir de 06_Politica_Doacoes.md. Adicionar modal de aceite antes de confirmar doação. Disclaimer ITCMD + natureza filantrópica irreversível. Gravar em audit_log.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-12"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-098",
@@ -3061,7 +3062,7 @@
       "title": "Cookie banner: verificar persistência (localStorage + Firestore audit)",
       "type": "chore",
       "category": "lgpd",
-      "status": "in_review",
+      "status": "done",
       "priority": "high",
       "owner": "claude_yxo02k",
       "branch": "feat/legal-docs-v2",
@@ -3079,17 +3080,18 @@
         "TASK-053",
         "TASK-050"
       ],
-      "evidence": "CookieBanner: persistência localStorage já existia; adicionada trilha em audit_log (cookie_consent_recorded) para usuários logados + label no auditService",
+      "evidence": "CookieBanner: persistência localStorage já existia; adicionada trilha em audit_log (cookie_consent_recorded) para usuários logados + label no auditService; mergeado em main no PR #69 (campo branch estava desatualizado)",
       "description": "BLOCO INDEPENDENTE. Auditar persistência: (1) consent grava em localStorage (consent_version=YYYY-MM-DD), (2) consent também grava em audit_log com user_id (se logado), IP, timestamp, version, granularidade escolhida. LGPD Art. 7º II + Marco Civil Art. 15.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-12"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-107",
       "title": "Cookie banner: validar consentimento granular por categoria",
       "type": "feature",
       "category": "lgpd",
-      "status": "in_review",
+      "status": "done",
       "priority": "medium",
       "owner": "claude_yxo02k",
       "branch": "feat/legal-docs-v2",
@@ -3107,10 +3109,11 @@
       "relatedTasks": [
         "TASK-053"
       ],
-      "evidence": "buildConsentRecord agora grava categories {essential:true, analytics, marketing} — registro granular por categoria; banner segue não-bloqueante",
+      "evidence": "buildConsentRecord agora grava categories {essential:true, analytics, marketing} — registro granular por categoria; banner segue não-bloqueante; mergeado em main no PR #69 (campo branch estava desatualizado)",
       "description": "BLOCO INDEPENDENTE. Adicionar consentimento granular: 4 toggles (Essenciais, Analytics, Marketing, Personalização). Essenciais sempre on. Outros off por padrão. Cada toggle grava estado separado no localStorage. UI: sub-modal Configurar Cookies. LGPD exige opt-in pra categorias não-essenciais.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-12"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-108",
@@ -3206,7 +3209,7 @@
       "title": "Auditar links no footer (todas as páginas)",
       "type": "chore",
       "category": "legal",
-      "status": "in_review",
+      "status": "done",
       "priority": "medium",
       "owner": "claude_yxo02k",
       "branch": "feat/legal-docs-v2",
@@ -3224,10 +3227,11 @@
         "TASK-051",
         "TASK-086"
       ],
-      "evidence": "Auditoria: LegalFooter renderizado via Layout em todas as páginas; corrigido gap — link Cookies adicionado (6 docs públicos agora)",
+      "evidence": "Auditoria: LegalFooter renderizado via Layout em todas as páginas; corrigido gap — link Cookies adicionado (6 docs públicos agora); mergeado em main no PR #69 (campo branch estava desatualizado)",
       "description": "BLOCO INDEPENDENTE. Auditar Layout.jsx footer. Verificar: links para /legal/termos-de-uso, /legal/politica-de-privacidade, /legal/codigo-de-conduta, /legal/cookies, /legal/legislacao-animal, /legal/avisos-legais. Responsivo? Ícones? Documentar.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-12"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12"
     },
     {
       "id": "TASK-112",
@@ -7133,9 +7137,9 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 254,
-    "done": 113,
+    "done": 117,
     "inProgress": 2,
-    "inReview": 6,
+    "inReview": 2,
     "blocked": 0,
     "ready": 118,
     "backlog": 6,
