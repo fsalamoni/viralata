@@ -5,7 +5,7 @@
  * Renderiza o TEXTO INTEGRAL do termo de voluntariado v2
  * (`volunteerTerms.v2.js`) com índice (jump links) e botão "Voltar".
  *
- * Diferente de `pages/VolunteerTerms.jsx` (que é a versão resumida
+ * Diferente da antiga pages/VolunteerTerms.jsx (removida na TASK-043; era a versão resumida
  * em seções com ícones), esta página é o documento integral exigido
  * pela Lei 14.063/2020 art. 4º §1º e pela LGPD art. 9º.
  */
