@@ -19,7 +19,13 @@
     "sync:fix": "node .harness/sync.cjs --fix",
     "sync:check": "node .harness/sync.cjs --check",
     "sync:watch": "node .harness/sync.cjs --watch",
-    "sync:serve": "node .harness/sync.cjs --watch --serve"
+    "sync:serve": "node .harness/sync.cjs --watch --serve",
+    "scrum": "node .harness/scrum.cjs",
+    "scrum:start": "node .harness/scrum.cjs start",
+    "scrum:done": "node .harness/scrum.cjs done",
+    "scrum:review": "node .harness/scrum.cjs review",
+    "scrum:list": "node .harness/scrum.cjs list",
+    "scrum:show": "node .harness/scrum.cjs show"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -82,6 +88,7 @@
     "globals": "^15.14.0",
     "jsdom": "^25.0.1",
     "postcss": "^8.5.3",
+    "proper-lockfile": "^4.1.2",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.8.2",
     "vite": "^6.1.0",
