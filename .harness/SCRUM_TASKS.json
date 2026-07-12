@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-12T18:05:42.030Z",
+  "generatedAt": "2026-07-12T18:18:50.921Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -5761,10 +5761,10 @@
       "title": "A11y automatizado (axe-core) na página da comunidade (gap Regra A Eixos 1 e 5)",
       "type": "chore",
       "category": "community",
-      "status": "ready",
+      "status": "in_review",
       "priority": "medium",
-      "owner": "unassigned",
-      "branch": "wt/17ff480a",
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
       "flag": null,
       "worktree": ".worktrees/wt-17ff480a",
       "pr": null,
@@ -5781,10 +5781,10 @@
         "TASK-196",
         "TASK-014"
       ],
-      "evidence": "COVERAGE_AUDIT.md Eixos 1 e 5; docs/SHELTER_MGMT_ROADMAP.md",
+      "evidence": "tests/e2e/a11y.spec.js — @axe-core/playwright (wcag2a+aa) em 7 rotas públicas incl. /comunidades; política critical/serious bloqueiam, moderate/minor warning; violações reais encontradas viraram TASK-249 (KNOWN_ISSUES documentado); 7/7 verde local; PW_CHROMIUM_PATH no playwright.config para o ambiente remoto",
       "description": "BLOCO INDEPENDENTE. Adicionar @axe-core/playwright ao smoke test (ou criar suite dedicada) para /comunidade/:id com flag ON. Cobrir: capa, painel admin (4 abas), modais, empty states. Reportar achados em docs/A11Y_AUDIT.md. Regra A §1.1 (a11y) + §1.5 (pós-deploy smoke test).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12"
     },
     {
       "id": "TASK-200",
@@ -6935,6 +6935,34 @@
       "description": "BLOCO INDEPENDENTE. (1) Cloud Function generateVolunteerCertificate(uid, period) → PDF, (2) Endpoint /perfil/voluntario/certificado?from=X&to=Y, (3) Botão \"Baixar certificado de horas\" no /perfil#voluntariadas, (4) Storage path volunteer_certificates/{uid}/{date}.pdf, (5) Template com: nome, CPF mascarado, abrigo(s), período, total horas, badge, signature do abrigo, (6) Lei 9.608/1998 atestado oficial + termo v2 §6.1(e) compliance.",
       "createdAt": "2026-07-11",
       "updatedAt": "2026-07-11 21:00"
+    },
+    {
+      "id": "TASK-249",
+      "title": "A11y: corrigir contraste terracotta/cream (color-contrast + link-in-text-block em /feed, /organizacoes, /voluntarios)",
+      "type": "bug",
+      "category": "design",
+      "status": "ready",
+      "priority": "medium",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "a11y",
+        "wcag-aa",
+        "design-system"
+      ],
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-199",
+        "TASK-191",
+        "TASK-014"
+      ],
+      "evidence": "tests/e2e/a11y.spec.js KNOWN_ISSUES — axe-core: color-contrast (serious, botões outline/badges sobre cream) e link-in-text-block (links sem underline) nas 3 rotas; corrigir tokens de cor p/ ratio ≥4.5:1 e sublinhar links em texto corrido, depois remover as entradas do KNOWN_ISSUES",
+      "description": "Detectado pela suite a11y automatizada (TASK-199). Ajustar a paleta (primary sobre background) e o estilo de links para WCAG AA. Ao corrigir, esvaziar KNOWN_ISSUES no spec — a suite volta a bloquear regressões.",
+      "createdAt": "2026-07-12",
+      "updatedAt": "2026-07-12"
     }
   ],
   "definitionOfDone": [
@@ -7105,7 +7133,7 @@
     "totalTasks": 254,
     "done": 111,
     "inProgress": 2,
-    "inReview": 6,
+    "inReview": 7,
     "blocked": 0,
     "ready": 119,
     "backlog": 6,
@@ -7166,6 +7194,6 @@
         "body": "Relatório fechado. Path: C:\\Users\\Usuario\\.mavis\\agents\\general\\workspace\\rel..."
       }
     ],
-    "total": 245
+    "total": 246
   }
 }
