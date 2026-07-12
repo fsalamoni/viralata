@@ -224,3 +224,80 @@ exports.triggerSecurityAlert = triggerSecurityAlert;
 
 // Re-export do applyRateLimit para facilitar testes / composição.
 exports.__applyRateLimit = applyRateLimit;
+
+// ─── Fase 13: Triggers do módulo de voluntários ────────────────────────
+//
+// Cinco Cloud Function triggers reativas (firestore v2) + helpers de
+// idempotência (notification_dedup/) e DLQ (dlq_volunteer_notifications/).
+//
+// Triggers:
+//   1. propagateVolunteerProfileSnapshot
+//      → onUpdate users/{uid}/volunteer_profile/main
+//      → Propaga display_name/email/phone/photo_url para todos os
+//        rosters (collectionGroup('volunteers')).
+//
+//   2. notifyAdminOnNewVolunteer
+//      → onCreate clubs/{clubId}/volunteers/{volunteerUid}
+//
+//   3. notifyVolunteerOnStatusChange
+//      → onUpdate clubs/{clubId}/volunteers/{volunteerUid} (status only)
+//
+//   4. notifyAdminOnNewParticipation
+//      → onCreate clubs/{clubId}/volunteer_participations/{id}
+//
+//   5. notifyOnCheckInOut
+//      → onUpdate clubs/{clubId}/volunteer_participations/{id}
+//        (check_in / check_out only)
+//
+// Idempotência: dedup_id = sha256(prefix + '|' + parts).slice(0, 16)
+// gravado em notification_dedup/ dentro de transação atômica.
+// DLQ: dlq_volunteer_notifications/ para reprocessamento manual.
+//
+// @see functions/volunteerTriggers.js (lógica testável)
+const {
+  runPropagateVolunteerProfileSnapshotSafe,
+  runNotifyAdminOnNewVolunteerSafe,
+  runNotifyVolunteerOnStatusChangeSafe,
+  runNotifyAdminOnNewParticipationSafe,
+  runNotifyOnCheckInOutSafe,
+  setLogger: setVolunteerTriggersLogger,
+} = require('./volunteerTriggers');
+
+const { onDocumentUpdated, onDocumentCreated: onDocCreatedVolunteer } = require('firebase-functions/v2/firestore');
+
+setVolunteerTriggersLogger(logger);
+
+exports.propagateVolunteerProfileSnapshot = onDocumentUpdated(
+  { document: 'users/{userId}/volunteer_profile/main', region: 'southamerica-east1' },
+  async (event) => {
+    await runPropagateVolunteerProfileSnapshotSafe(event);
+  },
+);
+
+exports.notifyAdminOnNewVolunteer = onDocCreatedVolunteer(
+  { document: 'clubs/{clubId}/volunteers/{volunteerUid}', region: 'southamerica-east1' },
+  async (event) => {
+    await runNotifyAdminOnNewVolunteerSafe(event);
+  },
+);
+
+exports.notifyVolunteerOnStatusChange = onDocumentUpdated(
+  { document: 'clubs/{clubId}/volunteers/{volunteerUid}', region: 'southamerica-east1' },
+  async (event) => {
+    await runNotifyVolunteerOnStatusChangeSafe(event);
+  },
+);
+
+exports.notifyAdminOnNewParticipation = onDocCreatedVolunteer(
+  { document: 'clubs/{clubId}/volunteer_participations/{participationId}', region: 'southamerica-east1' },
+  async (event) => {
+    await runNotifyAdminOnNewParticipationSafe(event);
+  },
+);
+
+exports.notifyOnCheckInOut = onDocumentUpdated(
+  { document: 'clubs/{clubId}/volunteer_participations/{participationId}', region: 'southamerica-east1' },
+  async (event) => {
+    await runNotifyOnCheckInOutSafe(event);
+  },
+);

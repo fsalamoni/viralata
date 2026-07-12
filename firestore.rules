@@ -83,6 +83,20 @@ service cloud.firestore {
         && (get(/databases/$(database)/documents/clubs/$(clubId)/volunteers/$(volunteerUid)).data.background_check_status == 'not_required'
           || get(/databases/$(database)/documents/clubs/$(clubId)/volunteers/$(volunteerUid)).data.background_check_status == 'approved');
     }
+    // TASK-226: gate App Check. Quando o Firebase App Check está enforcement-
+    // on (produção), o claim `app_check` é injetado em request.auth.token.
+    // Em dev/emulador, o claim não existe — daí o fallback que libera
+    // platform_admin (sempre protegido por outro caminho) e tokens
+    // custom-issued pelo emulador Auth. A regra é conservadora:
+    // libere APENAS onde existe um caminho alternativo de confiança
+    // (platform admin, emulador), nunca "permitir tudo se sem claim".
+    function isAppCheckVerified() {
+      return isAuth() && (
+        request.auth.token.app_check == true
+        || request.auth.token.firebase_sign_in_provider == 'custom'
+        || isPlatformAdmin()
+      );
+    }
     // Quem pode gerenciar um pet (dono pessoa física, ou clube dono via admin/permissão).
     function canManagePet(petData) {
       return petData.owner_id == request.auth.uid ||
@@ -962,6 +976,11 @@ service cloud.firestore {
           request.resource.data.volunteer_name.size() >= 2 &&
           request.resource.data.terms_accepted_at is string &&
           request.resource.data.terms_accepted_at.matches('^\\d{4}-\\d{2}-\\d{2}T') &&
+          // TASK-226: App Check gate. Criações via auto-join (voluntário
+          // público) precisam ter passado pelo hCaptcha client-side +
+          // App Check server-side. Admins de abrigo continuam livres
+          // (isAppCheckVerified libera platform_admin).
+          isAppCheckVerified() &&
           (isPlatformAdmin() ||
            isClubOwnerOrAdmin(clubId) ||
            canEditClubPets(clubId) ||
@@ -1014,6 +1033,9 @@ service cloud.firestore {
           // TASK-230: o voluntário precisa estar ativo na rostagem do abrigo
           // com background check ok antes de qualquer participação contar.
           isVolunteerInRoster(clubId, request.resource.data.volunteer_uid) &&
+          // TASK-226: App Check gate. Inserções de participação por
+          // membros do abrigo precisam de token App Check válido.
+          isAppCheckVerified() &&
           (isPlatformAdmin() ||
            isClubOwnerOrAdmin(clubId) ||
            canEditClubPets(clubId) ||
