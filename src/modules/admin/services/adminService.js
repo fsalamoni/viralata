@@ -11,15 +11,26 @@ export async function listAllUsers() {
 }
 
 /** Bane um usuário, impedindo que ele acesse a plataforma. */
-export async function banUser(uid, reason, actor) {
+export async function banUser(uid, reason, actor, bannedUntil = null) {
   if (!db || !uid) throw new Error('Dados inválidos');
+  if (!reason || String(reason).trim().length < 5) {
+    throw new Error('Informe o motivo do banimento (mínimo 5 caracteres).');
+  }
+  // TASK-178: bannedUntil = ISO string para banimento temporário;
+  // null = perpétuo. O gate (FirebaseAuthContext) trata expiração.
   await updateDoc(doc(db, 'users', uid), {
     banned: true,
     banned_at: serverTimestamp(),
-    banned_reason: reason || '',
+    banned_reason: String(reason).trim(),
+    banned_until: bannedUntil || null,
     updated_at: serverTimestamp(),
   });
-  await createAuditLog({ action: 'user_banned', actor, details: { user_id: uid, reason } });
+  await createAuditLog({
+    action: 'user_banned',
+    actor,
+    userId: uid,
+    details: { user_id: uid, reason: String(reason).trim(), banned_until: bannedUntil || null },
+  });
 }
 
 /** Remove o banimento de um usuário. */
@@ -29,9 +40,10 @@ export async function unbanUser(uid, actor) {
     banned: false,
     banned_at: null,
     banned_reason: null,
+    banned_until: null,
     updated_at: serverTimestamp(),
   });
-  await createAuditLog({ action: 'user_unbanned', actor, details: { user_id: uid } });
+  await createAuditLog({ action: 'user_unbanned', actor, userId: uid, details: { user_id: uid } });
 }
 
 /** Lista todas as organizações, inclusive fora do diretório público. */

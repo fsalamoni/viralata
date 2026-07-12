@@ -171,7 +171,10 @@ export const AuthProvider = ({ children }) => {
     updateUserProfile,
     isPlatformAdmin: isPlatformOwnerEmail(user?.email) && userProfile?.role === 'platform_admin',
     isProfileComplete: isAdopterProfileComplete(userProfile),
-    isBanned: userProfile?.banned === true,
+    // TASK-178: banimento temporário expira sozinho — banned_until no
+    // passado deixa de bloquear (o doc é saneado no próximo unban/admin).
+    isBanned: userProfile?.banned === true
+      && (!userProfile?.banned_until || new Date(userProfile.banned_until) > new Date()),
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

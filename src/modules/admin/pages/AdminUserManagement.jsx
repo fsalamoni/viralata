@@ -20,6 +20,7 @@ import {
   PLATFORM_OWNER_EMAIL,
 } from '../services/adminUsersService';
 import { listAllUsers } from '../services/adminService';
+import BanUserSection from '../components/BanUserSection';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -194,6 +195,13 @@ export default function AdminUsers() {
           </CardContent>
         </Card>
       )}
+
+      {/* TASK-178/179: banimento com motivo/prazo + timeline por usuário */}
+      <BanUserSection
+        users={users}
+        actor={user}
+        onChanged={() => { void loadAll(); }}
+      />
     </div>
   );
 }
