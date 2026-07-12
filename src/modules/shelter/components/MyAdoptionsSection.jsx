@@ -70,10 +70,16 @@ export function MyAdoptionsSection({ userUid }) {
                   <span className="text-xs text-muted-foreground">
                     Enviado em {formatDate(app.created_at)}
                   </span>
+                  <Link
+                    to={`/adocoes/${app.shelter_club_id}/${app.id}`}
+                    className="ml-auto text-xs font-medium text-primary underline"
+                  >
+                    Detalhes
+                  </Link>
                   {app.pet_id && (
                     <Link
                       to={`/pet/${app.pet_id}`}
-                      className="ml-auto text-xs font-medium text-primary underline"
+                      className="text-xs font-medium text-primary underline"
                     >
                       Ver pet
                     </Link>
