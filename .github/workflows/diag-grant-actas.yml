@@ -1,4 +1,4 @@
-name: "Diag: Verify what's in the function container"
+name: "Diag: Inspect function container image"
 
 on: workflow_dispatch
 
@@ -19,23 +19,30 @@ jobs:
           gcloud auth activate-service-account --key-file=/tmp/firebase-sa.json --project=viralata-4cf0b
           gcloud config set project viralata-4cf0b
 
-      - name: Get latest revision URL
+      - name: List buckets
         run: |
-          gcloud run revisions list \
-            --service=getmockstatus \
-            --region=southamerica-east1 \
-            --project=viralata-4cf0b \
-            --format="table(name,createTime,image)" 2>&1 | head -10
+          gcloud storage buckets list --project=viralata-4cf0b 2>&1 | head -20
 
-      - name: Get function source archive URL
+      - name: List source archives
         run: |
-          # List source archives in gcf-v2-sources-* buckets
-          gcloud storage ls "gs://gcf-v2-sources-*-viralata-4cf0b" --project=viralata-4cf0b 2>&1 | head -20
+          for BUCKET in $(gcloud storage buckets list --project=viralata-4cf0b --format="value(name)" 2>/dev/null); do
+            echo "=== $BUCKET ==="
+            gcloud storage ls "gs://$BUCKET" 2>&1 | head -5
+          done | head -40
 
-      - name: Look at source archive contents
+      - name: Inspect function container image
         run: |
-          LATEST=$(gcloud storage ls "gs://gcf-v2-sources-*-viralata-4cf0b" --project=viralata-4cf0b 2>&1 | sort | tail -1)
-          echo "=== Latest source: $LATEST ==="
-          gcloud storage cp "$LATEST" /tmp/func-source.zip 2>&1
-          echo "=== Files in source archive ==="
-          unzip -l /tmp/func-source.zip 2>&1 | head -50
+          # A imagem do function
+          IMAGE="southamerica-east1-docker.pkg.dev/viralata-4cf0b/gcf-artifacts/viralata--4cf0b__southamerica--east1__on_pet_created_notify_radar@sha256:f2fc632c6be938dc59e5440c110120a40e26ada7f327c4e93c9a40516a826a8b"
+          # Listar artefatos (camadas) da imagem
+          gcloud artifacts docker images list \
+            "southamerica-east1-docker.pkg.dev/viralata-4cf0b/gcf-artifacts" \
+            --project=viralata-4cf0b 2>&1 | tail -20
+
+      - name: Try to extract function source from image
+        run: |
+          # Tenta usar docker para inspecionar a imagem
+          gcloud auth configure-docker southamerica-east1-docker.pkg.dev --quiet 2>&1
+          docker pull "southamerica-east1-docker.pkg.dev/viralata-4cf0b/gcf-artifacts/viralata--4cf0b__southamerica--east1__on_pet_created_notify_radar@sha256:f2fc632c6be938dc59e5440c110120a40e26ada7f327c4e93c9a40516a826a8b" 2>&1 | tail -10
+          echo "=== Files in /workspace ==="
+          docker run --rm -it "southamerica-east1-docker.pkg.dev/viralata-4cf0b/gcf-artifacts/viralata--4cf0b__southamerica--east1__on_pet_created_notify_radar@sha256:f2fc632c6be938dc59e5440c110120a40e26ada7f327c4e93c9a40516a826a8b" ls -la /workspace 2>&1 | head -30
