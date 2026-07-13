@@ -25,6 +25,9 @@ import {
   exportToCSV,
   formatMonthLabel,
 } from '@/modules/shelter/domain/operational/reports';
+import { exportToPDF } from '@/modules/shelter/domain/operational/reportsPdf';
+import { sanitizeRowForReport } from '@/core/services/reportSanitizer';
+import { FileText } from 'lucide-react';
 
 // ─── Paleta de cores para charts ──────────────────────────────────────
 const CHART_COLORS = {
@@ -549,15 +552,36 @@ function ExportButton({ data, periodLabel }) {
   }
   if (rows.length === 0) return null;
 
-  const handleExport = () => {
-    exportToCSV(rows, `relatorio-${periodLabel || 'abrigo'}.csv`);
+  const handleExportCSV = () => {
+    const periodStr = periodLabel || 'abrigo';
+    exportToCSV(rows, 'relatorio-' + periodStr + '.csv');
+  };
+
+  const handleExportPDF = () => {
+    if (!rows || rows.length === 0) return;
+    const columns = Object.keys(rows[0]);
+    const matrix = rows.map((row) => sanitizeRowForReport(columns, columns.map((c) => row[c])));
+    const periodStr = periodLabel || new Date().toLocaleDateString('pt-BR');
+    exportToPDF({
+      title: 'Relatório do Abrigo',
+      subtitle: 'Período: ' + periodStr,
+      columns,
+      rows: matrix,
+      filename: 'relatorio-' + periodStr + '.pdf',
+    });
   };
 
   return (
-    <Button size="sm" variant="outline" onClick={handleExport}>
-      <Download className="h-3.5 w-3.5 mr-1.5" />
-      Exportar CSV
-    </Button>
+    <div className="flex gap-2">
+      <Button size="sm" variant="outline" onClick={handleExportCSV}>
+        <Download className="h-3.5 w-3.5 mr-1.5" />
+        Exportar CSV
+      </Button>
+      <Button size="sm" variant="outline" onClick={handleExportPDF}>
+        <FileText className="h-3.5 w-3.5 mr-1.5" />
+        Exportar PDF
+      </Button>
+    </div>
   );
 }
 
