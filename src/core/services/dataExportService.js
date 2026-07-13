@@ -7,21 +7,28 @@
  * exigiriam varrer toda conversa) — cobre os dados de identidade e as
  * ações do usuário na plataforma, o suficiente para o direito de
  * portabilidade sem depender de um job de backend.
+ *
+ * TASK-294 (LGPD Art. 18 V): expandido para incluir terms_acceptances,
+ * donation_contributions (clube), audit_logs pessoais (actor_id OU
+ * user_id == uid), applications de adoção (clube),
+ * volunteer_profiles e volunteer_rosters. Audit log do próprio
+ * export é gerado (`data_export_requested`).
+ *
+ * Helpers puros extraídos em `dataExportService.internal.js` para
+ * serem testáveis.
  */
 import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
 import { db } from '@/core/config/firebase';
-
-async function queryByField(col, field, uid) {
-  if (!db) return [];
-  const snap = await getDocs(query(collection(db, col), where(field, '==', uid)));
-  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-}
+import { createAuditLog } from '@/core/services/auditService';
+import { queryByField, queryAuditLogs } from './dataExportService.internal';
 
 export async function exportMyData(uid) {
   if (!db || !uid) throw new Error('Usuário não autenticado.');
 
   const [profileSnap, pets, adoptionInterests, clubMemberships,
-    notifications, abuseReports, ratingsGiven, ratingsReceived, conversations] = await Promise.all([
+    notifications, abuseReports, ratingsGiven, ratingsReceived, conversations,
+    termsAcceptances, donationContributions, auditLogs,
+    adoptionApplications, volunteerProfiles, volunteerRosters] = await Promise.all([
     getDoc(doc(db, 'users', uid)),
     queryByField('pets', 'owner_id', uid),
     queryByField('adoption_interests', 'user_id', uid),
@@ -31,19 +38,56 @@ export async function exportMyData(uid) {
     queryByField('adoption_ratings', 'rater_uid', uid),
     queryByField('adoption_ratings', 'rated_uid', uid),
     getDocs(query(collection(db, 'conversations'), where('member_ids', 'array-contains', uid))),
+    queryByField('terms_acceptances', 'user_id', uid),
+    queryByField('donation_contributions', 'user_id', uid),
+    queryAuditLogs(uid),
+    queryByField('adoption_applications', 'applicant_uid', uid),
+    queryByField('volunteer_profiles', 'user_id', uid),
+    queryByField('volunteer_rosters', 'volunteer_uid', uid),
   ]);
+
+  // Gera audit log do próprio export (LGPD Art. 37 + Art. 18 V — o
+  // usuário tem direito a saber QUANDO seus dados foram exportados e
+  // POR QUÊ). Best-effort — não bloqueia o export se o log falhar.
+  try {
+    await createAuditLog({
+      action: 'data_export_requested',
+      actor: { uid, email: profileSnap.data()?.email },
+      details: {
+        counts: {
+          pets: pets.length,
+          adoption_applications: adoptionApplications.length,
+          terms_acceptances: termsAcceptances.length,
+          donation_contributions: donationContributions.length,
+          audit_logs: auditLogs.length,
+          conversations: conversations.size,
+          volunteer_profiles: volunteerProfiles.length,
+          volunteer_rosters: volunteerRosters.length,
+        },
+      },
+    });
+  } catch {
+    // Silencioso — export é mais importante que o log.
+  }
 
   return {
     exported_at: new Date().toISOString(),
+    lgpd_article: 'Art. 18, V — direito de portabilidade',
     profile: profileSnap.exists() ? profileSnap.data() : null,
     pets,
     adoption_interests: adoptionInterests,
+    adoption_applications: adoptionApplications,
     club_memberships: clubMemberships,
     notifications,
     abuse_reports: abuseReports,
     ratings_given: ratingsGiven,
     ratings_received: ratingsReceived,
     conversations: conversations.docs.map((d) => ({ id: d.id, ...d.data() })),
+    terms_acceptances: termsAcceptances,
+    donation_contributions: donationContributions,
+    volunteer_profiles: volunteerProfiles,
+    volunteer_rosters: volunteerRosters,
+    audit_logs: auditLogs,
   };
 }
 
