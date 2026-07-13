@@ -4,38 +4,60 @@ on: workflow_dispatch
 
 permissions:
   contents: read
+  id-token: write
 
 jobs:
   logs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install gcloud
+        run: |
+          apt-get update -qq
+          apt-get install -y -qq apt-transport-https ca-certificates gnupg
+          echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee /etc/apt/sources.list.d/google-cloud-sdk.list
+          curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg
+          apt-get update -qq
+          apt-get install -y -qq google-cloud-cli
+          gcloud --version
+
       - name: Auth
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
           echo "$FIREBASE_SERVICE_ACCOUNT" > /tmp/firebase-sa.json
-          gcloud auth activate-service-account --key-file=/tmp/firebase-sa.json --project=viralata-4cf0b 2>&1
-          gcloud config set project viralata-4cf0b 2>&1
+          gcloud auth activate-service-account --key-file=/tmp/firebase-sa.json --project=viralata-4cf0b
+          gcloud config set project viralata-4cf0b
 
       - name: List functions
         run: |
           echo "=== Functions deployed ==="
-          gcloud functions list --gen2 --project=viralata-4cf0b --format="table(name,status,buildId,updateTime)" 2>&1
+          gcloud functions list --gen2 --project=viralata-4cf0b 2>&1
+
+      - name: IAM getMockStatus
+        run: |
+          echo "=== getMockStatus IAM ==="
+          gcloud functions get-iam-policy getMockStatus --region=southamerica-east1 --gen2 --project=viralata-4cf0b 2>&1
+
+      - name: IAM loadMockData
+        run: |
+          echo "=== loadMockData IAM ==="
+          gcloud functions get-iam-policy loadMockData --region=southamerica-east1 --gen2 --project=viralata-4cf0b 2>&1
 
       - name: Logs getMockStatus
         run: |
-          echo "=== getMockStatus last 30 ==="
-          gcloud functions logs read getMockStatus --region=southamerica-east1 --gen2 --limit=30 2>&1 | tail -100
+          echo "=== getMockStatus logs ==="
+          gcloud functions logs read getMockStatus --region=southamerica-east1 --gen2 --limit=40 2>&1 | tail -150
 
       - name: Logs loadMockData
         run: |
-          echo "=== loadMockData last 30 ==="
-          gcloud functions logs read loadMockData --region=southamerica-east1 --gen2 --limit=30 2>&1 | tail -100
-
-      - name: IAM policy
-        run: |
-          echo "=== getMockStatus IAM ==="
-          gcloud functions get-iam-policy getMockStatus --region=southamerica-east1 --gen2 --project=viralata-4cf0b 2>&1 | tail -20
-          echo "=== loadMockData IAM ==="
-          gcloud functions get-iam-policy loadMockData --region=southamerica-east1 --gen2 --project=viralata-4cf0b 2>&1 | tail -20
+          echo "=== loadMockData logs ==="
+          gcloud functions logs read loadMockData --region=southamerica-east1 --gen2 --limit=40 2>&1 | tail -150
