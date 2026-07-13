@@ -28,6 +28,7 @@ const LegalPageViewer = lazy(() => import('@/pages/legal/LegalPageViewer'));
 // TASK-082 (Fase 18): página pública /busca (flag shelter_smart_search).
 const SearchPage = lazy(() => import('@/pages/SearchPage'));
 const PageNotFound = lazy(() => import('@/pages/PageNotFound'));
+const ShelterPublic = lazy(() => import('@/pages/ShelterPublic'));
 const BannedNotice = lazy(() => import('@/pages/BannedNotice'));
 const AdminDebugPage = lazy(() => import('@/pages/AdminDebugPage'));
 const PublicDebugPage = lazy(() => import('@/pages/PublicDebugPage'));
@@ -289,6 +290,7 @@ export default function App() {
                   element={<ProtectedRoute>{withLayout('OrganizationAdminPanel', OrganizationAdminPanel)}</ProtectedRoute>}
                 />
                 <Route path="/organizacoes/:orgId" element={<ProtectedRoute>{withLayout('OrganizationDetail', OrganizationDetail)}</ProtectedRoute>} />
+                <Route path="/abrigos/:shelterId" element={withLayout('ShelterPublic', ShelterPublic)} />
                 <Route
                   path="/organizacoes/:orgId/eventos/:eventId"
                   element={<ProtectedRoute>{withLayout('EventDetail', EventDetail)}</ProtectedRoute>}
