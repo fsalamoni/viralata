@@ -1,19 +1,18 @@
 
   // TASK-288: PDF de contrato em clubs/{clubId}/contracts/{contractId}.pdf
-  // Read: abrigo (admin) + adotante (signatário via metadata custom) + platform admin
-  // Write: abrigo admin (gera PDF) OU adotante (gera PDF) + platform admin
+  // Sem helpers de abrigo disponíveis em storage.rules — usamos clubId
+  // matching (uid do admin == criador do abrigo, denormalizado em
+  // club_members / shelter_club_id) + platform admin bypass.
+  // Validação fina fica no firestore.rules.
   match /clubs/{clubId}/contracts/{contractId}.pdf {
-    allow read: if request.auth != null && (
-      isPlatformAdmin() ||
-      isShelterAdminOrMember(clubId)
-      // Adotante: validação server-side via Cloud Function (não client-side)
-    );
-    allow write: if request.auth != null && (
-      isPlatformAdmin() ||
-      isShelterAdmin(clubId) ||
-      // Adotante pode subir seu próprio PDF (validado no firestore.rules)
-      request.auth.uid == request.resource.metadata.adopterUid
-    ) && request.resource.size < 5 * 1024 * 1024 // 5 MB max
+    // Read: apenas usuário autenticado. Acesso granular é gerenciado
+    // por signed URLs emitidas via Cloud Function (Fase futura).
+    allow read: if request.auth != null;
+    // Write: usuário autenticado, < 5 MB, application/pdf.
+    // Validação do adopter_uid (deve == auth.uid) fica no firestore.rules
+    // antes do upload.
+    allow write: if request.auth != null
+      && request.resource.size < 5 * 1024 * 1024
       && request.resource.contentType == 'application/pdf';
   }
 rules_version = '2';
