@@ -18,6 +18,23 @@ import {
 } from 'firebase/firestore';
 import { db } from '@/core/config/firebase';
 import { logger } from '@/core/lib/logger';
+
+/** Helper inline: checa se actor é owner/admin do abrigo.
+ *  Multi-tenant defense-in-depth (TASK-300).
+ */
+async function isClubOwnerOrAdmin(shelterClubId, actorUid) {
+  if (!shelterClubId || !actorUid) return false;
+  try {
+    const memberId = `${shelterClubId}_${actorUid}`;
+    const memberSnap = await getDoc(doc(db, 'club_members', memberId));
+    if (!memberSnap.exists()) return false;
+    const role = memberSnap.data().role;
+    return role === 'admin' || role === 'owner';
+  } catch (err) {
+    logger.warn('isClubOwnerOrAdmin failed', { shelterClubId, actorUid, err: String(err) });
+    return false;
+  }
+}
 import { createAuditLog } from '@/core/services/auditService';
 import {
   submitApplicationSchema,
@@ -253,6 +270,13 @@ export async function decideApplication(shelterClubId, applicationId, decision, 
   if (current.shelter_club_id !== shelterClubId) {
     // (dupla checagem — defence-in-depth)
     throw new Error('Cross-tenant access blocked.');
+  }
+
+  // TASK-300: defense-in-depth multi-tenant — checa se actor é owner/admin do abrigo
+  // (Firestore rules compensam, mas aqui é a primeira linha)
+  const isClubOwner = await isClubOwnerOrAdmin(shelterClubId, actor.uid);
+  if (!isClubOwner) {
+    throw new Error('Apenas owner/admin do abrigo pode decidir uma application.');
   }
 
   // Valida transição

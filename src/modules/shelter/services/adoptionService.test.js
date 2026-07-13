@@ -99,6 +99,29 @@ beforeEach(() => {
 function appSnap(data, id = 'a1') {
   return { id, exists: () => true, data: () => data };
 }
+
+function memberSnap(role = 'admin') {
+  return { exists: () => true, data: () => ({ role, club_id: 'c1' }) };
+}
+
+/**
+ * Mock que reconhece paths:
+ *  - adoption_workflow/{id} → appSnap(data)
+ *  - club_members/{id} → memberSnap(role)
+ *  - outros → missingSnap()
+ */
+function setupGetDocMock({ appData, memberRole = 'admin' } = {}) {
+  mockGetDoc.mockImplementation((ref) => {
+    const path = ref?._path || '';
+    if (path.includes('adoption_workflow/')) {
+      return Promise.resolve(appSnap(appData || { status: 'applied', shelter_club_id: 'c1' }));
+    }
+    if (path.includes('club_members/')) {
+      return Promise.resolve(memberSnap(memberRole));
+    }
+    return Promise.resolve(missingSnap());
+  });
+}
 function missingSnap() {
   return { exists: () => false };
 }
@@ -229,7 +252,7 @@ describe('getApplication', () => {
     expect(await getApplication('c1', 'a1')).toBeNull();
   });
   it('retorna doc se existe', async () => {
-    mockGetDoc.mockResolvedValue(appSnap({ status: 'applied' }));
+    setupGetDocMock({ appData: { status: 'applied' } });
     const r = await getApplication('c1', 'a1');
     expect(r.id).toBe('a1');
     expect(r.status).toBe('applied');
@@ -247,42 +270,42 @@ describe('decideApplication', () => {
   });
 
   it('rejeita sem actor.uid', async () => {
-    mockGetDoc.mockResolvedValue(appSnap({ status: 'applied', shelter_club_id: 'c1' }));
+    setupGetDocMock({ appData: { status: 'applied', shelter_club_id: 'c1' } });
     await expect(
       decideApplication('c1', 'a1', { to_status: 'under_review' }, {}),
     ).rejects.toThrow(/actor\.uid/);
   });
 
   it('rejeita cross-tenant', async () => {
-    mockGetDoc.mockResolvedValue(appSnap({ status: 'applied', shelter_club_id: 'c2' }));
+    setupGetDocMock({ appData: { status: 'applied', shelter_club_id: 'c2' } });
     await expect(
       decideApplication('c1', 'a1', { to_status: 'under_review' }, { uid: 'u1' }),
     ).rejects.toThrow();
   });
 
   it('rejeita transição inválida (pula etapa)', async () => {
-    mockGetDoc.mockResolvedValue(appSnap({ status: 'applied', shelter_club_id: 'c1' }));
+    setupGetDocMock({ appData: { status: 'applied', shelter_club_id: 'c1' } });
     await expect(
       decideApplication('c1', 'a1', { to_status: 'approved' }, { uid: 'u1' }),
     ).rejects.toThrow(/Transição inválida/);
   });
 
   it('rejeita status terminal', async () => {
-    mockGetDoc.mockResolvedValue(appSnap({ status: 'rejected', shelter_club_id: 'c1' }));
+    setupGetDocMock({ appData: { status: 'rejected', shelter_club_id: 'c1' } });
     await expect(
       decideApplication('c1', 'a1', { to_status: 'under_review' }, { uid: 'u1' }),
     ).rejects.toThrow(/terminal/);
   });
 
   it('rejeita recusa sem motivo', async () => {
-    mockGetDoc.mockResolvedValue(appSnap({ status: 'under_review', shelter_club_id: 'c1' }));
+    setupGetDocMock({ appData: { status: 'under_review', shelter_club_id: 'c1' } });
     await expect(
       decideApplication('c1', 'a1', { to_status: 'rejected' }, { uid: 'u1' }),
     ).rejects.toThrow(/decision_notes/);
   });
 
   it('move applied → under_review com sucesso', async () => {
-    mockGetDoc.mockResolvedValue(appSnap({ status: 'applied', shelter_club_id: 'c1' }));
+    setupGetDocMock({ appData: { status: 'applied', shelter_club_id: 'c1' } });
     mockUpdateDoc.mockResolvedValue(null);
     const r = await decideApplication('c1', 'a1', {
       to_status: 'under_review',
@@ -297,7 +320,12 @@ describe('decideApplication', () => {
       .mockResolvedValueOnce(appSnap({
         status: 'under_review', shelter_club_id: 'c1', pet_id: 'pet-1',
       }))
-      // 2º get: pet (no _cascadeApproval)
+      // 2º get: club_member (TASK-300 — defense-in-depth)
+      .mockResolvedValueOnce({
+        id: 'c1_u1', exists: () => true,
+        data: () => ({ role: 'admin', club_id: 'c1' }),
+      })
+      // 3º get: pet (no _cascadeApproval)
       .mockResolvedValueOnce({
         id: 'pet-1', exists: () => true,
         data: () => ({ owner_type: 'organization', owner_id: 'c1' }),
@@ -341,9 +369,9 @@ describe('cancelApplication', () => {
     // verdade. Aqui só testamos que o service diferencia applicant de
     // abrigo (atribui 'withdrawn' para applicant e 'cancelled' para
     // terceiro). O Firestore rule bloqueia se não tiver permissão.
-    mockGetDoc.mockResolvedValue(appSnap({
+    setupGetDocMock({ appData: {
       status: 'applied', shelter_club_id: 'c1', applicant_uid: 'u-other',
-    }));
+    } });
     mockUpdateDoc.mockResolvedValue(null);
     const r = await cancelApplication('c1', 'a1', 'foo', { uid: 'u-attacker' });
     // Terceiro vira 'cancelled' (não 'withdrawn')
@@ -351,18 +379,18 @@ describe('cancelApplication', () => {
   });
 
   it('applicant pode withdraw (vira withdrawn, não cancelled)', async () => {
-    mockGetDoc.mockResolvedValue(appSnap({
+    setupGetDocMock({ appData: {
       status: 'applied', shelter_club_id: 'c1', applicant_uid: 'u1',
-    }));
+    } });
     mockUpdateDoc.mockResolvedValue(null);
     const r = await cancelApplication('c1', 'a1', 'mudei de ideia', { uid: 'u1' });
     expect(r.status).toBe('withdrawn');
   });
 
   it('abrigo pode cancelar (vira cancelled, não withdrawn)', async () => {
-    mockGetDoc.mockResolvedValue(appSnap({
+    setupGetDocMock({ appData: {
       status: 'applied', shelter_club_id: 'c1', applicant_uid: 'u-other',
-    }));
+    } });
     mockUpdateDoc.mockResolvedValue(null);
     const r = await cancelApplication('c1', 'a1', 'pet não está mais disponível', {
       uid: 'u-shelter-admin',
@@ -371,9 +399,9 @@ describe('cancelApplication', () => {
   });
 
   it('rejeita cancel de app em status terminal', async () => {
-    mockGetDoc.mockResolvedValue(appSnap({
+    setupGetDocMock({ appData: {
       status: 'rejected', shelter_club_id: 'c1', applicant_uid: 'u1',
-    }));
+    } });
     await expect(
       cancelApplication('c1', 'a1', 'foo', { uid: 'u1' }),
     ).rejects.toThrow(/terminal/);
