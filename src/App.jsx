@@ -39,6 +39,7 @@ const MyContracts = lazy(() => import('@/modules/contracts/pages/MyContracts'));
 const PostAdoptionDashboard = lazy(() => import('@/modules/shelter/components/PostAdoptionDashboard'));
 const ShelterInterviewsList = lazy(() => import('@/modules/interview/pages/ShelterInterviewsList'));
 const OnboardingQuestionnaire = lazy(() => import('@/modules/onboarding/pages/OnboardingQuestionnaire'));
+const LegalGate = lazy(() => import('@/components/legal/LegalGate'));
 
 // ─── Pets ─────────────────────────────────────────────────────────────────────
 const PetFeed = lazy(() => import('@/modules/pets/pages/PetFeed'));
@@ -132,7 +133,8 @@ function OnboardingGate({ children }) {
   if (!isProfileComplete && !isAllowedPath) {
     return <Navigate to="/onboarding" state={{ from: location }} replace />;
   }
-  return children;
+  // Profile completo: envolve com LegalGate para checar aceites
+  return <LegalGate>{children}</LegalGate>;
 }
 
 function AdminRoute({ children }) {
