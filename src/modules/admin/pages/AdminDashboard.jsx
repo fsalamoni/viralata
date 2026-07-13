@@ -27,6 +27,7 @@ export default function AdminDashboard() {
     { icon: Activity, title: 'Saúde da plataforma', desc: 'Latência, error rate, deploys, uptime, custos, capacidade, alertas', link: '/admin/saude', tone: 'bg-destructive/10 text-destructive' },
     { icon: Bell, title: 'Alertas', desc: 'Configurar thresholds de Slack/Email para billing, error rate, latência', link: '/admin/alertas', tone: 'bg-destructive/10 text-destructive' },
     { icon: Siren, title: 'Alertas de segurança', desc: 'Logins suspeitos, alterações de regras, rate limit, billing — logados pela Cloud Function (Fase 20)', link: '/admin/security-alerts', tone: 'bg-destructive/10 text-destructive' },
+    { icon: Database, title: 'Dados demo (mock data)', desc: 'Carregar ou limpar o pacote de dados de demonstração (gated por flag)', link: '/admin/mock-data', tone: 'bg-accent/10 text-accent' },
   ];
 
   return (

@@ -90,6 +90,8 @@ const PlatformHealth = lazy(() => import('@/modules/admin/pages/PlatformHealth')
 const SecurityAlerts = lazy(() => import('@/modules/admin/pages/SecurityAlerts'));
 const AlertConfigs = lazy(() => import('@/modules/admin/pages/AlertConfigs'));
 const AdminUserManagement = lazy(() => import('@/modules/admin/pages/AdminUserManagement'));
+// Mock data — painel admin para carregar/limpar dados demo (TASK-400).
+const AdminMockData = lazy(() => import('@/modules/admin/pages/AdminMockData'));
 
 // ─── QueryClient ─────────────────────────────────────────────────────────────
 const queryClient = new QueryClient({
@@ -382,6 +384,10 @@ export default function App() {
                 <Route
                   path="/admin/admins"
                   element={<AdminRoute>{withLayout('AdminUserManagement', AdminUserManagement)}</AdminRoute>}
+                />
+                <Route
+                  path="/admin/mock-data"
+                  element={<AdminRoute>{withLayout('AdminMockData', AdminMockData)}</AdminRoute>}
                 />
 
                 {/* ── Redirects legados ─────────────────────────────────── */}

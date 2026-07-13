@@ -122,6 +122,21 @@ export const FEATURE_FLAG = Object.freeze({
     (acc, key) => ({ ...acc, [key]: key }),
     {},
   ),
+
+  /**
+   * Painel de dados demo: quando ligada, expõe a rota `/admin/mock-data`
+   * com botões para carregar e limpar os conjuntos de dados mockados
+   * que vivem em `src/mocks/`. Os documentos são marcados com
+   * `_mock: true` para permitir a limpeza precisa sem tocar em nada
+   * criado por usuários reais. Útil para demos, treinamento,
+   * validação visual de UX com dados realistas e testes de fluxo
+   * ponta-a-ponta sem precisar popular manualmente cada coleção.
+   *
+   * Restrito ao platform_admin (a própria rota tem `AdminRoute`).
+   * Default ON no projeto (uso pessoal do admin master). Pode ser
+   * desligada em /admin/flags — a página some do menu admin.
+   */
+  MOCK_DATA_PANEL: 'mock_data_panel',
 });
 
 /** Metadados de exibição para o painel de flags (admin master). */
@@ -225,6 +240,18 @@ export const FEATURE_FLAG_META = Object.freeze({
   ...Object.fromEntries(
     Object.entries(SHELTER_META).map(([k, v]) => [k, v]),
   ),
+
+  [FEATURE_FLAG.MOCK_DATA_PANEL]: {
+    label: 'Painel de dados demo (mock data)',
+    description:
+      'Expõe a rota `/admin/mock-data` com botões para carregar e '
+      + 'limpar os conjuntos de dados mockados. Útil para demos, '
+      + 'treinamento e validação visual de UX. Os documentos são '
+      + 'marcados com `_mock: true`, então a limpeza é precisa e não '
+      + 'toca em nada criado por usuários reais. Restrito ao '
+      + 'platform_admin. Default ON; pode ser desligado em /admin/flags '
+      + '— a página some do menu admin.',
+  },
 });
 
 /**
@@ -251,6 +278,8 @@ export const DEFAULT_FEATURE_FLAGS = Object.freeze({
   ...Object.fromEntries(
     Object.values(SHELTER_FEATURE_FLAG).map((k) => [k, false]),
   ),
+
+  [FEATURE_FLAG.MOCK_DATA_PANEL]: true,
 });
 
 /**
