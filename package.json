@@ -11,6 +11,7 @@
     "e2e": "playwright test",
     "smoke:prod": "node scripts/smoke-prod.mjs",
     "smoke:routes": "node scripts/smoke-routes.mjs",
+    "smoke:staging": "node scripts/smoke-staging.mjs",
     "lint": "eslint . --quiet",
     "lint:fix": "eslint . --fix",
     "test": "vitest run",
