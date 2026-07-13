@@ -1,4 +1,4 @@
-name: "Diag: List custom domains via gcloud (with --quiet)"
+name: "Diag: List custom domains via gcloud (with --quiet AND gcloud update)"
 
 on: workflow_dispatch
 
@@ -25,20 +25,18 @@ jobs:
           gcloud config set project viralata-4cf0b
           echo "$FIREBASE_SERVICE_ACCOUNT" > /tmp/sa.json
           gcloud auth activate-service-account --key-file=/tmp/sa.json --quiet 2>&1 | tail -3
-          gcloud config set auth/credential_file_override /tmp/sa.json
 
-          echo ""
-          echo "=== firebase hosting sites ==="
-          gcloud firebase hosting sites list --quiet 2>&1 | head -20 || true
+          # install alpha + firebase
+          gcloud components install alpha firebase --quiet 2>&1 | tail -3
 
           echo ""
           echo "=== List custom domains via gcloud (alpha) ==="
-          gcloud alpha firebase hosting custom-domains list --site=viralata --quiet 2>&1 | head -50 || true
+          gcloud alpha firebase hosting custom-domains list --site=viralata 2>&1 | head -50 || true
 
           echo ""
           echo "=== Describe custom domain viralata.app ==="
-          gcloud alpha firebase hosting custom-domains describe viralata.app --site=viralata --quiet 2>&1 | head -30 || true
+          gcloud alpha firebase hosting custom-domains describe viralata.app --site=viralata 2>&1 | head -30 || true
 
           echo ""
           echo "=== Describe site viralata ==="
-          gcloud alpha firebase hosting sites describe viralata --quiet 2>&1 | head -30 || true
+          gcloud alpha firebase hosting sites describe viralata 2>&1 | head -30 || true
