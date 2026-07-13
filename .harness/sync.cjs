@@ -171,6 +171,10 @@ function reembedHtml(j) {
   const jsonBlock = '\n' + JSON.stringify(j, null, 2) + '\n  ';
   const newHtml = before + jsonBlock + after;
   fs.writeFileSync(HTML_PATH, newHtml, 'utf8');
+  // Copia para public/scrum.html (Firebase Hosting serve direto)
+  const PUBLIC_PATH = path.join(REPO, 'public', 'scrum.html');
+  fs.writeFileSync(PUBLIC_PATH, newHtml, 'utf8');
+  log('  → public/scrum.html atualizado');
   return newHtml.length;
 }
 

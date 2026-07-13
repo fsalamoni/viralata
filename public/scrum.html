@@ -1,7 +1,393 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Viralata · Painel Scrum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #faf8f4;
+    --surface: #ffffff;
+    --surface-2: #f5f1e8;
+    --line: #e9e3d6;
+    --line-soft: #f0eadb;
+    --ink: #1a1d24;
+    --ink-2: #4a4f5a;
+    --ink-3: #7c7a72;
+    --accent: #c97b3f;
+    --accent-soft: #c97b3f1a;
+    --accent-line: #c97b3f33;
+    --olive: #6b7a3f;
+    --rose: #b06367;
+    --amber: #d97706;
+    --emerald: #047857;
+    --indigo: #4f46e5;
+    --crimson: #b91c1c;
+    --slate: #475569;
+
+    --col-backlog:    #94a3b8;
+    --col-ready:      #6366f1;
+    --col-inprogress: #d97706;
+    --col-inreview:   #0891b2;
+    --col-blocked:    #b91c1c;
+    --col-done:       #047857;
+    --col-dropped:    #71717a;
+
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow-sm: 0 1px 2px rgba(20, 23, 30, 0.04);
+    --shadow:    0 2px 8px rgba(20, 23, 30, 0.06);
+    --shadow-lg: 0 6px 24px -2px rgba(20, 23, 30, 0.10);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+
+  /* ─── Topbar ─── */
+  .topbar {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(250, 248, 244, 0.92);
+    backdrop-filter: saturate(180%) blur(12px);
+    -webkit-backdrop-filter: saturate(180%) blur(12px);
+    border-bottom: 1px solid var(--line);
+  }
+  .topbar-inner {
+    max-width: 1600px; margin: 0 auto; padding: 14px 24px;
+    display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand-mark {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--rose) 100%);
+    color: #fff; display: grid; place-items: center;
+    font-weight: 700; font-size: 16px;
+    box-shadow: var(--shadow);
+  }
+  .brand-text h1 { font-size: 17px; font-weight: 700; margin: 0; line-height: 1.1; }
+  .brand-text small { color: var(--ink-3); font-size: 12px; }
+
+  .sprint-info {
+    display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+    font-size: 12.5px; color: var(--ink-2);
+  }
+  .sprint-info .pill {
+    background: var(--surface); border: 1px solid var(--line);
+    padding: 4px 10px; border-radius: 999px; font-weight: 500;
+  }
+  .sprint-info .pill.goal { background: var(--accent-soft); border-color: var(--accent-line); color: var(--accent); }
+
+  .topbar-actions { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
+  .btn {
+    appearance: none; cursor: pointer; border: 1px solid var(--line);
+    background: var(--surface); color: var(--ink);
+    padding: 7px 14px; border-radius: 8px; font-size: 13px; font-weight: 500;
+    font-family: inherit;
+    display: inline-flex; align-items: center; gap: 6px;
+    transition: all 0.15s ease;
+  }
+  .btn:hover { background: var(--surface-2); border-color: var(--ink-3); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn.primary:hover { background: #b56b33; border-color: #b56b33; }
+  .btn.ghost { background: transparent; border-color: transparent; }
+  .btn.ghost:hover { background: var(--surface-2); }
+  .btn svg { width: 14px; height: 14px; }
+
+  /* ─── Layout ─── */
+  .wrap { max-width: 1600px; margin: 0 auto; padding: 20px 24px 80px; }
+
+  /* ─── Stats row ─── */
+  .stats {
+    display: grid; gap: 12px; margin-bottom: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  }
+  .stat {
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 14px 16px;
+    display: flex; flex-direction: column; gap: 4px;
+    position: relative; overflow: hidden;
+  }
+  .stat::before {
+    content: ""; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 3px; background: var(--accent);
+  }
+  .stat.v-backlog::before { background: var(--col-backlog); }
+  .stat.v-ready::before { background: var(--col-ready); }
+  .stat.v-inprogress::before { background: var(--col-inprogress); }
+  .stat.v-inreview::before { background: var(--col-inreview); }
+  .stat.v-blocked::before { background: var(--col-blocked); }
+  .stat.v-done::before { background: var(--col-done); }
+  .stat.v-total::before { background: var(--accent); }
+  .stat.v-wt::before { background: var(--olive); }
+  .stat-label { font-size: 11.5px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.04em; font-weight: 600; }
+  .stat-value { font-size: 26px; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .stat-sub { font-size: 12px; color: var(--ink-3); }
+  .stat-value .delta { font-size: 12px; color: var(--ink-3); font-weight: 500; margin-left: 4px; }
+
+  /* ─── Tabs ─── */
+  .tabs {
+    display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 1px solid var(--line);
+    overflow-x: auto; scrollbar-width: thin;
+  }
+  .tab {
+    appearance: none; cursor: pointer; border: none; background: transparent;
+    padding: 10px 16px; font-size: 13.5px; font-weight: 500; color: var(--ink-3);
+    font-family: inherit; border-bottom: 2px solid transparent;
+    margin-bottom: -1px; white-space: nowrap;
+    transition: all 0.15s ease;
+  }
+  .tab:hover { color: var(--ink-2); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab .count { display: inline-block; background: var(--surface-2); padding: 1px 7px; border-radius: 999px; font-size: 11px; font-weight: 600; margin-left: 4px; color: var(--ink-2); }
+  .tab.active .count { background: var(--accent-soft); color: var(--accent); }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ─── Filters bar ─── */
+  .filters {
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 12px 14px; margin-bottom: 16px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+  }
+  .filter-group { display: flex; align-items: center; gap: 6px; }
+  .filter-group label { font-size: 11.5px; color: var(--ink-3); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+  .filter-group select, .filter-group input {
+    appearance: none; border: 1px solid var(--line); background: var(--surface);
+    padding: 6px 10px; border-radius: 6px; font-size: 13px; font-family: inherit; color: var(--ink);
+    min-width: 110px;
+  }
+  .filter-group input.search { min-width: 220px; }
+  .filter-group input.search:focus, .filter-group select:focus { outline: 2px solid var(--accent-line); border-color: var(--accent); }
+  .filter-clear { font-size: 12px; color: var(--ink-3); cursor: pointer; background: none; border: none; padding: 4px 8px; }
+  .filter-clear:hover { color: var(--accent); text-decoration: underline; }
+
+  /* ─── Kanban ─── */
+  .kanban {
+    display: grid; gap: 12px;
+    grid-template-columns: repeat(7, minmax(220px, 1fr));
+    overflow-x: auto; padding-bottom: 12px;
+  }
+  .col {
+    background: var(--surface-2); border-radius: var(--radius);
+    padding: 12px; min-height: 400px; display: flex; flex-direction: column; gap: 10px;
+    border: 1px solid transparent;
+  }
+  .col.dragover { background: var(--accent-soft); border-color: var(--accent); }
+  .col-head {
+    display: flex; align-items: center; gap: 8px; padding: 2px 4px 8px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .col-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .col-title { font-size: 12.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; flex: 1; }
+  .col-count { background: var(--surface); padding: 2px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 600; color: var(--ink-2); }
+  .col-body { display: flex; flex-direction: column; gap: 8px; min-height: 60px; }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: var(--radius-sm); padding: 10px 12px; cursor: grab;
+    transition: all 0.15s ease;
+    border-left-width: 3px;
+    position: relative;
+  }
+  .card:hover { box-shadow: var(--shadow); transform: translateY(-1px); }
+  .card.dragging { opacity: 0.4; cursor: grabbing; }
+  .card-head { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+  .card-id { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--ink-3); font-weight: 600; }
+  .card-prio {
+    margin-left: auto; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em;
+    padding: 1px 6px; border-radius: 4px;
+  }
+  .prio-critical { background: #fef2f2; color: var(--crimson); border: 1px solid #fecaca; }
+  .prio-high     { background: #fff7ed; color: var(--amber); border: 1px solid #fed7aa; }
+  .prio-medium   { background: #f5f3ff; color: var(--indigo); border: 1px solid #ddd6fe; }
+  .prio-low      { background: #f5f5f4; color: var(--ink-3); border: 1px solid #e7e5e4; }
+  .card-title { font-size: 13.5px; font-weight: 600; line-height: 1.3; margin-bottom: 6px; color: var(--ink); }
+  .card-meta { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; font-size: 11px; color: var(--ink-3); }
+  .card-meta .chip {
+    background: var(--surface-2); padding: 2px 7px; border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace; font-size: 10.5px;
+  }
+  .card-meta .chip.flag { background: var(--accent-soft); color: var(--accent); }
+  .card-meta .chip.wt   { background: #ecfccb; color: var(--olive); }
+  .card-meta .chip.cat  { background: #ede9fe; color: var(--indigo); }
+  .card-desc {
+    font-size: 12px; color: var(--ink-2); line-height: 1.45;
+    margin: 6px 0; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .card-blocked {
+    margin-top: 6px; font-size: 11px; color: var(--crimson);
+    display: flex; align-items: center; gap: 4px;
+  }
+
+  /* border colors per type/category — keep minimal */
+  .card.t-bug      { border-left-color: var(--crimson); }
+  .card.t-feature  { border-left-color: var(--accent); }
+  .card.t-refactor { border-left-color: var(--indigo); }
+  .card.t-docs     { border-left-color: var(--olive); }
+  .card.t-security { border-left-color: #be185d; }
+  .card.t-infra    { border-left-color: var(--slate); }
+  .card.t-debt     { border-left-color: var(--amber); }
+  .card.t-decision { border-left-color: #0e7490; }
+  .card.t-chore    { border-left-color: #94a3b8; }
+
+  /* ─── Tables (Risk, Sessions, etc) ─── */
+  .panel {
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 18px 20px; margin-bottom: 16px;
+  }
+  .panel-title {
+    font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em;
+    color: var(--ink-3); margin: 0 0 12px;
+  }
+  .panel-title.lg { font-size: 16px; text-transform: none; letter-spacing: 0; color: var(--ink); font-weight: 700; margin-bottom: 6px; }
+  .panel-sub { font-size: 12.5px; color: var(--ink-3); margin: 0 0 16px; }
+  table {
+    width: 100%; border-collapse: collapse; font-size: 13px;
+  }
+  th { text-align: left; padding: 8px 10px; font-size: 11px; font-weight: 600;
+       text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-3);
+       border-bottom: 1px solid var(--line); }
+  td { padding: 10px; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  td.mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+  td a { color: var(--accent); text-decoration: none; }
+  td a:hover { text-decoration: underline; }
+  .row-active td { background: var(--accent-soft); }
+
+  /* ─── Grids ─── */
+  .grid-2 { display: grid; gap: 12px; grid-template-columns: 1fr 1fr; }
+  .grid-3 { display: grid; gap: 12px; grid-template-columns: repeat(3, 1fr); }
+  @media (max-width: 900px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+
+  /* ─── Definition of Done ─── */
+  .dod-list { list-style: none; padding: 0; margin: 0; columns: 2; column-gap: 32px; }
+  @media (max-width: 900px) { .dod-list { columns: 1; } }
+  .dod-list li {
+    padding: 5px 0 5px 26px; position: relative; font-size: 13px; color: var(--ink-2);
+    break-inside: avoid;
+  }
+  .dod-list li::before {
+    content: ""; position: absolute; left: 4px; top: 11px; width: 12px; height: 12px;
+    border: 1.5px solid var(--accent); border-radius: 3px;
+  }
+
+  /* ─── Retro columns ─── */
+  .retro-cols { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  @media (max-width: 900px) { .retro-cols { grid-template-columns: 1fr; } }
+  .retro-col {
+    background: var(--surface-2); border-radius: var(--radius-sm); padding: 14px;
+  }
+  .retro-col h4 { margin: 0 0 10px; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+  .retro-col.stop  h4 { color: var(--crimson); }
+  .retro-col.start h4 { color: var(--emerald); }
+  .retro-col.keep  h4 { color: var(--olive); }
+  .retro-col ul { list-style: none; padding: 0; margin: 0; }
+  .retro-col li { font-size: 12.5px; padding: 5px 0 5px 16px; position: relative; color: var(--ink-2); }
+  .retro-col li::before {
+    content: "›"; position: absolute; left: 4px; top: 4px; color: var(--ink-3); font-weight: 700;
+  }
+
+  /* ─── Protocol block ─── */
+  .protocol {
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 24px 28px;
+  }
+  .protocol h2 { font-size: 18px; font-weight: 700; margin: 0 0 4px; }
+  .protocol h3 { font-size: 14px; font-weight: 700; margin: 22px 0 8px; color: var(--accent); }
+  .protocol p, .protocol li { font-size: 13px; color: var(--ink-2); line-height: 1.55; }
+  .protocol code, .protocol pre {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    background: var(--surface-2); border: 1px solid var(--line-soft);
+    padding: 1px 6px; border-radius: 4px; color: var(--ink);
+  }
+  .protocol pre {
+    padding: 12px 14px; overflow-x: auto; line-height: 1.5; margin: 8px 0;
+  }
+  .protocol pre code { background: none; border: none; padding: 0; }
+
+  /* ─── Modal ─── */
+  .modal-backdrop {
+    position: fixed; inset: 0; z-index: 100; background: rgba(20, 23, 30, 0.45);
+    display: none; align-items: flex-start; justify-content: center;
+    padding: 60px 20px; overflow-y: auto;
+  }
+  .modal-backdrop.open { display: flex; }
+  .modal {
+    background: var(--surface); border-radius: var(--radius); padding: 24px 28px;
+    max-width: 640px; width: 100%; box-shadow: var(--shadow-lg);
+  }
+  .modal h2 { margin: 0 0 4px; font-size: 18px; font-weight: 700; }
+  .modal .sub { color: var(--ink-3); font-size: 13px; margin-bottom: 20px; }
+  .form-row { margin-bottom: 12px; }
+  .form-row label { display: block; font-size: 12px; font-weight: 600; color: var(--ink-2); margin-bottom: 4px; }
+  .form-row input, .form-row select, .form-row textarea {
+    width: 100%; padding: 8px 10px; border: 1px solid var(--line);
+    border-radius: 6px; font-family: inherit; font-size: 13px; color: var(--ink); background: var(--surface);
+  }
+  .form-row textarea { min-height: 80px; resize: vertical; line-height: 1.5; }
+  .form-row input:focus, .form-row select:focus, .form-row textarea:focus {
+    outline: 2px solid var(--accent-line); border-color: var(--accent);
+  }
+  .form-row.row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .form-actions { display: flex; gap: 8px; margin-top: 20px; justify-content: flex-end; }
+
+  /* ─── Empty state ─── */
+  .empty {
+    padding: 30px 20px; text-align: center; color: var(--ink-3);
+    background: var(--surface-2); border-radius: var(--radius-sm); font-size: 13px;
+  }
+
+  /* ─── Footer ─── */
+  footer {
+    margin-top: 40px; padding: 20px 24px; text-align: center;
+    color: var(--ink-3); font-size: 12px; border-top: 1px solid var(--line);
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+
+  /* ─── Toast ─── */
+  .toast {
+    position: fixed; bottom: 20px; right: 20px; z-index: 200;
+    background: var(--ink); color: #fff; padding: 10px 16px; border-radius: 8px;
+    font-size: 13px; box-shadow: var(--shadow-lg);
+    opacity: 0; transform: translateY(10px); transition: all 0.2s ease;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+  .toast.error { background: var(--crimson); }
+  .toast.ok    { background: var(--emerald); }
+
+  /* ─── Utility ─── */
+  .text-mute { color: var(--ink-3); }
+  .text-accent { color: var(--accent); }
+  .tag {
+    display: inline-block; font-size: 10.5px; padding: 1px 6px; border-radius: 4px;
+    background: var(--surface-2); color: var(--ink-2); font-weight: 500;
+  }
+  .tag-critical { background: #fef2f2; color: var(--crimson); }
+  .tag-blocked  { background: #fef2f2; color: var(--crimson); }
+  .tag-done     { background: #ecfdf5; color: var(--emerald); }
+  .tag-active   { background: #ecfccb; color: var(--olive); }
+  details { margin-top: 8px; }
+  summary { cursor: pointer; font-size: 12px; color: var(--ink-3); user-select: none; }
+  summary:hover { color: var(--accent); }
+  pre.json-preview { max-height: 360px; overflow: auto; font-size: 11.5px; }
+</style>
+
+<script type="application/json" id="initial-data">
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-13T13:51:43.484Z",
+  "generatedAt": "2026-07-12T23:55:24.197Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -12,47 +398,11 @@
   },
   "activeWorktrees": [
     {
-      "id": "clickwrap",
-      "branch": "feat/mural-clickwrap-2026-07-13",
-      "head": "cdc79412c409be96a30feb5e5fca517f8cb11f54",
-      "headTitle": "feat(community): TASK-157 — Mural clickwrap + denúncia (Marco Civil + LGPD)",
-      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/clickwrap",
-      "status": "ahead-of-main",
-      "commitsAhead": 1,
-      "primarySession": null,
-      "sessionTitle": null,
-      "focus": []
-    },
-    {
-      "id": "mural",
-      "branch": "feat/mural-public-2026-07-13",
-      "head": "bd0ffe2a9229770c1659eb13baa880e644ddc860",
-      "headTitle": "feat(community): TASK-156 — página pública /comunidades/{slug} com mural read-only",
-      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/mural",
-      "status": "ahead-of-main",
-      "commitsAhead": 1,
-      "primarySession": null,
-      "sessionTitle": null,
-      "focus": []
-    },
-    {
-      "id": "scrum-public",
-      "branch": "chore/scrum-public-2026-07-13",
-      "head": "10550fc19590e50d3e87b26d2a118b9c1550b349",
-      "headTitle": "feat(community): TASK-160 — Fórum clickwrap + moderação (Marco Civil + LGPD) (#102)",
-      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/scrum-public",
-      "status": "in-sync",
-      "commitsAhead": 0,
-      "primarySession": null,
-      "sessionTitle": null,
-      "focus": []
-    },
-    {
-      "id": "sentry",
-      "branch": "feat/sentry-2026-07-13",
-      "head": "04f929f6fb979d34c8a481547dd25ef4e8e17cf3",
-      "headTitle": "fix(rules): hotfix — escape duplo no regex pdf_storage_path (#96)",
-      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/sentry",
+      "id": "viralata",
+      "branch": "claude/scrum-board-management-yxo02k",
+      "head": "aeb3aa76996ce8c1da3260deddc4ccf654b4ec20",
+      "headTitle": "fix(layout): HandHeartshake → HeartHandshake (icone inexistente no lucide-react quebrava build)",
+      "path": "/home/user/viralata",
       "status": "in-sync",
       "commitsAhead": 0,
       "primarySession": null,
@@ -474,10 +824,10 @@
       "title": "Adicionar tests em 10+ componentes sem .test.jsx",
       "type": "debt",
       "category": "test",
-      "status": "in_progress",
+      "status": "ready",
       "priority": "medium",
-      "owner": "mvs_419217909395550",
-      "branch": "feat/tests-coverage-2026-07-13",
+      "owner": "unassigned",
+      "branch": null,
       "flag": null,
       "worktree": null,
       "pr": null,
@@ -489,7 +839,7 @@
       "evidence": "docs/AUDIT_2026-07-11.md §5.1; docs/AUDIT_DEEP_2026-07-11.md §Pendências",
       "description": "Auditoria identificou 10+ componentes shelter/UI sem arquivo .test.jsx. Priorizar: componentes com lógica de negócio (não puramente apresentacional). Começar pelos que renderizam dados sensíveis (dashboard cards, kanban, exhibition details).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-13T01:19:51"
+      "updatedAt": "2026-07-11"
     },
     {
       "id": "TASK-014",
@@ -588,13 +938,13 @@
       "title": "Smart Search: implementar busca fuzzy client-side (typo-tolerance)",
       "type": "feature",
       "category": "search",
-      "status": "in_review",
+      "status": "ready",
       "priority": "high",
-      "owner": "mvs_f1e04f28717d42cdba05e221b7b4b6f3",
-      "branch": "feat/shelter-smart-search-fuzzy",
+      "owner": "unassigned",
+      "branch": null,
       "flag": "SHELTER_SMART_SEARCH",
       "worktree": null,
-      "pr": "#76",
+      "pr": null,
       "tags": [
         "fase-18",
         "typo-tolerance",
@@ -610,7 +960,7 @@
       "evidence": "docs/AUDIT_2026-07-11.md §5.3; decisão TASK-001 (Firestore nativo)",
       "description": "TASK-001 decidido: Firestore nativo. Como Firestore não tem typo-tolerance nativa, implementar busca fuzzy via Cloud Function (Levenshtein/phonetic) ou client-side via lib (Fuse.js, minisearch). Estratégia recomendada: cliente usa Fuse.js para busca local rápida em subset paginado (ex: 200 docs por vez), com debounce de 300ms. Server-side fica só para queries estruturadas (filtros facetados, range, etc).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-13T00:51:08"
+      "updatedAt": "2026-07-11"
     },
     {
       "id": "TASK-019",
@@ -10247,12 +10597,12 @@
     "firestoreIndexes": 35,
     "bundleSizeKB": 4125,
     "shelterPhases": "21/22 completas em produção (Fase 18 pendente decisão)",
-    "activeWorktreesAheadOfMain": 2,
+    "activeWorktreesAheadOfMain": 0,
     "mergedWorktreesThisSprint": [
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": "10550fc19590e50d3e87b26d2a118b9c1550b349",
+    "mainCommit": null,
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -10262,12 +10612,12 @@
     ],
     "openTODOs": 5,
     "openLegalReviews": 3,
-    "totalTasks": 367,
+    "totalTasks": 254,
     "done": 128,
-    "inProgress": 4,
-    "inReview": 1,
+    "inProgress": 3,
+    "inReview": 0,
     "blocked": 0,
-    "ready": 227,
+    "ready": 229,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -10297,7 +10647,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-13T01:19:51 — via scrum.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-11 21:30 — 6 critical tasks done (TASK-215+216+224+225+230+231) commit 62e32a2. 3 novas in_progress: TASK-234+237+238. Round 2.",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
@@ -10329,3 +10679,1039 @@
     "total": 367
   }
 }
+</script>
+  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-11T23:37:17.448Z">
+  </head>
+<body>
+
+<!-- ─── Topbar ─── -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-mark">VL</div>
+      <div class="brand-text">
+        <h1>Viralata · Painel Scrum</h1>
+        <small>Sistema de Gestão do Abrigo · Sprint W28</small>
+      </div>
+    </div>
+    <div class="sprint-info">
+      <span class="pill mono">main @ c0d2ffd</span>
+      <span class="pill">+2 worktrees ativos</span>
+      <span class="pill goal">Goal: estabilizar pós-22 fases + fechar worktrees</span>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn ghost" id="btn-export" title="Exportar SCRUM_TASKS.json">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        Export
+      </button>
+      <button class="btn ghost" id="btn-import" title="Importar SCRUM_TASKS.json">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+        Import
+      </button>
+      <input type="file" id="file-import" accept=".json" style="display:none" />
+      <button class="btn" id="btn-reset" title="Resetar para dataset inicial">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+        Reset
+      </button>
+      <button class="btn primary" id="btn-new">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        Nova task
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- ─── Stats ─── -->
+  <div class="stats" id="stats"></div>
+
+  <!-- ─── Tabs ─── -->
+  <nav class="tabs" id="tabs">
+    <button class="tab active" data-tab="kanban">Kanban <span class="count" id="c-kanban">0</span></button>
+    <button class="tab" data-tab="backlog">Backlog <span class="count" id="c-backlog">0</span></button>
+    <button class="tab" data-tab="worktrees">Worktrees <span class="count" id="c-wt">0</span></button>
+    <button class="tab" data-tab="sessions">Sessões <span class="count" id="c-sess">0</span></button>
+    <button class="tab" data-tab="risks">Riscos <span class="count" id="c-risks">0</span></button>
+    <button class="tab" data-tab="dod">DoD</button>
+    <button class="tab" data-tab="retro">Retrospectiva</button>
+    <button class="tab" data-tab="protocol">Protocolo</button>
+    <button class="tab" data-tab="roadmap">Roadmap</button>
+  </nav>
+
+  <!-- ─── Kanban panel ─── -->
+  <section class="tab-panel active" data-panel="kanban">
+    <div class="filters">
+      <div class="filter-group">
+        <label>Tipo</label>
+        <select id="f-type"><option value="">todos</option></select>
+      </div>
+      <div class="filter-group">
+        <label>Categoria</label>
+        <select id="f-cat"><option value="">todas</option></select>
+      </div>
+      <div class="filter-group">
+        <label>Prioridade</label>
+        <select id="f-prio"><option value="">todas</option></select>
+      </div>
+      <div class="filter-group">
+        <label>Owner</label>
+        <select id="f-owner"><option value="">todos</option></select>
+      </div>
+      <div class="filter-group" style="margin-left:auto; flex:1; min-width:200px;">
+        <input type="text" class="search" id="f-q" placeholder="Buscar por título, ID, tag, branch…" />
+      </div>
+      <button class="filter-clear" id="f-clear">limpar filtros</button>
+    </div>
+    <div class="kanban" id="kanban"></div>
+  </section>
+
+  <!-- ─── Backlog (lista densa) ─── -->
+  <section class="tab-panel" data-panel="backlog">
+    <div class="panel">
+      <h3 class="panel-title lg">Backlog consolidado</h3>
+      <p class="panel-sub">Todas as tasks em qualquer status, ordenadas por prioridade e status. Clique numa linha pra abrir o editor.</p>
+      <table id="tbl-backlog">
+        <thead><tr>
+          <th style="width:90px">ID</th>
+          <th>Título</th>
+          <th style="width:90px">Tipo</th>
+          <th style="width:120px">Categoria</th>
+          <th style="width:80px">Prio</th>
+          <th style="width:110px">Status</th>
+          <th style="width:130px">Owner</th>
+          <th style="width:130px">Branch/Flag</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ─── Worktrees ─── -->
+  <section class="tab-panel" data-panel="worktrees">
+    <div class="panel">
+      <h3 class="panel-title lg">Worktrees ativos</h3>
+      <p class="panel-sub">Branches com commits ahead de main. Verificar se são mergeáveis ou se bloqueiam outros.</p>
+      <table id="tbl-wt">
+        <thead><tr>
+          <th>ID</th>
+          <th>Branch</th>
+          <th>Head</th>
+          <th>Foco</th>
+          <th>Commits</th>
+          <th>Sessão</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ─── Sessions ─── -->
+  <section class="tab-panel" data-panel="sessions">
+    <div class="panel">
+      <h3 class="panel-title lg">Sessões ativas / recentes</h3>
+      <p class="panel-sub">Sessões Mavis (root + workers) trabalhando no projeto. Use mavis communication para coordenar.</p>
+      <table id="tbl-sess">
+        <thead><tr>
+          <th>ID</th>
+          <th>Agent</th>
+          <th>Título</th>
+          <th>Status</th>
+          <th>Workspace</th>
+          <th>Branch</th>
+          <th>Última atividade</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ─── Risks ─── -->
+  <section class="tab-panel" data-panel="risks">
+    <div class="panel">
+      <h3 class="panel-title lg">Risk register</h3>
+      <p class="panel-sub">Riscos conhecidos com probabilidade, impacto, mitigação e status.</p>
+      <table id="tbl-risks">
+        <thead><tr>
+          <th>ID</th>
+          <th>Título</th>
+          <th style="width:90px">Prob.</th>
+          <th style="width:90px">Impacto</th>
+          <th>Mitigação</th>
+          <th style="width:90px">Owner</th>
+          <th style="width:90px">Status</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ─── DoD ─── -->
+  <section class="tab-panel" data-panel="dod">
+    <div class="panel">
+      <h3 class="panel-title lg">Definition of Done</h3>
+      <p class="panel-sub">Checklist obrigatória pra qualquer task entrar em "done" (ou abrir PR). Reflete as regras de engenharia do projeto carregadas no agent memory.</p>
+      <ul class="dod-list" id="dod-list"></ul>
+    </div>
+  </section>
+
+  <!-- ─── Retro ─── -->
+  <section class="tab-panel" data-panel="retro">
+    <div class="panel">
+      <h3 class="panel-title lg">Retrospectiva · sprint W28</h3>
+      <p class="panel-sub">Padrões observados. Editar livremente, é documento vivo.</p>
+      <div class="retro-cols">
+        <div class="retro-col stop">
+          <h4>Parar</h4>
+          <ul id="retro-stop"></ul>
+        </div>
+        <div class="retro-col start">
+          <h4>Começar</h4>
+          <ul id="retro-start"></ul>
+        </div>
+        <div class="retro-col keep">
+          <h4>Continuar</h4>
+          <ul id="retro-keep"></ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Protocol ─── -->
+  <section class="tab-panel" data-panel="protocol">
+    <div class="protocol">
+      <h2>Protocolo de coordenação entre sessões</h2>
+      <p class="text-mute" style="margin-top:4px">v1.0 · 2026-07-11 · mantido em <code>.harness/SCRUM_PROTOCOL.md</code> (cópia espelhada)</p>
+
+      <h3>1. Identidade</h3>
+      <p>Você é uma sessão Mavis trabalhando no Viralata. Antes de começar qualquer trabalho:</p>
+      <ul>
+        <li>Leia <code>.harness/SCRUM_TASKS.json</code> (source of truth) ou importe via botão "Import" do painel.</li>
+        <li>Identifique tasks com <code>status: "ready"</code> e <code>owner: "unassigned"</code> ou com sua sessionId.</li>
+        <li>Se for tomar uma task: adicione-se como <code>owner</code>, mude status para <code>"in_progress"</code>, abra worktree <code>feat/shelter-&lt;fase&gt;-&lt;slug&gt;</code>.</li>
+      </ul>
+
+      <h3>2. Modelo de task</h3>
+      <pre><code>{
+  "id": "TASK-XXX",                    // sequencial, não reusar
+  "title": "Curto e imperativo",       // &lt;= 80 chars
+  "type": "feature|bug|refactor|docs|security|infra|debt|decision|chore",
+  "category": "core|shelter|pets|orgs|community|admin|security|infra|design|kanban|lgpd|legal|docs|ci|test|perf|search",
+  "status": "backlog|ready|in_progress|in_review|blocked|done|dropped",
+  "priority": "critical|high|medium|low",
+  "owner": "mvs_xxxxx | human | unassigned | human-jurídico",
+  "branch": "feat/... | wt/... | null",
+  "flag": "SHELTER_* | null",
+  "worktree": ".worktrees/... | null",
+  "pr": "#66 | null",
+  "tags": ["..."],
+  "blockedBy": ["TASK-002"],
+  "evidence": "caminho/URL",
+  "description": "Markdown livre",
+  "createdAt": "YYYY-MM-DD",
+  "updatedAt": "YYYY-MM-DD"
+}</code></pre>
+
+      <h3>3. Como abrir uma task nova</h3>
+      <p>Antes de criar, busque no painel/JSON se já existe. Se não, adicione com:</p>
+      <pre><code>{
+  "id": "TASK-NNN",                        // próximo ID disponível
+  "title": "...",
+  "type": "...",
+  "category": "...",
+  "status": "ready",                       // ou "in_progress" se já vai começar
+  "priority": "high",
+  "owner": "mvs_sua_session_id",
+  "branch": null,                          // preenche quando abrir
+  "flag": "SHELTER_..." | null,
+  "worktree": null,
+  "pr": null,
+  "tags": [],
+  "blockedBy": [],
+  "evidence": "docs/.../arquivo.md:LINHA",
+  "description": "Contexto + objetivo + critérios de aceitação",
+  "createdAt": "YYYY-MM-DD",
+  "updatedAt": "YYYY-MM-DD"
+}</code></pre>
+      <p>Salve o JSON, exporte do painel (botão Export) ou edite direto no arquivo. Se duas sessões editarem ao mesmo tempo, o painel resolve por timestamp (last write wins) — minimize isso coordenando por mensagens.</p>
+
+      <h3>4. Transições de status</h3>
+      <ul>
+        <li><strong>backlog → ready</strong>: priorizada pelo usuário ou owner; tem critérios de aceitação claros.</li>
+        <li><strong>ready → in_progress</strong>: worktree aberto (criar com <code>git worktree add</code>), owner = sua sessão.</li>
+        <li><strong>in_progress → in_review</strong>: <code>npm test</code> verde, lint clean, build OK, DELIVERABLE.md escrito, smoke test com flag OFF. Mande um `mavis communication send` à root pedindo review.</li>
+        <li><strong>in_review → done</strong>: mergeado em main, smoke test em produção OK.</li>
+        <li><strong>qualquer → blocked</strong>: preencher <code>blockedBy</code> com TASK-IDs e <code>evidence</code> com o motivo.</li>
+        <li><strong>qualquer → dropped</strong>: decisão humana ou descoberta de que não é mais necessária. <strong>Não apague</strong> — mantenha histórico.</li>
+      </ul>
+
+      <h3>5. Regras duras do projeto (carregadas no agent memory)</h3>
+      <ul>
+        <li><strong>Worktree sempre</strong>: branch <code>feat/shelter-&lt;fase&gt;-&lt;slug&gt;</code>. Nada em main sem worktree.</li>
+        <li><strong>Feature flag SHELTER_*</strong> em qualquer feature nova, default OFF.</li>
+        <li><strong>Testes antes do commit</strong> (<code>npm test</code> verde).</li>
+        <li><strong>Firestore rules</strong>: toda função com <code>return</code> explícito, zero fall-through.</li>
+        <li><strong>Zod <code>.partial()</code></strong> não aceita null → pra nullificar, <code>FieldValue.deleteField()</code>.</li>
+        <li><strong>Single-field <code>collectionGroup</code></strong>: auto-criado pelo Firestore, NUNCA declarar em <code>firestore.indexes.json</code>.</li>
+        <li><strong>Post-adoption cron</strong>: materializa só milestones com <code>scheduled_for &lt;= now+90d</code>.</li>
+        <li><strong>Snapshot pattern</strong>: <code>applicant_snapshot</code> imutável nas applications.</li>
+        <li><strong>Commits conventional</strong>, PR com flag + worktree + bundle hash.</li>
+        <li><strong>Stack congelada</strong>: React + Vite + TanStack Query + Zod · Firestore + Cloud Functions · Vitest · região <code>southamerica-east1</code> · LGPD sempre em mente.</li>
+      </ul>
+
+      <h3>6. Comunicação inter-sessão</h3>
+      <p>Use <code>mavis communication send</code> pra coordenar. Formato sugerido:</p>
+      <pre><code>mavis communication send --to &lt;sessId&gt; --subject "Scrum: TASK-XXX em in_progress" --body "TASK-XXX owner=eu, branch=feat/shelter-X-slug, deadline=YYYY-MM-DD. Não tocar em: TASK-YYY (em paralelo). Sinalizou bloqueio em TASK-ZZZ."</code></pre>
+
+      <h3>7. LGPD & jurídico</h3>
+      <p>Tasks que tocam PII, termos legais, telemedicina, prontuário ou qualquer coisa que vire evidência jurídica: owner = <code>human-jurídico</code> para revisão final, e mudanças em texto legal precisam de advogado humano antes de virar "done". Os 3 textos pendentes (TODO JURÍDICO) estão como TASK-006/007/008.</p>
+
+      <h3>8. Onde tudo vive</h3>
+      <ul>
+        <li><code>.harness/painel-scrum.html</code> — esta página. Abra no navegador.</li>
+        <li><code>.harness/SCRUM_TASKS.json</code> — dataset machine-readable. Use pra automação e pra resetar o painel.</li>
+        <li><code>.harness/SCRUM_PROTOCOL.md</code> — este protocolo em Markdown puro (espelhado).</li>
+        <li><code>docs/SHELTER_MGMT_ROADMAP.md</code> — roadmap de fases (Fase 0–22).</li>
+        <li><code>docs/ROADMAP.md</code> — roadmap paralelo (Fase 0–3: design system).</li>
+        <li><code>docs/AUDIT_2026-07-11.md</code> e <code>docs/AUDIT_DEEP_2026-07-11.md</code> — auditorias.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ─── Roadmap ─── -->
+  <section class="tab-panel" data-panel="roadmap">
+    <div class="panel">
+      <h3 class="panel-title lg">Roadmap — Sistema de Gestão do Abrigo</h3>
+      <p class="panel-sub">22 fases planejadas, 21 entregues em produção, 1 pendente de decisão (Fase 18 — Smart Search). Ver <code>docs/SHELTER_MGMT_ROADMAP.md</code> para detalhe completo de cada fase.</p>
+      <table>
+        <thead><tr><th>Fase</th><th>Nome</th><th>Flag</th><th>Status</th><th>PR</th></tr></thead>
+        <tbody id="roadmap-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  Viralata · Painel Scrum v1.0 · 2026-07-11 ·
+  <a href="#" id="link-show-json">ver JSON atual</a> ·
+  <a href="#" id="link-hide-json" style="display:none">ocultar JSON</a>
+</footer>
+
+<!-- ─── JSON debug panel ─── -->
+<div id="json-debug" class="wrap" style="display:none; margin-top:20px">
+  <div class="panel">
+    <h3 class="panel-title lg">JSON atual (live)</h3>
+    <p class="panel-sub">Cópia do estado persistido no localStorage. Use pra auditar mudanças.</p>
+    <pre class="json-preview mono" id="json-preview"></pre>
+  </div>
+</div>
+
+<!-- ─── Modal: add/edit task ─── -->
+<div class="modal-backdrop" id="modal">
+  <div class="modal">
+    <h2 id="modal-title">Nova task</h2>
+    <p class="sub" id="modal-sub">Adicione uma task ao painel. Ela persiste em localStorage.</p>
+    <form id="form">
+      <input type="hidden" id="f-id" />
+      <div class="form-row">
+        <label for="f-title">Título *</label>
+        <input type="text" id="f-title" required maxlength="120" placeholder="Curto e imperativo. Ex: 'Merge worktree wt/e79e15ca'" />
+      </div>
+      <div class="form-row">
+        <label for="f-desc">Descrição</label>
+        <textarea id="f-desc" placeholder="Contexto, objetivo, critérios de aceitação, evidências…"></textarea>
+      </div>
+      <div class="form-row row-2">
+        <div>
+          <label for="f-type">Tipo</label>
+          <select id="f-type-edit" required>
+            <option value="feature">feature</option>
+            <option value="bug">bug</option>
+            <option value="refactor">refactor</option>
+            <option value="docs">docs</option>
+            <option value="security">security</option>
+            <option value="infra">infra</option>
+            <option value="debt">debt</option>
+            <option value="decision">decision</option>
+            <option value="chore">chore</option>
+          </select>
+        </div>
+        <div>
+          <label for="f-cat-edit">Categoria</label>
+          <select id="f-cat-edit" required>
+            <option value="core">core</option>
+            <option value="shelter">shelter</option>
+            <option value="pets">pets</option>
+            <option value="orgs">orgs</option>
+            <option value="community">community</option>
+            <option value="admin">admin</option>
+            <option value="security">security</option>
+            <option value="infra">infra</option>
+            <option value="design">design</option>
+            <option value="kanban">kanban</option>
+            <option value="lgpd">lgpd</option>
+            <option value="legal">legal</option>
+            <option value="docs">docs</option>
+            <option value="ci">ci</option>
+            <option value="test">test</option>
+            <option value="perf">perf</option>
+            <option value="search">search</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row row-2">
+        <div>
+          <label for="f-status">Status</label>
+          <select id="f-status" required>
+            <option value="backlog">backlog</option>
+            <option value="ready" selected>ready</option>
+            <option value="in_progress">in_progress</option>
+            <option value="in_review">in_review</option>
+            <option value="blocked">blocked</option>
+            <option value="done">done</option>
+            <option value="dropped">dropped</option>
+          </select>
+        </div>
+        <div>
+          <label for="f-prio-edit">Prioridade</label>
+          <select id="f-prio-edit" required>
+            <option value="critical">critical</option>
+            <option value="high" selected>high</option>
+            <option value="medium">medium</option>
+            <option value="low">low</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row row-2">
+        <div>
+          <label for="f-owner-edit">Owner</label>
+          <input type="text" id="f-owner-edit" placeholder="mvs_xxxxx, human, human-jurídico, unassigned" />
+        </div>
+        <div>
+          <label for="f-branch">Branch</label>
+          <input type="text" id="f-branch" placeholder="feat/shelter-23-foo (ou wt/...)" />
+        </div>
+      </div>
+      <div class="form-row row-2">
+        <div>
+          <label for="f-flag">Feature flag</label>
+          <input type="text" id="f-flag" placeholder="SHELTER_FOO_BAR (ou vazio)" />
+        </div>
+        <div>
+          <label for="f-worktree">Worktree</label>
+          <input type="text" id="f-worktree" placeholder=".worktrees/... (ou vazio)" />
+        </div>
+      </div>
+      <div class="form-row row-2">
+        <div>
+          <label for="f-pr">PR</label>
+          <input type="text" id="f-pr" placeholder="#66 (ou vazio)" />
+        </div>
+        <div>
+          <label for="f-evidence">Evidência</label>
+          <input type="text" id="f-evidence" placeholder="docs/.../arquivo.md:LINHA ou URL" />
+        </div>
+      </div>
+      <div class="form-row">
+        <label for="f-tags">Tags (separadas por vírgula)</label>
+        <input type="text" id="f-tags" placeholder="lgpd, audit, perf" />
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn ghost" id="btn-cancel">Cancelar</button>
+        <button type="button" class="btn" id="btn-delete" style="display:none; color:var(--crimson)">Excluir</button>
+        <button type="submit" class="btn primary" id="btn-save">Salvar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ─── Toast ─── -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ─── State ─────────────────────────────────────────────────────────── */
+const STORAGE_KEY = 'viralata.scrum.v1';
+let state = null;
+let activeTab = 'kanban';
+const filters = { type: '', category: '', priority: '', owner: '', q: '' };
+
+/* ─── Boot ──────────────────────────────────────────────────────────── */
+async function boot() {
+  const initial = await loadInitialDataset();
+  const stored = localStorage.getItem(STORAGE_KEY);
+  if (stored) {
+    try { state = JSON.parse(stored); toast('Dataset carregado do localStorage', 'ok'); }
+    catch { state = initial; }
+  } else {
+    state = initial;
+  }
+  // Garantir que campos derivados (colunas, prioridades, etc) existam
+  state.columns    = state.columns    || ['backlog','ready','in_progress','in_review','blocked','done','dropped'];
+  state.priorities = state.priorities || ['critical','high','medium','low'];
+  state.types      = state.types      || ['feature','bug','refactor','docs','security','infra','debt','decision','chore'];
+  state.categories = state.categories || [];
+
+  hydrateFilters();
+  renderAll();
+  bindEvents();
+}
+
+async function loadInitialDataset() {
+  // 1) Preferir dataset embutido (funciona em file://)
+  try {
+    const embedded = document.getElementById('initial-data');
+    if (embedded && embedded.textContent && embedded.textContent.trim().length > 100) {
+      return JSON.parse(embedded.textContent);
+    }
+  } catch (e) { console.warn('embedded parse failed', e); }
+  // 2) Tentar fetch do JSON (funciona quando servido via http)
+  try {
+    const r = await fetch('./SCRUM_TASKS.json', { cache: 'no-store' });
+    if (r.ok) return await r.json();
+  } catch {}
+  // 3) Fallback mínimo
+  return {
+    version: '1.0.0',
+    project: 'viralata',
+    currentSprint: { id: 'EMPTY', label: 'Vazio', goal: 'Importe SCRUM_TASKS.json para começar' },
+    activeWorktrees: [], activeSessions: [],
+    columns: ['backlog','ready','in_progress','in_review','blocked','done','dropped'],
+    priorities: ['critical','high','medium','low'],
+    types: ['feature','bug','refactor','docs','security','infra','debt','decision','chore'],
+    categories: [], tasks: [], definitionOfDone: [], riskRegister: [],
+    retrospective: { stop: [], start: [], continue: [] }, metrics: {}
+  };
+}
+
+function persist() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+/* ─── Render ────────────────────────────────────────────────────────── */
+function renderAll() {
+  renderStats();
+  renderKanban();
+  renderBacklogTable();
+  renderWorktrees();
+  renderSessions();
+  renderRisks();
+  renderDoD();
+  renderRetro();
+  renderRoadmap();
+  renderTabCounts();
+  renderJsonPreview();
+}
+
+function renderTabCounts() {
+  document.getElementById('c-kanban').textContent  = state.tasks.length;
+  document.getElementById('c-backlog').textContent = state.tasks.filter(t => t.status !== 'done' && t.status !== 'dropped').length;
+  document.getElementById('c-wt').textContent      = (state.activeWorktrees || []).length;
+  document.getElementById('c-sess').textContent    = (state.activeSessions || []).length;
+  document.getElementById('c-risks').textContent   = (state.riskRegister || []).length;
+}
+
+function renderStats() {
+  const counts = {
+    total:       state.tasks.length,
+    backlog:     state.tasks.filter(t => t.status === 'backlog').length,
+    ready:       state.tasks.filter(t => t.status === 'ready').length,
+    in_progress: state.tasks.filter(t => t.status === 'in_progress').length,
+    in_review:   state.tasks.filter(t => t.status === 'in_review').length,
+    blocked:     state.tasks.filter(t => t.status === 'blocked').length,
+    done:        state.tasks.filter(t => t.status === 'done').length,
+    dropped:     state.tasks.filter(t => t.status === 'dropped').length,
+    worktrees:   (state.activeWorktrees || []).filter(w => w.status === 'ahead-of-main').length,
+    critical:    state.tasks.filter(t => t.priority === 'critical' && t.status !== 'done' && t.status !== 'dropped').length,
+  };
+  const html = `
+    <div class="stat v-total">
+      <span class="stat-label">Total tasks</span>
+      <span class="stat-value">${counts.total}</span>
+      <span class="stat-sub">${counts.critical} críticas em aberto</span>
+    </div>
+    <div class="stat v-backlog">
+      <span class="stat-label">Backlog</span>
+      <span class="stat-value">${counts.backlog}</span>
+      <span class="stat-sub">aguardando priorização</span>
+    </div>
+    <div class="stat v-ready">
+      <span class="stat-label">Ready</span>
+      <span class="stat-value">${counts.ready}</span>
+      <span class="stat-sub">pronta pra puxar</span>
+    </div>
+    <div class="stat v-inprogress">
+      <span class="stat-label">In progress</span>
+      <span class="stat-value">${counts.in_progress}</span>
+      <span class="stat-sub">em desenvolvimento</span>
+    </div>
+    <div class="stat v-inreview">
+      <span class="stat-label">In review</span>
+      <span class="stat-value">${counts.in_review}</span>
+      <span class="stat-sub">aguardando merge</span>
+    </div>
+    <div class="stat v-blocked">
+      <span class="stat-label">Blocked</span>
+      <span class="stat-value">${counts.blocked}</span>
+      <span class="stat-sub">atenção necessária</span>
+    </div>
+    <div class="stat v-done">
+      <span class="stat-label">Done</span>
+      <span class="stat-value">${counts.done}</span>
+      <span class="stat-sub">mergeadas em produção</span>
+    </div>
+    <div class="stat v-wt">
+      <span class="stat-label">Worktrees</span>
+      <span class="stat-value">${counts.worktrees}</span>
+      <span class="stat-sub">ahead de main</span>
+    </div>`;
+  document.getElementById('stats').innerHTML = html;
+}
+
+function applyFilters(tasks) {
+  return tasks.filter(t => {
+    if (filters.type     && t.type     !== filters.type)     return false;
+    if (filters.category && t.category !== filters.category) return false;
+    if (filters.priority && t.priority !== filters.priority) return false;
+    if (filters.owner    && t.owner    !== filters.owner)    return false;
+    if (filters.q) {
+      const q = filters.q.toLowerCase();
+      const hay = [t.id, t.title, t.description, t.branch, t.flag, (t.tags||[]).join(' ')].filter(Boolean).join(' ').toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+}
+
+function renderKanban() {
+  const cols = state.columns;
+  const tasks = applyFilters(state.tasks);
+  const board = document.getElementById('kanban');
+  board.innerHTML = cols.map(col => {
+    const colTasks = tasks.filter(t => t.status === col)
+                          .sort((a, b) => {
+                            const pi = { critical: 0, high: 1, medium: 2, low: 3 };
+                            return (pi[a.priority]||9) - (pi[b.priority]||9);
+                          });
+    return `
+      <div class="col" data-col="${col}">
+        <div class="col-head">
+          <span class="col-dot" style="background: var(--col-${col.replace('_','')})"></span>
+          <span class="col-title">${col.replace('_', ' ')}</span>
+          <span class="col-count">${colTasks.length}</span>
+        </div>
+        <div class="col-body" data-col-body="${col}">
+          ${colTasks.map(taskCardHTML).join('') || '<div class="empty" style="padding:14px 8px">vazio</div>'}
+        </div>
+      </div>`;
+  }).join('');
+  attachDnD();
+}
+
+function taskCardHTML(t) {
+  const blocked = (t.blockedBy || []).length > 0
+    ? `<div class="card-blocked">⛔ bloqueada por ${t.blockedBy.join(', ')}</div>` : '';
+  const prio = (t.priority || 'medium').toLowerCase();
+  return `
+    <div class="card t-${t.type || 'chore'}" draggable="true" data-id="${t.id}">
+      <div class="card-head">
+        <span class="card-id">${t.id}</span>
+        <span class="card-prio prio-${prio}">${prio}</span>
+      </div>
+      <div class="card-title">${escapeHTML(t.title)}</div>
+      <div class="card-desc">${escapeHTML(t.description || '')}</div>
+      <div class="card-meta">
+        <span class="chip cat">${t.category || 'core'}</span>
+        <span class="chip">${t.type || 'chore'}</span>
+        ${t.flag ? `<span class="chip flag">${t.flag}</span>` : ''}
+        ${t.worktree ? `<span class="chip wt">${t.worktree.replace('.worktrees/', '')}</span>` : ''}
+        ${t.branch ? `<span class="chip">${t.branch}</span>` : ''}
+        ${t.owner ? `<span class="chip">@${(t.owner+'').slice(0, 12)}</span>` : ''}
+      </div>
+      ${blocked}
+    </div>`;
+}
+
+function renderBacklogTable() {
+  const tbody = document.querySelector('#tbl-backlog tbody');
+  const tasks = [...state.tasks].sort((a, b) => {
+    const pi = { critical: 0, high: 1, medium: 2, low: 3 };
+    const si = { blocked: 0, in_progress: 1, in_review: 2, ready: 3, backlog: 4, done: 5, dropped: 6 };
+    return (pi[a.priority]||9) - (pi[b.priority]||9) || (si[a.status]||9) - (si[b.status]||9);
+  });
+  tbody.innerHTML = tasks.map(t => `
+    <tr data-id="${t.id}" style="cursor:pointer">
+      <td class="mono">${t.id}</td>
+      <td>${escapeHTML(t.title)}</td>
+      <td><span class="tag">${t.type}</span></td>
+      <td>${t.category}</td>
+      <td><span class="tag tag-prio-${t.priority}">${t.priority}</span></td>
+      <td><span class="tag ${t.status === 'done' ? 'tag-done' : t.status === 'blocked' ? 'tag-blocked' : ''}">${t.status}</span></td>
+      <td class="mono" style="font-size:11px">${(t.owner || 'unassigned')}</td>
+      <td class="mono" style="font-size:11px">${t.branch || t.flag || '—'}</td>
+    </tr>`).join('');
+}
+
+function renderWorktrees() {
+  const tbody = document.querySelector('#tbl-wt tbody');
+  tbody.innerHTML = (state.activeWorktrees || []).map(w => `
+    <tr>
+      <td class="mono">${w.id}</td>
+      <td class="mono">${w.branch}</td>
+      <td class="mono">${(w.head || '').slice(0, 8)} <span class="text-mute">·</span> ${escapeHTML(w.headTitle || '')}</td>
+      <td>${(w.focus || []).map(f => `<div style="font-size:12px; margin:2px 0">· ${escapeHTML(f)}</div>`).join('')}</td>
+      <td><span class="tag tag-active">+${w.commitsAhead}</span></td>
+      <td class="mono" style="font-size:11px">${w.primarySession || '—'}</td>
+    </tr>`).join('');
+}
+
+function renderSessions() {
+  const tbody = document.querySelector('#tbl-sess tbody');
+  tbody.innerHTML = (state.activeSessions || []).map(s => `
+    <tr class="${s.status === 'started' ? 'row-active' : ''}">
+      <td class="mono">${s.id}</td>
+      <td>${s.agentName}</td>
+      <td>${escapeHTML(s.title || '')}</td>
+      <td><span class="tag ${s.status === 'started' ? 'tag-active' : ''}">${s.status}</span></td>
+      <td class="mono" style="font-size:11px">${s.workspace || '—'}</td>
+      <td class="mono" style="font-size:11px">${s.branch || '—'}</td>
+      <td>${s.lastActiveAt || '—'}</td>
+    </tr>`).join('');
+}
+
+function renderRisks() {
+  const tbody = document.querySelector('#tbl-risks tbody');
+  tbody.innerHTML = (state.riskRegister || []).map(r => `
+    <tr>
+      <td class="mono">${r.id}</td>
+      <td>${escapeHTML(r.title)}</td>
+      <td><span class="tag">${r.probability}</span></td>
+      <td><span class="tag ${r.impact === 'high' || r.impact === 'critical' ? 'tag-critical' : ''}">${r.impact}</span></td>
+      <td style="font-size:12px">${escapeHTML(r.mitigation)}</td>
+      <td>${r.owner}</td>
+      <td><span class="tag ${r.status === 'mitigated' ? 'tag-done' : r.status === 'open' ? 'tag-blocked' : ''}">${r.status}</span></td>
+    </tr>`).join('');
+}
+
+function renderDoD() {
+  document.getElementById('dod-list').innerHTML = (state.definitionOfDone || []).map(d => `<li>${escapeHTML(d)}</li>`).join('');
+}
+
+function renderRetro() {
+  document.getElementById('retro-stop').innerHTML  = (state.retrospective?.stop || []).map(x => `<li>${escapeHTML(x)}</li>`).join('');
+  document.getElementById('retro-start').innerHTML = (state.retrospective?.start || []).map(x => `<li>${escapeHTML(x)}</li>`).join('');
+  document.getElementById('retro-keep').innerHTML  = (state.retrospective?.continue || []).map(x => `<li>${escapeHTML(x)}</li>`).join('');
+}
+
+function renderRoadmap() {
+  const rows = [
+    { f: 0,  n: 'Preparação (renomeação + skeleton)',              flag: 'SHELTER_FOUNDATION',                  st: 'done',  pr: '#37' },
+    { f: 1,  n: 'Cadastro Único do Animal',                         flag: 'SHELTER_ANIMAL_UNIFIED_PROFILE',      st: 'done',  pr: '#38, #39' },
+    { f: 2,  n: 'Linha do Tempo do Animal',                         flag: 'SHELTER_PET_TIMELINE',                st: 'done',  pr: '#40' },
+    { f: 3,  n: 'Workflow de Adoção',                               flag: 'SHELTER_ADOPTION_WORKFLOW',           st: 'done',  pr: '#41' },
+    { f: 4,  n: 'Perfil Completo do Adotante',                      flag: 'SHELTER_ADOPTER_FULL_PROFILE',        st: 'done',  pr: '#42' },
+    { f: 5,  n: 'Google Forms webhook (canal opt-in)',              flag: 'SHELTER_GOOGLE_FORMS',                st: 'done',  pr: '#43, #44, #46, #47' },
+    { f: 6,  n: 'Pós-Adoção com CRON de materialização',           flag: 'SHELTER_POST_ADOPTION_FOLLOWUP',      st: 'done',  pr: '#48' },
+    { f: 7,  n: 'Lares Temporários (Fosters)',                      flag: 'SHELTER_FOSTER',                      st: 'done',  pr: '#49' },
+    { f: 8,  n: 'Prontuário Médico (Health Records)',               flag: 'SHELTER_HEALTH_RECORDS',              st: 'done',  pr: '#50' },
+    { f: 9,  n: 'Gestão de Medicamentos',                           flag: 'SHELTER_MEDICATION',                  st: 'done',  pr: '#51' },
+    { f: 10, n: 'Galeria de Fotos (soft delete + purge 30d)',       flag: 'SHELTER_GALLERY',                     st: 'done',  pr: '#52' },
+    { f: 11, n: 'Vitrines / Eventos',                               flag: 'SHELTER_EXHIBITIONS',                 st: 'done',  pr: '#56' },
+    { f: 12, n: 'Escalas + RSVP de Vitrines',                       flag: 'SHELTER_EXHIBITION_RSVPS',            st: 'done',  pr: '(em #56)' },
+    { f: 13, n: 'Gestão de Voluntários',                            flag: 'SHELTER_VOLUNTEERS',                  st: 'done',  pr: '#54' },
+    { f: 14, n: 'Dashboard do Abrigo (tempo real)',                 flag: 'SHELTER_DASHBOARD',                   st: 'done',  pr: '#61' },
+    { f: 15, n: 'Central de Pendências (Kanban)',                   flag: 'SHELTER_KANBAN',                      st: 'done',  pr: '#63' },
+    { f: 16, n: 'Relatórios de Abrigos',                            flag: 'SHELTER_REPORTS',                     st: 'done',  pr: 'merged' },
+    { f: 17, n: 'Indicadores de Vitrines + Voluntários',            flag: 'SHELTER_INDICATORS',                  st: 'done',  pr: 'merged' },
+    { f: 18, n: 'Busca Inteligente (Multi-filtro + Cmd+K)',        flag: 'SHELTER_SMART_SEARCH',                st: 'blocked', pr: '— (decisão)' },
+    { f: 19, n: 'Termos e Políticas completos (Legal)',             flag: 'SHELTER_LEGAL_TERMS_V1',              st: 'done',  pr: '#58' },
+    { f: 20, n: 'Segurança Avançada',                               flag: 'SHELTER_SECURITY_HARDENING',          st: 'done',  pr: '#62' },
+    { f: 21, n: 'Painel de Saúde da Plataforma (Admin Master)',     flag: 'SHELTER_PLATFORM_HEALTH',             st: 'done',  pr: '#60' },
+    { f: 22, n: 'Migração Final + Cutover',                         flag: 'SHELTER_CUTOVER',                     st: 'done',  pr: '#66' },
+  ];
+  const tbody = document.getElementById('roadmap-body');
+  tbody.innerHTML = rows.map(r => `
+    <tr>
+      <td>${r.f}</td>
+      <td>${r.n}</td>
+      <td class="mono" style="font-size:11px">${r.flag}</td>
+      <td><span class="tag ${r.st === 'done' ? 'tag-done' : r.st === 'blocked' ? 'tag-blocked' : ''}">${r.st}</span></td>
+      <td class="mono" style="font-size:11px">${r.pr}</td>
+    </tr>`).join('');
+}
+
+function renderJsonPreview() {
+  const el = document.getElementById('json-preview');
+  if (el) el.textContent = JSON.stringify(state, null, 2);
+}
+
+/* ─── Filters ───────────────────────────────────────────────────────── */
+function hydrateFilters() {
+  const types = [...new Set(state.tasks.map(t => t.type).filter(Boolean))].sort();
+  const cats  = [...new Set(state.tasks.map(t => t.category).filter(Boolean))].sort();
+  const prios = state.priorities;
+  const owners= [...new Set(state.tasks.map(t => t.owner).filter(Boolean))].sort();
+
+  const tSel = document.getElementById('f-type');
+  const cSel = document.getElementById('f-cat');
+  const pSel = document.getElementById('f-prio');
+  const oSel = document.getElementById('f-owner');
+  tSel.innerHTML = '<option value="">todos</option>' + types.map(t => `<option value="${t}">${t}</option>`).join('');
+  cSel.innerHTML = '<option value="">todas</option>' + cats.map(t => `<option value="${t}">${t}</option>`).join('');
+  pSel.innerHTML = '<option value="">todas</option>' + prios.map(t => `<option value="${t}">${t}</option>`).join('');
+  oSel.innerHTML = '<option value="">todos</option>' + owners.map(t => `<option value="${t}">${t}</option>`).join('');
+}
+
+/* ─── Events ────────────────────────────────────────────────────────── */
+function bindEvents() {
+  // Tabs
+  document.getElementById('tabs').addEventListener('click', e => {
+    const t = e.target.closest('.tab');
+    if (!t) return;
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    activeTab = t.dataset.tab;
+    document.querySelector(`[data-panel="${activeTab}"]`).classList.add('active');
+  });
+
+  // Filters
+  ['f-type', 'f-cat', 'f-prio', 'f-owner'].forEach(id => {
+    document.getElementById(id).addEventListener('change', e => {
+      filters[id.slice(2).replace('-', '')] = e.target.value;
+      if (id === 'f-type') filters.type = e.target.value;
+      if (id === 'f-cat')  filters.category = e.target.value;
+      if (id === 'f-prio') filters.priority = e.target.value;
+      if (id === 'f-owner')filters.owner = e.target.value;
+      renderKanban();
+    });
+  });
+  document.getElementById('f-q').addEventListener('input', e => { filters.q = e.target.value; renderKanban(); });
+  document.getElementById('f-clear').addEventListener('click', () => {
+    filters.type = filters.category = filters.priority = filters.owner = filters.q = '';
+    document.getElementById('f-type').value = '';
+    document.getElementById('f-cat').value = '';
+    document.getElementById('f-prio').value = '';
+    document.getElementById('f-owner').value = '';
+    document.getElementById('f-q').value = '';
+    renderKanban();
+  });
+
+  // New
+  document.getElementById('btn-new').addEventListener('click', () => openModal());
+  document.getElementById('btn-cancel').addEventListener('click', closeModal);
+  document.getElementById('btn-delete').addEventListener('click', onDelete);
+  document.getElementById('form').addEventListener('submit', onSave);
+
+  // Click on card → open edit
+  document.getElementById('kanban').addEventListener('click', e => {
+    const card = e.target.closest('.card');
+    if (card) openModal(card.dataset.id);
+  });
+  document.querySelector('#tbl-backlog tbody').addEventListener('click', e => {
+    const tr = e.target.closest('tr');
+    if (tr) openModal(tr.dataset.id);
+  });
+
+  // Export / Import / Reset
+  document.getElementById('btn-export').addEventListener('click', exportJSON);
+  document.getElementById('btn-import').addEventListener('click', () => document.getElementById('file-import').click());
+  document.getElementById('file-import').addEventListener('change', importJSON);
+  document.getElementById('btn-reset').addEventListener('click', () => {
+    if (!confirm('Resetar o painel para o dataset inicial (SCRUM_TASKS.json)? Isso apaga mudanças locais.')) return;
+    localStorage.removeItem(STORAGE_KEY);
+    location.reload();
+  });
+
+  // JSON debug
+  document.getElementById('link-show-json').addEventListener('click', e => {
+    e.preventDefault();
+    document.getElementById('json-debug').style.display = 'block';
+    document.getElementById('link-show-json').style.display = 'none';
+    document.getElementById('link-hide-json').style.display = 'inline';
+  });
+  document.getElementById('link-hide-json').addEventListener('click', e => {
+    e.preventDefault();
+    document.getElementById('json-debug').style.display = 'none';
+    document.getElementById('link-show-json').style.display = 'inline';
+    document.getElementById('link-hide-json').style.display = 'none';
+  });
+
+  // Modal close on backdrop click
+  document.getElementById('modal').addEventListener('click', e => {
+    if (e.target.id === 'modal') closeModal();
+  });
+  // Esc closes modal
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeModal();
+  });
+}
+
+/* ─── DnD ───────────────────────────────────────────────────────────── */
+function attachDnD() {
+  const cards = document.querySelectorAll('.card');
+  const cols  = document.querySelectorAll('.col');
+  cards.forEach(c => {
+    c.addEventListener('dragstart', e => {
+      e.dataTransfer.setData('text/plain', c.dataset.id);
+      c.classList.add('dragging');
+    });
+    c.addEventListener('dragend', () => c.classList.remove('dragging'));
+  });
+  cols.forEach(col => {
+    col.addEventListener('dragover', e => { e.preventDefault(); col.classList.add('dragover'); });
+    col.addEventListener('dragleave', () => col.classList.remove('dragover'));
+    col.addEventListener('drop', e => {
+      e.preventDefault();
+      col.classList.remove('dragover');
+      const id = e.dataTransfer.getData('text/plain');
+      const newStatus = col.dataset.col;
+      const task = state.tasks.find(t => t.id === id);
+      if (task && task.status !== newStatus) {
+        const old = task.status;
+        task.status = newStatus;
+        task.updatedAt = new Date().toISOString().slice(0, 10);
+        if (newStatus === 'done')   task.resolvedAt = task.updatedAt;
+        if (newStatus === 'blocked') task.blockedAt = task.updatedAt;
+        persist();
+        renderAll();
+        toast(`TASK ${id}: ${old} → ${newStatus}`, 'ok');
+      }
+    });
+  });
+}
+
+/* ─── Modal ─────────────────────────────────────────────────────────── */
+function openModal(id) {
+  const m = document.getElementById('modal');
+  const isNew = !id;
+  const task = isNew ? { id: nextTaskId(), status: 'ready', priority: 'high', type: 'chore', category: 'core' } : state.tasks.find(t => t.id === id);
+  if (!task) return;
+  document.getElementById('modal-title').textContent = isNew ? 'Nova task' : `Editar ${task.id}`;
+  document.getElementById('modal-sub').textContent   = isNew ? 'Adicione uma task ao painel. Persiste em localStorage.' : `Criada em ${task.createdAt || '—'} · atualizada em ${task.updatedAt || '—'}`;
+  document.getElementById('f-id').value           = task.id;
+  document.getElementById('f-title').value        = task.title || '';
+  document.getElementById('f-desc').value         = task.description || '';
+  document.getElementById('f-type-edit').value    = task.type || 'chore';
+  document.getElementById('f-cat-edit').value     = task.category || 'core';
+  document.getElementById('f-status').value       = task.status || 'ready';
+  document.getElementById('f-prio-edit').value    = task.priority || 'high';
+  document.getElementById('f-owner-edit').value   = task.owner || '';
+  document.getElementById('f-branch').value       = task.branch || '';
+  document.getElementById('f-flag').value         = task.flag || '';
+  document.getElementById('f-worktree').value     = task.worktree || '';
+  document.getElementById('f-pr').value           = task.pr || '';
+  document.getElementById('f-evidence').value     = task.evidence || '';
+  document.getElementById('f-tags').value         = (task.tags || []).join(', ');
+  document.getElementById('btn-delete').style.display = isNew ? 'none' : 'inline-flex';
+  m.classList.add('open');
+  setTimeout(() => document.getElementById('f-title').focus(), 50);
+}
+
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+
+function onSave(e) {
+  e.preventDefault();
+  const id = document.getElementById('f-id').value;
+  const isNew = !state.tasks.find(t => t.id === id);
+  const today = new Date().toISOString().slice(0, 10);
+  const data = {
+    id,
+    title:       document.getElementById('f-title').value.trim(),
+    description: document.getElementById('f-desc').value.trim(),
+    type:        document.getElementById('f-type-edit').value,
+    category:    document.getElementById('f-cat-edit').value,
+    status:      document.getElementById('f-status').value,
+    priority:    document.getElementById('f-prio-edit').value,
+    owner:       document.getElementById('f-owner-edit').value.trim() || 'unassigned',
+    branch:      document.getElementById('f-branch').value.trim() || null,
+    flag:        document.getElementById('f-flag').value.trim() || null,
+    worktree:    document.getElementById('f-worktree').value.trim() || null,
+    pr:          document.getElementById('f-pr').value.trim() || null,
+    evidence:    document.getElementById('f-evidence').value.trim() || null,
+    tags:        document.getElementById('f-tags').value.split(',').map(s => s.trim()).filter(Boolean),
+  };
+  if (!data.title) { toast('Título é obrigatório', 'error'); return; }
+  if (isNew) {
+    data.createdAt = today;
+    data.updatedAt = today;
+    state.tasks.push(data);
+    toast(`TASK ${id} criada`, 'ok');
+  } else {
+    const i = state.tasks.findIndex(t => t.id === id);
+    state.tasks[i] = { ...state.tasks[i], ...data, updatedAt: today };
+    toast(`TASK ${id} atualizada`, 'ok');
+  }
+  persist();
+  closeModal();
+  renderAll();
+}
+
+function onDelete() {
+  const id = document.getElementById('f-id').value;
+  if (!confirm(`Excluir TASK ${id}? (prefira mover para 'dropped' se quiser manter histórico)`)) return;
+  state.tasks = state.tasks.filter(t => t.id !== id);
+  persist();
+  closeModal();
+  renderAll();
+  toast(`TASK ${id} removida`, 'error');
+}
+
+function nextTaskId() {
+  const nums = state.tasks.map(t => parseInt((t.id || 'TASK-0').replace('TASK-', ''), 10)).filter(n => !isNaN(n));
+  return 'TASK-' + String((Math.max(0, ...nums) + 1)).padStart(3, '0');
+}
+
+/* ─── Export / Import ───────────────────────────────────────────────── */
+function exportJSON() {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `SCRUM_TASKS_${new Date().toISOString().slice(0, 10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('Exportado: SCRUM_TASKS_*.json', 'ok');
+}
+
+function importJSON(e) {
+  const f = e.target.files[0]; if (!f) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (!data.tasks || !Array.isArray(data.tasks)) throw new Error('Formato inválido: tasks[] ausente');
+      state = data;
+      persist();
+      renderAll();
+      hydrateFilters();
+      toast(`Importado: ${data.tasks.length} tasks`, 'ok');
+    } catch (err) {
+      toast('Erro ao importar: ' + err.message, 'error');
+    }
+  };
+  reader.readAsText(f);
+  e.target.value = '';
+}
+
+/* ─── Util ──────────────────────────────────────────────────────────── */
+function escapeHTML(s) {
+  return String(s || '').replace(/[&<>"']/g, c => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[c]));
+}
+
+let toastTimer = null;
+function toast(msg, kind = '') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show ' + kind;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+boot();
+</script>
+
+</body>
+</html>
