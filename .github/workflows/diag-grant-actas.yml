@@ -11,6 +11,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      - name: Checkout (to access script)
+        uses: actions/checkout@v4
+
       - name: List collections via Firestore REST
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
@@ -22,28 +25,5 @@ jobs:
             echo ""
             echo "=== $COLL (first 15) ==="
             curl -s -H "Authorization: Bearer $ACCESS_TOKEN" "https://firestore.googleapis.com/v1/projects/viralata-4cf0b/databases/viralata/documents/$COLL?pageSize=15" > /tmp/out.json
-            python3 -c "
-import json, sys
-coll = '$COLL'
-d = json.load(open('/tmp/out.json'))
-if 'documents' in d:
-    print('Found ' + str(len(d['documents'])) + ' ' + coll)
-    for doc in d['documents'][:15]:
-        fields = doc.get('fields', {})
-        doc_id = doc['name'].split('/')[-1]
-        keys = ['title', 'name', 'display_name', 'label']
-        name = '?'
-        for k in keys:
-            v = fields.get(k, {}).get('stringValue')
-            if v:
-                name = v
-                break
-        status = fields.get('status', {}).get('stringValue', '')
-        city = fields.get('city', {}).get('stringValue', '')
-        state = fields.get('state', {}).get('stringValue', '')
-        owner_id = fields.get('owner_id', {}).get('stringValue', '')
-        print('  ' + doc_id + ' | ' + name + ' | ' + status + ' | ' + city + ' | ' + state + ' | ' + owner_id)
-else:
-    print('ERROR:', d)
-"
+            python3 .github/scripts/list_firestore_docs.py "$COLL"
           done
