@@ -1,4 +1,4 @@
-name: "Diag: Grant ActAs + Deploy Functions"
+name: "Diag: Deploy Functions via Cloud Run source"
 
 on: workflow_dispatch
 
@@ -7,37 +7,39 @@ permissions:
   id-token: write
 
 jobs:
-  grant:
+  deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Auth + grant ActAs
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Prepare functions dir
+        run: |
+          mkdir -p functions/mocks
+          cp src/mocks/*.js functions/mocks/
+          echo "=== files in functions/ ==="
+          ls functions/
+          echo "=== files in functions/mocks/ ==="
+          ls functions/mocks/
+
+      - name: Try gcloud run services update
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
           echo "$FIREBASE_SERVICE_ACCOUNT" > /tmp/firebase-sa.json
           gcloud auth activate-service-account --key-file=/tmp/firebase-sa.json --project=viralata-4cf0b
           gcloud config set project viralata-4cf0b
-          gcloud iam service-accounts add-iam-policy-binding \
-            viralata-4cf0b@appspot.gserviceaccount.com \
-            --member="serviceAccount:firebase-adminsdk-fbsvc@viralata-4cf0b.iam.gserviceaccount.com" \
-            --role="roles/iam.serviceAccountUser" \
-            --project=viralata-4cf0b 2>&1 | head -20
-
-      - name: Copy mocks + Deploy functions
-        env:
-          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          GOOGLE_APPLICATION_CREDENTIALS: /tmp/firebase-sa.json
-        run: |
-          mkdir -p functions/mocks
-          cp src/mocks/*.js functions/mocks/
-          echo "=== Mocks copiados ==="
-          ls functions/mocks/
-          npx firebase-tools@latest deploy \
-            --only functions \
-            --project viralata-4cf0b \
-            --non-interactive \
-            --force 2>&1 | tail -30
+          # Tentar deployar via gcloud run com --source (não precisa ActAs)
+          for FN in getMockStatus loadMockData clearMockData; do
+            echo "=== $FN ==="
+            gcloud run services update "$FN" \
+              --source=functions \
+              --region=southamerica-east1 \
+              --project=viralata-4cf0b 2>&1 | tail -10
+          done
