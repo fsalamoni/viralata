@@ -1,4 +1,4 @@
-name: Diag: Get Cloud Functions logs
+name: "Diag: Get Cloud Functions logs"
 
 on: workflow_dispatch
 
