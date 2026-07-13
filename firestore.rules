@@ -1371,22 +1371,72 @@ service cloud.firestore {
     
     match /community_post_comments/{commentId} {
       allow read: if true;
-      allow create: if isAuth();
-      allow update, delete: if isAuth() && (isPlatformAdmin() || request.auth.uid == resource.data.author_id);
+      // TASK-329: validação de author_id + post_id no create. O post deve
+      // existir e o author_id do comment DEVE ser o próprio usuário. Sem
+      // essa validação, qualquer user autenticado podia criar comment em
+      // QUALQUER post (incluindo de comunidades das quais não é membro).
+      allow create: if isAuth() && (
+        request.resource.data.author_id == request.auth.uid
+        && exists(/databases/$(database)/documents/community_posts/$(request.resource.data.post_id))
+      );
+      // Update: só author do comment. author_id, post_id e created_at
+      // são IMUTÁVEIS via affectedKeys (vandalismo: trocar autor,
+      // re-associar a outro post, falsificar timestamp).
+      allow update: if isAuth() && (
+        request.auth.uid == resource.data.author_id
+        && request.resource.data.author_id == resource.data.author_id
+        && request.resource.data.post_id == resource.data.post_id
+        && request.resource.data.created_at == resource.data.created_at
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['text', 'author_name', 'author_photo'])
+      );
+      allow delete: if isAuth() && (isPlatformAdmin() || request.auth.uid == resource.data.author_id);
     }
-    
+
     match /community_events/{eventId} {
       allow read: if true;
-      allow create, update, delete: if isAuth();
+      // TASK-329: validação de community_id + created_by no create.
+      // Sem isso, qualquer user autenticado podia criar eventos em
+      // QUALQUER comunidade (cross-tenant + vandalismo).
+      allow create: if isAuth() && (
+        request.resource.data.created_by == request.auth.uid
+        && exists(/databases/$(database)/documents/communities/$(request.resource.data.community_id))
+        && (canManageCommunity(get(/databases/$(database)/documents/communities/$(request.resource.data.community_id)).data)
+            || isCommunityMember(request.resource.data.community_id))
+      );
+      // Update: só o created_by ou admin. community_id, created_by e
+      // created_at são IMUTÁVEIS.
+      allow update: if isAuth() && (
+        (request.auth.uid == resource.data.created_by
+          && request.resource.data.created_by == resource.data.created_by
+          && request.resource.data.community_id == resource.data.community_id
+          && request.resource.data.created_at == resource.data.created_at)
+        || isPlatformAdmin()
+      );
+      allow delete: if isAuth() && (
+        isPlatformAdmin()
+        || request.auth.uid == resource.data.created_by
+        || canManageCommunity(get(/databases/$(database)/documents/communities/$(resource.data.community_id)).data)
+      );
     }
-    
+
     match /community_forum_threads/{threadId} {
       allow read: if true;
-      allow create: if isAuth();
+      // TASK-329: validação de community_id + author_id no create.
+      allow create: if isAuth() && (
+        request.resource.data.author_id == request.auth.uid
+        && exists(/databases/$(database)/documents/communities/$(request.resource.data.community_id))
+        && (canManageCommunity(get(/databases/$(database)/documents/communities/$(request.resource.data.community_id)).data)
+            || isCommunityMember(request.resource.data.community_id))
+      );
+      // Update: author, platform admin, ou apenas contadores (likes_count,
+      // messages_count, updated_at). Demais campos IMUTÁVEIS.
       allow update: if isAuth() && (
-        isPlatformAdmin() ||
-        request.auth.uid == resource.data.author_id ||
-        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likes_count', 'messages_count', 'updated_at']))
+        isPlatformAdmin()
+        || (request.auth.uid == resource.data.author_id
+            && request.resource.data.author_id == resource.data.author_id
+            && request.resource.data.community_id == resource.data.community_id
+            && request.resource.data.created_at == resource.data.created_at)
+        || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likes_count', 'messages_count', 'updated_at']))
       );
       allow delete: if isAuth() && (isPlatformAdmin() || request.auth.uid == resource.data.author_id);
 
@@ -1401,14 +1451,25 @@ service cloud.firestore {
         allow delete: if isAuth() && voteUid == request.auth.uid;
       }
     }
-    
+
     match /community_forum_messages/{messageId} {
       allow read: if true;
-      allow create: if isAuth();
+      // TASK-329: validação de author_id + thread_id no create.
+      // O thread deve existir (FK) e o author_id do message DEVE ser o
+      // próprio usuário.
+      allow create: if isAuth() && (
+        request.resource.data.author_id == request.auth.uid
+        && exists(/databases/$(database)/documents/community_forum_threads/$(request.resource.data.thread_id))
+      );
+      // Update: author, platform admin, ou apenas likes_count.
+      // Demais campos IMUTÁVEIS.
       allow update: if isAuth() && (
-        isPlatformAdmin() ||
-        request.auth.uid == resource.data.author_id ||
-        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likes_count']))
+        isPlatformAdmin()
+        || (request.auth.uid == resource.data.author_id
+            && request.resource.data.author_id == resource.data.author_id
+            && request.resource.data.thread_id == resource.data.thread_id
+            && request.resource.data.created_at == resource.data.created_at)
+        || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likes_count']))
       );
       allow delete: if isAuth() && (isPlatformAdmin() || request.auth.uid == resource.data.author_id);
 

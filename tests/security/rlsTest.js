@@ -87,6 +87,17 @@ export const EXPECTED_DENY_COLLECTIONS = Object.freeze([
   { collection: 'club_ledger_entries/{otherEntryId}', op: 'update', expected: 'deny' },
   { collection: 'club_ledger_entries/{otherEntryId}', op: 'delete', expected: 'deny' },
   { collection: 'club_members/{otherMemberId}', op: 'update', expected: 'deny' },
+
+  // TASK-329: random user NÃO pode criar posts/comments/threads/messages
+  // em nome de outro user (author_id spoofing) nem em outra comunidade
+  // (community_id spoofing). Esses "deny" são cobertos pelos tests de
+  // affectedKeys().hasOnly() nas rules.
+  { collection: 'community_post_comments/{otherId}', op: 'create', expected: 'deny' },
+  { collection: 'community_post_comments/{otherId}', op: 'update', expected: 'deny' },
+  { collection: 'community_events/{otherId}', op: 'create', expected: 'deny' },
+  { collection: 'community_events/{otherId}', op: 'update', expected: 'deny' },
+  { collection: 'community_forum_threads/{otherId}', op: 'create', expected: 'deny' },
+  { collection: 'community_forum_messages/{otherId}', op: 'create', expected: 'deny' },
 ]);
 
 /**
