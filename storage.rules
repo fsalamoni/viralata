@@ -1,5 +1,7 @@
-
-  // TASK-288: PDF de contrato em clubs/{clubId}/contracts/{contractId}.pdf
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+// TASK-288: PDF de contrato em clubs/{clubId}/contracts/{contractId}.pdf
   // Sem helpers de abrigo disponíveis em storage.rules — usamos clubId
   // matching (uid do admin == criador do abrigo, denormalizado em
   // club_members / shelter_club_id) + platform admin bypass.
@@ -15,9 +17,7 @@
       && request.resource.size < 5 * 1024 * 1024
       && request.resource.contentType == 'application/pdf';
   }
-rules_version = '2';
-service firebase.storage {
-  match /b/{bucket}/o {
+
     // ─── DENY-BY-DEFAULT EXPLÍCITO (Fase 20 — Segurança Avançada) ─────
     // Qualquer path NÃO listado abaixo é rejeitado tanto em leitura
     // quanto em escrita. Mantém o default seguro (Firestore/Storage
