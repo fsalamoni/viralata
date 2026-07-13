@@ -1,5 +1,6 @@
 /**
- * @fileoverview Barrel exports do domínio Smart Search (Fase 18).
+ * @fileoverview Barrel exports do domínio Smart Search (Fase 18) +
+ * Fuzzy matching (TASK-018) + Volunteer entity (TASK-241).
  */
 
 export {
@@ -28,4 +29,15 @@ export {
   // Entity lookups
   getSearchableEntity,
   getSearchableEntities,
+  // LGPD (TASK-241)
+  sanitizePii,
 } from './search';
+
+export {
+  // Fuzzy matching (TASK-018)
+  levenshtein,
+  fuzzyScore,
+  fuzzyMatch,
+  isFuzzyMatch,
+  FUZZY_DEFAULTS,
+} from './fuzzy';

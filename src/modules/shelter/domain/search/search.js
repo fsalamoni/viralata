@@ -335,9 +335,6 @@ export function sanitizePii(doc) {
   return safe;
 }
 
-// ─── Schemas Zod ───────────────────────────────────────────────────────
-
-/** Schema para o intervalo de datas. ISO 8601 (YYYY-MM-DD). */
 const dateRangeSchema = z.object({
   from: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'YYYY-MM-DD'),
   to: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'YYYY-MM-DD'),

@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-13T01:05:52.000Z",
+  "generatedAt": "2026-07-13T01:09:58.000Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -24,13 +24,25 @@
       "focus": []
     },
     {
-      "id": "feat-smart-search-volunteer",
-      "branch": "feat/shelter-smart-search-volunteer",
-      "head": "5e473940b1b3eb895e6c4b03f772599eda7a9d63",
-      "headTitle": "feat(shelter): TASK-241 — Smart Search: volunteer entity + LGPD sanitize",
-      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/feat-smart-search-volunteer",
+      "id": "feat-fuzzy-search",
+      "branch": "feat/shelter-smart-search-fuzzy",
+      "head": "e0294bf301c4ceef99e88a6fb84c40e1f534ac68",
+      "headTitle": "feat(shelter): TASK-018 — Smart Search: fuzzy client-side (Levenshtein + token)",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/feat-fuzzy-search",
       "status": "ahead-of-main",
       "commitsAhead": 1,
+      "primarySession": null,
+      "sessionTitle": null,
+      "focus": []
+    },
+    {
+      "id": "feat-smart-search-volunteer",
+      "branch": "feat/shelter-smart-search-volunteer",
+      "head": "9142cb47bba31dcb30208a9eef525f28b62b1d03",
+      "headTitle": "chore(scrum): TASK-241 → in_review (PR #75)",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/feat-smart-search-volunteer",
+      "status": "ahead-of-main",
+      "commitsAhead": 2,
       "primarySession": null,
       "sessionTitle": null,
       "focus": []
@@ -564,13 +576,13 @@
       "title": "Smart Search: implementar busca fuzzy client-side (typo-tolerance)",
       "type": "feature",
       "category": "search",
-      "status": "ready",
+      "status": "in_review",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "mvs_f1e04f28717d42cdba05e221b7b4b6f3",
+      "branch": "feat/shelter-smart-search-fuzzy",
       "flag": "SHELTER_SMART_SEARCH",
       "worktree": null,
-      "pr": null,
+      "pr": "#76",
       "tags": [
         "fase-18",
         "typo-tolerance",
@@ -586,7 +598,7 @@
       "evidence": "docs/AUDIT_2026-07-11.md §5.3; decisão TASK-001 (Firestore nativo)",
       "description": "TASK-001 decidido: Firestore nativo. Como Firestore não tem typo-tolerance nativa, implementar busca fuzzy via Cloud Function (Levenshtein/phonetic) ou client-side via lib (Fuse.js, minisearch). Estratégia recomendada: cliente usa Fuse.js para busca local rápida em subset paginado (ex: 200 docs por vez), com debounce de 300ms. Server-side fica só para queries estruturadas (filtros facetados, range, etc).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-13T00:51:08"
     },
     {
       "id": "TASK-019",
@@ -6740,13 +6752,13 @@
       "title": "Smart Search: volunteer entity + remove zumbi volunteer_profiles index + sanitize PII",
       "type": "feature",
       "category": "search",
-      "status": "in_review",
+      "status": "ready",
       "priority": "medium",
-      "owner": "mvs_f1e04f28717d42cdba05e221b7b4b6f3",
-      "branch": "feat/shelter-smart-search-volunteer",
+      "owner": "unassigned",
+      "branch": null,
       "flag": null,
       "worktree": null,
-      "pr": "#75",
+      "pr": null,
       "tags": [
         "regra-a",
         "voluntarios",
@@ -6761,7 +6773,7 @@
       "evidence": "D:\\viralata\\firestore.indexes.json:320-327 (zumbi volunteer_profiles); D:\\viralata\\src\\modules\\shelter\\domain\\search\\search.js:42-121 (5 entidades, sem volunteer); D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §Search",
       "description": "BLOCO INDEPENDENTE. Expandir TASK-221: (1) Adicionar volunteer em SEARCH_ENTITIES com isPublic:false + filtro shelterId obrigatório, (2) searchableFields (name, skills, city), filterableFields (skills, availability_days, has_vehicle), (3) sanitize mapDocToResult (email só domínio, phone mascarado, address omitido), (4) rate limit na busca, (5) hook useSmartSearchVolunteers, (6) rota /busca?type=volunteer, (7) Remover índice zumbi volunteer_profiles. Combinar com TASK-221.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-13T00:46:14"
+      "updatedAt": "2026-07-11 21:00"
     },
     {
       "id": "TASK-242",
@@ -10223,7 +10235,7 @@
     "firestoreIndexes": 35,
     "bundleSizeKB": 4125,
     "shelterPhases": "21/22 completas em produção (Fase 18 pendente decisão)",
-    "activeWorktreesAheadOfMain": 2,
+    "activeWorktreesAheadOfMain": 3,
     "mergedWorktreesThisSprint": [
       "wt/e79e15ca",
       "wt/17ff480a"
@@ -10273,7 +10285,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-13T00:46:14 — via scrum.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-13T00:51:08 — via scrum.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
