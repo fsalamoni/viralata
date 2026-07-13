@@ -9,7 +9,7 @@ permissions:
 jobs:
   logs:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -19,15 +19,12 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install gcloud
-        run: |
-          apt-get update -qq
-          apt-get install -y -qq apt-transport-https ca-certificates gnupg
-          echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee /etc/apt/sources.list.d/google-cloud-sdk.list
-          curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg
-          apt-get update -qq
-          apt-get install -y -qq google-cloud-cli
-          gcloud --version
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: viralata-4cf0b
+          service_account_key: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          export_default_credentials: true
 
       - name: Auth
         env:
@@ -55,9 +52,9 @@ jobs:
       - name: Logs getMockStatus
         run: |
           echo "=== getMockStatus logs ==="
-          gcloud functions logs read getMockStatus --region=southamerica-east1 --gen2 --limit=40 2>&1 | tail -150
+          gcloud functions logs read getMockStatus --region=southamerica-east1 --gen2 --limit=40 2>&1 | tail -200
 
       - name: Logs loadMockData
         run: |
           echo "=== loadMockData logs ==="
-          gcloud functions logs read loadMockData --region=southamerica-east1 --gen2 --limit=40 2>&1 | tail -150
+          gcloud functions logs read loadMockData --region=southamerica-east1 --gen2 --limit=40 2>&1 | tail -200
