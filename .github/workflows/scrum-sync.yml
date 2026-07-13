@@ -1,0 +1,46 @@
+name: Sync Scrum Dashboard
+
+# Roda:
+# - A cada push em main (auto-sync após cada merge)
+# - Manualmente (workflow_dispatch)
+# - Diariamente (scheduled, backup)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: '0 12 * * *'  # 09:00 BRT (12:00 UTC)
+
+permissions:
+  contents: write
+
+jobs:
+  sync-scrum:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run sync (rewrites public/scrum.html + commits back)
+        run: |
+          node .harness/sync.cjs --fix
+          # Se o public/scrum.html mudou, commit + push
+          if git diff --quiet public/scrum.html; then
+            echo "sem mudanças em public/scrum.html"
+          else
+            git config user.name "viralata-scrum-bot"
+            git config user.email "scrum-bot@viralata.local"
+            git add public/scrum.html
+            git commit -m "chore(scrum): auto-sync $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+            git push origin main
+          fi

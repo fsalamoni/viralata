@@ -60,11 +60,6 @@ const EventDetail = lazy(() => import('@/modules/organizations/pages/EventDetail
 // ─── Comunidades ──────────────────────────────────────────────────────────────
 const CommunityForumPublic = lazy(() => import('@/pages/CommunityForumPublic'));
 const CommunityPublic = lazy(() => import('@/pages/CommunityPublic'));
-// Scrum dashboard — usa public/scrum.html (Firebase Hosting serve direto)
-// <Navigate> preserva query/fragment e usa history (não full reload).
-function ScrumDashboardRedirect() {
-  return <Navigate to="/scrum.html" replace />;
-}
 const CommunitiesDirectory = lazy(() => import('@/modules/communities/pages/CommunitiesDirectory'));
 const CommunityDetail = lazy(() => import('@/modules/communities/pages/CommunityDetail'));
 const CommunityAdminPanel = lazy(() => import('@/modules/communities/pages/CommunityAdminPanel'));
@@ -416,7 +411,6 @@ export default function App() {
       <Route path="abrigos/:shelterId/interviews" element={<ShelterInterviewsList />} />
       <Route path="/comunidades/:slug" element={<CommunityPublic />} />
       <Route path="/comunidades/:slug/forum" element={<CommunityForumPublic />} />
-      <Route path="/scrum" element={<ScrumDashboardRedirect />} />
       </Routes>
               </OnboardingGate>
               </BannedGate>
