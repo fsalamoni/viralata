@@ -1,19 +1,23 @@
 /**
- * @fileoverview Hooks React Query para Smart Search (Fase 18).
+ * @fileoverview Hooks React Query para Smart Search (Fase 18) + Volunteer (TASK-241).
  *
  * - `useSmartSearch(filters, options, context)` — busca multi-entity
  *   via `globalSearch`.
  * - `useSearchEntity(entity, filters, options)` — busca em uma
  *   entity via `searchEntity`.
+ * - `useSmartSearchVolunteers(filters, options, context)` — busca
+ *   específica de voluntários (TASK-241).
  * - `useSearchableEntities()` — lista de entities (constante, sem
  *   request).
  * - `useCountResultsByEntity(filters, options)` — contagem por entity
  *   (para mostrar "X Animais, Y Adotantes..." na UI).
+ * - `useDebouncedQuery(initial, delayMs)` — debounce para input controlado.
  *
  * Feature-gated por `SHELTER_SMART_SEARCH`. Desligada → todos os
  * hooks retornam estado vazio.
  *
  * @see docs/SHELTER_MGMT_ROADMAP.md § Fase 18
+ * @see TASK-241 — Smart Search: volunteer entity + LGPD sanitize
  */
 
 import { useEffect, useMemo, useState } from 'react';
@@ -133,6 +137,25 @@ export function useSearchEntity(entity, filters = {}, options = {}) {
  */
 export function useSearchableEntities() {
   return getSearchableEntities();
+}
+
+/**
+ * Hook de conveniência: busca de voluntários (TASK-241).
+ *
+ * Sempre exige `shelterId` (multi-tenant). Resultados vêm com PII
+ * sanitizada (ver `sanitizePii` em search.js).
+ *
+ * Filtros suportados: query, shelterId (obrigatório), status,
+ * skills (array), availability_days (array), has_vehicle.
+ *
+ * @param {object} filters { shelterId, query?, status?, skills?, availability_days?, has_vehicle? }
+ * @param {object} [options] opções de paginação
+ * @param {object} [context] { actor, audit }
+ * @returns {object} React Query result com `data.byEntity.volunteer`
+ */
+export function useSmartSearchVolunteers(filters = {}, options = {}, context = {}) {
+  const enrichedFilters = { ...filters, entity: 'volunteer' };
+  return useSearchEntity('volunteer', enrichedFilters, options);
 }
 
 /**

@@ -424,17 +424,17 @@ describe('Entity lookups', () => {
     expect(() => getSearchableEntity('invalid')).toThrow();
   });
 
-  it('getSearchableEntities retorna 5 entries', () => {
+  it('getSearchableEntities retorna 6 entries (TASK-241: +volunteer)', () => {
     const list = getSearchableEntities();
-    expect(list.length).toBe(5);
+    expect(list.length).toBe(6);
     expect(list.map((e) => e.id).sort()).toEqual(
-      ['adopter', 'exhibition', 'foster', 'pet', 'shelter'].sort(),
+      ['adopter', 'exhibition', 'foster', 'pet', 'shelter', 'volunteer'].sort(),
     );
   });
 
-  it('SEARCH_ENTITIES tem 5 entries', () => {
-    expect(SEARCH_ENTITY_IDS.length).toBe(5);
-    expect(Object.keys(SEARCH_ENTITIES).length).toBe(5);
+  it('SEARCH_ENTITIES tem 6 entries (TASK-241: +volunteer)', () => {
+    expect(SEARCH_ENTITY_IDS.length).toBe(6);
+    expect(Object.keys(SEARCH_ENTITIES).length).toBe(6);
   });
 });
 
