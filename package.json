@@ -9,6 +9,8 @@
     "preview": "vite preview",
     "e2e:install": "playwright install chromium",
     "e2e": "playwright test",
+    "smoke:prod": "node scripts/smoke-prod.mjs",
+    "smoke:routes": "node scripts/smoke-routes.mjs",
     "lint": "eslint . --quiet",
     "lint:fix": "eslint . --fix",
     "test": "vitest run",
