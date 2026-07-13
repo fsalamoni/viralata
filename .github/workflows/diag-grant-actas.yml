@@ -1,4 +1,4 @@
-name: "Diag: Grant ActAs permission"
+name: "Diag: Grant ActAs + Deploy Functions"
 
 on: workflow_dispatch
 
@@ -9,27 +9,33 @@ permissions:
 jobs:
   grant:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
-      - name: Setup gcloud
-        uses: google-github-actions/setup-gcloud@v2
-        with:
-          project_id: viralata-4cf0b
-          service_account_key: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          export_default_credentials: true
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Try grant ActAs
+      - name: Auth + grant ActAs
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
-          echo "=== Grant Service Account User role to firebase-adminsdk-fbsvc on default SA ==="
+          echo "$FIREBASE_SERVICE_ACCOUNT" > /tmp/firebase-sa.json
+          gcloud auth activate-service-account --key-file=/tmp/firebase-sa.json --project=viralata-4cf0b
+          gcloud config set project viralata-4cf0b
           gcloud iam service-accounts add-iam-policy-binding \
             viralata-4cf0b@appspot.gserviceaccount.com \
             --member="serviceAccount:firebase-adminsdk-fbsvc@viralata-4cf0b.iam.gserviceaccount.com" \
             --role="roles/iam.serviceAccountUser" \
             --project=viralata-4cf0b 2>&1 | head -20
 
-          echo ""
-          echo "=== Try deploy functions now ==="
-          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > /tmp/firebase-sa.json
+      - name: Copy mocks + Deploy functions
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          GOOGLE_APPLICATION_CREDENTIALS: /tmp/firebase-sa.json
+        run: |
+          mkdir -p functions/mocks
+          cp src/mocks/*.js functions/mocks/
+          echo "=== Mocks copiados ==="
+          ls functions/mocks/
           npx firebase-tools@latest deploy \
             --only functions \
             --project viralata-4cf0b \
