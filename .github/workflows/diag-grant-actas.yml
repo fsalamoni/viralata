@@ -14,16 +14,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: List collections via Firestore REST
+      - name: List collections via Firestore Admin SDK
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
           echo "$FIREBASE_SERVICE_ACCOUNT" > /tmp/firebase-sa.json
-          ACCESS_TOKEN=$(node -e "const {google}=require('google-auth-library');const fs=require('fs');const key=JSON.parse(fs.readFileSync('/tmp/firebase-sa.json','utf8'));const c=new google.auth.JWT({email:key.client_email,key:key.private_key,scopes:['https://www.googleapis.com/auth/datastore']});c.authorize().then(()=>c.getAccessToken().then(t=>process.stdout.write(t.token)));" 2>&1 | tail -1)
-
-          for COLL in pets users communities clubs; do
-            echo ""
-            echo "=== $COLL (first 15) ==="
-            curl -s -H "Authorization: Bearer $ACCESS_TOKEN" "https://firestore.googleapis.com/v1/projects/viralata-4cf0b/databases/viralata/documents/$COLL?pageSize=15" > /tmp/out.json
-            python3 .github/scripts/list_firestore_docs.py "$COLL"
-          done
+          cd "$GITHUB_WORKSPACE"
+          npm install --silent firebase-admin 2>&1 | tail -3
+          node .github/scripts/list_firestore_sdk.cjs all
