@@ -5,8 +5,8 @@
 > projeto (humano, agente ou sessão paralela). Ele é atualizado em cada
 > movimento, merge ou task. Para detalhes, siga o índice da Seção 10.
 >
-> **Última atualização**: 2026-07-12 21:30 BRT
-> **Versão**: 1.1.0
+> **Última atualização**: 2026-07-13 00:55 BRT
+> **Versão**: 1.2.0
 > **Mantido por**: Mavis (viralata-coder, sessão `mvs_f1e04f28717d42cdba05e221b7b4b6f3`)
 
 ---
@@ -384,6 +384,41 @@ mavis communication send --to <root> --content "TASK-XXX in_review, PR #N"
 - **SIM** seguir Regra A (5 eixos por feature) + Regra B (auto scrum update)
 
 ---
+
+
+
+## 16. PRs abertos (2026-07-13)
+
+| PR | Título | Tasks | Worktree | Status |
+|---|---|---|---|---|
+| **#74** | chore(docs+scrum): STATE.md canônico + AGENTS.md B.1.6 (scrum.cjs) + cleanup stale | TASK-374 + 11 stale → done | `chore/state-and-cleanup-2026-07-12` | in_review |
+| **#75** | feat(shelter): TASK-241 — Smart Search: volunteer entity + LGPD sanitize | TASK-241 (LGPD PII) | `feat/shelter-smart-search-volunteer` | in_review |
+| **#76** | feat(shelter): TASK-018 — Smart Search: fuzzy client-side (Levenshtein) | TASK-018 (typo-tolerance) | `feat/shelter-smart-search-fuzzy` | in_review |
+
+**Total entregue nesta sessão** (3 PRs):
+- 1 PR de hygiene (docs + scrum + state + canonical scrum.cjs)
+- 1 PR de feature (volunteer entity + LGPD sanitize)
+- 1 PR de feature (fuzzy client-side)
+- 51 testes novos (29 fuzzy + 21 volunteer + 1 LGPD)
+- 1 bugfix (sanitizePii re-adicionado em search.js)
+- 1 índice Firestore removido (zumbi volunteer_profiles)
+- 1 índice Firestore adicionado (volunteers shelter_club_id+name)
+
+---
+
+## 17. Cron configurado (2026-07-13)
+
+3 crons ativos no agent `Mavis`:
+- **viralata-daily-health-check** — `0 9 * * *` (diário 09:00 BRT, active hours 06:00-22:00)
+  - Roda `sync.cjs --check`, lint, vitest, build, métricas, `sync.cjs --fix`
+  - Reporta status verde/amarelo/vermelho
+- **viralata-6h-sync-check** — `0 */6 * * *` (a cada 6h, sempre ativo)
+  - Valida JSON (refs quebradas, IDs duplicados, owner faltando)
+  - Re-embed do painel se necessário
+  - Reporta status curto
+- **viralata-weekly-pending-tasks** — `0 9 * * 1` (segunda 09:00 BRT, active hours 08:00-10:00)
+  - Reporta sprint status + decisões humanas pendentes + stale + PRs abertos
+
 
 ## 14. Histórico de mudanças deste documento
 
