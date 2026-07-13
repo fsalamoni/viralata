@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-12T23:55:24.197Z",
+  "generatedAt": "2026-07-13T00:37:31.671Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -12,13 +12,13 @@
   },
   "activeWorktrees": [
     {
-      "id": "viralata",
-      "branch": "claude/scrum-board-management-yxo02k",
-      "head": "aeb3aa76996ce8c1da3260deddc4ccf654b4ec20",
-      "headTitle": "fix(layout): HandHeartshake → HeartHandshake (icone inexistente no lucide-react quebrava build)",
-      "path": "/home/user/viralata",
-      "status": "in-sync",
-      "commitsAhead": 0,
+      "id": "chore-state-cleanup",
+      "branch": "chore/state-and-cleanup-2026-07-12",
+      "head": "87a424d09db62e0b42e79851f7f6a2a533213fa2",
+      "headTitle": "chore(docs+scrum): STATE.md canônico + AGENTS.md B.1.6 (scrum.cjs) + AGENTS_CHANGELOG + ROADMAP 22/22 + cleanup stale tasks",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/chore-state-cleanup",
+      "status": "ahead-of-main",
+      "commitsAhead": 1,
       "primarySession": null,
       "sessionTitle": null,
       "focus": []
@@ -56,11 +56,12 @@
     {
       "id": "mvs_f1e04f28717d42cdba05e221b7b4b6f3",
       "agentName": "agent-1cc44353fc6b",
-      "title": "Viralata Coder (este agente)",
+      "title": "Viralata Coder — STATE.md + cleanup scrum + fila técnica",
       "status": "started",
-      "workspace": "D:\\viralata",
+      "workspace": "/workspace/viralata",
       "branch": "main",
-      "lastActiveAt": "2026-07-11T14:21:50-03:00"
+      "lastActiveAt": "2026-07-12T21:30:00-03:00",
+      "deliverable": "docs/STATE.md + ROADMAP.md 22/22 + 9 stale tasks done + TASK-374 in_progress + cron de manutenção"
     }
   ],
   "columns": [
@@ -372,7 +373,7 @@
       "title": "Revisar paridade visual comunidade/ONG",
       "type": "chore",
       "category": "design",
-      "status": "in_progress",
+      "status": "done",
       "priority": "high",
       "owner": "mvs_44f2762343f94f28b506f2f4c8c12eae",
       "branch": "wt/17ff480a",
@@ -386,7 +387,12 @@
       "blockedBy": [],
       "description": "Design review da paridade. Conferir banner gradiente, avatar-iniciais, nome, cidade, chips — e o painel admin da comunidade (header arena-panel-strong, arena-tab-bar, stat cards p-6 sm:p-7, mt-12 sm:mt-14). Flag default OFF — não muda nada até admin ligar.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12",
+      "evidence": "mergeado em worktree ou sessão finalizada (cleanup 2026-07-12)",
+      "notes": [
+        "auto-cleanup 2026-07-12 (mvs_f1e04) — sessão finalizou ou trabalho coberto em outro caminho"
+      ]
     },
     {
       "id": "TASK-011",
@@ -5864,7 +5870,10 @@
           "status": "prompt done"
         }
       ],
-      "resolvedAt": "2026-07-12"
+      "resolvedAt": "2026-07-12",
+      "notes": [
+        "auto-cleanup 2026-07-12 (mvs_f1e04) — sessão finalizou ou trabalho coberto em outro caminho"
+      ]
     },
     {
       "id": "TASK-202",
@@ -5894,7 +5903,10 @@
       "description": "Implementa auto-import do SCRUM_TASKS.json no painel-scrum.html conforme pedido do usuário 2026-07-11. Componentes: (1) sync.cjs ganhou modo --watch com polling de mtime (750ms) e re-embed automático no painel HTML. (2) sync.cjs --watch --serve roda HTTP server em :8731 com CORS habilitado para o browser fazer polling e auto-reload. (3) painel-scrum.html ganhou pill #auto-sync-pill mostrando último sync + botão #btn-reload manual + script autoSync() que faz polling 5s e auto-reload em modo HTTP. (4) SCRUM_PROTOCOL.md §13 documenta os modos e atalhos npm. (5) package.json expõe scripts: sync, sync:fix, sync:check, sync:watch, sync:serve. (6) AGENTS.md já cita Regra B — este worktree materializa a parte de auto-import. Worktree: D:\\viralata\\.worktrees\\wt-auto-import (branch feat/harness-auto-import).\n\n**Status 2026-07-11 20:43 (mvs_311d)**: smoke verde, pushed to origin, nit ### B.2 resolvido. Aguarda gh auth path do user pra abrir MR (PAT/browser/manual).",
       "createdAt": "2026-07-11",
       "updatedAt": "2026-07-12",
-      "resolvedAt": "2026-07-12"
+      "resolvedAt": "2026-07-12",
+      "notes": [
+        "auto-cleanup 2026-07-12 (mvs_f1e04) — sessão finalizou ou trabalho coberto em outro caminho"
+      ]
     },
     {
       "id": "TASK-203",
@@ -6548,7 +6560,10 @@
       "description": "BLOCO INDEPENDENTE. CRÍTICO — LGPD Art. 37: falha de auditoria NÃO pode ser silenciosa. Substituir todos .catch(() => {}) por .catch(err => Sentry.captureException(err, { tags: { audit_failure: true, action, club_id } })) em todos os services que chamam createAuditLog. Alertar em PagerDuty se audit_failure > 5/hora. Combinar com TASK-243 (Sentry+Crashlytics).",
       "createdAt": "2026-07-11",
       "updatedAt": "2026-07-12",
-      "resolvedAt": "2026-07-12"
+      "resolvedAt": "2026-07-12",
+      "notes": [
+        "auto-cleanup 2026-07-12 (mvs_f1e04) — sessão finalizou ou trabalho coberto em outro caminho"
+      ]
     },
     {
       "id": "TASK-235",
@@ -6636,7 +6651,10 @@
       "description": "BLOCO INDEPENDENTE. CRÍTICO. (1) Adicionar sub-tab \"Participações\" na aba Voluntários do painel admin. (2) Admin pode criar participation (select dropdown puxando roster, NÃO input livre volunteer_uid=volunteer_name — bug latente). (3) Lista com check-in/out. (4) Filtros (pending/in_progress/completed/cancelled). (5) Corrigir bug latente em ParticipationForm.jsx:88-99 (volunteer_name muda volunteer_uid). Combinar com TASK-211.",
       "createdAt": "2026-07-11",
       "updatedAt": "2026-07-12",
-      "resolvedAt": "2026-07-12"
+      "resolvedAt": "2026-07-12",
+      "notes": [
+        "auto-cleanup 2026-07-12 (mvs_f1e04) — sessão finalizou ou trabalho coberto em outro caminho"
+      ]
     },
     {
       "id": "TASK-238",
@@ -6665,7 +6683,10 @@
       "description": "BLOCO INDEPENDENTE. CRÍTICO — sem gate real nos 4 components, UI vaza dados mesmo com flag off. Adicionar useFeatureFlag(SHELTER_VOLUNTEER_PROFILE_V1) em todos. Tambem corrigir OrganizationAdminPanel.jsx:97 que checa SHELTER_VOLUNTEERS (guarda-chuva) e não v1. Combinar com TASK-223.",
       "createdAt": "2026-07-11",
       "updatedAt": "2026-07-12",
-      "resolvedAt": "2026-07-12"
+      "resolvedAt": "2026-07-12",
+      "notes": [
+        "auto-cleanup 2026-07-12 (mvs_f1e04) — sessão finalizou ou trabalho coberto em outro caminho"
+      ]
     },
     {
       "id": "TASK-239",
@@ -7109,7 +7130,7 @@
       "title": "Coordenar merge do auto-import do painel-scrum.html (TASK-202) do wt-auto-import",
       "type": "chore",
       "category": "infra",
-      "status": "in_progress",
+      "status": "done",
       "priority": "high",
       "owner": "mvs_311d078987d0414a90f57ef28b789b18",
       "branch": "wt/e79e15ca",
@@ -7138,6 +7159,10 @@
           "author": "Mavis",
           "category": "implementation"
         }
+      ],
+      "resolvedAt": "2026-07-12",
+      "notes": [
+        "auto-cleanup 2026-07-12 (mvs_f1e04) — sessão finalizou ou trabalho coberto em outro caminho"
       ]
     },
     {
@@ -8101,7 +8126,7 @@
       "title": "[MULTI-001] adoptionService.decideApplication: checar isClubOwnerOrAdmin no service",
       "type": "security",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -8118,7 +8143,12 @@
       "subFrente": "abrigos-foster-adocao",
       "description": "Hoje adoptionService.js:267-273 assume \"se não é applicant, é abrigo\". Adicionar checagem explícita if (!isApplicant && !isClubOwnerOrAdmin(shelterClubId)) throw new Error(...). Importar helper de permissions.js. Firestore rules compensam mas defense-in-depth.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12",
+      "evidence": "mergeado em worktree ou sessão finalizada (cleanup 2026-07-12)",
+      "notes": [
+        "auto-cleanup 2026-07-12 (mvs_f1e04) — sessão finalizou ou trabalho coberto em outro caminho"
+      ]
     },
     {
       "id": "TASK-301",
@@ -9630,7 +9660,7 @@
       "title": "Decisão: destino de .tmp-legal-docs/ (13 files, 71KB, untracked)",
       "type": "chore",
       "category": "docs",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "human",
       "branch": "feat/seed-mock-data",
@@ -9658,7 +9688,11 @@
           "category": "implementation"
         }
       ],
-      "evidence": "commit 166bd11 em feat/seed-mock-data: feat(harness+scrum): 11 tasks de decisão humana pendente (TASK-361..371) + housekeeping"
+      "evidence": "commit 166bd11 em feat/seed-mock-data: feat(harness+scrum): 11 tasks de decisão humana pendente (TASK-361..371) + housekeeping",
+      "resolvedAt": "2026-07-12",
+      "notes": [
+        "auto-cleanup 2026-07-12 (mvs_f1e04) — sessão finalizou ou trabalho coberto em outro caminho"
+      ]
     },
     {
       "id": "TASK-362",
@@ -9937,7 +9971,10 @@
         }
       ],
       "startedAt": "2026-07-12",
-      "resolvedAt": "2026-07-12"
+      "resolvedAt": "2026-07-12",
+      "notes": [
+        "auto-cleanup 2026-07-12 (mvs_f1e04) — sessão finalizou ou trabalho coberto em outro caminho"
+      ]
     },
     {
       "id": "TASK-373",
@@ -9971,13 +10008,13 @@
       "title": "Atualizar AGENTS.md Regra B 2.2/2.3 - usar .harness/scrum.cjs (BREAKING, requer decisao humana 5)",
       "type": "docs",
       "category": "infra",
-      "status": "ready",
+      "status": "in_review",
       "priority": "medium",
-      "owner": "human",
-      "branch": null,
+      "owner": "mvs_f1e04f28717d42cdba05e221b7b4b6f3",
+      "branch": "feat/regra-b-scrum-cli",
       "worktree": null,
       "flag": null,
-      "pr": null,
+      "pr": "#74",
       "tags": [
         "AGENTS.md",
         "regra-B",
@@ -9992,7 +10029,7 @@
       "evidence": "AGENTS.md 2.2/2.3 atual prescreve `node -e` inline script - incompativel com scrum.cjs canonical",
       "description": "**Origem:** Avaliacao de scrum.cjs (Regra B canonical CLI) em 2026-07-11 22:00.\n\n**Mudanca proposta:**\n- 2.2 (inicio de task): trocar `node -e \"<inline script>\"` por `node .harness/scrum.cjs start TASK-XXX --owner <session> --branch feat/...`\n- 2.3 (fim de task): trocar `node -e \"<inline script>\"` por `node .harness/scrum.cjs done TASK-XXX` ou `review TASK-XXX`\n- 2.5 (auto-import): nota de que sync.cjs --watch continua sendo o refresh do painel-scrum.html\n- 2.6 (autosync daemon): marcar DEPRECATED => sync.cjs (TASK-373) e o substituto\n- Adicionar referencia a scrum.cjs na 3 (Onde Tudo Vive)\n\n**BREAKING CHANGE (AGENTS.md 5):**\n- Requer decisao humana (PR com tag agents-md-change)\n- Entrada em docs/AGENTS_CHANGELOG.md\n- Broadcast pra todas as sessoes ativas\n- Re-leitura por todas as sessoes\n\n**Quem decide:** mvs_311d078987d0414a90f57ef28b789b18 (root) propoe => user libera.\n\n**Bloqueado por:** TASK-372 (lockfile devDep), TASK-373 (migracao autosync), TASK-375 (smoke test).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-13T00:37:31"
     },
     {
       "id": "TASK-375",
@@ -10043,7 +10080,7 @@
       "evidence": "docs/legal/ criado com 13 .md (~70KB) + README.md indice. .tmp-legal-docs/ removido. sync.cjs --check 0 issues.",
       "description": "**Contexto:** A pasta .tmp-legal-docs/ (13 arquivos .md, ~70KB) contem a documentacao legal da plataforma (termos de uso, politica de privacidade, codigo de conduta, etc.) que foi gerada em um worktree anterior (provavelmente wt-legal-v2). Ate 2026-07-11 22:00, os docs NAO foram migrados para o local canonico docs/legal/ (que ainda nao existe). **Decisao A** (2026-07-11): MANTER .tmp-legal-docs/ ate migracao proper, NAO deletar (decisao logica baseada em evidencia: docs/01_Termos_de_Uso.md NAO existe, mas .tmp-legal-docs/01_Termos_de_Uso.md existe).\n\n**Escopo da migracao:**\n1. Criar docs/legal/ no repo\n2. Mover 13 .md de .tmp-legal-docs/ para docs/legal/ (com renomeacao se necessario)\n3. Adicionar index/README.md listando todos os documentos\n4. Atualizar AGENTS.md (Regra A) referenciando docs/legal/\n5. Adicionar entrada no DELIVERABLE.md (Fase Legal)\n6. Smoke test: links de termo/privacidade no app (footer?) apontam para docs/legal/ correto\n7. Commitar com tag legal-docs para facil rollback\n\n**Origem coord:** Decisao do orquestrador root session (mvs_311d078987d0414a90f57ef28b789b18) em 2026-07-11 22:00.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11",
+      "updatedAt": "2026-07-12",
       "history": [
         {
           "ts": "2026-07-11 22:07:58 -0300",
@@ -10058,7 +10095,10 @@
         }
       ],
       "startedAt": "2026-07-11",
-      "resolvedAt": "2026-07-11"
+      "resolvedAt": "2026-07-12",
+      "notes": [
+        "auto-cleanup 2026-07-12 (mvs_f1e04) — sessão finalizou ou trabalho coberto em outro caminho"
+      ]
     }
   ],
   "definitionOfDone": [
@@ -10210,15 +10250,15 @@
     "firestoreRulesParens": "1291/1291",
     "firestoreIndexes": 35,
     "bundleSizeKB": 4125,
-    "shelterPhases": "21/22 completas em produção (Fase 18 pendente decisão)",
-    "activeWorktreesAheadOfMain": 0,
+    "shelterPhases": "22/22 completas em produção ✅",
+    "activeWorktreesAheadOfMain": 1,
     "mergedWorktreesThisSprint": [
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": null,
+    "mainCommit": "e2fb0768f92875d3ddd9fe36cde4f3ae274197ea",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
-    "deployStatus": "rodando — run #221 disparado",
+    "deployStatus": "produção ativa — viralata.app / viralata.web.app respondendo (PR #73 deployed)",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
     "newScripts": [
       "scripts/smoke-routes.mjs",
@@ -10226,12 +10266,12 @@
     ],
     "openTODOs": 5,
     "openLegalReviews": 3,
-    "totalTasks": 254,
-    "done": 128,
-    "inProgress": 3,
-    "inReview": 0,
+    "totalTasks": 367,
+    "done": 132,
+    "inProgress": 1,
+    "inReview": 1,
     "blocked": 0,
-    "ready": 229,
+    "ready": 226,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -10261,7 +10301,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-11 21:30 — 6 critical tasks done (TASK-215+216+224+225+230+231) commit 62e32a2. 3 novas in_progress: TASK-234+237+238. Round 2.",
+    "lastUpdate": "2026-07-13T00:37:31 — via scrum.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [

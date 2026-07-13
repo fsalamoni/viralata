@@ -36,18 +36,34 @@ Você é uma sessão Mavis trabalhando no Viralata. Antes de começar qualquer t
 
 ## 3. Como abrir uma task nova
 
-Antes de criar, busque no painel/JSON se já existe. Se não, adicione com ID sequencial, `status: "ready"`, `owner: "mvs_sua_session_id"`. Salve o JSON, exporte do painel (botão **Export**) ou edite direto no arquivo. Se duas sessões editarem ao mesmo tempo, o painel resolve por timestamp (last write wins) — minimize isso coordenando por mensagens.
+Antes de criar, busque no painel/JSON se já existe. Se não, adicione com ID sequencial, `status: "ready"`, `owner: "mvs_sua_session_id"`. Salve o JSON, exporte do painel (botão **Export**) ou edite direto no arquivo. Se duas sessões editarem ao mesmo tempo, **USE `scrum.cjs` (canonical CLI)** — lock single-instance + atomic write previnem race condition (ver §8).
+
+**Para abrir via CLI** (recomendado para campos simples):
+```bash
+# Para transições (start/done/review/block/drop) — SEMPRE via CLI
+npm run scrum:start -- TASK-XXX --owner mvs_xxx --branch feat/...
+
+# Para criar task NOVA (não há comando CLI específico ainda) — edite JSON com lock manual:
+# 1. mavis communication send --to root --content "vou editar JSON, trava 30s"
+# 2. Editar .harness/SCRUM_TASKS.json
+# 3. node .harness/sync.cjs --fix
+# 4. mavis communication send --to root --content "liberei"
+```
 
 ## 4. Transições de status
 
-| De → Para | Quando | Ação extra |
+**CANONICAL: use `scrum.cjs` (ver §B.1.6 do AGENTS.md).** Edicão manual do JSON é LEGADO e desencorajada.
+
+| De → Para | Quando | Comando CLI |
 |---|---|---|
-| `backlog → ready` | Priorizada pelo usuário ou owner; tem critérios de aceitação claros | Mover data de priorização |
-| `ready → in_progress` | Worktree aberto (`git worktree add`) | `owner` = sua sessão |
-| `in_progress → in_review` | `npm test` verde, lint clean, build OK, DELIVERABLE.md escrito, smoke test com flag OFF | Mande `mavis communication send` à root pedindo review |
-| `in_review → done` | Mergeado em main, smoke test em produção OK | Marcar `resolvedAt` |
-| `qualquer → blocked` | Bloqueio externo (decisão, dep, etc.) | Preencher `blockedBy` com TASK-IDs e `evidence` |
-| `qualquer → dropped` | Decisão humana ou descoberta de que não é mais necessária | **Não apague** — mantenha histórico |
+| `backlog → ready` | Priorizada pelo usuário ou owner; tem critérios de aceitação claros | (edição manual OK com lock) |
+| `ready → in_progress` | Worktree aberto (`git worktree add`) | `npm run scrum:start -- TASK-XXX --owner mvs_xxx --branch feat/...` |
+| `in_progress → in_review` | `npm test` verde, lint clean, build OK, DELIVERABLE.md escrito, smoke test com flag OFF | `npm run scrum:review -- TASK-XXX --pr "#N"` |
+| `in_review → done` | Mergeado em main, smoke test em produção OK | `npm run scrum:done -- TASK-XXX --pr "#N" --evidence "..."` |
+| `qualquer → blocked` | Bloqueio externo (decisão, dep, etc.) | `npm run scrum:block -- TASK-XXX --reason "..."` |
+| `qualquer → dropped` | Decisão humana ou descoberta de que não é mais necessária | `npm run scrum:drop -- TASK-XXX --reason "..."` |
+
+**Por que `scrum.cjs`**: lock single-instance, atomic write, validação de transições, recálculo automático de métricas. Previne race condition entre sessões paralelas.
 
 ## 5. Regras duras do projeto (carregadas no agent memory)
 
@@ -85,8 +101,10 @@ Tasks que tocam PII, termos legais, telemedicina, prontuário ou qualquer coisa 
 | Arquivo | O quê |
 |---|---|
 | `.harness/painel-scrum.html` | Página visual. Abra no navegador. **Auto-sync** com `.harness/SCRUM_TASKS.json` via `node .harness/sync.cjs --watch` (vê §13). |
-| `.harness/SCRUM_TASKS.json` | Dataset machine-readable. Use pra automação e pra resetar o painel. |
+| `.harness/SCRUM_TASKS.json` | Dataset machine-readable. Source of truth. Edite **via `scrum.cjs`** (ver §4). |
+| `.harness/scrum.cjs` | **CLI canônica** para transições (start/done/review/block/drop/list/show). Lock single-instance + atomic write. **USE ESTA** em vez de editar JSON manualmente. |
 | `.harness/sync.cjs` | Sync com git worktrees + **auto-reembed do painel** (modo `--watch`, vê §13). |
+| `.harness/autosync.cjs` | **DEPRECATED** desde 2026-07-12 (TASK-373). Use `scrum.cjs` direto. |
 | `.harness/SCRUM_PROTOCOL.md` | Este protocolo (espelha o painel). |
 
 ## 13. Auto-sync do painel (`sync.cjs --watch`)
