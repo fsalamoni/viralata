@@ -5,6 +5,16 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      skip_hosting:
+        description: 'Pular deploy de Hosting (functions/rules/storage CORS only)'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
 
 permissions:
   contents: read
@@ -53,6 +63,11 @@ jobs:
 
       - name: Deploy to Firebase Hosting (Preview — PRs)
         if: github.event_name == 'pull_request'
+        # continue-on-error: quota de channels do Firebase Hosting (limite ~50
+        # channels ativos por projeto) estoura com HTTP 429 quando muitos PRs
+        # preview coexistem. Não bloqueia o merge — o merge no main roda o
+        # deploy de produção normalmente, e o preview expira em 7d sozinho.
+        continue-on-error: true
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}

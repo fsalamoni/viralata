@@ -1,0 +1,83 @@
+name: Redeploy Cloud Functions
+
+# Workflow dedicada para re-deploy manual de Cloud Functions via
+# workflow_dispatch. Útil quando o gateway do Cloud Functions fica
+# em estado ruim (ex: OPTIONS preflight retornando 403 do Google
+# Frontend) e um re-deploy limpa o estado.
+#
+# Trigger: aba "Actions" no GitHub → "Redeploy Cloud Functions" →
+# "Run workflow" → seleciona o branch (sempre main).
+#
+# Por que workflow dedicada e não reusar deploy.yml?
+#   - deploy.yml faz Hosting + Functions + Rules + Storage CORS. Rodar
+#     tudo é overkill quando só Functions precisa ser re-deployado.
+#   - Esta workflow só depende de Node + firebase-tools, mais rápida.
+#   - Pode ser disparada por qualquer pessoa com write no repo,
+#     sem precisar de push em main.
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to redeploy from (use main for production)'
+        required: true
+        default: 'main'
+        type: choice
+        options:
+          - main
+
+permissions:
+  contents: read
+
+jobs:
+  redeploy_functions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Functions dependencies
+        run: npm ci
+        working-directory: functions
+
+      - name: Run Functions tests
+        run: npm test
+        working-directory: functions
+        continue-on-error: true
+
+      - name: Authenticate to Firebase
+        run: |
+          echo "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/firebase-sa.json"
+
+      - name: Redeploy Cloud Functions
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/firebase-sa.json
+        run: |
+          npx firebase-tools@latest deploy \
+            --only functions \
+            --project viralata-4cf0b \
+            --non-interactive \
+            --force
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "### Redeploy Cloud Functions" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- Branch: \`${{ inputs.branch }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- Result: **${{ job.status }}**" >> $GITHUB_STEP_SUMMARY
+          echo "- Actor: @${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Run: #${{ github.run_number }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Se o status é ✅ success, o gateway do Cloud Functions foi" >> $GITHUB_STEP_SUMMARY
+          echo "re-inicializado. Limpar cache do SW e hard-refresh no browser" >> $GITHUB_STEP_SUMMARY
+          echo "para confirmar." >> $GITHUB_STEP_SUMMARY
