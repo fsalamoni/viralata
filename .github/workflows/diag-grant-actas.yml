@@ -1,4 +1,4 @@
-name: "Diag: Extract NEW function image"
+name: "Diag: List newest image + verify _payloads"
 
 on: workflow_dispatch
 
@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Auth + pull NEW image
+      - name: Auth + get newest image
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
@@ -19,16 +19,44 @@ jobs:
           gcloud auth activate-service-account --key-file=/tmp/firebase-sa.json --project=viralata-4cf0b
           gcloud config set project viralata-4cf0b
           gcloud auth configure-docker southamerica-east1-docker.pkg.dev --quiet 2>&1
-          # A NOVA imagem (do redeploy #11 que rodou agora)
-          NEW_IMAGE="southamerica-east1-docker.pkg.dev/viralata-4cf0b/gcf-artifacts/viralata--4cf0b__southamerica--east1__on_pet_created_notify_radar@sha256:26ad44680710d08c2a55181eb9ddd8b7682557cbfc13e8e810e6def3c918ae5f"
+
+          # Get the newest image
+          echo "=== NEWEST artifact images ==="
+          gcloud artifacts docker images list \
+            "southamerica-east1-docker.pkg.dev/viralata-4cf0b/gcf-artifacts" \
+            --include-tags \
+            --project=viralata-4cf0b \
+            --sort-by=~CREATE_TIME \
+            --limit=3 2>&1 | head -10
+
+          # Get the LATEST revision
+          echo "=== Newest revision ==="
+          LATEST_REV=$(gcloud run revisions list \
+            --service=getmockstatus \
+            --region=southamerica-east1 \
+            --project=viralata-4cf0b \
+            --sort-by=~createTime \
+            --limit=1 \
+            --format="value(name)" 2>/dev/null)
+          echo "Latest rev: $LATEST_REV"
+
+          # Get the image of the latest revision
+          NEW_IMAGE=$(gcloud run revisions describe "$LATEST_REV" \
+            --region=southamerica-east1 \
+            --project=viralata-4cf0b \
+            --format="value(image)" 2>/dev/null)
+          echo "Latest image: $NEW_IMAGE"
+
+          # Pull and extract
           docker pull "$NEW_IMAGE" 2>&1 | tail -3
           CONTAINER=$(docker create "$NEW_IMAGE")
-          echo "=== Files in /workspace (NEW IMAGE) ==="
-          docker cp "$CONTAINER:/workspace" - 2>/dev/null | tar -tv 2>&1 | grep -E "payloads|mocks|mockData.js" | head -20
+
           echo ""
-          echo "=== mockData.js content (verify new path) ==="
-          docker cp "$CONTAINER:/workspace/mockData.js" - 2>/dev/null | head -60
+          echo "=== ALL files in /workspace/_payloads/ (newest image) ==="
+          docker cp "$CONTAINER:/workspace/_payloads" - 2>/dev/null | tar -tv 2>&1 | head -30
+
           echo ""
-          echo "=== Functions tests after import resolved? ==="
-          docker run --rm "$NEW_IMAGE" node -e "const f=require('/workspace/mockData.js'); console.log('loaded:', typeof f);" 2>&1 | head -10
+          echo "=== mockData.js head ==="
+          docker cp "$CONTAINER:/workspace/mockData.js" - 2>/dev/null | head -5
+
           docker rm "$CONTAINER" 2>&1 | head -2
