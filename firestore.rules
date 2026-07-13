@@ -572,7 +572,52 @@ service cloud.firestore {
     }
 
     // ─── Auditoria ────────────────────────────────────────────────────────────
-    match /audit_logs/{logId} {
+  
+  // TASK-288: contracts/{contractId} — coleção dedicada de contratos de adoção
+  match /clubs/{clubId}/contracts/{contractId} {
+    // Leitura: abrigo (admin/member) + adotante (signatário) + platform admin
+    allow read: if isAuth() && (
+      isPlatformAdmin() ||
+      isShelterAdminOrMember(clubId) ||
+      isContractAdopter(resource.data)
+    );
+
+    // Create: adotante (adopter_uid == auth.uid) + abrigo admin
+    allow create: if isAuth() && (
+      isShelterAdmin(clubId) ||
+      (
+        request.resource.data.adopter_uid == auth.uid &&
+        request.resource.data.status == 'pending_shelter_signature' &&
+        request.resource.data.document_hash.matches('^[a-f0-9]{64}$') &&
+        request.resource.data.pdf_storage_path.matches('^clubs/[^/]+/contracts/[^/]+\.pdf$')
+      )
+    );
+
+    // Update: abrigo (admin) assina OU cancela. Adotante NÃO edita.
+    allow update: if isAuth() && isShelterAdmin(clubId) && (
+      // Shelter assina (pending → fully_signed)
+      (
+        resource.data.status == 'pending_shelter_signature' &&
+        request.resource.data.status == 'fully_signed' &&
+        request.resource.data.shelter_representative_uid is string &&
+        request.resource.data.shelter_signed_at is string
+      ) ||
+      // Cancelamento (pending → cancelled) — abrigo OU adotante
+      (
+        resource.data.status == 'pending_shelter_signature' &&
+        request.resource.data.status == 'cancelled' &&
+        (
+          isShelterAdmin(clubId) ||
+          resource.data.adopter_uid == auth.uid
+        )
+      )
+    );
+
+    // Delete: apenas platform admin
+    allow delete: if isAuth() && isPlatformAdmin();
+  }
+
+  match /audit_logs/{logId} {
       // TASK-294 (LGPD Art. 18 V — portabilidade): o próprio usuário pode
       // ler os audit logs onde é ator ou sujeito (actor_id OU user_id == uid).
       // Mantém a regra original de admin ter acesso irrestrito.
@@ -1775,4 +1820,9 @@ service cloud.firestore {
           .hasOnly(['status', 'log']);
     }
   }
+}
+
+// TASK-288: helper para verificar se o user é o adotante do contrato
+function isContractAdopter(contractData) {
+  return contractData.adopter_uid == request.auth.uid;
 }

@@ -34,6 +34,8 @@ const AdminDebugPage = lazy(() => import('@/pages/AdminDebugPage'));
 const PublicDebugPage = lazy(() => import('@/pages/PublicDebugPage'));
 
 // ─── Onboarding ───────────────────────────────────────────────────────────────
+const ShelterContractsList = lazy(() => import('@/modules/contracts/pages/ShelterContractsList'));
+const MyContracts = lazy(() => import('@/modules/contracts/pages/MyContracts'));
 const OnboardingQuestionnaire = lazy(() => import('@/modules/onboarding/pages/OnboardingQuestionnaire'));
 
 // ─── Pets ─────────────────────────────────────────────────────────────────────
@@ -399,7 +401,9 @@ export default function App() {
 
                 {/* ── 404 ───────────────────────────────────────────────── */}
                 <Route path="*" element={<PageNotFound />} />
-              </Routes>
+              <Route path="abrigos/:shelterId/contracts" element={<ShelterContractsList />} />
+      <Route path="perfil/contratos" element={<MyContracts />} />
+      </Routes>
               </OnboardingGate>
               </BannedGate>
             </Suspense>
