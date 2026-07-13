@@ -12,6 +12,7 @@
     "smoke:prod": "node scripts/smoke-prod.mjs",
     "smoke:routes": "node scripts/smoke-routes.mjs",
     "smoke:staging": "node scripts/smoke-staging.mjs",
+    "security:check-xlsx": "node scripts/check-xlsx-security.mjs",
     "lint": "eslint . --quiet",
     "lint:fix": "eslint . --fix",
     "test": "vitest run",
