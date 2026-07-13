@@ -617,6 +617,40 @@ service cloud.firestore {
     allow delete: if isAuth() && isPlatformAdmin();
   }
 
+  // TASK-290: interviews/{interviewId} — entrevistas de adoção
+  match /clubs/{clubId}/interviews/{interviewId} {
+    // Read: abrigo (admin/member) + applicant + platform admin
+    allow read: if isAuth() && (
+      isPlatformAdmin() ||
+      isShelterAdminOrMember(clubId) ||
+      resource.data.applicant_uid == request.auth.uid
+    );
+
+    // Create: abrigo admin OU applicant (proposta para si mesmo)
+    allow create: if isAuth() && (
+      isShelterAdmin(clubId) ||
+      (
+        request.resource.data.applicant_uid == request.auth.uid &&
+        request.resource.data.status == 'proposed'
+      )
+    );
+
+    // Update: abrigo admin (proposou/agendou/concluiu/avaliou) OU applicant (cancelar)
+    // Cada status só transiciona via service (VALID_TRANSITIONS).
+    allow update: if isAuth() && (
+      isShelterAdmin(clubId) ||
+      (
+        // Applicant pode cancelar
+        resource.data.applicant_uid == request.auth.uid &&
+        request.resource.data.status == 'cancelled' &&
+        request.resource.data.cancel_reason is string
+      )
+    );
+
+    // Delete: apenas platform admin
+    allow delete: if isAuth() && isPlatformAdmin();
+  }
+
   match /audit_logs/{logId} {
       // TASK-294 (LGPD Art. 18 V — portabilidade): o próprio usuário pode
       // ler os audit logs onde é ator ou sujeito (actor_id OU user_id == uid).
