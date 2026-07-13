@@ -5,10 +5,10 @@
  * roda no Firebase Functions runtime (CommonJS, Node 20). Os
  * testes aqui não exercitam o runtime real — eles testam a
  * lógica pura extraída em módulos `*Core.js` (ex:
- * `securityAlertsCore.js`). Como esses módulos só dependem
- * de `firebase-admin/firestore` (que pode não estar instalado
+ * `securityAlertsCore.js`, `mockDataCore.js`). Como esses módulos só
+ * dependem de `firebase-admin/firestore` (que pode não estar instalado
  * em CI), redirecionamos para um stub mínimo em
- * `__mocks__/firebase-admin-firestore.cjs`.
+ * `__mocks__/*.cjs`.
  */
 
 import { defineConfig } from 'vitest/config';

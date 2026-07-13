@@ -13,7 +13,9 @@ function isCompatible(profile, pet) {
   const isApartment = profile.housing_type === 'apartment_screened'
     || profile.housing_type === 'apartment_unscreened';
 
-  if (isApartment && (pet.size === 'large' || pet.size === 'giant')) return false;
+  if (isApartment && (pet.size === 'large' || pet.size === 'giant')) {
+    return false;
+  }
 
   if (pet.needs_yard === true) {
     const hasYard = profile.housing_type === 'house_with_yard' || profile.housing_type === 'farm';
