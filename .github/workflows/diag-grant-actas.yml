@@ -1,4 +1,4 @@
-name: "Diag: Deploy Functions via gcloud functions deploy"
+name: "Diag: Find function source bucket"
 
 on: workflow_dispatch
 
@@ -7,44 +7,34 @@ permissions:
   id-token: write
 
 jobs:
-  deploy:
+  find:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 5
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Prepare functions dir
-        run: |
-          mkdir -p functions/mocks
-          cp src/mocks/*.js functions/mocks/
-          echo "=== files in functions/ ==="
-          ls functions/
-
-      - name: Try gcloud functions deploy with --runtime
+      - name: Auth
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
           echo "$FIREBASE_SERVICE_ACCOUNT" > /tmp/firebase-sa.json
           gcloud auth activate-service-account --key-file=/tmp/firebase-sa.json --project=viralata-4cf0b
           gcloud config set project viralata-4cf0b
-          # Deploy via gcloud functions deploy (não firebase deploy)
-          # Pode ser que não precise de ActAs se o service account já é o mesmo
-          for FN in getMockStatus loadMockData clearMockData; do
-            echo "=== $FN ==="
-            gcloud functions deploy "$FN" \
-              --gen2 \
-              --region=southamerica-east1 \
-              --runtime=nodejs20 \
-              --source=functions \
-              --entry-point="$FN" \
-              --trigger-http \
-              --no-allow-unauthenticated \
-              --service-account=firebase-adminsdk-fbsvc@viralata-4cf0b.iam.gserviceaccount.com \
-              --project=viralata-4cf0b 2>&1 | tail -15
-          done
+
+      - name: Describe function
+        run: |
+          echo "=== gcloud functions describe getMockStatus ==="
+          gcloud functions describe getMockStatus \
+            --region=southamerica-east1 \
+            --gen2 \
+            --project=viralata-4cf0b 2>&1 | head -80
+
+      - name: List Cloud Run services
+        run: |
+          echo "=== Cloud Run services ==="
+          gcloud run services list --region=southamerica-east1 --project=viralata-4cf0b 2>&1
+
+      - name: Describe Cloud Run service
+        run: |
+          echo "=== getmockstatus (Cloud Run) ==="
+          gcloud run services describe getmockstatus \
+            --region=southamerica-east1 \
+            --project=viralata-4cf0b 2>&1 | head -80
