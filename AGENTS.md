@@ -139,6 +139,26 @@ Para validar a Regra A, a funcionalidade "voluntários" precisa ter:
   ```
   A CLI valida transições, atualiza métricas, e lock-a o JSON (single-instance). **Use a CLI em vez de editar o JSON manualmente.**
 
+### B.1.6 Cheat sheet — scrum.cjs (TASK-374 — Regra B canonical)
+
+A partir de 2026-07-12, **toda** transição de status de task DEVE usar a CLI canônica. **Proibido** editar `SCRUM_TASKS.json` manualmente para mudar status. Exceções: ajuste de descrição, nota, evidence, adição de tag.
+
+**Comandos disponíveis**:
+
+| Comando | Quando | Exemplo |
+|---|---|---|
+| `start` | Puxar task para trabalhar | `npm run scrum:start -- TASK-374 --owner mvs_xxx --branch feat/regra-b-scrum-cli` |
+| `done` | Finalizar (sem PR; só trabalho feito) | `npm run scrum:done -- TASK-374 --evidence "PR #N ou nota"` |
+| `review` | PR aberto, em review | `npm run scrum:review -- TASK-374 --pr "#N"` |
+| `block` | Bloqueio externo (decisão, dep) | `npm run scrum:block -- TASK-XXX --reason "aguarda TASK-YYY"` |
+| `drop` | Descarte (manter histórico) | `npm run scrum:drop -- TASK-XXX --reason "superseded por TASK-YYY"` |
+| `list` | Listar tasks por status/owner | `npm run scrum:list -- in_progress` |
+| `show` | Detalhe de uma task | `npm run scrum:show -- TASK-374` |
+
+**Por que scrum.cjs e não `node -e`**: lock single-instance, atomic write, validação de transições, recálculo de métricas automático. `node -e` é legado.
+
+**Substituto do `autosync.cjs` (TASK-373)**: o daemon `autosync.cjs` (mavis messages → JSON) é **DEPRECATED** a partir de 2026-07-12. Substitua por `scrum.cjs` direto. Se precisar de pipeline automático de mensagens, abra task para implementar (ou use `sync.cjs --watch` que já cobre o lado do embed).
+
 ### B.2 Auto-import do painel-scrum.html (OBRIGATÓRIO)
 
 > **O painel visual (`painel-scrum.html`) DEVE estar sempre em dia com o JSON. Não basta editar o JSON — o HTML precisa refletir a mudança SEM intervenção manual.**

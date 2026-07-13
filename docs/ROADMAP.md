@@ -1,12 +1,14 @@
 # Roadmap — Viralata
 
-> Plano de organização do desenvolvimento por fases. Ver
-> `docs/DESIGN_SYSTEM.md` para o fundamento visual detalhado por trás das
-> Fases 0 e 1 abaixo. **Fases 0, 1 e 2 estão concluídas, e a maior parte da
-> Fase 3 também** — ver "O que já está entregue" abaixo. O que resta na
-> Fase 3 depende de decisão externa (conta de ads real) ou é limitação
-> estrutural documentada (cobertura de cidades do filtro de raio, CVE do
-> `xlsx` sem patch no npm).
+> Plano de organização do desenvolvimento por fases. **Leia primeiro
+> `docs/STATE.md`** — o documento canônico de estado atual, atualizado em
+> cada movimento, com índice dos demais docs e o plano de ataque.
+> Ver `docs/DESIGN_SYSTEM.md` para o fundamento visual detalhado por trás
+> das Fases 0 e 1 abaixo. **Fases 0, 1 e 2 estão concluídas, e a maior
+> parte da Fase 3 também** — ver "O que já está entregue" abaixo. O que
+> resta na Fase 3 depende de decisão externa (conta de ads real) ou é
+> limitação estrutural documentada (cobertura de cidades do filtro de raio,
+> CVE do `xlsx` sem patch no npm).
 
 ## Roadmap paralelo: Sistema de Gestão do Abrigo
 
@@ -16,7 +18,7 @@ completo de gestão da causa animal. Ver
 **[`docs/SHELTER_MGMT_ROADMAP.md`](./SHELTER_MGMT_ROADMAP.md)** para o
 plano detalhado (22 fases, 5 macro-blocos, ~25-40 dias de trabalho).
 
-Status atual (2026-07-11):
+Status atual (2026-07-12, pós-PR #69-73):
 
 | Fase | Nome | Status | PR |
 |---|---|---|---|
@@ -38,13 +40,38 @@ Status atual (2026-07-11):
 | 15 | Central de Pendências (Kanban) ⚠️ GRANDE | ✅ Concluída | #63 |
 | 16 | Relatórios de Abrigos | ✅ Concluída | merged main |
 | 17 | Indicadores de Vitrines + Voluntários | ✅ Concluída | merged main |
-| 18 | Busca Inteligente ⚠️ GRANDE | 🚨 Decisão pendente (Meilisearch vs Typesense vs Algolia vs Firestore) | — |
-| 19 | Termos e Políticas completos (Legal) ⚠️ GRANDE | ✅ Concluída | #58 |
-| 20 | Segurança Avançada | ✅ Concluída | #62 |
-| 21 | Painel de Saúde da Plataforma (Admin Master) | ✅ Concluída | #60 |
+| 18 | Smart Search (Firestore nativo) ⚠️ GRANDE | ✅ Concluída (decisão Firestore nativo 2026-07-11) | #68 |
+| 19 | Termos e Políticas completos (Legal) ⚠️ GRANDE | ✅ Concluída | #58 + docs legais v2 (11 textos) mergeados em #73 |
+| 20 | Segurança Avançada | ✅ Concluída | #62 + #69 (App Check + hCaptcha + audit) |
+| 21 | Painel de Saúde da Plataforma (Admin Master) | ✅ Concluída | #60 + #71 (admin: ban, broadcast, metrics, retenção) |
 | 22 | Migração Final + Cutover | ✅ Concluída | #66 |
 
-**21/22 fases concluídas** (0–17, 19, 20, 21, 22 ✅; apenas Fase 18 ⏸️).
+**22/22 fases concluídas** ✅ — deploy em produção em viralata.app / viralata.web.app.
+
+Convenções atualizadas: ✅ concluído · 🟡 em andamento · ⏸️ aguardando · ❌ bloqueado.
+Cada fase = 1 feature flag (`SHELTER_*`) default OFF. Módulo isolado em
+`src/modules/shelter/`. Princípios: schema evolutivo, dual-read/write
+durante migração, defense in depth, audit log de tudo.
+
+> ⚠️ **Atenção (2026-07-12)**: as 22 fases estão em `origin/main`, mas o
+> **main local do PC** está 84 commits atrás. 3 worktrees ahead-of-main
+> têm trabalho substantivo (voluntários + legal v2 + housekeeping) pronto
+> para virar PR. Ver `docs/STATE.md` Seção 7.
+
+## Pós-cutover (sprint 2026-W28, 11/07 → 18/07)
+
+Após as 22 fases, o sprint atual foca em estabilização, LGPD compliance
+e débitos técnicos. Tracks paralelos:
+
+| Track | Tarefas principais | Owner |
+|---|---|---|
+| **LGPD compliance** | termo v2 voluntários (TASK-209), 3 revisões jurídicas (TASK-006/007/008), ativar SHELTER_LEGAL_TERMS_V1 (TASK-113), DPO (TASK-184), breach ANPD (TASK-037/187) | human-jurídico + human |
+| **Decisões de produto** | SendGrid vs Resend (TASK-365), FCM push real (TASK-367), Foster = Voluntário? (TASK-362), Validação CPF (TASK-370), Calendar integration (TASK-371) | human |
+| **Débitos técnicos** | 10+ components sem test (TASK-013), auditoria a11y (TASK-014/199), atualizar AGENTS.md Regra B (TASK-374) | viralata-coder |
+| **Features pequenas** | Sentry + Crashlytics (TASK-239), volunteer entity no Smart Search (TASK-241), PDF certificado (TASK-248), Bridge Foster↔Voluntário (TASK-247) | viralata-coder |
+| **Hygiene main local** | sincronizar 84 commits, remover 3 worktrees órfãos, limpar stash (TASK-045), unificar JSON local com origin | human (delicado) |
+
+Detalhes completos, fila de execução e bloqueios em `docs/STATE.md` Seção 6 e 9.
 
 Convenções: ✅ concluído · 🟡 em andamento · ⏸️ aguardando · ❌ bloqueado. Cada fase = 1 feature flag (`SHELTER_*`) default OFF. Módulo isolado em `src/modules/shelter/`. Princípios: schema evolutivo, dual-read/write durante migração, defense in depth, audit log de tudo.
 
