@@ -1,0 +1,20 @@
+name: "Diag: Get Cloud Functions logs"
+
+on: workflow_dispatch
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  logs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Auth
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          echo "$FIREBASE_SERVICE_ACCOUNT" > /tmp/firebase-sa.json
+          gcloud auth activate-service-account --key-file=/tmp/firebase-sa.json --project=viralata-4cf0b
+          gcloud config set project viralata-4cf0b
