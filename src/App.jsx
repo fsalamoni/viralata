@@ -37,6 +37,7 @@ const PublicDebugPage = lazy(() => import('@/pages/PublicDebugPage'));
 const ShelterContractsList = lazy(() => import('@/modules/contracts/pages/ShelterContractsList'));
 const MyContracts = lazy(() => import('@/modules/contracts/pages/MyContracts'));
 const PostAdoptionDashboard = lazy(() => import('@/modules/shelter/components/PostAdoptionDashboard'));
+const ShelterInterviewsList = lazy(() => import('@/modules/interview/pages/ShelterInterviewsList'));
 const OnboardingQuestionnaire = lazy(() => import('@/modules/onboarding/pages/OnboardingQuestionnaire'));
 
 // ─── Pets ─────────────────────────────────────────────────────────────────────
@@ -405,6 +406,7 @@ export default function App() {
               <Route path="abrigos/:shelterId/contracts" element={<ShelterContractsList />} />
       <Route path="perfil/contratos" element={<MyContracts />} />
       <Route path="adoptions" element={<PostAdoptionDashboard />} />
+      <Route path="abrigos/:shelterId/interviews" element={<ShelterInterviewsList />} />
       </Routes>
               </OnboardingGate>
               </BannedGate>
