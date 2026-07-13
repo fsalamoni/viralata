@@ -573,7 +573,15 @@ service cloud.firestore {
 
     // ─── Auditoria ────────────────────────────────────────────────────────────
     match /audit_logs/{logId} {
-      allow read: if isPlatformAdmin();
+      // TASK-294 (LGPD Art. 18 V — portabilidade): o próprio usuário pode
+      // ler os audit logs onde é ator ou sujeito (actor_id OU user_id == uid).
+      // Mantém a regra original de admin ter acesso irrestrito.
+      allow read: if isPlatformAdmin() || (
+        isAuth() && (
+          resource.data.actor_id == request.auth.uid
+          || resource.data.user_id == request.auth.uid
+        )
+      );
       allow create: if isAuth();
       allow update, delete: if false; // Imutável
     }
