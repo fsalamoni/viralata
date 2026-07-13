@@ -28,18 +28,22 @@ import json, sys
 coll = sys.argv[1]
 d = json.load(open('/tmp/out.json'))
 if 'documents' in d:
-    print(f'Found {len(d["documents"])} {coll} (showing up to 15):')
+    print('Found ' + str(len(d['documents'])) + ' ' + coll)
     for doc in d['documents'][:15]:
         fields = doc.get('fields', {})
         doc_id = doc['name'].split('/')[-1]
-        # try multiple field names
-        name_field = fields.get('title') or fields.get('name') or fields.get('display_name') or fields.get('label') or {}
-        name = name_field.get('stringValue', '?')
+        keys = ['title', 'name', 'display_name', 'label']
+        name = '?'
+        for k in keys:
+            v = fields.get(k, {}).get('stringValue')
+            if v:
+                name = v
+                break
         status = fields.get('status', {}).get('stringValue', '')
         city = fields.get('city', {}).get('stringValue', '')
         state = fields.get('state', {}).get('stringValue', '')
         owner_id = fields.get('owner_id', {}).get('stringValue', '')
-        print(f'  {doc_id:<25} name={name:<20} status={status:<12} city={city:<20} state={state:<3} owner={owner_id}')
+        print('  ' + doc_id + ' | ' + name + ' | ' + status + ' | ' + city + ' | ' + state + ' | ' + owner_id)
 else:
     print('ERROR:', d)
 INNER
