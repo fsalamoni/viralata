@@ -19,18 +19,21 @@ jobs:
           gcloud auth activate-service-account --key-file=/tmp/firebase-sa.json --project=viralata-4cf0b
           gcloud config set project viralata-4cf0b
 
-      - name: Pull and extract image
+      - name: Pull and list ALL files
         run: |
           gcloud auth configure-docker southamerica-east1-docker.pkg.dev --quiet 2>&1
           docker pull "southamerica-east1-docker.pkg.dev/viralata-4cf0b/gcf-artifacts/viralata--4cf0b__southamerica--east1__on_pet_created_notify_radar@sha256:f2fc632c6be938dc59e5440c110120a40e26ada7f327c4e93c9a40516a826a8b" 2>&1 | tail -3
           CONTAINER=$(docker create "southamerica-east1-docker.pkg.dev/viralata-4cf0b/gcf-artifacts/viralata--4cf0b__southamerica--east1__on_pet_created_notify_radar@sha256:f2fc632c6be938dc59e5440c110120a40e26ada7f327c4e93c9a40516a826a8b")
-          echo "=== Files in /workspace ==="
-          docker cp "$CONTAINER:/workspace" - 2>/dev/null | tar -tv 2>&1 | head -30
-          echo "=== mockData.js content ==="
+          echo "=== All files in /workspace ==="
+          docker cp "$CONTAINER:/workspace" - 2>/dev/null | tar -tv 2>&1 | head -80
+          echo "=== Check if mocks dir exists ==="
+          docker cp "$CONTAINER:/workspace/mocks" - 2>/dev/null | tar -tv 2>&1 | head -20
+          echo "=== Check .gcloudignore content ==="
+          docker cp "$CONTAINER:/workspace/.gcloudignore" - 2>/dev/null
+          echo "=== Check functions/.gcloudignore content (try) ==="
+          docker cp "$CONTAINER:/workspace/functions/.gcloudignore" - 2>/dev/null
+          echo "=== Check .gitignore content ==="
+          docker cp "$CONTAINER:/workspace/.gitignore" - 2>/dev/null
+          echo "=== Try cat /workspace/mockData.js (new path) ==="
           docker cp "$CONTAINER:/workspace/mockData.js" - 2>/dev/null | head -50
-          echo "=== mocks/package.json content ==="
-          docker cp "$CONTAINER:/workspace/mocks/package.json" - 2>/dev/null
-          echo ""
-          echo "=== mocks/index.js (first 30 lines) ==="
-          docker cp "$CONTAINER:/workspace/mocks/index.js" - 2>/dev/null | head -30
           docker rm "$CONTAINER" 2>&1 | head -2
