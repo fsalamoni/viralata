@@ -1,4 +1,4 @@
-name: "Diag: Grant ActAs at PROJECT level"
+name: "Diag: Grant ActAs on Compute default SA"
 
 on: workflow_dispatch
 
@@ -19,15 +19,16 @@ jobs:
           gcloud auth activate-service-account --key-file=/tmp/firebase-sa.json --project=viralata-4cf0b
           gcloud config set project viralata-4cf0b
 
-          # Tentar dar o role de Service Account User no project inteiro
-          # (cobre qualquer SA no project)
-          echo "=== Grant Service Account User at project level ==="
-          gcloud projects add-iam-policy-binding viralata-4cf0b \
+          # Grant on the specific compute default SA
+          gcloud iam service-accounts add-iam-policy-binding \
+            1060557663725-compute@developer.gserviceaccount.com \
             --member="serviceAccount:firebase-adminsdk-fbsvc@viralata-4cf0b.iam.gserviceaccount.com" \
-            --role="roles/iam.serviceAccountUser" 2>&1 | head -20
+            --role="roles/iam.serviceAccountUser" \
+            --project=viralata-4cf0b 2>&1 | head -20
 
-          # Tentar também iam.serviceAccountAdmin
-          echo "=== Grant Service Account Admin at project level ==="
-          gcloud projects add-iam-policy-binding viralata-4cf0b \
+          # And on the appspot SA
+          gcloud iam service-accounts add-iam-policy-binding \
+            viralata-4cf0b@appspot.gserviceaccount.com \
             --member="serviceAccount:firebase-adminsdk-fbsvc@viralata-4cf0b.iam.gserviceaccount.com" \
-            --role="roles/iam.serviceAccountAdmin" 2>&1 | head -20
+            --role="roles/iam.serviceAccountUser" \
+            --project=viralata-4cf0b 2>&1 | head -20
