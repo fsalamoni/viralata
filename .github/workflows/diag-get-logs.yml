@@ -1,0 +1,16 @@
+name: Get Cloud Functions logs
+on: workflow_dispatch
+jobs:
+  logs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Get logs
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          echo "$FIREBASE_SERVICE_ACCOUNT" > /tmp/firebase-sa.json
+          gcloud auth activate-service-account --key-file=/tmp/firebase-sa.json --project=viralata-4cf0b
+          gcloud config set project viralata-4cf0b
+          echo "=== LAST 50 LOG ENTRIES (getMockStatus) ==="
+          gcloud functions logs read getMockStatus --region=southamerica-east1 --gen2 --limit=30 2>&1 | tail -60
