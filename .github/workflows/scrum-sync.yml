@@ -34,6 +34,24 @@ jobs:
       - name: Run sync (rewrites public/scrum.html + commits back)
         run: |
           node .harness/sync.cjs --fix
+          # FORÇAR update do topbar com main @ atual e worktree count
+          # (independente do que o sync.cjs fez)
+          MAIN_COMMIT=$(git rev-parse HEAD)
+          MAIN_SHORT=$(echo $MAIN_COMMIT | cut -c1-7)
+          WT_COUNT=$(git worktree list | wc -l)
+          # -1 porque a primeira linha é o main worktree
+          WT_COUNT=$((WT_COUNT - 1))
+          WT_TXT="0 worktrees ativos"
+          if [ "$WT_COUNT" -gt 0 ]; then
+            WT_TXT="+${WT_COUNT} worktree"
+            if [ "$WT_COUNT" -gt 1 ]; then
+              WT_TXT="${WT_TXT}s ativo${WT_COUNT}s"
+            else
+              WT_TXT="${WT_TXT} ativo"
+            fi
+          fi
+          sed -i 's|<span class="pill mono">main @ [0-9a-f]\{7\}</span>|<span class="pill mono">main @ '${MAIN_SHORT}'</span>|' public/scrum.html
+          sed -i 's|<span class="pill">[+]\?[0-9]\+ worktrees\? ativos\?</span>|<span class="pill">'${WT_TXT}'</span>|' public/scrum.html
           # Se o public/scrum.html mudou, commit + push
           if git diff --quiet public/scrum.html; then
             echo "sem mudanças em public/scrum.html"
