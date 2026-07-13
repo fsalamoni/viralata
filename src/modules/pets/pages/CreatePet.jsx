@@ -18,6 +18,7 @@ import { toast } from 'sonner';
 import { Upload, ArrowLeft, PawPrint } from 'lucide-react';
 import { cn } from '@/core/lib/utils';
 import PageHero from '@/components/PageHero';
+import { RescueStep } from '../components/RescueStep';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import AdoptionFormBuilder from '../components/AdoptionFormBuilder';
 import { normalizeForm } from '../domain/adoptionForm';
@@ -396,7 +397,7 @@ export default function CreatePet() {
             </>
           )}
 
-          {step === 2 && (
+          {step === 4 && (
             <>
               <h2 className="mb-4 font-['Sora'] text-base font-bold text-foreground">Saúde e requisitos</h2>
               <div className="space-y-3.5">
@@ -469,7 +470,11 @@ export default function CreatePet() {
             </>
           )}
 
-          {step === 3 && (
+          {step === 2 && (
+          <RescueStep form={watch()} setValue={setValue} />
+        )}
+
+        {step === 3 && (
             <>
               <h2 className="mb-4 font-['Sora'] text-base font-bold text-foreground">Revisão</h2>
               <div className="mb-4 flex gap-3.5">
