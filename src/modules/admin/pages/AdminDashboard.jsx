@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Shield, PawPrint, Building2, AlertTriangle, Users, BarChart3, ScrollText, Bell, SlidersHorizontal, Flag } from 'lucide-react';
+import { Shield, PawPrint, Building2, AlertTriangle, Users, BarChart3, ScrollText, Bell, SlidersHorizontal, Flag, Database } from 'lucide-react';
 import PageHero from '@/components/PageHero';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 
@@ -23,6 +23,7 @@ export default function AdminDashboard() {
     { icon: Bell, title: 'Notificações', desc: 'Inspecionar entregas, links e leituras das notificações geradas', link: '/admin/notificacoes', tone: 'bg-accent/10 text-accent' },
     { icon: SlidersHorizontal, title: 'Configurações', desc: 'Ajustar textos, rótulos e parâmetros operacionais auditáveis da plataforma', link: '/admin/configuracoes', tone: 'bg-highlight/20 text-[hsl(30,60%,32%)]' },
     { icon: Flag, title: 'Flags de atualizações', desc: 'Ligar e desligar as feature flags que liberam novidades na plataforma', link: '/admin/flags', tone: 'bg-primary/10 text-primary' },
+    { icon: Database, title: 'Dados demo (mock data)', desc: 'Carregar ou limpar o pacote de dados de demonstração (gated por flag)', link: '/admin/mock-data', tone: 'bg-accent/10 text-accent' },
   ];
 
   return (

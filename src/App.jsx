@@ -64,6 +64,7 @@ const AdminAuditLog = lazy(() => import('@/modules/admin/pages/AdminAuditLog'));
 const AdminNotifications = lazy(() => import('@/modules/admin/pages/AdminNotifications'));
 const AdminPlatformSettings = lazy(() => import('@/modules/admin/pages/AdminPlatformSettings'));
 const AdminFlags = lazy(() => import('@/modules/admin/pages/AdminFlags'));
+const AdminMockData = lazy(() => import('@/modules/admin/pages/AdminMockData'));
 
 // ─── QueryClient ─────────────────────────────────────────────────────────────
 const queryClient = new QueryClient({
@@ -301,6 +302,10 @@ export default function App() {
                 <Route
                   path="/admin/flags"
                   element={<AdminRoute>{withLayout('AdminFlags', AdminFlags)}</AdminRoute>}
+                />
+                <Route
+                  path="/admin/mock-data"
+                  element={<AdminRoute>{withLayout('AdminMockData', AdminMockData)}</AdminRoute>}
                 />
 
                 {/* ── Redirects legados ─────────────────────────────────── */}

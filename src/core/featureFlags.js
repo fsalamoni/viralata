@@ -107,6 +107,23 @@ export const FEATURE_FLAG = Object.freeze({
    * — puramente aditiva, nenhuma diferença visual antes de ligar.
    */
   COMMUNITY_NGO_PARITY: 'community_ngo_parity',
+
+  /**
+   * Painel de dados demo: quando ligada, expõe a rota `/admin/mock-data`
+   * com botões para carregar e limpar os conjuntos de dados mockados
+   * que vivem em `src/mocks/`. Os documentos são marcados com
+   * `_mock: true` para permitir a limpeza precisa sem tocar em nada
+   * criado por usuários reais. Útil para demos, treinamento,
+   * validação visual de UX com dados realistas e testes de fluxo
+   * ponta-a-ponta sem precisar popular manualmente cada coleção.
+   *
+   * Restrito ao platform_admin (a própria rota tem `AdminRoute`).
+   * Desligada por default — a página simplesmente não aparece no menu
+   * do admin. Acionar a flag em produção é decisão do admin master
+   * (recomenda-se manter DESLIGADA em prod salvo janelas controladas
+   * de demo).
+   */
+  MOCK_DATA_PANEL: 'mock_data_panel',
 });
 
 /** Metadados de exibição para o painel de flags (admin master). */
@@ -196,6 +213,17 @@ export const FEATURE_FLAG_META = Object.freeze({
       + 'Configurações). Desligada (default), a comunidade mantém '
       + 'seu padrão antigo. Puramente aditivo.',
   },
+  [FEATURE_FLAG.MOCK_DATA_PANEL]: {
+    label: 'Painel de dados demo (mock data)',
+    description:
+      'Expõe a rota `/admin/mock-data` com botões para carregar e '
+      + 'limpar os conjuntos de dados mockados. Útil para demos, '
+      + 'treinamento e validação visual de UX. Os documentos são '
+      + 'marcados com `_mock: true`, então a limpeza é precisa e não '
+      + 'toca em nada criado por usuários reais. Restrito ao '
+      + 'platform_admin. Recomenda-se manter DESLIGADA em produção '
+      + 'salvo janelas controladas de demo. Puramente aditivo.',
+  },
 });
 
 /**
@@ -215,6 +243,7 @@ export const DEFAULT_FEATURE_FLAGS = Object.freeze({
   [FEATURE_FLAG.PAGE_HERO_ENABLED]: false,
   [FEATURE_FLAG.STANDARDIZED_PAGE_LAYOUT]: false,
   [FEATURE_FLAG.COMMUNITY_NGO_PARITY]: false,
+  [FEATURE_FLAG.MOCK_DATA_PANEL]: true,
 });
 
 /**
