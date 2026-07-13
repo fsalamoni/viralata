@@ -1,4 +1,4 @@
-name: "Diag: Get Cloud Functions logs"
+name: "Diag: List pets in Firestore directly"
 
 on: workflow_dispatch
 
@@ -7,14 +7,66 @@ permissions:
   id-token: write
 
 jobs:
-  logs:
+  verify:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Auth
+      - name: List pets via Firestore REST
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
+          # Get access token
           echo "$FIREBASE_SERVICE_ACCOUNT" > /tmp/firebase-sa.json
-          gcloud auth activate-service-account --key-file=/tmp/firebase-sa.json --project=viralata-4cf0b
-          gcloud config set project viralata-4cf0b
+          ACCESS_TOKEN=$(node -e "
+            const {google} = require('google-auth-library');
+            const fs = require('fs');
+            const key = JSON.parse(fs.readFileSync('/tmp/firebase-sa.json', 'utf8'));
+            const jwtClient = new google.auth.JWT({
+              email: key.client_email,
+              key: key.private_key,
+              scopes: ['https://www.googleapis.com/auth/datastore', 'https://www.googleapis.com/auth/cloud-platform'],
+            });
+            jwtClient.authorize().then(() => {
+              jwtClient.getAccessToken().then(t => process.stdout.write(t.token));
+            });
+          " 2>&1 | tail -1)
+          echo "Token: ${ACCESS_TOKEN:0:30}..."
+
+          echo ""
+          echo "=== Pets available (limit 20) ==="
+          curl -s -H "Authorization: Bearer $ACCESS_TOKEN" \
+            "https://firestore.googleapis.com/v1/projects/viralata-4cf0b/databases/viralata/documents/pets?pageSize=20" \
+            2>&1 | python3 -c "
+import json, sys
+d = json.load(sys.stdin)
+if 'documents' in d:
+  print(f'Found {len(d[\"documents\"])} pets')
+  for p in d['documents']:
+    fields = p.get('fields', {})
+    name = fields.get('title', {}).get('stringValue', '?')
+    species = fields.get('species', {}).get('stringValue', '?')
+    status = fields.get('status', {}).get('stringValue', '?')
+    city = fields.get('city', {}).get('stringValue', '?')
+    state = fields.get('state', {}).get('stringValue', '?')
+    print(f'  {name:<15} {species:<10} {status:<12} {city:<20} {state}')
+else:
+  print(json.dumps(d, indent=2)[:500])
+" 2>&1 | head -20
+
+          echo ""
+          echo "=== Users (limit 5) ==="
+          curl -s -H "Authorization: Bearer $ACCESS_TOKEN" \
+            "https://firestore.googleapis.com/v1/projects/viralata-4cf0b/databases/viralata/documents/users?pageSize=5" \
+            2>&1 | python3 -c "
+import json, sys
+d = json.load(sys.stdin)
+if 'documents' in d:
+  print(f'Found {len(d[\"documents\"])} users (first 5)')
+  for u in d['documents'][:5]:
+    fields = u.get('fields', {})
+    name = fields.get('display_name', {}).get('stringValue', '?')
+    email = fields.get('email', {}).get('stringValue', '?')
+    print(f'  {name:<25} {email}')
+else:
+  print(json.dumps(d, indent=2)[:500])
+" 2>&1 | head -10
