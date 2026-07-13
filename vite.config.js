@@ -19,7 +19,7 @@ export default defineConfig(({ mode }) => {
         // usuário ainda vê o bundle velho cacheado pelo SW antigo".
         skipWaiting: true,
         clientsClaim: true,
-        includeAssets: ['favicon.svg', 'apple-touch-icon.png', 'pwa-192.png', 'pwa-512.png'],
+        includeAssets: ['favicon.svg', 'apple-touch-icon.png', 'pwa-192.png', 'pwa-512.png', 'scrum.html'],
         manifest: {
           name: 'Viralata - Adoção Responsável',
           short_name: 'Viralata',
@@ -50,7 +50,11 @@ export default defineConfig(({ mode }) => {
           ],
           // navigateFallbackDenylist: rotas de API/SW continuam via Firebase
           // Hosting, não caem no fallback do Workbox.
-          navigateFallbackDenylist: [/^\/api/, /^\/sw\.js$/],
+          navigateFallbackDenylist: [
+            /^\/api/,
+            /^\/sw\.js$/,
+            /^\/scrum/, // Painel scrum (servido direto do Firebase Hosting, não pelo SW)
+          ],
         },
       }),
     ],
