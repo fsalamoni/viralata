@@ -50,6 +50,10 @@ const QUIET = ARGS.includes('--quiet') || process.env.SYNC_QUIET === '1';
 const FORCE = ARGS.includes('--force');
 const WATCH = ARGS.includes('--watch');
 const SERVE = ARGS.includes('--serve');
+// TASK-378: --pull faz git pull --ff-only periódico no watcher, para o
+// painel local acompanhar o remoto automaticamente (sem pull manual).
+const PULL = ARGS.includes('--pull');
+const PULL_INTERVAL_MS = Number(process.env.SYNC_PULL_INTERVAL_MS || 60_000);
 
 /* ─── helpers ─────────────────────────────────────────────────────── */
 
@@ -243,6 +247,30 @@ function startWatch() {
 
   // fs.watch é instável no Windows com editores que usam save-as (escreve+rename).
   // Poll é mais confiável nesse caso. Vamos usar chokidar-style polling.
+  // TASK-378: auto-pull do remoto. A cada intervalo (default 60s),
+  // se o repo estiver limpo e num branch com upstream, faz
+  // `git pull --ff-only`. Fast-forward puro: nunca cria merge nem
+  // sobrescreve trabalho local — com mudanças locais ou histórico
+  // divergente, apenas loga e segue (resolver manualmente).
+  if (PULL) {
+    log(`auto-pull ativo (a cada ${Math.round(PULL_INTERVAL_MS / 1000)}s, --ff-only)`);
+    const doPull = () => {
+      const dirty = sh('git status --porcelain');
+      if (dirty === null) { log('⚠ auto-pull: git indisponível'); return; }
+      if (dirty !== '') { log('⚠ auto-pull: mudanças locais não commitadas — pull adiado'); return; }
+      const before = sh('git rev-parse --short HEAD');
+      const out = sh('git pull --ff-only 2>&1');
+      const after = sh('git rev-parse --short HEAD');
+      if (out === null) {
+        log('⚠ auto-pull: pull falhou (histórico divergente? rode git status no repo)');
+      } else if (before !== after) {
+        log(`✓ auto-pull: ${before} → ${after} (painel será re-embedado se o JSON mudou)`);
+      }
+    };
+    doPull();
+    setInterval(doPull, PULL_INTERVAL_MS).unref?.();
+  }
+
   let lastMtime = fs.statSync(JSON_PATH).mtimeMs;
   const interval = setInterval(() => {
     let mtime;

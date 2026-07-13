@@ -127,6 +127,7 @@ npm run sync           # one-shot
 npm run sync:fix       # one-shot + corrige
 npm run sync:watch     # long-running watcher
 npm run sync:serve     # watcher + HTTP server (auto-reload no browser)
+npm run sync:live      # sync:serve + git pull --ff-only automático a cada 60s (uso local recomendado)
 ```
 
 **Comportamento do painel sob auto-sync:**

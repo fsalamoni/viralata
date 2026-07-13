@@ -10095,6 +10095,33 @@
       ],
       "startedAt": "2026-07-11",
       "resolvedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-378",
+      "title": "Painel scrum: auto-pull do remoto no watcher (npm run sync:live)",
+      "type": "feature",
+      "category": "infra",
+      "status": "done",
+      "priority": "high",
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
+      "flag": null,
+      "worktree": null,
+      "pr": "#109",
+      "tags": [
+        "harness",
+        "regra-b",
+        "auto-sync"
+      ],
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-202"
+      ],
+      "evidence": "sync.cjs --pull: git pull --ff-only a cada 60s no watcher (adiado com mudanças locais; nunca cria merge); npm run sync:live; causa raiz do painel local divergente era clone 99+ commits atrás do origin/main",
+      "description": "O painel local mostrava cenário antigo porque o clone não acompanhava o remoto. Com sync:live, o painel puxa o main automaticamente conforme o desenvolvimento se concretiza.",
+      "createdAt": "2026-07-13",
+      "updatedAt": "2026-07-13",
+      "resolvedAt": "2026-07-13"
     }
   ],
   "definitionOfDone": [
@@ -10263,7 +10290,7 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 367,
-    "done": 128,
+    "done": 129,
     "inProgress": 4,
     "inReview": 1,
     "blocked": 0,
@@ -10326,6 +10353,6 @@
         "body": "Relatório fechado. Path: C:\\Users\\Usuario\\.mavis\\agents\\general\\workspace\\rel..."
       }
     ],
-    "total": 367
+    "total": 368
   }
 }
