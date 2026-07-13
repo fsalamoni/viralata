@@ -340,11 +340,11 @@ describe('globalSearch', () => {
 // ─── getSearchableEntities ─────────────────────────────────────────────
 
 describe('getSearchableEntities', () => {
-  it('retorna 5 entities', () => {
+  it('retorna 6 entities (TASK-241: +volunteer)', () => {
     const list = getSearchableEntities();
-    expect(list.length).toBe(5);
+    expect(list.length).toBe(6);
     expect(list.map((e) => e.id).sort()).toEqual(
-      ['adopter', 'exhibition', 'foster', 'pet', 'shelter'].sort(),
+      ['adopter', 'exhibition', 'foster', 'pet', 'shelter', 'volunteer'].sort(),
     );
   });
 
@@ -468,8 +468,8 @@ describe('edge cases', () => {
     mockGetDocs.mockResolvedValue({ docs: [] });
     const r = await globalSearch({});
     expect(r.totalCount).toBe(0);
-    // byEntity contém todas as 5 entities, com shelter preenchido (público)
+    // byEntity contém todas as 6 entities, com shelter preenchido (público)
     expect(r.byEntity.shelter).toEqual([]);
-    expect(Object.keys(r.byEntity).length).toBe(5);
+    expect(Object.keys(r.byEntity).length).toBe(6);
   });
 });

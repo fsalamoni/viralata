@@ -586,7 +586,7 @@
       ]
     },
     {
-      "collectionGroup": "volunteer_profiles",
+      "collectionGroup": "volunteers",
       "queryScope": "COLLECTION",
       "fields": [
         {
@@ -594,7 +594,7 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "display_name",
+          "fieldPath": "name",
           "order": "ASCENDING"
         }
       ]

@@ -1,5 +1,5 @@
 /**
- * @fileoverview Domínio: Smart Search (Fase 18).
+ * @fileoverview Domínio: Smart Search (Fase 18) + Volunteer entity (TASK-241).
  *
  * Define a busca inteligente multi-entidade do Sistema de Gestão do
  * Abrigo. A busca é executada pelo `searchService` em cima do Firestore
@@ -13,6 +13,12 @@
  *                 listagem pública)
  *   - foster:     subcollection `clubs/{clubId}/fosters`
  *   - exhibition: subcollection `clubs/{clubId}/exhibitions`
+ *   - volunteer:  collection `volunteers` (top-level, multi-tenant,
+ *                 LGPD-sanitized PII — TASK-241)
+ *
+ * LGPD (TASK-241): a entity `volunteer` é SEMPRE autenticada (isPublic=false)
+ * e o resultado é sanitizado: email aparece só como domínio, phone é
+ * mascarado, address/notes são omitidos, has_vehicle e skills aparecem.
  *
  * Ranking:
  *   1. Match exato (case-insensitive)        → score 1.00
@@ -21,6 +27,7 @@
  *   4. Match de token (palavra)              → score 0.40
  *
  * @see docs/SHELTER_MGMT_ROADMAP.md § Fase 18
+ * @see TASK-241 — Smart Search: volunteer entity + LGPD sanitize
  */
 
 import { z } from 'zod';
@@ -117,6 +124,29 @@ export const SEARCH_ENTITIES = Object.freeze({
     titleField: 'title',
     subtitleField: 'location',
     urlPattern: '/admin/exhibitions/{id}',
+  }),
+  // TASK-241: volunteer entity — multi-tenant, LGPD-sanitized
+  volunteer: Object.freeze({
+    id: 'volunteer',
+    label: 'Voluntários',
+    collection: 'volunteers',
+    pathType: 'top-level',
+    isPublic: false,  // SEMPRE autenticada — abrigo busca seus voluntários
+    // searchableFields NÃO inclui PII direta (email/phone/notes/address) —
+    // a busca é por nome, skills (string array) e city.
+    searchableFields: Object.freeze(['name', 'display_name', 'skills', 'city']),
+    filterableFields: Object.freeze({
+      status: { type: 'string' },
+      skills: { type: 'array' },
+      availability_days: { type: 'array' },
+      has_vehicle: { type: 'boolean' },
+      shelter_club_id: { type: 'string', required: true },
+    }),
+    titleField: 'name',
+    subtitleField: 'city',
+    urlPattern: '/admin/volunteers/{id}',
+    // Flag que indica sanitize LGPD — searchService aplica sanitizePii().
+    lgpdSanitize: true,
   }),
 });
 
@@ -257,6 +287,52 @@ export function matchContains(text, needle) {
   const t = normalizeText(text);
   const n = normalizeText(needle);
   return t.includes(n);
+}
+
+/** Schema para o intervalo de datas. ISO 8601 (YYYY-MM-DD). */
+// ─── LGPD helpers (TASK-241) ──────────────────────────────────────────
+
+/**
+ * Sanitiza PII de um doc antes de mapear para SearchResult.
+ * Aplicado apenas para entities com `lgpdSanitize: true`.
+ *
+ * - `email` / `contact_email`: mantém só o domínio
+ *   (ex: `joao@gmail.com` → `gmail.com`).
+ * - `phone` / `contact_phone` / `mobile`: mascara os 4 dígitos
+ *   do meio (ex: `11999887766` → `11999-****`).
+ * - `address` / `notes` / `bio`: OMITIDOS (não vão pro resultado).
+ * - Outros campos (skills, city, has_vehicle, availability_days,
+ *   name/display_name): MANTIDOS.
+ *
+ * @param {object} doc - doc cru do Firestore
+ * @returns {object} cópia do doc com PII sanitizada
+ */
+export function sanitizePii(doc) {
+  if (!doc || typeof doc !== 'object') return {};
+  const safe = { ...doc };
+  // Email: só domínio
+  for (const key of ['email', 'contact_email']) {
+    if (typeof safe[key] === 'string') {
+      const at = safe[key].indexOf('@');
+      safe[key] = at > 0 ? safe[key].slice(at + 1) : '[redacted]';
+    }
+  }
+  // Phone: mascara meio
+  for (const key of ['phone', 'contact_phone', 'mobile']) {
+    if (typeof safe[key] === 'string') {
+      const digits = safe[key].replace(/\D/g, '');
+      if (digits.length >= 8) {
+        safe[key] = `${digits.slice(0, 5)}-****`;
+      } else {
+        safe[key] = '[redacted]';
+      }
+    }
+  }
+  // Address / notes / bio: OMITIDOS
+  for (const key of ['address', 'notes', 'bio', 'description']) {
+    if (key in safe) delete safe[key];
+  }
+  return safe;
 }
 
 // ─── Schemas Zod ───────────────────────────────────────────────────────
@@ -435,6 +511,36 @@ export function buildSearchQuery(entity, filters = {}, options = {}) {
     if (filters.adopterUid) {
       constraints.push({
         type: 'where', field: 'foster_uid', op: '==', value: filters.adopterUid,
+      });
+    }
+  }
+  // TASK-241: volunteer array-contains filters
+  if (entity === 'volunteer') {
+    if (Array.isArray(filters.skills) && filters.skills.length > 0) {
+      if (filters.skills.length === 1) {
+        constraints.push({
+          type: 'where', field: 'skills', op: 'array-contains', value: filters.skills[0],
+        });
+      } else {
+        constraints.push({
+          type: 'where', field: 'skills', op: 'array-contains-any', value: filters.skills,
+        });
+      }
+    }
+    if (Array.isArray(filters.availability_days) && filters.availability_days.length > 0) {
+      if (filters.availability_days.length === 1) {
+        constraints.push({
+          type: 'where', field: 'availability_days', op: 'array-contains', value: filters.availability_days[0],
+        });
+      } else {
+        constraints.push({
+          type: 'where', field: 'availability_days', op: 'array-contains-any', value: filters.availability_days,
+        });
+      }
+    }
+    if (typeof filters.has_vehicle === 'boolean') {
+      constraints.push({
+        type: 'where', field: 'has_vehicle', op: '==', value: filters.has_vehicle,
       });
     }
   }
@@ -620,13 +726,15 @@ export function buildSnippet(doc, query, entityId) {
  */
 export function mapDocToResult(doc, entityId, query) {
   const cfg = SEARCH_ENTITIES[entityId];
-  const title = String(doc[cfg.titleField] || '(sem título)');
-  const subtitle = cfg.subtitleField && doc[cfg.subtitleField] != null
-    ? String(doc[cfg.subtitleField])
+  // TASK-241: sanitize PII para entities com lgpdSanitize=true
+  const safeDoc = cfg.lgpdSanitize ? sanitizePii(doc) : doc;
+  const title = String(safeDoc[cfg.titleField] || '(sem título)');
+  const subtitle = cfg.subtitleField && safeDoc[cfg.subtitleField] != null
+    ? String(safeDoc[cfg.subtitleField])
     : '';
   const url = cfg.urlPattern.replace('{id}', doc.id);
-  const score = rankResult(doc, query, entityId);
-  const snippet = buildSnippet(doc, query, entityId);
+  const score = rankResult(safeDoc, query, entityId);
+  const snippet = buildSnippet(safeDoc, query, entityId);
   return {
     id: doc.id,
     entity: entityId,
