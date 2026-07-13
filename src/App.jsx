@@ -425,10 +425,6 @@ export default function App() {
                 <Route path="/inicio" element={<Navigate to="/feed" replace />} />
                 <Route path="/clubes" element={<Navigate to="/comunidade" replace />} />
                 <Route path="/atletas" element={<Navigate to="/feed" replace />} />
-                {/* TASK-244: painel público do SCRUM servido direto pelo
-                    Firebase Hosting em public/scrum.html (não passa pelo SPA). */}
-                <Route path="/scrum" element={<ScrumDashboardRedirect />} />
-
                 {/* ── 404 ──────────────────────────────────────────────── */}
                 <Route path="*" element={<PageNotFound />} />
               </Routes>
