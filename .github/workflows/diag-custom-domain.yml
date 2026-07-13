@@ -1,4 +1,4 @@
-name: "Diag: List custom domains via gcloud (with --quiet AND gcloud update)"
+name: "Diag: Inspect hosting via firebase-tools + REST API"
 
 on: workflow_dispatch
 
@@ -11,32 +11,26 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Setup gcloud
-        uses: google-github-actions/setup-gcloud@v2
-        with:
-          project_id: viralata-4cf0b
-          service_account_key: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          export_default_credentials: true
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Use gcloud to inspect hosting
+      - name: Use firebase-tools to inspect hosting
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
-          gcloud config set project viralata-4cf0b
           echo "$FIREBASE_SERVICE_ACCOUNT" > /tmp/sa.json
-          gcloud auth activate-service-account --key-file=/tmp/sa.json --quiet 2>&1 | tail -3
+          export GOOGLE_APPLICATION_CREDENTIALS=/tmp/sa.json
 
-          # install alpha + firebase
-          gcloud components install alpha firebase --quiet 2>&1 | tail -3
-
-          echo ""
-          echo "=== List custom domains via gcloud (alpha) ==="
-          gcloud alpha firebase hosting custom-domains list --site=viralata 2>&1 | head -50 || true
+          # Generate a Firebase Hosting access token via REST
+          ACCESS_TOKEN=$(node -e "const {google}=require('google-auth-library');const fs=require('fs');const key=JSON.parse(fs.readFileSync('/tmp/sa.json','utf8'));const c=new google.auth.JWT({email:key.client_email,key:key.private_key,scopes:['https://www.googleapis.com/auth/cloud-platform']});c.authorize().then(()=>c.getAccessToken().then(t=>process.stdout.write(t.token)));" 2>&1 | tail -1)
+          echo "Token ok: ${ACCESS_TOKEN:0:30}..."
 
           echo ""
-          echo "=== Describe custom domain viralata.app ==="
-          gcloud alpha firebase hosting custom-domains describe viralata.app --site=viralata 2>&1 | head -30 || true
-
+          echo "=== Firebase Hosting sites ==="
+          curl -s -H "Authorization: Bearer $ACCESS_TOKEN" "https://firebasehosting.googleapis.com/v1beta1/projects/viralata-4cf0b/sites" 2>&1 | head -80
           echo ""
-          echo "=== Describe site viralata ==="
-          gcloud alpha firebase hosting sites describe viralata 2>&1 | head -30 || true
+          echo "=== Custom domains for site viralata ==="
+          curl -s -H "Authorization: Bearer $ACCESS_TOKEN" "https://firebasehosting.googleapis.com/v1beta1/projects/viralata-4cf0b/sites/viralata/customDomains" 2>&1 | head -200
+          echo ""
+          echo "=== viralata.app specific ==="
+          curl -s -H "Authorization: Bearer $ACCESS_TOKEN" "https://firebasehosting.googleapis.com/v1beta1/projects/viralata-4cf0b/sites/viralata/customDomains/viralata.app" 2>&1 | head -100
