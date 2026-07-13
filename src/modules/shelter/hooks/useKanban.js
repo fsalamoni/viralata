@@ -75,6 +75,19 @@ export function useMyCards(clubId, uid) {
   });
 }
 
+/**
+ * Cards atribuídos ao usuário logado em TODOS os abrigos (cross-shelter).
+ * Usa collectionGroup query + array-contains. Limit 200 (paginar depois
+ * se necessário). Usado pelo "Minhas tarefas" do Profile.
+ */
+export function useMyCardsAll(uid) {
+  return useQuery({
+    queryKey: [...kanbanKeys.all('*'), 'myCardsAll', uid],
+    queryFn: () => kanbanService.getMyCardsAll(uid),
+    enabled: kanbanEnabled() && Boolean(uid),
+  });
+}
+
 // ─── Mutations ───────────────────────────────────────────────────────────────
 
 

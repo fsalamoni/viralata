@@ -28,6 +28,7 @@ import { exportMyData, downloadDataExport } from '@/core/services/dataExportServ
 import { deleteMyAccount } from '@/core/services/deleteAccountService';
 import PageHero from '@/components/PageHero';
 import MyAdoptionsSection from '@/modules/shelter/components/MyAdoptionsSection';
+import MyTasksSection from '@/modules/shelter/components/MyTasksSection';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import { VolunteerProfileForm } from '@/modules/shelter/components/VolunteerProfileForm';
 import {
@@ -187,6 +188,9 @@ export default function Profile() {
   const { data: myRosters = [], isLoading: isRostersLoading } = useUserVolunteerRosters(
     volunteerProfileV1 && user?.uid ? user.uid : null,
   );
+
+  // TASK-150: dashboard pessoal de cards Kanban (cross-shelter).
+  const shelterKanban = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_KANBAN);
   const withdrawConsent = useWithdrawVolunteerConsent(user?.uid);
   const [exitState, setExitState] = useState({
     roster: null,           // { shelterClubId, volunteerName }
@@ -566,6 +570,11 @@ export default function Profile() {
 
       {/* TASK-129: Minhas adoções — histórico cross-abrigo de applications */}
       <MyAdoptionsSection userUid={user?.uid} />
+
+      {/* TASK-150: Minhas tarefas — cards Kanban onde o user é assignee,
+          cross-shelter (todos os abrigos onde ele participa). Gated pela
+          flag `shelter_kanban`. Click abre o detalhe do card. */}
+      {shelterKanban && <MyTasksSection userUid={user?.uid} />}
 
       {/* TASK-242: Minhas voluntariadas (offboarding · LGPD Art. 18 IX).
           Renderiza apenas se a flag `shelter_volunteer_profile_v1` estiver ON.

@@ -18,7 +18,7 @@
  */
 
 import {
-  collection, doc, getDoc, getDocs, addDoc, updateDoc, deleteDoc,
+  collection, collectionGroup, doc, getDoc, getDocs, addDoc, updateDoc, deleteDoc,
   query, where, orderBy, limit, writeBatch, serverTimestamp,
 } from 'firebase/firestore';
 import { db } from '@/core/config/firebase';
@@ -567,6 +567,69 @@ export async function getCardsByAssignee(shelterClubId, uid) {
         ...card,
         board_name:  boardSnap.exists() ? boardSnap.data().name : null,
         column_name: colSnap.exists()  ? colSnap.data().title : null,
+        column_color: colSnap.exists() ? colSnap.data().color : null,
+      };
+    }),
+  );
+  return enriched;
+}
+
+/**
+ * Lista todos os cards onde o `uid` é assignee, **cross-shelter**
+ * (todos os abrigos onde o usuário tem tasks). Usa collectionGroup
+ * para varrer `kanban_cards` em todos os clubes.
+ *
+ * Retorna cards enriquecidos com:
+ *  - `shelter_club_id` (path do parent)
+ *  - `shelter_club_name` (best-effort, requer read extra do clube)
+ *  - `board_name` / `column_name` / `column_color`
+ *
+ * Performance: collectionGroup + array-contains + Firestore aggregate. Limite
+ * 200 cards (ajustar se necessário). Para dashboards pessoais com mais
+ * tasks, paginar ou usar Firestore query cursor.
+ *
+ * @param {string} uid - user id
+ * @returns {Promise<Array>} lista de cards enriquecidos, ordenados por due_at asc
+ */
+export async function getMyCardsAll(uid) {
+  if (!db) return [];
+  if (!uid) return [];
+  const q = query(
+    collectionGroup(db, CARDS_SUBCOLLECTION),
+    where('assignees', 'array-contains', uid),
+    orderBy('due_at', 'asc'),
+    limit(200),
+  );
+  const snap = await getDocs(q).catch(() => ({ docs: [], empty: true }));
+
+  // Extrair shelter_club_id do path: clubs/{clubId}/kanban_cards/{cardId}
+  const enriched = await Promise.all(
+    snap.docs.map(async (docSnap) => {
+      const card = { id: docSnap.id, ...docSnap.data() };
+      const path = docSnap.ref.path; // clubs/{clubId}/kanban_cards/{cardId}
+      // Reaproveita o helper puro (testado em kanbanService.getMyCardsAll.test.js)
+      // para manter a regex em um único lugar.
+      const { extractShelterClubIdFromCardsPath } = await import('./kanbanService.getMyCardsAll.js');
+      const shelterClubId = extractShelterClubIdFromCardsPath(path);
+
+      // Enrich com board + column
+      const [boardSnap, colSnap, clubSnap] = await Promise.all([
+        shelterClubId
+          ? getDoc(boardRef(shelterClubId, card.board_id)).catch(() => ({ exists: () => false }))
+          : Promise.resolve({ exists: () => false }),
+        shelterClubId
+          ? getDoc(columnRef(shelterClubId, card.column_id)).catch(() => ({ exists: () => false }))
+          : Promise.resolve({ exists: () => false }),
+        shelterClubId
+          ? getDoc(doc(db, CLUBS_COLLECTION, shelterClubId)).catch(() => ({ exists: () => false }))
+          : Promise.resolve({ exists: () => false }),
+      ]);
+      return {
+        ...card,
+        shelter_club_id: shelterClubId,
+        shelter_club_name: clubSnap.exists() ? clubSnap.data().name : null,
+        board_name: boardSnap.exists() ? boardSnap.data().name : null,
+        column_name: colSnap.exists() ? colSnap.data().title : null,
         column_color: colSnap.exists() ? colSnap.data().color : null,
       };
     }),
