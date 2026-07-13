@@ -18,6 +18,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { ImageUpload } from '@/components/ui/image-upload';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { PasswordConfirmDialog } from '@/components/ui/password-confirm-dialog';
 import {
   Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription,
 } from '@/components/ui/dialog';
@@ -793,15 +794,19 @@ export default function Profile() {
         </CardContent>
       </Card>
 
-      <ConfirmDialog
+      {/* TASK-295: confirmação dupla (email + senha) via reauth.
+          O PasswordConfirmDialog recebe a senha e chama reauthenticateWithCredential
+          antes de deleteMyAccount. Garante que o user realmente é o dono. */}
+      <PasswordConfirmDialog
         open={confirmDelete}
         onOpenChange={setConfirmDelete}
         title="Excluir sua conta"
-        description="Seu perfil será anonimizado e sua conta de acesso removida. Pets, posts e mensagens já publicados permanecem para não quebrar o histórico de outros usuários. Esta ação não pode ser desfeita."
+        description="Por segurança, confirme sua senha. Seu perfil será anonimizado e sua conta de acesso removida. Pets, posts e mensagens já publicados permanecem para não quebrar o histórico de outros usuários. Esta ação não pode ser desfeita."
         confirmLabel="Excluir definitivamente"
         destructive
         loading={deleting}
         onConfirm={handleDeleteAccount}
+        email={user?.email}
       />
     </div>
   );
