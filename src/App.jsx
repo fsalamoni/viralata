@@ -43,6 +43,7 @@ const OnboardingQuestionnaire = lazy(() => import('@/modules/onboarding/pages/On
 // ─── Pets ─────────────────────────────────────────────────────────────────────
 const PetFeed = lazy(() => import('@/modules/pets/pages/PetFeed'));
 const PetDetail = lazy(() => import('@/modules/pets/pages/PetDetail'));
+const PublicPet = lazy(() => import('@/modules/pets/pages/PublicPet'));
 const CreatePet = lazy(() => import('@/modules/pets/pages/CreatePet'));
 const MyPets = lazy(() => import('@/modules/pets/pages/MyPets'));
 const MyInterests = lazy(() => import('@/modules/pets/pages/MyInterests'));
@@ -240,6 +241,7 @@ export default function App() {
 
                 {/* ── Feed público de pets (auth opcional) ─────────────── */}
                 <Route path="/feed" element={withLayout('PetFeed', PetFeed)} />
+                <Route path="/pet/:petId" element={<PublicPet />} />
                 <Route path="/pets/:petId" element={withLayout('PetDetail', PetDetail)} />
 
                 {/* ── Pets autenticados ─────────────────────────────────── */}
