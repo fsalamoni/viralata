@@ -2,6 +2,7 @@ import React, { useMemo, useState, useCallback, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { MapPin, Zap, X, Heart, Info, CheckCircle2, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
+import { useFeedPreferences } from '@/core/hooks/useFeedPreferences';
 import { usePetFeed, useCreateInterest } from '../hooks/usePets';
 import { hasKnownCoords } from '../domain/geoDistance';
 import { applyFeedFilters } from '../domain/feedFilters';
@@ -291,9 +292,13 @@ export default function PetFeedEnhanced() {
   const navigate = useNavigate();
   const { userProfile, user } = useAuth();
   const { settings } = usePlatformSettings();
-  const [species, setSpecies] = useState('all');
-  const [size, setSize] = useState('all');
-  const [showOwnPets, setShowOwnPets] = useState(true);
+  const [feedPrefs, setFeedPrefs] = useFeedPreferences();
+  const species = feedPrefs.species;
+  const size = feedPrefs.size;
+  const showOwnPets = feedPrefs.showOwnPets;
+  const setSpecies = (v) => setFeedPrefs({ species: v });
+  const setSize = (v) => setFeedPrefs({ size: v });
+  const setShowOwnPets = (v) => setFeedPrefs({ showOwnPets: v });
   // Item 4: por padrão o filtro usa a cidade do cadastro do usuário. Se não há
   // cidade cadastrada, o raio inicial fica em 5 km. O usuário pode limpar a
   // cidade e o raio para ver todos os pets da plataforma.
