@@ -387,6 +387,18 @@ function main() {
     if (FIX) {
       saveJson(j);
       if (!JSON_OUT && !QUIET) console.log(`\n✓ JSON salvo em ${JSON_PATH}`);
+      // Re-embed do painel (Regra B) — atualiza public/scrum.html
+      try {
+        const size = reembedHtml(j);
+        patchSyncBadge(new Date().toISOString());
+        if (!JSON_OUT && !QUIET) {
+          const counts = {};
+          j.tasks.forEach(t => { counts[t.status] = (counts[t.status] || 0) + 1; });
+          console.log(`✓ re-embed ok · ${j.tasks.length} tasks · done=${counts.done||0} ready=${counts.ready||0} in_progress=${counts.in_progress||0} · HTML ${(size/1024).toFixed(1)}KB`);
+        }
+      } catch (e) {
+        if (!JSON_OUT && !QUIET) console.error('✗ re-embed falhou:', e.message);
+      }
     }
 
     if (CHECK) {
