@@ -65,15 +65,24 @@ jobs:
       # tem "type":"commonjs". Sem o package.json com "type":"module" no
       # diretório alvo, Node trata os arquivos como CJS e quebra com
       # "SyntaxError: Cannot use import statement outside a module".
-      - name: Copy src/mocks into functions/_payloads (predeploy)
+      - name: Copy src/mocks into functions/_payloads as .mjs (predeploy)
         run: |
           mkdir -p functions/_payloads
-          find functions/_payloads -name "*.js" -delete 2>/dev/null || true
-          find functions/_payloads -name "*.gcloudignore" -delete 2>/dev/null || true
-          cp src/mocks/*.js functions/_payloads/
-          cat > functions/_payloads/package.json << 'PJ'
-          { "type": "module" }
-          PJ
+          find functions/_payloads -type f -delete 2>/dev/null || true
+          # IMPORTANTE: copiar como .mjs (NÃO .js)
+          # O firebase-tools FILTRA arquivos .js em qualquer diretório que
+          # tenha um package.json (mesmo com type:module). A extensão .mjs
+          # força Node a tratar como ESM sem precisar de package.json,
+          # e o firebase-tools não filtra .mjs.
+          for f in src/mocks/*.js; do
+            base=$(basename "$f" .js)
+            cp "$f" "functions/_payloads/$base.mjs"
+          done
+          # Reescrever imports internos de './xxx.js' para './xxx.mjs'
+          for f in functions/_payloads/*.mjs; do
+            sed -i "s|from '\./\([a-zA-Z0-9_]*\)\.js'|from './\1.mjs'|g" "$f"
+            sed -i 's|from "\./\([a-zA-Z0-9_]*\)\.js"|from "./\1.mjs"|g' "$f"
+          done
           echo "=== Payloads copiados ==="
           ls -la functions/_payloads/
 
