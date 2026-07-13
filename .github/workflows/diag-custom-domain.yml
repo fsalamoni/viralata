@@ -1,4 +1,4 @@
-name: "Diag: List custom domains via gcloud"
+name: "Diag: List custom domains via gcloud (with --quiet)"
 
 on: workflow_dispatch
 
@@ -19,25 +19,26 @@ jobs:
           export_default_credentials: true
 
       - name: Use gcloud to inspect hosting
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
           gcloud config set project viralata-4cf0b
-          gcloud auth login --cred-file="$GOOGLE_APPLICATION_CREDENTIALS" --quiet 2>&1 | tail -3 || true
+          echo "$FIREBASE_SERVICE_ACCOUNT" > /tmp/sa.json
+          gcloud auth activate-service-account --key-file=/tmp/sa.json --quiet 2>&1 | tail -3
+          gcloud config set auth/credential_file_override /tmp/sa.json
 
+          echo ""
           echo "=== firebase hosting sites ==="
-          gcloud firebase hosting sites list --format="value(name)" 2>&1 || true
+          gcloud firebase hosting sites list --quiet 2>&1 | head -20 || true
 
           echo ""
-          echo "=== gcloud firebase hosting:channel:list ==="
-          gcloud firebase hosting:channel:list --site=viralata --format="value(name)" 2>&1 || true
-
-          echo ""
-          echo "=== Describe site via gcloud (try alpha) ==="
-          gcloud alpha firebase hosting sites describe viralata 2>&1 | head -50 || true
-
-          echo ""
-          echo "=== List custom domains via gcloud ==="
-          gcloud alpha firebase hosting custom-domains list --site=viralata 2>&1 | head -50 || true
+          echo "=== List custom domains via gcloud (alpha) ==="
+          gcloud alpha firebase hosting custom-domains list --site=viralata --quiet 2>&1 | head -50 || true
 
           echo ""
           echo "=== Describe custom domain viralata.app ==="
-          gcloud alpha firebase hosting custom-domains describe viralata.app --site=viralata 2>&1 | head -30 || true
+          gcloud alpha firebase hosting custom-domains describe viralata.app --site=viralata --quiet 2>&1 | head -30 || true
+
+          echo ""
+          echo "=== Describe site viralata ==="
+          gcloud alpha firebase hosting sites describe viralata --quiet 2>&1 | head -30 || true
