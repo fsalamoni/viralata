@@ -74,7 +74,36 @@ function newMockError(code, message) {
   return new MockError(code, message);
 }
 
-export { MockError };
+/**
+ * Detecta erros de CORS / função não-deployed / função em cold-start.
+ *
+ * O `firebase/functions` SDK engole a fase de preflight e expõe o
+ * resultado como `functions/internal` quando o navegador bloqueia a
+ * requisição via CORS ou a Cloud Function devolve 403/HTML em vez de
+ * JSON. Sem essa detecção, o painel admin mostra "Erro interno" sem
+ * dica do problema real (deploy pendente, region errada, função não
+ * deployed, etc).
+ */
+function isCallableUnreachable(err) {
+  if (!err) return false;
+  const code = String(err.code || '').toLowerCase();
+  const msg = String(err.message || '').toLowerCase();
+  // Códigos típicos do SDK quando o preflight falha:
+  if (code === 'functions/internal') return true;
+  if (code === 'functions/unavailable') return true;
+  if (code === 'internal') return true;
+  // Sinais no corpo do erro (mensagens que o gateway devolve em HTML).
+  if (msg.includes('cors')) return true;
+  if (msg.includes('preflight')) return true;
+  if (msg.includes('failed to fetch')) return true;
+  if (msg.includes('blocked by')) return true;
+  if (msg.includes('forbidden') && msg.includes('getmockstatus')) return true;
+  if (msg.includes('forbidden') && msg.includes('loadmockdata')) return true;
+  if (msg.includes('forbidden') && msg.includes('clearmockdata')) return true;
+  return false;
+}
+
+export { MockError, isCallableUnreachable };
 
 /* ============================================================== *
  * 3. `loadAll(realUid, realUserName)` — chama a Cloud Function    *
@@ -102,6 +131,13 @@ export async function loadAll({ realUid, realUserName, onProgress } = {}) {
     result = await getLoadFn()({ realUid, realUserName: realUserName || null });
   } catch (err) {
     // onCall joga HttpsError — normalizamos para o shape de erro da UI.
+    if (isCallableUnreachable(err)) {
+      logger.error('mockDataService.loadAll: callable indisponível (CORS/403/deploy pendente)', err);
+      throw newMockError(
+        'MOCK_FN_UNREACHABLE',
+        'Cloud Function de mock indisponível. Verifique se `loadMockData` está deployed em southamerica-east1 e se o CI do último push para main foi bem-sucedido. Veja .github/workflows/deploy.yml.',
+      );
+    }
     const code = err?.code || 'MOCK_REMOTE_ERROR';
     const message = err?.message || String(err);
     logger.error('mockDataService.loadAll: callable falhou', err);
@@ -133,6 +169,13 @@ export async function clearAll({ realUid, realUserName, onProgress } = {}) {
   try {
     result = await getClearFn()({ realUid: realUid || null, realUserName: realUserName || null });
   } catch (err) {
+    if (isCallableUnreachable(err)) {
+      logger.error('mockDataService.clearAll: callable indisponível (CORS/403/deploy pendente)', err);
+      throw newMockError(
+        'MOCK_FN_UNREACHABLE',
+        'Cloud Function de mock indisponível. Verifique se `clearMockData` está deployed em southamerica-east1 e se o CI do último push para main foi bem-sucedido. Veja .github/workflows/deploy.yml.',
+      );
+    }
     const code = err?.code || 'MOCK_REMOTE_ERROR';
     const message = err?.message || String(err);
     logger.error('mockDataService.clearAll: callable falhou', err);
@@ -154,7 +197,7 @@ export async function clearAll({ realUid, realUserName, onProgress } = {}) {
  * Conta documentos `_mock: true` por coleção (server-side, mais barato
  * que o loop client-side antigo).
  *
- * @returns {Promise<{ byCollection: Record<string, number>, total: number, expected: number }>}
+ * @returns {Promise<{ byCollection: Record<string, number>, total: number, expected: number, _error?: string }>}
  */
 export async function getStatus() {
   if (!functions) return { byCollection: {}, total: 0, expected: 0 };
@@ -162,8 +205,17 @@ export async function getStatus() {
     const result = await getStatusFn()();
     return result.data;
   } catch (err) {
+    if (isCallableUnreachable(err)) {
+      logger.error('mockDataService.getStatus: callable indisponível (CORS/403/deploy pendente)', err);
+      return {
+        byCollection: {},
+        total: 0,
+        expected: 0,
+        _error: 'MOCK_FN_UNREACHABLE',
+      };
+    }
     logger.error('mockDataService.getStatus: callable falhou', err);
-    return { byCollection: {}, total: 0, expected: 0 };
+    return { byCollection: {}, total: 0, expected: 0, _error: err?.code || 'MOCK_REMOTE_ERROR' };
   }
 }
 

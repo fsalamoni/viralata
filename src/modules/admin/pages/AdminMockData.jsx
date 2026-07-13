@@ -215,6 +215,35 @@ export default function AdminMockData() {
         />
       </div>
 
+      {/* Banner de Cloud Function indisponível (CORS/403/deploy pendente).
+          Mostra a dica de troubleshooting ao dono da plataforma sem
+          ficar preso no toast efêmero. */}
+      {status._error === 'MOCK_FN_UNREACHABLE' && (
+        <div className="flex items-start gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-900">
+          <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-amber-600" />
+          <div className="space-y-1">
+            <p className="font-semibold">Cloud Function de mock indisponível</p>
+            <p className="text-amber-900/80">
+              <code className="rounded bg-white/60 px-1.5 py-0.5 text-[12px]">getMockStatus</code> /
+              <code className="ml-1 rounded bg-white/60 px-1.5 py-0.5 text-[12px]">loadMockData</code> /
+              <code className="ml-1 rounded bg-white/60 px-1.5 py-0.5 text-[12px]">clearMockData</code> não responderam.
+              Quase sempre significa que o último deploy falhou (CI em vermelho) ou a função foi
+              removida. Verifique{' '}
+              <a
+                className="underline"
+                href="https://github.com/fsalamoni/viralata/actions/workflows/deploy.yml"
+                target="_blank"
+                rel="noreferrer"
+              >
+                o workflow Deploy Viralata → Firebase Hosting
+              </a>{' '}
+              e, se preciso, rode o deploy manualmente com{' '}
+              <code className="rounded bg-white/60 px-1.5 py-0.5 text-[12px]">firebase deploy --only functions --project viralata-4cf0b</code>.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Action cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Card className="border-emerald-500/20">
