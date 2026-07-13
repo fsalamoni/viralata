@@ -37,24 +37,24 @@ jobs:
       - name: List functions
         run: |
           echo "=== Functions deployed ==="
-          gcloud functions list --gen2 --project=viralata-4cf0b 2>&1
+          gcloud functions list --v2 --project=viralata-4cf0b 2>&1
 
       - name: IAM getMockStatus
         run: |
           echo "=== getMockStatus IAM ==="
-          gcloud functions get-iam-policy getMockStatus --region=southamerica-east1 --gen2 --project=viralata-4cf0b 2>&1
+          gcloud functions get-iam-policy getMockStatus --region=southamerica-east1 --v2 --project=viralata-4cf0b 2>&1
 
       - name: IAM loadMockData
         run: |
           echo "=== loadMockData IAM ==="
-          gcloud functions get-iam-policy loadMockData --region=southamerica-east1 --gen2 --project=viralata-4cf0b 2>&1
+          gcloud functions get-iam-policy loadMockData --region=southamerica-east1 --v2 --project=viralata-4cf0b 2>&1
 
       - name: Logs getMockStatus
         run: |
           echo "=== getMockStatus logs ==="
-          gcloud functions logs read getMockStatus --region=southamerica-east1 --gen2 --limit=40 2>&1 | tail -200
+          gcloud functions logs read getMockStatus --region=southamerica-east1 --v2 --limit=40 2>&1 | tail -200
 
       - name: Logs loadMockData
         run: |
           echo "=== loadMockData logs ==="
-          gcloud functions logs read loadMockData --region=southamerica-east1 --gen2 --limit=40 2>&1 | tail -200
+          gcloud functions logs read loadMockData --region=southamerica-east1 --v2 --limit=40 2>&1 | tail -200
