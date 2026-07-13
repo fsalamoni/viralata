@@ -19,30 +19,13 @@ jobs:
           gcloud auth activate-service-account --key-file=/tmp/firebase-sa.json --project=viralata-4cf0b
           gcloud config set project viralata-4cf0b
 
-      - name: List buckets
+      - name: Pull and inspect image
         run: |
-          gcloud storage buckets list --project=viralata-4cf0b 2>&1 | head -20
-
-      - name: List source archives
-        run: |
-          for BUCKET in $(gcloud storage buckets list --project=viralata-4cf0b --format="value(name)" 2>/dev/null); do
-            echo "=== $BUCKET ==="
-            gcloud storage ls "gs://$BUCKET" 2>&1 | head -5
-          done | head -40
-
-      - name: Inspect function container image
-        run: |
-          # A imagem do function
-          IMAGE="southamerica-east1-docker.pkg.dev/viralata-4cf0b/gcf-artifacts/viralata--4cf0b__southamerica--east1__on_pet_created_notify_radar@sha256:f2fc632c6be938dc59e5440c110120a40e26ada7f327c4e93c9a40516a826a8b"
-          # Listar artefatos (camadas) da imagem
-          gcloud artifacts docker images list \
-            "southamerica-east1-docker.pkg.dev/viralata-4cf0b/gcf-artifacts" \
-            --project=viralata-4cf0b 2>&1 | tail -20
-
-      - name: Try to extract function source from image
-        run: |
-          # Tenta usar docker para inspecionar a imagem
           gcloud auth configure-docker southamerica-east1-docker.pkg.dev --quiet 2>&1
-          docker pull "southamerica-east1-docker.pkg.dev/viralata-4cf0b/gcf-artifacts/viralata--4cf0b__southamerica--east1__on_pet_created_notify_radar@sha256:f2fc632c6be938dc59e5440c110120a40e26ada7f327c4e93c9a40516a826a8b" 2>&1 | tail -10
+          docker pull "southamerica-east1-docker.pkg.dev/viralata-4cf0b/gcf-artifacts/viralata--4cf0b__southamerica--east1__on_pet_created_notify_radar@sha256:f2fc632c6be938dc59e5440c110120a40e26ada7f327c4e93c9a40516a826a8b" 2>&1 | tail -5
           echo "=== Files in /workspace ==="
-          docker run --rm -it "southamerica-east1-docker.pkg.dev/viralata-4cf0b/gcf-artifacts/viralata--4cf0b__southamerica--east1__on_pet_created_notify_radar@sha256:f2fc632c6be938dc59e5440c110120a40e26ada7f327c4e93c9a40516a826a8b" ls -la /workspace 2>&1 | head -30
+          docker run --rm "southamerica-east1-docker.pkg.dev/viralata-4cf0b/gcf-artifacts/viralata--4cf0b__southamerica--east1__on_pet_created_notify_radar@sha256:f2fc632c6be938dc59e5440c110120a40e26ada7f327c4e93c9a40516a826a8b" ls -la /workspace 2>&1 | head -30
+          echo "=== Files in /workspace/mocks (if exists) ==="
+          docker run --rm "southamerica-east1-docker.pkg.dev/viralata-4cf0b/gcf-artifacts/viralata--4cf0b__southamerica--east1__on_pet_created_notify_radar@sha256:f2fc632c6be938dc59e5440c110120a40e26ada7f327c4e93c9a40516a826a8b" ls -la /workspace/mocks 2>&1 | head -30
+          echo "=== mockData.js content (verify new path) ==="
+          docker run --rm "southamerica-east1-docker.pkg.dev/viralata-4cf0b/gcf-artifacts/viralata--4cf0b__southamerica--east1__on_pet_created_notify_radar@sha256:f2fc632c6be938dc59e5440c110120a40e26ada7f327c4e93c9a40516a826a8b" cat /workspace/mockData.js 2>&1 | head -50
