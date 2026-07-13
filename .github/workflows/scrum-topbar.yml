@@ -1,0 +1,62 @@
+name: Scrum Topbar Auto-Update
+
+# Triggers:
+# - Em todo push em main (corrige topbar DEPOIS do sync)
+# - Manualmente (workflow_dispatch)
+# - Em workflow_run quando Sync Scrum Dashboard completa (fallback)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["Sync Scrum Dashboard"]
+    types: [completed]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: scrum-topbar
+  cancel-in-progress: true
+
+jobs:
+  update-topbar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Update topbar with sed
+        run: |
+          # Pega o commit atual (após o auto-sync anterior)
+          MAIN_COMMIT=$(git rev-parse HEAD)
+          MAIN_SHORT=$(echo $MAIN_COMMIT | cut -c1-7)
+          # Conta worktrees (excluindo o main)
+          WT_COUNT=$(git worktree list --porcelain | grep -c "^worktree")
+          WT_COUNT=$((WT_COUNT - 1))
+          WT_TXT="0 worktrees ativos"
+          if [ "$WT_COUNT" -gt 0 ]; then
+            if [ "$WT_COUNT" -gt 1 ]; then
+              WT_TXT="+${WT_COUNT} worktrees ativos"
+            else
+              WT_TXT="+1 worktree ativo"
+            fi
+          fi
+          echo "Main: $MAIN_SHORT · Worktrees: $WT_COUNT"
+          # Atualiza os pills
+          sed -i "s|<span class=\"pill mono\">main @ [0-9a-f]\{7\}</span>|<span class=\"pill mono\">main @ ${MAIN_SHORT}</span>|" public/scrum.html
+          sed -i "s|<span class=\"pill\">[+]\?[0-9]\+ worktrees\? ativos\?</span>|<span class=\"pill\">${WT_TXT}</span>|" public/scrum.html
+          # Commit + push se mudou
+          if git diff --quiet public/scrum.html; then
+            echo "Sem mudanças no topbar"
+          else
+            git config user.name "viralata-scrum-bot"
+            git config user.email "scrum-bot@viralata.local"
+            git add public/scrum.html
+            git commit -m "chore(scrum): topbar auto-update ${MAIN_SHORT} (workflow)"
+            git push origin main
+          fi
