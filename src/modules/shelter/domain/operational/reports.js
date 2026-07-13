@@ -16,6 +16,7 @@
  */
 
 import { z } from 'zod';
+import { parseTimestamp } from '@/core/utils/timestamp';
 
 // ─── Tipos de relatório ────────────────────────────────────────────────
 
@@ -568,8 +569,8 @@ export function computeTimeToAdoptionReport(apps, nMonths = 12, referenceDate = 
     const days = monthAdoptions
       .map((a) => {
         if (!a.created_at || !a.decided_at) return null;
-        const created = a.created_at?.toDate ? a.created_at.toDate() : new Date(a.created_at);
-        const decided = a.decided_at?.toDate ? a.decided_at.toDate() : new Date(a.decided_at);
+        const created = a.created_at?.toDate ? parseTimestamp(a.created_at) : new Date(a.created_at);
+        const decided = a.decided_at?.toDate ? parseTimestamp(a.decided_at) : new Date(a.decided_at);
         return daysBetween(created, decided);
       })
       .filter((d) => d !== null && d >= 0);
@@ -588,8 +589,8 @@ export function computeTimeToAdoptionReport(apps, nMonths = 12, referenceDate = 
   // Média global
   const allCompleted = apps.filter((a) => a.status === 'adoption_completed' && a.created_at && a.decided_at);
   const allDays = allCompleted.map((a) => {
-    const created = a.created_at?.toDate ? a.created_at.toDate() : new Date(a.created_at);
-    const decided = a.decided_at?.toDate ? a.decided_at.toDate() : new Date(a.decided_at);
+    const created = a.created_at?.toDate ? parseTimestamp(a.created_at) : new Date(a.created_at);
+    const decided = a.decided_at?.toDate ? parseTimestamp(a.decided_at) : new Date(a.decided_at);
     return daysBetween(created, decided);
   }).filter((d) => d >= 0);
 
@@ -617,8 +618,8 @@ export function computeTimeInShelterReport(pets) {
       .map((p) => {
         if (!p.rescue_date && !p.created_at) return null;
         const d = p.rescue_date?.toDate
-          ? p.rescue_date.toDate()
-          : (p.created_at?.toDate ? p.created_at.toDate() : new Date(p.created_at));
+          ? parseTimestamp(p.rescue_date)
+          : (p.created_at?.toDate ? parseTimestamp(p.created_at) : new Date(p.created_at));
         return daysBetween(d, now);
       })
       .filter((d) => d !== null);
@@ -632,8 +633,8 @@ export function computeTimeInShelterReport(pets) {
     .map((p) => {
       if (!p.rescue_date && !p.created_at) return null;
       const d = p.rescue_date?.toDate
-        ? p.rescue_date.toDate()
-        : (p.created_at?.toDate ? p.created_at.toDate() : new Date(p.created_at));
+        ? parseTimestamp(p.rescue_date)
+        : (p.created_at?.toDate ? parseTimestamp(p.created_at) : new Date(p.created_at));
       return daysBetween(d, now);
     })
     .filter((d) => d !== null);

@@ -1,6 +1,7 @@
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/core/config/firebase';
 import { logger } from '@/core/lib/logger';
+import { parseTimestamp } from '@/core/utils/timestamp';
 
 export const AUDIT_ACTION_LABELS = {
   user_profile_updated: 'Perfil atualizado',

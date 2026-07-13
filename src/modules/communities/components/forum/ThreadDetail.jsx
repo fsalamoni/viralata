@@ -11,6 +11,7 @@ import CommentSection from './CommentSection';
 import AttachmentRenderer from './AttachmentRenderer';
 import { toast } from 'sonner';
 import { confirmDialog } from '@/components/ui/confirm-provider';
+import { parseTimestamp } from '@/core/utils/timestamp';
 
 export default function ThreadDetail({ thread, communityId, onBack }) {
   const { user } = useAuth();
@@ -73,7 +74,7 @@ export default function ThreadDetail({ thread, communityId, onBack }) {
           )}
           <div>
             <p className="font-medium text-foreground">{thread.author_name}</p>
-            <p>{thread.created_at ? formatDistanceToNow(thread.created_at.toDate(), { addSuffix: true, locale: ptBR }) : ''}</p>
+            <p>{thread.created_at ? formatDistanceToNow(parseTimestamp(thread.created_at), { addSuffix: true, locale: ptBR }) : ''}</p>
           </div>
         </div>
 

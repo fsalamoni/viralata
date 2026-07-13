@@ -13,6 +13,7 @@
  */
 
 import { z } from 'zod';
+import { parseTimestamp } from '@/core/utils/timestamp';
 
 // ─── Enums ────────────────────────────────────────────────────────────
 export const INDICATOR_TYPES = Object.freeze([
@@ -184,7 +185,7 @@ export function filterByPeriod(items, dateField, start, end) {
   return items.filter((item) => {
     const raw = item[dateField];
     if (!raw) return false;
-    const d = raw?.toDate ? raw.toDate() : new Date(raw);
+    const d = raw?.toDate ? parseTimestamp(raw) : new Date(raw);
     if (start && d < start) return false;
     if (end && d > end) return false;
     return true;
@@ -330,7 +331,7 @@ export function computeVolunteerSummary(participations, start, end, nMonths = 12
   // Filtra por período
   const inPeriod = participations.filter((p) => {
     if (!start && !end) return true;
-    const d = p.created_at?.toDate ? p.created_at.toDate() : (p.created_at ? new Date(p.created_at) : null);
+    const d = p.created_at?.toDate ? parseTimestamp(p.created_at) : (p.created_at ? new Date(p.created_at) : null);
     if (!d) return false;
     if (start && d < start) return false;
     if (end && d > end) return false;
@@ -346,8 +347,8 @@ export function computeVolunteerSummary(participations, start, end, nMonths = 12
   let totalHours = 0;
   for (const p of inPeriod) {
     if (p.check_out && p.check_in) {
-      const out = p.check_out?.toDate ? p.check_out.toDate() : new Date(p.check_out);
-      const inn = p.check_in?.toDate ? p.check_in.toDate() : new Date(p.check_in);
+      const out = p.check_out?.toDate ? parseTimestamp(p.check_out) : new Date(p.check_out);
+      const inn = p.check_in?.toDate ? parseTimestamp(p.check_in) : new Date(p.check_in);
       const hours = (out.getTime() - inn.getTime()) / (1000 * 60 * 60);
       if (hours > 0 && hours < 48) totalHours += hours; // sanity cap: 48h
     }
@@ -365,14 +366,14 @@ export function computeVolunteerSummary(participations, start, end, nMonths = 12
     const monthStart = new Date(Date.UTC(year, month, 1));
     const monthEnd = new Date(Date.UTC(year, month + 1, 0, 23, 59, 59, 999));
     const monthParts = inPeriod.filter((p) => {
-      const d = p.created_at?.toDate ? p.created_at.toDate() : (p.created_at ? new Date(p.created_at) : null);
+      const d = p.created_at?.toDate ? parseTimestamp(p.created_at) : (p.created_at ? new Date(p.created_at) : null);
       return d && d >= monthStart && d <= monthEnd;
     });
     let monthHours = 0;
     for (const p of monthParts) {
       if (p.check_out && p.check_in) {
-        const out = p.check_out?.toDate ? p.check_out.toDate() : new Date(p.check_out);
-        const inn = p.check_in?.toDate ? p.check_in.toDate() : new Date(p.check_in);
+        const out = p.check_out?.toDate ? parseTimestamp(p.check_out) : new Date(p.check_out);
+        const inn = p.check_in?.toDate ? parseTimestamp(p.check_in) : new Date(p.check_in);
         const h = (out.getTime() - inn.getTime()) / (1000 * 60 * 60);
         if (h > 0 && h < 48) monthHours += h;
       }
@@ -412,7 +413,7 @@ function _countActiveVolunteers(participations, days = 90) {
   const cutoff = Date.now() - days * 24 * 60 * 60 * 1000;
   const uids = new Set();
   for (const p of participations) {
-    const d = p.created_at?.toDate ? p.created_at.toDate() : (p.created_at ? new Date(p.created_at) : null);
+    const d = p.created_at?.toDate ? parseTimestamp(p.created_at) : (p.created_at ? new Date(p.created_at) : null);
     if (!d) continue;
     if (d.getTime() >= cutoff && p.volunteer_uid) uids.add(p.volunteer_uid);
   }
@@ -441,12 +442,12 @@ export function computeVolunteerDetail(participations, volunteerProfiles) {
     let lastDate = null;
     for (const p of parts) {
       if (p.check_out && p.check_in) {
-        const out = p.check_out?.toDate ? p.check_out.toDate() : new Date(p.check_out);
-        const inn = p.check_in?.toDate ? p.check_in.toDate() : new Date(p.check_in);
+        const out = p.check_out?.toDate ? parseTimestamp(p.check_out) : new Date(p.check_out);
+        const inn = p.check_in?.toDate ? parseTimestamp(p.check_in) : new Date(p.check_in);
         const h = (out.getTime() - inn.getTime()) / (1000 * 60 * 60);
         if (h > 0 && h < 48) hours += h;
       }
-      const d = p.created_at?.toDate ? p.created_at.toDate() : (p.created_at ? new Date(p.created_at) : null);
+      const d = p.created_at?.toDate ? parseTimestamp(p.created_at) : (p.created_at ? new Date(p.created_at) : null);
       if (d && (!lastDate || d > lastDate)) lastDate = d;
     }
     return {

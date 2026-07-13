@@ -14,13 +14,14 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useMyApplications } from '@/modules/shelter/hooks/useAdoptionApplications';
+import { parseTimestamp } from '@/core/utils/timestamp';
 import {
-  APPLICATION_STATUS_LABELS,
+    APPLICATION_STATUS_LABELS,
   APPLICATION_STATUS_TONES,
 } from '@/modules/shelter/domain/operational/adoption';
 
 function formatDate(value) {
-  const d = value?.toDate ? value.toDate() : (value ? new Date(value) : null);
+  const d = value?.toDate ? parseTimestamp(value) : (value ? new Date(value) : null);
   if (!d || Number.isNaN(d.getTime())) return '';
   return d.toLocaleDateString('pt-BR');
 }

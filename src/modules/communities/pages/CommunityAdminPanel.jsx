@@ -23,6 +23,7 @@ import { isCommunityOwner, hasCommunityPermission, hasAnyCommunityPermission } f
 import CommunityAdminTab from '@/modules/communities/components/CommunityAdminTab';
 import CommunityTeamTab from '@/modules/communities/components/CommunityTeamTab';
 import MuralTab from '@/modules/communities/components/MuralTab';
+import { parseTimestamp } from '@/core/utils/timestamp';
 
 const TAB_ICONS = {
   overview: LayoutGrid,
@@ -294,7 +295,7 @@ export default function CommunityAdminPanel() {
 }
 
 function OverviewTab({ community }) {
-  const founded = community.created_at?.toDate ? community.created_at.toDate().getFullYear() : null;
+  const founded = parseTimestamp(community.created_at)?.getFullYear() ?? null;
   const members = community.member_count || 1;
   return (
     <div className="space-y-6">

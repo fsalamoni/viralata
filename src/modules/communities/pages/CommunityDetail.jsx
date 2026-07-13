@@ -20,6 +20,7 @@ import AboutTab from '../components/AboutTab';
 import CommunityTeamTab from '../components/CommunityTeamTab';
 import CommunityCover from '../components/CommunityCover';
 import { cn } from '@/core/lib/utils';
+import { parseTimestamp } from '@/core/utils/timestamp';
 
 /** Abas públicas da comunidade (modo padrão, sem `arena-tab-bar`). */
 const TABS_LEGACY = [
@@ -99,7 +100,7 @@ export default function CommunityDetail() {
     if (!community) return null;
     return {
       members: community.member_count || 1,
-      founded: community.created_at?.toDate ? community.created_at.toDate().getFullYear() : null,
+      founded: parseTimestamp(community.created_at)?.getFullYear() ?? null,
     };
   }, [community]);
 

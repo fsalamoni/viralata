@@ -5,6 +5,7 @@ import { ptBR } from 'date-fns/locale';
 import { MessageCircle, PlusCircle, Heart, User } from 'lucide-react';
 import { getForumThreads } from '../../services/communityService';
 import { Skeleton } from '@/components/ui/skeleton';
+import { parseTimestamp } from '@/core/utils/timestamp';
 
 export default function ThreadList({ communityId, onSelectThread, onCreateThread }) {
   const [threads, setThreads] = useState([]);
@@ -57,7 +58,7 @@ export default function ThreadList({ communityId, onSelectThread, onCreateThread
                   )}
                   <span>{thread.author_name}</span>
                   <span>•</span>
-                  <span>{thread.created_at ? formatDistanceToNow(thread.created_at.toDate(), { addSuffix: true, locale: ptBR }) : ''}</span>
+                  <span>{thread.created_at ? formatDistanceToNow(parseTimestamp(thread.created_at), { addSuffix: true, locale: ptBR }) : ''}</span>
                 </div>
                 <div className="flex items-center gap-4">
                   <span className="flex items-center gap-1"><Heart className="w-4 h-4" /> {thread.likes_count || 0}</span>

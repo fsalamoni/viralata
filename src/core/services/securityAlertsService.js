@@ -36,6 +36,7 @@ import {
 import { httpsCallable } from 'firebase/functions';
 import { db, functions } from '@/core/config/firebase';
 import { logger } from '@/core/lib/logger';
+import { parseTimestamp } from '@/core/utils/timestamp';
 
 const COLLECTION = 'platform_security_alerts';
 

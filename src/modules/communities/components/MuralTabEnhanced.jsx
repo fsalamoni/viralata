@@ -22,10 +22,11 @@ import { hasCommunityPermission } from '../domain/permissions';
 import { COMMUNITY_PERMISSION } from '../domain/constants';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { parseTimestamp } from '@/core/utils/timestamp';
 
 function timeAgo(createdAt) {
-  if (!createdAt?.toDate) return 'Agora mesmo';
-  return formatDistanceToNow(createdAt.toDate(), { addSuffix: true, locale: ptBR });
+  if (!parseTimestamp(createdAt)) return "Agora mesmo";
+  return formatDistanceToNow(parseTimestamp(createdAt), { addSuffix: true, locale: ptBR });
 }
 
 /**

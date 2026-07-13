@@ -12,6 +12,7 @@ import { COMMUNITY_PERMISSION } from '../domain/constants';
 
 import { ptBR } from 'date-fns/locale';
 import { confirmDialog } from '@/components/ui/confirm-provider';
+import { parseTimestamp } from '@/core/utils/timestamp';
 
 export default function MuralTab({ communityId, isMember, isAdmin, membership, community }) {
   const { user } = useAuth();
@@ -103,7 +104,7 @@ export default function MuralTab({ communityId, isMember, isAdmin, membership, c
                     <div>
                       <p className="font-bold text-sm">{authorName}</p>
                       <p className="text-xs text-muted-foreground">
-                        {post.created_at ? formatDistanceToNow(post.created_at.toDate(), { addSuffix: true, locale: ptBR }) : 'Agora mesmo'}
+                        {post.created_at ? formatDistanceToNow(parseTimestamp(post.created_at), { addSuffix: true, locale: ptBR }) : 'Agora mesmo'}
                       </p>
                     </div>
                   </div>

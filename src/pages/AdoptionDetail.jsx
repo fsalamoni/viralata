@@ -21,6 +21,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import { getApplication } from '@/modules/shelter/services/adoptionService';
+import { parseTimestamp } from '@/core/utils/timestamp';
 import {
   APPLICATION_STATUS_LABELS,
   APPLICATION_STATUS_TONES,
@@ -28,7 +29,7 @@ import {
 } from '@/modules/shelter/domain/operational/adoption';
 
 function formatDateTime(value) {
-  const d = value?.toDate ? value.toDate() : (value ? new Date(value) : null);
+  const d = value?.toDate ? parseTimestamp(value) : (value ? new Date(value) : null);
   if (!d || Number.isNaN(d.getTime())) return null;
   return d.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
 }

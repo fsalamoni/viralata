@@ -41,6 +41,7 @@ import { MedicationsList } from '@/modules/shelter/components/MedicationsList';
 import { TimelineList } from '@/modules/shelter/components/TimelineList';
 import { FostersList } from '@/modules/shelter/components/FostersList';
 import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
+import { parseTimestamp } from '@/core/utils/timestamp';
 
 const TAB_ICONS = {
   overview: LayoutGrid,
@@ -400,7 +401,7 @@ export default function OrganizationAdminPanel() {
 }
 
 function OverviewTab({ club }) {
-  const founded = club.created_at?.toDate ? club.created_at.toDate().getFullYear() : null;
+  const founded = parseTimestamp(club.created_at)?.getFullYear() ?? null;
   const { data: pets = [] } = useMyPets(club.id);
   return (
     <div className="space-y-6">

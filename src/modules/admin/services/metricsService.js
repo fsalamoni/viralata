@@ -5,6 +5,7 @@
  */
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/core/config/firebase';
+import { parseTimestamp } from '@/core/utils/timestamp';
 
 function toDate(value) {
   if (!value) return null;

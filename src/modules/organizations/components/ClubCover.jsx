@@ -1,6 +1,7 @@
 import React from 'react';
 import { Calendar, Users, PawPrint, MapPin, Settings, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { parseTimestamp } from '@/core/utils/timestamp';
 
 /**
  * Card da ONG exibido no topo da página pública (logo abaixo da barra
@@ -28,9 +29,7 @@ export default function ClubCover({ club, stats, isAdmin }) {
   if (!club) return null;
 
   const location = [club.city, club.state].filter(Boolean).join(' / ');
-  const founded = stats?.founded || (club.created_at?.toDate
-    ? club.created_at.toDate().getFullYear()
-    : null);
+  const founded = stats?.founded || (parseTimestamp(club.created_at)?.getFullYear() ?? null);
   const followers = stats?.followers ?? club.member_count ?? 0;
   const animals = stats?.animals ?? 0;
 

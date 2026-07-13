@@ -16,6 +16,7 @@ vi.mock('@/core/lib/logger', () => ({
 }));
 
 import { getMyCardsAll } from '@/modules/shelter/services/kanbanService';
+import { parseTimestamp } from '@/core/utils/timestamp';
 
 describe('useMyPostAdoptionTasks — filtro post-adoption', () => {
   it('filtra cards com tag "post-adoption"', async () => {
@@ -52,7 +53,7 @@ describe('PostAdoptionDashboard — helpers', () => {
     // Mock impl — testando lógica isolada
     const dueState = (dueAt) => {
       if (!dueAt) return { label: 'Sem prazo', tone: 'secondary' };
-      const d = dueAt?.toDate ? dueAt.toDate() : new Date(dueAt);
+      const d = dueAt?.toDate ? parseTimestamp(dueAt) : new Date(dueAt);
       const now = new Date();
       const diffDays = Math.ceil((d - now) / (1000 * 60 * 60 * 24));
       if (diffDays < 0) return { label: `Atrasado (${Math.abs(diffDays)}d)`, tone: 'destructive' };
@@ -70,7 +71,7 @@ describe('PostAdoptionDashboard — helpers', () => {
   it('dueState: vence hoje', () => {
     const dueState = (dueAt) => {
       if (!dueAt) return { label: 'Sem prazo' };
-      const d = dueAt?.toDate ? dueAt.toDate() : new Date(dueAt);
+      const d = dueAt?.toDate ? parseTimestamp(dueAt) : new Date(dueAt);
       const now = new Date();
       const diffDays = Math.ceil((d - now) / (1000 * 60 * 60 * 24));
       if (diffDays < 0) return { tone: 'destructive', label: 'overdue' };

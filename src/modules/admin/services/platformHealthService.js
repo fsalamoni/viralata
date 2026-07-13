@@ -33,6 +33,7 @@ import {
 import { db } from '@/core/config/firebase';
 import { logger } from '@/core/lib/logger';
 import { createAuditLog } from '@/core/services/auditService';
+import { parseTimestamp } from '@/core/utils/timestamp';
 
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 const SEVEN_DAYS_MS = 7 * ONE_DAY_MS;

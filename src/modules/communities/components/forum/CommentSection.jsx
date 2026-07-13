@@ -14,6 +14,7 @@ import AttachmentRenderer from './AttachmentRenderer';
 import { uploadAttachment } from '@/core/services/storageService';
 import MarkdownContent from '@/components/ui/markdown-content';
 import { confirmDialog } from '@/components/ui/confirm-provider';
+import { parseTimestamp } from '@/core/utils/timestamp';
 
 function MessageItem({ message, threadId, onDeleted }) {
   const { user } = useAuth();
@@ -62,7 +63,7 @@ function MessageItem({ message, threadId, onDeleted }) {
           <div>
             <p className="font-semibold text-sm">{message.author_name}</p>
             <p className="text-xs text-muted-foreground">
-              {message.created_at ? formatDistanceToNow(message.created_at.toDate(), { addSuffix: true, locale: ptBR }) : ''}
+              {message.created_at ? formatDistanceToNow(parseTimestamp(message.created_at), { addSuffix: true, locale: ptBR }) : ''}
             </p>
           </div>
         </div>

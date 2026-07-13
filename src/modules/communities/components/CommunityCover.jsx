@@ -1,6 +1,7 @@
 import React from 'react';
 import { Calendar, Users, MapPin, Settings, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { parseTimestamp } from '@/core/utils/timestamp';
 
 /**
  * Card da COMUNIDADE exibido no topo da página pública (logo abaixo da
@@ -25,9 +26,7 @@ export default function CommunityCover({ community, stats, isAdmin }) {
   if (!community) return null;
 
   const location = [community.city, community.state].filter(Boolean).join(' / ');
-  const founded = stats?.founded || (community.created_at?.toDate
-    ? community.created_at.toDate().getFullYear()
-    : null);
+  const founded = stats?.founded || (parseTimestamp(community.created_at)?.getFullYear() ?? null);
   const members = stats?.members ?? community.member_count ?? 1;
 
   return (

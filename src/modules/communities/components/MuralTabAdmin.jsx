@@ -24,6 +24,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { hasCommunityPermission } from '../domain/permissions';
 import { COMMUNITY_PERMISSION } from '../domain/constants';
+import { parseTimestamp } from '@/core/utils/timestamp';
 
 /**
  * Versão admin do Mural: tudo do MuralTabEnhanced (likes, comentários,
@@ -346,7 +347,7 @@ function PostCard({ post, liked, currentUser, isAdmin, onToggleLike, onDelete })
           <div>
             <p className="font-bold text-sm">{authorName}</p>
             <p className="text-xs text-muted-foreground">
-              {post.created_at ? formatDistanceToNow(post.created_at.toDate(), { addSuffix: true, locale: ptBR }) : 'Agora mesmo'}
+              {post.created_at ? formatDistanceToNow(parseTimestamp(post.created_at), { addSuffix: true, locale: ptBR }) : 'Agora mesmo'}
             </p>
           </div>
         </div>

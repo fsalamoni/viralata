@@ -32,6 +32,7 @@ import ClubTeamPublicTab from '../components/ClubTeamPublicTab';
 import ClubCover from '../components/ClubCover';
 import ClubThemedScope from '../components/ClubThemedScope';
 import { cn } from '@/core/lib/utils';
+import { parseTimestamp } from '@/core/utils/timestamp';
 
 /** Abas públicas da ONG — com badges nas que têm contagem. */
 const TABS = [
@@ -75,7 +76,7 @@ export default function ClubDetail() {
     return {
       followers: club.member_count || 0,
       animals: pets.filter((p) => !p.status || p.status === 'available').length,
-      founded: club.created_at?.toDate ? club.created_at.toDate().getFullYear() : null,
+      founded: parseTimestamp(club.created_at)?.getFullYear() ?? null,
     };
   }, [club, pets]);
 

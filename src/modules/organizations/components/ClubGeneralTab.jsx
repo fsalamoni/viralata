@@ -6,6 +6,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import ClubPublicChatDialog from './ClubPublicChatDialog';
+import { parseTimestamp } from '@/core/utils/timestamp';
 
 /**
  * Aba pública "Geral" da ONG — segue o padrão visual da imagem de
@@ -34,9 +35,7 @@ export default function ClubGeneralTab({ club, stats }) {
   const hasContactPhone = !!club.contact_phone;
   const hasWhatsapp = !!whatsappClean;
   const hasInstagram = !!club.instagram;
-  const founded = stats?.founded || (club.created_at?.toDate
-    ? club.created_at.toDate().getFullYear()
-    : null);
+  const founded = stats?.founded || (parseTimestamp(club.created_at)?.getFullYear() ?? null);
   const followers = stats?.followers ?? club.member_count ?? 0;
   const animals = stats?.animals ?? 0;
 

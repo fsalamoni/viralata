@@ -19,6 +19,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Heart, Calendar, Image as ImageIcon, MessageCircle, CheckCircle2, Clock, AlertCircle } from 'lucide-react';
 import { useMyPostAdoptionTasks } from '@/modules/shelter/hooks/useMyPostAdoptionTasks';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
+import { parseTimestamp } from '@/core/utils/timestamp';
 
 const TASK_ICONS = {
   'check-in': MessageCircle,
@@ -39,7 +40,7 @@ function taskTypeLabel(card) {
 
 function dueState(dueAt) {
   if (!dueAt) return { label: 'Sem prazo', tone: 'secondary' };
-  const d = dueAt?.toDate ? dueAt.toDate() : new Date(dueAt);
+  const d = dueAt?.toDate ? parseTimestamp(dueAt) : new Date(dueAt);
   const now = new Date();
   const diffDays = Math.ceil((d - now) / (1000 * 60 * 60 * 24));
   if (diffDays < 0) return { label: `Atrasado (${Math.abs(diffDays)}d)`, tone: 'destructive' };

@@ -19,8 +19,9 @@ import {
 } from 'firebase/firestore';
 import { db } from '@/core/config/firebase';
 import { logger } from '@/core/lib/logger';
+import { parseTimestamp } from '@/core/utils/timestamp';
 import {
-  reportsQuerySchema,
+    reportsQuerySchema,
   periodRange,
   computeRescuesReport,
   computeAdoptionsReport,
@@ -62,7 +63,7 @@ function filterByDateRange(items, dateField, start, end) {
   return items.filter((item) => {
     const raw = item[dateField];
     if (!raw) return false;
-    const d = raw?.toDate ? raw.toDate() : new Date(raw);
+    const d = raw?.toDate ? parseTimestamp(raw) : new Date(raw);
     if (start && d < start) return false;
     if (end && d > end) return false;
     return true;
@@ -236,7 +237,7 @@ export async function getReportsSummary(clubId, options = {}) {
         const monthEnd = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0, 23, 59, 59, 999));
         const inMonth = postAdoptions.filter((p) => {
           if (p.status !== 'returned' || !p.returned_at) return false;
-          const rd = p.returned_at?.toDate ? p.returned_at.toDate() : new Date(p.returned_at);
+          const rd = p.returned_at?.toDate ? parseTimestamp(p.returned_at) : new Date(p.returned_at);
           return rd >= monthStart && rd <= monthEnd;
         });
         const byReason = inMonth.reduce((acc, p) => {

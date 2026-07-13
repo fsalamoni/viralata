@@ -37,6 +37,7 @@ import PageHero from '@/components/PageHero';
 import ClubCover from '@/modules/organizations/components/ClubCover';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
+import { parseTimestamp } from '@/core/utils/timestamp';
 
 /** Busca pets adotados (snapshot público) — limit 6 */
 async function fetchRecentAdoptions(clubId) {
@@ -77,7 +78,7 @@ async function fetchAnimalsCount(clubId) {
 
 function formatDate(timestamp) {
   if (!timestamp) return '';
-  const d = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+  const d = timestamp.toDate ? parseTimestamp(timestamp) : new Date(timestamp);
   if (Number.isNaN(d.getTime())) return '';
   return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
 }
@@ -167,7 +168,7 @@ export default function ShelterPublic() {
     followers: club.member_count || 0,
     animals: animalsCount,
     adoptions: adoptionsCount,
-    founded: club.created_at?.toDate ? club.created_at.toDate().getFullYear() : null,
+    founded: club.created_at?.toDate ? parseTimestamp(club.created_at).getFullYear() : null,
   };
 
   return (

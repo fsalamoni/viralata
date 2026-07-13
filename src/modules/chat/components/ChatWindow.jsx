@@ -37,6 +37,7 @@ import { useMessages, useChatActions } from '@/modules/chat/hooks/useChat';
 import MessageBubble from './MessageBubble';
 import ChatComposer from './ChatComposer';
 import NewChatDialog from './NewChatDialog';
+import { parseTimestamp } from '@/core/utils/timestamp';
 
 function dayLabel(ms) {
   if (!ms) return '';
