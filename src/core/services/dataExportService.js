@@ -28,7 +28,10 @@ export async function exportMyData(uid) {
   const [profileSnap, pets, adoptionInterests, clubMemberships,
     notifications, abuseReports, ratingsGiven, ratingsReceived, conversations,
     termsAcceptances, donationContributions, auditLogs,
-    adoptionApplications, volunteerProfiles, volunteerRosters] = await Promise.all([
+    adoptionApplications, volunteerProfiles, volunteerRosters,
+    communityPosts, communityPostComments, communityForumThreads,
+    communityForumMessages, communityMembers, communityPostLikes,
+    communityEvents, communityEventRsvps, clubChatMessages] = await Promise.all([
     getDoc(doc(db, 'users', uid)),
     queryByField('pets', 'owner_id', uid),
     queryByField('adoption_interests', 'user_id', uid),
@@ -44,6 +47,16 @@ export async function exportMyData(uid) {
     queryByField('adoption_applications', 'applicant_uid', uid),
     queryByField('volunteer_profiles', 'user_id', uid),
     queryByField('volunteer_rosters', 'volunteer_uid', uid),
+    // TASK-331: dados de comunidade + chat (LGPD Art. 18 V — cobertura total)
+    queryByField('community_posts', 'author_id', uid),
+    queryByField('community_post_comments', 'author_id', uid),
+    queryByField('community_forum_threads', 'author_id', uid),
+    queryByField('community_forum_messages', 'author_id', uid),
+    queryByField('community_members', 'user_id', uid),
+    queryByField('community_post_likes', 'user_id', uid),
+    queryByField('community_events', 'created_by', uid),
+    queryByField('community_event_rsvps', 'user_id', uid),
+    queryByField('club_chat_messages', 'author_id', uid),
   ]);
 
   // Gera audit log do próprio export (LGPD Art. 37 + Art. 18 V — o
@@ -63,6 +76,15 @@ export async function exportMyData(uid) {
           conversations: conversations.size,
           volunteer_profiles: volunteerProfiles.length,
           volunteer_rosters: volunteerRosters.length,
+          community_posts: communityPosts.length,
+          community_post_comments: communityPostComments.length,
+          community_forum_threads: communityForumThreads.length,
+          community_forum_messages: communityForumMessages.length,
+          community_members: communityMembers.length,
+          community_post_likes: communityPostLikes.length,
+          community_events: communityEvents.length,
+          community_event_rsvps: communityEventRsvps.length,
+          club_chat_messages: clubChatMessages.length,
         },
       },
     });
@@ -87,6 +109,16 @@ export async function exportMyData(uid) {
     donation_contributions: donationContributions,
     volunteer_profiles: volunteerProfiles,
     volunteer_rosters: volunteerRosters,
+    // TASK-331: comunidade + chat
+    community_posts: communityPosts,
+    community_post_comments: communityPostComments,
+    community_forum_threads: communityForumThreads,
+    community_forum_messages: communityForumMessages,
+    community_members: communityMembers,
+    community_post_likes: communityPostLikes,
+    community_events: communityEvents,
+    community_event_rsvps: communityEventRsvps,
+    club_chat_messages: clubChatMessages,
     audit_logs: auditLogs,
   };
 }
