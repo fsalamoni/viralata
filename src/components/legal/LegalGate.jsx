@@ -35,7 +35,6 @@ import {
 } from '@/modules/shelter/domain/legal/terms';
 import TermsAcceptanceModal from '@/modules/shelter/components/legal/TermsAcceptanceModal';
 import { logger } from '@/core/lib/logger';
-import { captureIpUa } from '@/modules/shelter/services/termsAcceptanceService';
 
 const LEGAL_ALLOWED_PATHS = [
   '/onboarding',
@@ -110,18 +109,20 @@ export default function LegalGate({ children }) {
     try {
       const userAgent = typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown';
       for (const item of items) {
+        // TermsAcceptanceModal envia items com snake_case (terms_type,
+        // terms_version, document_hash) — bate com o schema Zod de
+        // recordAcceptanceInputSchema. Não renomear.
         await recordAcceptance(
           user.uid,
           {
-            terms_type: item.termsType,
-            terms_version: item.documentVersion,
-            document_hash: item.documentHash,
+            terms_type: item.terms_type,
+            terms_version: item.terms_version,
+            document_hash: item.document_hash,
             signature_text: signature,
             legal_basis: 'consent',
-            ip_address: null, // preenchido por Cloud Function na auditoria
+            ip_address: 'unknown', // preenchido por Cloud Function na auditoria
             user_agent: userAgent,
             liveness_verified: false,
-            accepted_at: new Date().toISOString(),
           },
           user
         );
