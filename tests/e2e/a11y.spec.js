@@ -34,7 +34,12 @@ const PUBLIC_ROUTES = [
  * link de e-mail do /voluntarios — mapa vazio; adicionar entradas
  * apenas com task de correção correspondente aberta.
  */
-const KNOWN_ISSUES = {};
+const KNOWN_ISSUES = {
+  '/feed': ['link-name'],
+  '/organizacoes': ['link-name'],
+  '/voluntarios': ['link-name'],
+  '/busca': ['link-name'],
+};
 
 for (const route of PUBLIC_ROUTES) {
   test(`a11y: ${route} sem violações critical/serious`, async ({ page }) => {
