@@ -53,6 +53,16 @@ jobs:
         working-directory: functions
         continue-on-error: true
 
+      # CRÍTICO: mockData.js faz dynamic import de ../../src/mocks/index.js,
+      # mas o Firebase Functions só deploya a pasta functions/. Sem este
+      # passo, o runtime quebra com ERR_MODULE_NOT_FOUND e retorna 500.
+      - name: Copy src/mocks into functions/mocks (predeploy)
+        run: |
+          mkdir -p functions/mocks
+          cp src/mocks/*.js functions/mocks/
+          echo "=== Mocks copiados ==="
+          ls functions/mocks/
+
       - name: Redeploy Cloud Functions
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}

@@ -56,9 +56,12 @@ const ADMIN_BATCH_LIMIT = 450;
 let _payloadsPromise = null;
 function loadMockPayloads() {
   if (!_payloadsPromise) {
-    // Aponta para a raiz do repositório (functions/ está 1 nível abaixo).
+    // Aponta para ./mocks/ dentro do package functions/ (o workflow de
+    // redeploy copia src/mocks/*.js → functions/mocks/ antes do deploy
+    // porque o Firebase Functions só inclui a pasta functions/ no
+    // container, não o resto do repo).
     const indexUrl = pathToFileURL(
-      path.resolve(__dirname, '..', 'src', 'mocks', 'index.js')
+      path.resolve(__dirname, 'mocks', 'index.js')
     ).href;
     _payloadsPromise = import(indexUrl);
   }
