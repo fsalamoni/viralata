@@ -10,6 +10,7 @@ import {
   UsersRound, PawPrint, Bird, Rabbit, Ban, Wallet, MapPin, Shield,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { ONBOARDING_QUESTIONNAIRE_VERSION, getNewFieldsForUser } from '../domain/questionnaireVersion';
 
 const STEPS = [
   {
@@ -163,6 +164,9 @@ export default function OnboardingQuestionnaire() {
         privacy_policy_version: '2026-07-10',
         code_of_conduct_accepted_at: acceptedAt,
         code_of_conduct_version: '2026-07-10',
+        // Versionamento do questionário (TASK-401 parte 3)
+        onboarding_version: ONBOARDING_QUESTIONNAIRE_VERSION,
+        onboarding_completed_at: acceptedAt,
       });
       toast.success('Perfil concluído! Bem-vindo ao Viralata 🐾');
       navigate('/feed');
