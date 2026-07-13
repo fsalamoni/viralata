@@ -58,6 +58,7 @@ const OrganizationAdminPanel = lazy(() => import('@/modules/organizations/pages/
 const EventDetail = lazy(() => import('@/modules/organizations/pages/EventDetail'));
 
 // ─── Comunidades ──────────────────────────────────────────────────────────────
+const CommunityForumPublic = lazy(() => import('@/pages/CommunityForumPublic'));
 const CommunityPublic = lazy(() => import('@/pages/CommunityPublic'));
 const CommunitiesDirectory = lazy(() => import('@/modules/communities/pages/CommunitiesDirectory'));
 const CommunityDetail = lazy(() => import('@/modules/communities/pages/CommunityDetail'));
@@ -409,6 +410,7 @@ export default function App() {
       <Route path="adoptions" element={<PostAdoptionDashboard />} />
       <Route path="abrigos/:shelterId/interviews" element={<ShelterInterviewsList />} />
       <Route path="/comunidades/:slug" element={<CommunityPublic />} />
+      <Route path="/comunidades/:slug/forum" element={<CommunityForumPublic />} />
       </Routes>
               </OnboardingGate>
               </BannedGate>
