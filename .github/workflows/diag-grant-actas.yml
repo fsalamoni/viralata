@@ -1,4 +1,4 @@
-name: "Diag: Grant ActAs on Compute default SA"
+name: "Diag: Verify what's in the function container"
 
 on: workflow_dispatch
 
@@ -7,11 +7,11 @@ permissions:
   id-token: write
 
 jobs:
-  grant:
+  verify:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Auth + grant
+      - name: Auth + gcloud
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
@@ -19,16 +19,23 @@ jobs:
           gcloud auth activate-service-account --key-file=/tmp/firebase-sa.json --project=viralata-4cf0b
           gcloud config set project viralata-4cf0b
 
-          # Grant on the specific compute default SA
-          gcloud iam service-accounts add-iam-policy-binding \
-            1060557663725-compute@developer.gserviceaccount.com \
-            --member="serviceAccount:firebase-adminsdk-fbsvc@viralata-4cf0b.iam.gserviceaccount.com" \
-            --role="roles/iam.serviceAccountUser" \
-            --project=viralata-4cf0b 2>&1 | head -20
+      - name: Get latest revision URL
+        run: |
+          gcloud run revisions list \
+            --service=getmockstatus \
+            --region=southamerica-east1 \
+            --project=viralata-4cf0b \
+            --format="table(name,createTime,image)" 2>&1 | head -10
 
-          # And on the appspot SA
-          gcloud iam service-accounts add-iam-policy-binding \
-            viralata-4cf0b@appspot.gserviceaccount.com \
-            --member="serviceAccount:firebase-adminsdk-fbsvc@viralata-4cf0b.iam.gserviceaccount.com" \
-            --role="roles/iam.serviceAccountUser" \
-            --project=viralata-4cf0b 2>&1 | head -20
+      - name: Get function source archive URL
+        run: |
+          # List source archives in gcf-v2-sources-* buckets
+          gcloud storage ls "gs://gcf-v2-sources-*-viralata-4cf0b" --project=viralata-4cf0b 2>&1 | head -20
+
+      - name: Look at source archive contents
+        run: |
+          LATEST=$(gcloud storage ls "gs://gcf-v2-sources-*-viralata-4cf0b" --project=viralata-4cf0b 2>&1 | sort | tail -1)
+          echo "=== Latest source: $LATEST ==="
+          gcloud storage cp "$LATEST" /tmp/func-source.zip 2>&1
+          echo "=== Files in source archive ==="
+          unzip -l /tmp/func-source.zip 2>&1 | head -50
