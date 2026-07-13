@@ -37,24 +37,53 @@ jobs:
       - name: List functions
         run: |
           echo "=== Functions deployed ==="
-          gcloud functions list --v2 --project=viralata-4cf0b 2>&1
+          gcloud functions list --v2 --project=viralata-4cf0b 2>&1 || true
 
       - name: IAM getMockStatus
         run: |
           echo "=== getMockStatus IAM ==="
-          gcloud functions get-iam-policy getMockStatus --region=southamerica-east1 --v2 --project=viralata-4cf0b 2>&1
+          gcloud functions get-iam-policy getMockStatus --region=southamerica-east1 --project=viralata-4cf0b 2>&1 || true
 
       - name: IAM loadMockData
         run: |
           echo "=== loadMockData IAM ==="
-          gcloud functions get-iam-policy loadMockData --region=southamerica-east1 --v2 --project=viralata-4cf0b 2>&1
+          gcloud functions get-iam-policy loadMockData --region=southamerica-east1 --project=viralata-4cf0b 2>&1 || true
+
+      - name: IAM clearMockData
+        run: |
+          echo "=== clearMockData IAM ==="
+          gcloud functions get-iam-policy clearMockData --region=southamerica-east1 --project=viralata-4cf0b 2>&1 || true
 
       - name: Logs getMockStatus
         run: |
-          echo "=== getMockStatus logs ==="
-          gcloud functions logs read getMockStatus --region=southamerica-east1 --v2 --limit=40 2>&1 | tail -200
+          echo "=== getMockStatus logs (latest 40) ==="
+          gcloud functions logs read getMockStatus --region=southamerica-east1 --limit=40 2>&1 | tail -200 || true
 
       - name: Logs loadMockData
         run: |
-          echo "=== loadMockData logs ==="
-          gcloud functions logs read loadMockData --region=southamerica-east1 --v2 --limit=40 2>&1 | tail -200
+          echo "=== loadMockData logs (latest 40) ==="
+          gcloud functions logs read loadMockData --region=southamerica-east1 --limit=40 2>&1 | tail -200 || true
+
+      - name: Logs clearMockData
+        run: |
+          echo "=== clearMockData logs (latest 40) ==="
+          gcloud functions logs read clearMockData --region=southamerica-east1 --limit=40 2>&1 | tail -200 || true
+
+      - name: Test function calls (no auth)
+        run: |
+          echo "=== Direct curl test (no auth) ==="
+          for FN in getMockStatus loadMockData clearMockData; do
+            echo "--- $FN ---"
+            curl -s -X POST "https://southamerica-east1-viralata-4cf0b.cloudfunctions.net/$FN" \
+              -H "Content-Type: application/json" \
+              -d '{"data":{}}' | head -3
+            echo ""
+          done
+
+      - name: Test function calls (CORS preflight)
+        run: |
+          echo "=== CORS preflight test ==="
+          curl -sI -X OPTIONS "https://southamerica-east1-viralata-4cf0b.cloudfunctions.net/getMockStatus" \
+            -H "Origin: https://viralata.web.app" \
+            -H "Access-Control-Request-Method: POST" \
+            -H "Access-Control-Request-Headers: authorization,content-type" | head -15
