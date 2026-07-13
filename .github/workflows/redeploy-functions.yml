@@ -65,6 +65,31 @@ jobs:
             --non-interactive \
             --force
 
+      # callable v2 functions precisam explicitamente de IAM=allUsers
+      # para que o gateway do Cloud Functions aceite preflight CORS.
+      # Sem isso, OPTIONS volta 403 do Google Frontend e o client SDK
+      # bloqueia com "blocked by CORS policy".
+      - name: Grant invoker role to allUsers
+        if: always()
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/firebase-sa.json
+        run: |
+          echo "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/firebase-sa.json"
+          gcloud auth activate-service-account --key-file="$RUNNER_TEMP/firebase-sa.json"
+          gcloud functions add-invoker-policy-binding \
+            --region=southamerica-east1 \
+            --member=allUsers \
+            getMockStatus 2>&1 | tail -3 || true
+          gcloud functions add-invoker-policy-binding \
+            --region=southamerica-east1 \
+            --member=allUsers \
+            loadMockData 2>&1 | tail -3 || true
+          gcloud functions add-invoker-policy-binding \
+            --region=southamerica-east1 \
+            --member=allUsers \
+            clearMockData 2>&1 | tail -3 || true
+
       - name: Summary
         if: always()
         run: |
