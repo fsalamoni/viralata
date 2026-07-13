@@ -225,7 +225,7 @@ export default function App() {
                 {/* Fase 19: páginas legais integrais sob /legal/*.
                     Flag-gated — se OFF, o viewer redireciona para a rota
                     legada correspondente. */}
-                <Route path="/legal/:slug*" element={withLayout('LegalPageViewer', LegalPageViewer)} />
+                <Route path="/legal/:slug/*" element={withLayout('LegalPageViewer', LegalPageViewer)} />
                 <Route path="/busca" element={withLayout('SearchPage', SearchPage)} />
 
                 {/* ── Onboarding (auth obrigatória, perfil ainda não completo) ── */}
@@ -274,11 +274,12 @@ export default function App() {
                   path="/comunidade/:communityId"
                   element={<ProtectedRoute>{withLayout('CommunityDetail', CommunityDetail)}</ProtectedRoute>}
                 />
-                <Route
-                  path="/comunidade/:communityId"
-                  element={<ProtectedRoute>{withLayout('CommunityDetail', CommunityDetail)}</ProtectedRoute>}
-                />
                 <Route path="/comunidade/:communityId/admin" element={<ProtectedRoute>{withLayout('CommunityAdminPanel', CommunityAdminPanel)}</ProtectedRoute>} />
+                {/* TASK-156: página pública de comunidade com mural read-only.
+                    Sem auth — anon consegue ver o mural, mas não postar. */}
+                <Route path="/comunidades/:slug" element={withLayout('CommunityPublic', CommunityPublic)} />
+                {/* TASK-159: feed público do fórum da comunidade (read-only). */}
+                <Route path="/comunidades/:slug/forum" element={withLayout('CommunityForumPublic', CommunityForumPublic)} />
 
 
                 {/* ── Organizações (ONGs) ───────────────────────────────── */}
@@ -297,6 +298,18 @@ export default function App() {
                 />
                 <Route path="/organizacoes/:orgId" element={<ProtectedRoute>{withLayout('OrganizationDetail', OrganizationDetail)}</ProtectedRoute>} />
                 <Route path="/abrigos/:shelterId" element={withLayout('ShelterPublic', ShelterPublic)} />
+                {/* TASK-288: contratos do abrigo (Lei 14.063/2020) — visível para
+                    admins do abrigo (gate via contractsService). */}
+                <Route
+                  path="/abrigos/:shelterId/contracts"
+                  element={<ProtectedRoute>{withLayout('ShelterContracts', ShelterContractsList)}</ProtectedRoute>}
+                />
+                {/* TASK-290: entrevistas do abrigo — visível para admins do
+                    abrigo (gate via interviewService). */}
+                <Route
+                  path="/abrigos/:shelterId/interviews"
+                  element={<ProtectedRoute>{withLayout('ShelterInterviews', ShelterInterviewsList)}</ProtectedRoute>}
+                />
                 <Route
                   path="/organizacoes/:orgId/eventos/:eventId"
                   element={<ProtectedRoute>{withLayout('EventDetail', EventDetail)}</ProtectedRoute>}
@@ -323,6 +336,11 @@ export default function App() {
                   path="/perfil"
                   element={<ProtectedRoute>{withLayout('Profile', Profile)}</ProtectedRoute>}
                 />
+                {/* TASK-288: contratos do adotante — apenas os próprios */}
+                <Route
+                  path="/perfil/contratos"
+                  element={<ProtectedRoute>{withLayout('MyContracts', MyContracts)}</ProtectedRoute>}
+                />
                 <Route
                   path="/adocoes/:clubId/:applicationId"
                   element={<ProtectedRoute>{withLayout('AdoptionDetail', AdoptionDetail)}</ProtectedRoute>}
@@ -330,6 +348,11 @@ export default function App() {
                 <Route
                   path="/quero-adotar/:petId"
                   element={<ProtectedRoute>{withLayout('AdoptionWizard', AdoptionWizard)}</ProtectedRoute>}
+                />
+                {/* TASK-289: dashboard pessoal do adotante pós-adoção */}
+                <Route
+                  path="/adoptions"
+                  element={<ProtectedRoute>{withLayout('PostAdoptionDashboard', PostAdoptionDashboard)}</ProtectedRoute>}
                 />
 
                 {/* ── Admin ─────────────────────────────────────────────── */}
@@ -402,16 +425,13 @@ export default function App() {
                 <Route path="/inicio" element={<Navigate to="/feed" replace />} />
                 <Route path="/clubes" element={<Navigate to="/comunidade" replace />} />
                 <Route path="/atletas" element={<Navigate to="/feed" replace />} />
+                {/* TASK-244: painel público do SCRUM servido direto pelo
+                    Firebase Hosting em public/scrum.html (não passa pelo SPA). */}
+                <Route path="/scrum" element={<ScrumDashboardRedirect />} />
 
-                {/* ── 404 ───────────────────────────────────────────────── */}
+                {/* ── 404 ──────────────────────────────────────────────── */}
                 <Route path="*" element={<PageNotFound />} />
-              <Route path="abrigos/:shelterId/contracts" element={<ShelterContractsList />} />
-      <Route path="perfil/contratos" element={<MyContracts />} />
-      <Route path="adoptions" element={<PostAdoptionDashboard />} />
-      <Route path="abrigos/:shelterId/interviews" element={<ShelterInterviewsList />} />
-      <Route path="/comunidades/:slug" element={<CommunityPublic />} />
-      <Route path="/comunidades/:slug/forum" element={<CommunityForumPublic />} />
-      </Routes>
+              </Routes>
               </OnboardingGate>
               </BannedGate>
             </Suspense>

@@ -197,9 +197,15 @@ async function writeAuditLog(db, realUid, realUserName, op, counts, errorsLength
 /**
  * Materializa todos os 208 documentos do pacote de mock no Firestore.
  * Idempotente — re-chamar sobrescreve os mesmos IDs.
+ *
+ * `cors: true` é explícito (já é o default em onCall v2, mas colocar
+ * no código evita surpresa se um dia alguém setar `enforceAppCheck` ou
+ * outra opção que mexa no CORS pipeline). Sem isso o OPTIONS preflight
+ * volta 403 do Google Frontend e o `httpsCallable` do client SDK
+ * rejeita com "blocked by CORS policy".
  */
 exports.loadMockData = onCall(
-  { region: REGION },
+  { region: REGION, cors: true },
   async (request) => {
     assertOwner(request);
     const { realUid, realUserName } = request.data || {};
@@ -222,7 +228,7 @@ exports.loadMockData = onCall(
 
 /** Apaga do Firestore todos os documentos com IDs determinísticos. */
 exports.clearMockData = onCall(
-  { region: REGION },
+  { region: REGION, cors: true },
   async (request) => {
     assertOwner(request);
     const { realUid, realUserName } = request.data || {};
@@ -244,7 +250,7 @@ exports.clearMockData = onCall(
 
 /** Conta documentos `_mock: true` por coleção (para o painel admin). */
 exports.getMockStatus = onCall(
-  { region: REGION },
+  { region: REGION, cors: true },
   async (request) => {
     assertOwner(request);
     const db = getFirestore(DATABASE_ID);
