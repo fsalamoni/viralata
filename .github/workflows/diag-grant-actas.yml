@@ -1,4 +1,4 @@
-name: "Diag: Deploy Functions w/ gcloud using default SA"
+name: "Diag: Push new image + update Cloud Run"
 
 on: workflow_dispatch
 
@@ -7,9 +7,9 @@ permissions:
   id-token: write
 
 jobs:
-  deploy:
+  push:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -19,28 +19,35 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Prepare functions dir
-        run: |
-          mkdir -p functions/mocks
-          cp src/mocks/*.js functions/mocks/
-
-      - name: Deploy
+      - name: Auth + configure Docker
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
           echo "$FIREBASE_SERVICE_ACCOUNT" > /tmp/firebase-sa.json
           gcloud auth activate-service-account --key-file=/tmp/firebase-sa.json --project=viralata-4cf0b
           gcloud config set project viralata-4cf0b
-          # NÃO set --service-account — usar o default (appspot)
-          for FN in getMockStatus loadMockData clearMockData; do
+          gcloud auth configure-docker southamerica-east1-docker.pkg.dev --quiet
+
+      - name: Prepare functions dir
+        run: |
+          mkdir -p functions/mocks
+          cp src/mocks/*.js functions/mocks/
+          # Remove .gcloudignore that gcloud creates
+          rm -f functions/.gcloudignore
+
+      - name: Build & push image
+        run: |
+          # Build usando Cloud Build (sem docker local)
+          gcloud builds submit functions \
+            --tag=southamerica-east1-docker.pkg.dev/viralata-4cf0b/gcf-artifacts/viralata--4cf0b__southamerica--east1__mock_data_functions:version_2 \
+            --project=viralata-4cf0b 2>&1 | tail -20
+
+      - name: Update Cloud Run service
+        run: |
+          for FN in getmockstatus loadmockdata clearmockdata; do
             echo "=== $FN ==="
-            gcloud functions deploy "$FN" \
-              --gen2 \
+            gcloud run services update "$FN" \
+              --image=southamerica-east1-docker.pkg.dev/viralata-4cf0b/gcf-artifacts/viralata--4cf0b__southamerica--east1__mock_data_functions:version_2 \
               --region=southamerica-east1 \
-              --runtime=nodejs20 \
-              --source=functions \
-              --entry-point="$FN" \
-              --trigger-http \
-              --no-allow-unauthenticated \
-              --project=viralata-4cf0b 2>&1 | tail -20
+              --project=viralata-4cf0b 2>&1 | tail -10
           done
