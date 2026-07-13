@@ -1,4 +1,4 @@
-name: "Diag: Deploy Functions via Cloud Run source"
+name: "Diag: Deploy Functions via gcloud functions deploy"
 
 on: workflow_dispatch
 
@@ -9,7 +9,7 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -25,21 +25,26 @@ jobs:
           cp src/mocks/*.js functions/mocks/
           echo "=== files in functions/ ==="
           ls functions/
-          echo "=== files in functions/mocks/ ==="
-          ls functions/mocks/
 
-      - name: Try gcloud run services update
+      - name: Try gcloud functions deploy with --runtime
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
           echo "$FIREBASE_SERVICE_ACCOUNT" > /tmp/firebase-sa.json
           gcloud auth activate-service-account --key-file=/tmp/firebase-sa.json --project=viralata-4cf0b
           gcloud config set project viralata-4cf0b
-          # Tentar deployar via gcloud run com --source (não precisa ActAs)
+          # Deploy via gcloud functions deploy (não firebase deploy)
+          # Pode ser que não precise de ActAs se o service account já é o mesmo
           for FN in getMockStatus loadMockData clearMockData; do
             echo "=== $FN ==="
-            gcloud run services update "$FN" \
-              --source=functions \
+            gcloud functions deploy "$FN" \
+              --gen2 \
               --region=southamerica-east1 \
-              --project=viralata-4cf0b 2>&1 | tail -10
+              --runtime=nodejs20 \
+              --source=functions \
+              --entry-point="$FN" \
+              --trigger-http \
+              --no-allow-unauthenticated \
+              --service-account=firebase-adminsdk-fbsvc@viralata-4cf0b.iam.gserviceaccount.com \
+              --project=viralata-4cf0b 2>&1 | tail -15
           done
