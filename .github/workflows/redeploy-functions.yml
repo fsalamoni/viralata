@@ -69,26 +69,25 @@ jobs:
       # para que o gateway do Cloud Functions aceite preflight CORS.
       # Sem isso, OPTIONS volta 403 do Google Frontend e o client SDK
       # bloqueia com "blocked by CORS policy".
-      - name: Grant invoker role to allUsers
+      - name: Grant invoker role to allUsers (v2 functions)
         if: always()
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/firebase-sa.json
         run: |
           echo "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/firebase-sa.json"
-          gcloud auth activate-service-account --key-file="$RUNNER_TEMP/firebase-sa.json"
-          gcloud functions add-invoker-policy-binding \
-            --region=southamerica-east1 \
-            --member=allUsers \
-            getMockStatus 2>&1 | tail -3 || true
-          gcloud functions add-invoker-policy-binding \
-            --region=southamerica-east1 \
-            --member=allUsers \
-            loadMockData 2>&1 | tail -3 || true
-          gcloud functions add-invoker-policy-binding \
-            --region=southamerica-east1 \
-            --member=allUsers \
-            clearMockData 2>&1 | tail -3 || true
+          gcloud auth activate-service-account --key-file="$RUNNER_TEMP/firebase-sa.json" --project=viralata-4cf0b
+          gcloud config set project viralata-4cf0b
+          # v2 functions no Cloud Functions usam 'gcloud functions' com --gen2
+          for FN in getMockStatus loadMockData clearMockData; do
+            echo "--- $FN ---"
+            gcloud functions add-invoker-policy-binding \
+              --gen2 \
+              --region=southamerica-east1 \
+              --project=viralata-4cf0b \
+              --member=allUsers \
+              "$FN" 2>&1 | tail -3 || true
+          done
 
       - name: Summary
         if: always()
