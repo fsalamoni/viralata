@@ -1,4 +1,4 @@
-name: "Diag: Find function source bucket"
+name: "Diag: Deploy Functions w/ gcloud using default SA"
 
 on: workflow_dispatch
 
@@ -7,34 +7,40 @@ permissions:
   id-token: write
 
 jobs:
-  find:
+  deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
     steps:
-      - name: Auth
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Prepare functions dir
+        run: |
+          mkdir -p functions/mocks
+          cp src/mocks/*.js functions/mocks/
+
+      - name: Deploy
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
           echo "$FIREBASE_SERVICE_ACCOUNT" > /tmp/firebase-sa.json
           gcloud auth activate-service-account --key-file=/tmp/firebase-sa.json --project=viralata-4cf0b
           gcloud config set project viralata-4cf0b
-
-      - name: Describe function
-        run: |
-          echo "=== gcloud functions describe getMockStatus ==="
-          gcloud functions describe getMockStatus \
-            --region=southamerica-east1 \
-            --gen2 \
-            --project=viralata-4cf0b 2>&1 | head -80
-
-      - name: List Cloud Run services
-        run: |
-          echo "=== Cloud Run services ==="
-          gcloud run services list --region=southamerica-east1 --project=viralata-4cf0b 2>&1
-
-      - name: Describe Cloud Run service
-        run: |
-          echo "=== getmockstatus (Cloud Run) ==="
-          gcloud run services describe getmockstatus \
-            --region=southamerica-east1 \
-            --project=viralata-4cf0b 2>&1 | head -80
+          # NÃO set --service-account — usar o default (appspot)
+          for FN in getMockStatus loadMockData clearMockData; do
+            echo "=== $FN ==="
+            gcloud functions deploy "$FN" \
+              --gen2 \
+              --region=southamerica-east1 \
+              --runtime=nodejs20 \
+              --source=functions \
+              --entry-point="$FN" \
+              --trigger-http \
+              --no-allow-unauthenticated \
+              --project=viralata-4cf0b 2>&1 | tail -20
+          done
