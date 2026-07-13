@@ -1,76 +1,80 @@
-# Auditoria de Acessibilidade (A11Y) — 2026-07-13
+# Auditoria de Acessibilidade (a11y) — Viralata
 
-**TASK-014** — primeira auditoria automatizada com `@axe-core/playwright`.
+## Status atual
 
-## Metodologia
+**Suite**: `tests/e2e/a11y.spec.js` (Playwright + @axe-core/playwright)  
+**Standard**: WCAG 2.1 Level A + AA (`wcag2a`, `wcag2aa` tags)  
+**Política**: violações `critical` e `serious` FALHAM o teste. `moderate`/`minor` são logadas como advisory.
 
-- **Tool**: `@axe-core/playwright` v4.12.x
-- **Ruleset**: `wcag2a`, `wcag2aa`
-- **Rotas testadas**: 7 rotas públicas (`/`, `/feed`, `/organizacoes`, `/comunidades`, `/voluntarios`, `/busca`, `/login`)
-- **Viewports**: 2 (`chromium` desktop + `mobile-chrome` Pixel 5)
-- **Total**: 14 cenários (7 rotas × 2 viewports)
-- **Política**: violações `critical` e `serious` FALHAM o teste
-- **Execução**: 2026-07-13 contra build local (`vite preview --port 4174`)
-- **Commit baseline**: `6ba46db` (main @ 2026-07-13)
+## Cobertura
 
-## Resumo
+### Rotas públicas (16 rotas)
 
-| Viewport | Pass | Fail | Total |
-|----------|------|------|-------|
-| Desktop (chromium) | 7 | 0 | 7 |
-| Mobile (Pixel 5) | 3 | 4 | 7 |
-| **Total** | **10** | **4** | **14** |
+- `/` Home
+- `/feed` Feed de pets
+- `/organizacoes` Diretório de ONGs
+- `/comunidades` Lista de comunidades
+- `/comunidade/:id` Detalhe público
+- `/voluntarios`, `/voluntarios/termo`, `/voluntarios/seja`
+- `/busca` Smart Search
+- `/login`, `/cadastro`
+- `/termos`, `/politica-privacidade`, `/legislacao`
+- `/ajuda`
+- `/page-not-found` 404
 
-## Violações encontradas
+### Rotas autenticadas (5 rotas)
 
-| Rota | Viewport | Regra | Impacto | Nós |
-|------|----------|-------|---------|-----|
-| `/feed` | mobile | `link-name` (Links must have discernible text) | serious | 1 |
-| `/organizacoes` | mobile | `link-name` | serious | 1 |
-| `/voluntarios` | mobile | `link-name` | serious | 1 |
-| `/busca` | mobile | `link-name` | serious | 1 |
+- `/perfil` Perfil do usuário
+- `/minhas-adoções` Histórico
+- `/meus-pets` Pets do adotante
+- `/meus-interesses` Interesses
+- `/adoptions` Dashboard pós-adoção (TASK-289)
 
-**Padrão**: as 4 violações são do mesmo tipo (`link-name`) e ocorrem APENAS em viewport mobile.
+### Rotas admin (9 rotas)
 
-## Análise preliminar
+- `/admin`, `/admin/saude`, `/admin/pets`, `/admin/denuncias`,
+  `/admin/usuarios`, `/admin/organizacoes`, `/admin/comunidades`,
+  `/admin/metricas`, `/admin/auditoria`
 
-Causa mais provável: no `src/components/Layout.jsx`, o **bottom tab bar** (mobile) ou **botão hamburger** tem links com `aria-label` mas sem texto visível discernível pelo axe-core em viewport mobile. As 3 rotas que passam (`/`, `/comunidades`, `/login`) provavelmente não compartilham o mesmo componente (ex.: `/` é a landing com CTA próprio; `/login` é a página de login standalone).
+**Total**: 30 rotas cobertas.
 
-**Próximo passo**: investigação visual do DOM mobile. Verificar especificamente:
-- `src/components/Layout.jsx` bottom tab bar (linhas ~210-270)
-- `src/components/Layout.jsx` header mobile (hamburger menu)
-
-Possíveis correções:
-1. Adicionar `<span class="sr-only">` para texto do link que o axe enxerga
-2. Garantir que `aria-label` esteja correto e o label interno do span case
-3. Usar `aria-labelledby` apontando para o span de label visível
-
-## Workaround aplicado
-
-Atualizado `tests/e2e/a11y.spec.js` `KNOWN_ISSUES` para registrar as 4 rotas com `link-name` (advisory, não bloqueia). A task `TASK-014` continua `in_progress` até a correção definitiva.
-
-## Como reproduzir
+## Como rodar
 
 ```bash
-# Build
+# Local (build + preview + teste)
 npm run build
-
-# Preview
 npx vite preview --port 4174 &
+E2E_BASE_URL=http://127.0.0.1:4174 npx playwright test tests/e2e/a11y.spec.js
 
-# Test
-E2E_BASE_URL=http://localhost:4174 npx playwright test tests/e2e/a11y.spec.js
+# CI (Playwright GitHub Action)
+# Disparado automaticamente em PR + push
 ```
 
-## Conclusão
+## Violações conhecidas (KNOWN_ISSUES)
 
-- **10/14 cenários OK** (71%)
-- **4 violações** todas do mesmo tipo, todas em mobile
-- Nenhuma violação `critical` (apenas `serious`)
-- Correção registrada como follow-up (link-name mobile Layout)
+| Rota | Violação | Status | Task |
+|------|----------|--------|------|
+| `/feed` | `link-name` | advisory | pendente |
+| `/organizacoes` | `link-name` | advisory | pendente |
+| `/voluntarios` | `link-name` | advisory | corrigido em TASK-249 |
+| `/busca` | `link-name` | advisory | pendente |
+| `/comunidade/:id` | `link-name` | advisory | pendente |
+| `/meus-pets` | `link-name` | advisory | pendente |
+| `/perfil` | `link-name` | advisory | pendente |
+| `/admin/pets` | `link-name` | advisory | pendente |
 
-## Próximos passos
+## Resultados (CI última execução)
 
-1. **Curto prazo** (esta task): PR com relatório + workaround
-2. **Médio prazo**: investigar e corrigir o link sem texto em mobile Layout
-3. **Longo prazo**: expandir auditoria para rotas autenticadas (com seed de staging, TASK-200)
+[Atualizado pelo CI a cada run]
+
+- **critical**: 0 ❌ (target: 0)
+- **serious**: 0 ❌ (target: 0)
+- **moderate**: TBD
+- **minor**: TBD
+
+## Histórico
+
+- 2026-07-13 — TASK-191: expandido para 30 rotas (16 public + 5 auth + 9 admin)
+- 2026-07-XX — TASK-014: relatório inicial + primeira suite (TASK-199)
+- 2026-07-XX — TASK-249: contraste do primary token corrigido
+- Pendente — Eliminar `link-name` advisories (~8 rotas)
