@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-12T23:55:24.197Z",
+  "generatedAt": "2026-07-13T13:51:43.484Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -398,11 +398,47 @@
   },
   "activeWorktrees": [
     {
-      "id": "viralata",
-      "branch": "claude/scrum-board-management-yxo02k",
-      "head": "aeb3aa76996ce8c1da3260deddc4ccf654b4ec20",
-      "headTitle": "fix(layout): HandHeartshake → HeartHandshake (icone inexistente no lucide-react quebrava build)",
-      "path": "/home/user/viralata",
+      "id": "clickwrap",
+      "branch": "feat/mural-clickwrap-2026-07-13",
+      "head": "cdc79412c409be96a30feb5e5fca517f8cb11f54",
+      "headTitle": "feat(community): TASK-157 — Mural clickwrap + denúncia (Marco Civil + LGPD)",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/clickwrap",
+      "status": "ahead-of-main",
+      "commitsAhead": 1,
+      "primarySession": null,
+      "sessionTitle": null,
+      "focus": []
+    },
+    {
+      "id": "mural",
+      "branch": "feat/mural-public-2026-07-13",
+      "head": "bd0ffe2a9229770c1659eb13baa880e644ddc860",
+      "headTitle": "feat(community): TASK-156 — página pública /comunidades/{slug} com mural read-only",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/mural",
+      "status": "ahead-of-main",
+      "commitsAhead": 1,
+      "primarySession": null,
+      "sessionTitle": null,
+      "focus": []
+    },
+    {
+      "id": "scrum-public",
+      "branch": "chore/scrum-public-2026-07-13",
+      "head": "10550fc19590e50d3e87b26d2a118b9c1550b349",
+      "headTitle": "feat(community): TASK-160 — Fórum clickwrap + moderação (Marco Civil + LGPD) (#102)",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/scrum-public",
+      "status": "in-sync",
+      "commitsAhead": 0,
+      "primarySession": null,
+      "sessionTitle": null,
+      "focus": []
+    },
+    {
+      "id": "sentry",
+      "branch": "feat/sentry-2026-07-13",
+      "head": "04f929f6fb979d34c8a481547dd25ef4e8e17cf3",
+      "headTitle": "fix(rules): hotfix — escape duplo no regex pdf_storage_path (#96)",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/sentry",
       "status": "in-sync",
       "commitsAhead": 0,
       "primarySession": null,
@@ -824,10 +860,10 @@
       "title": "Adicionar tests em 10+ componentes sem .test.jsx",
       "type": "debt",
       "category": "test",
-      "status": "ready",
+      "status": "in_progress",
       "priority": "medium",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "mvs_419217909395550",
+      "branch": "feat/tests-coverage-2026-07-13",
       "flag": null,
       "worktree": null,
       "pr": null,
@@ -839,7 +875,7 @@
       "evidence": "docs/AUDIT_2026-07-11.md §5.1; docs/AUDIT_DEEP_2026-07-11.md §Pendências",
       "description": "Auditoria identificou 10+ componentes shelter/UI sem arquivo .test.jsx. Priorizar: componentes com lógica de negócio (não puramente apresentacional). Começar pelos que renderizam dados sensíveis (dashboard cards, kanban, exhibition details).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-13T01:19:51"
     },
     {
       "id": "TASK-014",
@@ -938,13 +974,13 @@
       "title": "Smart Search: implementar busca fuzzy client-side (typo-tolerance)",
       "type": "feature",
       "category": "search",
-      "status": "ready",
+      "status": "in_review",
       "priority": "high",
-      "owner": "unassigned",
-      "branch": null,
+      "owner": "mvs_f1e04f28717d42cdba05e221b7b4b6f3",
+      "branch": "feat/shelter-smart-search-fuzzy",
       "flag": "SHELTER_SMART_SEARCH",
       "worktree": null,
-      "pr": null,
+      "pr": "#76",
       "tags": [
         "fase-18",
         "typo-tolerance",
@@ -960,7 +996,7 @@
       "evidence": "docs/AUDIT_2026-07-11.md §5.3; decisão TASK-001 (Firestore nativo)",
       "description": "TASK-001 decidido: Firestore nativo. Como Firestore não tem typo-tolerance nativa, implementar busca fuzzy via Cloud Function (Levenshtein/phonetic) ou client-side via lib (Fuse.js, minisearch). Estratégia recomendada: cliente usa Fuse.js para busca local rápida em subset paginado (ex: 200 docs por vez), com debounce de 300ms. Server-side fica só para queries estruturadas (filtros facetados, range, etc).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-13T00:51:08"
     },
     {
       "id": "TASK-019",
@@ -10445,6 +10481,33 @@
       ],
       "startedAt": "2026-07-11",
       "resolvedAt": "2026-07-11"
+    },
+    {
+      "id": "TASK-378",
+      "title": "Painel scrum: auto-pull do remoto no watcher (npm run sync:live)",
+      "type": "feature",
+      "category": "infra",
+      "status": "done",
+      "priority": "high",
+      "owner": "claude_yxo02k",
+      "branch": "claude/scrum-board-management-yxo02k",
+      "flag": null,
+      "worktree": null,
+      "pr": "#109",
+      "tags": [
+        "harness",
+        "regra-b",
+        "auto-sync"
+      ],
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-202"
+      ],
+      "evidence": "sync.cjs --pull: git pull --ff-only a cada 60s no watcher (adiado com mudanças locais; nunca cria merge); npm run sync:live; causa raiz do painel local divergente era clone 99+ commits atrás do origin/main",
+      "description": "O painel local mostrava cenário antigo porque o clone não acompanhava o remoto. Com sync:live, o painel puxa o main automaticamente conforme o desenvolvimento se concretiza.",
+      "createdAt": "2026-07-13",
+      "updatedAt": "2026-07-13",
+      "resolvedAt": "2026-07-13"
     }
   ],
   "definitionOfDone": [
@@ -10597,12 +10660,12 @@
     "firestoreIndexes": 35,
     "bundleSizeKB": 4125,
     "shelterPhases": "21/22 completas em produção (Fase 18 pendente decisão)",
-    "activeWorktreesAheadOfMain": 0,
+    "activeWorktreesAheadOfMain": 2,
     "mergedWorktreesThisSprint": [
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": null,
+    "mainCommit": "10550fc19590e50d3e87b26d2a118b9c1550b349",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -10612,12 +10675,12 @@
     ],
     "openTODOs": 5,
     "openLegalReviews": 3,
-    "totalTasks": 254,
-    "done": 128,
-    "inProgress": 3,
-    "inReview": 0,
+    "totalTasks": 367,
+    "done": 129,
+    "inProgress": 4,
+    "inReview": 1,
     "blocked": 0,
-    "ready": 229,
+    "ready": 227,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -10647,7 +10710,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-11 21:30 — 6 critical tasks done (TASK-215+216+224+225+230+231) commit 62e32a2. 3 novas in_progress: TASK-234+237+238. Round 2.",
+    "lastUpdate": "2026-07-13T01:19:51 — via scrum.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
@@ -10676,7 +10739,7 @@
         "body": "Relatório fechado. Path: C:\\Users\\Usuario\\.mavis\\agents\\general\\workspace\\rel..."
       }
     ],
-    "total": 367
+    "total": 368
   }
 }
 </script>
