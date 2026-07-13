@@ -1,4 +1,4 @@
-name: "Diag: Push new image + update Cloud Run"
+name: "Diag: Grant ActAs at PROJECT level"
 
 on: workflow_dispatch
 
@@ -7,47 +7,27 @@ permissions:
   id-token: write
 
 jobs:
-  push:
+  grant:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 10
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Auth + configure Docker
+      - name: Auth + grant
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
           echo "$FIREBASE_SERVICE_ACCOUNT" > /tmp/firebase-sa.json
           gcloud auth activate-service-account --key-file=/tmp/firebase-sa.json --project=viralata-4cf0b
           gcloud config set project viralata-4cf0b
-          gcloud auth configure-docker southamerica-east1-docker.pkg.dev --quiet
 
-      - name: Prepare functions dir
-        run: |
-          mkdir -p functions/mocks
-          cp src/mocks/*.js functions/mocks/
-          # Remove .gcloudignore that gcloud creates
-          rm -f functions/.gcloudignore
+          # Tentar dar o role de Service Account User no project inteiro
+          # (cobre qualquer SA no project)
+          echo "=== Grant Service Account User at project level ==="
+          gcloud projects add-iam-policy-binding viralata-4cf0b \
+            --member="serviceAccount:firebase-adminsdk-fbsvc@viralata-4cf0b.iam.gserviceaccount.com" \
+            --role="roles/iam.serviceAccountUser" 2>&1 | head -20
 
-      - name: Build & push image
-        run: |
-          # Build usando Cloud Build (sem docker local)
-          gcloud builds submit functions \
-            --tag=southamerica-east1-docker.pkg.dev/viralata-4cf0b/gcf-artifacts/viralata--4cf0b__southamerica--east1__mock_data_functions:version_2 \
-            --project=viralata-4cf0b 2>&1 | tail -20
-
-      - name: Update Cloud Run service
-        run: |
-          for FN in getmockstatus loadmockdata clearmockdata; do
-            echo "=== $FN ==="
-            gcloud run services update "$FN" \
-              --image=southamerica-east1-docker.pkg.dev/viralata-4cf0b/gcf-artifacts/viralata--4cf0b__southamerica--east1__mock_data_functions:version_2 \
-              --region=southamerica-east1 \
-              --project=viralata-4cf0b 2>&1 | tail -10
-          done
+          # Tentar também iam.serviceAccountAdmin
+          echo "=== Grant Service Account Admin at project level ==="
+          gcloud projects add-iam-policy-binding viralata-4cf0b \
+            --member="serviceAccount:firebase-adminsdk-fbsvc@viralata-4cf0b.iam.gserviceaccount.com" \
+            --role="roles/iam.serviceAccountAdmin" 2>&1 | head -20
