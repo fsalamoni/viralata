@@ -651,6 +651,22 @@ service cloud.firestore {
     allow delete: if isAuth() && isPlatformAdmin();
   }
 
+  // TASK-157: CoC acceptance — registro de aceite de Código de Conduta
+  match /community_coc_acceptance/{userId} {
+    // User pode ler apenas seu próprio doc.
+    allow read: if isAuth() && request.auth.uid == userId;
+    // Create: o próprio user (no primeiro aceite).
+    allow create: if isAuth() && request.auth.uid == userId
+      && request.resource.data.user_id == request.auth.uid
+      && request.resource.data.last_version is string
+      && request.resource.data.accepted_community_ids is list;
+    // Update: o próprio user (aceites em novas comunidades).
+    allow update: if isAuth() && request.auth.uid == userId
+      && request.resource.data.user_id == request.auth.uid;
+    // Delete: apenas platform admin (LGPD right to be forgotten).
+    allow delete: if isAuth() && isPlatformAdmin();
+  }
+
   match /audit_logs/{logId} {
       // TASK-294 (LGPD Art. 18 V — portabilidade): o próprio usuário pode
       // ler os audit logs onde é ator ou sujeito (actor_id OU user_id == uid).
