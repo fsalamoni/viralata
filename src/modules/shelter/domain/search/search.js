@@ -338,6 +338,48 @@ export function sanitizePii(doc) {
 // ─── Schemas Zod ───────────────────────────────────────────────────────
 
 /** Schema para o intervalo de datas. ISO 8601 (YYYY-MM-DD). */
+// ─── LGPD helpers (TASK-241) ──────────────────────────────────────────
+
+/**
+ * Sanitiza PII de um doc antes de mapear para SearchResult.
+ * Aplicado apenas para entities com `lgpdSanitize: true`.
+ *
+ * - `email` / `contact_email`: mantém só o domínio
+ *   (ex: `joao@gmail.com` → `gmail.com`).
+ * - `phone` / `contact_phone` / `mobile`: mascara os 4 dígitos
+ *   do meio (ex: `11999887766` → `11999-****`).
+ * - `address` / `notes` / `bio`: OMITIDOS (não vão pro resultado).
+ * - Outros campos (skills, city, has_vehicle, availability_days,
+ *   name/display_name): MANTIDOS.
+ *
+ * @param {object} doc - doc cru do Firestore
+ * @returns {object} cópia do doc com PII sanitizada
+ */
+export function sanitizePii(doc) {
+  if (!doc || typeof doc !== 'object') return {};
+  const safe = { ...doc };
+  for (const key of ['email', 'contact_email']) {
+    if (typeof safe[key] === 'string') {
+      const at = safe[key].indexOf('@');
+      safe[key] = at > 0 ? safe[key].slice(at + 1) : '[redacted]';
+    }
+  }
+  for (const key of ['phone', 'contact_phone', 'mobile']) {
+    if (typeof safe[key] === 'string') {
+      const digits = safe[key].replace(/\D/g, '');
+      if (digits.length >= 8) {
+        safe[key] = `${digits.slice(0, 5)}-****`;
+      } else {
+        safe[key] = '[redacted]';
+      }
+    }
+  }
+  for (const key of ['address', 'notes', 'bio', 'description']) {
+    if (key in safe) delete safe[key];
+  }
+  return safe;
+}
+
 const dateRangeSchema = z.object({
   from: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'YYYY-MM-DD'),
   to: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'YYYY-MM-DD'),
