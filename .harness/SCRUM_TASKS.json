@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-13T00:36:33.931Z",
+  "generatedAt": "2026-07-13T00:37:31.671Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -14,11 +14,11 @@
     {
       "id": "chore-state-cleanup",
       "branch": "chore/state-and-cleanup-2026-07-12",
-      "head": "e2fb0768f92875d3ddd9fe36cde4f3ae274197ea",
-      "headTitle": "Merge PR #73: recupera merges pendentes (121 tasks scrum + docs legais v2) + galeria pública",
+      "head": "87a424d09db62e0b42e79851f7f6a2a533213fa2",
+      "headTitle": "chore(docs+scrum): STATE.md canônico + AGENTS.md B.1.6 (scrum.cjs) + AGENTS_CHANGELOG + ROADMAP 22/22 + cleanup stale tasks",
       "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/chore-state-cleanup",
-      "status": "in-sync",
-      "commitsAhead": 0,
+      "status": "ahead-of-main",
+      "commitsAhead": 1,
       "primarySession": null,
       "sessionTitle": null,
       "focus": []
@@ -10008,13 +10008,13 @@
       "title": "Atualizar AGENTS.md Regra B 2.2/2.3 - usar .harness/scrum.cjs (BREAKING, requer decisao humana 5)",
       "type": "docs",
       "category": "infra",
-      "status": "in_progress",
+      "status": "in_review",
       "priority": "medium",
       "owner": "mvs_f1e04f28717d42cdba05e221b7b4b6f3",
       "branch": "feat/regra-b-scrum-cli",
       "worktree": null,
       "flag": null,
-      "pr": null,
+      "pr": "#74",
       "tags": [
         "AGENTS.md",
         "regra-B",
@@ -10029,7 +10029,7 @@
       "evidence": "AGENTS.md 2.2/2.3 atual prescreve `node -e` inline script - incompativel com scrum.cjs canonical",
       "description": "**Origem:** Avaliacao de scrum.cjs (Regra B canonical CLI) em 2026-07-11 22:00.\n\n**Mudanca proposta:**\n- 2.2 (inicio de task): trocar `node -e \"<inline script>\"` por `node .harness/scrum.cjs start TASK-XXX --owner <session> --branch feat/...`\n- 2.3 (fim de task): trocar `node -e \"<inline script>\"` por `node .harness/scrum.cjs done TASK-XXX` ou `review TASK-XXX`\n- 2.5 (auto-import): nota de que sync.cjs --watch continua sendo o refresh do painel-scrum.html\n- 2.6 (autosync daemon): marcar DEPRECATED => sync.cjs (TASK-373) e o substituto\n- Adicionar referencia a scrum.cjs na 3 (Onde Tudo Vive)\n\n**BREAKING CHANGE (AGENTS.md 5):**\n- Requer decisao humana (PR com tag agents-md-change)\n- Entrada em docs/AGENTS_CHANGELOG.md\n- Broadcast pra todas as sessoes ativas\n- Re-leitura por todas as sessoes\n\n**Quem decide:** mvs_311d078987d0414a90f57ef28b789b18 (root) propoe => user libera.\n\n**Bloqueado por:** TASK-372 (lockfile devDep), TASK-373 (migracao autosync), TASK-375 (smoke test).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-12"
+      "updatedAt": "2026-07-13T00:37:31"
     },
     {
       "id": "TASK-375",
@@ -10251,7 +10251,7 @@
     "firestoreIndexes": 35,
     "bundleSizeKB": 4125,
     "shelterPhases": "22/22 completas em produção ✅",
-    "activeWorktreesAheadOfMain": 0,
+    "activeWorktreesAheadOfMain": 1,
     "mergedWorktreesThisSprint": [
       "wt/e79e15ca",
       "wt/17ff480a"
@@ -10268,8 +10268,8 @@
     "openLegalReviews": 3,
     "totalTasks": 367,
     "done": 132,
-    "inProgress": 2,
-    "inReview": 0,
+    "inProgress": 1,
+    "inReview": 1,
     "blocked": 0,
     "ready": 226,
     "backlog": 6,
@@ -10301,7 +10301,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-12 21:30 — Cleanup: 9 stale in_progress/in_review marcadas done (TASK-010/201/202/234/237/238/261/300/361/372/376). TASK-374 → in_progress (vai implementar Regra B scrum.cjs canonical). Métricas recalculadas.",
+    "lastUpdate": "2026-07-13T00:37:31 — via scrum.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
