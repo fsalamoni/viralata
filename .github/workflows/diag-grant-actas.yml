@@ -1,0 +1,37 @@
+name: "Diag: Grant ActAs permission"
+
+on: workflow_dispatch
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  grant:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: viralata-4cf0b
+          service_account_key: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          export_default_credentials: true
+
+      - name: Try grant ActAs
+        run: |
+          echo "=== Grant Service Account User role to firebase-adminsdk-fbsvc on default SA ==="
+          gcloud iam service-accounts add-iam-policy-binding \
+            viralata-4cf0b@appspot.gserviceaccount.com \
+            --member="serviceAccount:firebase-adminsdk-fbsvc@viralata-4cf0b.iam.gserviceaccount.com" \
+            --role="roles/iam.serviceAccountUser" \
+            --project=viralata-4cf0b 2>&1 | head -20
+
+          echo ""
+          echo "=== Try deploy functions now ==="
+          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > /tmp/firebase-sa.json
+          npx firebase-tools@latest deploy \
+            --only functions \
+            --project viralata-4cf0b \
+            --non-interactive \
+            --force 2>&1 | tail -30
