@@ -56,12 +56,16 @@ const ADMIN_BATCH_LIMIT = 450;
 let _payloadsPromise = null;
 function loadMockPayloads() {
   if (!_payloadsPromise) {
-    // Aponta para ./mocks/ dentro do package functions/ (o workflow de
-    // redeploy copia src/mocks/*.js → functions/mocks/ antes do deploy
-    // porque o Firebase Functions só inclui a pasta functions/ no
-    // container, não o resto do repo).
+    // Aponta para ./_payloads/ dentro de functions/ (o workflow de
+    // redeploy copia src/mocks/*.js → functions/_payloads/ antes do
+    // deploy porque o Firebase Functions só inclui a pasta functions/
+    // no container, não o resto do repo).
+    //
+    // NÃO pode ser ./mocks/: o firebase-tools@15 filtra *.js em dirs
+    // chamados 'mocks' (convenção de test mocks do Jest) e deleta todos
+    // os arquivos no upload. Já passei por isso — usar _payloads evita.
     const indexUrl = pathToFileURL(
-      path.resolve(__dirname, 'mocks', 'index.js')
+      path.resolve(__dirname, '_payloads', 'index.js')
     ).href;
     _payloadsPromise = import(indexUrl);
   }
