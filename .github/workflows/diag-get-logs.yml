@@ -1,0 +1,41 @@
+name: Diag: Get Cloud Functions logs
+
+on: workflow_dispatch
+
+permissions:
+  contents: read
+
+jobs:
+  logs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Auth
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          echo "$FIREBASE_SERVICE_ACCOUNT" > /tmp/firebase-sa.json
+          gcloud auth activate-service-account --key-file=/tmp/firebase-sa.json --project=viralata-4cf0b 2>&1
+          gcloud config set project viralata-4cf0b 2>&1
+
+      - name: List functions
+        run: |
+          echo "=== Functions deployed ==="
+          gcloud functions list --gen2 --project=viralata-4cf0b --format="table(name,status,buildId,updateTime)" 2>&1
+
+      - name: Logs getMockStatus
+        run: |
+          echo "=== getMockStatus last 30 ==="
+          gcloud functions logs read getMockStatus --region=southamerica-east1 --gen2 --limit=30 2>&1 | tail -100
+
+      - name: Logs loadMockData
+        run: |
+          echo "=== loadMockData last 30 ==="
+          gcloud functions logs read loadMockData --region=southamerica-east1 --gen2 --limit=30 2>&1 | tail -100
+
+      - name: IAM policy
+        run: |
+          echo "=== getMockStatus IAM ==="
+          gcloud functions get-iam-policy getMockStatus --region=southamerica-east1 --gen2 --project=viralata-4cf0b 2>&1 | tail -20
+          echo "=== loadMockData IAM ==="
+          gcloud functions get-iam-policy loadMockData --region=southamerica-east1 --gen2 --project=viralata-4cf0b 2>&1 | tail -20
