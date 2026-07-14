@@ -48,6 +48,8 @@ const PublicPet = lazy(() => import('@/modules/pets/pages/PublicPet'));
 const CreatePet = lazy(() => import('@/modules/pets/pages/CreatePet'));
 const MyPets = lazy(() => import('@/modules/pets/pages/MyPets'));
 const MyInterests = lazy(() => import('@/modules/pets/pages/MyInterests'));
+// TASK-304: página "Minha Application" pro adotante
+const MyApplications = lazy(() => import('@/modules/adoption/pages/MyApplications'));
 const RadarSettings = lazy(() => import('@/modules/pets/pages/RadarSettings'));
 
 // ─── Organizações ─────────────────────────────────────────────────────────────
@@ -262,6 +264,10 @@ export default function App() {
                 <Route
                   path="/meus-interesses"
                   element={<ProtectedRoute>{withLayout('MyInterests', MyInterests)}</ProtectedRoute>}
+                />
+                <Route
+                  path="/meus-pedidos"
+                  element={<ProtectedRoute>{withLayout('MyApplications', MyApplications)}</ProtectedRoute>}
                 />
                 <Route
                   path="/radar"
