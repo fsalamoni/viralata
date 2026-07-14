@@ -30,6 +30,7 @@ const SearchPage = lazy(() => import('@/pages/SearchPage'));
 const PublicExhibitions = lazy(() => import('@/pages/PublicExhibitions'));
 const EventsUnified = lazy(() => import('@/pages/EventsUnified'));
 const FosterDashboard = lazy(() => import('@/pages/FosterDashboard'));
+const ShelterAdminDashboard = lazy(() => import('@/modules/shelter/components/ShelterAdminDashboard'));
 const PublicExhibitionDetail = lazy(() => import('@/pages/PublicExhibitionDetail'));
 const PublicFosterPrograms = lazy(() => import('@/pages/PublicFosterPrograms'));
 const PublicMuralFeed = lazy(() => import('@/pages/PublicMuralFeed'));
@@ -241,6 +242,7 @@ export default function App() {
                 <Route path="/vitrines" element={withLayout('PublicExhibitions', PublicExhibitions)} />
                 <Route path="/eventos" element={withLayout('EventsUnified', EventsUnified)} />
                 <Route path="/lares-temporarios/dashboard" element={withLayout('FosterDashboard', FosterDashboard)} />
+                <Route path="/abrigos/:clubId/admin/dashboard" element={withLayout('ShelterAdminDashboard', ShelterAdminDashboard)} />
                 <Route path="/vitrines/:id" element={withLayout('PublicExhibitionDetail', PublicExhibitionDetail)} />
                 <Route path="/lares-temporarios" element={withLayout('PublicFosterPrograms', PublicFosterPrograms)} />
                 <Route path="/mural" element={withLayout('PublicMuralFeed', PublicMuralFeed)} />
