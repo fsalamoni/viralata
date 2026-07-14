@@ -33,6 +33,7 @@ import MyTasksSection from '@/modules/shelter/components/MyTasksSection';
 import UpcomingEventsSection from '@/modules/communities/components/UpcomingEventsSection';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import { VolunteerProfileForm } from '@/modules/shelter/components/VolunteerProfileForm';
+import { VolunteerMetricsCard } from '@/modules/shelter/components/VolunteerMetricsCard';
 import {
   useVolunteerProfile,
   useUserVolunteerRosters,
@@ -525,6 +526,11 @@ export default function Profile() {
           </Button>
         </CardContent>
       </Card>
+
+      {/* TASK-126: Métricas globais de voluntariado. */}
+      {volunteerProfileV1 && user?.uid && (
+        <VolunteerMetricsCard uid={user.uid} />
+      )}
 
       {/* TASK-236: Perfil de voluntário (Fase 13).
           Renderiza apenas se a feature flag `shelter_volunteer_profile_v1`
