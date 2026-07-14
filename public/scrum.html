@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-14T15:00:03.959Z",
+  "generatedAt": "2026-07-14T16:47:48.380Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -10451,17 +10451,17 @@
       "updatedAt": "2026-07-11"
     },
     {
-      "id": "TASK-376",
+      "id": "TASK-401",
       "title": "Migrar .tmp-legal-docs/ (13 .md ~70KB) para docs/legal/ canonico",
       "type": "chore",
       "category": "docs",
       "status": "done",
       "priority": "medium",
-      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
-      "branch": "wt/e79e15ca",
+      "owner": "unassigned",
+      "branch": "fix/task-401-footer-dedup-mode-2026-07-14",
       "worktree": ".worktrees/wt-e79e15ca",
       "flag": null,
-      "pr": null,
+      "pr": "170",
       "tags": [
         "legal",
         "docs",
@@ -10472,7 +10472,7 @@
       "evidence": "docs/legal/ criado com 13 .md (~70KB) + README.md indice. .tmp-legal-docs/ removido. sync.cjs --check 0 issues.",
       "description": "**Contexto:** A pasta .tmp-legal-docs/ (13 arquivos .md, ~70KB) contem a documentacao legal da plataforma (termos de uso, politica de privacidade, codigo de conduta, etc.) que foi gerada em um worktree anterior (provavelmente wt-legal-v2). Ate 2026-07-11 22:00, os docs NAO foram migrados para o local canonico docs/legal/ (que ainda nao existe). **Decisao A** (2026-07-11): MANTER .tmp-legal-docs/ ate migracao proper, NAO deletar (decisao logica baseada em evidencia: docs/01_Termos_de_Uso.md NAO existe, mas .tmp-legal-docs/01_Termos_de_Uso.md existe).\n\n**Escopo da migracao:**\n1. Criar docs/legal/ no repo\n2. Mover 13 .md de .tmp-legal-docs/ para docs/legal/ (com renomeacao se necessario)\n3. Adicionar index/README.md listando todos os documentos\n4. Atualizar AGENTS.md (Regra A) referenciando docs/legal/\n5. Adicionar entrada no DELIVERABLE.md (Fase Legal)\n6. Smoke test: links de termo/privacidade no app (footer?) apontam para docs/legal/ correto\n7. Commitar com tag legal-docs para facil rollback\n\n**Origem coord:** Decisao do orquestrador root session (mvs_311d078987d0414a90f57ef28b789b18) em 2026-07-11 22:00.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11",
+      "updatedAt": "2026-07-14T16:06:26",
       "history": [
         {
           "ts": "2026-07-11 22:07:58 -0300",
@@ -10487,7 +10487,7 @@
         }
       ],
       "startedAt": "2026-07-11",
-      "resolvedAt": "2026-07-11"
+      "resolvedAt": "2026-07-14"
     },
     {
       "id": "TASK-378",
@@ -10515,6 +10515,58 @@
       "createdAt": "2026-07-13",
       "updatedAt": "2026-07-13",
       "resolvedAt": "2026-07-13"
+    },
+    {
+      "id": "TASK-376",
+      "title": "UI: deduplicar LegalFooter + modo fixo/auto-hide por preferência",
+      "type": "debt",
+      "category": "ui",
+      "status": "ready",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "tags": [
+        "ui",
+        "footer",
+        "duplicacao",
+        "user-preference"
+      ],
+      "blockedBy": [],
+      "eixo": "1-ux",
+      "subFrente": "ui",
+      "description": "Layout.jsx renderiza LegalFooter DUAS vezes (linhas 230 e 274). Além disso, footer deve ter 2 modos: (a) fixo na tela, (b) aparece quando mouse chega na posição, configurável por preferência do usuário. Adicionar preference footer_mode em platform_settings.",
+      "createdAt": "2026-07-14",
+      "updatedAt": "2026-07-14"
+    },
+    {
+      "id": "TASK-402",
+      "title": "UI: card de abas em Organizacao/Comunidade — altura equilibrada",
+      "type": "debt",
+      "category": "ui",
+      "status": "done",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": "fix/task-402-tabs-height-balance-2026-07-14",
+      "flag": null,
+      "worktree": null,
+      "pr": "171",
+      "tags": [
+        "ui",
+        "tabs",
+        "organizacao",
+        "comunidade",
+        "altura"
+      ],
+      "blockedBy": [],
+      "eixo": "1-ux",
+      "subFrente": "ui",
+      "description": "Em OrganizacaoDetail e CommunityPublic, o card de Tabs (Lista) não se ajusta à altura do conteúdo. Quando usuário clica em uma aba com muito conteúdo, o card mantém altura fixa ou fica desbalanceado. Deve crescer para acomodar a aba mais alta, com transição suave. Usar min-height dinâmico ou auto.",
+      "createdAt": "2026-07-14",
+      "updatedAt": "2026-07-14T16:16:43",
+      "resolvedAt": "2026-07-14"
     }
   ],
   "definitionOfDone": [
@@ -10672,7 +10724,7 @@
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": "86c45145ba95f59d36049a71c9d25606353d2a7d",
+    "mainCommit": "27c1a0f89a63bdce8a879c5daed7689c8acad987",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -10682,12 +10734,12 @@
     ],
     "openTODOs": 5,
     "openLegalReviews": 3,
-    "totalTasks": 368,
-    "done": 166,
+    "totalTasks": 370,
+    "done": 203,
     "inProgress": 3,
     "inReview": 1,
     "blocked": 0,
-    "ready": 191,
+    "ready": 156,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -10717,7 +10769,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-14T12:50:17 — via scrum.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-14T16:16:43 — via scrum.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
@@ -10750,7 +10802,7 @@
   }
 }
   </script>
-  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-14T14:54:01.553Z">
+  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-14T15:00:04.006Z">
   </head>
 <body>
 
