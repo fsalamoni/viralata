@@ -29,6 +29,7 @@ const LegalPageViewer = lazy(() => import('@/pages/legal/LegalPageViewer'));
 const SearchPage = lazy(() => import('@/pages/SearchPage'));
 const PublicExhibitions = lazy(() => import('@/pages/PublicExhibitions'));
 const PublicExhibitionDetail = lazy(() => import('@/pages/PublicExhibitionDetail'));
+const PublicFosterPrograms = lazy(() => import('@/pages/PublicFosterPrograms'));
 const PageNotFound = lazy(() => import('@/pages/PageNotFound'));
 const ShelterPublic = lazy(() => import('@/pages/ShelterPublic'));
 const BannedNotice = lazy(() => import('@/pages/BannedNotice'));
@@ -234,6 +235,7 @@ export default function App() {
                 <Route path="/busca" element={withLayout('SearchPage', SearchPage)} />
                 <Route path="/vitrines" element={withLayout('PublicExhibitions', PublicExhibitions)} />
                 <Route path="/vitrines/:id" element={withLayout('PublicExhibitionDetail', PublicExhibitionDetail)} />
+                <Route path="/lares-temporarios" element={withLayout('PublicFosterPrograms', PublicFosterPrograms)} />
 
                 {/* ── Onboarding (auth obrigatória, perfil ainda não completo) ── */}
                 <Route
