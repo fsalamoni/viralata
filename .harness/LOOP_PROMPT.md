@@ -1,7 +1,36 @@
-# LOOP_PROMPT — desenvolvimento autônomo (atualizado 2026-07-14 21:53 GMT-3)
+# LOOP_PROMPT — desenvolvimento autônomo (atualizado 2026-07-14 22:08 GMT-3)
 
 **Contexto**: `/workspace/viralata`, branch `main`, React+Vite+Firebase.
 **Sessão**: Mavis root (loop autônomo, 20min, **24/7 sem limite de horário**).
+
+---
+
+## 🚀 MODO DE EXECUÇÃO: FEATURE (BATCH) — SEM PR/MERGE POR TASK
+
+**A cada turno**:
+- Implementa UMA task
+- Faz commit + push da branch
+- **NÃO** cria PR
+- **NÃO** faz merge
+- **NÃO** faz deploy
+- **OBRIGATÓRIO**: REGRA #0 (scrum update) + REGRA #1 (metrics sync)
+
+**A cada 10 tasks OU 4 horas (o que vier primeiro)**: batch PR + merge + deploy.
+
+### Por que este modo?
+- **Tokens**: 80% do overhead era PR-API + espera 20s + merge + force-push + sync + commit. Agora a task é pura implementação.
+- **Calma**: sem pressão de tempo, foco em qualidade
+- **Visibilidade**: painel público (viralata.web.app/scrum.html) continua sendo atualizado via REGRA #1
+- **Reversibilidade**: reverter 1 commit antes do batch é trivial
+
+### Como o batch é feito:
+1. Contar tasks completadas desde o último batch
+2. Se >= 10 OU passaram 4h: criar 1 PR batch com N commits, merge admin squash
+3. Deploy automático (workflow Deploy Viralata dispara)
+
+### Trigger de batch manual:
+- Usuário fala "Mavis, batch" ou similar
+- Aí o agente faz o batch imediatamente
 
 ---
 
@@ -81,7 +110,7 @@ python3 -c "import json; d=json.load(open('.harness/SCRUM_TASKS.json')); done=[t
 
 ---
 
-## 🎯 MISSÃO DO TURNO (20 min)
+## 🎯 MISSÃO DO TURNO (20 min) — MODO FEATURE (BATCH)
 
 1. **Investigue ANTES de codar** (NÃO leia tudo):
    - 1-2 greps para ver arquivos relacionados
@@ -90,20 +119,40 @@ python3 -c "import json; d=json.load(open('.harness/SCRUM_TASKS.json')); done=[t
 2. **Implemente com feature flag** (`SHELTER_*` ou conforme categoria, default OFF).
 3. **Test**: 2+ tests smoke no mínimo.
 4. **Worktree** + branch `feat/<slug>-2026-07-14`.
-5. **Commit + push + PR API + merge admin squash** (bypass CI por quota).
-6. **OBRIGATÓRIO ao final** — REGRA #0 acima:
+5. **Commit + push da branch** (SEM PR, SEM merge, SEM deploy).
+6. **OBRIGATÓRIO ao final** — REGRA #0 + #1:
    ```bash
    cd /workspace/viralata
    node .harness/scrum.cjs start TASK-XXX  # ao começar
-   # ... implementar, PR, merge ...
-   python3 -c "import json; d=json.load(open('.harness/SCRUM_TASKS.json')); [t.update({'status':'done','pr':'$PR_NUM','branch':'feat/<slug>-2026-07-14','updatedAt':'2026-07-14'}) for t in d['tasks'] if t['id']=='TASK-XXX']; json.dump(d, open('.harness/SCRUM_TASKS.json','w'), indent=2)"
-   node .harness/scrum.cjs done TASK-XXX --pr $PR_NUM --reason "..."
+   
+   # ... implementar, build, test ...
+   
+   # Push da branch (SEM PR)
+   cd .worktrees/wt-<slug>
+   git add -A
+   git commit -m "feat: ..."
+   git push -u origin feat/<slug>-2026-07-14
+   
+   # Limpar worktree
+   cd /workspace/viralata
+   git worktree remove --force .worktrees/wt-<slug>
+   git worktree prune
+   
+   # REGRA #0: marcar done (pr=0 pois ainda não é PR)
+   node .harness/scrum.cjs done TASK-XXX --pr 0 --reason "feat/<slug> pushed (batch pendente)"
+   
+   # REGRA #1: metrics sync
+   python3 -c "import json; d=json.load(open('.harness/SCRUM_TASKS.json')); m=d.setdefault('metrics',{}); m['totalTasks']=len(d['tasks']); m['done']=len([t for t in d['tasks'] if t['status']=='done']); m['ready']=len([t for t in d['tasks'] if t['status']=='ready']); m['inProgress']=len([t for t in d['tasks'] if t['status']=='in_progress']); m['inReview']=len([t for t in d['tasks'] if t['status']=='in_review']); m['blocked']=len([t for t in d['tasks'] if t['status']=='blocked']); m['backlog']=len([t for t in d['tasks'] if t['status']=='backlog']); json.dump(d, open('.harness/SCRUM_TASKS.json','w'), indent=2)"
+   
+   # Re-embed + commit + push do scrum update
    node .harness/sync.cjs --fix
-   git add -A && git commit -m "chore(scrum): TASK-XXX done PR #$PR_NUM"
+   git add -A
+   git commit -m "chore(scrum): TASK-XXX done (batch pendente)"
    git pull --rebase --autostash origin main
    git push origin main
    ```
-7. **ATUALIZE O `LOOP_PROMPT.md`** ao final se completou uma task crítica: remova ela da lista, adicione nova candidata, faça commit + push do LOOP_PROMPT.md atualizado.
+7. **NÃO** criar PR. **NÃO** fazer merge. **NÃO** fazer deploy. (Aguardar batch.)
+8. **ATUALIZE O `LOOP_PROMPT.md`** ao final: remova task da lista, adicione nova candidata, faça commit + push.
 
 ---
 
@@ -284,3 +333,65 @@ git push -u origin chore/review-2026-07-14
 - **24/7, sem limite de horário.** O loop roda a cada 20 minutos, todos os dias.
 - Só para quando o user desligar explicitamente (ou matar o cron via `mavis cron delete`).
 - A madrugada também conta — não pare o turno por causa de horário.
+
+---
+
+## 🚀 BATCH: a cada 10 tasks OU 4 horas
+
+**Trigger**: quando o `next-loop.sh` detectar que:
+- ≥ 10 tasks completadas desde o último batch
+- OU ≥ 4h desde o último batch
+
+OU quando o user disser explicitamente "Mavis, batch" / "agora" / similar.
+
+### Comandos do batch:
+```bash
+cd /workspace/viralata
+
+# 1) Pegar todas as branches feat/* pendentes (sem PR)
+git branch -r | grep "feat/" | head -20
+
+# 2) Para cada branch, criar 1 PR (ou 1 PR batch com várias branches cherry-picked)
+# Estratégia: 1 PR batch com N branches via cherry-pick
+
+# 3) PR + merge admin squash
+PR_NUM=$(curl -sS -X POST -H "Authorization: token $GITHUB_PAT" -H "Content-Type: application/json" \
+  -d '{"title":"chore(batch): 10 features (TASK-XXX, TASK-YYY, ...)","head":"chore/batch-2026-07-14","base":"main","body":"Batch PR com 10 features pendentes."}' \
+  "https://api.github.com/repos/fsalamoni/viralata/pulls" | python3 -c "import sys,json; print(json.load(sys.stdin).get('number'))")
+sleep 20
+curl -sS -X PUT -H "Authorization: token $GITHUB_PAT" -H "Content-Type: application/json" \
+  -d '{"merge_method":"squash"}' "https://api.github.com/repos/fsalamoni/viralata/pulls/$PR_NUM/merge"
+
+# 4) Workflow Deploy Viralata roda automaticamente
+# 5) Scrum topbar finalizer roda automaticamente
+
+# 6) Atualizar pr=PR_NUM nas tasks do batch
+python3 -c "import json; d=json.load(open('.harness/SCRUM_TASKS.json')); [t.update({'pr':'$PR_NUM'}) for t in d['tasks'] if t.get('pr')==0 and t.get('status')=='done']; json.dump(d, open('.harness/SCRUM_TASKS.json','w'), indent=2)"
+
+# 7) Resetar contador de batch
+echo "0" > /tmp/tasks_since_last_batch
+```
+
+### Por que batch?
+- **Tokens**: economiza 80% do overhead (sem PR/merge/deploy por task)
+- **Qualidade**: foco em implementação sem pressão de tempo
+- **Reversibilidade**: reverter 1 commit antes do merge é trivial
+- **Quota Firebase**: menos deploys, menos pressão no CDN
+
+---
+
+## 🛠️ WORKFLOWS — APENAS ESSENCIAIS
+
+Workflows ativos em produção (após limpeza 2026-07-14 22:08):
+- `deploy.yml` — Deploy Viralata (push em main) **ESSENCIAL**
+- `scrum-topbar.yml` — Topbar auto-update (cron */15 + workflow_run) **ESSENCIAL**
+- `scrum-topbar-finalizer.yml` — Topbar finalizer pós-deploy **ESSENCIAL**
+
+Workflows com trigger REMOVIDO (somente schedule):
+- `scrum-sync.yml` — só roda diariamente (backup)
+- `security-audit.yml` — só roda semanalmente (segunda 09:00 UTC)
+
+Workflows de diagnóstico (apenas manual):
+- `diag-*.yml` — só rodam via workflow_dispatch manual
+
+**Nada de erro desnecessário. Nenhum workflow desnecessário.**

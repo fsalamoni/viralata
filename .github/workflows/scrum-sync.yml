@@ -6,8 +6,6 @@ name: Sync Scrum Dashboard
 # - Diariamente (scheduled, backup)
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
   schedule:
     - cron: '0 12 * * *'  # 09:00 BRT (12:00 UTC)

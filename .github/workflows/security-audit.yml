@@ -4,10 +4,6 @@ name: Security Audit (npm audit)
 # Roda em PRs, push para main, e semanalmente (segunda 09:00 UTC).
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
   schedule:
     - cron: '0 9 * * 1'
 
