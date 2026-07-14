@@ -128,8 +128,8 @@ python3 -c "import json; d=json.load(open('.harness/SCRUM_TASKS.json')); done=[t
 
 | ID | Pri | Categoria | Descrição |
 |---|---|---|---|
-| **TASK-326** | medium | shelter | [UX-FOSTER-003] Vitrine pública do LT (histórico pets) |
-| **TASK-310** | high | shelter | [UX-MATCH-001] Scoring compatibilidade visível em Applications |
+| **TASK-147** | high | shelter | Vitrines: sistema de escalas (turnos por role) |
+| **TASK-308** | high | shelter | [UX-POSTADOPT-001] UI devolução + pause |
 | **TASK-308** | high | shelter | [UX-POSTADOPT-001] UI devolução + pause |
 | **TASK-315** | high | shelter | [UX-A11Y-001] Acessibilidade (keyboard nav, ARIA, contraste WCAG) |
 | **TASK-309** | high | shelter | [UX-ABRIGO-002] Onboarding wizard do abrigo (5 passos) |
@@ -211,7 +211,7 @@ Escolha a task com **mais impacto visual** e **menos dependência** de:
 - Decisões jurídicas (LGPD, DPO)
 - Cloud Functions (FCM, email)
 
-**Default**: TASK-310 (Scoring compatibilidade) ou TASK-326 (Vitrine pública LT) ou TASK-147 (Escalas vitrines) — são features visíveis e seguras.
+**Default**: TASK-147 (Escalas vitrines) ou TASK-308 (UI devolução + pause) ou TASK-315 (Acessibilidade) — são features visíveis e com baixo risco.
 
 ---
 
