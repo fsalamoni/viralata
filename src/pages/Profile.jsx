@@ -30,6 +30,7 @@ import { deleteMyAccount } from '@/core/services/deleteAccountService';
 import PageHero from '@/components/PageHero';
 import MyAdoptionsSection from '@/modules/shelter/components/MyAdoptionsSection';
 import MyTasksSection from '@/modules/shelter/components/MyTasksSection';
+import UpcomingEventsSection from '@/modules/communities/components/UpcomingEventsSection';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import { VolunteerProfileForm } from '@/modules/shelter/components/VolunteerProfileForm';
 import {
@@ -570,6 +571,9 @@ export default function Profile() {
       )}
 
       {/* TASK-129: Minhas adoções — histórico cross-abrigo de applications */}
+      {/* TASK-164: Próximos eventos do usuário (cross-comunidade) */}
+      <UpcomingEventsSection userUid={user?.uid} />
+
       <MyAdoptionsSection userUid={user?.uid} />
 
       {/* TASK-150: Minhas tarefas — cards Kanban onde o user é assignee,
