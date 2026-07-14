@@ -392,7 +392,7 @@ export default function OrganizationAdminPanel() {
         )}
         {shelterFoundation && shelterFoster && (
           <TabsContent value="foster" className="mt-12 px-1 sm:mt-14">
-            <SafeTab label="foster"><FostersList shelterClubId={orgId} canAbriho /></SafeTab>
+            <SafeTab label="foster"><FostersList shelterClubId={orgId} canAbriho={canManageTeam} actor={{ uid: user?.uid, displayName: user?.displayName }} /></SafeTab>
           </TabsContent>
         )}
       </Tabs>
