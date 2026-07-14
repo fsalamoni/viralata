@@ -72,6 +72,7 @@ const CommunityPublic = lazy(() => import('@/pages/CommunityPublic'));
 const CommunitiesDirectory = lazy(() => import('@/modules/communities/pages/CommunitiesDirectory'));
 const CommunityDetail = lazy(() => import('@/modules/communities/pages/CommunityDetail'));
 const CommunityAdminPanel = lazy(() => import('@/modules/communities/pages/CommunityAdminPanel'));
+const CommunityEventDetail = lazy(() => import('@/modules/communities/pages/CommunityEventDetail'));
 
 const CreateCommunity = lazy(() => import('@/modules/communities/pages/CreateCommunity'));
 
@@ -293,6 +294,11 @@ export default function App() {
                 <Route
                   path="/comunidade/:communityId"
                   element={<ProtectedRoute>{withLayout('CommunityDetail', CommunityDetail)}</ProtectedRoute>}
+                />
+                {/* TASK-334: detalhe público de evento de comunidade com RSVP. */}
+                <Route
+                  path="/comunidade/:communityId/eventos/:eventId"
+                  element={<ProtectedRoute>{withLayout('CommunityEventDetail', CommunityEventDetail)}</ProtectedRoute>}
                 />
                 <Route path="/comunidade/:communityId/admin" element={<ProtectedRoute>{withLayout('CommunityAdminPanel', CommunityAdminPanel)}</ProtectedRoute>} />
                 {/* TASK-156: página pública de comunidade com mural read-only.

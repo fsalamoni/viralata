@@ -116,6 +116,13 @@ export const FEATURE_FLAG = Object.freeze({
    */
   COMMUNITY_NGO_PARITY: 'community_ngo_parity',
 
+  /**
+   * Detalhe público de evento de comunidade: rota /comunidade/:id/eventos/:eventId
+   * com painel de participantes e RSVP (going/maybe/not_going). Cards de evento
+   * na EventsTab ganham link para a página. Aditivo — desligado, sem mudança.
+   */
+  COMMUNITY_EVENT_DETAIL_V1: 'community_event_detail_v1',
+
   // ─── Sistema de Gestão do Abrigo (Fases 0-21) ───────────────────────────
   // Cada flag = 1 fase do SHELTER_MGMT_ROADMAP. Default OFF.
   ...Object.values(SHELTER_FEATURE_FLAG).reduce(
@@ -234,6 +241,16 @@ export const FEATURE_FLAG_META = Object.freeze({
       + 'seu padrão antigo. Puramente aditivo.',
   },
 
+  [FEATURE_FLAG.COMMUNITY_EVENT_DETAIL_V1]: {
+    label: 'Comunidade · detalhe de evento + RSVP',
+    description:
+      'Cria a página pública de evento em /comunidade/:id/eventos/:eventId '
+      + 'com painel de participantes e RSVP going/maybe/not_going. '
+      + 'Cards de evento na aba Eventos da comunidade ganham link '
+      + 'para a página. Sem a flag, cards não são clicáveis. '
+      + 'Puramente aditivo.',
+  },
+
 
   // SHELTER_* (Sistema de Gestão do Abrigo): meta importada de
   // src/modules/shelter/domain/constants.js (não duplica string).
@@ -278,6 +295,9 @@ export const DEFAULT_FEATURE_FLAGS = Object.freeze({
   ...Object.fromEntries(
     Object.values(SHELTER_FEATURE_FLAG).map((k) => [k, false]),
   ),
+
+  // Community flags: depois do spread para não serem sobrescritas.
+  [FEATURE_FLAG.COMMUNITY_EVENT_DETAIL_V1]: false,
 
   [FEATURE_FLAG.MOCK_DATA_PANEL]: true,
 });

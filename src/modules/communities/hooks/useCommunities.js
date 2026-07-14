@@ -70,6 +70,10 @@ import {
   setCommunityMemberRole,
   setCommunityMemberPermissions,
   removeCommunityMember,
+  getCommunityEvent,
+  getCommunityEventRsvps,
+  setCommunityEventRsvp,
+  removeCommunityEventRsvp,
 } from '../services/communityService';
 
 export function useMyCommunityMembership(communityId) {
@@ -118,6 +122,53 @@ export function useRemoveCommunityMember(communityId) {
     mutationFn: (targetUserId) => removeCommunityMember(communityId, targetUserId, user),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['communityMembers', communityId] });
+    },
+  });
+}
+
+// ─── Community Event ──────────────────────────────────────────────────────────
+
+export function useCommunityEvent(communityId, eventId) {
+  return useQuery({
+    queryKey: ['communityEvent', communityId, eventId],
+    queryFn: () => getCommunityEvent(communityId, eventId),
+    enabled: !!communityId && !!eventId,
+  });
+}
+
+export function useCommunityEventRsvps(eventId) {
+  return useQuery({
+    queryKey: ['communityEventRsvps', eventId],
+    queryFn: () => getCommunityEventRsvps(eventId),
+    enabled: !!eventId,
+  });
+}
+
+export function useSetCommunityEventRsvp(eventId) {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+  return useMutation({
+    mutationFn: (status) =>
+      setCommunityEventRsvp(
+        eventId,
+        user.uid,
+        user.displayName || user.email || 'Membro',
+        user.photoURL || '',
+        status,
+      ),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['communityEventRsvps', eventId] });
+    },
+  });
+}
+
+export function useRemoveCommunityEventRsvp(eventId) {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+  return useMutation({
+    mutationFn: () => removeCommunityEventRsvp(eventId, user.uid),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['communityEventRsvps', eventId] });
     },
   });
 }
