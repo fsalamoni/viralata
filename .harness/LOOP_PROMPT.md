@@ -172,7 +172,7 @@ python3 -c "import json; d=json.load(open('.harness/SCRUM_TASKS.json')); done=[t
 - TASK-207, 264, 265, 266, 267, 132, 133, 134, 401, 402 (Fases anteriores)
 - **Varredura 1 (36 tasks)**: 150, 152, 154, 157, 159, 160, 180, 191, 200, 241, 244, 245, 288, 289, 290, 293, 294, 295, 296, 299, 300, 329, 331, 332, 055, 218, 219, 221, 246, 275, 305, 307, 316, 335, 356, 267
 - **Varredura 2 (29 tasks)**: 008, 063, 115, 116, 118, 119, 120, 121, 125, 147, 151, 158, 161, 162, 163, 166, 168, 173, 177, 193, 223, 264, 265, 266, 270, 313, 314, 344, 354
-- **Loop turn 2026-07-14 23:01 UTC**: TASK-325 MilestoneCompleteDialog (feat/milestone-complete-2026-07-14), TASK-053 CookieBanner audit (OK — gated, localStorage, audit log, docs)
+- **Loop turn 2026-07-14 23:01 UTC**: TASK-325 MilestoneCompleteDialog (feat/milestone-complete-2026-07-14), TASK-053 CookieBanner audit (OK), TASK-273 Smart Search volunteer entity (feat/volunteer-search-2026-07-14)
 
 ---
 
@@ -192,6 +192,7 @@ python3 -c "import json; d=json.load(open('.harness/SCRUM_TASKS.json')); done=[t
 
 > **Notas**:
 > - TASK-325 (milestone photo/video upload) entregue — feat/milestone-complete-2026-07-14, push OK, merge pendente
+> - TASK-273 (Smart Search volunteer entity) entregue — feat/volunteer-search-2026-07-14, push OK, merge pendente
 > - TASK-315, TASK-308, TASK-302, TASK-176 entregues em batch (verificar com git log antes de pegar)
 > - TASK-310, TASK-326 feitas pelo cron (verificar com git log antes de pegar)
 > - TASK-053 CookieBanner audit: component OK — gated por SHELTER_LEGAL_TERMS_V1, botoes corretos, localStorage + audit log, 16 tests
