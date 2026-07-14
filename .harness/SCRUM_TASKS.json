@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-14T20:00:14.498Z",
+  "generatedAt": "2026-07-14T20:27:25.806Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -10,7 +10,20 @@
     "endsAt": "2026-07-18",
     "goal": "Estabilizar produção pós-deploy das 22 fases, fechar 3 worktrees em paralelo, decidir backend da Fase 18, priorizar débitos técnicos"
   },
-  "activeWorktrees": [],
+  "activeWorktrees": [
+    {
+      "id": "wt-similar-pets",
+      "branch": "feat/similar-pets-2026-07-14",
+      "head": "0efedfc12647bf399622ef31cea810e9ab57e38e",
+      "headTitle": "feat: TASK-324 pets similares no PetDetail (SHELTER_SIMILAR_PETS)",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-similar-pets",
+      "status": "ahead-of-main",
+      "commitsAhead": 1,
+      "primarySession": null,
+      "sessionTitle": null,
+      "focus": []
+    }
+  ],
   "activeSessions": [
     {
       "id": "mvs_311d078987d0414a90f57ef28b789b18",
@@ -8747,10 +8760,10 @@
       "title": "[UX-SIMILAR-001] \"Pets similares\" no PetDetail",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
-      "branch": null,
+      "branch": "feat/similar-pets-2026-07-14",
       "worktree": null,
       "tags": [
         "regra-A",
@@ -8764,7 +8777,8 @@
       "subFrente": "abrigos-foster-adocao",
       "description": "Query \"same species + same size + available + not this pet\" ordenado por rescue_date. Mostrar 4 cards.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14",
+      "pr": "182"
     },
     {
       "id": "TASK-325",
@@ -10346,12 +10360,12 @@
     "firestoreIndexes": 35,
     "bundleSizeKB": 4125,
     "shelterPhases": "21/22 completas em produção (Fase 18 pendente decisão)",
-    "activeWorktreesAheadOfMain": 0,
+    "activeWorktreesAheadOfMain": 1,
     "mergedWorktreesThisSprint": [
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": "78bd9edf66aceba8a1910f233011daeb5ff425d9",
+    "mainCommit": "3f4e8ca8f263b6901faa193597cb8b6ad6a07f2e",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
