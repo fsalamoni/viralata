@@ -125,10 +125,11 @@ export const FEATURE_FLAG = Object.freeze({
 
   // ─── Sistema de Gestão do Abrigo (Fases 0-21) ───────────────────────────
   // Cada flag = 1 fase do SHELTER_MGMT_ROADMAP. Default OFF.
-  ...Object.values(SHELTER_FEATURE_FLAG).reduce(
+  // Guard against circular import (constants.js → featureFlags.js → constants.js)
+  ...(SHELTER_FEATURE_FLAG ? Object.values(SHELTER_FEATURE_FLAG).reduce(
     (acc, key) => ({ ...acc, [key]: key }),
     {},
-  ),
+  ) : {}),
 
   /**
    * Painel de dados demo: quando ligada, expõe a rota `/admin/mock-data`
@@ -254,9 +255,9 @@ export const FEATURE_FLAG_META = Object.freeze({
 
   // SHELTER_* (Sistema de Gestão do Abrigo): meta importada de
   // src/modules/shelter/domain/constants.js (não duplica string).
-  ...Object.fromEntries(
-    Object.entries(SHELTER_META).map(([k, v]) => [k, v]),
-  ),
+  ...(SHELTER_META
+    ? Object.fromEntries(Object.entries(SHELTER_META).map(([k, v]) => [k, v]))
+    : {}),
 
   [FEATURE_FLAG.MOCK_DATA_PANEL]: {
     label: 'Painel de dados demo (mock data)',
@@ -292,9 +293,9 @@ export const DEFAULT_FEATURE_FLAGS = Object.freeze({
 
   // SHELTER_* (Sistema de Gestão do Abrigo): todas OFF por default.
   // As chaves vêm de SHELTER_FEATURE_FLAG no módulo shelter/.
-  ...Object.fromEntries(
-    Object.values(SHELTER_FEATURE_FLAG).map((k) => [k, false]),
-  ),
+  ...(SHELTER_FEATURE_FLAG
+    ? Object.fromEntries(Object.values(SHELTER_FEATURE_FLAG).map((k) => [k, false]))
+    : {}),
 
   // Community flags: depois do spread para não serem sobrescritas.
   [FEATURE_FLAG.COMMUNITY_EVENT_DETAIL_V1]: false,

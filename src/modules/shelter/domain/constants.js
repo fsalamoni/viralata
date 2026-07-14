@@ -25,6 +25,8 @@ import { FEATURE_FLAG as FF } from '@/core/featureFlags';
  * mapeamento flag ↔ fase.
  */
 export const SHELTER_FEATURE_FLAG = Object.freeze({
+  // UX — Onboarding wizard 5 passos do abrigo (TASK-309)
+  SHELTER_ONBOARDING_WIZARD: 'shelter_onboarding_wizard',
   // UX — Scoring de compatibilidade nas applications (TASK-310)
   SHELTER_APPLICATION_SCORING: 'shelter_application_scoring',
   // Fase 0 — Preparação (renomeação + skeleton + docs)
@@ -209,6 +211,14 @@ export const SHELTER_FEATURE_FLAG_META = Object.freeze({
       + 'check-in/out. Inclui aceite do termo de voluntariado (LGPD, '
       + 'snapshot versionado). `exhibition_id` na participation é FK '
       + 'opcional para a Fase 11 (vitrines).',
+  },
+  [SHELTER_FEATURE_FLAG.SHELTER_ONBOARDING_WIZARD]: {
+    label: 'Abrigos · onboarding wizard 5 passos',
+    description:
+      'Wizard de onboarding do abrigo (5 passos: logo+capa, endereço, '
+      + 'equipe, termos DPA, primeiro pet). Salva progresso em '
+      + 'clubs/{clubId}/onboarding_progress. Ativado após DPA em '
+      + 'CreateClub.',
   },
   [SHELTER_FEATURE_FLAG.SHELTER_DASHBOARD]: {
     label: 'Abrigos · dashboard em tempo real',

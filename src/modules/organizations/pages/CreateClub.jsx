@@ -18,6 +18,8 @@ import {
   SHELTER_ONBOARDING_TERMS_VERSION,
   buildShelterOnboardingAcceptance,
 } from '@/modules/shelter/domain/legal/shelterOnboardingTerms';
+import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
+import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 
 const INITIAL = {
   name: '',
@@ -37,6 +39,7 @@ export default function CreateClub() {
   const navigate = useNavigate();
   const { isAuthenticated, user, userProfile } = useAuth();
   const createClub = useCreateClub();
+  const onboardingWizardEnabled = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_ONBOARDING_WIZARD);
   const [form, setForm] = useState(INITIAL);
   const [errors, setErrors] = useState({});
   const [dpaOpen, setDpaOpen] = useState(false);
@@ -101,7 +104,11 @@ export default function CreateClub() {
       console.warn('audit log falhou (não bloqueante):', err);
     });
     toast.success('Abrigo criado! Termo de Adesão e DPA registrados.');
-    navigate(`/organizacoes/${id}/admin`);
+    if (onboardingWizardEnabled) {
+      navigate(`/abrigo/${id}/onboarding`);
+    } else {
+      navigate(`/organizacoes/${id}/admin`);
+    }
   };
 
   return (
