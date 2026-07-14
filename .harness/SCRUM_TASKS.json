@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-14T23:02:18.717Z",
+  "generatedAt": "2026-07-14T23:14:54.338Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -10,7 +10,20 @@
     "endsAt": "2026-07-18",
     "goal": "Estabilizar produção pós-deploy das 22 fases, fechar 3 worktrees em paralelo, decidir backend da Fase 18, priorizar débitos técnicos"
   },
-  "activeWorktrees": [],
+  "activeWorktrees": [
+    {
+      "id": "wt-milestone-complete",
+      "branch": "feat/milestone-complete-2026-07-14",
+      "head": "69e7b45ea000e314f43f48c9d20733eca2b7f212",
+      "headTitle": "feat(shelter): TASK-325 milestone photo/video upload dialog",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-milestone-complete",
+      "status": "ahead-of-main",
+      "commitsAhead": 1,
+      "primarySession": null,
+      "sessionTitle": null,
+      "focus": []
+    }
+  ],
   "activeSessions": [
     {
       "id": "mvs_311d078987d0414a90f57ef28b789b18",
@@ -1520,13 +1533,13 @@
       "title": "Auditar CookieBanner: visibilidade com flag SHELTER_LEGAL_TERMS_V1 ON",
       "type": "chore",
       "category": "lgpd",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "mvs_311d078987d0414a90f57ef28b789b18",
       "branch": "feat/legal-docs-v2",
       "flag": "SHELTER_LEGAL_TERMS_V1",
       "worktree": ".worktrees/wt-legal-v2",
-      "pr": null,
+      "pr": 0,
       "tags": [
         "cookies",
         "lgpd",
@@ -1539,7 +1552,8 @@
       "evidence": "src/components/CookieBanner.jsx (existe); App.jsx:169 renderiza <CookieBanner />",
       "description": "CookieBanner.jsx existe e é renderizado no App.jsx. Verificar: (1) está gated pela flag SHELTER_LEGAL_TERMS_V1? (2) tem botões 'Aceitar Todos' e 'Configurar'? (3) grava consent no localStorage/Firestore? (4) tem versão documentada? Auditar e ajustar se preciso. Usuário disse que TODOS os flags estão ativos - logo o banner DEVE aparecer. Se não aparece, é bug.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14",
+      "resolvedAt": "2026-07-14"
     },
     {
       "id": "TASK-056",
@@ -8786,9 +8800,9 @@
       "category": "shelter",
       "status": "done",
       "priority": "medium",
-      "owner": "unassigned",
-      "branch": null,
-      "worktree": null,
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/milestone-complete-2026-07-14",
+      "worktree": ".worktrees/wt-milestone-complete",
       "tags": [
         "regra-A",
         "abrigos-foster-adocao",
@@ -8804,7 +8818,8 @@
       "description": "Componente MilestoneCompleteDialog.jsx. Upload direto pra Storage (kanban_tasks/{taskId}/proof/{file}). Mostra foto no card do milestone. Comemoração visual (confetti leve).",
       "createdAt": "2026-07-11",
       "updatedAt": "2026-07-14",
-      "pr": "0"
+      "pr": 0,
+      "resolvedAt": "2026-07-14"
     },
     {
       "id": "TASK-326",
@@ -10366,12 +10381,12 @@
     "firestoreIndexes": 35,
     "bundleSizeKB": 4125,
     "shelterPhases": "21/22 completas em produção (Fase 18 pendente decisão)",
-    "activeWorktreesAheadOfMain": 0,
+    "activeWorktreesAheadOfMain": 1,
     "mergedWorktreesThisSprint": [
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": "99ac355985fbae869da4b1b8d5b75ca2ea53b5e6",
+    "mainCommit": "742853bf68a54539b7a73e8b6752daccf76393f4",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
