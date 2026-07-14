@@ -36,6 +36,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Seo from '@/components/Seo';
+import SocialShare from '@/components/SocialShare';
 import {
   Heart, MapPin, MessageCircle, Share2, ArrowLeft, PawPrint,
   ShieldAlert, Info, Users, Calendar, CheckCircle2, XCircle, Building2,
@@ -204,9 +205,14 @@ export default function PublicPet() {
               <ArrowLeft className="h-4 w-4 mr-1" /> Voltar ao feed
             </Link>
           </Button>
-          <Button variant="ghost" size="sm" onClick={handleShare}>
-            <Share2 className="h-4 w-4 mr-1" /> Compartilhar
-          </Button>
+          {/* TASK-143: SocialShare com Web Share API + fallback (WhatsApp/X/Facebook/copy) */}
+          <SocialShare
+            kind="pet"
+            id={petId}
+            title={pet.title || pet.name || 'Conheça este pet'}
+            description={pet.description?.slice(0, 140)}
+            variant="icon"
+          />
         </div>
 
         {/* Capa */}
