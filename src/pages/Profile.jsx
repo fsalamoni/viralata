@@ -33,6 +33,7 @@ import MyTasksSection from '@/modules/shelter/components/MyTasksSection';
 import UpcomingEventsSection from '@/modules/communities/components/UpcomingEventsSection';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import { VolunteerSection } from '@/modules/shelter/components/VolunteerSection';
+import { MyFostersSection } from '@/modules/shelter/components/MyFostersSection';
 import { AppearanceSettings } from '@/components/AppearanceSettings';
 import { VolunteerProfileForm } from '@/modules/shelter/components/VolunteerProfileForm';
 import { VolunteerMetricsCard } from '@/modules/shelter/components/VolunteerMetricsCard';
@@ -538,6 +539,9 @@ export default function Profile() {
       {volunteerProfileV1 && user?.uid && (
         <VolunteerSection />
       )}
+
+      {/* TASK-133: Meus Lares Temporários */}
+      <MyFostersSection userUid={user?.uid} />
 
       {/* TASK-236: Perfil de voluntário (Fase 13).
           Renderiza apenas se a feature flag `shelter_volunteer_profile_v1`
