@@ -28,6 +28,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { doc, getDoc, collection, query, where, getDocs, limit } from 'firebase/firestore';
+import { PublicPetTimeline } from '@/modules/pets/components/PublicPetTimeline';
 import { db } from '@/core/config/firebase';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
@@ -382,6 +383,11 @@ export default function PublicPet() {
               </div>
             </CardContent>
           </Card>
+        )}
+
+        {/* TASK-135: timeline pública do pet (read-only) */}
+        {pet?.shelter_club_id && (
+          <PublicPetTimeline petId={petId} shelterClubId={pet.shelter_club_id} />
         )}
 
         {/* Aviso LGPD / segurança */}
