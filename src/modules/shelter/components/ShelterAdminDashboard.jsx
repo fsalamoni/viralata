@@ -18,6 +18,7 @@ import { Link } from 'react-router-dom';
 import {
   CheckSquare, FileText, PawPrint, Home, Clock, ChevronRight,
 } from 'lucide-react';
+import { PostAdoptionReturnedList } from '@/modules/shelter/components/PostAdoptionReturnedList';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -326,6 +327,11 @@ export function ShelterAdminDashboard({ clubId }) {
               )}
             </CardContent>
           </Card>
+
+          {/* Devoluções pós-adoção (TASK-308) */}
+          {clubId && (
+            <PostAdoptionReturnedList shelterClubId={clubId} />
+          )}
         </div>
       )}
     </main>
