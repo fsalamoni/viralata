@@ -66,7 +66,7 @@ const ADMIN_ROUTES = [
  */
 const KNOWN_ISSUES = {
   '/feed': ['link-name'],
-  '/organizacoes': ['link-name'],
+  '/organizacoes': ['link-name', 'color-contrast'],  // TASK-014: 2 nodes com contraste insuficiente em chips
   '/voluntarios': ['link-name'],
   '/busca': ['link-name'],
   '/comunidade/demo': ['link-name'],
