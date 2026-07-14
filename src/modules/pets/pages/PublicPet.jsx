@@ -42,6 +42,7 @@ import SocialShare from '@/components/SocialShare';
 import {
   Heart, MapPin, MessageCircle, Share2, ArrowLeft, PawPrint,
   ShieldAlert, Info, Users, Calendar, CheckCircle2, XCircle, Building2,
+  Maximize2,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -65,6 +66,7 @@ export default function PublicPet() {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [currentPhoto, setCurrentPhoto] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
 
   // Carrega pet
   useEffect(() => {
@@ -217,19 +219,30 @@ export default function PublicPet() {
           />
         </div>
 
-        {/* Capa */}
+        {/* Capa (TASK-323: lightbox acessível ao clicar) */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-muted"
+          className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-muted group"
         >
           {currentPhotoUrl ? (
-            <img
-              src={currentPhotoUrl}
-              alt={pet.title || pet.name}
-              className="w-full h-full object-cover"
-              loading="eager"
-            />
+            <button
+              type="button"
+              onClick={() => setLightboxOpen(true)}
+              className="block w-full h-full text-left relative focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+              aria-label={`Ampliar foto de ${pet.title || pet.name || 'pet'}`}
+              data-testid="open-pet-lightbox"
+            >
+              <img
+                src={currentPhotoUrl}
+                alt={pet.title || pet.name}
+                className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                loading="eager"
+              />
+              <span className="absolute bottom-2 right-2 inline-flex items-center gap-1 rounded-full bg-black/60 px-2 py-1 text-[10px] text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                <Maximize2 className="h-3 w-3" /> Ampliar
+              </span>
+            </button>
           ) : (
             <div className="w-full h-full flex items-center justify-center text-7xl">
               {speciesEmoji}
