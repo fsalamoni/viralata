@@ -3,7 +3,7 @@ import VolunteerCtaCard from '@/modules/shelter/components/VolunteerCtaCard';
 import PublicGallerySection from '@/modules/shelter/components/PublicGallerySection';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { ArrowLeft, Building2, PawPrint, MessageSquare, HandCoins, Wallet, Users, Info } from 'lucide-react';
+import { ArrowLeft, Building2, PawPrint, MessageSquare, HandCoins, Wallet, Users, Info, HeartHandshake } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -29,6 +29,7 @@ import ClubFeedTab from '../components/ClubFeedTab';
 import ClubDonationsTab from '../components/ClubDonationsTab';
 import ClubFinanceTab from '../components/ClubFinanceTab';
 import ClubTeamPublicTab from '../components/ClubTeamPublicTab';
+import ClubVolunteersPublicTab from '../components/ClubVolunteersPublicTab';
 import ClubCover from '../components/ClubCover';
 import ClubThemedScope from '../components/ClubThemedScope';
 import { cn } from '@/core/lib/utils';
@@ -41,6 +42,7 @@ const TABS = [
   { key: 'feed', label: 'Mural da ONG', icon: MessageSquare, badgeKey: null },
   { key: 'donations', label: 'Chamados de Doação', icon: HandCoins, badgeKey: 'donations' },
   { key: 'finance', label: 'Prestação de Contas', icon: Wallet, badgeKey: null },
+  { key: 'volunteers', label: 'Voluntários', icon: HeartHandshake, badgeKey: 'volunteers' },
   { key: 'team', label: 'Equipe', icon: Users, badgeKey: null },
 ];
 
@@ -246,6 +248,9 @@ export default function ClubDetail() {
             <ClubFinanceTab clubId={orgId} canManage={false} />
           </TabsContent>
 
+          <TabsContent value="volunteers" className="mt-6 outline-none sm:mt-8">
+            <ClubVolunteersPublicTab clubId={orgId} club={club} viewerMembership={membership} />
+          </TabsContent>
           <TabsContent value="team" className="mt-6 outline-none sm:mt-8">
             <ClubTeamPublicTab clubId={orgId} club={club} viewerMembership={membership} />
           </TabsContent>
