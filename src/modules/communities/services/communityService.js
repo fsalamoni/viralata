@@ -487,3 +487,43 @@ export async function removeCommunityMember(communityId, targetUserId, actor) {
   await deleteDoc(memberRef);
   await createAuditLog({ action: 'community_member_removed', actor, details: { community_id: communityId, target_user: targetUserId } });
 }
+
+// ─── Community Event RSVP ─────────────────────────────────────────────────────
+
+const COMMUNITY_EVENT_RSVP_COLLECTION = 'community_event_rsvps';
+
+export async function getCommunityEvent(communityId, eventId) {
+  if (!db || !eventId) return null;
+  const snap = await getDoc(doc(db, 'community_events', eventId));
+  if (!snap.exists() || snap.data().community_id !== communityId) return null;
+  return { id: snap.id, ...snap.data() };
+}
+
+export async function getCommunityEventRsvps(eventId) {
+  if (!db || !eventId) return [];
+  const q = query(
+    collection(db, COMMUNITY_EVENT_RSVP_COLLECTION),
+    where('event_id', '==', eventId),
+    orderBy('created_at', 'desc'),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+
+export async function setCommunityEventRsvp(eventId, userId, userName, userPhoto, status) {
+  if (!db || !eventId || !userId) throw new Error('Parâmetros obrigatórios não informados.');
+  const rsvpId = `${eventId}_${userId}`;
+  await setDoc(doc(db, COMMUNITY_EVENT_RSVP_COLLECTION, rsvpId), {
+    event_id: eventId,
+    user_id: userId,
+    user_name: userName || 'Membro',
+    user_photo: userPhoto || '',
+    status,
+    created_at: serverTimestamp(),
+  });
+}
+
+export async function removeCommunityEventRsvp(eventId, userId) {
+  if (!db || !eventId || !userId) return;
+  await deleteDoc(doc(db, COMMUNITY_EVENT_RSVP_COLLECTION, `${eventId}_${userId}`));
+}
