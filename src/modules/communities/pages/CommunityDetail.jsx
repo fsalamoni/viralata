@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Users, Calendar, MessageSquare, MessageCircle, Info, Settings } from 'lucide-react';
+import { ArrowLeft, Users, Calendar, MessageSquare, MessageCircle, Info, Settings, Building2 } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
+import { EmptyState } from '@/components/ui/empty-state';
 import { getCommunity, joinCommunity } from '../services/communityService';
 import { deriveCommunityMembershipState } from '../domain/permissions';
 import { useMyCommunityMembership } from '../hooks/useCommunities';
@@ -105,7 +106,22 @@ export default function CommunityDetail() {
   }, [community]);
 
   if (loading) return <div className={loadingClass}><Skeleton className="h-64 rounded-3xl" /></div>;
-  if (!community) return <div>Comunidade não encontrada</div>;
+  if (!community) {
+    return (
+      <div className={loadingClass}>
+        <EmptyState
+          icon={Building2}
+          title="Comunidade não encontrada"
+          description="A comunidade que você procura não existe, foi removida ou você não tem permissão para visualizá-la."
+          action={(
+            <Button asChild>
+              <Link to="/comunidade">Ver todas as comunidades</Link>
+            </Button>
+          )}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className={successClass}>
