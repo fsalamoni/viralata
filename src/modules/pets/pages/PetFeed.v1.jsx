@@ -14,7 +14,12 @@ import PageHero from '@/components/PageHero';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import { usePlatformSettings } from '@/core/lib/FeatureFlagsContext';
 
-const RADIUS_OPTIONS = [5, 10, 25, 50, 100];
+// TASK-401: raio default = 50 km. Antes era 25 km, o que filtrava todos os pets
+// de SP/RJ/MG (400-1000 km) para usuários em Porto Alegre. User podia ficar
+// com feed vazio achando que era bug — na verdade, era o filtro de distância
+// sendo restritivo demais. Use 100 km para garantir cobertura nacional na
+// primeira visita; user pode refinar.
+const RADIUS_OPTIONS = [10, 25, 50, 100];
 
 const SPECIES_FILTERS = [
   { value: 'all', label: 'Todos' },
@@ -204,7 +209,7 @@ export default function PetFeed() {
   // cidade cadastrada, o raio inicial fica em 5 km. O usuário pode limpar a
   // cidade e o raio para ver todos os pets da plataforma.
   const [city, setCity] = useState(() => userProfile?.city || '');
-  const [radius, setRadius] = useState(() => (userProfile?.city ? 25 : 5));
+  const [radius, setRadius] = useState(() => (userProfile?.city ? 50 : 25));
 
   // O perfil pode não estar carregado no primeiro render (auth ainda
   // resolvendo). Quando ele chega, aplicamos a cidade do cadastro uma única vez,
@@ -215,7 +220,7 @@ export default function PetFeed() {
     if (userProfile?.city) {
       appliedProfileCity.current = true;
       setCity((prev) => (prev ? prev : userProfile.city));
-      setRadius((prev) => (prev === 5 ? 25 : prev));
+      setRadius((prev) => (prev === 25 ? 50 : prev));
     }
   }, [userProfile?.city]);
   const createInterest = useCreateInterest();
@@ -300,6 +305,13 @@ export default function PetFeed() {
           />
         </div>
         <div className="flex gap-1.5 overflow-x-auto">
+          <FilterChip
+            active={!radius}
+            onClick={() => setRadius(null)}
+            data-testid="feed-radius-all"
+          >
+            Sem limite
+          </FilterChip>
           {RADIUS_OPTIONS.map((km) => (
             <FilterChip key={km} active={radius === km} onClick={() => setRadius((prev) => (prev === km ? null : km))}>
               {km} km
@@ -323,10 +335,10 @@ export default function PetFeed() {
         {!trimmedCity
           ? 'Sem cidade definida — mostrando todos os pets disponíveis na plataforma'
           : radiusActive
-            ? `Pets até ${radius} km de ${trimmedCity} (distância aproximada pelo centro da cidade, sem geolocalização precisa)`
-            : radius
-              ? `Não conhecemos a localização de "${trimmedCity}" para calcular distância — mostrando só pets cadastrados exatamente nessa cidade.`
-              : `Pets em ${trimmedCity}`}
+            ? `Pets até ${radius} km de ${trimmedCity} (distância aproximada pelo centro da cidade, sem geolocalização precisa). Use "Sem limite" para ver pets de todo o Brasil.`
+            : !radius
+              ? 'Sem filtro de distância — mostrando pets de todo o Brasil'
+              : `Não conhecemos a localização de "${trimmedCity}" para calcular distância — mostrando só pets cadastrados exatamente nessa cidade.`}
       </p>
 
       {!isLoading && !isError && (
