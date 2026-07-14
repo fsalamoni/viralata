@@ -28,6 +28,7 @@ import {
   EXHIBITION_STATUS_LABELS,
 } from '@/modules/shelter/domain/operational/exhibition';
 import { listPublicExhibitions } from '@/modules/shelter/services/exhibitionPublicService';
+import { ExhibitionVolunteers } from '@/modules/shelter/components/ExhibitionVolunteers';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/core/config/firebase';
 import { logger } from '@/core/lib/logger';
@@ -277,6 +278,14 @@ export default function PublicExhibitionDetail() {
             </div>
           </CardContent>
         </Card>
+      )}
+
+      {/* TASK-208: voluntários escalados */}
+      {exhibition.shelter_club_id && exhibition.id && (
+        <ExhibitionVolunteers
+          shelterClubId={exhibition.shelter_club_id}
+          exhibitionId={exhibition.id}
+        />
       )}
 
       {/* Ações */}
