@@ -340,6 +340,35 @@ export async function recordDose(petId, medId, shelterClubId, doseInput, actor) 
     },
   }).catch(() => {});
 
+  // TASK-140: cria evento na timeline do pet (link medication_dose → pet_timeline)
+  try {
+    await addTimelineEvent(
+      petId,
+      {
+        type: 'medication',
+        event_date: parsed.administered_at || parsed.scheduled_at,
+        data: {
+          medication: medData.medication || 'Medicação',
+          dosage: medData.dosage || null,
+          dose_id: doseRef.id,
+          medication_id: medId,
+          scheduled_at: parsed.scheduled_at,
+          administered_at: parsed.administered_at || null,
+          skipped: parsed.skipped,
+          by_name: doseDoc.by_name,
+          notes: parsed.notes || null,
+        },
+      },
+      { uid: actor.uid, displayName: actor.displayName },
+      { shelterClubId },
+    );
+  } catch (err) {
+    logger.warn('medicationService.recordDose', {
+      msg: 'timeline event failed (non-blocking)',
+      err: String(err),
+    });
+  }
+
   return { id: doseRef.id, ...doseDoc };
 }
 
