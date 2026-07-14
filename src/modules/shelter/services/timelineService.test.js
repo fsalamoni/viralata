@@ -73,8 +73,8 @@ beforeEach(() => {
 // ─── Enums / Labels ────────────────────────────────────────────────────
 
 describe('TIMELINE_EVENT_TYPES', () => {
-  it('tem 14 tipos oficiais', () => {
-    expect(TIMELINE_EVENT_TYPES.length).toBe(14);
+  it('tem 16 tipos oficiais (TASK-148: +adoption +foster_start)', () => {
+    expect(TIMELINE_EVENT_TYPES.length).toBe(16);
   });
   it('inclui os principais tipos esperados', () => {
     expect(TIMELINE_EVENT_TYPES).toContain('intake');
@@ -84,6 +84,9 @@ describe('TIMELINE_EVENT_TYPES', () => {
     expect(TIMELINE_EVENT_TYPES).toContain('status_change');
     expect(TIMELINE_EVENT_TYPES).toContain('transfer');
     expect(TIMELINE_EVENT_TYPES).toContain('deceased');
+    // TASK-148: novos tipos
+    expect(TIMELINE_EVENT_TYPES).toContain('adoption');
+    expect(TIMELINE_EVENT_TYPES).toContain('foster_start');
   });
 });
 

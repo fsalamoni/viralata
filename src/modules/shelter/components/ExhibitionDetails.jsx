@@ -18,6 +18,9 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
 import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
+} from '@/components/ui/dialog';
+import {
   EXHIBITION_STATUS_LABELS,
   SHIFT_ROLE_LABELS,
   POST_EVENT_DESTINATION_LABELS,
@@ -43,6 +46,7 @@ import {
   usePostEventLogs,
   useLogPostEvent,
 } from '@/modules/shelter/hooks/useExhibitions';
+import { PostEventLog } from '@/modules/shelter/components/PostEventLog';
 
 const STATUS_TONES = {
   scheduled: 'bg-amber-100 text-amber-900',
@@ -206,6 +210,9 @@ export function ExhibitionDetails({ shelterClubId, exhibitionId, actor, onBack }
     start_at: '', end_at: '', role: 'cuidador', slots_total: 1, notes: '',
   });
   const [logForm, setLogForm] = useState({ pet_id: '', pet_origin: 'internal', destination: 'returned_to_shelter', notes: '' });
+  // TASK-148: modal dedicado de log pós-evento (radio group + autocomplete).
+  const [closeOutOpen, setCloseOutOpen] = useState(false);
+  const [closeOutContext, setCloseOutContext] = useState({ petId: '', petOrigin: 'internal' });
 
   if (isLoading) return <p className="text-sm text-muted-foreground">Carregando vitrine…</p>;
   if (!exhibition) return <p className="text-sm text-destructive">Vitrine não encontrada.</p>;
@@ -395,6 +402,20 @@ export function ExhibitionDetails({ shelterClubId, exhibitionId, actor, onBack }
             {exhibition.status === 'active' && (
               <Button size="sm" variant="secondary" onClick={handleComplete}>
                 Concluir
+              </Button>
+            )}
+            {(exhibition.status === 'active' || exhibition.status === 'completed') && (
+              <Button
+                size="sm"
+                variant="default"
+                onClick={() => {
+                  setCloseOutContext({ petId: '', petOrigin: 'internal' });
+                  setCloseOutOpen(true);
+                }}
+                data-testid="encerrar-evento-btn"
+                aria-haspopup="dialog"
+              >
+                Encerrar evento
               </Button>
             )}
             {(exhibition.status === 'scheduled' || exhibition.status === 'active') && (
@@ -641,6 +662,94 @@ export function ExhibitionDetails({ shelterClubId, exhibitionId, actor, onBack }
           </CardContent>
         </Card>
       )}
+
+      {/* TASK-148: Dialog dedicado para registrar destino de cada animal
+          pós-evento (radio group + autocomplete). Acionado pelo botão
+          "Encerrar evento" no header. */}
+      <Dialog
+        open={closeOutOpen}
+        onOpenChange={(open) => {
+          setCloseOutOpen(open);
+          if (!open) setCloseOutContext({ petId: '', petOrigin: 'internal' });
+        }}
+      >
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Encerrar evento — registrar destino do animal</DialogTitle>
+            <DialogDescription>
+              Selecione o pet e indique o que aconteceu com ele após o evento.
+              Você pode chamar este diálogo várias vezes para registrar animais
+              diferentes.
+            </DialogDescription>
+          </DialogHeader>
+          {/* Quick-pick: lista de animais da vitrine (internos) */}
+          {exhibition.pet_ids?.length > 0 && (
+            <div className="space-y-1">
+              <p className="text-xs font-medium text-muted-foreground">
+                Animais internos desta vitrine (clique para pré-preencher):
+              </p>
+              <div className="flex flex-wrap gap-1">
+                {exhibition.pet_ids.map((pid) => {
+                  const alreadyLogged = logs.some(
+                    (l) => l.pet_id === pid && l.pet_origin === 'internal',
+                  );
+                  return (
+                    <Button
+                      key={pid}
+                      type="button"
+                      size="sm"
+                      variant={alreadyLogged ? 'ghost' : 'outline'}
+                      disabled={alreadyLogged}
+                      onClick={() => setCloseOutContext({ petId: pid, petOrigin: 'internal' })}
+                    >
+                      {pid.slice(0, 12)}{alreadyLogged ? ' ✓' : ''}
+                    </Button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+          {exhibition.external_pets?.length > 0 && (
+            <div className="space-y-1">
+              <p className="text-xs font-medium text-muted-foreground">
+                Pets externos (clique para pré-preencher):
+              </p>
+              <div className="flex flex-wrap gap-1">
+                {exhibition.external_pets.map((p) => {
+                  const pid = p.pet_id;
+                  const alreadyLogged = logs.some(
+                    (l) => l.pet_id === pid && l.pet_origin === 'external',
+                  );
+                  return (
+                    <Button
+                      key={`${pid}_${p.owner_shelter_id}`}
+                      type="button"
+                      size="sm"
+                      variant={alreadyLogged ? 'ghost' : 'outline'}
+                      disabled={alreadyLogged}
+                      onClick={() => setCloseOutContext({ petId: pid, petOrigin: 'external' })}
+                    >
+                      {p.name || pid.slice(0, 12)}{alreadyLogged ? ' ✓' : ''}
+                    </Button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+          <PostEventLog
+            shelterClubId={shelterClubId}
+            exhibitionId={exhibitionId}
+            actor={actor}
+            initialPetId={closeOutContext.petId}
+            initialPetOrigin={closeOutContext.petOrigin}
+            onCancel={() => setCloseOutOpen(false)}
+            onLogged={() => {
+              // Mantém o dialog aberto para permitir registrar múltiplos pets.
+              setCloseOutContext({ petId: '', petOrigin: 'internal' });
+            }}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

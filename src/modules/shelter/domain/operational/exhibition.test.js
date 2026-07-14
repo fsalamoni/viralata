@@ -32,6 +32,11 @@ import {
   isExhibitionPast,
   exhibitionDurationHours,
   formatExhibitionDateTime,
+  // TASK-148
+  POST_EVENT_OUTCOMES,
+  POST_EVENT_OUTCOME_LABELS,
+  mapOutcomeToDestination,
+  postEventLogOutcomeSchema,
 } from './exhibition';
 
 // ─── Enums ──────────────────────────────────────────────────────────────
@@ -366,6 +371,109 @@ describe('addInternalPetSchema / removeInternalPetSchema', () => {
     expect(() => addInternalPetSchema.parse({})).toThrow();
   });
 });
+
+// ─── TASK-148: POST_EVENT_OUTCOMES + postEventLogOutcomeSchema ─────────
+
+describe('POST_EVENT_OUTCOMES (TASK-148)', () => {
+  it('tem 4 outcomes oficiais', () => {
+    expect(POST_EVENT_OUTCOMES.length).toBe(4);
+  });
+  it('inclui returned, adopted, foster, other', () => {
+    expect(POST_EVENT_OUTCOMES).toEqual(
+      expect.arrayContaining(['returned', 'adopted', 'foster', 'other']),
+    );
+  });
+  it('tem label pt-BR para cada outcome', () => {
+    for (const o of POST_EVENT_OUTCOMES) {
+      expect(POST_EVENT_OUTCOME_LABELS[o]).toBeTruthy();
+    }
+  });
+});
+
+describe('mapOutcomeToDestination (TASK-148)', () => {
+  it('returned → returned_to_shelter', () => {
+    expect(mapOutcomeToDestination('returned')).toBe('returned_to_shelter');
+  });
+  it('adopted → adopted', () => {
+    expect(mapOutcomeToDestination('adopted')).toBe('adopted');
+  });
+  it('foster → transferred', () => {
+    expect(mapOutcomeToDestination('foster')).toBe('transferred');
+  });
+  it('other → returned_to_shelter (notes obrigatório)', () => {
+    expect(mapOutcomeToDestination('other')).toBe('returned_to_shelter');
+  });
+  it('lança para outcome inválido', () => {
+    expect(() => mapOutcomeToDestination('fugiu')).toThrow(/inválido/);
+  });
+});
+
+describe('postEventLogOutcomeSchema (TASK-148)', () => {
+  const baseValid = {
+    pet_id: 'p-1',
+    pet_origin: 'internal',
+    outcome: 'returned',
+  };
+  it('aceita payload mínimo (returned)', () => {
+    expect(() => postEventLogOutcomeSchema.parse(baseValid)).not.toThrow();
+  });
+  it('rejeita pet_id vazio', () => {
+    expect(() => postEventLogOutcomeSchema.parse({ ...baseValid, pet_id: '' })).toThrow();
+  });
+  it('rejeita pet_origin inválido', () => {
+    expect(() => postEventLogOutcomeSchema.parse({ ...baseValid, pet_origin: 'unknown' })).toThrow();
+  });
+  it('rejeita outcome inválido', () => {
+    expect(() => postEventLogOutcomeSchema.parse({ ...baseValid, outcome: 'fugiu' })).toThrow();
+  });
+  it('aceita todos os 4 outcomes (com campos condicionais preenchidos)', () => {
+    const conditionalFields = {
+      returned: {},
+      adopted: { adopter_uid: 'u-99' },
+      foster: { shelter_club_id: 'c-2' },
+      other: { notes: 'descrição livre' },
+    };
+    for (const o of POST_EVENT_OUTCOMES) {
+      expect(() => postEventLogOutcomeSchema.parse({
+        ...baseValid,
+        outcome: o,
+        ...conditionalFields[o],
+      })).not.toThrow();
+    }
+  });
+  it('adopted exige adopter_uid', () => {
+    expect(() => postEventLogOutcomeSchema.parse({ ...baseValid, outcome: 'adopted' })).toThrow(/adopter/i);
+  });
+  it('adopted aceita com adopter_uid', () => {
+    expect(() => postEventLogOutcomeSchema.parse({
+      ...baseValid, outcome: 'adopted', adopter_uid: 'u-99',
+    })).not.toThrow();
+  });
+  it('foster exige shelter_club_id', () => {
+    expect(() => postEventLogOutcomeSchema.parse({ ...baseValid, outcome: 'foster' })).toThrow(/abrigo/i);
+  });
+  it('foster aceita com shelter_club_id', () => {
+    expect(() => postEventLogOutcomeSchema.parse({
+      ...baseValid, outcome: 'foster', shelter_club_id: 'c-2',
+    })).not.toThrow();
+  });
+  it('other exige notes com mín. 3 chars', () => {
+    expect(() => postEventLogOutcomeSchema.parse({
+      ...baseValid, outcome: 'other', notes: 'o',
+    })).toThrow(/notas/i);
+  });
+  it('other aceita com notes >= 3 chars', () => {
+    expect(() => postEventLogOutcomeSchema.parse({
+      ...baseValid, outcome: 'other', notes: 'evadiu do canil',
+    })).not.toThrow();
+  });
+  it('rejeita notes > 500 chars', () => {
+    expect(() => postEventLogOutcomeSchema.parse({
+      ...baseValid, notes: 'x'.repeat(501),
+    })).toThrow(/500/);
+  });
+});
+
 
 describe('addExternalPetSchema', () => {
   it('aceita pet externo mínimo', () => {

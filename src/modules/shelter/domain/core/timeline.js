@@ -32,6 +32,8 @@ export const TIMELINE_EVENT_TYPES = Object.freeze([
   'asilomar_assessment',     // Reavaliação Asilomar
   'deceased',                // Óbito
   'returned',                // Devolvido pelo adotante
+  'adoption',                // Adoção (TASK-148) — gerado pelo post_event_log
+  'foster_start',            // Início de lar temporário (TASK-148) — gerado pelo post_event_log
 ]);
 
 // ─── Schemas por tipo (payload varia) ──────────────────────────────────
@@ -117,6 +119,34 @@ const returnedPayloadSchema = z.object({
   previous_adopter_uid: z.string().max(128).optional(),
 }).strict();
 
+/**
+ * Adoption payload (TASK-148).
+ * Disparado pelo `exhibitionService.logPostEvent` quando o destino do
+ * animal pós-vitrine é 'adopted' (outcome 'adopted').
+ */
+const adoptionPayloadSchema = z.object({
+  adopter_uid: z.string().min(1).max(128),
+  adopter_name: z.string().max(200).optional(),
+  exhibition_id: z.string().min(1).max(128).optional(),
+  exhibition_title: z.string().max(200).optional(),
+  notes: z.string().max(2000).optional(),
+}).strict();
+
+/**
+ * Foster-start payload (TASK-148).
+ * Disparado pelo `exhibitionService.logPostEvent` quando o destino é
+ * 'transferred' (outcome 'foster' = lar temporário / transferido).
+ */
+const fosterStartPayloadSchema = z.object({
+  shelter_club_id: z.string().min(1).max(128),
+  shelter_club_name: z.string().max(200).optional(),
+  foster_uid: z.string().max(128).optional(),
+  foster_name: z.string().max(200).optional(),
+  exhibition_id: z.string().min(1).max(128).optional(),
+  exhibition_title: z.string().max(200).optional(),
+  notes: z.string().max(2000).optional(),
+}).strict();
+
 const intakePayloadSchema = z.object({
   intake_type: z.enum(['rescue', 'born', 'transfer', 'surrender', 'purchase']),
   source: z.string().max(280).optional(),
@@ -150,6 +180,8 @@ const eventPayloadSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('asilomar_assessment'), data: asilomarPayloadSchema }),
   z.object({ type: z.literal('deceased'), data: deceasedPayloadSchema }),
   z.object({ type: z.literal('returned'), data: returnedPayloadSchema }),
+  z.object({ type: z.literal('adoption'), data: adoptionPayloadSchema }),
+  z.object({ type: z.literal('foster_start'), data: fosterStartPayloadSchema }),
 ]);
 
 // Mapa direto: type → payload schema. Mais simples de usar que a union.
@@ -168,6 +200,8 @@ const PAYLOAD_SCHEMAS = Object.freeze({
   asilomar_assessment: asilomarPayloadSchema,
   deceased: deceasedPayloadSchema,
   returned: returnedPayloadSchema,
+  adoption: adoptionPayloadSchema,
+  foster_start: fosterStartPayloadSchema,
 });
 
 // ─── Schema principal do evento ────────────────────────────────────────
@@ -224,6 +258,8 @@ export const TIMELINE_EVENT_LABELS = Object.freeze({
   asilomar_assessment: 'Avaliação Asilomar',
   deceased: 'Óbito',
   returned: 'Devolvido pelo adotante',
+  adoption: 'Adoção (pós-vitrine)',
+  foster_start: 'Início de lar temporário (pós-vitrine)',
 });
 
 export const TIMELINE_EVENT_ICONS = Object.freeze({
@@ -241,6 +277,8 @@ export const TIMELINE_EVENT_ICONS = Object.freeze({
   asilomar_assessment: '🏥',
   deceased: '⚰️',
   returned: '↩️',
+  adoption: '🎉',
+  foster_start: '🏡',
 });
 
 // ─── Helpers ────────────────────────────────────────────────────────────

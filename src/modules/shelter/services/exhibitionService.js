@@ -97,6 +97,74 @@ function _shiftRef(shelterClubId, exhibitionId, shiftId) {
   );
 }
 
+/**
+ * Monta o payload do evento de timeline correspondente ao destino
+ * pós-vitrine (TASK-148). Retorna `null` para destinos que não
+ * justificam evento de timeline (ex.: `died` usa o tipo `deceased`
+ * com payload separado, mas evitamos gerar evento duplicado se a
+ * timeline já tem um). Para destinos simples, retorna um `note`.
+ */
+function _buildPostEventTimelinePayload(parsedLog, exhibition, now) {
+  const baseExhibitionRef = {
+    exhibition_id: exhibition.id,
+    exhibition_title: exhibition.title,
+  };
+  switch (parsedLog.destination) {
+    case 'adopted':
+      return {
+        type: 'adoption',
+        event_date: now,
+        data: {
+          adopter_uid: parsedLog.adopter_uid,
+          adopter_name: parsedLog.adopter_name || null,
+          notes: parsedLog.notes || null,
+          ...baseExhibitionRef,
+        },
+      };
+    case 'transferred':
+      return {
+        type: 'foster_start',
+        event_date: now,
+        data: {
+          shelter_club_id: parsedLog.transferred_to_shelter_id,
+          shelter_club_name: parsedLog.transferred_to_shelter_name || null,
+          notes: parsedLog.notes || null,
+          ...baseExhibitionRef,
+        },
+      };
+    case 'returned_to_shelter':
+      return {
+        type: 'note',
+        event_date: now,
+        data: {
+          text: `Voltou ao abrigo após vitrine "${exhibition.title}"${
+            parsedLog.notes ? ` — ${parsedLog.notes}` : ''
+          }`,
+          visibility: 'internal',
+        },
+      };
+    case 'died':
+      return {
+        type: 'deceased',
+        event_date: now,
+        data: {
+          cause: parsedLog.notes || 'Óbito durante/pós-vitrine',
+          necropsy: false,
+          reported_by: parsedLog.logged_by_name || null,
+        },
+      };
+    default:
+      return {
+        type: 'note',
+        event_date: now,
+        data: {
+          text: `Destino pós-vitrine "${exhibition.title}": ${parsedLog.destination}`,
+          visibility: 'internal',
+        },
+      };
+  }
+}
+
 function _postEventLogCollection(shelterClubId, exhibitionId) {
   return collection(
     db, CLUBS_COLLECTION, shelterClubId,
@@ -753,27 +821,28 @@ export async function logPostEvent(shelterClubId, exhibitionId, input, actor) {
     },
   );
 
-  // Cria evento na timeline do pet (apenas para internal)
+  // Cria evento na timeline do pet (apenas para internal).
+  // TASK-148: usa tipos semânticos do timeline (adoption / foster_start /
+  // note) para que dashboards / relatórios possam diferenciar o que
+  // aconteceu com cada animal pós-vitrine.
   if (parsed.pet_origin === 'internal') {
-    try {
-      await addTimelineEvent(
-        parsed.pet_id,
-        {
-          type: 'note',
-          event_date: now,
-          data: {
-            text: `Destino pós-vitrine "${exhibition.title}": ${parsed.destination}`,
-            visibility: 'internal',
-          },
-        },
-        { uid: actor.uid, displayName: actor.displayName },
-        { shelterClubId },
-      );
-    } catch (err) {
-      logger.warn('exhibitionService.logPostEvent', {
-        msg: 'timeline event failed (non-blocking)',
-        err: String(err),
-      });
+    const timelinePayload = _buildPostEventTimelinePayload(
+      parsed, exhibition, now,
+    );
+    if (timelinePayload) {
+      try {
+        await addTimelineEvent(
+          parsed.pet_id,
+          timelinePayload,
+          { uid: actor.uid, displayName: actor.displayName },
+          { shelterClubId },
+        );
+      } catch (err) {
+        logger.warn('exhibitionService.logPostEvent', {
+          msg: 'timeline event failed (non-blocking)',
+          err: String(err),
+        });
+      }
     }
   }
 
@@ -787,6 +856,11 @@ export async function logPostEvent(shelterClubId, exhibitionId, input, actor) {
       pet_id: parsed.pet_id,
       pet_origin: parsed.pet_origin,
       destination: parsed.destination,
+      // TASK-148: inclui contexto (Regra A §1.3 — auditoria completa).
+      // Não gravamos PII (apenas FKs).
+      adopter_uid: parsed.adopter_uid || null,
+      transferred_to_shelter_id: parsed.transferred_to_shelter_id || null,
+      transferred_to_shelter_name: parsed.transferred_to_shelter_name || null,
     },
   }).catch(() => {});
 

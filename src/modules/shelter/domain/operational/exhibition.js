@@ -86,6 +86,54 @@ export const POST_EVENT_DESTINATIONS = Object.freeze([
   'died',                 // Óbito (raro, mas possível — stress/etc)
 ]);
 
+/**
+ * Outcomes do log pós-evento (Fase 11 / TASK-148).
+ *
+ * Estas são as opções de radio group expostas na UI (`PostEventLog.jsx`).
+ * Cada outcome é mapeado para um `POST_EVENT_DESTINATIONS` antes de ser
+ * persistido (ver `mapOutcomeToDestination`). Isso desacopla a
+ * linguagem de produto (voluntários do abrigo enxergam "foster", "other")
+ * do schema do Firestore (mantido retrocompatível com Fase 11 inicial).
+ *
+ *  - 'returned' → 'returned_to_shelter' (animal voltou ao abrigo)
+ *  - 'adopted'  → 'adopted'             (animal foi adotado no evento)
+ *  - 'foster'   → 'transferred'         (animal foi para lar temporário
+ *                                         de outro abrigo, ou transferido
+ *                                         para coalizão parceira)
+ *  - 'other'    → 'returned_to_shelter' (casos especiais — campo notes
+ *                                         obrigatório para documentar)
+ */
+export const POST_EVENT_OUTCOMES = Object.freeze([
+  'returned',  // Voltou ao abrigo
+  'adopted',   // Adotado
+  'foster',    // Lar temporário / transferido
+  'other',     // Outro (notes obrigatório)
+]);
+
+/**
+ * Labels em pt-BR para os outcomes (UI).
+ */
+export const POST_EVENT_OUTCOME_LABELS = Object.freeze({
+  returned: 'Voltou ao abrigo',
+  adopted: 'Adotado',
+  foster: 'Lar temporário / Transferido',
+  other: 'Outro',
+});
+
+/**
+ * Tradução outcome (UI) → destination (Firestore).
+ */
+export function mapOutcomeToDestination(outcome) {
+  switch (outcome) {
+    case 'returned': return 'returned_to_shelter';
+    case 'adopted':  return 'adopted';
+    case 'foster':   return 'transferred';
+    case 'other':    return 'returned_to_shelter';
+    default:
+      throw new Error(`Outcome inválido: ${outcome}`);
+  }
+}
+
 // ─── Schema: venue (local do evento) ───────────────────────────────────
 
 /**
@@ -308,6 +356,56 @@ export const createPostEventLogSchema = z.object({
   transferred_to_shelter_id: z.string().max(128).optional(),
   transferred_to_shelter_name: z.string().max(200).optional(),
 }).strict();
+
+/**
+ * Schema do payload enviado pelo `PostEventLog.jsx` (formulário por animal).
+ * Diferente de `createPostEventLogSchema`, este schema:
+ *  - usa `outcome` (POST_EVENT_OUTCOMES) em vez de `destination` direto
+ *  - exige `adopter_uid` quando outcome === 'adopted'
+ *  - exige `shelter_club_id` (do abrigo destino) quando outcome === 'foster'
+ *  - exige `notes` quando outcome === 'other' (mín. 3 chars)
+ *  - limita notes a 500 chars (UX — campo opcional na maioria dos casos)
+ *  - exige `pet_id` (1..128) e `pet_origin` (internal/external)
+ *
+ * O componente `PostEventLog.jsx` traduz esse payload para o formato
+ * aceito por `exhibitionService.logPostEvent` (campos destination,
+ * transferred_to_shelter_id, adopter_uid, etc).
+ */
+export const postEventLogOutcomeSchema = z.object({
+  pet_id: z.string().min(1, 'ID do pet é obrigatório').max(128),
+  pet_origin: z.enum(['internal', 'external'], {
+    errorMap: () => ({ message: 'Origem deve ser "internal" ou "external"' }),
+  }),
+  outcome: z.enum(POST_EVENT_OUTCOMES, {
+    errorMap: () => ({ message: 'Outcome inválido' }),
+  }),
+  adopter_uid: z.string().min(1).max(128).optional(),
+  shelter_club_id: z.string().min(1).max(128).optional(),
+  shelter_club_name: z.string().max(200).optional(),
+  notes: z.string().max(500, 'Notas limitadas a 500 caracteres').optional(),
+}).superRefine((data, ctx) => {
+  if (data.outcome === 'adopted' && !data.adopter_uid) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['adopter_uid'],
+      message: 'Adotante é obrigatório quando outcome é "adopted"',
+    });
+  }
+  if (data.outcome === 'foster' && !data.shelter_club_id) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['shelter_club_id'],
+      message: 'Abrigo de destino é obrigatório quando outcome é "foster"',
+    });
+  }
+  if (data.outcome === 'other' && (!data.notes || data.notes.trim().length < 3)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['notes'],
+      message: 'Notas (mín. 3 caracteres) são obrigatórias quando outcome é "other"',
+    });
+  }
+});
 
 // ─── Helpers ────────────────────────────────────────────────────────────
 
