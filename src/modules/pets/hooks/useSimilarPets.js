@@ -1,73 +1,89 @@
 /**
- * @fileoverview useSimilarPets — hook que retorna pets similares a um pet de referência.
+ * @fileoverview useSimilarPets — lista pets similares (TASK-324).
  *
- * Score de similaridade por atributos em comum:
- *   - Espécie:       +5  (mesmo valor)
- *   - Porte:        +3  (mesmo valor)
- *   - Faixa etária:  +2  (mesmo age_group)
- *   - Cidade:        +2  (mesma cidade)
- *   - Mesmo abrigo:  +1  (mesmo shelter_club_id)
+ * Query: `pets` collection
+ *  - mesma espécie + mesmo porte + status=available
+ *  - exclui o pet atual
+ *  - ordena por rescue_date (mais antigos primeiro = mais tempo esperando)
+ *  - client-side: aplica score de similaridade e pega top 4
  *
- * Retorna até `limit` pets ordenados por score descrescente,
- * excluindo o pet de referência e pets já adotados.
+ * Score de similaridade (cliente-side, definido aqui):
+ *  - mesma espécie: +5
+ *  - mesmo porte: +3
+ *  - mesma idade: +2
+ *  - mesma cidade (case-insensitive): +2
+ *  - mesmo abrigo: +1
  *
- * Requer `SHELTER_SIMILAR_PETS` (default OFF) — fora da flag, o hook
- * retorna array vazio sem fazer query.
+ * Sem dependência de novos índices. Em produção (100+ pets), mover
+ * score para Cloud Function ou Algolia/Typesense.
  */
-import { useQuery } from '@tanstack/react-query';
-import { collection, where, query, getDocs, orderBy, limit } from 'firebase/firestore';
+
+import { useState, useEffect } from 'react';
 import { db } from '@/core/config/firebase';
-import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
-import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
+import { collection, query, where, orderBy, getDocs, limit } from 'firebase/firestore';
+import { logger } from '@/core/lib/logger';
 
-const MAX_SIMILAR = 6;
+const MAX_RESULTS = 30;
 
-function scoreSimilarity(pet, ref) {
+/**
+ * Calcula score de similaridade entre 2 pets (exportado para tests).
+ */
+export function scoreSimilarity(pet, ref) {
   if (!ref || !pet) return 0;
   let score = 0;
-  if (pet.species === ref.species) score += 5;
-  if (pet.size === ref.size) score += 3;
-  if (pet.age_group === ref.age_group) score += 2;
-  if (pet.city && ref.city && pet.city.toLowerCase() === ref.city.toLowerCase()) score += 2;
+  if (pet.species && pet.species === ref.species) score += 5;
+  if (pet.size && pet.size === ref.size) score += 3;
+  if (pet.age_group && pet.age_group === ref.age_group) score += 2;
+  if (pet.city && ref.city && String(pet.city).toLowerCase() === String(ref.city).toLowerCase()) score += 2;
   if (pet.shelter_club_id && pet.shelter_club_id === ref.shelter_club_id) score += 1;
   return score;
 }
 
-/**
- * Busca candidatos: pets disponíveis da mesma espécie, ordenados por
- * created_at desc. Limitamos a 50 candidatos para o scoring client-side.
- * O Firestore composite index necessário é: species + status + created_at.
- * Se não existir, o índice automático será criado (pode demorar ~1 min).
- */
-async function fetchCandidates(pet) {
-  if (!pet?.id || !pet?.species) return [];
-  const q = query(
-    collection(db, 'pets'),
-    where('species', '==', pet.species),
-    where('status', '==', 'available'),
-    orderBy('created_at', 'desc'),
-    limit(50),
-  );
-  const snap = await getDocs(q);
-  return snap.docs
-    .map((d) => ({ id: d.id, ...d.data() }))
-    .filter((p) => p.id !== pet.id);
-}
+export function useSimilarPets(refPet, { max = 4 } = {}) {
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-export function useSimilarPets(pet) {
-  const enabled = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_SIMILAR_PETS);
+  useEffect(() => {
+    if (!refPet?.id || !refPet?.species) {
+      setLoading(false);
+      return undefined;
+    }
+    let cancelled = false;
+    setLoading(true);
+    (async () => {
+      try {
+        // Query simples: mesma espécie + available, excluindo self via .where('__name__', '!=', refPet.id)
+        // Firestore não suporta != no __name__ — filtro client-side
+        const q = query(
+          collection(db, 'pets'),
+          where('species', '==', refPet.species),
+          where('status', '==', 'available'),
+          orderBy('rescue_date', 'asc'),
+          limit(MAX_RESULTS),
+        );
+        const snap = await getDocs(q);
+        if (cancelled) return;
+        const all = snap.docs
+          .map((d) => ({ id: d.id, ...d.data() }))
+          .filter((p) => p.id !== refPet.id);
+        // Aplica score e ordena
+        const scored = all
+          .map((p) => ({ ...p, _score: scoreSimilarity(p, refPet) }))
+          .sort((a, b) => b._score - a._score)
+          .slice(0, max);
+        setItems(scored);
+        setLoading(false);
+      } catch (err) {
+        if (!cancelled) {
+          logger.warn('useSimilarPets', { err: String(err) });
+          setError(err.message);
+          setLoading(false);
+        }
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [refPet?.id, refPet?.species, refPet?.size, refPet?.age_group, refPet?.city, refPet?.shelter_club_id, max]);
 
-  return useQuery({
-    queryKey: ['pets', 'similar', pet?.id],
-    queryFn: async () => {
-      const candidates = await fetchCandidates(pet);
-      return candidates
-        .map((p) => ({ ...p, _score: scoreSimilarity(p, pet) }))
-        .filter((p) => p._score > 0)
-        .sort((a, b) => b._score - a._score)
-        .slice(0, MAX_SIMILAR);
-    },
-    enabled: Boolean(pet?.id) && Boolean(enabled),
-    staleTime: 1000 * 60 * 5,
-  });
+  return { items, loading, error };
 }

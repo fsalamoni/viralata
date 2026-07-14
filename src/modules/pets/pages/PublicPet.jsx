@@ -30,6 +30,7 @@ import { motion } from 'framer-motion';
 import { doc, getDoc, collection, query, where, getDocs, limit } from 'firebase/firestore';
 import { PublicPetTimeline } from '@/modules/pets/components/PublicPetTimeline';
 import { PublicHealthRecord } from '@/modules/pets/components/PublicHealthRecord';
+import { SimilarPetsSection } from '@/modules/pets/components/SimilarPetsSection';
 import { db } from '@/core/config/firebase';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
