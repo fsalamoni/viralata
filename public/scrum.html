@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-14T13:29:07.052Z",
+  "generatedAt": "2026-07-14T14:54:01.505Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -1960,13 +1960,13 @@
       "title": "Varredura completa: auditoria de termos/checkboxes/navegação/footer/feature flags em todo o app",
       "type": "chore",
       "category": "lgpd",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "mvs_311d078987d0414a90f57ef28b789b18",
       "branch": "feat/legal-docs-v2",
       "flag": null,
       "worktree": ".worktrees/wt-legal-v2",
-      "pr": null,
+      "pr": "79",
       "tags": [
         "pente-fino",
         "varredura",
@@ -1988,7 +1988,7 @@
       "evidence": "Pedido do usuário 2026-07-11 14:24",
       "description": "Após correções TASK-046 a TASK-054, fazer pente fino COMPLETO: (1) todo cadastro tem checkboxes de aceite? (2) toda página tem link no footer? (3) todo aceite grava em audit_log? (4) feature flags corretas? (5) LGPD compliance global. Orquestrar até 3 workers em paralelo para dividir cobertura.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14"
     },
     {
       "id": "TASK-059",
@@ -4899,7 +4899,7 @@
       "title": "Kanban: dashboard pessoal do usuário (cards onde é assignee)",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -4909,14 +4909,14 @@
         "regra-a"
       ],
       "worktree": null,
-      "pr": null,
+      "pr": "81",
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
       "evidence": "Regra A §1.4 (perfil) + SHELTER_MGMT §Fase 14",
       "description": "BLOCO INDEPENDENTE. Adicionar card \"Minhas tarefas\" em Profile.jsx: lista de cards onde user_id está em assignees, status atual, due_date, click pra abrir o card.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14"
     },
     {
       "id": "TASK-151",
@@ -4949,7 +4949,7 @@
       "title": "Dashboard: página pública do abrigo /abrigos/{id}",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -4959,7 +4959,7 @@
         "regra-a"
       ],
       "worktree": null,
-      "pr": null,
+      "pr": "82",
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [
@@ -4968,7 +4968,7 @@
       "evidence": "Regra A §1.1 (público) — perfil abrigo",
       "description": "BLOCO INDEPENDENTE. Criar src/pages/ShelterPublic.jsx: capa (CommunityCover-like), nome, cidade, stats (#animais, #adoções, #LTs), próximos eventos, últimas adoções. Sem auth. Roteamento: se /comunidade/{id} for abrigo, mostra ShelterPublic.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14"
     },
     {
       "id": "TASK-153",
@@ -5000,7 +5000,7 @@
       "title": "Relatórios: exportação CSV/PDF com dados do abrigo",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -5011,14 +5011,14 @@
         "regra-a"
       ],
       "worktree": null,
-      "pr": null,
+      "pr": "115",
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
       "evidence": "Regra A §1.4 (relatórios) + LGPD Art. 18 V (exportação)",
       "description": "BLOCO INDEPENDENTE. Em ReportsTab, botão \"Exportar\": CSV (raw data, 1 linha por entidade) + PDF (resumo formatado). LGPD: anonimiza adopters que pediram exclusão.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14"
     },
     {
       "id": "TASK-155",
@@ -5075,7 +5075,7 @@
       "title": "Mural: clickwrap em comentários + moderação (denunciar, admin deleta)",
       "type": "feature",
       "category": "community",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -5086,14 +5086,14 @@
         "regra-a"
       ],
       "worktree": null,
-      "pr": null,
+      "pr": "100",
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
       "evidence": "Regra A §1.3 (LGPD) + Marco Civil Art. 19",
       "description": "BLOCO INDEPENDENTE. Adicionar: (1) aceite de conduta (TASK-062) ao comentar pela primeira vez, (2) botão \"denunciar\" em cada comentário (audit_log + flag de revisão), (3) admin pode deletar com motivo. Compliance Marco Civil.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14"
     },
     {
       "id": "TASK-158",
@@ -5125,7 +5125,7 @@
       "title": "Fórum: feed público de threads em /comunidades/{id}/forum",
       "type": "feature",
       "category": "community",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -5135,21 +5135,21 @@
         "regra-a"
       ],
       "worktree": null,
-      "pr": null,
+      "pr": "101",
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
       "evidence": "Regra A §1.1 (público) — transparência",
       "description": "BLOCO INDEPENDENTE. Adicionar ForumTab com variant \"public\" no CommunityDetail. Threads + comentários visíveis sem auth. Click pra responder exige login.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14"
     },
     {
       "id": "TASK-160",
       "title": "Fórum: clickwrap em respostas + moderação",
       "type": "feature",
       "category": "community",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -5160,14 +5160,14 @@
         "regra-a"
       ],
       "worktree": null,
-      "pr": null,
+      "pr": "102",
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
       "evidence": "Regra A §1.3 (LGPD) + Marco Civil Art. 19",
       "description": "BLOCO INDEPENDENTE. Aceite do código de conduta (TASK-062) ao criar primeira thread. Botão denunciar. Moderação admin.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14"
     },
     {
       "id": "TASK-161",
@@ -5656,7 +5656,7 @@
       "title": "Pública: página individual /pet/{id} (read-only) com tudo do pet",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -5666,14 +5666,14 @@
         "regra-a"
       ],
       "worktree": null,
-      "pr": null,
+      "pr": "111",
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
       "evidence": "Regra A §1.1 (público) — descoberta pet",
       "description": "BLOCO INDEPENDENTE. PetDetail.jsx: capa, dados básicos, abrigo, saúde pública (TASK-136), galeria pública (TASK-142), vitrines que participou, button \"Quero adotar\" (TASK-127). Sem clinical_notes internas.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14"
     },
     {
       "id": "TASK-181",
@@ -5930,7 +5930,7 @@
       "title": "UX: a11y audit completo com axe-core (Playwright)",
       "type": "chore",
       "category": "core",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
@@ -5940,14 +5940,14 @@
         "regra-a"
       ],
       "worktree": null,
-      "pr": null,
+      "pr": "98",
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
       "evidence": "Regra A §1.1 (a11y) + TASK-014",
       "description": "BLOCO INDEPENDENTE. Adicionar @axe-core/playwright. Rodar em todas as rotas. Reportar achados em docs/A11Y_AUDIT.md. Critical issues = bugs.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14"
     },
     {
       "id": "TASK-192",
@@ -6200,13 +6200,13 @@
       "title": "Smoke test ON em staging com múltiplos papéis (gap Regra A Eixo 5)",
       "type": "chore",
       "category": "community",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": "wt/17ff480a",
       "flag": null,
       "worktree": ".worktrees/wt-17ff480a",
-      "pr": null,
+      "pr": "95",
       "tags": [
         "smoke-test",
         "regra-a",
@@ -6224,7 +6224,7 @@
       "evidence": "COVERAGE_AUDIT.md Eixo 5; scripts/smoke-routes.mjs",
       "description": "BLOCO INDEPENDENTE. Criar suite de smoke test dedicada que: (1) liga COMMUNITY_NGO_PARITY em staging, (2) testa as 4 abas com owner, (3) testa com admin, (4) testa com member (verifica MuralTab acessível se tem perm feed, oculta se não tem), (5) confirma consistência visual com ONG. Regra A §1.5 (pós-deploy).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14"
     },
     {
       "id": "TASK-201",
@@ -6481,13 +6481,13 @@
       "title": "Firestore rules: hasOnly em checkInOut + FK exhibition_id + canVolunteerParticipate enforced",
       "type": "security",
       "category": "infra",
-      "status": "ready",
+      "status": "done",
       "priority": "critical",
       "owner": "unassigned",
       "branch": null,
       "flag": null,
       "worktree": null,
-      "pr": null,
+      "pr": "150",
       "tags": [
         "regra-a",
         "voluntarios",
@@ -6501,20 +6501,20 @@
       "evidence": "D:\\viralata\\firestore.rules:1015 (permite qualquer campo em update); :957-968 (roster create aceita qualquer shelter); :982-1003 (participation create sem FK)",
       "description": "BLOCO INDEPENDENTE. CRÍTICO — firestore rules tem 4+ brechas: (1) checkInOut update aceita qualquer campo, não só check_in/check_out; (2) participation create não exige voluntário estar na roster; (3) exhibition_id é FK fraca (string livre); (4) canVolunteerParticipate só client-side. Adicionar: hasOnly([check_in,check_out,updated_at]), get() check em clubs/{clubId}/volunteers/{uid}, exhibitionExists check, status check (active + BG approved). Regra A §A.1.3.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11 20:50"
+      "updatedAt": "2026-07-14"
     },
     {
       "id": "TASK-219",
       "title": "Permissão granular \"volunteers\" + corrigir drift UI (\"team\") vs rules (\"animals\")",
       "type": "security",
       "category": "infra",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
       "flag": null,
       "worktree": null,
-      "pr": null,
+      "pr": "169",
       "tags": [
         "regra-a",
         "voluntarios",
@@ -6528,7 +6528,7 @@
       "evidence": "D:\\viralata\\firestore.rules:940,957,963,988,1003 (usa \"animals\"); D:\\viralata\\src\\modules\\organizations\\pages\\OrganizationAdminPanel.jsx:148 (usa \"team\"); D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_REGRA_A_AUDIT.md §permissões",
       "description": "BLOCO INDEPENDENTE. Inconsistência UI/rules: UI gateia aba com \"team\", rules usam \"animals\" (vazamento de privilégio). (1) Adicionar \"volunteers\" em CLUB_PERMISSION constants; (2) padronizar rules e UI para \"volunteers\"; (3) atualizar canManageVolunteers helper; (4) smoke test cross-role. Regra A §A.1.2 + §A.1.3.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11 20:50"
+      "updatedAt": "2026-07-14"
     },
     {
       "id": "TASK-220",
@@ -6562,13 +6562,13 @@
       "title": "Smart Search: adicionar volunteer como entidade (skills array + availability) + remover índice zumbi volunteer_profiles",
       "type": "feature",
       "category": "search",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
       "flag": null,
       "worktree": null,
-      "pr": null,
+      "pr": "75",
       "tags": [
         "regra-a",
         "voluntarios",
@@ -6583,7 +6583,7 @@
       "evidence": "D:\\viralata\\src\\modules\\shelter\\services\\searchService.js (5 entidades, sem volunteer); D:\\viralata\\firestore.indexes.json:320-327 (zumbi volunteer_profiles); D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_REGRA_A_AUDIT.md §Search",
       "description": "BLOCO INDEPENDENTE. (1) Adicionar volunteer em domain/search/search.js com searchableFields (name, skills, city) e filterableFields (skills, availability_days, has_vehicle). (2) Adicionar hook useSmartSearchVolunteers. (3) Adicionar rota /busca?type=volunteer. (4) Remover índice zumbi em firestore.indexes.json:320-327 (collection volunteer_profiles não existe). (5) Adicionar collectionGroup volunteer_profile com índice para skills+city. Regra A §A.1.4.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11 20:50"
+      "updatedAt": "2026-07-14"
     },
     {
       "id": "TASK-222",
@@ -7131,13 +7131,13 @@
       "title": "Smart Search: volunteer entity + remove zumbi volunteer_profiles index + sanitize PII",
       "type": "feature",
       "category": "search",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
       "flag": null,
       "worktree": null,
-      "pr": null,
+      "pr": "75",
       "tags": [
         "regra-a",
         "voluntarios",
@@ -7152,7 +7152,7 @@
       "evidence": "D:\\viralata\\firestore.indexes.json:320-327 (zumbi volunteer_profiles); D:\\viralata\\src\\modules\\shelter\\domain\\search\\search.js:42-121 (5 entidades, sem volunteer); D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §Search",
       "description": "BLOCO INDEPENDENTE. Expandir TASK-221: (1) Adicionar volunteer em SEARCH_ENTITIES com isPublic:false + filtro shelterId obrigatório, (2) searchableFields (name, skills, city), filterableFields (skills, availability_days, has_vehicle), (3) sanitize mapDocToResult (email só domínio, phone mascarado, address omitido), (4) rate limit na busca, (5) hook useSmartSearchVolunteers, (6) rota /busca?type=volunteer, (7) Remover índice zumbi volunteer_profiles. Combinar com TASK-221.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11 21:00"
+      "updatedAt": "2026-07-14"
     },
     {
       "id": "TASK-242",
@@ -7214,13 +7214,13 @@
       "title": "Cessão de direito de imagem (CC Art. 20) + Image rights schema no volunteer_profile",
       "type": "security",
       "category": "legal",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
       "flag": null,
       "worktree": null,
-      "pr": null,
+      "pr": "103",
       "tags": [
         "regra-a",
         "voluntarios",
@@ -7234,20 +7234,20 @@
       "evidence": "D:\\viralata\\src\\modules\\shelter\\domain\\operational\\volunteerProfile.js (sem image_rights_accepted); termo v2 §5.2(g) (proíbe foto animal, não menciona imagem voluntário); CC Art. 20 + CF Art. 5º X; D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §LGPD",
       "description": "BLOCO INDEPENDENTE. (1) Adicionar cláusula cessão de direito de imagem ao termo v2 (item 4.4), (2) Schema image_rights_accepted: boolean no volunteer_profile, (3) Gate UI para upload de foto do voluntário, (4) Cessão limitada a uso institucional da plataforma (badge, certificado, hall da fama), (5) Voluntário pode revogar cessão (retira foto mas mantém aceite).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11 21:00"
+      "updatedAt": "2026-07-14"
     },
     {
       "id": "TASK-245",
       "title": "Compartilhamento com terceiros (prefeituras/seguradoras/pesquisa) — atualizar item 7.6 do termo v2",
       "type": "security",
       "category": "legal",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
       "flag": null,
       "worktree": null,
-      "pr": null,
+      "pr": "105",
       "tags": [
         "regra-a",
         "voluntarios",
@@ -7262,20 +7262,20 @@
       "evidence": "D:\\viralata\\src\\modules\\shelter\\domain\\legal\\texts\\volunteerTerms.v2.js §7.6 (lista parcial); LGPD Art. 9 (dever de informação); D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §LGPD",
       "description": "BLOCO INDEPENDENTE. (1) Atualizar item 7.6 do termo v2 com lista exaustiva: prefeituras/SICONV (verbas públicas), seguradoras (acidente), pesquisadores acadêmicos (agregado+anonimizado), outros abrigos (APENAS onde tem roster ativa), (2) Criar dataSharingRegister collection com consent granular opt-in por destinatário, (3) Refinar 7.6: \"compartilhado APENAS com os abrigos nos quais o voluntário tem roster ativa\" (não cross-tenant read implícito), (4) Filtro PII para prefeituras (sem RG/CPF, só horas+abrigo).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11 21:00"
+      "updatedAt": "2026-07-14"
     },
     {
       "id": "TASK-246",
       "title": "10+ smoke test routes voluntário + Sentry sourcemap + Crashlytics + bundle hash",
       "type": "chore",
       "category": "infra",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
       "flag": null,
       "worktree": null,
-      "pr": null,
+      "pr": "84",
       "tags": [
         "regra-a",
         "voluntarios",
@@ -7291,7 +7291,7 @@
       "evidence": "D:\\viralata\\scripts\\smoke-routes.mjs (0 rotas voluntário); D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §Post-deploy",
       "description": "BLOCO INDEPENDENTE. Expandir TASK-223: (1) Adicionar 10+ rotas voluntário em scripts/smoke-routes.mjs: /voluntarios, /voluntarios/seja, /voluntarios/termo, /shelters/:id/voluntarios, /perfil#voluntariados, /abrigos/:id/voluntarios, /busca?type=volunteer, (2) Sentry sourcemap via @sentry/vite-plugin ou sentry-cli, (3) Crashlytics SDK, (4) E2E test fluxo completo: anônimo → login → aceita termo → entra roster → check-in → check-out → horas no perfil → admin vê indicators. (5) Bundle hash script + PR description.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11 21:00"
+      "updatedAt": "2026-07-14"
     },
     {
       "id": "TASK-247",
@@ -7671,7 +7671,7 @@
       "title": "Permissão granular volunteers:read/apply/manage_status/bg_check/bulk/delete",
       "type": "refactor",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "critical",
       "owner": "unassigned",
       "branch": null,
@@ -7688,7 +7688,8 @@
       "subFrente": "voluntarios",
       "description": "(a) Adicionar chaves em src/modules/organizations/domain/constants.js: CLUB_PERMISSION.VOLUNTEERS = \"volunteers\". (b) Atualizar hasClubPermission para reconhecer. (c) Atualizar PERMISSION_DESCRIPTIONS em ClubTeamTab.jsx + renderizar nova toggle na grade. (d) Atualizar firestore.rules para usar hasClubPermission(clubId, \"volunteers\") em vez de \"animals\". (e) Testar: owner pode, member com volunteers:true pode, sem permissão é bloqueado.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14",
+      "pr": "169"
     },
     {
       "id": "TASK-268",
@@ -7870,7 +7871,7 @@
       "title": "Integração Exhibition ↔ volunteer_participations (vincular participação à vitrine)",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -7888,7 +7889,8 @@
       "subFrente": "voluntarios",
       "description": "Em ExhibitionDetails.jsx: nova seção \"Voluntários\" abaixo de Escalas. (a) Lista de participations filtrada por event_type=exhibition, exhibition_id={id}. (b) Botão \"+ Adicionar voluntário\" abre dropdown com useShelterVolunteers({status:\"active\", background_check_status:[\"approved\",\"not_required\"]}). (c) Ao selecionar, chama useCreateParticipation com event_type=\"exhibition\", exhibition_id={id}, shelter_club_id={clubId}, volunteer_uid, volunteer_name, event_label={exhibition.title}, event_date={exhibition.datetime_start}, role. (d) Mostra canVolunteerParticipate em badge. (e) Empty state: \"Nenhum voluntário escalado para esta vitrine.\"",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14",
+      "pr": "161"
     },
     {
       "id": "TASK-276",
@@ -8205,7 +8207,7 @@
       "title": "[CONTRACT-001] Criar coleção contracts/{contractId} dedicada com Storage de PDF assinado",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "critical",
       "owner": "unassigned",
       "branch": null,
@@ -8223,14 +8225,15 @@
       "subFrente": "abrigos-foster-adocao",
       "description": "Hoje o aceite do termo é embed em adoption_workflow/{appId}. Criar coleção dedicada em clubs/{clubId}/contracts/{contractId} com: hash SHA-256 do documento, IP, user-agent, signature_text adotante, signature_text abrigo (representante), timestamp, PDF em Storage. Migrar docs legados. UI: rota /contracts no abrigo (search + export) e /profile/contracts pro adotante (download). Firestore rules com return explícito. Zod schema novo. Multi-tenant. Audit log.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14",
+      "pr": "94"
     },
     {
       "id": "TASK-289",
       "title": "[POSTADOPT-001] UI do dashboard pessoal do adotante pós-adoção",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "critical",
       "owner": "unassigned",
       "branch": null,
@@ -8247,14 +8250,15 @@
       "subFrente": "abrigos-foster-adocao",
       "description": "Rota /adoptions (ou /my-adoptions) com lista de adoções concluídas + tasks pendentes materializadas (kanban_tasks filtradas por adopter_uid == auth.uid). UI pro adotante completar task (upload foto, responder check-in). Cloud Function scheduled adicional (1x/dia 9h BRT) que notifica via FCM/email tasks devidas. Componente PostAdoptionDashboard.jsx + hook useMyAdoptions + service postAdoptionService.completeTask.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14",
+      "pr": "91"
     },
     {
       "id": "TASK-290",
       "title": "[INTERVIEW-001] Implementar fluxo de entrevista dedicado (scheduling + checklist + record)",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "critical",
       "owner": "unassigned",
       "branch": null,
@@ -8272,7 +8276,8 @@
       "subFrente": "abrigos-foster-adocao",
       "description": "Criar clubs/{clubId}/interviews/{interviewId} collection. Schema: application_id, scheduled_at, mode (presencial|video|telefone), checklist[] (tópicos), completed_at, completed_by_uid, notes, evaluation_stars, evaluation_notes. Service interviewService.js (propose, schedule, complete, evaluate). UI: InterviewTab no painel do abrigo, InterviewCard no ApplicationsList, MyInterviewCard no perfil do adotante. Status no adoption workflow: interview_scheduled → interview_done (já existe em VALID_TRANSITIONS mas sem materialização).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14",
+      "pr": "93"
     },
     {
       "id": "TASK-291",
@@ -8331,7 +8336,7 @@
       "title": "[SMOKE-001] Criar script scripts/smoke-prod.mjs com smoke test cross-role",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "critical",
       "owner": "unassigned",
       "branch": null,
@@ -8348,14 +8353,15 @@
       "subFrente": "abrigos-foster-adocao",
       "description": "Script Playwright que: (1) login como applicant, submete application; (2) login como abrigo admin, aprova; (3) login como abrigo admin, gera contrato; (4) login como adotante, assina; (5) login como abrigo, vê pós-adoção criado. Roda contra staging. Verifica cada flag SHELTER_* ON. CI gate: bloqueia merge se falhar. Adicionar a npm run smoke:prod.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14",
+      "pr": "88"
     },
     {
       "id": "TASK-294",
       "title": "[LGPD-EXPORT-001] dataExportService.js: garantir export completo de PII (LGPD art. 18 V)",
       "type": "security",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "critical",
       "owner": "unassigned",
       "branch": null,
@@ -8372,14 +8378,15 @@
       "subFrente": "abrigos-foster-adocao",
       "description": "Auditar dataExportService.js. Garantir export de: pets do usuário, applications (submitted + received), mensagens, donations, terms_acceptances, audit_logs pessoais (actor_id == uid). Formato JSON ZIP. Botão \"Baixar meus dados\" no /profile (não gated). Audit log do próprio export. DPO assina.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14",
+      "pr": "84"
     },
     {
       "id": "TASK-295",
       "title": "[LGPD-DELETE-001] deleteAccountService.js: garantir anonimização LGPD art. 18 VI",
       "type": "security",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "critical",
       "owner": "unassigned",
       "branch": null,
@@ -8397,14 +8404,15 @@
       "subFrente": "abrigos-foster-adocao",
       "description": "Auditar deleteAccountService.js. Soft delete + purge em 30 dias. Anonimizar: users/{uid}.displayName → \"Usuário removido\", email → \"[removido]\", cpf → null, foto → deletada. Manter audit_logs agregados (6 meses — Marco Civil). Confirmação dupla (email + senha).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14",
+      "pr": "85"
     },
     {
       "id": "TASK-296",
       "title": "[INTEL-001] Hardening de CreatePet.jsx: step de Cadastro de Resgate",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -8421,7 +8429,8 @@
       "subFrente": "abrigos-foster-adocao",
       "description": "Adicionar step \"Resgate\" no wizard (STEPS = [\"Fotos\", \"Sobre\", \"Resgate\", \"Saúde\", \"Revisão\"]). Campos: rescue_name, rescue_date, rescue_by_uid, rescue_location (address+city+state+lat+lng), microchip_id, intake_type (5 valores), asilomar_status (5 valores). Componente RescueStep.jsx. Microcopy explicando o que é Asilomar Status.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14",
+      "pr": "110"
     },
     {
       "id": "TASK-297",
@@ -8481,7 +8490,7 @@
       "title": "[SEC-001] Rate limit em mutations client-side sensíveis",
       "type": "security",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -8498,14 +8507,15 @@
       "subFrente": "abrigos-foster-adocao",
       "description": "Adicionar throttle em: submit application (max 5/min/user), accept foster (max 3/min/user), decide application (max 10/min/abrigo), update pet (max 30/min/user). Implementar via Firestore rules usando request.time + counter collection, OU client-side debounce com toast warning.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14",
+      "pr": "106"
     },
     {
       "id": "TASK-300",
       "title": "[MULTI-001] adoptionService.decideApplication: checar isClubOwnerOrAdmin no service",
       "type": "security",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -8522,7 +8532,8 @@
       "subFrente": "abrigos-foster-adocao",
       "description": "Hoje adoptionService.js:267-273 assume \"se não é applicant, é abrigo\". Adicionar checagem explícita if (!isApplicant && !isClubOwnerOrAdmin(shelterClubId)) throw new Error(...). Importar helper de permissions.js. Firestore rules compensam mas defense-in-depth.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14",
+      "pr": "108"
     },
     {
       "id": "TASK-301",
@@ -8631,7 +8642,7 @@
       "title": "[UX-FOSTER-001] Página pública /lares-temporarios/novo + perfil público do LT",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -8648,7 +8659,8 @@
       "subFrente": "abrigos-foster-adocao",
       "description": "Cadastro público de LT (gated por feature flag). Perfil público /lares-temporarios/:uid (consentido) com foto, capacidade, região, histórico de adoções do LT. CTA \"Quero ser LT\" na home e em cada pet elegível.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14",
+      "pr": "155"
     },
     {
       "id": "TASK-306",
@@ -8679,7 +8691,7 @@
       "title": "[UX-CONTRACT-001] UI dedicada de contratos no abrigo + download PDF",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -8698,7 +8710,8 @@
       "subFrente": "abrigos-foster-adocao",
       "description": "Rota /abrigos/:id/contracts. Lista todos os contracts do abrigo. Filtros: pet, adotante, data, status. Botão \"Baixar PDF\" (jspdf). Botão \"Ver detalhes\" (modal com hash, IP, user-agent, signature).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14",
+      "pr": "89"
     },
     {
       "id": "TASK-308",
@@ -8902,7 +8915,7 @@
       "title": "[UX-MOBILE-001] Bottom sheet em mobile (substituir modals)",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -8921,7 +8934,8 @@
       "subFrente": "abrigos-foster-adocao",
       "description": "Onde há modal centralizado hoje (DecisionModal em ApplicationsList, foster accept, etc), usar Dialog shadcn mas com sm:bottom-0 sm:rounded-b-none em viewport < 640px. Bottom sheet nativo em iOS, drawer em Android. Testar touch dismiss.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14",
+      "pr": "162"
     },
     {
       "id": "TASK-317",
@@ -9234,7 +9248,7 @@
       "title": "[SEC-CRITICAL] Tighten firestore.rules em community_events, community_posts/comments, community_forum_* (multi-tenant + ownership)",
       "type": "security",
       "category": "communities",
-      "status": "ready",
+      "status": "done",
       "priority": "critical",
       "owner": "unassigned",
       "branch": null,
@@ -9253,7 +9267,8 @@
       "subFrente": "comunidade-adotante-eventos",
       "description": "CRITICAL: Aplicar correções em firestore.rules:1324-1327 (community_events), :1318-1322 (community_post_comments), :1351-1371 (community_forum_messages), :1329-1338 (community_forum_threads): validação de community_id + created_by + affectedKeys().hasOnly([...]) em update. Fechar brecha de cross-tenant + vandalismo. Sem isso, plataforma tem furo de segurança ativo.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14",
+      "pr": "83"
     },
     {
       "id": "TASK-330",
@@ -9287,7 +9302,7 @@
       "title": "[LGPD-EXPORT] Estender dataExportService.exportMyData: incluir community_posts, community_forum_messages, community_memberships, community_post_comments, club_chat_messages",
       "type": "feature",
       "category": "core",
-      "status": "ready",
+      "status": "done",
       "priority": "critical",
       "owner": "unassigned",
       "branch": null,
@@ -9304,14 +9319,15 @@
       "subFrente": "comunidade-adotante-eventos",
       "description": "Estender dataExportService.exportMyData para incluir dados de comunidade + chat. Conformidade Art. 18 V LGPD. Lista atual: users/, pets/, adoption_interests, club_members, notifications, abuse_reports, adoption_ratings, conversations. Falta: dados de comunidade, eventos, mensagens de chat, comentários, likes.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14",
+      "pr": "86"
     },
     {
       "id": "TASK-332",
       "title": "[LGPD-DELETE] Estender deleteAccountService.deleteMyAccount: purgar community_memberships, community_posts, community_forum_messages, club_chat_messages, community_post_likes",
       "type": "feature",
       "category": "core",
-      "status": "ready",
+      "status": "done",
       "priority": "critical",
       "owner": "unassigned",
       "branch": null,
@@ -9328,7 +9344,8 @@
       "subFrente": "comunidade-adotante-eventos",
       "description": "Estender deleteAccountService.deleteMyAccount para soft-delete + job de purga. Conformidade Art. 18 VI LGPD. Provavelmente só desativa users/ — verificar e cobrir comunidade.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14",
+      "pr": "87"
     },
     {
       "id": "TASK-333",
@@ -9386,7 +9403,7 @@
       "title": "Smart Search: adicionar entity event (community + club) e community",
       "type": "feature",
       "category": "communities",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -9403,7 +9420,8 @@
       "subFrente": "comunidade-adotante-eventos",
       "description": "Estender search.js:42-121 com SEARCH_ENTITIES.event (filterable: club_id, community_id, type, starts_at, city) e SEARCH_ENTITIES.community (filterable: city, state, name).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14",
+      "pr": "75"
     },
     {
       "id": "TASK-336",
@@ -9912,7 +9930,7 @@
       "title": "Smart Search entity adopter_profile (housing, budget, has_children, etc.)",
       "type": "feature",
       "category": "core",
-      "status": "ready",
+      "status": "done",
       "priority": "low",
       "owner": "unassigned",
       "branch": null,
@@ -9929,7 +9947,8 @@
       "subFrente": "comunidade-adotante-eventos",
       "description": "Adicionar entity que lê users/{uid}/adopter_profile/. Filtrar por shelter_club_id para multi-tenant.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14",
+      "pr": "75"
     },
     {
       "id": "TASK-357",
@@ -10653,7 +10672,7 @@
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": null,
+    "mainCommit": "b6f1f2905aac7235b5bf8b4dd026bf2965c05f37",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -10731,7 +10750,7 @@
   }
 }
   </script>
-  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-14T12:52:22.344Z">
+  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-14T13:29:07.108Z">
   </head>
 <body>
 
