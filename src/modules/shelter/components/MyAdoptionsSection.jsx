@@ -36,7 +36,10 @@ export function MyAdoptionsSection({ userUid }) {
           <Heart className="w-[19px] h-[19px] text-accent" /> Minhas adoções
         </CardTitle>
         <CardDescription className="text-[12.5px]">
-          Histórico dos seus pedidos de adoção em todos os abrigos.
+          Histórico dos seus pedidos de adoção em todos os abrigos.{' '}
+          <Link to="/meus-pedidos" className="underline text-primary">
+            Ver página completa
+          </Link>
         </CardDescription>
       </CardHeader>
       <CardContent className="p-0 pt-4">
