@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-13T18:06:17.992Z",
+  "generatedAt": "2026-07-14T12:52:22.292Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -219,13 +219,13 @@
       "title": "Kanban: reorder via useCardMutations.reorder",
       "type": "debt",
       "category": "kanban",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
       "flag": "SHELTER_KANBAN",
       "worktree": null,
-      "pr": null,
+      "pr": "142",
       "tags": [
         "todo",
         "kanban",
@@ -235,20 +235,21 @@
       "evidence": "src/modules/shelter/components/KanbanBoard.jsx:34",
       "description": "TODO existente no KanbanBoard. Implementar reorder com hooks useCardMutations.reorder para suportar drag-and-drop persistente entre colunas. Hoje drop move visualmente mas não persiste ordem customizada dentro de coluna.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14T04:27:44",
+      "resolvedAt": "2026-07-14"
     },
     {
       "id": "TASK-005",
       "title": "Kanban: usar addChecklistItem mutation no modal",
       "type": "debt",
       "category": "kanban",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
       "flag": "SHELTER_KANBAN",
       "worktree": null,
-      "pr": null,
+      "pr": "143",
       "tags": [
         "todo",
         "kanban",
@@ -258,7 +259,8 @@
       "evidence": "src/modules/shelter/components/KanbanCardModal.jsx:31",
       "description": "TODO existente. Substituir manipulação direta de state por addChecklistItem mutation para que itens de checklist respeitem auditoria e event log.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14T04:33:55",
+      "resolvedAt": "2026-07-14"
     },
     {
       "id": "TASK-006",
@@ -425,7 +427,7 @@
       "title": "Adicionar tests em 10+ componentes sem .test.jsx",
       "type": "debt",
       "category": "test",
-      "status": "in_progress",
+      "status": "done",
       "priority": "medium",
       "owner": "mvs_419217909395550",
       "branch": "feat/tests-coverage-2026-07-13",
@@ -440,20 +442,21 @@
       "evidence": "docs/AUDIT_2026-07-11.md §5.1; docs/AUDIT_DEEP_2026-07-11.md §Pendências",
       "description": "Auditoria identificou 10+ componentes shelter/UI sem arquivo .test.jsx. Priorizar: componentes com lógica de negócio (não puramente apresentacional). Começar pelos que renderizam dados sensíveis (dashboard cards, kanban, exhibition details).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-13T01:19:51"
+      "updatedAt": "2026-07-14T01:47:32",
+      "resolvedAt": "2026-07-14"
     },
     {
       "id": "TASK-014",
       "title": "Auditoria de acessibilidade completa (axe-core)",
       "type": "chore",
       "category": "test",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
       "flag": null,
       "worktree": null,
-      "pr": null,
+      "pr": "146",
       "tags": [
         "a11y",
         "axe-core"
@@ -462,7 +465,8 @@
       "evidence": "docs/AUDIT_2026-07-11.md §5.2; docs/AUDIT_DEEP_2026-07-11.md §Pendências",
       "description": "Auditoria mencionou que audit completo de a11y não foi feito. Usar axe-core via Playwright em rotas-chave. Já há 10 ocorrências de aria-* / role= nos componentes shelter, e shadcn/ui segue padrões. Esperado: encontrar issues de contraste, focus trap, keyboard nav. Reportar em docs/A11Y_AUDIT.md.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14T05:06:53",
+      "resolvedAt": "2026-07-14"
     },
     {
       "id": "TASK-015",
@@ -493,7 +497,7 @@
       "title": "Migrar xlsx (SheetJS 0.18.5) para versão patched",
       "type": "security",
       "category": "security",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -509,7 +513,8 @@
       "evidence": "docs/ROADMAP.md §Fase 3",
       "description": "xlsx 0.18.5 (SheetJS) tem CVEs conhecidos: prototype pollution GHSA-4r6h-8v6p-xvw6 e ReDoS GHSA-5pgg-2g8v-p4x9. Patches só no CDN próprio do SheetJS, não no npm. Mitigação atual: limitação a .xlsx + parsing client-side. Rever quando: (1) SheetJS publicar versão corrigida no npm, OU (2) política de rede permitir instalar via tarball do CDN. Verificar periodicamente o advisory.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14T01:46:42",
+      "resolvedAt": "2026-07-14"
     },
     {
       "id": "TASK-017",
@@ -877,13 +882,13 @@
       "title": "Revisão de segurança: dependency audit (npm audit + cargo)",
       "type": "chore",
       "category": "security",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
       "flag": "SHELTER_SECURITY_HARDENING",
       "worktree": null,
-      "pr": null,
+      "pr": "149",
       "tags": [
         "deps",
         "audit",
@@ -892,7 +897,8 @@
       "blockedBy": [],
       "description": "Rodar npm audit + verificar advisories. Adicionar npm audit ao CI (.github/workflows/) com bloqueio em severidade high+. Rever o override teeny-request → 10.1.2 (transitivo, monitorar).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14T05:47:16",
+      "resolvedAt": "2026-07-14"
     },
     {
       "id": "TASK-033",
@@ -1041,13 +1047,13 @@
       "title": "MFA opcional para admins (TOTP)",
       "type": "feature",
       "category": "security",
-      "status": "ready",
+      "status": "done",
       "priority": "low",
       "owner": "unassigned",
       "branch": null,
       "flag": "SHELTER_SECURITY_HARDENING",
       "worktree": null,
-      "pr": null,
+      "pr": "148",
       "tags": [
         "mfa",
         "totp",
@@ -1057,20 +1063,21 @@
       "evidence": "docs/SHELTER_MGMT_ROADMAP.md §11.7",
       "description": "MFA opcional via TOTP (app authenticator) para usuários com permissão de admin. Usar Firebase Multi-factor Authentication. UI de setup + prompt em login.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14T05:45:27",
+      "resolvedAt": "2026-07-14"
     },
     {
       "id": "TASK-040",
       "title": "Política de senhas forte (mín 12 chars, sem repetição últimas 5)",
       "type": "feature",
       "category": "security",
-      "status": "ready",
+      "status": "done",
       "priority": "low",
       "owner": "unassigned",
       "branch": null,
       "flag": "SHELTER_SECURITY_HARDENING",
       "worktree": null,
-      "pr": null,
+      "pr": "144",
       "tags": [
         "senha",
         "política",
@@ -1080,7 +1087,8 @@
       "evidence": "docs/SHELTER_MGMT_ROADMAP.md §11.7",
       "description": "Política de senhas: mínimo 12 chars, sem repetição das últimas 5. Implementar via Firebase Auth password policy + validação client-side. Comunicar na tela de signup/login.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14T04:41:22",
+      "resolvedAt": "2026-07-14"
     },
     {
       "id": "TASK-041",
@@ -1111,13 +1119,13 @@
       "title": "Investigar erro \"Algo deu errado\" em /organizacoes/{clubId}/admin",
       "type": "bug",
       "category": "admin",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
       "flag": null,
       "worktree": null,
-      "pr": null,
+      "pr": "141",
       "tags": [
         "bug",
         "runtime",
@@ -1127,7 +1135,8 @@
       "evidence": "sibling scratchpad §NÃO ENTREGUE #2; test OrganizationAdminPanel.test.jsx (mock com flags SHELTER ativas) PASSA",
       "description": "Reportado em produção por usuário (rota /organizacoes/TM9MBn5aFXgObfRZ39m9/admin). Não reproduzido sem auth + org real. Test com mock passa — provavelmente é runtime (Firestore permission denied em uma aba específica, ou bug em condicional que o test não cobre). Reproduzir via página /public-debug?debug=1&clubId=XXX que isola a aba que quebra. Owner provável: precisa de sessão com auth para reproduzir.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14T04:20:15",
+      "resolvedAt": "2026-07-14"
     },
     {
       "id": "TASK-043",
@@ -2533,13 +2542,13 @@
       "title": "Varredura: auditoria de feature flags (defaults, gates)",
       "type": "chore",
       "category": "core",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
       "flag": null,
       "worktree": null,
-      "pr": null,
+      "pr": "147",
       "tags": [
         "varredura",
         "feature-flags",
@@ -2552,7 +2561,8 @@
       "evidence": "src/core/featureFlags.js",
       "description": "BLOCO INDEPENDENTE. Auditar src/core/featureFlags.js: todas flags default OFF? SHELTER_* documentadas? Painel mostra todas? DEFAULT_FEATURE_FLAGS e normalizeFeatureFlags sem gaps? Documentar em docs/AUDIT_FLAGS.md.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14T05:30:01",
+      "resolvedAt": "2026-07-14"
     },
     {
       "id": "TASK-089",
@@ -3719,7 +3729,7 @@
       "title": "Voluntários: sistema de escalas (turnos, check-in/out, hours_logged)",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -3730,7 +3740,7 @@
         "regra-a"
       ],
       "worktree": null,
-      "pr": null,
+      "pr": "164",
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [
@@ -3739,14 +3749,15 @@
       "evidence": "Regra A §1.2 (papel voluntário) + SHELTER_MGMT_ROADMAP §Fase 12",
       "description": "BLOCO INDEPENDENTE. Criar UI de escalas em VolunteerParticipationForm.jsx. Cada participation tem check_in/check_out, hours_logged auto, foto opcional de prova. Dashboard pessoal: próximas escalas, atrasadas, concluídas. Notificação 24h antes.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14T12:50:17",
+      "resolvedAt": "2026-07-14"
     },
     {
       "id": "TASK-208",
       "title": "Voluntários: vinculação a vitrines e eventos (atribuições)",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -3756,7 +3767,7 @@
         "regra-a"
       ],
       "worktree": null,
-      "pr": null,
+      "pr": "161",
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [
@@ -3765,7 +3776,8 @@
       "evidence": "Regra A §1.1 (vitrines) + SHELTER_MGMT §Fase 11",
       "description": "BLOCO INDEPENDENTE. Em ExhibitionDetails.jsx, adicionar \"Escalas\" com: lista de roles, atribuir voluntários (select de roster do abrigo), confirmar presença, substituir. Persistir em volunteer_participation.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14T12:41:20",
+      "resolvedAt": "2026-07-14"
     },
     {
       "id": "TASK-209",
@@ -3799,7 +3811,7 @@
       "title": "Voluntários: clickwrap de aceite em ações críticas (cada evento que vai participar)",
       "type": "feature",
       "category": "legal",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -3810,7 +3822,7 @@
         "regra-a"
       ],
       "worktree": null,
-      "pr": null,
+      "pr": "160",
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [
@@ -3819,14 +3831,15 @@
       "evidence": "Regra A §1.3 (LGPD) + clickwrap de aceite",
       "description": "BLOCO INDEPENDENTE. Adicionar modal/checkbox de aceite do termo v2 antes de: (a) signup como voluntário, (b) aceitar escala, (c) check-in. Gravar em audit_log com {user_id, action, document_version, ip, timestamp, signature_text_hash}. Lei 14.063/2020 compliance.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14T11:59:37",
+      "resolvedAt": "2026-07-14"
     },
     {
       "id": "TASK-211",
       "title": "Voluntários: auditoria completa (signup, assignment, shift, role_change)",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -3836,21 +3849,22 @@
         "regra-a"
       ],
       "worktree": null,
-      "pr": null,
+      "pr": "163",
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
       "evidence": "Regra A §1.3 (auditoria) — todas as ações geram audit_log",
       "description": "BLOCO INDEPENDENTE. Garantir que cada ação crítica grava audit_log: signup, role_change, shift_start, shift_end, scale_confirm, scale_decline, role_attribution. Validar imutabilidade do log (Firestore rules deny update/delete).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14T12:47:31",
+      "resolvedAt": "2026-07-14"
     },
     {
       "id": "TASK-212",
       "title": "Voluntários: Firestore rules com isolamento tenant",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "critical",
       "owner": "unassigned",
       "branch": null,
@@ -3861,21 +3875,22 @@
         "regra-a"
       ],
       "worktree": null,
-      "pr": null,
+      "pr": "150",
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
       "evidence": "Regra A §1.3 (multi-tenant)",
       "description": "BLOCO INDEPENDENTE. Validar Firestore rules em firestore.rules: volunteer só vê suas próprias participações (user_id == auth.uid) + as do abrigo onde é roster (shelter_id in members). Platform admin vê tudo. Sem cross-tenant leak.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14T06:00:51",
+      "resolvedAt": "2026-07-14"
     },
     {
       "id": "TASK-126",
       "title": "Voluntários: métricas globais (participações, transporte, frequência, horas)",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
@@ -3885,7 +3900,7 @@
         "regra-a"
       ],
       "worktree": null,
-      "pr": null,
+      "pr": "145",
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [
@@ -3894,7 +3909,8 @@
       "evidence": "Regra A §1.4 (perfil) + SHELTER_MGMT §Fase 12 métricas",
       "description": "BLOCO INDEPENDENTE. Adicionar métricas no VolunteerProfileForm/Profile: #participações, #transporte_ida, #transporte_volta, frequência (%), horas totais. Computed fields no Firestore (Cloud Function onWrite).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14T04:54:18",
+      "resolvedAt": "2026-07-14"
     },
     {
       "id": "TASK-127",
@@ -4010,7 +4026,7 @@
       "title": "LT: página pública /lares-temporarios com form de cadastro",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -4020,7 +4036,7 @@
         "regra-a"
       ],
       "worktree": null,
-      "pr": null,
+      "pr": "155",
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [
@@ -4029,7 +4045,8 @@
       "evidence": "Regra A §1.1 (público) — foster",
       "description": "BLOCO INDEPENDENTE. Criar src/pages/LaresTemporarios.jsx: o que é LT, requisitos (espaço, disponibilidade, experiência), form de cadastro (capacity, address_full, available_dates, preferences). Clickwrap no termo v2 (TASK-069).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14T10:57:40",
+      "resolvedAt": "2026-07-14"
     },
     {
       "id": "TASK-132",
@@ -4113,7 +4130,7 @@
       "title": "LT: timeline pública do animal (read-only)",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
@@ -4123,14 +4140,15 @@
         "regra-a"
       ],
       "worktree": null,
-      "pr": null,
+      "pr": "154",
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
       "evidence": "Regra A §1.1 (público) — transparência do cuidado",
       "description": "BLOCO INDEPENDENTE. Adicionar em /pet/{id}: timeline pública com eventos do animal, incluindo foster_start, foster_end, vaccination. Oculta clinical_notes (LGPD tenant-specific).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14T10:52:09",
+      "resolvedAt": "2026-07-14"
     },
     {
       "id": "TASK-136",
@@ -4212,7 +4230,7 @@
       "title": "Medicação: alertas 30min antes de cada dose (FCM + in-app)",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -4223,21 +4241,22 @@
         "regra-a"
       ],
       "worktree": null,
-      "pr": null,
+      "pr": "159",
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
       "evidence": "Regra A §1.5 (notificações) + SHELTER_MGMT §Fase 8",
       "description": "BLOCO INDEPENDENTE. Cloud Function scheduled que dispara push notification ao responsável 30min antes de cada scheduled_at. Fallback: in-app notification center.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14T11:56:27",
+      "resolvedAt": "2026-07-14"
     },
     {
       "id": "TASK-140",
       "title": "Medicação: link entre medication_dose e pet_timeline event",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
@@ -4247,21 +4266,22 @@
         "regra-a"
       ],
       "worktree": null,
-      "pr": null,
+      "pr": "157",
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
       "evidence": "Regra A §1.3 (integrações)",
       "description": "BLOCO INDEPENDENTE. Ao criar medication_start e medication_end, gravar evento correspondente em pet_timeline/{pet_id}/events/. Cross-reference no MedicalRecordList.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14T11:03:23",
+      "resolvedAt": "2026-07-14"
     },
     {
       "id": "TASK-141",
       "title": "Medicação: relatórios de adesão (compliance %) por animal",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "low",
       "owner": "unassigned",
       "branch": null,
@@ -4278,7 +4298,8 @@
       "evidence": "Regra A §1.4 (relatórios) + Regra A §1.5 (métricas)",
       "description": "BLOCO INDEPENDENTE. Adicionar em ReportsTab: % de doses administradas no prazo por animal. Alerta se compliance < 80%.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14T03:41:14",
+      "resolvedAt": "2026-07-14"
     },
     {
       "id": "TASK-142",
@@ -4310,7 +4331,7 @@
       "title": "Galeria: compartilhamento social (Instagram, Twitter, link)",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "low",
       "owner": "unassigned",
       "branch": null,
@@ -4327,14 +4348,15 @@
       "evidence": "Regra A §1.4 (integrações)",
       "description": "BLOCO INDEPENDENTE. Botão \"Compartilhar\" em cada foto. Gera imagem \"story\" com QR + pet name + link. Open Graph tags para preview.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14T03:51:37",
+      "resolvedAt": "2026-07-14"
     },
     {
       "id": "TASK-144",
       "title": "Galeria: vinculação automática com vitrines e adoções",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "low",
       "owner": "unassigned",
       "branch": null,
@@ -4344,21 +4366,22 @@
         "regra-a"
       ],
       "worktree": null,
-      "pr": null,
+      "pr": "158",
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
       "evidence": "Regra A §1.3 (integrações)",
       "description": "BLOCO INDEPENDENTE. Ao marcar uma foto como \"adoption_done\", criar evento adoption_done na pet_timeline com link da foto. Mesma lógica para exhibition_done.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14T11:52:47",
+      "resolvedAt": "2026-07-14"
     },
     {
       "id": "TASK-145",
       "title": "Vitrines: listagem pública /vitrines",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -4368,7 +4391,7 @@
         "regra-a"
       ],
       "worktree": null,
-      "pr": null,
+      "pr": "152",
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [
@@ -4377,14 +4400,15 @@
       "evidence": "Regra A §1.1 (público)",
       "description": "BLOCO INDEPENDENTE. Criar src/pages/Vitrines.jsx: listagem de vitrines ativas, filtros (cidade, data, abrigo), integração com Google Maps. Cards com foto, data, local, # animais, link para detalhe.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14T10:41:37",
+      "resolvedAt": "2026-07-14"
     },
     {
       "id": "TASK-146",
       "title": "Vitrines: página individual /vitrines/{id} (pública)",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -4394,7 +4418,7 @@
         "regra-a"
       ],
       "worktree": null,
-      "pr": null,
+      "pr": "153",
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [
@@ -4403,7 +4427,8 @@
       "evidence": "Regra A §1.1 (público)",
       "description": "BLOCO INDEPENDENTE. Detalhe público da vitrine: organizador, co-organizadores, local + mapa, data/hora, animais participantes, escalas de voluntários (com opt-in de exposição), botão \"Quero ser voluntário aqui\".",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14T10:48:22",
+      "resolvedAt": "2026-07-14"
     },
     {
       "id": "TASK-147",
@@ -4614,7 +4639,7 @@
       "title": "Relatórios: compartilhamento seguro com time externo (ONGs, veterinários)",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "low",
       "owner": "unassigned",
       "branch": null,
@@ -4624,21 +4649,22 @@
         "regra-a"
       ],
       "worktree": null,
-      "pr": null,
+      "pr": "140",
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
       "evidence": "Regra A §1.4 (integrações)",
       "description": "BLOCO INDEPENDENTE. Botão \"Compartilhar relatório\" gera link com expiração (24h) + token. Audit_log do acesso.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14T04:15:45",
+      "resolvedAt": "2026-07-14"
     },
     {
       "id": "TASK-156",
       "title": "Mural: feed público de posts (read-only) em /comunidades/{id}",
       "type": "feature",
       "category": "community",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -4648,14 +4674,15 @@
         "regra-a"
       ],
       "worktree": null,
-      "pr": null,
+      "pr": "156",
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
       "evidence": "Regra A §1.1 (público)",
       "description": "BLOCO INDEPENDENTE. Adicionar MuralTab com variant \"public\" em src/pages/CommunityDetail.jsx. Posts públicos do abrigo/comunidade. Logado para interagir.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14T11:00:35",
+      "resolvedAt": "2026-07-14"
     },
     {
       "id": "TASK-157",
@@ -4834,7 +4861,7 @@
       "title": "Eventos: feed de eventos próximos no perfil do usuário",
       "type": "feature",
       "category": "community",
-      "status": "ready",
+      "status": "done",
       "priority": "low",
       "owner": "unassigned",
       "branch": null,
@@ -4851,7 +4878,8 @@
       "evidence": "Regra A §1.4 (perfil)",
       "description": "BLOCO INDEPENDENTE. Em Profile.jsx, seção \"Próximos eventos\": eventos da comunidade onde o usuário confirmou presença, com link pra detalhe.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14T03:48:47",
+      "resolvedAt": "2026-07-14"
     },
     {
       "id": "TASK-165",
@@ -5113,7 +5141,7 @@
       "title": "Admin Notifications: templates reutilizáveis (variables {{pet_name}}, {{shelter_name}})",
       "type": "feature",
       "category": "admin",
-      "status": "ready",
+      "status": "done",
       "priority": "low",
       "owner": "unassigned",
       "branch": null,
@@ -5131,14 +5159,15 @@
       "evidence": "Regra A §1.4 (admin) + eficiência",
       "description": "BLOCO INDEPENDENTE. Sistema de templates com variáveis. Persistir em Firestore (collection notification_templates).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14T03:45:58",
+      "resolvedAt": "2026-07-14"
     },
     {
       "id": "TASK-176",
       "title": "Admin Security: integração Sentry (Deno source maps, alertas)",
       "type": "feature",
       "category": "admin",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -5149,14 +5178,15 @@
         "regra-a"
       ],
       "worktree": null,
-      "pr": null,
+      "pr": "151",
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
       "evidence": "Regra A §1.5 (pós-deploy) + Sentry setup",
       "description": "BLOCO INDEPENDENTE. Configurar Sentry SDK no src/main.jsx com source maps, error tracking, performance monitoring. URL em env. Alertas in-app em AdminSecurity.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14T10:32:37",
+      "resolvedAt": "2026-07-14"
     },
     {
       "id": "TASK-177",
@@ -7155,7 +7185,7 @@
       "title": "CTA \"Quero ser voluntário\" na página pública do abrigo",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "critical",
       "owner": "unassigned",
       "branch": null,
@@ -7172,7 +7202,8 @@
       "subFrente": "voluntarios",
       "description": "Adicionar tab \"Voluntários\" pública em src/modules/organizations/pages/ClubDetail.jsx + botão no cover. Mostrar contagem de voluntários ativos, chamada \"Precisamos de voluntários para X/Y/Z\" configurável pelo abrigo, botão CTA que abre modal de signup (gated por isAuthenticated). Se não autenticado, redireciona a /login?next=... Mobile + a11y (focus trap, aria-live). Empty state: \"Seja o primeiro voluntário!\". Loading: skeleton.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14T02:26:58",
+      "resolvedAt": "2026-07-14"
     },
     {
       "id": "TASK-264",
@@ -8138,7 +8169,7 @@
       "title": "[MOBILE-001] Auditoria mobile (a11y + touch targets) em todas as páginas do fluxo",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -8155,14 +8186,16 @@
       "subFrente": "abrigos-foster-adocao",
       "description": "Auditar com DevTools mobile + axe-core. Garantir: touch targets >= 44px, contraste WCAG AA, keyboard nav em todos os dialogs, ARIA labels em forms, swipe em galleries, bottom-sheet em mobile (não modal centralizado). Páginas: CreatePet, PetDetail, AdoptionFormFill, ApplicationsList, FostersList, Dashboard, Kanban (drag alternative). Teste em viewport 375x667 (iPhone SE) e 412x915 (Pixel 7).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14T12:44:52",
+      "resolvedAt": "2026-07-14",
+      "pr": "162"
     },
     {
       "id": "TASK-303",
       "title": "[UX-ABRIGO-001] Página pública /abrigos/:id rica com 3 CTAs (Adotar/Voluntário/LT)",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -8179,14 +8212,15 @@
       "subFrente": "abrigos-foster-adocao",
       "description": "Componente ShelterPublicPage.jsx com capa + chips + tabs (Sobre, Pets, Vitrines, Equipe, Contato). 3 CTAs integrados: \"Quero adotar\" (link feed filtrado), \"Quero ser voluntário\" (modal/signup), \"Quero ser lar temporário\" (modal/signup). Mobile-first. Open Graph meta. ClubDetail é a base; refatorar.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14T02:13:17",
+      "resolvedAt": "2026-07-14"
     },
     {
       "id": "TASK-304",
       "title": "[UX-APP-001] Página \"Minha Application\" pro adotante",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -8203,7 +8237,8 @@
       "subFrente": "abrigos-foster-adocao",
       "description": "Rota /meus-pedidos (separado de /meus-interesses legacy). Lista applications do adoption_workflow com timeline do status (submited → under_review → interview_scheduled → approved → contract_signed). Filtros: status, pet, abrigo. Detalhe com decisão do abrigo visível.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14T01:18:12",
+      "resolvedAt": "2026-07-14"
     },
     {
       "id": "TASK-305",
@@ -8788,7 +8823,7 @@
       "title": "[REFACTOR-001] Substituir window.prompt em FostersList.jsx por modal shadcn",
       "type": "refactor",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "low",
       "owner": "unassigned",
       "branch": null,
@@ -8805,7 +8840,8 @@
       "subFrente": "abrigos-foster-adocao",
       "description": "handleExtend e handleEnd usam window.prompt — não é UX aceitável. Substituir por Dialog shadcn com form.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14T02:45:31",
+      "resolvedAt": "2026-07-14"
     },
     {
       "id": "TASK-329",
@@ -9417,7 +9453,7 @@
       "title": "Empty states ricos em CommunityDetail (404 comunidade)",
       "type": "refactor",
       "category": "communities",
-      "status": "ready",
+      "status": "done",
       "priority": "low",
       "owner": "unassigned",
       "branch": null,
@@ -9433,7 +9469,8 @@
       "subFrente": "comunidade-adotante-eventos",
       "description": "Substituir <div>Comunidade não encontrada</div> (CommunityDetail.jsx:107) por <EmptyState icon={Building2} title=\"...\" description=\"...\" action={<Button>Voltar</Button>} />.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14T03:43:51",
+      "resolvedAt": "2026-07-14"
     },
     {
       "id": "TASK-354",
@@ -10230,7 +10267,7 @@
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": "65aacfffbe3eddeb00f9fee983f4179550d56b2f",
+    "mainCommit": "7c50e8ffae0415f7713ee6931186a009e19362df",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -10240,12 +10277,12 @@
     ],
     "openTODOs": 5,
     "openLegalReviews": 3,
-    "totalTasks": 367,
-    "done": 129,
-    "inProgress": 4,
+    "totalTasks": 368,
+    "done": 166,
+    "inProgress": 3,
     "inReview": 1,
     "blocked": 0,
-    "ready": 227,
+    "ready": 191,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -10275,7 +10312,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-13T01:19:51 — via scrum.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-14T12:50:17 — via scrum.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
