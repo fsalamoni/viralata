@@ -11,17 +11,23 @@
  * para o pet.
  */
 
+import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { ArrowLeft, CheckCircle2, Circle, XCircle, FileText } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Circle, XCircle, FileText, Undo2, PauseCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
+import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
+import { FEATURE_FLAG } from '@/core/featureFlags';
 import { getApplication } from '@/modules/shelter/services/adoptionService';
+import { getPostAdoption } from '@/modules/shelter/services/postAdoptionService';
 import { parseTimestamp } from '@/core/utils/timestamp';
+import { PostAdoptionReturnDialog } from '@/modules/shelter/components/PostAdoptionReturnDialog';
+import { PostAdoptionPauseDialog } from '@/modules/shelter/components/PostAdoptionPauseDialog';
 import {
   APPLICATION_STATUS_LABELS,
   APPLICATION_STATUS_TONES,
@@ -76,6 +82,9 @@ function buildTimeline(app) {
 export default function AdoptionDetail() {
   const { clubId, applicationId } = useParams();
   const wrapperClass = useArenaPageClasses('arena-page mx-auto w-full max-w-2xl px-4 py-6 sm:px-6');
+  const returnEnabled = useFeatureFlag(FEATURE_FLAG.SHELTER_POST_ADOPTION_RETURN);
+  const [returnDialogOpen, setReturnDialogOpen] = useState(false);
+  const [pauseDialogOpen, setPauseDialogOpen] = useState(false);
 
   const { data: app, isLoading, isError } = useQuery({
     queryKey: ['application', clubId, applicationId],
@@ -110,6 +119,16 @@ export default function AdoptionDetail() {
   }
 
   const timeline = buildTimeline(app);
+
+  // Post-adoption record (only fetched when feature flag is on and app is completed)
+  const { data: postAdoption } = useQuery({
+    queryKey: ['postAdoption', clubId, applicationId],
+    queryFn: () => getPostAdoption(clubId, applicationId),
+    enabled: Boolean(returnEnabled && clubId && applicationId && app?.status === 'adoption_completed'),
+  });
+
+  const showPostAdoptionActions =
+    returnEnabled && app?.status === 'adoption_completed';
 
   return (
     <div className={wrapperClass}>
@@ -171,8 +190,49 @@ export default function AdoptionDetail() {
               versão {app.terms_version} (Lei 14.063/2020).
             </p>
           )}
+
+          {/* Ações pós-adoção (TASK-308) */}
+          {showPostAdoptionActions && (
+            <div className="mt-5 flex flex-wrap gap-2 border-t border-border pt-4">
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-destructive/50 text-destructive hover:bg-destructive/10"
+                onClick={() => setReturnDialogOpen(true)}
+              >
+                <Undo2 className="mr-1.5 h-4 w-4" />
+                Devolver animal
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setPauseDialogOpen(true)}
+              >
+                <PauseCircle className="mr-1.5 h-4 w-4" />
+                Pausar acompanhamento
+              </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
+
+      {/* Dialogs */}
+      {showPostAdoptionActions && (
+        <>
+          <PostAdoptionReturnDialog
+            open={returnDialogOpen}
+            onOpenChange={setReturnDialogOpen}
+            postAdoption={postAdoption || { id: applicationId, shelter_club_id: clubId }}
+            petName={app?.pet_name}
+          />
+          <PostAdoptionPauseDialog
+            open={pauseDialogOpen}
+            onOpenChange={setPauseDialogOpen}
+            postAdoption={postAdoption || { id: applicationId, shelter_club_id: clubId }}
+            petName={app?.pet_name}
+          />
+        </>
+      )}
     </div>
   );
 }

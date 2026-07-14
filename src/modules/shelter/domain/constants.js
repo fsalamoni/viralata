@@ -41,6 +41,8 @@ export const SHELTER_FEATURE_FLAG = Object.freeze({
   SHELTER_ADOPTER_FULL_PROFILE: 'shelter_adopter_full_profile',
   // Fase 5 — Acompanhamento Pós-Adoção
   SHELTER_POST_ADOPTION_FOLLOWUP: 'shelter_post_adoption_followup',
+  // UI devolução + pausa pós-adoção (TASK-308)
+  SHELTER_POST_ADOPTION_RETURN: 'shelter_post_adoption_return',
   // Fase 6 — Lares Temporários
   SHELTER_FOSTER: 'shelter_foster',
   // Fase 6 — Histórico público do LT (vitrine + histórico de pets)
@@ -142,6 +144,12 @@ export const SHELTER_FEATURE_FLAG_META = Object.freeze({
     description:
       'Tarefas automáticas em 3 sem, 3 meses, 1, 2 e 3 anos após cada '
       + 'adoção. Dashboard mostra pendentes. Notificações ao responsável.',
+  },
+  [SHELTER_FEATURE_FLAG.SHELTER_POST_ADOPTION_RETURN]: {
+    label: 'Abrigos · UI devolução + pausa pós-adoção',
+    description:
+      'Dialog para adotante devolver animal ou pausar acompanhamento. '
+      + 'Lista de devolvidos no dashboard do abrigo com timeline.',
   },
   [SHELTER_FEATURE_FLAG.SHELTER_FOSTER]: {
     label: 'Abrigos · lares temporários',
