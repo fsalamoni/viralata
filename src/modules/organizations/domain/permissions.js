@@ -58,6 +58,17 @@ export function hasClubPermission(club, membership, key, currentUserUid) {
 
   if (!perms) return false;
   if (key === 'animals' && perms.edit_pets === true) return true;
+  // TASK-267: suporte a permissão granular nested (ex: 'volunteers:bg_check')
+  if (typeof key === 'string' && key.includes(':')) {
+    const [outer, inner] = key.split(':', 2);
+    if (outer && inner) {
+      const sub = perms[outer];
+      if (sub && typeof sub === 'object' && sub[inner] === true) return true;
+      // Nested existe mas o sub-acesso é false/missing
+      // NÃO herda da chave legacy 'volunteers' (mais restritivo)
+      return false;
+    }
+  }
   return perms[key] === true;
 }
 
