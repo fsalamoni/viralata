@@ -1,7 +1,26 @@
-# LOOP_PROMPT — desenvolvimento autônomo (atualizado 2026-07-14 18:21 GMT-3)
+# LOOP_PROMPT — desenvolvimento autônomo (atualizado 2026-07-14 21:53 GMT-3)
 
 **Contexto**: `/workspace/viralata`, branch `main`, React+Vite+Firebase.
-**Sessão**: Mavis root (loop autônomo, 20min).
+**Sessão**: Mavis root (loop autônomo, 20min, **24/7 sem limite de horário**).
+
+---
+
+## 🔄 CICLO DO LOOP — DECISÃO AUTOMÁTICA A CADA TURNO
+
+```bash
+cd /workspace/viralata
+python3 -c "
+import json
+with open('.harness/SCRUM_TASKS.json') as f: d = json.load(f)
+ready = [t for t in d['tasks'] if t['status'] == 'ready' and t.get('owner') not in ['human', 'human-juridico']]
+print(f'{len(ready)} tasks ready')
+"
+```
+
+- **Se `ready > 0`** → MODO FEATURE (implementar próxima task)
+- **Se `ready == 0`** → MODO REVISÃO (UX/UI + bug-hunting)
+
+Use `.harness/next-loop.sh` — ele decide e marca a task automaticamente.
 
 ---
 
@@ -205,3 +224,60 @@ Escolha a task com **mais impacto visual** e **menos dependência** de:
 4. ✅ Atualizar cron `viralata-dev-loop-20min` com novo prompt
 5. ✅ Commit + push do LOOP_PROMPT.md
 6. ✅ Resumo do que foi entregue
+
+---
+
+## 🔧 MODO REVISÃO (quando `ready == 0`)
+
+**Objetivo**: revisar o que foi entregue, adequar frontend à UX/UI ideal, prevenir bugs, antecipar falhas. Loop segue rodando — não para até o user desligar.
+
+### Atividades (rodar em ordem de prioridade):
+
+1. **Varredura de feature flags** — flags deprecated que podem ser removidas
+2. **Auditoria a11y** — lighthouse, ARIA, contraste
+3. **Análise de erros do console** — logs recorrentes em `src/`
+4. **Refatoração de duplicação** — componentes similares
+5. **Otimização de performance** — bundle, lazy loading
+6. **Testes E2E** — smoke tests de fluxos críticos
+7. **Documentação** — `docs/STATE.md`, `README.md`
+8. **Prevenção de bugs** (procurar ativamente):
+   - `try/catch` que silenciam erros
+   - `Math.random` que deveria ser seed
+   - `useEffect` que poderiam ser `useMemo`
+   - keys duplicadas em `.map`
+   - inputs sem `maxLength`
+   - forms sem validação Zod
+9. **Revisão de UX**:
+   - Empty states em todos os componentes de lista
+   - Loading states em todos os componentes async
+   - Error states em todos os `catch`
+   - `aria-label` em todos os botões só com ícone
+   - `role=tab/aria-selected` em todos os Tabs
+10. **Smoke check de rotas**:
+```bash
+for route in / /feed /mapa /comunidades /vitrines /eventos /lares-temporarios/dashboard /perfil /meus-pedidos; do
+  status=$(curl -sS -o /dev/null -w "%{http_code}" "https://viralata.web.app${route}")
+  echo "$route: $status"
+done
+```
+
+### Commit de revisão:
+```bash
+cd /workspace/viralata
+git checkout -b chore/review-2026-07-14
+# melhorias
+git add -A
+git commit -m "chore(review): UX/UI + bug-hunting (2026-07-14)"
+git push -u origin chore/review-2026-07-14
+# PR + merge admin squash
+```
+
+**Se REVISÃO não tem nada a fazer**: o cron continua. Quando o user adicionar nova task (qualquer `node .harness/scrum.cjs add ...` ou via UI), o loop volta pra MODO FEATURE.
+
+---
+
+## ⏰ HORÁRIO
+
+- **24/7, sem limite de horário.** O loop roda a cada 20 minutos, todos os dias.
+- Só para quando o user desligar explicitamente (ou matar o cron via `mavis cron delete`).
+- A madrugada também conta — não pare o turno por causa de horário.
