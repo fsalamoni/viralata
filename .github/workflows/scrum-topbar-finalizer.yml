@@ -1,0 +1,44 @@
+name: Scrum Topbar Finalizer
+
+on:
+  workflow_run:
+    workflows: ["Deploy Viralata → Firebase Hosting"]
+    types: [completed]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: scrum-topbar-finalizer
+  cancel-in-progress: true
+
+jobs:
+  finalize:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Force topbar update on public/scrum.html
+        run: |
+          MAIN_COMMIT=$(git rev-parse HEAD)
+          MAIN_SHORT=$(echo $MAIN_COMMIT | cut -c1-7)
+          echo "Forcing topbar: main @ ${MAIN_SHORT}"
+          sed -i "s|<span class=\"pill mono\">main @ [0-9a-f]\{7\}</span>|<span class=\"pill mono\">main @ ${MAIN_SHORT}</span>|g" public/scrum.html
+          sed -i "s|<span class=\"pill\">[+]\?[0-9]\+ worktrees\? ativos\?</span>|<span class=\"pill\">0 worktrees ativos</span>|g" public/scrum.html
+          sed -i "s|<span class=\"pill mono\">main @ [0-9a-f]\{7\}</span>|<span class=\"pill mono\">main @ ${MAIN_SHORT}</span>|g" .harness/painel-scrum.html
+          sed -i "s|<span class=\"pill\">[+]\?[0-9]\+ worktrees\? ativos\?</span>|<span class=\"pill\">0 worktrees ativos</span>|g" .harness/painel-scrum.html
+          git add public/scrum.html .harness/painel-scrum.html
+          if git diff --staged --quiet; then
+            echo "Sem mudanças"
+          else
+            git config user.name "viralata-scrum-bot"
+            git config user.email "scrum-bot@viralata.local"
+            git commit -m "chore(scrum): topbar finalizer ${MAIN_SHORT} (pós-deploy)"
+            git pull --rebase --autostash origin main || true
+            git push origin main
+          fi
