@@ -158,6 +158,7 @@ python3 -c "import json; d=json.load(open('.harness/SCRUM_TASKS.json')); done=[t
 
 ## ✅ TASKS CONCLUÍDAS NESTE LOOP (NÃO pegar)
 
+- TASK-315 A11Y WCAG AA — kanban roles, dialog aria-label, icon button aria-labels (feat/a11y-improvements-2026-07-14)
 - TASK-308 PostAdoptionReturnDialog + PostAdoptionPauseDialog (PR #189)
 - TASK-148 PostEventLog (PR #176)
 - TASK-136 PublicHealthRecord (PR #175)
@@ -192,7 +193,7 @@ python3 -c "import json; d=json.load(open('.harness/SCRUM_TASKS.json')); done=[t
 | TASK-302 | medium | shelter | a11y mobile (helper) |
 
 > **Notas**:
-> - TASK-315 (a11y audit) foi entregue em modo BATCH (branch feat/task-315-a11y-audit-2026-07-14 pushed, pr=0)
+> - TASK-315 (a11y WCAG AA) foi entregue em modo BATCH (branch feat/a11y-improvements-2026-07-14 pushed, pr=0)
 > - TASK-310, TASK-326 foram feitas pelo cron (verificar com git log antes de pegar)
 
 ---
