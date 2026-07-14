@@ -73,6 +73,8 @@ const fosterProfileSchema = z.object({
   // Termo
   terms_accepted_at: z.string().datetime().optional(),
   terms_version: z.string().max(20).optional(),
+  // Consentimento para exibir histórico público (TASK-326)
+  consent_to_show_history: z.boolean().default(false),
 }).strict();
 
 // ─── Schema do placement ───────────────────────────────────────────────

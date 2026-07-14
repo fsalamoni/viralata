@@ -43,6 +43,8 @@ export const SHELTER_FEATURE_FLAG = Object.freeze({
   SHELTER_POST_ADOPTION_FOLLOWUP: 'shelter_post_adoption_followup',
   // Fase 6 — Lares Temporários
   SHELTER_FOSTER: 'shelter_foster',
+  // Fase 6 — Histórico público do LT (vitrine + histórico de pets)
+  SHELTER_FOSTER_PUBLIC_HISTORY_V1: 'shelter_foster_public_history_v1',
   // Fase 7 — Gestão de Saúde
   SHELTER_HEALTH_RECORDS: 'shelter_health_records',
   // Fase 8 — Gestão de Medicamentos
@@ -146,6 +148,13 @@ export const SHELTER_FEATURE_FLAG_META = Object.freeze({
     description:
       'Cadastro de LTs com histórico de animais. Indicador de adoção '
       + 'direta pelo LT sem passar pelo workflow completo.',
+  },
+  [SHELTER_FEATURE_FLAG.SHELTER_FOSTER_PUBLIC_HISTORY_V1]: {
+    label: 'Abrigos · histórico público do LT',
+    description:
+      'Página pública /lares-temporarios/:uid/historico com pets que '
+      + 'passaram pelo LT (consent_to_show_history=true). '
+      + 'Exibe foto + nome + status final de cada pet.',
   },
   [SHELTER_FEATURE_FLAG.SHELTER_HEALTH_RECORDS]: {
     label: 'Abrigos · prontuário de saúde',
