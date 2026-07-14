@@ -27,6 +27,7 @@ import {
   useCancelFoster,
 } from '@/modules/shelter/hooks/useFosters';
 import SingleAcceptanceDialog from '@/modules/shelter/components/legal/SingleAcceptanceDialog';
+import FosterActionDialog from '@/modules/shelter/components/FosterActionDialog';
 import {
   FOSTER_TERMS_TEXT,
   FOSTER_TERMS_VERSION,
@@ -52,6 +53,7 @@ const STATUS_TONES = {
 export function FostersList({ shelterClubId, actor, canAbriho = false, isFoster = false }) {
   const [statusFilter, setStatusFilter] = useState(null);
   const [acceptingFosterId, setAcceptingFosterId] = useState(null);
+const [actionContext, setActionContext] = useState(null); // { action, fosterId, currentEndDate? }
   const { data: fosterList = [], isLoading } = useFosters(shelterClubId, {
     status: statusFilter,
   });
@@ -94,54 +96,15 @@ export function FostersList({ shelterClubId, actor, canAbriho = false, isFoster 
   };
 
   const handleExtend = async (fosterId, currentEndDate) => {
-    const newEnd = window.prompt(
-      `Nova data final (YYYY-MM-DD, depois de ${currentEndDate.slice(0, 10)}):`,
-    );
-    if (!newEnd) return;
-    const reason = window.prompt('Motivo da prorrogação:');
-    if (!reason || reason.length < 3) return;
-    try {
-      await extendMutation.mutateAsync({
-        fosterId,
-        extension: { new_end_date: `${newEnd}T00:00:00.000Z`, reason },
-        actor,
-      });
-      toast({ title: 'Prazo prorrogado.' });
-    } catch (err) {
-      toast({ title: 'Erro', description: String(err?.message || err), variant: 'destructive' });
-    }
+    setActionContext({ action: 'extend', fosterId, currentEndDate });
   };
 
   const handleEnd = async (fosterId) => {
-    const reason = window.prompt('Motivo do término:');
-    if (!reason || reason.length < 3) return;
-    const healthy = await confirmDialog({
-      title: 'Animal voltou saudável?',
-      destructive: false,
-      confirmLabel: 'Sim',
-      cancelLabel: 'Não',
-    });
-    try {
-      await endMutation.mutateAsync({
-        fosterId,
-        endData: { reason, pet_returned_healthy: healthy },
-        actor,
-      });
-      toast({ title: 'Placement finalizado.' });
-    } catch (err) {
-      toast({ title: 'Erro', description: String(err?.message || err), variant: 'destructive' });
-    }
+    setActionContext({ action: 'end', fosterId });
   };
 
   const handleCancel = async (fosterId) => {
-    const reason = window.prompt('Motivo do cancelamento:');
-    if (!reason) return;
-    try {
-      await cancelMutation.mutateAsync({ fosterId, reason, actor });
-      toast({ title: 'Placement cancelado.' });
-    } catch (err) {
-      toast({ title: 'Erro', description: String(err?.message || err), variant: 'destructive' });
-    }
+    setActionContext({ action: 'cancel', fosterId });
   };
 
   return (
@@ -261,6 +224,56 @@ export function FostersList({ shelterClubId, actor, canAbriho = false, isFoster 
 
       {/* Modal do Termo de Lar Temporário — substitui o window.prompt.
           Atende Guia de Implementação Legal v2 §4.2 e Lei 14.063/2020. */}
+      <FosterActionDialog
+        open={!!actionContext}
+        onOpenChange={(open) => { if (!open) setActionContext(null); }}
+        action={actionContext?.action}
+        fosterId={actionContext?.fosterId}
+        currentEndDate={actionContext?.currentEndDate}
+        submitting={
+          actionContext?.action === 'extend' ? extendMutation.isPending :
+          actionContext?.action === 'end' ? endMutation.isPending :
+          actionContext?.action === 'cancel' ? cancelMutation.isPending : false
+        }
+        onSubmit={async (result) => {
+          if (!result) return;
+          if (actionContext.action === 'extend') {
+            try {
+              await extendMutation.mutateAsync({
+                fosterId: actionContext.fosterId,
+                extension: { new_end_date: result.new_end_date, reason: result.reason },
+                actor,
+              });
+              toast({ title: 'Prazo prorrogado.' });
+            } catch (err) {
+              toast({ title: 'Erro', description: String(err?.message || err), variant: 'destructive' });
+            }
+          } else if (actionContext.action === 'end') {
+            try {
+              await endMutation.mutateAsync({
+                fosterId: actionContext.fosterId,
+                endData: { reason: result.reason, pet_returned_healthy: result.pet_returned_healthy },
+                actor,
+              });
+              toast({ title: 'Placement finalizado.' });
+            } catch (err) {
+              toast({ title: 'Erro', description: String(err?.message || err), variant: 'destructive' });
+            }
+          } else if (actionContext.action === 'cancel') {
+            try {
+              await cancelMutation.mutateAsync({
+                fosterId: actionContext.fosterId,
+                reason: result.reason,
+                actor,
+              });
+              toast({ title: 'Placement cancelado.' });
+            } catch (err) {
+              toast({ title: 'Erro', description: String(err?.message || err), variant: 'destructive' });
+            }
+          }
+        }}
+      />
+
       <SingleAcceptanceDialog
         open={!!acceptingFosterId}
         onOpenChange={(open) => { if (!open) setAcceptingFosterId(null); }}
