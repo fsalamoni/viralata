@@ -7,18 +7,22 @@
  * inscrição com o abrigo pré-selecionado (`/voluntarios/seja?abrigo=id`).
  */
 
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { HeartHandshake } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
+import { JoinVolunteerModal } from '@/modules/shelter/components/JoinVolunteerModal';
 
 export function VolunteerCtaCard({ clubId, clubName }) {
   const enabled = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_VOLUNTEER_PROFILE_V1);
+  const [modalOpen, setModalOpen] = useState(false);
   if (!enabled || !clubId) return null;
 
   return (
+    <>
     <Card className="rounded-[24px] border-primary/20 bg-primary/5">
       <CardContent className="flex flex-wrap items-center gap-4 p-5 sm:p-6">
         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary/10">
@@ -34,13 +38,25 @@ export function VolunteerCtaCard({ clubId, clubName }) {
           <Button asChild size="sm" variant="outline">
             <Link to="/voluntarios">Saiba mais</Link>
           </Button>
-          <Button asChild size="sm">
-            <Link to={`/voluntarios/seja?abrigo=${clubId}`}>Inscrever-se</Link>
+          <Button
+            size="sm"
+            onClick={() => setModalOpen(true)}
+            data-testid="open-join-volunteer-modal"
+          >
+            Inscrever-se
           </Button>
         </div>
       </CardContent>
     </Card>
-  );
+      <JoinVolunteerModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        clubId={clubId}
+        clubName={clubName}
+        onSuccess={() => setModalOpen(false)}
+      />
+    </>  
+);
 }
 
 export default VolunteerCtaCard;
