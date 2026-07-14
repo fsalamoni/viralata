@@ -85,3 +85,92 @@ export function sortByRelevance(pets) {
     return dateA - dateB;
   });
 }
+
+/**
+ * Calcula score de compatibilidade 0-100 entre perfil do adotante e pet.
+ * Reutiliza as mesmas regras de isCompatible(), mas retorna um percentual
+ * em vez de booleano. Usado no card da application (TASK-310).
+ *
+ * @param {object} profile - applicant_snapshot (UserProfile)
+ * @param {object} pet - dados do pet (pode vir de Firestore ou applicant_snapshot)
+ * @returns {number} score de 0 a 100 (arredondado)
+ */
+export function calculateMatchScore(profile, pet) {
+  if (!profile || !pet) return 0;
+
+  let score = 100;
+
+  // --- Moradia ---
+  const isApartment = profile.housing_type === 'apartment_screened'
+    || profile.housing_type === 'apartment_unscreened';
+  const isApartmentUnscreened = profile.housing_type === 'apartment_unscreened';
+  const hasYard = profile.housing_type === 'house_with_yard'
+    || profile.housing_type === 'farm';
+
+  // Pet grande/gigante em apartamento: -30
+  if (isApartment && (pet.size === 'large' || pet.size === 'giant')) {
+    score -= 30;
+  }
+  // Pet que precisa de pátio mas não tem: -25
+  if (pet.needs_yard === true && !hasYard) {
+    score -= 25;
+  }
+  // Apartamento sem tela + pet precisa de tela: -20
+  if (isApartmentUnscreened && pet.needs_screened_apt === true) {
+    score -= 20;
+  }
+
+  // --- Crianças ---
+  const hasChildren = profile.household_children > 0 || profile.has_children === true;
+  if (hasChildren && pet.good_with_kids === false) {
+    score -= 30;
+  }
+
+  // --- Outros pets ---
+  const otherPets = Array.isArray(profile.other_pets) ? profile.other_pets : [];
+  if (otherPets.includes('dog') && pet.good_with_dogs === false) {
+    score -= 20;
+  }
+  if (otherPets.includes('cat') && pet.good_with_cats === false) {
+    score -= 20;
+  }
+
+  // --- Passeios ---
+  // Puppy grande sem passeios: -20
+  if (
+    pet.age_group === 'puppy'
+    && (pet.size === 'large' || pet.size === 'giant')
+    && profile.daily_walks === 'none'
+  ) {
+    score -= 20;
+  }
+
+  // --- Orçamento ---
+  // Pet com necessidades especiais + orçamento básico: -20
+  if (pet.health_notes && pet.health_notes.trim().length > 0 && profile.budget_level === 'basic') {
+    score -= 20;
+  }
+
+  // --- Bônus ---
+  // Tamanho adequado para apartamento: +10
+  if (isApartment && (pet.size === 'small' || pet.size === 'medium')) {
+    score += 10;
+  }
+  // Pet se dá bem com crianças E há crianças: +5
+  if (hasChildren && pet.good_with_kids === true) {
+    score += 5;
+  }
+
+  return Math.max(0, Math.min(100, Math.round(score)));
+}
+
+/**
+ * Retorna o nível do match como string + variante de cor.
+ * @param {number} score 0-100
+ * @returns {{ label: string, variant: string }}
+ */
+export function getMatchBadge(score) {
+  if (score >= 75) return { label: 'Match alto', variant: 'high' };
+  if (score >= 40) return { label: 'Match médio', variant: 'medium' };
+  return { label: 'Match baixo', variant: 'low' };
+}
