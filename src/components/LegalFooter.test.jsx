@@ -20,28 +20,31 @@ vi.mock('@/core/featureFlags', () => ({
 
 import LegalFooter from './LegalFooter.jsx';
 
+vi.mock('@/core/hooks/useUiPreferences', () => ({
+  useUiPreferences: () => [
+    { footerMode: 'fixed', bottomTabBarMode: 'fixed' },
+    vi.fn(),
+    { saving: false, error: null, syncedAt: null },
+  ],
+  FOOTER_MODES: { FIXED: 'fixed', AUTOHIDE: 'autohide', HIDDEN: 'hidden' },
+  BOTTOM_TAB_MODES: { FIXED: 'fixed', AUTOHIDE: 'autohide', HIDDEN: 'hidden' },
+}));
+
+
 function renderInRouter(node) {
   return renderToString(
     React.createElement(MemoryRouter, { initialEntries: ['/'] }, node),
   );
 }
 
-describe('LegalFooter — flag OFF (rotas legadas)', () => {
+describe('LegalFooter — flag OFF (sem footer)', () => {
   beforeEach(() => {
     useFeatureFlagMock.mockReturnValue(false);
   });
 
-  it('renderiza as 3 rotas legadas', () => {
+  it('NÃO renderiza nada (flag OFF oculta totalmente)', () => {
     const html = renderInRouter(React.createElement(LegalFooter));
-    expect(html).toContain('/termos');
-    expect(html).toContain('/politica-privacidade');
-    expect(html).toContain('/legislacao');
-  });
-
-  it('NÃO renderiza rotas /legal/*', () => {
-    const html = renderInRouter(React.createElement(LegalFooter));
-    expect(html).not.toContain('/legal/termos-de-uso');
-    expect(html).not.toContain('/legal/cookies');
+    expect(html).toBe('');
   });
 });
 

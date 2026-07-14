@@ -33,6 +33,7 @@ import MyTasksSection from '@/modules/shelter/components/MyTasksSection';
 import UpcomingEventsSection from '@/modules/communities/components/UpcomingEventsSection';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import { VolunteerSection } from '@/modules/shelter/components/VolunteerSection';
+import { AppearanceSettings } from '@/components/AppearanceSettings';
 import { VolunteerProfileForm } from '@/modules/shelter/components/VolunteerProfileForm';
 import { VolunteerMetricsCard } from '@/modules/shelter/components/VolunteerMetricsCard';
 import {
@@ -527,6 +528,9 @@ export default function Profile() {
           </Button>
         </CardContent>
       </Card>
+
+      {/* TASK-401: Preferências visuais */}
+      {user?.uid && <AppearanceSettings />}
 
       {/* TASK-265: Seção consolidada "Voluntário" com métricas, habilidades,
           abrigos, escalas abertas, auditoria e form de edição. Substitui

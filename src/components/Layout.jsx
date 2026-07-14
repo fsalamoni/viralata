@@ -224,11 +224,6 @@ export default function Layout({ children, currentPageName }) {
           antigo mesmo com skipWaiting+clientsClaim. */}
       <SwUpdateBanner />
 
-      {/* Rodapé com links para documentos legais — exigido pelo Guia de
-          Implementação Legal v2 (10/07/2026) §5. Gated por flag dentro
-          do próprio componente. */}
-      <LegalFooter />
-
       {/* Bottom tab bar (mobile, autenticado) */}
       {isAuthenticated && (
         <nav className="safe-pb fixed inset-x-0 bottom-0 z-40 flex items-end justify-around border-t border-border bg-card/95 px-2 pt-2 backdrop-blur-xl md:hidden">
@@ -266,11 +261,10 @@ export default function Layout({ children, currentPageName }) {
         </nav>
       )}
 
-      {/* Rodapé com links legais (TASK-051). Gated por
-          SHELTER_LEGAL_TERMS_V1 — quando OFF, o componente
-          se oculta sozinho. Renderizado depois da bottom tab
-          bar (mobile) para garantir ordem visual
-          [tab bar] [conteúdo] [footer]. */}
+      {/* Rodapé com links legais. TASK-051: links exigidos pelo Guia
+          de Implementação Legal v2 (10/07/2026) §5. TASK-401: agora
+          respeita a preferência do usuário (footerMode: fixed/autohide/hidden)
+          e se oculta quando SHELTER_LEGAL_TERMS_V1 está OFF. */}
       <LegalFooter />
     </div>
   );
