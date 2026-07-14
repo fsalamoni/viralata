@@ -1,4 +1,4 @@
-name: "Diag: Inspect hosting via firebase-tools + REST API"
+name: "Diag: Inspect hosting via REST API"
 
 on: workflow_dispatch
 
@@ -14,16 +14,27 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Use firebase-tools to inspect hosting
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install google-auth-library
+        run: |
+          mkdir -p /tmp/auth-lib
+          cd /tmp/auth-lib
+          npm init -y > /dev/null 2>&1
+          npm install google-auth-library 2>&1 | tail -3
+
+      - name: Inspect hosting
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
           echo "$FIREBASE_SERVICE_ACCOUNT" > /tmp/sa.json
-          cd "$GITHUB_WORKSPACE"
-          npm install --silent google-auth-library 2>&1 | tail -3 || true
-
-          ACCESS_TOKEN=$(node .github/scripts/get_access_token.cjs 2>/dev/null)
-          echo "Token ok: ${ACCESS_TOKEN:0:30}..."
+          cd /tmp/auth-lib
+          ACCESS_TOKEN=$(node $GITHUB_WORKSPACE/.github/scripts/get_access_token.cjs 2>/tmp/auth-err.log)
+          echo "Token len: ${#ACCESS_TOKEN}"
+          echo "Err log: $(cat /tmp/auth-err.log 2>/dev/null)"
 
           echo ""
           echo "=== Firebase Hosting sites ==="
@@ -31,6 +42,3 @@ jobs:
           echo ""
           echo "=== Custom domains for site viralata ==="
           curl -s -H "Authorization: Bearer $ACCESS_TOKEN" "https://firebasehosting.googleapis.com/v1beta1/projects/viralata-4cf0b/sites/viralata/customDomains" 2>&1 | head -200
-          echo ""
-          echo "=== viralata.app specific ==="
-          curl -s -H "Authorization: Bearer $ACCESS_TOKEN" "https://firebasehosting.googleapis.com/v1beta1/projects/viralata-4cf0b/sites/viralata/customDomains/viralata.app" 2>&1 | head -100
