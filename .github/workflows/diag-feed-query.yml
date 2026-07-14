@@ -1,0 +1,24 @@
+name: "Diag: Test feed query against Firestore"
+
+on: workflow_dispatch
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          echo "$FIREBASE_SERVICE_ACCOUNT" > /tmp/sa.json
+          cd "$GITHUB_WORKSPACE"
+          npm install --silent firebase-admin 2>&1 | tail -3
+          node .github/scripts/test-feed-query.cjs
