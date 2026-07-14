@@ -3,6 +3,7 @@
  * Feature-gated por SHELTER_KANBAN
  */
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import * as kanbanService from '../services/kanbanService';
 
 const SHELTER_KANBAN_KEY = 'shelter_kanban';
@@ -161,6 +162,8 @@ export function useColumnMutations(clubId, boardId) {
 /** Cria / atualiza / move / deleta cards */
 export function useCardMutations(clubId, boardId) {
   const qc = useQueryClient();
+  const { user } = useAuth();
+  const uid = user?.uid;
 
   const create = useMutation({
     mutationFn: (data) => kanbanService.createCard(clubId, data),
@@ -178,7 +181,7 @@ export function useCardMutations(clubId, boardId) {
 
   const move = useMutation({
     mutationFn: ({ cardId, targetColumnId, newOrder }) =>
-      kanbanService.moveCard(clubId, cardId, { target_column_id: targetColumnId, new_order: newOrder }),
+      kanbanService.moveCard(clubId, cardId, uid, { target_column_id: targetColumnId, new_order: newOrder }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: kanbanKeys.cards(clubId, boardId) });
     },
