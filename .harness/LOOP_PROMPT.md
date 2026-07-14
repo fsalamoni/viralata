@@ -109,6 +109,7 @@ python3 -c "import json; d=json.load(open('.harness/SCRUM_TASKS.json')); done=[t
 
 ## ✅ TASKS CONCLUÍDAS NESTE LOOP (NÃO pegar)
 
+- TASK-308 PostAdoptionReturnDialog + PostAdoptionPauseDialog (PR #189)
 - TASK-148 PostEventLog (PR #176)
 - TASK-136 PublicHealthRecord (PR #175)
 - TASK-149 UpcomingExhibitionsFeed (PR #177)
@@ -128,15 +129,17 @@ python3 -c "import json; d=json.load(open('.harness/SCRUM_TASKS.json')); done=[t
 
 | ID | Pri | Categoria | Descrição |
 |---|---|---|---|
-| **TASK-147** | high | shelter | Vitrines: sistema de escalas (turnos por role) |
-| **TASK-308** | high | shelter | [UX-POSTADOPT-001] UI devolução + pause |
-| **TASK-308** | high | shelter | [UX-POSTADOPT-001] UI devolução + pause |
 | **TASK-315** | high | shelter | [UX-A11Y-001] Acessibilidade (keyboard nav, ARIA, contraste WCAG) |
 | **TASK-309** | high | shelter | [UX-ABRIGO-002] Onboarding wizard do abrigo (5 passos) |
+| **TASK-273** | high | shelter | Smart Search: adicionar entidade volunteer |
+| **TASK-277** | high | shelter | Rate limit em joinShelterAsVolunteer e acceptVolunteerTerms |
+| **TASK-312** | high | shelter | [INT-SEARCH-001] Sync ativo do search index (Cloud Function) |
 | **TASK-325** | medium | shelter | [UX-MILESTONE-001] Foto/video pro adotante completar milestones |
 | **TASK-268** | critical | shelter | Cloud Function onVolunteerJoinedShelter (FCM admin) |
 | **TASK-269** | critical | shelter | Cloud Function onVolunteerParticipationCreated (FCM voluntário) |
 | **TASK-291** | high | shelter | Email provider (SendGrid/Resend) — AGUARDA decisão humana |
+| **TASK-239** | medium | shelter | Sentry + Crashlytics |
+| **TASK-302** | medium | shelter | a11y mobile (helper) |
 | **TASK-176** | high | shelter | Sentry enriquecido |
 | **TASK-239** | medium | shelter | Sentry + Crashlytics |
 | **TASK-302** | medium | shelter | a11y mobile (helper) |
