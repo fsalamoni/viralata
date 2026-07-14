@@ -13,11 +13,14 @@ import {
 import { usePetPermissions } from '../hooks/usePetPermissions';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
+import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
+import { useSimilarPets } from '../hooks/useSimilarPets';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import { getOrCreateDirectConversation } from '@/modules/chat/services/chatService';
 import InterestPanel from '../components/InterestPanel';
 import RatingForm from '../components/RatingForm';
 import PetShareCard from '../components/PetShareCard';
+import { SimilarPets } from '../components/SimilarPets';
 import AdoptionFormFill from '../components/AdoptionFormFill';
 import PetDetailSkeleton from '../components/PetDetailSkeleton';
 import PetNotFound from '../components/PetNotFound';
@@ -81,6 +84,8 @@ export default function PetDetail() {
   const petPermissions = usePetPermissions(pet);
   const showAdoptionGating = useFeatureFlag(FEATURE_FLAG.PET_ADOPTION_GATING);
   const wrapperClass = useArenaPageClasses('arena-page max-w-4xl mx-auto px-4 py-6 space-y-6');
+  const { data: similarPets = [], isLoading: similarLoading } = useSimilarPets(pet);
+  const showSimilarPets = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_SIMILAR_PETS);
 
   if (isLoading) return <PetDetailSkeleton />;
   if (!pet) return <PetNotFound petId={petId} />;
@@ -422,6 +427,13 @@ export default function PetDetail() {
       )}
 
       {/* Painel de interessados (apenas para donos) */}
+
+      {/* Pets similares — gated por SHELTER_SIMILAR_PETS */}
+      {showSimilarPets && (
+        <div className="mt-8 not-prose">
+          <SimilarPets pet={pet} similarPets={similarPets} isLoading={similarLoading} />
+        </div>
+      )}
       {canManage && (
         <Tabs value={managementTab} onValueChange={setManagementTab} className="mt-6">
           <TabsList className="arena-tab-bar">
