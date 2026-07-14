@@ -31,6 +31,7 @@ import {
   computeTimeInShelterReport,
   computeFostersReport,
   computeSpayNeuterReport,
+  computeMedicationAdherenceReport,
 } from '@/modules/shelter/domain/operational/reports';
 
 const CLUBS_COLLECTION = 'clubs';
@@ -39,6 +40,7 @@ const ADOPTION_COLLECTION = 'adoption_workflow';
 const POST_ADOPTION_COLLECTION = 'post_adoption';
 const FOSTERS_COLLECTION = 'fosters';
 const MEDICATIONS_COLLECTION = 'medications';
+const DOSES_COLLECTION = 'doses';
 
 const MAX_PETS = 5000;
 const MAX_APPS = 2000;
@@ -292,6 +294,38 @@ export async function getReportsSummary(clubId, options = {}) {
     } catch (err) {
       logger.warn('reportsService.getReportsSummary.fosters', { err: String(err) });
       result.fosters = { type: 'fosters', total: 0, active: 0, ended: 0, byStatus: {}, byEnvironment: {}, _error: String(err) };
+    }
+  }
+
+  // TASK-141: medicação — busca medications + doses via collectionGroup
+  if (types.has('medication_adherence')) {
+    try {
+      const medications = [];
+      const doses = [];
+      const medsGroup = fsQuery(
+        collectionGroup(db, MEDICATIONS_COLLECTION),
+        where('shelter_club_id', '==', clubId),
+        limit(1000),
+      );
+      const medsSnap = await getDocs(medsGroup).catch(() => ({ docs: [] }));
+      medsSnap.docs.forEach((d) => medications.push({ id: d.id, ...d.data() }));
+      // Doses são sub-subcoleção, mas como o firebase tools não suporta
+      // collectionGroup duplo, vamos iterar as medications e buscar doses por pet/med
+      for (const med of medications) {
+        const dosesQ = fsQuery(
+          collection(db, PETS_COLLECTION, med.pet_id, MEDICATIONS_COLLECTION, med.id, DOSES_COLLECTION),
+          limit(500),
+        );
+        const dosesSnap = await getDocs(dosesQ).catch(() => ({ docs: [] }));
+        dosesSnap.docs.forEach((d) => doses.push({ id: d.id, ...d.data() }));
+      }
+      result.medicationAdherence = computeMedicationAdherenceReport({ medications, doses, pets });
+    } catch (err) {
+      logger.warn('reportsService.getReportsSummary.medicationAdherence', { err: String(err) });
+      result.medicationAdherence = {
+        type: 'medication_adherence', totalDoses: 0, onTime: 0, late: 0, missed: 0, skipped: 0,
+        adherencePct: 0, perPet: [], _error: String(err),
+      };
     }
   }
 
