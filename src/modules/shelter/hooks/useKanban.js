@@ -166,14 +166,14 @@ export function useCardMutations(clubId, boardId) {
   const uid = user?.uid;
 
   const create = useMutation({
-    mutationFn: (data) => kanbanService.createCard(clubId, data),
+    mutationFn: (data) => kanbanService.createCard(clubId, uid, data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: kanbanKeys.cards(clubId, boardId) });
     },
   });
 
   const update = useMutation({
-    mutationFn: ({ cardId, ...data }) => kanbanService.updateCard(clubId, cardId, data),
+    mutationFn: ({ cardId, ...data }) => kanbanService.updateCard(clubId, cardId, uid, data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: kanbanKeys.cards(clubId, boardId) });
     },
@@ -188,21 +188,21 @@ export function useCardMutations(clubId, boardId) {
   });
 
   const del = useMutation({
-    mutationFn: (cardId) => kanbanService.deleteCard(clubId, cardId),
+    mutationFn: (cardId) => kanbanService.deleteCard(clubId, cardId, uid),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: kanbanKeys.cards(clubId, boardId) });
     },
   });
 
   const toggleChecklist = useMutation({
-    mutationFn: ({ cardId, itemIndex }) => kanbanService.toggleChecklistItem(clubId, cardId, itemIndex),
+    mutationFn: ({ cardId, itemIndex }) => kanbanService.toggleChecklistItem(clubId, cardId, uid, itemIndex),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: kanbanKeys.cards(clubId, boardId) });
     },
   });
 
   const addChecklist = useMutation({
-    mutationFn: ({ cardId, text }) => kanbanService.addChecklistItem(clubId, cardId, text),
+    mutationFn: ({ cardId, text }) => kanbanService.addChecklistItem(clubId, cardId, uid, text),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: kanbanKeys.cards(clubId, boardId) });
     },
