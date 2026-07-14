@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -11,6 +12,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { format } from 'date-fns';
 import { hasCommunityPermission } from '../domain/permissions';
 import { COMMUNITY_PERMISSION } from '../domain/constants';
+import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
+import { FEATURE_FLAG } from '@/core/featureFlags';
 
 import { ptBR } from 'date-fns/locale';
 import { confirmDialog } from '@/components/ui/confirm-provider';
@@ -19,6 +22,7 @@ export default function EventsTab({ communityId, isAdmin, membership, community 
   const { user } = useAuth();
   const [events, setEvents] = useState([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const eventDetailEnabled = useFeatureFlag(FEATURE_FLAG.COMMUNITY_EVENT_DETAIL_V1);
 
   const fetchEvents = () => {
     listCommunityEvents(communityId).then(setEvents).catch(console.error);
@@ -66,33 +70,43 @@ export default function EventsTab({ communityId, isAdmin, membership, community 
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2">
-          {events.map(ev => (
-            <Card key={ev.id} className="p-4 flex flex-col gap-3 hover:bg-secondary/10 transition-colors">
-              <div className="flex justify-between items-start">
-                <h3 className="font-bold text-base">{ev.title}</h3>
-                {canManageEvents && (
-                  <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive hover:bg-destructive/10" onClick={(e) => handleDelete(ev.id, e)}>
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                )}
-              </div>
-              <p className="text-sm text-muted-foreground line-clamp-2">{ev.description}</p>
+          {events.map(ev => {
+            const card = (
+              <Card key={ev.id} className="p-4 flex flex-col gap-3 hover:bg-secondary/10 transition-colors cursor-pointer">
+                <div className="flex justify-between items-start">
+                  <h3 className="font-bold text-base">{ev.title}</h3>
+                  {canManageEvents && (
+                    <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive hover:bg-destructive/10" onClick={(e) => handleDelete(ev.id, e)}>
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  )}
+                </div>
+                <p className="text-sm text-muted-foreground line-clamp-2">{ev.description}</p>
 
-              <div className="space-y-1 mt-auto pt-2 border-t border-border/50">
-                {ev.starts_at && (
-                  <div className="text-xs flex items-center gap-1.5 text-foreground/80 font-medium">
-                    <Calendar className="w-3.5 h-3.5 text-primary" />
-                    {format(new Date(ev.starts_at), "dd 'de' MMMM 'às' HH:mm", { locale: ptBR })}
-                  </div>
-                )}
-                {ev.location && (
-                  <div className="text-xs flex items-center gap-1.5 text-muted-foreground">
-                    <MapPin className="w-3.5 h-3.5" /> {ev.location}
-                  </div>
-                )}
-              </div>
-            </Card>
-          ))}
+                <div className="space-y-1 mt-auto pt-2 border-t border-border/50">
+                  {ev.starts_at && (
+                    <div className="text-xs flex items-center gap-1.5 text-foreground/80 font-medium">
+                      <Calendar className="w-3.5 h-3.5 text-primary" />
+                      {format(new Date(ev.starts_at), "dd 'de' MMMM 'às' HH:mm", { locale: ptBR })}
+                    </div>
+                  )}
+                  {ev.location && (
+                    <div className="text-xs flex items-center gap-1.5 text-muted-foreground">
+                      <MapPin className="w-3.5 h-3.5" /> {ev.location}
+                    </div>
+                  )}
+                </div>
+              </Card>
+            );
+            if (eventDetailEnabled) {
+              return (
+                <Link key={ev.id} to={`/comunidade/${communityId}/eventos/${ev.id}`} className="block">
+                  {card}
+                </Link>
+              );
+            }
+            return card;
+          })}
         </div>
       )}
 

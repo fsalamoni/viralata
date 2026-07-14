@@ -39,3 +39,16 @@ export const COMMUNITY_PERMISSION_LABELS = Object.freeze({
   [COMMUNITY_PERMISSION.EVENTS]: 'Gerenciar eventos',
   [COMMUNITY_PERMISSION.TEAM]: 'Gerenciar equipe',
 });
+
+/** RSVP para eventos de comunidade (going / maybe / not_going). */
+export const COMMUNITY_EVENT_RSVP = Object.freeze({
+  GOING: 'going',
+  MAYBE: 'maybe',
+  NOT_GOING: 'not_going',
+});
+
+export const COMMUNITY_EVENT_RSVP_LABELS = Object.freeze({
+  [COMMUNITY_EVENT_RSVP.GOING]: 'Vou',
+  [COMMUNITY_EVENT_RSVP.MAYBE]: 'Talvez',
+  [COMMUNITY_EVENT_RSVP.NOT_GOING]: 'Não vou',
+});
