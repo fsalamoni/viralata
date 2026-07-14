@@ -71,6 +71,11 @@ export const createPetPhotoSchema = z.object({
   thumb_url: z.string().url().optional(),
   storage_path: z.string().min(1).max(500),
   caption: z.string().max(500).optional(),
+  // TASK-144: vinculação automática com vitrines e adoções
+  exhibition_id: z.string().min(1).max(128).optional(),
+  adoption_id: z.string().min(1).max(128).optional(),
+  // Auto-derived: se exhibition_id setado, category='exhibition' (se não setado)
+  // Auto-derived: se adoption_id setado, category='adoption' (se não setado)
   original_metadata: z.object({
     width: z.number().int().positive().optional(),
     height: z.number().int().positive().optional(),
