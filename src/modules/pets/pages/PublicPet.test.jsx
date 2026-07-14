@@ -51,6 +51,8 @@ vi.mock('@/components/ui/badge', () => ({
 
 vi.mock('@/components/ui/card', () => ({
   Card: ({ children }) => <div>{children}</div>,
+  CardHeader: ({ children }) => <div>{children}</div>,
+  CardTitle: ({ children }) => <div>{children}</div>,
   CardContent: ({ children }) => <div>{children}</div>,
 }));
 
