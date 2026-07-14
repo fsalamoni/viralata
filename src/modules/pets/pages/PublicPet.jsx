@@ -29,6 +29,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { doc, getDoc, collection, query, where, getDocs, limit } from 'firebase/firestore';
 import { PublicPetTimeline } from '@/modules/pets/components/PublicPetTimeline';
+import { PublicHealthRecord } from '@/modules/pets/components/PublicHealthRecord';
 import { db } from '@/core/config/firebase';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
@@ -389,6 +390,10 @@ export default function PublicPet() {
         {pet?.shelter_club_id && (
           <PublicPetTimeline petId={petId} shelterClubId={pet.shelter_club_id} />
         )}
+
+        {/* TASK-136: prontuário público do pet (read-only LGPD) */}
+        {/* vaccines, dewormings, ectoparasites — sem clinical_notes/prescription */}
+        {petId && <PublicHealthRecord petId={petId} shelterClubId={pet?.shelter_club_id} />}
 
         {/* Aviso LGPD / segurança */}
         <Card className="border-amber-200 bg-amber-50/50">

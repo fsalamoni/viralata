@@ -398,6 +398,44 @@ service cloud.firestore {
         allow delete: if isAuth() && isPlatformAdmin();
       }
 
+      // ─── TASK-136: Subcoleção `health_records` (Prontuário Público Read-Only LGPD) ───
+      // View pública paralela à subcoleção `medical` (interna). Usada pelo
+      // PublicHealthRecord em /pet/{id} (visitantes, autenticados ou não).
+      // Apenas campos da whitelist são gravados; campos sensíveis
+      // (clinical_notes, prescription, internal_flags, vet_private_notes)
+      // são defense-in-depth filtrados no client pelo filterPublicFields.
+      //
+      // Regra de leitura: PÚBLICA (qualquer visitante, sem login) — alinhado
+      // com o fato de o pet já ter nome, foto, cidade/UF visíveis em
+      // /pet/{id}. Vacinas, vermifugos e antipulgas NÃO são dados pessoais
+      // sensíveis sob a LGPD (Art. 5º II) — são dados do animal.
+      //
+      // Regra de escrita: RESTRITA ao abrigo (multi-tenant via
+      // shelter_club_id) + platform admin. Pets individuais (sem abrigo)
+      // só podem ser editados pelo owner do pet.
+      match /health_records/{recordId} {
+        allow read: if true;  // público — alinhado com o resto de /pet/{id}
+        allow create: if isAuth() && (
+          isPlatformAdmin() ||
+          canManagePet(get(/databases/$(database)/documents/pets/$(petId)).data) ||
+          (request.resource.data.shelter_club_id != null &&
+            (isClubOwnerOrAdmin(request.resource.data.shelter_club_id) ||
+             canEditClubPets(request.resource.data.shelter_club_id) ||
+             hasClubPermission(request.resource.data.shelter_club_id, 'animals') ||
+             hasClubPermission(request.resource.data.shelter_club_id, 'health')))
+        );
+        allow update: if isAuth() && (
+          isPlatformAdmin() ||
+          canManagePet(get(/databases/$(database)/documents/pets/$(petId)).data) ||
+          (resource.data.shelter_club_id != null &&
+            (isClubOwnerOrAdmin(resource.data.shelter_club_id) ||
+             canEditClubPets(resource.data.shelter_club_id) ||
+             hasClubPermission(resource.data.shelter_club_id, 'animals') ||
+             hasClubPermission(resource.data.shelter_club_id, 'health')))
+        );
+        allow delete: if isAuth() && isPlatformAdmin();
+      }
+
       // ─── Fase 9: Subcoleção `medications` (Prescrição + Doses) ───
       // Multi-tenant via shelter_club_id em cada medicação. Doses ficam
       // em sub-subcoleção `doses/` (mesmas regras de leitura).
