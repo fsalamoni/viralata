@@ -304,7 +304,7 @@ export const DEFAULT_SHELTER_FLAGS = Object.freeze(
  */
 export const SHELTER_TYPE = Object.freeze({
   // Aliases para o nome novo (não duplica tipos legados)
-  ABRIGO: 'abrigo',  // exibição
+//  ABRIGO: 'abrigo',  // (removido TASK-088 — era label, não flag)
 });
 
 /** Re-exporta FF para componentes que querem apenas o SHELTER_FEATURE_FLAG */
