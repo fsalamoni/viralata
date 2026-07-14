@@ -15,26 +15,50 @@
    - Se travou/bloqueou: `node .harness/scrum.cjs block TASK-XXX --reason "..."`
    - **NUNCA** termine o turno sem uma transição de status.
 
-2. Re-embede o painel:
+2. **🔴 REGRA #1 — SINCRONIZAR `metrics` DO JSON**:
+   O `scrum.cjs done` atualiza o status da task no array MAS NÃO atualiza o objeto top-level `metrics` (que o painel público usa). Sem isso, o painel mostra contagem stale.
+   ```python
+   import json
+   with open('.harness/SCRUM_TASKS.json', 'r') as f: d = json.load(f)
+   m = d.setdefault('metrics', {})
+   m['totalTasks'] = len(d['tasks'])
+   m['done'] = len([t for t in d['tasks'] if t['status']=='done'])
+   m['ready'] = len([t for t in d['tasks'] if t['status']=='ready'])
+   m['inProgress'] = len([t for t in d['tasks'] if t['status']=='in_progress'])
+   m['inReview'] = len([t for t in d['tasks'] if t['status']=='in_review'])
+   m['blocked'] = len([t for t in d['tasks'] if t['status']=='blocked'])
+   m['backlog'] = len([t for t in d['tasks'] if t['status']=='backlog'])
+   with open('.harness/SCRUM_TASKS.json', 'w') as f: json.dump(d, f, indent=2)
+   ```
+
+3. Re-embede o painel:
    ```bash
    node .harness/sync.cjs --fix
    ```
 
-3. Commit + push do scrum update:
+4. Commit + push do scrum update:
    ```bash
    git add -A
    git commit -m "chore(scrum): TASK-XXX done PR #YYY"
    git pull --rebase --autostash origin main
    git push origin main
+   # SE push falhar (force-push): use --force-with-lease
    ```
 
-4. Se completou a task: **ATUALIZE ESTE PROMPT** (remova da lista de candidatas, adicione nova, faça commit + push).
+5. Se completou a task: **ATUALIZE ESTE PROMPT** (remova da lista de candidatas, adicione nova, faça commit + push).
+
+6. Se forçor push manual: trigger deploy via API:
+   ```bash
+   curl -sS -X POST -H "Authorization: token $GITHUB_PAT" -H "Content-Type: application/json" \
+     -d '{"ref":"main","inputs":{"skip_hosting":"false"}}' \
+     "https://api.github.com/repos/fsalamoni/viralata/actions/workflows/deploy.yml/dispatches"
+   ```
 
 **VERIFICAÇÃO antes de encerrar**:
 ```bash
-python3 -c "import json; d=json.load(open('.harness/SCRUM_TASKS.json')); done=[t for t in d['tasks'] if t['status']=='done']; print(f'Done: {len(done)}/{len(d[\"tasks\"])}')"
+python3 -c "import json; d=json.load(open('.harness/SCRUM_TASKS.json')); done=[t for t in d['tasks'] if t['status']=='done']; m=d.get('metrics',{}); print(f'array done: {len(done)} | metrics done: {m.get(\"done\")}')"
 ```
-**Se a contagem não subiu após fechar uma task, ALGO ESTÁ ERRADO — corrija antes de sair.**
+**Se `array done` ≠ `metrics done`, ALGO ESTÁ ERRADO — REGRA #1 não foi aplicada.**
 
 ---
 
