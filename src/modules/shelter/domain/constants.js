@@ -25,6 +25,8 @@ import { FEATURE_FLAG as FF } from '@/core/featureFlags';
  * mapeamento flag ↔ fase.
  */
 export const SHELTER_FEATURE_FLAG = Object.freeze({
+  // UX — Pets similares na página do pet
+  SHELTER_SIMILAR_PETS: 'shelter_similar_pets',
   // Fase 0 — Preparação (renomeação + skeleton + docs)
   SHELTER_FOUNDATION: 'shelter_foundation',
   // Fase 1 — Cadastro Único do Animal
@@ -279,6 +281,13 @@ export const SHELTER_FEATURE_FLAG_META = Object.freeze({
     description:
       'Dashboard admin master: saúde, custos Firebase, capacidade, '
       + 'movimentação, gerenciamento de admins, alertas.',
+  },
+  [SHELTER_FEATURE_FLAG.SHELTER_SIMILAR_PETS]: {
+    label: 'Abrigos · pets similares',
+    description:
+      'Seção "Pets similares" na página do pet (PetDetail), mostrando até '
+      + '6 pets com espécie/porte/idade compatíveis, ordenados por score de '
+      + 'similaridade. Gated: só visible quando a flag está ON.',
   },
   [SHELTER_FEATURE_FLAG.SHELTER_CUTOVER]: {
     label: 'Abrigos · cutover final',
