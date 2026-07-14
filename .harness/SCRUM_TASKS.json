@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-14T21:22:53.050Z",
+  "generatedAt": "2026-07-14T21:24:45.615Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -8371,10 +8371,10 @@
       "title": "[UX-ABRIGO-002] Onboarding wizard do abrigo (5 passos)",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
-      "branch": null,
+      "branch": "feat/shelter-onboarding-wizard-2026-07-14",
       "worktree": null,
       "tags": [
         "regra-A",
@@ -8388,7 +8388,8 @@
       "subFrente": "abrigos-foster-adocao",
       "description": "Componente ShelterOnboardingWizard.jsx com 5 steps: 1) Logo + capa, 2) Endereço, 3) Equipe (convidar primeiro admin), 4) Termos (DPA + aceite), 5) Primeiro pet. Salva progress em clubs/{clubId}/onboarding/wizard_state. Smoke test: novo abrigo é criado com 80%+ perfil completo.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14",
+      "pr": "186"
     },
     {
       "id": "TASK-310",
@@ -10365,7 +10366,7 @@
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": "e09b004028050b1393f74d1c9f4a1c2039e4488c",
+    "mainCommit": "2bdd50a231d65a1c887adea7e220c449f6957b78",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
