@@ -125,16 +125,29 @@ export async function createPetPhoto(input, actor) {
 
   const parsed = createPetPhotoSchema.parse(input);
 
+  // TASK-144: auto-categorize baseado em exhibition_id/adoption_id
+  // Se um ID é setado e a category não foi explicitamente outra, usar
+  // a categoria derivada.
+  const autoCategory = parsed.exhibition_id
+    ? 'exhibition'
+    : (parsed.adoption_id ? 'adoption' : null);
+  const finalCategory = (autoCategory && parsed.category === 'rescue')
+    ? autoCategory  // só sobrescreve rescue (default)
+    : parsed.category;
+
   const payload = {
     pet_id: parsed.pet_id,
     shelter_club_id: parsed.shelter_club_id,
-    category: parsed.category,
+    category: finalCategory,
     url: parsed.url,
     thumb_url: parsed.thumb_url || null,
     storage_path: parsed.storage_path,
     uploaded_by_uid: actor.uid,
     uploaded_by_name: actor.displayName || null,
     caption: parsed.caption || null,
+    // TASK-144: vinculação
+    exhibition_id: parsed.exhibition_id || null,
+    adoption_id: parsed.adoption_id || null,
     original_metadata: parsed.original_metadata || null,
     deleted_at: null,
     deleted_by_uid: null,
