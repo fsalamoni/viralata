@@ -60,7 +60,7 @@ export default function ThreadDetail({ thread, communityId, onBack }) {
         <div className="flex justify-between items-start">
           <h2 className="text-2xl font-bold">{thread.title}</h2>
           {user && (user.uid === thread.author_id) && (
-            <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10" onClick={handleDelete}>
+            <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10" onClick={handleDelete} aria-label="Excluir tópico">
               <Trash2 className="w-4 h-4" />
             </Button>
           )}

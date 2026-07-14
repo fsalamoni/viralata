@@ -76,7 +76,7 @@ export default function EventsTab({ communityId, isAdmin, membership, community 
                 <div className="flex justify-between items-start">
                   <h3 className="font-bold text-base">{ev.title}</h3>
                   {canManageEvents && (
-                    <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive hover:bg-destructive/10" onClick={(e) => handleDelete(ev.id, e)}>
+                    <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive hover:bg-destructive/10" onClick={(e) => handleDelete(ev.id, e)} aria-label="Excluir evento">
                       <Trash2 className="w-4 h-4" />
                     </Button>
                   )}

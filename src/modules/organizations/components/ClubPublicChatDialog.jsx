@@ -194,7 +194,7 @@ function ChatBody({ thread, loadingThread, role = 'user' }) {
             className="min-h-[40px] max-h-32 flex-1 resize-none rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             aria-label="Mensagem"
           />
-          <Button onClick={handleSend} disabled={!text.trim() || send.isPending} size="icon" className="h-10 w-10">
+          <Button onClick={handleSend} disabled={!text.trim() || send.isPending} size="icon" className="h-10 w-10" aria-label="Enviar mensagem">
             {send.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
           </Button>
         </div>

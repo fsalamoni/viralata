@@ -179,7 +179,7 @@ function MemberCard({ member, viewerContext, onStartChat }) {
             </Button>
           )}
           {viewerContext.uid && (
-            <Button size="icon" variant="outline" className="h-8 w-8" title="Iniciar chat" onClick={onStartChat}>
+            <Button size="icon" variant="outline" className="h-8 w-8" aria-label="Iniciar chat" onClick={onStartChat}>
               <MessageCircle className="h-3.5 w-3.5 text-primary" />
             </Button>
           )}

@@ -20,7 +20,7 @@ export const DialogOverlay = React.forwardRef(({ className, ...props }, ref) => 
 ));
 DialogOverlay.displayName = 'DialogOverlay';
 
-export const DialogContent = React.forwardRef(({ className, children, ...props }, ref) => (
+export const DialogContent = React.forwardRef(({ className, children, ariaLabel, ...props }, ref) => (
   <DialogPortal>
     <DialogOverlay />
     <DialogPrimitive.Content
@@ -30,11 +30,15 @@ export const DialogContent = React.forwardRef(({ className, children, ...props }
         className,
       )}
       {...props}
+      aria-label={ariaLabel}
     >
       {children}
-      <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+      <DialogPrimitive.Close
+        aria-label="Fechar"
+        className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+      >
         <X className="h-4 w-4" />
-        <span className="sr-only">Close</span>
+        <span className="sr-only">Fechar</span>
       </DialogPrimitive.Close>
     </DialogPrimitive.Content>
   </DialogPortal>

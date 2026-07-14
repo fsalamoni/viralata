@@ -103,7 +103,7 @@ export default function EventChat({ eventId }) {
           placeholder="Escreva uma mensagem…"
           className="max-h-32 flex-1 resize-none rounded-xl border border-input bg-background px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
         />
-        <Button type="submit" size="icon" disabled={send.isPending || !draft.trim()}>
+        <Button type="submit" size="icon" disabled={send.isPending || !draft.trim()} aria-label="Enviar mensagem">
           <Send className="h-4 w-4" />
         </Button>
       </form>

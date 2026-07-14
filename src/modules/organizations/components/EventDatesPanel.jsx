@@ -263,10 +263,10 @@ function PresenceSection({ date, editing, setEditing, form, setForm, onSave, sav
             {date.note ? <p>{date.note}</p> : <p className="text-muted-foreground/80">Sem observações.</p>}
           </div>
           <div className="flex shrink-0 gap-1">
-            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setEditing(true)} title="Editar">
+            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setEditing(true)} aria-label="Editar">
               <Pencil className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive/85" onClick={onDeleteRequest} title="Excluir">
+            <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive/85" onClick={onDeleteRequest} aria-label="Excluir">
               <Trash2 className="h-4 w-4" />
             </Button>
           </div>

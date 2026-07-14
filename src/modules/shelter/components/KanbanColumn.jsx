@@ -7,9 +7,12 @@ import { CSS } from '@dnd-kit/utilities';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { KanbanCard } from './KanbanCard';
 import { KanbanCreateCard } from './KanbanCreateCard';
+import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
+import { FEATURE_FLAG } from '@/core/featureFlags';
 
 export function KanbanColumn({ column, cards, boardId, clubId, onCardClick }) {
   const [addingCard, setAddingCard] = useState(false);
+  const a11yEnabled = useFeatureFlag(FEATURE_FLAG.A11Y_IMPROVEMENTS_V1);
 
   const {
     attributes,
@@ -31,6 +34,9 @@ export function KanbanColumn({ column, cards, boardId, clubId, onCardClick }) {
       ref={setNodeRef}
       style={style}
       className="flex-shrink-0 w-72 flex flex-col bg-gray-50 rounded-xl"
+      {...(a11yEnabled
+        ? { role: 'list', 'aria-label': `Coluna: ${column.title}` }
+        : {})}
     >
       {/* Header da coluna */}
       <div
@@ -62,7 +68,12 @@ export function KanbanColumn({ column, cards, boardId, clubId, onCardClick }) {
         </SortableContext>
 
         {cards.length === 0 && !addingCard && (
-          <p className="text-xs text-gray-400 text-center py-4">Sem cards</p>
+          <p
+            className="text-xs text-gray-400 text-center py-4"
+            {...(a11yEnabled ? { role: 'status' } : {})}
+          >
+            Sem cards
+          </p>
         )}
       </div>
 

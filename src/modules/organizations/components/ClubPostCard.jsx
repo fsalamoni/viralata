@@ -339,7 +339,7 @@ function CommentsSection({ post, commentsQ, addComment, deleteComment, currentUs
           className="min-h-[40px] resize-none text-sm"
           rows={1}
         />
-        <Button onClick={handleSend} disabled={!text.trim() || sending} size="icon" className="h-10 w-10 shrink-0">
+        <Button onClick={handleSend} disabled={!text.trim() || sending} size="icon" className="h-10 w-10 shrink-0" aria-label="Enviar comentário">
           <Send className="h-4 w-4" />
         </Button>
       </div>

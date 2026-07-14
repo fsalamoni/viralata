@@ -145,6 +145,14 @@ export const FEATURE_FLAG = Object.freeze({
    * desligada em /admin/flags — a página some do menu admin.
    */
   MOCK_DATA_PANEL: 'mock_data_panel',
+
+  /**
+   * Melhorias de acessibilidade (WCAG AA): foco visível em todos os dialogs,
+   * aria-label em botões de ícone, roles ARIA no kanban (region/list/option),
+   * Escape fecha o lightbox, badge contrast ratios, alt text em imagens.
+   * Aditivo — desligada, a UI funciona sem as melhorias a11y.
+   */
+  A11Y_IMPROVEMENTS_V1: 'a11y_improvements_v1',
 });
 
 /** Metadados de exibição para o painel de flags (admin master). */
@@ -270,6 +278,14 @@ export const FEATURE_FLAG_META = Object.freeze({
       + 'platform_admin. Default ON; pode ser desligado em /admin/flags '
       + '— a página some do menu admin.',
   },
+  [FEATURE_FLAG.A11Y_IMPROVEMENTS_V1]: {
+    label: 'Acessibilidade WCAG AA',
+    description:
+      'Foco visível em dialogs, aria-label em botões de ícone, '
+      + 'roles ARIA no kanban (region/list/option), Escape fecha '
+      + 'lightbox, contraste em badges, alt text em imagens. '
+      + 'Aditivo — desligada, a UI funciona sem as melhorias.',
+  },
 });
 
 /**
@@ -301,6 +317,7 @@ export const DEFAULT_FEATURE_FLAGS = Object.freeze({
   [FEATURE_FLAG.COMMUNITY_EVENT_DETAIL_V1]: false,
 
   [FEATURE_FLAG.MOCK_DATA_PANEL]: true,
+  [FEATURE_FLAG.A11Y_IMPROVEMENTS_V1]: false,
 });
 
 /**

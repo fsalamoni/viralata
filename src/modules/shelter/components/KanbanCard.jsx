@@ -4,6 +4,8 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { CARD_PRIORITY_COLORS, CARD_PRIORITY_LABELS, CARD_TYPE_LABELS } from '../domain/operational/kanban';
+import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
+import { FEATURE_FLAG } from '@/core/featureFlags';
 
 const TYPE_ICONS = {
   medication: '💊',
@@ -15,6 +17,7 @@ const TYPE_ICONS = {
 };
 
 export function KanbanCard({ card, onClick, isOverlay }) {
+  const a11yEnabled = useFeatureFlag(FEATURE_FLAG.A11Y_IMPROVEMENTS_V1);
   const {
     attributes,
     listeners,
@@ -35,6 +38,20 @@ export function KanbanCard({ card, onClick, isOverlay }) {
   const done = card.status === 'resolved' || card.status === 'cancelled';
   const priorityColor = CARD_PRIORITY_COLORS[card.priority] || '#6B7280';
 
+  // Constrói aria-label descritivo para screen readers
+  const ariaLabel = a11yEnabled
+    ? [
+        CARD_TYPE_LABELS[card.type] || card.type,
+        CARD_PRIORITY_LABELS[card.priority],
+        card.title,
+        done ? 'concluído' : null,
+        card.due_at ? `vencimento ${new Date(card.due_at).toLocaleDateString('pt-BR')}` : null,
+        card.assignees?.length > 0 ? `${card.assignees.length} responsável(s)` : null,
+      ]
+        .filter(Boolean)
+        .join(', ')
+    : undefined;
+
   return (
     <div
       ref={setNodeRef}
@@ -42,6 +59,9 @@ export function KanbanCard({ card, onClick, isOverlay }) {
       {...attributes}
       {...listeners}
       onClick={onClick}
+      aria-label={ariaLabel}
+      {...(a11yEnabled ? { role: 'option' } : {})}
+      tabIndex={a11yEnabled ? 0 : undefined}
       className={`
         bg-white rounded-lg p-3 shadow-sm border border-gray-100
         hover:shadow-md hover:border-blue-200 cursor-pointer

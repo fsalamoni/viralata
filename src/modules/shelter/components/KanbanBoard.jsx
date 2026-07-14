@@ -20,10 +20,13 @@ import {
 import { KanbanColumn } from './KanbanColumn';
 import { KanbanCard } from './KanbanCard';
 import { useCardMutations } from '../hooks/useKanban';
+import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
+import { FEATURE_FLAG } from '@/core/featureFlags';
 
 export function KanbanBoard({ columns = [], cards = [], boardId, clubId, onCardClick, onAddColumn }) {
   const [activeId, setActiveId] = useState(null);
   const { moveCard } = useCardMutations(clubId, boardId);
+  const a11yEnabled = useFeatureFlag(FEATURE_FLAG.A11Y_IMPROVEMENTS_V1);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -121,7 +124,12 @@ export function KanbanBoard({ columns = [], cards = [], boardId, clubId, onCardC
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <div className="flex gap-4 overflow-x-auto pb-4 px-1">
+      <div
+        className="flex gap-4 overflow-x-auto pb-4 px-1"
+        {...(a11yEnabled
+          ? { role: 'region', 'aria-label': 'Quadro kanban' }
+          : {})}
+      >
         {columns.map((col) => (
           <SortableContext
             key={col.id}

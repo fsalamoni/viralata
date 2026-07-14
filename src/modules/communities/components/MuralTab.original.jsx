@@ -109,7 +109,7 @@ export default function MuralTab({ communityId, isMember, isAdmin, membership, c
                     </div>
                   </div>
                   {canDelete(post.id, post.author_id) && (
-                    <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10" onClick={() => handleDelete(post.id)}>
+                    <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10" onClick={() => handleDelete(post.id)} aria-label="Excluir post">
                       <Trash2 className="w-4 h-4" />
                     </Button>
                   )}

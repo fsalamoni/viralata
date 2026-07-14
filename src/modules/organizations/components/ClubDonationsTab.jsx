@@ -557,7 +557,7 @@ function ReceiptDialog({ open, onOpenChange, donation }) {
                     <p className="truncate text-xs font-semibold">{form.file_name}</p>
                     <a href={form.file_url} target="_blank" rel="noreferrer" className="text-[11px] text-highlight hover:underline">Visualizar</a>
                   </div>
-                  <Button type="button" size="icon" variant="ghost" className="h-7 w-7" onClick={() => setForm(EMPTY_RECEIPT)}>
+                  <Button type="button" size="icon" variant="ghost" className="h-7 w-7" onClick={() => setForm(EMPTY_RECEIPT)} aria-label="Limpar recibo">
                     <X className="h-3.5 w-3.5" />
                   </Button>
                 </div>

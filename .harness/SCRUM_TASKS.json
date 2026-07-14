@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-14T22:34:03.542Z",
+  "generatedAt": "2026-07-14T22:47:05.292Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -8527,7 +8527,7 @@
       "status": "done",
       "priority": "high",
       "owner": "unassigned",
-      "branch": "feat/task-315-a11y-audit-2026-07-14",
+      "branch": null,
       "worktree": null,
       "tags": [
         "regra-A",
@@ -8542,9 +8542,9 @@
       "subFrente": "abrigos-foster-adocao",
       "description": "Auditar axe-core em todas as páginas do fluxo. Corrigir: foco trap em dialogs, Escape fecha, tabIndex em forms, aria-label em botões de ícone, role em custom widgets (kanban, slider), contraste de badges, alt text em fotos. Lighthouse a11y >= 90.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-14T22:34:03",
-      "pr": "0",
-      "resolvedAt": "2026-07-14"
+      "updatedAt": "2026-07-14",
+      "pr": 0,
+      "reason": "feat: WCAG AA a11y improvements — kanban roles, dialog aria-label, icon button aria-label fixes (batch pendente)"
     },
     {
       "id": "TASK-316",
@@ -10370,7 +10370,7 @@
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": "4149e4f68cd614660f1d115c670ce20c270d68de",
+    "mainCommit": "a636b48a796a6191c9297eaf4ebf02c167509fd5",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -10415,7 +10415,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-14T22:34:03 — via scrum.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-14T21:45:52 — via scrum.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [

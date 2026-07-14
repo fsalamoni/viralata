@@ -68,7 +68,7 @@ function MessageItem({ message, threadId, onDeleted }) {
           </div>
         </div>
         {user && user.uid === message.author_id && (
-          <Button variant="ghost" size="icon" className="text-destructive h-8 w-8" onClick={handleDelete}>
+          <Button variant="ghost" size="icon" className="text-destructive h-8 w-8" onClick={handleDelete} aria-label="Excluir comentário">
             <Trash2 className="w-4 h-4" />
           </Button>
         )}
@@ -240,7 +240,7 @@ export default function CommentSection({ threadId }) {
                   <div key={idx} className="flex items-center gap-2">
                     <Input value={opt} onChange={e => updatePollOption(idx, e.target.value)} placeholder={`Opção ${idx + 1}`} />
                     {pollOptions.length > 2 && (
-                      <Button type="button" variant="ghost" size="icon" onClick={() => removePollOption(idx)} className="text-destructive">×</Button>
+                      <Button type="button" variant="ghost" size="icon" onClick={() => removePollOption(idx)} className="text-destructive" aria-label="Remover opção">×</Button>
                     )}
                   </div>
                 ))}

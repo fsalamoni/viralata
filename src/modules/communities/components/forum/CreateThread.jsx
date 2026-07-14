@@ -152,7 +152,7 @@ export default function CreateThread({ communityId, onBack, onCreated }) {
                     <div key={idx} className="flex items-center gap-2">
                       <Input value={opt} onChange={e => updatePollOption(idx, e.target.value)} placeholder={`Opção ${idx + 1}`} />
                       {pollOptions.length > 2 && (
-                        <Button type="button" variant="ghost" size="icon" onClick={() => removePollOption(idx)} className="text-destructive">×</Button>
+                        <Button type="button" variant="ghost" size="icon" onClick={() => removePollOption(idx)} className="text-destructive" aria-label="Remover opção">×</Button>
                       )}
                     </div>
                   ))}
