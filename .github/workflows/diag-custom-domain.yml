@@ -1,4 +1,4 @@
-name: "Diag: Inspect hosting via REST API"
+name: "Diag: Inspect hosting via firebase-tools CLI"
 
 on: workflow_dispatch
 
@@ -9,36 +9,35 @@ permissions:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install google-auth-library
-        run: |
-          mkdir -p /tmp/auth-lib
-          cd /tmp/auth-lib
-          npm init -y > /dev/null 2>&1
-          npm install google-auth-library 2>&1 | tail -3
-
-      - name: Inspect hosting
+      - name: Use firebase-tools to inspect hosting
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
           echo "$FIREBASE_SERVICE_ACCOUNT" > /tmp/sa.json
-          cd /tmp/auth-lib
-          ACCESS_TOKEN=$(node $GITHUB_WORKSPACE/.github/scripts/get_access_token.cjs 2>/tmp/auth-err.log)
-          echo "Token len: ${#ACCESS_TOKEN}"
-          echo "Err log: $(cat /tmp/auth-err.log 2>/dev/null)"
+          export GOOGLE_APPLICATION_CREDENTIALS=/tmp/sa.json
+          export FIREBASE_TOKEN=""  # Use service account instead
+
+          # install firebase-tools
+          npm install -g firebase-tools@latest 2>&1 | tail -3
 
           echo ""
-          echo "=== Firebase Hosting sites ==="
-          curl -s -H "Authorization: Bearer $ACCESS_TOKEN" "https://firebasehosting.googleapis.com/v1beta1/projects/viralata-4cf0b/sites" 2>&1 | head -80
+          echo "=== firebase login:ci (using sa) ==="
+          # Alternative: use --use-ssa from local project config
+          firebase login --use-localhost 2>&1 | head -10 || true
+
           echo ""
-          echo "=== Custom domains for site viralata ==="
-          curl -s -H "Authorization: Bearer $ACCESS_TOKEN" "https://firebasehosting.googleapis.com/v1beta1/projects/viralata-4cf0b/sites/viralata/customDomains" 2>&1 | head -200
+          echo "=== firebase projects:list ==="
+          firebase projects:list 2>&1 | head -10
+
+          echo ""
+          echo "=== firebase hosting:channel:list ==="
+          firebase hosting:channel:list --project=viralata-4cf0b --site=viralata 2>&1 | head -20
+
+          echo ""
+          echo "=== Try to read site via deploy-targets (the only way) ==="
+          firebase target --project=viralata-4cf0b 2>&1 | head -20
