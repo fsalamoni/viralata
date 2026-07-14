@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { isCompatible, filterCompatiblePets, sortByRelevance } from './matching.js';
+import { isCompatible, filterCompatiblePets, sortByRelevance, calculateMatchScore, getMatchBadge } from './matching.js';
 
 const baseProfile = {
   housing_type: 'house_with_yard',
@@ -107,5 +107,91 @@ describe('sortByRelevance', () => {
     ];
     const sorted = sortByRelevance(pets);
     expect(sorted[0].id).toBe('b');
+  });
+});
+
+describe('calculateMatchScore — TASK-310', () => {
+  it('retorna 0 para perfil ou pet nulo', () => {
+    expect(calculateMatchScore(null, basePet)).toBe(0);
+    expect(calculateMatchScore(baseProfile, null)).toBe(0);
+  });
+
+  it('retorna 100 para combinação ideal', () => {
+    const profile = {
+      housing_type: 'house_with_yard',
+      household_children: 0,
+      other_pets: [],
+      daily_walks: 'long',
+      budget_level: 'high',
+    };
+    const pet = { size: 'medium', needs_yard: false, good_with_kids: true, good_with_dogs: true };
+    expect(calculateMatchScore(profile, pet)).toBe(100);
+  });
+
+  it('deduz 30 por pet grande em apartamento', () => {
+    const profile = { housing_type: 'apartment_screened', household_children: 0, other_pets: [], daily_walks: 'long', budget_level: 'high' };
+    const pet = { size: 'large', needs_yard: false, good_with_kids: true, good_with_dogs: true };
+    expect(calculateMatchScore(profile, pet)).toBe(70);
+  });
+
+  it('deduz 25 por pet que precisa de pátio sem ter', () => {
+    const profile = { housing_type: 'house_with_yard', household_children: 0, other_pets: [], daily_walks: 'long', budget_level: 'high' };
+    const pet = { size: 'large', needs_yard: true, good_with_kids: true, good_with_dogs: true };
+    // large pet + needs_yard=true in house_with_yard = no deduction for yard (has yard)
+    // → 100
+    expect(calculateMatchScore(profile, pet)).toBe(100);
+  });
+
+  it('deduz 25 por pet que precisa de pátio em apartamento', () => {
+    const profile = { housing_type: 'apartment_unscreened', household_children: 0, other_pets: [], daily_walks: 'long', budget_level: 'high' };
+    const pet = { size: 'large', needs_yard: true, good_with_kids: true, good_with_dogs: true };
+    // needs_yard + no yard: -25, apartment large: -30
+    expect(calculateMatchScore(profile, pet)).toBe(45);
+  });
+
+  it('deduz 30 por pet que não se dá com crianças quando há crianças', () => {
+    const profile = { housing_type: 'house_with_yard', household_children: 2, other_pets: [], daily_walks: 'long', budget_level: 'high' };
+    const pet = { size: 'medium', needs_yard: false, good_with_kids: false, good_with_dogs: true };
+    expect(calculateMatchScore(profile, pet)).toBe(70);
+  });
+
+  it('deduz 20 por pet com necessidades de saúde + orçamento básico', () => {
+    const profile = { housing_type: 'house_with_yard', household_children: 0, other_pets: [], daily_walks: 'long', budget_level: 'basic' };
+    const pet = { size: 'medium', needs_yard: false, good_with_kids: true, good_with_dogs: true, health_notes: 'Diabetes' };
+    expect(calculateMatchScore(profile, pet)).toBe(80);
+  });
+
+  it('soma bônus de +10 para pet pequeno/médio em apartamento', () => {
+    const profile = { housing_type: 'apartment_screened', household_children: 0, other_pets: [], daily_walks: 'long', budget_level: 'high' };
+    const pet = { size: 'small', needs_yard: false, good_with_kids: true, good_with_dogs: true };
+    // 100 base - 0 deduções + 10 bônus = 110 → clampado a 100
+    expect(calculateMatchScore(profile, pet)).toBe(100);
+  });
+
+  it('clampa em 0 quando há muitas deduções', () => {
+    const profile = { housing_type: 'apartment_unscreened', household_children: 3, other_pets: ['dog', 'cat'], daily_walks: 'none', budget_level: 'basic' };
+    const pet = { size: 'giant', needs_yard: true, good_with_kids: false, good_with_dogs: false, good_with_cats: false, age_group: 'puppy', health_notes: 'Cirurgia necessária' };
+    // many deductions → should clamp to 0
+    expect(calculateMatchScore(profile, pet)).toBe(0);
+  });
+});
+
+describe('getMatchBadge', () => {
+  it('alto >= 75', () => {
+    expect(getMatchBadge(75).label).toBe('Match alto');
+    expect(getMatchBadge(100).label).toBe('Match alto');
+    expect(getMatchBadge(75).variant).toBe('high');
+  });
+
+  it('médio 40-74', () => {
+    expect(getMatchBadge(74).label).toBe('Match médio');
+    expect(getMatchBadge(40).label).toBe('Match médio');
+    expect(getMatchBadge(74).variant).toBe('medium');
+  });
+
+  it('baixo < 40', () => {
+    expect(getMatchBadge(39).label).toBe('Match baixo');
+    expect(getMatchBadge(0).label).toBe('Match baixo');
+    expect(getMatchBadge(39).variant).toBe('low');
   });
 });

@@ -25,6 +25,8 @@ import { FEATURE_FLAG as FF } from '@/core/featureFlags';
  * mapeamento flag ↔ fase.
  */
 export const SHELTER_FEATURE_FLAG = Object.freeze({
+  // UX — Scoring de compatibilidade nas applications (TASK-310)
+  SHELTER_APPLICATION_SCORING: 'shelter_application_scoring',
   // Fase 0 — Preparação (renomeação + skeleton + docs)
   SHELTER_FOUNDATION: 'shelter_foundation',
   // Fase 1 — Cadastro Único do Animal

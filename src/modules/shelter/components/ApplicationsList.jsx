@@ -5,14 +5,18 @@
  * badges, permite aprovar/rejeitar/withdraw.
  *
  * Feature flag: `shelter_adoption_workflow` (default OFF).
+ * TASK-310: scoring de compatibilidade via `shelter_application_scoring`.
  */
 
 import { useState } from 'react';
+import { useQueries } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
+import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
+import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
 import {
   APPLICATION_STATUS,
   APPLICATION_STATUS_LABELS,
@@ -25,9 +29,59 @@ import {
   useDecideApplication,
   useCancelApplication,
 } from '@/modules/shelter/hooks/useAdoptionApplications';
+import { getPetById } from '@/modules/pets/hooks/usePets';
+import { calculateMatchScore, getMatchBadge } from '@/modules/pets/domain/matching';
+
+// ─── Badge de match score ─────────────────────────────────────────────────
+
+const MATCH_VARIANT = {
+  high: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+  medium: 'bg-amber-100 text-amber-800 border-amber-200',
+  low: 'bg-red-100 text-red-700 border-red-200',
+};
+
+function MatchScoreBadge({ score }) {
+  if (score == null) return null;
+  const { label, variant } = getMatchBadge(score);
+  return (
+    <Badge
+      className={`text-xs border ${MATCH_VARIANT[variant] || ''}`}
+      title={`Compatibilidade: ${score}%`}
+    >
+      {label} {score}%
+    </Badge>
+  );
+}
+
+// ─── Ordenação por score de match ────────────────────────────────────────
+
+/**
+ * Ordena applications por score (desc) ou data (desc — mais recentes primeiro).
+ * @param {object[]} apps
+ * @param {'score'|'date'} mode
+ * @param {Map<string, number>} petScoreMap petId → score
+ */
+function sortApplications(apps, mode, petScoreMap) {
+  return [...apps].sort((a, b) => {
+    if (mode === 'score') {
+      const sa = petScoreMap.get(a.pet_id) ?? -1;
+      const sb = petScoreMap.get(b.pet_id) ?? -1;
+      if (sb !== sa) return sb - sa;
+    }
+    // date: mais recente primeiro (created_at DESC)
+    const ta = a.created_at?.seconds ?? 0;
+    const tb = b.created_at?.seconds ?? 0;
+    return tb - ta;
+  });
+}
+
+// ─── Componente principal ─────────────────────────────────────────────────
 
 export function ApplicationsList({ shelterClubId, canAdmin = false, actor }) {
   const [statusFilter, setStatusFilter] = useState(null);
+  const [sortMode, setSortMode] = useState('date');
+  const scoringEnabled = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_APPLICATION_SCORING);
+
   const { data: apps = [], isLoading } = useApplications(shelterClubId, {
     status: statusFilter,
   });
@@ -36,6 +90,38 @@ export function ApplicationsList({ shelterClubId, canAdmin = false, actor }) {
   const { toast } = useToast();
 
   const [decisionModal, setDecisionModal] = useState(null);
+
+  // ── Batch fetch pet data para todos os pets das applications ──
+  const petIdList = apps.map((a) => a.pet_id).filter(Boolean);
+  const petQueries = useQueries({
+    queries: petIdList.map((petId) => ({
+      queryKey: ['pet', petId],
+      queryFn: () => getPetById(petId),
+      enabled: Boolean(petId),
+      staleTime: 60_000,
+    })),
+  });
+
+  // Mapa petId → pet data
+  const petMap = {};
+  petQueries.forEach((q, i) => {
+    if (q.data) petMap[petIdList[i]] = q.data;
+  });
+
+  // Mapa petId → score de match
+  const petScoreMap = {};
+  if (scoringEnabled) {
+    apps.forEach((app) => {
+      const pet = petMap[app.pet_id];
+      const snap = app.applicant_snapshot;
+      if (pet && snap) {
+        petScoreMap[app.pet_id] = calculateMatchScore(snap, pet);
+      }
+    });
+  }
+
+  // Aplica ordenação
+  const sortedApps = sortApplications(apps, sortMode, petScoreMap);
 
   if (!shelterClubId) {
     return <p className="text-sm text-muted-foreground">Selecione um abrigo para ver applications.</p>;
@@ -90,24 +176,44 @@ export function ApplicationsList({ shelterClubId, canAdmin = false, actor }) {
               {statusFilter ? ` com status ${APPLICATION_STATUS_LABELS[statusFilter]}` : ''}
             </p>
           </div>
-          <div className="flex flex-wrap gap-1">
-            <Button
-              size="sm"
-              variant={statusFilter === null ? 'default' : 'outline'}
-              onClick={() => setStatusFilter(null)}
-            >
-              Todas
-            </Button>
-            {APPLICATION_STATUS.filter((s) => !isTerminal(s) || s === 'rejected').map((s) => (
+          <div className="flex flex-col items-end gap-1">
+            {scoringEnabled && (
+              <div className="flex flex-wrap gap-1">
+                <Button
+                  size="sm"
+                  variant={sortMode === 'date' ? 'default' : 'outline'}
+                  onClick={() => setSortMode('date')}
+                >
+                  Mais recentes
+                </Button>
+                <Button
+                  size="sm"
+                  variant={sortMode === 'score' ? 'default' : 'outline'}
+                  onClick={() => setSortMode('score')}
+                >
+                  Melhor match
+                </Button>
+              </div>
+            )}
+            <div className="flex flex-wrap gap-1">
               <Button
-                key={s}
                 size="sm"
-                variant={statusFilter === s ? 'default' : 'outline'}
-                onClick={() => setStatusFilter(s)}
+                variant={statusFilter === null ? 'default' : 'outline'}
+                onClick={() => setStatusFilter(null)}
               >
-                {APPLICATION_STATUS_LABELS[s]}
+                Todas
               </Button>
-            ))}
+              {APPLICATION_STATUS.filter((s) => !isTerminal(s) || s === 'rejected').map((s) => (
+                <Button
+                  key={s}
+                  size="sm"
+                  variant={statusFilter === s ? 'default' : 'outline'}
+                  onClick={() => setStatusFilter(s)}
+                >
+                  {APPLICATION_STATUS_LABELS[s]}
+                </Button>
+              ))}
+            </div>
           </div>
         </div>
       </CardHeader>
@@ -118,71 +224,77 @@ export function ApplicationsList({ shelterClubId, canAdmin = false, actor }) {
           </p>
         ) : (
           <ol className="space-y-3">
-            {apps.map((app) => (
-              <li
-                key={app.id}
-                className="rounded-md border border-border p-3"
-              >
-                <div className="flex flex-wrap items-start gap-3">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex flex-wrap items-center gap-2 mb-1">
-                      <Badge className={APPLICATION_STATUS_TONES[app.status] || ''}>
-                        {APPLICATION_STATUS_LABELS[app.status] || app.status}
-                      </Badge>
-                      <span className="text-xs text-muted-foreground">
-                        pet: <code className="text-xs">{app.pet_id?.slice(0, 8)}…</code>
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        applicant: <code className="text-xs">{app.applicant_uid?.slice(0, 8)}…</code>
-                      </span>
+            {sortedApps.map((app) => {
+              const score = petScoreMap[app.pet_id];
+              return (
+                <li
+                  key={app.id}
+                  className="rounded-md border border-border p-3"
+                >
+                  <div className="flex flex-wrap items-start gap-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-2 mb-1">
+                        <Badge className={APPLICATION_STATUS_TONES[app.status] || ''}>
+                          {APPLICATION_STATUS_LABELS[app.status] || app.status}
+                        </Badge>
+                        {scoringEnabled && score != null && (
+                          <MatchScoreBadge score={score} />
+                        )}
+                        <span className="text-xs text-muted-foreground">
+                          pet: <code className="text-xs">{app.pet_id?.slice(0, 8)}…</code>
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          applicant: <code className="text-xs">{app.applicant_uid?.slice(0, 8)}…</code>
+                        </span>
+                      </div>
+                      <p className="text-sm text-foreground mb-1">
+                        <strong>Motivo:</strong> {app.applicant_form?.reason_to_adopt?.slice(0, 200)}
+                        {(app.applicant_form?.reason_to_adopt?.length || 0) > 200 ? '…' : ''}
+                      </p>
+                      {app.applicant_form?.has_yard !== undefined && (
+                        <p className="text-xs text-muted-foreground">
+                          Quintal: {app.applicant_form.has_yard ? 'sim' : 'não'} •
+                          Moradores: {app.applicant_form.household_size || '?'} •
+                          Crianças: {app.applicant_form.has_children ? 'sim' : 'não'}
+                        </p>
+                      )}
+                      {app.decision_notes && (
+                        <p className="text-xs text-muted-foreground mt-2 italic">
+                          Decisão: {app.decision_notes}
+                        </p>
+                      )}
                     </div>
-                    <p className="text-sm text-foreground mb-1">
-                      <strong>Motivo:</strong> {app.applicant_form?.reason_to_adopt?.slice(0, 200)}
-                      {(app.applicant_form?.reason_to_adopt?.length || 0) > 200 ? '…' : ''}
-                    </p>
-                    {app.applicant_form?.has_yard !== undefined && (
-                      <p className="text-xs text-muted-foreground">
-                        Quintal: {app.applicant_form.has_yard ? 'sim' : 'não'} •
-                        Moradores: {app.applicant_form.household_size || '?'} •
-                        Crianças: {app.applicant_form.has_children ? 'sim' : 'não'}
-                      </p>
-                    )}
-                    {app.decision_notes && (
-                      <p className="text-xs text-muted-foreground mt-2 italic">
-                        Decisão: {app.decision_notes}
-                      </p>
+                    {canAdmin && !isTerminal(app.status) && (
+                      <div className="flex flex-col gap-1">
+                        {nextStatuses(app.status).filter((s) => ['under_review', 'approved', 'rejected'].includes(s)).map((s) => (
+                          <Button
+                            key={s}
+                            size="sm"
+                            variant={s === 'approved' ? 'default' : s === 'rejected' ? 'destructive' : 'outline'}
+                            onClick={() => {
+                              if (s === 'approved' || s === 'rejected') {
+                                setDecisionModal({ app, toStatus: s });
+                              } else {
+                                handleDecide(app.id, s, '');
+                              }
+                            }}
+                          >
+                            {APPLICATION_STATUS_LABELS[s]}
+                          </Button>
+                        ))}
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleCancel(app.id)}
+                        >
+                          Cancelar
+                        </Button>
+                      </div>
                     )}
                   </div>
-                  {canAdmin && !isTerminal(app.status) && (
-                    <div className="flex flex-col gap-1">
-                      {nextStatuses(app.status).filter((s) => ['under_review', 'approved', 'rejected'].includes(s)).map((s) => (
-                        <Button
-                          key={s}
-                          size="sm"
-                          variant={s === 'approved' ? 'default' : s === 'rejected' ? 'destructive' : 'outline'}
-                          onClick={() => {
-                            if (s === 'approved' || s === 'rejected') {
-                              setDecisionModal({ app, toStatus: s });
-                            } else {
-                              handleDecide(app.id, s, '');
-                            }
-                          }}
-                        >
-                          {APPLICATION_STATUS_LABELS[s]}
-                        </Button>
-                      ))}
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => handleCancel(app.id)}
-                      >
-                        Cancelar
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              </li>
-            ))}
+                </li>
+              );
+            })}
           </ol>
         )}
 
