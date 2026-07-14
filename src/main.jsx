@@ -4,6 +4,8 @@ import App from './App.jsx';
 import ErrorBoundary from './components/ErrorBoundary.jsx';
 import { registerPwa } from '@core/pwa/registerPwa';
 import './index.css';
+import { initErrorTracker } from '@/core/services/errorTracker';
+initErrorTracker().catch(() => {});
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
