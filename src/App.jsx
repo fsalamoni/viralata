@@ -80,6 +80,8 @@ const CreateReport = lazy(() => import('@/modules/reports/pages/CreateReport'));
 
 // ─── Perfil ───────────────────────────────────────────────────────────────────
 const Profile = lazy(() => import('@/pages/Profile'));
+// TASK-266: página dedicada /perfil/voluntario
+const VolunteerProfile = lazy(() => import('@/pages/VolunteerProfile'));
 // TASK-130: página individual do pedido de adoção (timeline).
 const AdoptionDetail = lazy(() => import('@/pages/AdoptionDetail'));
 // TASK-127: wizard "Quero adotar" (5 steps, pets de abrigo).
@@ -347,6 +349,10 @@ export default function App() {
                 <Route
                   path="/perfil"
                   element={<ProtectedRoute>{withLayout('Profile', Profile)}</ProtectedRoute>}
+                />
+                <Route
+                  path="/perfil/voluntario"
+                  element={<ProtectedRoute>{withLayout('VolunteerProfile', VolunteerProfile)}</ProtectedRoute>}
                 />
                 {/* TASK-288: contratos do adotante — apenas os próprios */}
                 <Route
