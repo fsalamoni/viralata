@@ -630,6 +630,104 @@ describe('logPostEvent', () => {
       pet_id: 'p-1', pet_origin: 'internal', destination: 'fugiu',
     }, actor)).rejects.toThrow();
   });
+
+  // ─── TASK-148: timeline events semânticos + audit log ──────────────
+
+  it('TASK-148: adopted cria timeline event tipo "adoption" + audit', async () => {
+    mockGetDoc.mockResolvedValue(snap({
+      shelter_club_id: 'c-1', pet_ids: ['p-1'], external_pets: [], title: 'Feira ADOP',
+    }));
+    mockGetDocs.mockResolvedValue(querySnap([]));
+    const mockAddTimelineEvent = (await import('@/modules/shelter/services/timelineService')).addTimelineEvent;
+    mockAddTimelineEvent.mockClear();
+    const r = await logPostEvent('c-1', 'e-1', {
+      pet_id: 'p-1', pet_origin: 'internal', destination: 'adopted', adopter_uid: 'u-77',
+    }, actor);
+    expect(r.id).toBe('new-doc-id');
+    expect(mockAddTimelineEvent).toHaveBeenCalledWith(
+      'p-1',
+      expect.objectContaining({
+        type: 'adoption',
+        data: expect.objectContaining({ adopter_uid: 'u-77' }),
+      }),
+      expect.anything(),
+      expect.anything(),
+    );
+    expect(mockCreateAuditLog).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: 'exhibition_post_event_logged',
+        details: expect.objectContaining({
+          pet_id: 'p-1', destination: 'adopted', adopter_uid: 'u-77',
+        }),
+      }),
+    );
+  });
+
+  it('TASK-148: transferred cria timeline event tipo "foster_start" + audit', async () => {
+    mockGetDoc.mockResolvedValue(snap({
+      shelter_club_id: 'c-1', pet_ids: ['p-2'], external_pets: [], title: 'Feira X',
+    }));
+    mockGetDocs.mockResolvedValue(querySnap([]));
+    const mockAddTimelineEvent = (await import('@/modules/shelter/services/timelineService')).addTimelineEvent;
+    mockAddTimelineEvent.mockClear();
+    await logPostEvent('c-1', 'e-1', {
+      pet_id: 'p-2', pet_origin: 'internal', destination: 'transferred',
+      transferred_to_shelter_id: 'c-99', transferred_to_shelter_name: 'Outro Abrigo',
+    }, actor);
+    expect(mockAddTimelineEvent).toHaveBeenCalledWith(
+      'p-2',
+      expect.objectContaining({
+        type: 'foster_start',
+        data: expect.objectContaining({ shelter_club_id: 'c-99' }),
+      }),
+      expect.anything(),
+      expect.anything(),
+    );
+    expect(mockCreateAuditLog).toHaveBeenCalledWith(
+      expect.objectContaining({ action: 'exhibition_post_event_logged' }),
+    );
+  });
+
+  it('TASK-148: died cria timeline event tipo "deceased"', async () => {
+    mockGetDoc.mockResolvedValue(snap({
+      shelter_club_id: 'c-1', pet_ids: ['p-3'], external_pets: [], title: 'Feira Y',
+    }));
+    mockGetDocs.mockResolvedValue(querySnap([]));
+    const mockAddTimelineEvent = (await import('@/modules/shelter/services/timelineService')).addTimelineEvent;
+    mockAddTimelineEvent.mockClear();
+    await logPostEvent('c-1', 'e-1', {
+      pet_id: 'p-3', pet_origin: 'internal', destination: 'died',
+      notes: 'Insuficiência cardíaca durante o evento',
+    }, actor);
+    expect(mockAddTimelineEvent).toHaveBeenCalledWith(
+      'p-3',
+      expect.objectContaining({
+        type: 'deceased',
+        data: expect.objectContaining({ cause: expect.stringContaining('Insuficiência') }),
+      }),
+      expect.anything(),
+      expect.anything(),
+    );
+  });
+
+  it('TASK-148: pet externo NÃO cria timeline event (escopo internal-only)', async () => {
+    mockGetDoc.mockResolvedValue(snap({
+      shelter_club_id: 'c-1', pet_ids: [],
+      external_pets: [{ pet_id: 'p-4', owner_shelter_id: 'c-2', name: 'Buddy' }],
+      title: 'Feira Z',
+    }));
+    mockGetDocs.mockResolvedValue(querySnap([]));
+    const mockAddTimelineEvent = (await import('@/modules/shelter/services/timelineService')).addTimelineEvent;
+    mockAddTimelineEvent.mockClear();
+    await logPostEvent('c-1', 'e-1', {
+      pet_id: 'p-4', pet_origin: 'external', destination: 'adopted', adopter_uid: 'u-1',
+    }, actor);
+    expect(mockAddTimelineEvent).not.toHaveBeenCalled();
+    // Mas audit log é criado independente de origem
+    expect(mockCreateAuditLog).toHaveBeenCalledWith(
+      expect.objectContaining({ action: 'exhibition_post_event_logged' }),
+    );
+  });
 });
 
 // ─── Helpers do domain ─────────────────────────────────────────────────
