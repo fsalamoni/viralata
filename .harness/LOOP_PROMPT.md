@@ -1,4 +1,4 @@
-# LOOP_PROMPT — desenvolvimento autônomo (atualizado 2026-07-14 22:08 GMT-3)
+# LOOP_PROMPT — desenvolvimento autônomo (atualizado 2026-07-14 23:02 GMT-3)
 
 **Contexto**: `/workspace/viralata`, branch `main`, React+Vite+Firebase.
 **Sessão**: Mavis root (loop autônomo, 20min, **24/7 sem limite de horário**).
@@ -179,8 +179,6 @@ python3 -c "import json; d=json.load(open('.harness/SCRUM_TASKS.json')); done=[t
 
 | ID | Pri | Categoria | Descrição |
 |---|---|---|---|
-| TASK-308 | high | shelter | [UX-POSTADOPT-001] UI devolução + pause |
-| TASK-325 | medium | shelter | [UX-MILESTONE-001] Foto/video pro adotante completar milestones |
 | TASK-309 | high | shelter | [UX-ABRIGO-002] Onboarding wizard do abrigo (5 passos) — verificar duplicação |
 | TASK-273 | high | shelter | Smart Search: adicionar entidade volunteer |
 | TASK-277 | high | shelter | Rate limit em joinShelterAsVolunteer e acceptVolunteerTerms |
@@ -190,11 +188,11 @@ python3 -c "import json; d=json.load(open('.harness/SCRUM_TASKS.json')); done=[t
 | TASK-291 | high | shelter | Email provider (SendGrid/Resend) — AGUARDA decisão humana |
 | TASK-176 | high | shelter | Sentry enriquecido |
 | TASK-239 | medium | shelter | Sentry + Crashlytics |
-| TASK-302 | medium | shelter | a11y mobile (helper) |
 
 > **Notas**:
-> - TASK-315 (a11y WCAG AA) foi entregue em modo BATCH (branch feat/a11y-improvements-2026-07-14 pushed, pr=0)
-> - TASK-310, TASK-326 foram feitas pelo cron (verificar com git log antes de pegar)
+> - TASK-325 (milestone photo/video upload) entregue em modo BATCH — branch feat/task-325-milestone-upload-2026-07-14, pr=0
+> - TASK-315, TASK-308, TASK-302, TASK-176 entregues em batch (verificar com git log antes de pegar)
+> - TASK-310, TASK-326 feitas pelo cron (verificar com git log antes de pegar)
 
 ---
 
