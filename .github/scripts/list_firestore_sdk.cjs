@@ -2,13 +2,13 @@
 const fs = require('fs');
 const path = require('path');
 
-process.env.GOOGLE_APPLICATION_CREDENTIALS = '/tmp/firebase-sa.json';
+process.env.GOOGLE_APPLICATION_CREDENTIALS = '/tmp/sa.json';
 
 (async () => {
   const { Firestore } = require('firebase-admin/firestore');
   const { initializeApp, cert, getApps } = require('firebase-admin/app');
 
-  const sa = JSON.parse(fs.readFileSync('/tmp/firebase-sa.json', 'utf8'));
+  const sa = JSON.parse(fs.readFileSync('/tmp/sa.json', 'utf8'));
   if (getApps().length === 0) {
     initializeApp({ credential: cert(sa) });
   }
