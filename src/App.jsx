@@ -44,6 +44,7 @@ const PublicDebugPage = lazy(() => import('@/pages/PublicDebugPage'));
 const ShelterContractsList = lazy(() => import('@/modules/contracts/pages/ShelterContractsList'));
 const MyContracts = lazy(() => import('@/modules/contracts/pages/MyContracts'));
 const PostAdoptionDashboard = lazy(() => import('@/modules/shelter/components/PostAdoptionDashboard'));
+const ShelterOnboardingWizard = lazy(() => import('@/modules/shelter/pages/ShelterOnboardingWizard'));
 const ShelterInterviewsList = lazy(() => import('@/modules/interview/pages/ShelterInterviewsList'));
 const OnboardingQuestionnaire = lazy(() => import('@/modules/onboarding/pages/OnboardingQuestionnaire'));
 const LegalGate = lazy(() => import('@/components/legal/LegalGate'));
@@ -243,6 +244,7 @@ export default function App() {
                 <Route path="/vitrines" element={withLayout('PublicExhibitions', PublicExhibitions)} />
                 <Route path="/eventos" element={withLayout('EventsUnified', EventsUnified)} />
                 <Route path="/lares-temporarios/dashboard" element={withLayout('FosterDashboard', FosterDashboard)} />
+                <Route path="/abrigo/:clubId/onboarding" element={withLayout('ShelterOnboarding', ShelterOnboardingWizard)} />
                 <Route path="/abrigos/:clubId/admin/dashboard" element={withLayout('ShelterAdminDashboard', ShelterAdminDashboard)} />
                 <Route path="/vitrines/:id" element={withLayout('PublicExhibitionDetail', PublicExhibitionDetail)} />
                 <Route path="/lares-temporarios" element={withLayout('PublicFosterPrograms', PublicFosterPrograms)} />

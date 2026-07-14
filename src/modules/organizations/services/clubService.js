@@ -184,9 +184,9 @@ export async function updateClub(id, updates, actor) {
   // também significa que precisamos lembrar de adicionar campos novos
   // (ex.: `theme`) aqui no momento em que eles viram personalização.
   const allowed = [
-    'name', 'description', 'history', 'city', 'state', 'logo_url',
+    'name', 'description', 'history', 'city', 'state', 'logo_url', 'cover_url',
     'contact_email', 'contact_phone', 'whatsapp_number', 'instagram',
-    'home_venue', 'cnpj', 'donation_link', 'chat_enabled',
+    'home_venue', 'cnpj', 'donation_link', 'chat_enabled', 'onboarding_completed',
     'theme', // objeto de personalização visual (primary, highlight, …, cover_*)
   ];
   const sanitized = {};
