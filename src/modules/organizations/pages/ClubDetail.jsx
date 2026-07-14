@@ -7,6 +7,7 @@ import { ArrowLeft, Building2, PawPrint, MessageSquare, HandCoins, Wallet, Users
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { TabsContentStack, BalancedTabsContent } from '@/components/ui/BalancedTabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 import { toast } from 'sonner';
@@ -224,37 +225,39 @@ export default function ClubDetail() {
             )}
           </div>
 
-          <TabsContent value="general" className="mt-6 space-y-6 outline-none sm:mt-8">
+          <TabsContentStack>
+          <BalancedTabsContent value="general" className="mt-6 space-y-6 outline-none sm:mt-8">
             {/* TASK-205: CTA "Seja voluntário" (flag-gated, some se OFF) */}
             <VolunteerCtaCard clubId={orgId} clubName={club?.name} />
             <ClubGeneralTab club={club} stats={stats} />
             {/* TASK-142: galeria pública (some sem fotos) */}
             <PublicGallerySection clubId={orgId} />
-          </TabsContent>
+          </BalancedTabsContent>
 
-          <TabsContent value="pets" className="mt-6 outline-none sm:mt-8">
+          <BalancedTabsContent value="pets" className="mt-6 outline-none sm:mt-8">
             <ClubPetsPublicTab clubId={orgId} clubName={club?.name} />
-          </TabsContent>
+          </BalancedTabsContent>
 
-          <TabsContent value="feed" className="mt-6 outline-none sm:mt-8">
+          <BalancedTabsContent value="feed" className="mt-6 outline-none sm:mt-8">
             <ClubFeedTab clubId={orgId} club={club} membership={membership} canManageFeed={false} />
-          </TabsContent>
+          </BalancedTabsContent>
 
-          <TabsContent value="donations" className="mt-6 outline-none sm:mt-8">
+          <BalancedTabsContent value="donations" className="mt-6 outline-none sm:mt-8">
             <ClubDonationsTab clubId={orgId} club={club} membership={membership} canManage={false} />
-          </TabsContent>
+          </BalancedTabsContent>
 
-          <TabsContent value="finance" className="mt-6 outline-none sm:mt-8">
+          <BalancedTabsContent value="finance" className="mt-6 outline-none sm:mt-8">
             <ClubFinanceTab clubId={orgId} canManage={false} />
-          </TabsContent>
+          </BalancedTabsContent>
 
-          <TabsContent value="volunteers" className="mt-6 outline-none sm:mt-8">
+          <BalancedTabsContent value="volunteers" className="mt-6 outline-none sm:mt-8">
             <ClubVolunteersPublicTab clubId={orgId} club={club} viewerMembership={membership} />
-          </TabsContent>
-          <TabsContent value="team" className="mt-6 outline-none sm:mt-8">
+          </BalancedTabsContent>
+          <BalancedTabsContent value="team" className="mt-6 outline-none sm:mt-8">
             <ClubTeamPublicTab clubId={orgId} club={club} viewerMembership={membership} />
-          </TabsContent>
-        </Tabs>
+          </BalancedTabsContent>
+        
+        </TabsContentStack></Tabs>
       </div>
     </ClubThemedScope>
   );

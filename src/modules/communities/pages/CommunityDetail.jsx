@@ -6,6 +6,7 @@ import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { TabsContentStack, BalancedTabsContent } from '@/components/ui/BalancedTabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 import { getCommunity, joinCommunity } from '../services/communityService';
@@ -169,7 +170,7 @@ export default function CommunityDetail() {
           `arena-tab-bar` e o botão ficam em um flex row com
           `border-b` para o delineador. */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className={parityEnabled ? 'w-full' : 'w-full space-y-5'}>
-        {parityEnabled ? (
+    <TabsContentStack>        {parityEnabled ? (
           <div className="flex flex-wrap items-end justify-between gap-3 border-b border-border/60 pb-1">
             <div className="w-full sm:w-auto">
               <TabsList className="arena-tab-bar">
@@ -212,16 +213,17 @@ export default function CommunityDetail() {
           </TabsList>
         )}
 
-        <TabsContent value="mural"><MuralTab communityId={communityId} isMember={isMember} isAdmin={canAdmin} membership={membership} community={community} /></TabsContent>
-        <TabsContent value="forum"><ForumTab communityId={communityId} /></TabsContent>
-        <TabsContent value="eventos"><EventsTab communityId={communityId} isAdmin={canAdmin} membership={membership} community={community} /></TabsContent>
-        <TabsContent value="sobre"><AboutTab community={community} /></TabsContent>
+        <BalancedTabsContent value="mural"><MuralTab communityId={communityId} isMember={isMember} isAdmin={canAdmin} membership={membership} community={community} /></BalancedTabsContent>
+        <BalancedTabsContent value="forum"><ForumTab communityId={communityId} /></BalancedTabsContent>
+        <BalancedTabsContent value="eventos"><EventsTab communityId={communityId} isAdmin={canAdmin} membership={membership} community={community} /></BalancedTabsContent>
+        <BalancedTabsContent value="sobre"><AboutTab community={community} /></BalancedTabsContent>
         {canAdmin && (
-          <TabsContent value="equipe">
+          <BalancedTabsContent value="equipe">
             <CommunityTeamTab community={community} membership={membership} />
-          </TabsContent>
+          </BalancedTabsContent>
         )}
-      </Tabs>
+      
+    </TabsContentStack></Tabs>
     </div>
   );
 }
