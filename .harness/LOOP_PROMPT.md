@@ -178,22 +178,22 @@ python3 -c "import json; d=json.load(open('.harness/SCRUM_TASKS.json')); done=[t
 
 | ID | Pri | Categoria | Descrição |
 |---|---|---|---|
-| **TASK-315** | high | shelter | [UX-A11Y-001] Acessibilidade (keyboard nav, ARIA, contraste WCAG) |
-| **TASK-309** | high | shelter | [UX-ABRIGO-002] Onboarding wizard do abrigo (5 passos) |
-| **TASK-273** | high | shelter | Smart Search: adicionar entidade volunteer |
-| **TASK-277** | high | shelter | Rate limit em joinShelterAsVolunteer e acceptVolunteerTerms |
-| **TASK-312** | high | shelter | [INT-SEARCH-001] Sync ativo do search index (Cloud Function) |
-| **TASK-325** | medium | shelter | [UX-MILESTONE-001] Foto/video pro adotante completar milestones |
-| **TASK-268** | critical | shelter | Cloud Function onVolunteerJoinedShelter (FCM admin) |
-| **TASK-269** | critical | shelter | Cloud Function onVolunteerParticipationCreated (FCM voluntário) |
-| **TASK-291** | high | shelter | Email provider (SendGrid/Resend) — AGUARDA decisão humana |
-| **TASK-239** | medium | shelter | Sentry + Crashlytics |
-| **TASK-302** | medium | shelter | a11y mobile (helper) |
-| **TASK-176** | high | shelter | Sentry enriquecido |
-| **TASK-239** | medium | shelter | Sentry + Crashlytics |
-| **TASK-302** | medium | shelter | a11y mobile (helper) |
+| TASK-308 | high | shelter | [UX-POSTADOPT-001] UI devolução + pause |
+| TASK-325 | medium | shelter | [UX-MILESTONE-001] Foto/video pro adotante completar milestones |
+| TASK-309 | high | shelter | [UX-ABRIGO-002] Onboarding wizard do abrigo (5 passos) — verificar duplicação |
+| TASK-273 | high | shelter | Smart Search: adicionar entidade volunteer |
+| TASK-277 | high | shelter | Rate limit em joinShelterAsVolunteer e acceptVolunteerTerms |
+| TASK-312 | high | shelter | [INT-SEARCH-001] Sync ativo do search index (Cloud Function) |
+| TASK-268 | critical | shelter | Cloud Function onVolunteerJoinedShelter (FCM admin) |
+| TASK-269 | critical | shelter | Cloud Function onVolunteerParticipationCreated (FCM voluntário) |
+| TASK-291 | high | shelter | Email provider (SendGrid/Resend) — AGUARDA decisão humana |
+| TASK-176 | high | shelter | Sentry enriquecido |
+| TASK-239 | medium | shelter | Sentry + Crashlytics |
+| TASK-302 | medium | shelter | a11y mobile (helper) |
 
-> **Nota**: TASK-147 foi marcada done via varredura (PR #147 já no main).
+> **Notas**:
+> - TASK-315 (a11y audit) foi entregue em modo BATCH (branch feat/task-315-a11y-audit-2026-07-14 pushed, pr=0)
+> - TASK-310, TASK-326 foram feitas pelo cron (verificar com git log antes de pegar)
 
 ---
 
