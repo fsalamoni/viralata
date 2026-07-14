@@ -33,6 +33,7 @@ export const REPORT_TYPES = Object.freeze([
   'time_in_shelter',  // Tempo médio no abrigo
   'fosters',          // Animais em lar temporário
   'spay_neuter',      // Castrados / não castrados
+  'medication_adherence', // Adesão à medicação por animal (TASK-141)
 ]);
 
 export const REPORT_TYPE_LABELS = Object.freeze({
@@ -45,6 +46,7 @@ export const REPORT_TYPE_LABELS = Object.freeze({
   time_in_shelter: 'Tempo no Abrigo',
   fosters: 'Lares Temporários',
   spay_neuter: 'Castrações',
+  medication_adherence: 'Adesão à Medicação',
 });
 
 // ─── Período ───────────────────────────────────────────────────────────
@@ -733,4 +735,137 @@ export function exportToCSV(data, filename = 'relatorio.csv') {
   link.download = filename;
   link.click();
   URL.revokeObjectURL(url);
+}
+
+// ─── Medicação: Adesão (TASK-141) ───────────────────────────────────────
+
+/**
+ * Schema do relatório de adesão à medicação.
+ * - `adherencePct`: 0-100 (% de doses administradas no prazo)
+ * - `onTime`: doses administradas no prazo
+ * - `late`: doses administradas com atraso (mas não puladas)
+ * - `missed`: doses não administradas (pulados ou vencidas sem registro)
+ * - `perPet`: array com breakdown por animal
+ */
+export const medicationAdherenceReportSchema = z.object({
+  type: z.literal('medication_adherence'),
+  totalDoses: z.number().int().min(0),
+  onTime: z.number().int().min(0),
+  late: z.number().int().min(0),
+  missed: z.number().int().min(0),
+  skipped: z.number().int().min(0),
+  adherencePct: z.number().min(0).max(100),
+  perPet: z.array(z.object({
+    pet_id: z.string(),
+    pet_name: z.string().optional(),
+    totalDoses: z.number().int().min(0),
+    onTime: z.number().int().min(0),
+    late: z.number().int().min(0),
+    missed: z.number().int().min(0),
+    adherencePct: z.number().min(0).max(100),
+  })),
+});
+
+/**
+ * Computa a taxa de adesão à medicação por animal (TASK-141).
+ *
+ * Critérios:
+ *  - **onTime** (verde): dose administrada em até 30 min após scheduled_at
+ *  - **late** (amarelo): dose administrada após 30 min de atraso
+ *  - **missed** (vermelho): dose não administrada (skipped=true OU
+ *    scheduled_at < now - 24h sem administered_at)
+ *  - **skipped** (cinza): dose explicitamente pulada
+ *
+ * Compliance: (onTime + late*0.5) / total
+ *  - On-time = 100% credit
+ *  - Late = 50% credit
+ *  - Missed/Skipped = 0% credit
+ *
+ * Alerta: se adherencePct < 80% → abrigo precisa de mais staff.
+ */
+export function computeMedicationAdherenceReport({ medications, doses, pets }) {
+  if (!medications || medications.length === 0) {
+    return medicationAdherenceReportSchema.parse({
+      type: 'medication_adherence',
+      totalDoses: 0, onTime: 0, late: 0, missed: 0, skipped: 0,
+      adherencePct: 0, perPet: [],
+    });
+  }
+
+  const ON_TIME_WINDOW_MS = 30 * 60 * 1000; // 30 min
+  const now = Date.now();
+  const petById = (pets || []).reduce((acc, p) => { acc[p.id] = p; return acc; }, {});
+
+  let totalDoses = 0;
+  let onTime = 0;
+  let late = 0;
+  let missed = 0;
+  let skipped = 0;
+  const perPetMap = new Map();
+
+  for (const med of medications) {
+    const medDoses = (doses || []).filter((d) => d.medication_id === med.id || d.medication_id === med.medId);
+    const petId = med.pet_id || med.petId;
+    if (!petId) continue;
+
+    if (!perPetMap.has(petId)) {
+      perPetMap.set(petId, {
+        pet_id: petId,
+        pet_name: petById[petId]?.name || 'Pet',
+        totalDoses: 0, onTime: 0, late: 0, missed: 0,
+      });
+    }
+    const perPetRow = perPetMap.get(petId);
+
+    for (const dose of medDoses) {
+      totalDoses++;
+      perPetRow.totalDoses++;
+
+      if (dose.skipped) {
+        skipped++;
+        continue;
+      }
+
+      const scheduled = dose.scheduled_at && dose.scheduled_at.toMillis
+        ? dose.scheduled_at.toMillis()
+        : (typeof dose.scheduled_at === 'string' ? new Date(dose.scheduled_at).getTime() : null);
+      const administered = dose.administered_at
+        ? (dose.administered_at.toMillis
+            ? dose.administered_at.toMillis()
+            : new Date(dose.administered_at).getTime())
+        : null;
+
+      if (administered && scheduled !== null) {
+        const diff = administered - scheduled;
+        if (diff <= ON_TIME_WINDOW_MS) {
+          onTime++;
+          perPetRow.onTime++;
+        } else {
+          late++;
+          perPetRow.late++;
+        }
+      } else if (!administered && scheduled !== null && scheduled < now - 24 * 60 * 60 * 1000) {
+        missed++;
+        perPetRow.missed++;
+      }
+    }
+  }
+
+  // Calcula compliance por pet
+  const perPet = Array.from(perPetMap.values()).map((p) => ({
+    ...p,
+    adherencePct: p.totalDoses > 0
+      ? Math.round(((p.onTime + p.late * 0.5) / p.totalDoses) * 100)
+      : 0,
+  }));
+
+  const adherencePct = totalDoses > 0
+    ? Math.round(((onTime + late * 0.5) / totalDoses) * 100)
+    : 0;
+
+  return medicationAdherenceReportSchema.parse({
+    type: 'medication_adherence',
+    totalDoses, onTime, late, missed, skipped,
+    adherencePct, perPet,
+  });
 }

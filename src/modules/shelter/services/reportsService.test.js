@@ -116,7 +116,10 @@ describe('reportsService', () => {
         .mockResolvedValueOnce(makeSnap(fosters));
 
       const { getReportsSummary } = await import('./reportsService');
-      const result = await getReportsSummary('club-abc', { periodType: 'month' });
+      const result = await getReportsSummary('club-abc', {
+        periodType: 'month',
+        reportTypes: ['rescues', 'adoptions', 'fosters'],
+      });
 
       expect(mockGetDocs).toHaveBeenCalledTimes(4);
       expect(result).toHaveProperty('rescues');
