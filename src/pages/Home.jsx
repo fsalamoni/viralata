@@ -240,6 +240,11 @@ export default function Home() {
         </div>
       </motion.section>
 
+      {/* TASK-149: Próximas vitrines */}
+      <section className="px-6 py-7 max-w-5xl mx-auto">
+        <UpcomingExhibitionsFeed limit={6} />
+      </section>
+
       {/* Footer */}
       <footer className="border-t border-border px-6 py-7 text-center">
         <p className="text-[13px] text-muted-foreground">© {new Date().getFullYear()} Viralata — Adoção responsável de pets</p>
