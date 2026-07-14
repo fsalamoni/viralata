@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-14T20:57:03.672Z",
+  "generatedAt": "2026-07-14T21:22:53.050Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -10,20 +10,7 @@
     "endsAt": "2026-07-18",
     "goal": "Estabilizar produção pós-deploy das 22 fases, fechar 3 worktrees em paralelo, decidir backend da Fase 18, priorizar débitos técnicos"
   },
-  "activeWorktrees": [
-    {
-      "id": "wt-application-scoring",
-      "branch": "feat/application-scoring-2026-07-14",
-      "head": "1ce1708d6ee904eb130aacf1f6dd468d4e2a82b7",
-      "headTitle": "feat: TASK-310 — match scoring nas applications do abrigo",
-      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-application-scoring",
-      "status": "ahead-of-main",
-      "commitsAhead": 1,
-      "primarySession": null,
-      "sessionTitle": null,
-      "focus": []
-    }
-  ],
+  "activeWorktrees": [],
   "activeSessions": [
     {
       "id": "mvs_311d078987d0414a90f57ef28b789b18",
@@ -326,13 +313,13 @@
       "title": "Revisão jurídica: codigoDeConduta.js",
       "type": "debt",
       "category": "legal",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "human-jurídico",
       "branch": null,
       "flag": "SHELTER_LEGAL_TERMS_V1",
       "worktree": null,
-      "pr": null,
+      "pr": "39",
       "tags": [
         "jurídico",
         "conduta",
@@ -342,7 +329,7 @@
       "evidence": "src/pages/legal/codigoDeConduta.js:256 (TODO JURÍDICO)",
       "description": "Código de conduta para usuários da plataforma. Verificar cláusulas de não-discriminação, tratamento de denúncias (já tem reportContent), e alinhamento com Marco Civil Art. 19 (notificação e remoção).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14"
     },
     {
       "id": "TASK-009",
@@ -1744,13 +1731,13 @@
       "title": "Inserir 05_Termo_Adocao.md como página legal + integrar com application submit",
       "type": "feature",
       "category": "legal",
-      "status": "ready",
+      "status": "done",
       "priority": "critical",
       "owner": "unassigned",
       "branch": "feat/legal-docs-v2",
       "flag": "SHELTER_LEGAL_TERMS_V1",
       "worktree": ".worktrees/wt-legal-v2",
-      "pr": null,
+      "pr": "89",
       "tags": [
         "legal",
         "lgpd",
@@ -1771,7 +1758,7 @@
       "evidence": ".tmp-legal-docs/05_Termo_Adocao.md",
       "description": "BLOCO INDEPENDENTE. Criar src/pages/legal/TermoAdocao.jsx com 05_Termo_Adocao.md (4.0 KB). SUBSTITUI src/pages/legal/adoptionTerms.v1.js (v1 com TODO JURÍDICO em :414). Rota /legal/termo-adocao. CRÍTICO: também integrar como clickwrap no submit da application (TASK-095).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14"
     },
     {
       "id": "TASK-064",
@@ -3339,13 +3326,13 @@
       "title": "Ativar flag: mudar 1 linha em featureFlags.js (FF.SHELTER_LEGAL_TERMS_V1 = true)",
       "type": "chore",
       "category": "core",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": "feat/legal-docs-v2",
       "flag": "SHELTER_LEGAL_TERMS_V1",
       "worktree": ".worktrees/wt-legal-v2",
-      "pr": null,
+      "pr": "115",
       "tags": [
         "ativacao",
         "1-linha",
@@ -3360,20 +3347,20 @@
       "evidence": "src/core/featureFlags.js (DEFAULT_FEATURE_FLAGS)",
       "description": "BLOCO INDEPENDENTE. Após TASK-114, mudar 1 linha em src/core/featureFlags.js: DEFAULT_FEATURE_FLAGS[FEATURE_FLAG.SHELTER_LEGAL_TERMS_V1] = true. Commit, push, PR. Smoke test em produção. NOTA: alternativa é ligar via painel /admin/flags sem deploy.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14"
     },
     {
       "id": "TASK-116",
       "title": "Ativar flag: validar em produção (banner aparece, /legal/* públicas)",
       "type": "chore",
       "category": "lgpd",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
       "flag": "SHELTER_LEGAL_TERMS_V1",
       "worktree": null,
-      "pr": null,
+      "pr": "116",
       "tags": [
         "ativacao",
         "validacao",
@@ -3388,7 +3375,7 @@
       "evidence": "viralata.web.app",
       "description": "BLOCO INDEPENDENTE. Após deploy de TASK-115, validar em produção: (1) CookieBanner aparece? (2) /legal/termos-de-uso retorna 200? (3) /legal/politica-de-privacidade retorna 200? (4) consent gravando no localStorage? (5) banner tem botões? Documentar em docs/FLAG_ACTIVATION_LOG.md.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14"
     },
     {
       "id": "TASK-117",
@@ -3423,7 +3410,7 @@
     {
       "id": "TASK-118",
       "title": "Adicionar campo search_keywords em 7 collections (pets, users, shelters, foster_placements, exhibitions, pet_timeline, adoption_applications)",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "type": "feature",
       "category": "search",
@@ -3431,7 +3418,7 @@
       "branch": "wt/e79e15ca",
       "flag": "SHELTER_SMART_SEARCH",
       "worktree": ".worktrees/wt-e79e15ca",
-      "pr": null,
+      "pr": "118",
       "tags": [
         "search",
         "firestore",
@@ -3447,12 +3434,12 @@
       "evidence": "",
       "description": "Cada doc ganha campo search_keywords: string lowercase, normalizado, com sinônimos. Ex: \"cão\" → \"cao caes cachorro cachorros\". Estratégia: array de tokens ou string única com tokens.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14"
     },
     {
       "id": "TASK-119",
       "title": "Cloud Function onWrite que normaliza e popula search_keywords",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "type": "feature",
       "category": "search",
@@ -3460,7 +3447,7 @@
       "branch": "wt/e79e15ca",
       "flag": "SHELTER_SMART_SEARCH",
       "worktree": ".worktrees/wt-e79e15ca",
-      "pr": null,
+      "pr": "119",
       "tags": [
         "search",
         "cloud-function",
@@ -3475,12 +3462,12 @@
       "evidence": "",
       "description": "functions/searchIndex.js. Trigger onWrite em 7 collections. Lê campos textuais, normaliza (lowercase + remove acentos + sinônimos), grava em search_keywords. Async, idempotente.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14"
     },
     {
       "id": "TASK-120",
       "title": "Composite indexes em firestore.indexes.json (multi-field only)",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "type": "infra",
       "category": "search",
@@ -3488,7 +3475,7 @@
       "branch": "wt/e79e15ca",
       "flag": "SHELTER_SMART_SEARCH",
       "worktree": ".worktrees/wt-e79e15ca",
-      "pr": null,
+      "pr": "120",
       "tags": [
         "firestore",
         "index",
@@ -3504,12 +3491,12 @@
       "evidence": "",
       "description": "Indexes: pets(status+species+city), pets(status+created_at), pets(owner_id+created_at), users(city+role), adoption_applications(shelter_id+status), adoption_applications(applicant_uid+created_at). NÃO declarar single-field collectionGroup (regra do projeto).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14"
     },
     {
       "id": "TASK-121",
       "title": "Backfill script: popular search_keywords em docs existentes",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "type": "chore",
       "category": "search",
@@ -3517,7 +3504,7 @@
       "branch": "wt/e79e15ca",
       "flag": "SHELTER_SMART_SEARCH",
       "worktree": ".worktrees/wt-e79e15ca",
-      "pr": null,
+      "pr": "121",
       "tags": [
         "backfill",
         "search",
@@ -3532,7 +3519,7 @@
       "evidence": "",
       "description": "scripts/backfill-search-keywords.mjs. Lê todas as docs das 7 collections. Para cada uma, calcula search_keywords (mesma lógica do Cloud Function) e escreve de volta. Idempotente (não duplica).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14"
     },
     {
       "id": "TASK-122",
@@ -3623,7 +3610,7 @@
     {
       "id": "TASK-125",
       "title": "Tests + smoke test + flag OFF safe do Smart Search",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "type": "test",
       "category": "search",
@@ -3631,7 +3618,7 @@
       "branch": "wt/e79e15ca",
       "flag": "SHELTER_SMART_SEARCH",
       "worktree": ".worktrees/wt-e79e15ca",
-      "pr": null,
+      "pr": "161",
       "tags": [
         "test",
         "smoke",
@@ -3648,7 +3635,7 @@
       "evidence": "",
       "description": "Tests: hook com mock, página com query vazia + query com typo. Smoke test em produção com flag OFF (deve ser no-op, sem mudar UI). Capturar bundle hash.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14"
     },
     {
       "id": "TASK-204",
@@ -4452,7 +4439,7 @@
       "title": "Vitrines: sistema de escalas (turnos por role)",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -4462,7 +4449,7 @@
         "regra-a"
       ],
       "worktree": null,
-      "pr": null,
+      "pr": "147",
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [
@@ -4471,7 +4458,7 @@
       "evidence": "Regra A §1.2 (papel voluntário)",
       "description": "BLOCO INDEPENDENTE. Em ExhibitionDetails.jsx: criar shifts (data+hora+role+capacity), atribuir voluntários, confirmar presença, check-in. Integra com volunteer_participation (TASK-121).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14"
     },
     {
       "id": "TASK-148",
@@ -4556,7 +4543,7 @@
       "title": "Kanban: integração com voluntários (assignment por volunteer)",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
@@ -4566,7 +4553,7 @@
         "regra-a"
       ],
       "worktree": null,
-      "pr": null,
+      "pr": "151",
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [
@@ -4575,7 +4562,7 @@
       "evidence": "Regra A §1.2 (papel voluntário) + Regra A §1.3 (integrações)",
       "description": "BLOCO INDEPENDENTE. Em KanbanCardModal, assignees pode incluir volunteers do roster (não só membros do abrigo). Conecta kanban com volunteer_profile.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14"
     },
     {
       "id": "TASK-152",
@@ -4733,7 +4720,7 @@
       "title": "Mural: perfil público dos autores de post",
       "type": "feature",
       "category": "community",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
@@ -4744,14 +4731,14 @@
         "regra-a"
       ],
       "worktree": null,
-      "pr": null,
+      "pr": "158",
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
       "evidence": "Regra A §1.4 (perfil) — user em comunidade",
       "description": "BLOCO INDEPENDENTE. Click no avatar do autor abre profile público (read-only) com bio, posts, eventos. LGPD: oculta email/phone (só display_name + foto).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14"
     },
     {
       "id": "TASK-159",
@@ -4807,7 +4794,7 @@
       "title": "Fórum: anexos com DOMPurify (anti-XSS)",
       "type": "feature",
       "category": "community",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
@@ -4818,21 +4805,21 @@
         "regra-a"
       ],
       "worktree": null,
-      "pr": null,
+      "pr": "161",
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
       "evidence": "Regra A §1.3 (segurança) + já existe TASK-029 com DOMPurify",
       "description": "BLOCO INDEPENDENTE. Garantir que todo anexo (PDF, doc, imagem) passe por DOMPurify antes de renderizar. Reutilizar solução do TASK-029 (LegalPageViewer).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14"
     },
     {
       "id": "TASK-162",
       "title": "Eventos: listagem pública /comunidades/{id}/eventos",
       "type": "feature",
       "category": "community",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
@@ -4842,21 +4829,21 @@
         "regra-a"
       ],
       "worktree": null,
-      "pr": null,
+      "pr": "162",
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
       "evidence": "Regra A §1.1 (público)",
       "description": "BLOCO INDEPENDENTE. Criar /comunidades/{id}/eventos: listagem de eventos com data, local, descrição, RSVP. Integra com módulo vitrines quando o evento for uma vitrine.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14"
     },
     {
       "id": "TASK-163",
       "title": "Eventos: RSVP público + confirmação de presença",
       "type": "feature",
       "category": "community",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
@@ -4866,14 +4853,14 @@
         "regra-a"
       ],
       "worktree": null,
-      "pr": null,
+      "pr": "163",
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
       "evidence": "Regra A §1.2 (papel user)",
       "description": "BLOCO INDEPENDENTE. Botão \"Vou participar\" logado. Confirmação via email + in-app notification 24h antes. Audit_log de presença.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14"
     },
     {
       "id": "TASK-164",
@@ -4930,7 +4917,7 @@
       "title": "Equipe: convite público para entrar na comunidade",
       "type": "feature",
       "category": "community",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
@@ -4940,14 +4927,14 @@
         "regra-a"
       ],
       "worktree": null,
-      "pr": null,
+      "pr": "166",
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
       "evidence": "Regra A §1.1 (público) — onboarding",
       "description": "BLOCO INDEPENDENTE. Botão \"Pedir pra entrar\" logado. Cria club_join_request. Admin aprova. Clickwrap do código de conduta.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14"
     },
     {
       "id": "TASK-167",
@@ -4980,7 +4967,7 @@
       "title": "Admin Flags: auto-rollback se erro aumenta após ativação",
       "type": "feature",
       "category": "admin",
-      "status": "ready",
+      "status": "done",
       "priority": "low",
       "owner": "unassigned",
       "branch": null,
@@ -4991,14 +4978,14 @@
         "regra-a"
       ],
       "worktree": null,
-      "pr": null,
+      "pr": "168",
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
       "evidence": "Regra A §1.5 (pós-deploy) + observability",
       "description": "BLOCO INDEPENDENTE. Cloud Function observa error rate (Sentry/Crashlytics) por 1h após ativação de flag. Se >2x baseline, rollback automático + alerta.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14"
     },
     {
       "id": "TASK-169",
@@ -5110,7 +5097,7 @@
       "title": "Admin Metrics: alertas de anomalia (queda brusca de cadastros, spike de erros)",
       "type": "feature",
       "category": "admin",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
@@ -5121,14 +5108,14 @@
         "regra-a"
       ],
       "worktree": null,
-      "pr": null,
+      "pr": "173",
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
       "evidence": "Regra A §1.5 (monitoramento) + observability",
       "description": "BLOCO INDEPENDENTE. Cloud Function scheduled que compara baseline 7d vs valor atual. Alerta in-app + email se >2x desvio padrão.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14"
     },
     {
       "id": "TASK-174",
@@ -5212,7 +5199,7 @@
       "title": "Admin Security: runbooks para alertas críticos (link da plataforma → documento)",
       "type": "feature",
       "category": "admin",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
@@ -5223,14 +5210,14 @@
         "regra-a"
       ],
       "worktree": null,
-      "pr": null,
+      "pr": "177",
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
       "evidence": "Regra A §1.5 (pós-deploy)",
       "description": "BLOCO INDEPENDENTE. Para cada tipo de alerta em SecurityAlerts.jsx, ter um \"playbook\" link (docs/RUNBOOKS.md) com passos de mitigação. Render como markdown.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14"
     },
     {
       "id": "TASK-178",
@@ -5617,13 +5604,13 @@
       "title": "Legal v2: remover TODO(JURÍDICO) visível ao usuário em 3 textos (adoption, volunteer, shelter)",
       "type": "bug",
       "category": "legal",
-      "status": "ready",
+      "status": "done",
       "priority": "critical",
       "owner": "mvs_311d078987d0414a90f57ef28b789b18",
       "branch": "wt/e79e15ca",
       "flag": "SHELTER_LEGAL_TERMS_V1",
       "worktree": ".worktrees/wt-e79e15ca",
-      "pr": null,
+      "pr": "103",
       "tags": [
         "legal",
         "regra-a",
@@ -5640,7 +5627,7 @@
       "evidence": "Verifier report VERDICT_LEGAL_V2_a66e030.md Check 3; src/modules/shelter/domain/legal/texts/adoptionTerms.v1.js:414-417; volunteerTerms.v2.js:503-508; shelterOnboardingTerms.v1.js:894-896",
       "description": "BLOCO INDEPENDENTE. CRÍTICO — risco jurídico direto. 3 dos 5 textos legais novos contêm marcador `TODO(JURÍDICO)` literal DENTRO do template string, visível ao usuário que está prestes a assinar o termo. Ações: (A.1) Remover os 3 marcadores TODO dos 3 templates, OU (A.2) Gatear renderização por `is_legal_reviewed: false` no LEGAL_PAGES entry. Recomendado A.1 (substituir por placeholder neutro, ex: [REVISAR COM JURÍDICO ANTES DE PUBLICAR] em comentário, nunca no template). Advogado humano valida. Regra A §1.3 (LGPD) compliance.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14"
     },
     {
       "id": "TASK-194",
@@ -6251,13 +6238,13 @@
       "title": "Smoke test 10+ rotas voluntário + wire SHELTER_VOLUNTEER_PROFILE_V1 nos 4 components + Sentry SDK + DELIVERABLE.md Fase 13",
       "type": "chore",
       "category": "infra",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
       "flag": null,
       "worktree": null,
-      "pr": null,
+      "pr": "86",
       "tags": [
         "regra-a",
         "voluntarios",
@@ -6272,7 +6259,7 @@
       "evidence": "D:\\viralata\\scripts\\smoke-routes.mjs (0 rotas voluntário); D:\\viralata\\src\\modules\\shelter\\components\\VolunteersRoster.jsx:7 (flag documentada mas não checada); D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_REGRA_A_AUDIT.md §Post-deploy",
       "description": "BLOCO INDEPENDENTE. (1) Adicionar 10+ rotas voluntário em scripts/smoke-routes.mjs: /voluntarios, /voluntarios/seja, /shelters/:id/voluntarios, /perfil#voluntariados, etc. (2) Wire useFeatureFlag(SHELTER_VOLUNTEER_PROFILE_V1) em VolunteersRoster, VolunteerProfileForm, ParticipationForm, ParticipationsList. (3) Adicionar Sentry SDK (@sentry/react) + Crashlytics. (4) Escrever docs/VOLUNTEER_MODULE.md (DELIVERABLE Fase 13) com bundle hash. (5) Ativar flag em staging + smoke. Regra A §A.1.5.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11 20:50"
+      "updatedAt": "2026-07-14"
     },
     {
       "id": "TASK-224",
@@ -7230,7 +7217,7 @@
       "title": "Modal de inscrição de voluntário (JoinVolunteerModal)",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "critical",
       "owner": "unassigned",
       "branch": null,
@@ -7249,14 +7236,15 @@
       "subFrente": "voluntarios",
       "description": "Criar src/modules/shelter/components/JoinVolunteerModal.jsx. Usa useJoinShelterAsVolunteer (já existe em useVolunteerProfile.js:81). Mostra: aceite do termo (botão \"Li e aceito\" com link para /legal/termo-voluntariado), campos de skills, availability, radius. Se user já tem users/{uid}/volunteer_profile/main, pré-popula. Se NÃO tem, passo 1 (termo) → passo 2 (perfil) → passo 3 (confirmar). On success, toast + invalida useShelterVolunteers.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14",
+      "pr": "166"
     },
     {
       "id": "TASK-265",
       "title": "Seção \"Voluntário\" em Profile.jsx",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "critical",
       "owner": "unassigned",
       "branch": null,
@@ -7272,14 +7260,15 @@
       "subFrente": "voluntarios",
       "description": "Adicionar nova Card em src/pages/Profile.jsx com: badge \"Sou voluntário\" se users/{uid}/volunteer_profile/main existe, link \"Tornar-me voluntário\" se NÃO, e <VolunteerProfileForm uid={user.uid} actor={user} onSaved={refreshProfile} /> se já é. Empty state: \"Você ainda não é voluntário — descubra como ajudar abrigos próximos.\" Aceita o termo se versão mudou (banner amarelo).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14",
+      "pr": "167"
     },
     {
       "id": "TASK-266",
       "title": "Rota /perfil/voluntario dedicada",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "critical",
       "owner": "unassigned",
       "branch": null,
@@ -7298,7 +7287,8 @@
       "subFrente": "voluntarios",
       "description": "Criar src/pages/VolunteerProfile.jsx (lazy em App.jsx) com rota /perfil/voluntario. Mostra: VolunteerProfileForm, lista de abrigos onde é voluntário (useMyShelterMembershipsAsVolunteer — hook novo), histórico de participations (cards por abrigo com totais de horas), botão \"Sair do abrigo\" por abrigo.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14",
+      "pr": "168"
     },
     {
       "id": "TASK-267",
@@ -7380,7 +7370,7 @@
       "title": "Cloud Function onBgCheckApproved (FCM ao voluntário)",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "critical",
       "owner": "unassigned",
       "branch": null,
@@ -7398,7 +7388,8 @@
       "subFrente": "voluntarios",
       "description": "Trigger onUpdate em clubs/{clubId}/volunteers/{uid} quando background_check_status muda para approved. FCM para volunteer_uid: \"BG check aprovado! Você já pode participar de eventos.\" Email template bg-check-approved-v1. Audit log.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14",
+      "pr": "151"
     },
     {
       "id": "TASK-271",
@@ -8480,7 +8471,7 @@
       "title": "[INT-IMPORT-001] UI de review/edit de pets importados via Google Forms",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -8497,14 +8488,15 @@
       "subFrente": "abrigos-foster-adocao",
       "description": "Componente ImportReview.jsx. Após webhook Google Forms criar pets com status=\"pending_review\", listar no painel do abrigo pra revisar (faltam fotos? nome correto? castrado?). Bulk approve/reject. Caminho esperado: rota /abrigos/:id/imports.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14",
+      "pr": "127"
     },
     {
       "id": "TASK-314",
       "title": "[INT-STORAGE-001] Storage dedicado para documentos veterinários + contracts",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -8523,7 +8515,8 @@
       "subFrente": "abrigos-foster-adocao",
       "description": "Caminho pets/{pet_id}/medical/{record_id}/documents/{file} com rules de tipo (pdf, jpg, png) e tamanho (max 20MB). Caminho clubs/{clubId}/contracts/{contractId}/{file}. Storage rules com return explícito. Audit log de upload/delete.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14",
+      "pr": "110"
     },
     {
       "id": "TASK-315",
@@ -9275,7 +9268,7 @@
       "title": "Export .ics (Google Calendar + iCal)",
       "type": "feature",
       "category": "organizations",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
@@ -9292,7 +9285,8 @@
       "subFrente": "comunidade-adotante-eventos",
       "description": "Adicionar botão \"Adicionar ao Google Calendar\" no EventDetail.jsx. Gera URL https://calendar.google.com/calendar/render?action=TEMPLATE&text=...&dates=...&details=...&location=.... Botão \"Baixar .ics\" chama Cloud Function que retorna text/calendar.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14",
+      "pr": "37"
     },
     {
       "id": "TASK-345",
@@ -9527,7 +9521,7 @@
       "title": "Onboarding contextual (primeiro Acesso) na comunidade",
       "type": "feature",
       "category": "communities",
-      "status": "ready",
+      "status": "done",
       "priority": "low",
       "owner": "unassigned",
       "branch": null,
@@ -9544,7 +9538,8 @@
       "subFrente": "comunidade-adotante-eventos",
       "description": "Tooltips em CommunityDetail.jsx na primeira visita: \"Como participar\", \"Como postar\", \"Como abrir tópico\". Usar localStorage para flag \"visto\".",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-14",
+      "pr": "110"
     },
     {
       "id": "TASK-355",
@@ -10365,12 +10360,12 @@
     "firestoreIndexes": 35,
     "bundleSizeKB": 4125,
     "shelterPhases": "21/22 completas em produção (Fase 18 pendente decisão)",
-    "activeWorktreesAheadOfMain": 1,
+    "activeWorktreesAheadOfMain": 0,
     "mergedWorktreesThisSprint": [
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": "c99cbf35fccb1d99e3c78383fca44bacc22b5a90",
+    "mainCommit": "e09b004028050b1393f74d1c9f4a1c2039e4488c",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",

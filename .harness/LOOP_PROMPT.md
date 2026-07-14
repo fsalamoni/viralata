@@ -1,7 +1,40 @@
-# LOOP_PROMPT — desenvolvimento autônomo (atualizado 2026-07-14 18:18 GMT-3)
+# LOOP_PROMPT — desenvolvimento autônomo (atualizado 2026-07-14 18:21 GMT-3)
 
 **Contexto**: `/workspace/viralata`, branch `main`, React+Vite+Firebase.
 **Sessão**: Mavis root (loop autônomo, 20min).
+
+---
+
+## 🚨 REGRA #0 — ATUALIZAÇÃO DO SCRUM É OBRIGATÓRIA E INEGOCIÁVEL 🚨
+
+**SEMPRE, ANTES de encerrar o turno (mesmo se a task falhou):**
+
+1. Marque a task no SCRUM:
+   - Se completou: `node .harness/scrum.cjs done TASK-XXX --pr YYY --reason "..."`
+   - Se começou e está em progresso: `node .harness/scrum.cjs start TASK-XXX`
+   - Se travou/bloqueou: `node .harness/scrum.cjs block TASK-XXX --reason "..."`
+   - **NUNCA** termine o turno sem uma transição de status.
+
+2. Re-embede o painel:
+   ```bash
+   node .harness/sync.cjs --fix
+   ```
+
+3. Commit + push do scrum update:
+   ```bash
+   git add -A
+   git commit -m "chore(scrum): TASK-XXX done PR #YYY"
+   git pull --rebase --autostash origin main
+   git push origin main
+   ```
+
+4. Se completou a task: **ATUALIZE ESTE PROMPT** (remova da lista de candidatas, adicione nova, faça commit + push).
+
+**VERIFICAÇÃO antes de encerrar**:
+```bash
+python3 -c "import json; d=json.load(open('.harness/SCRUM_TASKS.json')); done=[t for t in d['tasks'] if t['status']=='done']; print(f'Done: {len(done)}/{len(d[\"tasks\"])}')"
+```
+**Se a contagem não subiu após fechar uma task, ALGO ESTÁ ERRADO — corrija antes de sair.**
 
 ---
 
@@ -15,9 +48,11 @@
 3. **Test**: 2+ tests smoke no mínimo.
 4. **Worktree** + branch `feat/<slug>-2026-07-14`.
 5. **Commit + push + PR API + merge admin squash** (bypass CI por quota).
-6. **OBRIGATÓRIO ao final**:
+6. **OBRIGATÓRIO ao final** — REGRA #0 acima:
    ```bash
    cd /workspace/viralata
+   node .harness/scrum.cjs start TASK-XXX  # ao começar
+   # ... implementar, PR, merge ...
    python3 -c "import json; d=json.load(open('.harness/SCRUM_TASKS.json')); [t.update({'status':'done','pr':'$PR_NUM','branch':'feat/<slug>-2026-07-14','updatedAt':'2026-07-14'}) for t in d['tasks'] if t['id']=='TASK-XXX']; json.dump(d, open('.harness/SCRUM_TASKS.json','w'), indent=2)"
    node .harness/scrum.cjs done TASK-XXX --pr $PR_NUM --reason "..."
    node .harness/sync.cjs --fix
@@ -41,7 +76,8 @@
 - TASK-324 Pets similares (PR #184)
 - TASK-334 CommunityEventDetail + RSVP (PR #183)
 - TASK-207, 264, 265, 266, 267, 132, 133, 134, 401, 402 (Fases anteriores)
-- **Varredura**: 36 tasks done cruzando git log
+- **Varredura 1 (36 tasks)**: 150, 152, 154, 157, 159, 160, 180, 191, 200, 241, 244, 245, 288, 289, 290, 293, 294, 295, 296, 299, 300, 329, 331, 332, 055, 218, 219, 221, 246, 275, 305, 307, 316, 335, 356, 267
+- **Varredura 2 (29 tasks)**: 008, 063, 115, 116, 118, 119, 120, 121, 125, 147, 151, 158, 161, 162, 163, 166, 168, 173, 177, 193, 223, 264, 265, 266, 270, 313, 314, 344, 354
 
 ---
 
@@ -49,20 +85,20 @@
 
 | ID | Pri | Categoria | Descrição |
 |---|---|---|---|
-| **TASK-147** | high | shelter | Vitrines: sistema de escalas (turnos por role) |
 | **TASK-326** | medium | shelter | [UX-FOSTER-003] Vitrine pública do LT (histórico pets) |
 | **TASK-310** | high | shelter | [UX-MATCH-001] Scoring compatibilidade visível em Applications |
 | **TASK-308** | high | shelter | [UX-POSTADOPT-001] UI devolução + pause |
 | **TASK-315** | high | shelter | [UX-A11Y-001] Acessibilidade (keyboard nav, ARIA, contraste WCAG) |
 | **TASK-309** | high | shelter | [UX-ABRIGO-002] Onboarding wizard do abrigo (5 passos) |
 | **TASK-325** | medium | shelter | [UX-MILESTONE-001] Foto/video pro adotante completar milestones |
-| **TASK-309** | high | shelter | (idem acima) |
-| **TASK-264** | critical | shelter | Modal inscrição de voluntário (re-checar duplicação) |
-| **TASK-265** | critical | shelter | Seção "Voluntário" em Profile.jsx (re-checar) |
-| **TASK-266** | critical | shelter | Rota /perfil/voluntario (re-checar) |
 | **TASK-268** | critical | shelter | Cloud Function onVolunteerJoinedShelter (FCM admin) |
+| **TASK-269** | critical | shelter | Cloud Function onVolunteerParticipationCreated (FCM voluntário) |
+| **TASK-291** | high | shelter | Email provider (SendGrid/Resend) — AGUARDA decisão humana |
+| **TASK-176** | high | shelter | Sentry enriquecido |
+| **TASK-239** | medium | shelter | Sentry + Crashlytics |
+| **TASK-302** | medium | shelter | a11y mobile (helper) |
 
-> **Nota**: TASK-264, 265, 266, 267, 132, 133, 134, 401, 402 já foram entregues anteriormente — **verificar com `git log` se ainda não estão no main** antes de pegar.
+> **Nota**: TASK-147 foi marcada done via varredura (PR #147 já no main).
 
 ---
 
