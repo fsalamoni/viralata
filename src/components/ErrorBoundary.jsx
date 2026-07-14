@@ -1,5 +1,6 @@
 import React from 'react';
 import { recordClientError } from '@/core/services/observabilityService';
+import { captureError } from '@/core/services/errorTracker';
 
 export default class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -14,6 +15,7 @@ export default class ErrorBoundary extends React.Component {
   componentDidCatch(error, info) {
     this.setState({ info });
     recordClientError(error, { source: 'ErrorBoundary', info, fatal: true });
+    captureError(error, { source: 'ErrorBoundary', info, fatal: true });
     // Log to console for visibility
     console.error('[ErrorBoundary] caught:', error);
     if (info?.componentStack) console.error(info.componentStack);
