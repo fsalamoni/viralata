@@ -20,6 +20,7 @@ const { onDocumentCreated } = require('firebase-functions/v2/firestore');
 const { logger } = require('firebase-functions');
 const { isCompatible } = require('./matching');
 const mockData = require('./mockData');
+const vt = require('./volunteerTriggers');
 
 const DATABASE_ID = 'viralata';
 const REGION = 'southamerica-east1';
@@ -78,6 +79,23 @@ exports.onPetCreatedNotifyRadar = onDocumentCreated(
       await notifyRadarMatches(pet, event.params.petId);
     } catch (err) {
       logger.error('Falha ao processar radar de pets:', err);
+    }
+  },
+);
+
+// Trigger 6: onCreate volunteer_participations → notifica voluntário
+// (FCM + calendar + email + audit) — TASK-269
+exports.onVolunteerParticipationCreated = onDocumentCreated(
+  {
+    document: 'clubs/{clubId}/volunteer_participations/{participationId}',
+    database: DATABASE_ID,
+    region: REGION,
+  },
+  async (event) => {
+    try {
+      await vt.runNotifyVolunteerOnParticipationCreatedSafe(event);
+    } catch (err) {
+      logger.error('onVolunteerParticipationCreated failed:', err);
     }
   },
 );
