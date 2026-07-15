@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-15T23:46:36.628Z",
+  "generatedAt": "2026-07-15T23:54:08.053Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W29",
@@ -7391,7 +7391,7 @@
       "title": "Bridge Foster↔Voluntário + multi-roster agregado no /perfil",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
@@ -7411,7 +7411,8 @@
       "evidence": "D:\\viralata\\src\\modules\\shelter\\components\\FostersList.jsx (separado); D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §UX",
       "description": "BLOCO INDEPENDENTE. (1) Bridge Foster↔Voluntário: no /perfil mostrar AMBOS (foster + volunteer), (2) No fluxo \"Aceitar animal em LT\", perguntar \"Quer se voluntariar para [abrigo] também?\" (cross-sell opt-in), (3) Bloco \"Meus abrigos\" no /perfil: lista todas as rosters do voluntário logado (collectionGroup query + filter volunteer_uid==me), (4) Switch \"ver como admin/ver como voluntário\", (5) Botão \"Sair do abrigo\" por roster (combinar com TASK-242).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11 21:00"
+      "updatedAt": "2026-07-15T23:53:36",
+      "resolvedAt": "2026-07-15"
     },
     {
       "id": "TASK-248",
@@ -8289,7 +8290,7 @@
       "title": "Atualizar docs/SHELTER_MGMT_ROADMAP.md § Fase 13 com checklist dos gaps",
       "type": "docs",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "low",
       "owner": "unassigned",
       "branch": null,
@@ -8306,7 +8307,8 @@
       "subFrente": "voluntarios",
       "description": "Documentar o que foi implementado na Fase 13 e o que ficou como Fase 13.1 (público + perfil + atribuições + integrações). Marcar Fase 13 como \"80% done\".",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15T23:51:32",
+      "resolvedAt": "2026-07-15"
     },
     {
       "id": "TASK-287",
@@ -9962,7 +9964,7 @@
       "title": "Auditoria: cobrir community_post_liked, community_post_commented, community_event_rsvp, community_event_created, community_event_deleted, community_forum_thread_created",
       "type": "feature",
       "category": "core",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
@@ -9981,7 +9983,8 @@
       "subFrente": "comunidade-adotante-eventos",
       "description": "Adicionar constantes em AUDIT_ACTION_LABELS (auditService.js:5-76). Chamar createAuditLog em cada service.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15T23:53:51",
+      "resolvedAt": "2026-07-15"
     },
     {
       "id": "TASK-351",
@@ -11141,7 +11144,7 @@
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": "4aebfb13443c3982751f9d8bf7acea3e32223d4d",
+    "mainCommit": "4eb96b969f54c044f03037ee307ef5003a5faee2",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -11152,11 +11155,11 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 376,
-    "done": 345,
+    "done": 348,
     "inProgress": 0,
     "inReview": 0,
     "blocked": 0,
-    "ready": 26,
+    "ready": 23,
     "backlog": 4,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -11186,7 +11189,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-15T23:46:36.632Z — via sync.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-15T23:54:08.057Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
@@ -11316,7 +11319,7 @@
   ]
 }
   </script>
-  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-15T23:46:36.641Z">
+  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-15T23:54:08.066Z">
   </head>
 <body>
 
