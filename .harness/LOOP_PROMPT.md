@@ -84,6 +84,7 @@ print(f'{len(ready)} tasks ready')
 | TASK-007 | high | Revisão jurídica: avisosLegais.js |
 
 > **Notas**:
+> - TASK-352 ✅ done — feat/task-352-pinned-posts-2026-07-15: posts fixados/desselvados — pinned+pinned_at em community_posts, togglePostPin() c/ audit log, banner carrossel em MuralTabAdmin, botão Pin/PinOff (admin), firestore.rules pinned-only-by-admin
 > - TASK-291 ✅ done — feat/task-291-email-oncall-2026-07-15: sendEmail onCall callable c/ 7 templates de adoção + sendEmailOnCallCore.cjs + 222 testes ✅ + firestore.rules email_delivery_log
 > - TASK-342 ✅ done — feat/task-342-event-volunteers-2026-07-15: volunteer_ids + volunteer_shifts em club_events, multi-select no EventFormDialog, shifts editor, EventDetail aba Escalas
 > - TASK-340 ✅ done — feat/task-340-event-types-2026-07-15: novos tipos VACCINATION, LECTURE, FUNDRAISING, PET_DAY em CLUB_EVENT_TYPE + UI
@@ -93,10 +94,10 @@ print(f'{len(ready)} tasks ready')
 
 ## 📊 MÉTRICAS ATUAIS
 
-- **done=300** (was 299 — TASK-291 done: sendEmail onCall callable + 7 templates + testes)
-- **ready=58**, in_progress=4
-- **Main**: `e8ce4f2`
-- **Branch**: `feat/task-291-email-oncall-2026-07-15`
+- **done=326** (was 325 — TASK-352 done: posts fixados em comunidade)
+- **ready=43**, in_progress=1
+- **Main**: `d59a433`
+- **Branch**: `feat/task-352-pinned-posts-2026-07-15`
 
 ## 🏁 FIM DO TURNO
 
