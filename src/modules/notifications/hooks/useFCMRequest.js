@@ -22,7 +22,7 @@
  */
 
 import { useCallback, useRef } from 'react';
-import { useFeatureFlag } from '@/core/featureFlags';
+import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
 import {
   registerFCMToken,

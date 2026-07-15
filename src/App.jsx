@@ -198,8 +198,8 @@ function RouteTelemetry() {
 // o service worker envia a mensagem para cá (onMessage API).
 // Mostramos toast in-app + deixamos o sw mostrar a notificação native
 // (que é ignorada quando o app está em foreground).
-import { toast } from '@/components/ui/sonner';
-import { useFeatureFlag } from '@/core/featureFlags';
+import { toast } from 'sonner';
+import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
 import { onForegroundMessage } from '@/modules/notifications/services/fcmService';
 import { logger } from '@/core/lib/logger';
