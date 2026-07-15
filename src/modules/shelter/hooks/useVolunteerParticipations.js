@@ -16,6 +16,7 @@ import {
   checkInOut,
   deleteParticipation,
 } from '@/modules/shelter/services/volunteerParticipationService';
+import { captureVolunteerError } from '@/core/services/errorTracker';
 
 const STALE_TIME_MS = 30_000;
 
@@ -44,6 +45,7 @@ export function useCreateParticipation() {
     onSuccess: (data) => {
       qc.invalidateQueries({ queryKey: ['volunteer-participations', data.shelter_club_id] });
     },
+    onError: (err) => captureVolunteerError(err, { mutation: 'createParticipation' }),
   });
 }
 
@@ -56,6 +58,7 @@ export function useUpdateParticipation(shelterClubId, participationId) {
       qc.invalidateQueries({ queryKey: ['volunteer-participations', shelterClubId] });
       qc.invalidateQueries({ queryKey: ['volunteer-participation', shelterClubId, participationId] });
     },
+    onError: (err) => captureVolunteerError(err, { mutation: 'updateParticipation', shelterClubId }),
   });
 }
 
@@ -68,6 +71,7 @@ export function useCheckInOut(shelterClubId, participationId) {
       qc.invalidateQueries({ queryKey: ['volunteer-participations', shelterClubId] });
       qc.invalidateQueries({ queryKey: ['volunteer-participation', shelterClubId, participationId] });
     },
+    onError: (err) => captureVolunteerError(err, { mutation: 'checkInOut', shelterClubId }),
   });
 }
 
@@ -79,5 +83,6 @@ export function useDeleteParticipation(shelterClubId) {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['volunteer-participations', shelterClubId] });
     },
+    onError: (err) => captureVolunteerError(err, { mutation: 'deleteParticipation', shelterClubId }),
   });
 }
