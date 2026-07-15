@@ -5,6 +5,16 @@
  * Functions runtime. A lógica pura está aqui; o wrapper `onSchedule`
  * fica em `eventReminderCron.js`.
  *
+ * Handles:
+ *   - community_events (TASK-337): eventos de comunidade
+ *   - club_events (TASK-337):     eventos de abrigo/ONG
+ *
+ * RSVP collections:
+ *   - community_event_rsvps  (community_events)
+ *   - club_event_rsvps       (club_events)
+ *
+ * Feature flag: `community_event_detail_v1` (via feature_flags/{name})
+ *
  * @see functions/eventReminderCron.js
  */
 
@@ -17,14 +27,18 @@ const DEDUP_COLLECTION = 'notification_dedup';
 const NOTIF_TYPE = 'event_reminder';
 const FEATURE_FLAG = 'community_event_detail_v1';
 
+// ─── Main entry ─────────────────────────────────────────────────────────
+
 /**
+ * Executa varredura de eventos que começam entre agora e agora+25h.
+ * Notifica participantes com RSVP confirmado via EVENT_REMINDER.
+ *
  * @param {object} opts
- * @param {object} opts.db       - Firestore db instance
- * @param {object} opts.logger   - Logger with info/error
+ * @param {object} opts.db     - Firestore db instance
+ * @param {object} opts.logger - Logger with info/error
  * @returns {Promise<{sent: number, skipped: number, errors: number, reason?: string}>}
  */
 async function runEventReminder({ db, logger }) {
-  // Flag check
   const flagEnabled = await isFeatureEnabled(db, FEATURE_FLAG);
   if (!flagEnabled) {
     logger.info('eventReminderCron: feature flag off, skipping');
@@ -33,70 +47,168 @@ async function runEventReminder({ db, logger }) {
 
   const now = new Date();
   const windowEnd = new Date(now.getTime() + 25 * 60 * 60 * 1000);
+  const nowIso = now.toISOString();
+  const windowEndIso = windowEnd.toISOString();
 
-  // Buscar eventos community_events no intervalo
-  const eventsSnap = await db
-    .collection('community_events')
-    .where('event_date', '>=', now.toISOString())
-    .where('event_date', '<=', windowEnd.toISOString())
-    .get();
-
-  if (eventsSnap.empty) {
-    logger.info('eventReminderCron: no events in 24h window');
-    return { sent: 0, skipped: 0, errors: 0 };
-  }
+  logger.info('eventReminderCron: scanning window', { now: nowIso, windowEnd: windowEndIso });
 
   let totalSent = 0;
   let totalSkipped = 0;
   let totalErrors = 0;
 
-  for (const eventDoc of eventsSnap.docs) {
-    const eventData = eventDoc.data();
-    const eventId = eventDoc.id;
+  // ── community_events ────────────────────────────────────────────────
+  try {
+    const communityEventsSnap = await db
+      .collection('community_events')
+      .where('starts_at', '>=', nowIso)
+      .where('starts_at', '<=', windowEndIso)
+      .get();
 
-    try {
-      const result = await _processEvent(db, eventId, eventData, now, logger);
-      totalSent += result.sent;
-      totalSkipped += result.skipped;
-      totalErrors += result.errors;
-    } catch (err) {
-      totalErrors++;
-      logger.error('eventReminderCron: failed to process event', {
-        eventId,
-        error: String(err),
-      });
+    if (!communityEventsSnap.empty) {
+      logger.info('eventReminderCron: community_events found', { count: communityEventsSnap.size });
+
+      for (const eventDoc of communityEventsSnap.docs) {
+        const eventData = eventDoc.data();
+        try {
+          const result = await _processCommunityEvent(db, eventDoc.id, eventData, now, logger);
+          totalSent += result.sent;
+          totalSkipped += result.skipped;
+          totalErrors += result.errors;
+        } catch (err) {
+          totalErrors++;
+          logger.error('eventReminderCron: failed community event', { eventId: eventDoc.id, error: String(err) });
+        }
+      }
     }
+  } catch (err) {
+    logger.error('eventReminderCron: community_events query failed', { error: String(err) });
   }
 
+  // ── club_events (collectionGroup: all clubs/*/events) ───────────────
+  try {
+    const clubEventsSnap = await db
+      .collectionGroup('events')
+      .where('starts_at', '>=', nowIso)
+      .where('starts_at', '<=', windowEndIso)
+      .get();
+
+    if (!clubEventsSnap.empty) {
+      logger.info('eventReminderCron: club_events found', { count: clubEventsSnap.size });
+
+      for (const eventDoc of clubEventsSnap.docs) {
+        const eventData = eventDoc.data();
+        const eventPath = eventDoc.ref.path; // clubs/{clubId}/events/{eventId}
+        const clubId = _extractClubId(eventPath);
+        try {
+          const result = await _processClubEvent(db, eventDoc.id, clubId, eventData, now, logger);
+          totalSent += result.sent;
+          totalSkipped += result.skipped;
+          totalErrors += result.errors;
+        } catch (err) {
+          totalErrors++;
+          logger.error('eventReminderCron: failed club event', { eventId: eventDoc.id, clubId, error: String(err) });
+        }
+      }
+    }
+  } catch (err) {
+    logger.error('eventReminderCron: club_events collectionGroup query failed', { error: String(err) });
+  }
+
+  logger.info('eventReminderCron: done', { sent: totalSent, skipped: totalSkipped, errors: totalErrors });
   return { sent: totalSent, skipped: totalSkipped, errors: totalErrors };
 }
 
-async function _processEvent(db, eventId, eventData, now, logger) {
-  // Buscar RSVPs confirmados
+// ─── community_events processor ────────────────────────────────────────
+
+/**
+ * @param {object} db
+ * @param {string} eventId
+ * @param {object} eventData
+ * @param {Date} now
+ * @param {object} logger
+ */
+async function _processCommunityEvent(db, eventId, eventData, now, logger) {
+  // community_event_rsvps: { event_id, user_id, status }
   const rsvpsSnap = await db
-    .collection('event_rsvps')
+    .collection('community_event_rsvps')
     .where('event_id', '==', eventId)
     .where('status', '==', 'confirmed')
     .get();
 
-  if (rsvpsSnap.empty) {
-    return { sent: 0, skipped: 0, errors: 0 };
-  }
+  if (rsvpsSnap.empty) return { sent: 0, skipped: 0, errors: 0 };
 
-  const eventTitle = eventData.title || 'Evento';
-  const eventDate = _parseDate(eventData.event_date);
-  const formattedDate = eventDate
-    ? eventDate.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })
+  return _fanOutEventReminder({
+    db,
+    eventId,
+    eventTitle: eventData.title || 'Evento de comunidade',
+    eventDateField: eventData.starts_at,
+    link: `/comunidades/${eventData.community_id || ''}/eventos/${eventId}`,
+    rsvpsSnap,
+    now,
+    logger,
+    source: 'community',
+  });
+}
+
+// ─── club_events processor ──────────────────────────────────────────────
+
+/**
+ * @param {object} db
+ * @param {string} eventId
+ * @param {string} clubId
+ * @param {object} eventData
+ * @param {Date} now
+ * @param {object} logger
+ */
+async function _processClubEvent(db, eventId, clubId, eventData, now, logger) {
+  // club_event_rsvps: { event_id, club_id, user_id, status }
+  const rsvpsSnap = await db
+    .collection('club_event_rsvps')
+    .where('event_id', '==', eventId)
+    .where('club_id', '==', clubId)
+    .where('status', '==', 'confirmed')
+    .get();
+
+  if (rsvpsSnap.empty) return { sent: 0, skipped: 0, errors: 0 };
+
+  return _fanOutEventReminder({
+    db,
+    eventId,
+    eventTitle: eventData.title || 'Evento de abrigo',
+    eventDateField: eventData.starts_at,
+    link: `/abrigo/${clubId}/eventos/${eventId}`,
+    rsvpsSnap,
+    now,
+    logger,
+    source: 'club',
+  });
+}
+
+// ─── Shared fan-out ────────────────────────────────────────────────────
+
+/**
+ * Fan-out de EVENT_REMINDER para participantes com RSVP confirmado.
+ * Idempotente via dedup key (event_id + user_id + date).
+ *
+ * @param {object} opts
+ * @param {object} opts.db
+ * @param {string} opts.eventId
+ * @param {string} opts.eventTitle
+ * @param {string} opts.eventDateField  - starts_at value from Firestore (ISO string or Timestamp)
+ * @param {string} opts.link
+ * @param {object} opts.rsvpsSnap       - Firestore query snapshot
+ * @param {Date}   opts.now
+ * @param {object} opts.logger
+ * @param {string} opts.source           - 'community' | 'club'
+ */
+async function _fanOutEventReminder({ db, eventId, eventTitle, eventDateField, link, rsvpsSnap, now, logger, source }) {
+  const parsedDate = _parseDate(eventDateField);
+  const formattedDate = parsedDate
+    ? parsedDate.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', hour: '2-digit', minute: '2-digit' })
     : '';
 
-  const notificationTitle = '⏰ Lembrete: evento amanhã!';
+  const notificationTitle = '⏰ Lembrete: evento em breve!';
   const notificationMessage = eventTitle + (formattedDate ? ` — ${formattedDate}` : '');
-
-  // Determinar link do evento
-  const communityId = eventData.community_id || '';
-  const link = communityId
-    ? `/comunidades/${communityId}/eventos/${eventId}`
-    : `/eventos/${eventId}`;
 
   let sent = 0;
   let skipped = 0;
@@ -107,78 +219,45 @@ async function _processEvent(db, eventId, eventData, now, logger) {
 
   for (const rsvpDoc of rsvpsSnap.docs) {
     const rsvp = rsvpDoc.data();
-    const userUid = rsvp.user_uid;
+    const userUid = rsvp.user_id;
     if (!userUid) { skipped++; continue; }
 
-    const dedupKey = _dedupId('event_reminder', eventId, userUid, _toDateStr(now));
+    const dedupKey = _dedupKey('event_reminder', eventId, userUid, _toDateStr(now));
 
     try {
-      const created = await _sendWithDedup(
-        db,
-        dedupKey,
-        userUid,
-        NOTIF_TYPE,
-        notificationTitle,
-        notificationMessage,
-        link,
-        eventId,
-        createdAt,
-        createdAtMs,
-      );
+      const created = await _sendWithDedup(db, dedupKey, userUid, NOTIF_TYPE, notificationTitle, notificationMessage, link, eventId, createdAt, createdAtMs);
       if (created) sent++;
       else skipped++;
     } catch (err) {
       errors++;
-      logger.error('eventReminderCron: failed to send notification', {
-        eventId,
-        userUid,
-        error: String(err),
-      });
+      logger.error(`eventReminderCron: failed fan-out (${source})`, { eventId, userUid, error: String(err) });
     }
   }
 
+  logger.info(`eventReminderCron: ${source} event processed`, { eventId, sent, skipped, errors });
   return { sent, skipped, errors };
 }
 
+// ─── Transaction ───────────────────────────────────────────────────────
+
 /**
- * Corpo transacional — extraído para permitir testes unitários.
- * Recebe o objeto `t` da transação diretamente.
- *
- * @param {object} t         - Firestore transaction object
- * @param {object} db        - Firestore db instance
- * @param {string} dedupKey  - Dedup document ID
- * @param {string} userUid   - Recipient user ID
- * @param {string} type      - Notification type
- * @param {string} title     - Notification title
- * @param {string} message   - Notification message
- * @param {string|null} link - Notification link
- * @param {string} eventId   - Source event ID
- * @param {string} createdAt - ISO timestamp
- * @param {number} createdAtMs - Unix ms timestamp
- * @returns {Promise<boolean>} true = criada, false = já existia
+ * Transacional: cria dedup doc + notification doc.
+ * @returns {Promise<boolean>} true = criada, false = já existia (suppressed)
  */
-async function _doTransaction(
-  t,
-  db,
-  dedupKey,
-  userUid,
-  type,
-  title,
-  message,
-  link,
-  eventId,
-  createdAt,
-  createdAtMs,
-) {
+async function _sendWithDedup(db, dedupKey, userUid, type, title, message, link, eventId, createdAt, createdAtMs) {
+  return db.runTransaction((t) => _doTransaction(t, db, dedupKey, userUid, type, title, message, link, eventId, createdAt, createdAtMs));
+}
+
+/**
+ * @param {object} t    - Firestore transaction
+ * @param {object} db   - Firestore db
+ */
+async function _doTransaction(t, db, dedupKey, userUid, type, title, message, link, eventId, createdAt, createdAtMs) {
   const dedupRef = db.collection(DEDUP_COLLECTION).doc(dedupKey);
   const fresh = await t.get(dedupRef);
   if (fresh.exists) return false;
 
-  t.set(dedupRef, {
-    sent_at: createdAt,
-    sent_at_ms: createdAtMs,
-    payload_type: type,
-  });
+  t.set(dedupRef, { sent_at: createdAt, sent_at_ms: createdAtMs, payload_type: type });
 
   const notifRef = db.collection(NOTIFICATIONS_COLLECTION).doc();
   t.set(notifRef, {
@@ -200,30 +279,17 @@ async function _doTransaction(
   return true;
 }
 
+// ─── Helpers ───────────────────────────────────────────────────────────
+
 /**
- * Grava notificação apenas se a dedup key ainda não existir (transação).
- * @returns {Promise<boolean>} true = criada, false = já existia (suppressed)
+ * Extrai clubId do path 'clubs/{clubId}/events/{eventId}'.
  */
-async function _sendWithDedup(
-  db,
-  dedupKey,
-  userUid,
-  type,
-  title,
-  message,
-  link,
-  eventId,
-  createdAt,
-  createdAtMs,
-) {
-  return db.runTransaction((t) => _doTransaction(
-    t, db, dedupKey, userUid, type, title, message, link, eventId, createdAt, createdAtMs,
-  ));
+function _extractClubId(eventPath) {
+  const match = eventPath.match(/^clubs\/([^/]+)\/events\/[^/]+$/);
+  return match ? match[1] : '';
 }
 
-// ─── Helpers ─────────────────────────────────────────────────────────────
-
-function _dedupId(prefix, ...parts) {
+function _dedupKey(prefix, ...parts) {
   return (
     prefix +
     ':' +
@@ -237,7 +303,7 @@ function _dedupId(prefix, ...parts) {
 
 function _parseDate(value) {
   if (!value) return null;
-  if (typeof value.toDate === 'function') return value.toDate();
+  if (value && typeof value.toDate === 'function') return value.toDate();
   const d = new Date(value);
   return Number.isNaN(d.getTime()) ? null : d;
 }
@@ -248,14 +314,32 @@ function _toDateStr(date) {
   return d.toISOString().slice(0, 10); // YYYY-MM-DD
 }
 
+/**
+ * Feature flag via feature_flags/{name} (padrão do codebase).
+ */
 async function isFeatureEnabled(db, flagKey) {
   try {
-    const snap = await db.collection('platform_settings').doc('flags').get();
-    const flags = snap.data()?.feature_flags || {};
-    return flags[flagKey] === true;
+    const snap = await db.collection('feature_flags').doc(flagKey).get();
+    return snap.data()?.enabled === true;
   } catch (_) {
     return false;
   }
 }
 
-module.exports = { runEventReminder, _doTransaction, _dedupId, _toDateStr, _parseDate };
+module.exports = {
+  runEventReminder,
+  _processCommunityEvent,
+  _processClubEvent,
+  _fanOutEventReminder,
+  _doTransaction,
+  _sendWithDedup,
+  _extractClubId,
+  _dedupKey,
+  _toDateStr,
+  _parseDate,
+  isFeatureEnabled,
+  NOTIF_TYPE,
+  FEATURE_FLAG,
+  NOTIFICATIONS_COLLECTION,
+  DEDUP_COLLECTION,
+};
