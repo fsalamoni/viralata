@@ -270,3 +270,7 @@ exports.onCommunityEventCreated = onDocumentCreated(
     try { await runOnCommunityEventCreatedSafe(event); } catch (e) { logger.error(e); }
   },
 );
+
+// ─── TASK-321: Server-side CPF digit validation callable ──────────────────
+const { validateCpfCallable } = require('./validateCpf');
+exports.validateCpf = validateCpfCallable;
