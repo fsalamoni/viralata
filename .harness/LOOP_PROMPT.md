@@ -1,4 +1,4 @@
-# LOOP_PROMPT — viralata (atualizado 2026-07-15 20:10 UTC)
+# LOOP_PROMPT — viralata (atualizado 2026-07-15 20:53 UTC)
 
 **Contexto**: /workspace/viralata, branch main, React+Vite+Firebase.
 **Repo**: https://github.com/fsalamoni/viralata.git
@@ -74,32 +74,29 @@ print(f'{len(ready)} tasks ready')
 
 ---
 
-## 🆕 CANDIDATAS (2026-07-15 20:10 UTC)
+## 🆕 CANDIDATAS (2026-07-15 20:53 UTC)
 
 | ID | Pri | Descrição |
 |---|---|---|
-| TASK-291 | critical | [EMAIL-001] Integrar SendGrid ou Resend — AGUARDA decisão humana |
-| TASK-292 | critical | [FCM-001] Integrar FCM push notifications — bloqueada por TASK-291 |
+| TASK-292 | critical | [FCM-001] Integrar FCM push notifications — bloqueada por TASK-291 (✅ done) |
 | TASK-368 | critical | [D-07] DPO sign-off — human-jurídico |
 | TASK-006 | high | Revisão jurídica: adoptionTerms.v1.js |
 | TASK-007 | high | Revisão jurídica: avisosLegais.js |
 
 > **Notas**:
-> - TASK-340 ✅ done — feat/task-340-event-types-2026-07-15 (TASK-338 was done, unblocked): novos tipos VACCINATION, LECTURE, FUNDRAISING, PET_DAY em CLUB_EVENT_TYPE + UI (TYPE_TONE map) + EventDetail badge dinamico
-> - TASK-087 ✅ done — feat/task-087-audit-clickwrap-2026-07-15: auditoria clickwrap 4 fluxos críticos (Adoção, Foster, Doação, Voluntariado)
+> - TASK-291 ✅ done — feat/task-291-email-oncall-2026-07-15: sendEmail onCall callable c/ 7 templates de adoção + sendEmailOnCallCore.cjs + 222 testes ✅ + firestore.rules email_delivery_log
+> - TASK-342 ✅ done — feat/task-342-event-volunteers-2026-07-15: volunteer_ids + volunteer_shifts em club_events, multi-select no EventFormDialog, shifts editor, EventDetail aba Escalas
+> - TASK-340 ✅ done — feat/task-340-event-types-2026-07-15: novos tipos VACCINATION, LECTURE, FUNDRAISING, PET_DAY em CLUB_EVENT_TYPE + UI
+> - TASK-087 ✅ done — feat/task-087-audit-clickwrap-2026-07-15: auditoria clickwrap 4 fluxos críticos
 > - TASK-298 ✅ done — feat/task-298-contract-ip-ua-2026-07-15 (contract CF: IP+UA, Lei 14.063/2020)
-> - TASK-220 ✅ done — feat/task-220-clean (PR #192) merged 2026-07-15
-> - TASK-269 ✅ done — feat/task-268-volunteer-fcm-notify (PR #190)
-> - TASK-312 ✅ done — [INT-SEARCH-001] Sync ativo do search index
-> - TASK-273 ✅ done — Smart Search: adicionar entidade volunteer
 > - Todas as branches feat/* = `fsalamoni/viralata`
 
 ## 📊 MÉTRICAS ATUAIS
 
-- **done=297** (was 296 — TASK-340 done: event types VACCINATION, LECTURE, FUNDRAISING, PET_DAY)
-- **ready=61**, in_progress=4
-- **Main**: `dc0d49d`
-- **Branch**: `feat/task-340-event-types-2026-07-15`
+- **done=300** (was 299 — TASK-291 done: sendEmail onCall callable + 7 templates + testes)
+- **ready=58**, in_progress=4
+- **Main**: `e8ce4f2`
+- **Branch**: `feat/task-291-email-oncall-2026-07-15`
 
 ## 🏁 FIM DO TURNO
 
