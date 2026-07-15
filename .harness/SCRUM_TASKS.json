@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-15T15:56:13.735Z",
+  "generatedAt": "2026-07-15T16:31:47.314Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -12,13 +12,13 @@
   },
   "activeWorktrees": [
     {
-      "id": "task-279",
-      "branch": "feat/task-279-volunteer-terms-immutable-2026-07-15",
-      "head": "aa483aa35472a1eb84eef9a9094574d9757fdae8",
-      "headTitle": "feat(task-279): migrate volunteer terms to immutable terms_acceptances",
-      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/task-279",
-      "status": "ahead-of-main",
-      "commitsAhead": 1,
+      "id": "viralata",
+      "branch": "feat/task-298-contract-ip-ua-2026-07-15",
+      "head": "04de457c024c6867b9c070ea786fbfe7c46c0631",
+      "headTitle": "feat(task-298): add createContract CF — IP + user-agent (Lei 14.063/2020 art. 6º)",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata",
+      "status": "in-sync",
+      "commitsAhead": 0,
       "primarySession": null,
       "sessionTitle": null,
       "focus": []
@@ -8141,10 +8141,10 @@
       "title": "[CONTRACT-003] IP + user-agent no aceite do termo",
       "type": "security",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
-      "branch": null,
+      "branch": "feat/task-298-contract-ip-ua-2026-07-15",
       "worktree": null,
       "tags": [
         "regra-A",
@@ -8161,7 +8161,8 @@
       "subFrente": "abrigos-foster-adocao",
       "description": "createAcceptance captura __CF_CONNECTING_IP (header) e navigator.userAgent no momento do aceite. Persiste em contracts/{id}.signature_ip, .signature_user_agent. Audit log redundante. Lei 14.063/2020 art. 6º.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15",
+      "pr": null
     },
     {
       "id": "TASK-299",
@@ -10451,12 +10452,12 @@
     "firestoreIndexes": 35,
     "bundleSizeKB": 4125,
     "shelterPhases": "21/22 completas em produção (Fase 18 pendente decisão)",
-    "activeWorktreesAheadOfMain": 1,
+    "activeWorktreesAheadOfMain": 0,
     "mergedWorktreesThisSprint": [
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": "c5bf9d298fe1aea3fdbaca9c153e4e1710cc5cb6",
+    "mainCommit": null,
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -10467,11 +10468,11 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 371,
-    "done": 286,
+    "done": 287,
     "inProgress": 4,
     "inReview": 1,
     "blocked": 1,
-    "ready": 72,
+    "ready": 71,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
