@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-15T13:48:54.099Z",
+  "generatedAt": "2026-07-15T15:25:04.286Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -398,11 +398,11 @@
   },
   "activeWorktrees": [
     {
-      "id": "feat-task-283-sentry-volunteer-2026-07-15",
-      "branch": "feat/task-283-sentry-volunteer-2026-07-15",
-      "head": "731b21aa25e2ebf929883d3eaea5d34cba31ee69",
-      "headTitle": "feat(task-283): Sentry domain:volunteer tag em volunteer hooks + captureVolunteerError",
-      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/feat-task-283-sentry-volunteer-2026-07-15",
+      "id": "wt-e79e15ca",
+      "branch": "feat/task-195-legal-smoke-test-2026-07-15",
+      "head": "1eae1e5071f412c0065c0664e580c87610508699",
+      "headTitle": "feat(TASK-195): add 5 legal v2 slugs to smoke-routes",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-e79e15ca",
       "status": "ahead-of-main",
       "commitsAhead": 1,
       "primarySession": null,
@@ -2013,13 +2013,13 @@
       "title": "Inserir 01_Termos_de_Uso.md como página legal",
       "type": "feature",
       "category": "legal",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": "feat/legal-docs-v2",
       "flag": "SHELTER_LEGAL_TERMS_V1",
       "worktree": ".worktrees/wt-legal-v2",
-      "pr": null,
+      "pr": "0",
       "tags": [
         "legal",
         "lgpd",
@@ -2036,7 +2036,8 @@
       "evidence": ".tmp-legal-docs/01_Termos_de_Uso.md",
       "description": "BLOCO INDEPENDENTE. Criar src/pages/legal/TermosDeUso.jsx (ou via CMS) com 01_Termos_de_Uso.md (5.8 KB). Adicionar rota /legal/termos-de-uso. Test: renderiza o doc, valida shape Zod, link no footer. Aceitação: rota retorna 200, conteúdo bate byte-a-byte com o .md (após normalização).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15T14:31:17",
+      "resolvedAt": "2026-07-15"
     },
     {
       "id": "TASK-060",
@@ -6073,13 +6074,13 @@
       "title": "Legal v2: smoke test cobre 5 slugs novos + ligar flag em staging antes de prod",
       "type": "chore",
       "category": "infra",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "mvs_311d078987d0414a90f57ef28b789b18",
       "branch": "wt/e79e15ca",
       "flag": null,
       "worktree": ".worktrees/wt-e79e15ca",
-      "pr": null,
+      "pr": "0",
       "tags": [
         "smoke-test",
         "regra-a",
@@ -6097,7 +6098,8 @@
       "evidence": "Verifier report Check 11; scripts/smoke-routes.mjs (sem matches para os 5 slugs); DEFAULT_FEATURE_FLAGS em featureFlags.js (todos SHELTER_*=false)",
       "description": "BLOCO INDEPENDENTE. ALTO — 5 slugs novos não-smoke-testados e gated por flag OFF em prod. Ações: (C.1) Adicionar 5 entries em scripts/smoke-routes.mjs para /legal/termo-de-adocao, /legal/politica-de-doacoes, /legal/termo-voluntariado, /legal/termo-lar-temporario, /legal/termo-adesao-abrigos. (C.2) Rodar smoke em staging com flag OFF primeiro (deve redirecionar pra legacy). (C.3) Ligar SHELTER_LEGAL_TERMS_V1 em staging, smoke novamente (deve retornar 200 nos 5). (C.4) Só após (C.3) verde, promover pra prod. Regra A §1.5 (pós-deploy).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15T15:24:56",
+      "resolvedAt": "2026-07-15"
     },
     {
       "id": "TASK-196",
@@ -8110,7 +8112,7 @@
       "title": "Analytics: funil de voluntário",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
@@ -8127,7 +8129,9 @@
       "subFrente": "voluntarios",
       "description": "Em src/core/services/observabilityService.js: novos eventos volunteer_signup_started, volunteer_terms_accepted, volunteer_joined_shelter, volunteer_first_participation. Cada um com propriedades: source: \"public_page\" | \"profile\" | \"admin_invite\", shelter_id, user_uid. Dashboard em /admin/metricas com funil.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15T14:58:35",
+      "pr": "0",
+      "resolvedAt": "2026-07-15"
     },
     {
       "id": "TASK-283",
@@ -10661,6 +10665,24 @@
       "createdAt": "2026-07-14",
       "updatedAt": "2026-07-14T16:16:43",
       "resolvedAt": "2026-07-14"
+    },
+    {
+      "id": "TASK-HOTFIX-001",
+      "title": "[HOTFIX] Home.jsx import UpcomingExhibitionsFeed (landing page em branco)",
+      "description": "PR #177 (TASK-149) adicionou uso de <UpcomingExhibitionsFeed /> no Home.jsx mas o import do componente ficou faltando. Build CI não detectou. Em produção (após deploy de outro commit posterior), o Home crashava com ReferenceError: UpcomingExhibitionsFeed is not defined. ErrorBoundary triggered, usuário via 'Algo deu errado'.\n\n**Fix**: Adicionado `import UpcomingExhibitionsFeed from '@/modules/shelter/components/UpcomingExhibitionsFeed';` em src/pages/Home.jsx\n\n**PR #193 merged em 2026-07-15 15:04 UTC. Deploy concluído.**",
+      "status": "done",
+      "priority": "critical",
+      "category": "hotfix",
+      "owner": "unassigned",
+      "branch": "hotfix/fix-home-import-upcoming-exhibitions-2026-07-15",
+      "pr": "193",
+      "createdAt": "2026-07-15",
+      "updatedAt": "2026-07-15",
+      "tags": [
+        "hotfix",
+        "build",
+        "production-down"
+      ]
     }
   ],
   "definitionOfDone": [
@@ -10818,7 +10840,7 @@
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": "295be7779aec8771a89dbf150906e72d8ddadb3e",
+    "mainCommit": "0b20709416727ee2be5a425b204c85bfb18c7feb",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -10828,12 +10850,12 @@
     ],
     "openTODOs": 5,
     "openLegalReviews": 3,
-    "totalTasks": 370,
-    "done": 281,
+    "totalTasks": 371,
+    "done": 285,
     "inProgress": 4,
     "inReview": 1,
     "blocked": 1,
-    "ready": 76,
+    "ready": 73,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -10863,7 +10885,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-15T13:36:57 — via scrum.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-15T15:24:56 — via scrum.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
@@ -10896,7 +10918,7 @@
   }
 }
   </script>
-  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-15T13:48:54.149Z">
+  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-15T15:25:04.346Z">
   </head>
 <body>
 

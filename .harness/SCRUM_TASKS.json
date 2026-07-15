@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-15T15:11:13.550Z",
+  "generatedAt": "2026-07-15T15:25:04.286Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -12,11 +12,11 @@
   },
   "activeWorktrees": [
     {
-      "id": "wt-cpf-validation",
-      "branch": "feat/task-321-cpf-validation",
-      "head": "31c25febe297e526bb66835848586b678432b53b",
-      "headTitle": "feat(task-321): server-side CPF digit validation callable",
-      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-cpf-validation",
+      "id": "wt-e79e15ca",
+      "branch": "feat/task-195-legal-smoke-test-2026-07-15",
+      "head": "1eae1e5071f412c0065c0664e580c87610508699",
+      "headTitle": "feat(TASK-195): add 5 legal v2 slugs to smoke-routes",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-e79e15ca",
       "status": "ahead-of-main",
       "commitsAhead": 1,
       "primarySession": null,
@@ -5688,13 +5688,13 @@
       "title": "Legal v2: smoke test cobre 5 slugs novos + ligar flag em staging antes de prod",
       "type": "chore",
       "category": "infra",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "mvs_311d078987d0414a90f57ef28b789b18",
       "branch": "wt/e79e15ca",
       "flag": null,
       "worktree": ".worktrees/wt-e79e15ca",
-      "pr": null,
+      "pr": "0",
       "tags": [
         "smoke-test",
         "regra-a",
@@ -5712,7 +5712,8 @@
       "evidence": "Verifier report Check 11; scripts/smoke-routes.mjs (sem matches para os 5 slugs); DEFAULT_FEATURE_FLAGS em featureFlags.js (todos SHELTER_*=false)",
       "description": "BLOCO INDEPENDENTE. ALTO — 5 slugs novos não-smoke-testados e gated por flag OFF em prod. Ações: (C.1) Adicionar 5 entries em scripts/smoke-routes.mjs para /legal/termo-de-adocao, /legal/politica-de-doacoes, /legal/termo-voluntariado, /legal/termo-lar-temporario, /legal/termo-adesao-abrigos. (C.2) Rodar smoke em staging com flag OFF primeiro (deve redirecionar pra legacy). (C.3) Ligar SHELTER_LEGAL_TERMS_V1 em staging, smoke novamente (deve retornar 200 nos 5). (C.4) Só após (C.3) verde, promover pra prod. Regra A §1.5 (pós-deploy).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15T15:24:56",
+      "resolvedAt": "2026-07-15"
     },
     {
       "id": "TASK-196",
@@ -10453,7 +10454,7 @@
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": "19a21db2e5e849e56a573da3ac15249a981bf8f2",
+    "mainCommit": "0b20709416727ee2be5a425b204c85bfb18c7feb",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -10464,11 +10465,11 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 371,
-    "done": 284,
+    "done": 285,
     "inProgress": 4,
     "inReview": 1,
     "blocked": 1,
-    "ready": 74,
+    "ready": 73,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -10498,7 +10499,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-15T15:11 UTC — TASK-321 done (CPF digit validation callable)",
+    "lastUpdate": "2026-07-15T15:24:56 — via scrum.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
