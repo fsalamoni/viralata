@@ -693,6 +693,7 @@ export async function createClubEvent(clubId, data, user) {
     starts_at: data.starts_at || null,
     recurring: !!data.recurring,
     visibility,
+    pet_ids: Array.isArray(data.pet_ids) ? data.pet_ids.filter(Boolean) : [],
     created_by: user.uid,
     created_by_name: data.created_by_name || user.displayName || user.email || '',
     created_at: serverTimestamp(),
@@ -747,7 +748,7 @@ export async function createClubEvent(clubId, data, user) {
 }
 
 export async function updateClubEvent(eventId, updates, actor) {
-  const allowed = ['title', 'description', 'type', 'location', 'starts_at', 'recurring', 'visibility'];
+  const allowed = ['title', 'description', 'type', 'location', 'starts_at', 'recurring', 'visibility', 'pet_ids'];
   const sanitized = {};
   allowed.forEach((key) => {
     if (updates[key] === undefined) return;
@@ -755,6 +756,7 @@ export async function updateClubEvent(eventId, updates, actor) {
     else if (key === 'type') sanitized[key] = updates[key];
     else if (key === 'recurring') sanitized[key] = !!updates[key];
     else if (key === 'visibility') sanitized[key] = updates[key] === EVENT_VISIBILITY.PRIVATE ? EVENT_VISIBILITY.PRIVATE : EVENT_VISIBILITY.PUBLIC;
+    else if (key === 'pet_ids') sanitized[key] = Array.isArray(updates[key]) ? updates[key].filter(Boolean) : [];
     else sanitized[key] = trimmed(updates[key]);
   });
   await updateDoc(doc(db, COL.events, eventId), { ...sanitized, updated_at: serverTimestamp() });
