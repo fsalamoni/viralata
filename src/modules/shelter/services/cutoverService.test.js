@@ -59,6 +59,13 @@ vi.mock('@/modules/shelter/domain/constants', () => ({
     SHELTER_SECURITY_HARDENING: 'shelter_security_hardening',
     SHELTER_PLATFORM_HEALTH: 'shelter_platform_health',
     SHELTER_CUTOVER: 'shelter_cutover',
+    SHELTER_ADOPTER_DASHBOARD_V1: 'shelter_adopter_dashboard_v1',
+    SHELTER_EVENTS_V1: 'shelter_events_v1',
+    SHELTER_ADOPTER_PROFILE_V1: 'shelter_adopter_profile_v1',
+    SHELTER_SPONSORED_COMMUNITY_V1: 'shelter_sponsored_community_v1',
+    SHELTER_COMMUNITY_RICH_EVENTS_V1: 'shelter_community_rich_events_v1',
+    SHELTER_COMMUNITY_CHAT_V1: 'shelter_community_chat_v1',
+    SHELTER_FCM_PUSH_V1: 'shelter_fcm_push_v1',
   },
   DEFAULT_SHELTER_FLAGS: {
     shelter_foundation: false,
@@ -86,6 +93,13 @@ vi.mock('@/modules/shelter/domain/constants', () => ({
     shelter_security_hardening: false,
     shelter_platform_health: false,
     shelter_cutover: false,
+    shelter_adopter_dashboard_v1: false,
+    shelter_events_v1: false,
+    shelter_adopter_profile_v1: false,
+    shelter_sponsored_community_v1: false,
+    shelter_community_rich_events_v1: false,
+    shelter_community_chat_v1: false,
+    shelter_fcm_push_v1: false,
   },
 }));
 
@@ -165,6 +179,13 @@ describe('getCutoverStatus', () => {
       'shelter_security_hardening': true,
       'shelter_platform_health': true,
       'shelter_cutover': true,
+      'shelter_adopter_dashboard_v1': true,
+      'shelter_events_v1': true,
+      'shelter_adopter_profile_v1': true,
+      'shelter_sponsored_community_v1': true,
+      'shelter_community_rich_events_v1': true,
+      'shelter_community_chat_v1': true,
+      'shelter_fcm_push_v1': true,
     };
 
     const result = getCutoverStatus(allEnabled);
@@ -245,6 +266,13 @@ describe('checkCutoverReadiness', () => {
       'shelter_security_hardening': true,
       'shelter_platform_health': true,
       'shelter_cutover': true,
+      'shelter_adopter_dashboard_v1': true,
+      'shelter_events_v1': true,
+      'shelter_adopter_profile_v1': true,
+      'shelter_sponsored_community_v1': true,
+      'shelter_community_rich_events_v1': true,
+      'shelter_community_chat_v1': true,
+      'shelter_fcm_push_v1': true,
     };
 
     const result = await checkCutoverReadiness(allEnabled);
