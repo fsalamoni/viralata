@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-15T22:18:36.712Z",
+  "generatedAt": "2026-07-15T22:19:26.125Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W29",
@@ -396,7 +396,20 @@
     "endsAt": "2026-07-22",
     "goal": "Implementar 50+ features de UI/UX/infra. Limpar inconsistências. Decisões registradas. Zero tasks in_progress stale."
   },
-  "activeWorktrees": [],
+  "activeWorktrees": [
+    {
+      "id": "viralata",
+      "branch": "feat/task-352-pinned-posts-2026-07-15",
+      "head": "7c09d8b56ae62567a85771f18a06fca9128f9d8a",
+      "headTitle": "chore(scrum): sync.cjs --fix re-embed métricas (c19ccf0)",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata",
+      "status": "in-sync",
+      "commitsAhead": 0,
+      "primarySession": null,
+      "sessionTitle": null,
+      "focus": []
+    }
+  ],
   "activeSessions": [
     {
       "id": "mvs_f1e04f28717d42cdba05e221b7b4b6f3",
@@ -9999,9 +10012,9 @@
       "title": "Posts fixados / destaque (campo pinned em community_posts)",
       "type": "feature",
       "category": "communities",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
-      "owner": "unassigned",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
       "branch": null,
       "worktree": null,
       "tags": [
@@ -10016,7 +10029,8 @@
       "subFrente": "comunidade-adotante-eventos",
       "description": "Adicionar pinned: boolean + pinned_at. UI no MuralTab.jsx com carrossel/banner no topo. Permissão: admin/owner.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15",
+      "pr": null
     },
     {
       "id": "TASK-353",
@@ -11129,7 +11143,7 @@
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": "c19ccf0ab51731e7b81110df2d9be7c38717a664",
+    "mainCommit": null,
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -11140,11 +11154,11 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 376,
-    "done": 325,
+    "done": 326,
     "inProgress": 1,
     "inReview": 1,
     "blocked": 0,
-    "ready": 44,
+    "ready": 43,
     "backlog": 4,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -11174,7 +11188,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-15T22:18:36.722Z — via sync.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-15T22:19:26.142Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
@@ -11304,7 +11318,7 @@
   ]
 }
   </script>
-  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-15T22:18:05.656Z">
+  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-15T22:18:36.730Z">
   </head>
 <body>
 
