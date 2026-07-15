@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-15T10:48:14.216Z",
+  "generatedAt": "2026-07-15T11:23:11.616Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -10,7 +10,20 @@
     "endsAt": "2026-07-18",
     "goal": "Estabilizar produção pós-deploy das 22 fases, fechar 3 worktrees em paralelo, decidir backend da Fase 18, priorizar débitos técnicos"
   },
-  "activeWorktrees": [],
+  "activeWorktrees": [
+    {
+      "id": "viralata",
+      "branch": "feat/task-337-event-reminder-cron-2026-07-15",
+      "head": "a3fd868899e046d2c21adac2267f0e0f64b68f40",
+      "headTitle": "chore(scrum): topbar auto-update 50e1486 (workflow)",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata",
+      "status": "in-sync",
+      "commitsAhead": 0,
+      "primarySession": null,
+      "sessionTitle": null,
+      "focus": []
+    }
+  ],
   "activeSessions": [
     {
       "id": "mvs_311d078987d0414a90f57ef28b789b18",
@@ -9135,9 +9148,9 @@
       "title": "Cloud Function scheduled para reminder de evento (24h antes)",
       "type": "feature",
       "category": "communities",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
-      "owner": "unassigned",
+      "owner": "mavis",
       "branch": null,
       "worktree": null,
       "tags": [
@@ -9152,7 +9165,7 @@
       "subFrente": "comunidade-adotante-eventos",
       "description": "Adicionar functions/eventReminderCron.js com schedule diário. Varre community_events + club_events com starts_at entre now e now+25h, dispara EVENT_REMINDER.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15"
     },
     {
       "id": "TASK-338",
@@ -10411,7 +10424,7 @@
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": "82581d9ce155a4f4246827635a1a6c0f9c53203b",
+    "mainCommit": null,
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -10422,11 +10435,11 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 370,
-    "done": 275,
+    "done": 276,
     "inProgress": 3,
     "inReview": 1,
     "blocked": 0,
-    "ready": 84,
+    "ready": 83,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
