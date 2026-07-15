@@ -170,3 +170,31 @@ print(f'72 tasks ready')
 
 ## 🚀 BATCH (a cada 10 tasks)
 - User disser "Mavis, batch" → batch PR + merge + deploy.
+
+
+---
+
+## 🆔 REGRA #2 PERMANENTE — IDs únicos (2026-07-15)
+
+**Problema visto**: Ao criar tasks novas, o agente pode escolher um ID que JÁ EXISTE.
+Resultado: IDs duplicados, painel mostra 1 task, JSON tem 2.
+
+**REGRA**: Antes de criar uma task nova, SEMPRE verificar:
+```bash
+python3 -c "
+import json
+with open('.harness/SCRUM_TASKS.json') as f: d = json.load(f)
+existing = [t['id'] for t in d['tasks']]
+new_id = 'TASK-XXX'  # ID que você quer usar
+if new_id in existing:
+    print(f'ERRO: {new_id} JÁ EXISTE! Use TASK-{max([int(i.split("-")[1]) for i in existing if i.startswith("TASK-")])+1}')
+else:
+    print(f'OK: {new_id} está livre')
+"
+```
+
+**Convenção**: Se a task é continuidade de uma decisão recente, use ID >= 600 (reservados para decisões).
+Se a task é continuação de uma sprint normal, use o próximo ID disponível.
+
+**Por quê**: IDs duplicados quebram sync.cjs (que mostra "Updates: 0 / Issues: IDs duplicados: 2")
+e confundem o painel público.
