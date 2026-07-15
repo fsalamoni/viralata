@@ -164,6 +164,12 @@ function syncJson(j) {
 /* ─── painel-scrum.html re-embed (Regra B: auto-import) ──────────── */
 
 function reembedHtml(j) {
+  // TASK-FIX: também atualiza metrics.lastUpdate
+  if (!j.metrics) j.metrics = {};
+  j.metrics.lastUpdate = `${new Date().toISOString()} — via sync.cjs (Regra B §B.1)`;
+  // salva JSON atualizado
+  fs.writeFileSync(JSON_PATH, JSON.stringify(j, null, 2) + '\n', 'utf8');
+  
   const startMarker = '<script type="application/json" id="initial-data">';
   const html = fs.readFileSync(HTML_PATH, 'utf8');
   const startIdx = html.indexOf(startMarker);
