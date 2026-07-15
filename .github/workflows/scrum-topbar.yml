@@ -3,9 +3,6 @@ name: Scrum Topbar Auto-Update
 on:
   push:
     branches: [main]
-  workflow_run:
-    workflows: ["Sync Scrum Dashboard"]
-    types: [completed]
   schedule:
     - cron: '*/15 * * * *'  # a cada 15 min como backup
 
@@ -19,7 +16,6 @@ concurrency:
 jobs:
   update-topbar:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -27,33 +23,24 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
 
-      - name: Update topbar with sed
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Re-embed métricas no painel
         run: |
-          MAIN_COMMIT=$(git rev-parse HEAD)
-          MAIN_SHORT=$(echo $MAIN_COMMIT | cut -c1-7)
-          WT_COUNT=$(git worktree list --porcelain 2>/dev/null | grep -c "^worktree" || echo 0)
-          WT_COUNT=$((WT_COUNT - 1))
-          WT_TXT="0 worktrees ativos"
-          if [ "$WT_COUNT" -gt 0 ]; then
-            if [ "$WT_COUNT" -gt 1 ]; then
-              WT_TXT="+${WT_COUNT} worktrees ativos"
-            else
-              WT_TXT="+1 worktree ativo"
-            fi
-          fi
-          echo "Main: $MAIN_SHORT · Worktrees: $WT_COUNT"
-          for f in public/scrum.html .harness/painel-scrum.html; do
-            if [ -f "$f" ]; then
-              sed -i "s|<span class=\"pill mono\">main @ [0-9a-f]\{7\}</span>|<span class=\"pill mono\">main @ ${MAIN_SHORT}</span>|" "$f"
-              sed -i "s|<span class=\"pill\">[+]\?[0-9]\+ worktrees\? ativos\?</span>|<span class=\"pill\">${WT_TXT}</span>|" "$f"
-            fi
-          done
-          if git diff --quiet public/scrum.html .harness/painel-scrum.html; then
-            echo "Sem mudanças no topbar"
-          else
+          node .harness/sync.cjs --fix
+          git diff --quiet public/scrum.html .harness/painel-scrum.html .harness/SCRUM_TASKS.json
+          if [ $? -ne 0 ]; then
+            echo "Mudanças detectadas, commitando..."
+            MAIN_COMMIT=$(git rev-parse HEAD)
+            MAIN_SHORT=$(echo $MAIN_COMMIT | cut -c1-7)
             git config user.name "viralata-scrum-bot"
             git config user.email "scrum-bot@viralata.local"
-            git add public/scrum.html .harness/painel-scrum.html
-            git commit -m "chore(scrum): topbar auto-update ${MAIN_SHORT} (workflow)"
+            git add public/scrum.html .harness/painel-scrum.html .harness/SCRUM_TASKS.json
+            git commit -m "chore(scrum): sync.cjs --fix re-embed métricas (${MAIN_SHORT})"
             git push origin main
+          else
+            echo "Sem mudanças nas métricas"
           fi
