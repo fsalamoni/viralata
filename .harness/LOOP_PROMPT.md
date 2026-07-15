@@ -1,4 +1,10 @@
-# LOOP_PROMPT — viralata (atualizado 2026-07-15 08:11 UTC)
+# LOOP_PROMPT — viralata (atualizado 2026-07-15 15:05 UTC)
+
+**🆕 MUDANÇAS 2026-07-15**:
+- ✅ `sync.cjs --fix` é SEMPRE obrigatório (atualiza `public/scrum.html` local)
+- ✅ `scrum-topbar.yml` (cron `*/15`) cuida do painel em produção
+- ❌ Deploy do site oficial apenas quando user disser ("Mavis, deploy")
+- 🎯 Foco: TERMINAR tasks, não otimizar processo
 
 **Contexto**: /workspace/viralata, branch main, React+Vite+Firebase.
 **Repo**: https://github.com/fsalamoni/viralata.git
@@ -61,12 +67,20 @@ assert len(done) == m.get('done'), f'ALINHAMENTO QUEBRADO: array={len(done)} met
 print('ALINHADO OK')
 "
 
-# 4. Commit + push
+# 4. **SEMPRE** — sync.cjs --fix (re-embed painel scrum.html)
+node .harness/sync.cjs --fix
+
+# 5. Commit + push (INCLUI painel-scrum.html + public/scrum.html)
 git add -A && git commit -m "chore(scrum): TASK-XXX done" && git push origin main
 ```
 
 **Se QUALQUER passo falhar, NÃO ENCERRAR O TURNO**. A não-atualização do scrum foi
 a regressão mais grave do projeto em 2 meses.
+
+**IMPORTANTE 2026-07-15**:
+- ✅ `sync.cjs --fix` é **OBRIGATÓRIO** em TODO turno (mantém painel scrum.html local atualizado)
+- ✅ `scrum-topbar.yml` (workflow `*/15`) cuida de invalidar cache do CDN e atualizar `viralata.web.app/scrum.html` em produção
+- ❌ **NÃO disparar deploy do site oficial (`deploy.yml`)** por task — apenas quando user disser "Mavis, deploy"
 
 **A cada 10 tasks OU 4 horas (o que vier primeiro)**: batch PR + merge + deploy.
 
@@ -124,22 +138,15 @@ print(f'72 tasks ready')
 
 ---
 
-## 🆕 CANDIDATAS (2026-07-15)
+## 🆕 CANDIDATAS (2026-07-15, dinâmico)
 
-| ID | Pri | Descrição |
-|---|---|---|
-| TASK-291 | critical | [EMAIL-001] Integrar SendGrid ou Resend — AGUARDA decisão humana |
-| TASK-292 | critical | [FCM-001] Integrar FCM push notifications — bloqueada por TASK-291 |
-| TASK-368 | critical | [D-07] DPO sign-off — human-jurídico |
-| TASK-006 | high | Revisão jurídica: adoptionTerms.v1.js |
-| TASK-007 | high | Revisão jurídica: avisosLegais.js |
+**Top 5 non-human ready (calculado do JSON):**
+- **TASK-291** (critical) [EMAIL-001] Integrar SendGrid ou Resend pra email transacion
+- **TASK-292** (critical) [FCM-001] Integrar Firebase Cloud Messaging pra push notific
+- **TASK-060** (high) Inserir 02_Politica_de_Privacidade.md como página legal
+- **TASK-064** (high) Inserir 06_Politica_Doacoes.md como página legal
+- **TASK-065** (high) Inserir 07_DPA_Abrigos.md como página legal
 
-**Top 5 non-human ready:**
-| TASK-291 | critical | [EMAIL-001] Integrar SendGrid ou Resend pra email transacion...
-| TASK-292 | critical | [FCM-001] Integrar Firebase Cloud Messaging pra push notific...
-| TASK-368 | critical | [D-07] Decisão: DPO sign-off antes de qualquer canário em pr...
-| TASK-006 | high | Revisão jurídica: adoptionTerms.v1.js...
-| TASK-007 | high | Revisão jurídica: avisosLegais.js...
 
 > **Notas**:
 > - TASK-220 ✅ done — feat/task-220-clean (PR #192) merged 2026-07-15
@@ -154,8 +161,9 @@ print(f'72 tasks ready')
 
 ## 📊 MÉTRICAS ATUAIS
 
-- **done=269**, ready=90, in_progress=3
-- **Main**: `102de261904f`
+- **done=314**, ready=60, in_progress=1, in_review=0, blocked=1, backlog=4
+- **Total**: 382 tasks
+- **Main HEAD**: ver `git log -1 origin/main --format=%h`
 
 ## 🏁 FIM DO TURNO
 
