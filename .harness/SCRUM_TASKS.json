@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-15T08:58:42.456Z",
+  "generatedAt": "2026-07-15T09:12:24.889Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -12,13 +12,13 @@
   },
   "activeWorktrees": [
     {
-      "id": "wt-task-274",
-      "branch": "feat/task-274-capability-matrix",
-      "head": "caadc0feee5da5318eb3165240c9e20e517edfda",
-      "headTitle": "feat(task-274): Atribuições finas (capability matrix) por voluntário",
-      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-task-274",
-      "status": "ahead-of-main",
-      "commitsAhead": 1,
+      "id": "viralata",
+      "branch": "feat/task-123-search-sidebar-2026-07-15",
+      "head": "637611a48f80a64967e62cbac3665c202cae56ad",
+      "headTitle": "feat(task-123): search page sidebar + city filter",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata",
+      "status": "in-sync",
+      "commitsAhead": 0,
       "primarySession": null,
       "sessionTitle": null,
       "focus": []
@@ -3572,7 +3572,7 @@
     {
       "id": "TASK-123",
       "title": "Página /busca + CommandPalette Cmd+K global",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "type": "feature",
       "category": "search",
@@ -3580,7 +3580,7 @@
       "branch": "wt/e79e15ca",
       "flag": "SHELTER_SMART_SEARCH",
       "worktree": ".worktrees/wt-e79e15ca",
-      "pr": null,
+      "pr": "0",
       "tags": [
         "ux",
         "search",
@@ -3595,7 +3595,8 @@
       "evidence": "",
       "description": "src/pages/SearchPage.jsx. Sidebar com filtros facetados (espécie, cidade, status, ONG). Result grid. CommandPalette: modal global aberto por Cmd/Ctrl+K. Renderiza input + resultados agrupados.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15T09:12:15",
+      "resolvedAt": "2026-07-15"
     },
     {
       "id": "TASK-124",
@@ -10413,12 +10414,12 @@
     "firestoreIndexes": 35,
     "bundleSizeKB": 4125,
     "shelterPhases": "21/22 completas em produção (Fase 18 pendente decisão)",
-    "activeWorktreesAheadOfMain": 1,
+    "activeWorktreesAheadOfMain": 0,
     "mergedWorktreesThisSprint": [
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": "2bf6f6440e58e98628a02eec0972c53df50c062b",
+    "mainCommit": null,
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -10429,11 +10430,11 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 370,
-    "done": 271,
+    "done": 272,
     "inProgress": 3,
     "inReview": 1,
     "blocked": 0,
-    "ready": 88,
+    "ready": 87,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -10463,7 +10464,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-15T08:58:31 — via scrum.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-15T09:12:15 — via scrum.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
