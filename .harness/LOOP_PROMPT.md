@@ -85,7 +85,7 @@ python3 -c "
 import json
 with open('.harness/SCRUM_TASKS.json') as f: d = json.load(f)
 ready = [t for t in d['tasks'] if t['status'] == 'ready' and t.get('owner') not in ['human', 'human-juridico']]
-print(f'72 tasks ready')
+print(f'{len(ready)} tasks ready')
 "
 ```
 
@@ -148,14 +148,15 @@ print(f'72 tasks ready')
 > - TASK-273 ✅ done — Smart Search: adicionar entidade volunteer
 > - TASK-176 ✅ done — Sentry enriched
 > - TASK-239 ✅ done — Sentry SDK + Crashlytics
+> - TASK-038 ✅ done — feat/task-038-worm-backup-2026-07-15 (WORM: gcs-worm-setup + gcs-worm-verify, DR_PLAN §6)
 > - Todas as branches feat/* = `fsalamoni/viralata`
 
 ---
 
 ## 📊 MÉTRICAS ATUAIS
 
-- **done=269**, ready=90, in_progress=3
-- **Main**: `102de261904f`
+- **done=288**, ready=70, in_progress=4
+- **Main**: `691de55`
 
 ## 🏁 FIM DO TURNO
 
