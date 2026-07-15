@@ -35,6 +35,7 @@ const PublicExhibitionDetail = lazy(() => import('@/pages/PublicExhibitionDetail
 const PublicFosterPrograms = lazy(() => import('@/pages/PublicFosterPrograms'));
 const PublicFosterHistory = lazy(() => import('@/pages/PublicFosterHistory'));
 const PublicMuralFeed = lazy(() => import('@/pages/PublicMuralFeed'));
+const AdopterDashboard = lazy(() => import('@/modules/adopter/pages/AdopterDashboard'));
 const PageNotFound = lazy(() => import('@/pages/PageNotFound'));
 const ShelterPublic = lazy(() => import('@/pages/ShelterPublic'));
 const BannedNotice = lazy(() => import('@/pages/BannedNotice'));
@@ -387,6 +388,11 @@ export default function App() {
                 <Route
                   path="/adoptions"
                   element={<ProtectedRoute>{withLayout('PostAdoptionDashboard', PostAdoptionDashboard)}</ProtectedRoute>}
+                />
+                {/* TASK-339: dashboard unificado do adotante */}
+                <Route
+                  path="/meu-painel"
+                  element={<ProtectedRoute>{withLayout('AdopterDashboard', AdopterDashboard)}</ProtectedRoute>}
                 />
 
                 {/* ── Admin ─────────────────────────────────────────────── */}
