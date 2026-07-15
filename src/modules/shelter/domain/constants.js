@@ -95,6 +95,8 @@ export const SHELTER_FEATURE_FLAG = Object.freeze({
   SHELTER_PLATFORM_HEALTH: 'shelter_platform_health',
   // Fase 21 — Migração Final + Cutover
   SHELTER_CUTOVER: 'shelter_cutover',
+  // TASK-292 — Firebase Cloud Messaging: push notifications
+  SHELTER_FCM_V1: 'shelter_fcm_v1',
 });
 
 /**
@@ -315,6 +317,17 @@ export const SHELTER_FEATURE_FLAG_META = Object.freeze({
       'Migração final: clubs → shelters, remoção de feature flags, '
       + 'validação completa em produção. Liga só no final, depois de '
       + 'todas as outras fases validadas.',
+  },
+  [SHELTER_FEATURE_FLAG.SHELTER_FCM_V1]: {
+    label: 'Abrigos · push notifications (FCM v1)',
+    description:
+      'Firebase Cloud Messaging: service worker registra FCM token em '
+      + '`users/{uid}.fcm_tokens[]`; Cloud Function sendPushNotification '
+      + 'onCall com type + link. Triggers: onCreate adoption_workflow '
+      + '(→ abrigo), onUpdate adoption_workflow.status (→ adotante), '
+      + 'onCreate kanban_tasks (→ assignee). Permissão pedida após 1ª '
+      + 'ação relevante (não no signup). Respeita opt-out via token '
+      + 'removal. LGPD Art.7 VI — consentimento legítimo.',
   },
 });
 

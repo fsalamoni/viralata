@@ -193,6 +193,64 @@ function RouteTelemetry() {
   return null;
 }
 
+// ─── TASK-292: FCM foreground listener ─────────────────────────────────────────
+// Quando o app está em foreground (aberto) e chega um push FCM,
+// o service worker envia a mensagem para cá (onMessage API).
+// Mostramos toast in-app + deixamos o sw mostrar a notificação native
+// (que é ignorada quando o app está em foreground).
+import { toast } from '@/components/ui/sonner';
+import { useFeatureFlag } from '@/core/featureFlags';
+import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
+import { onForegroundMessage } from '@/modules/notifications/services/fcmService';
+import { logger } from '@/core/lib/logger';
+
+function FCMSetup() {
+  const isEnabled = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_FCM_V1);
+
+  useEffect(() => {
+    if (!isEnabled) return;
+
+    let unsubscribe = null;
+
+    const setup = async () => {
+      try {
+        unsubscribe = await onForegroundMessage((payload) => {
+          // Payload received while app is in foreground
+          const { notification, data } = payload;
+          if (!notification) return;
+
+          logger.info('[FCMSetup] foreground push received:', notification.title);
+
+          // Show in-app toast
+          toast(notification.title, {
+            description: notification.body,
+            duration: 5000,
+            action: data?.link
+              ? {
+                  label: 'Ver',
+                  onClick: () => {
+                    if (typeof window !== 'undefined') {
+                      window.location.href = data.link;
+                    }
+                  },
+                }
+              : undefined,
+          });
+        });
+      } catch (err) {
+        logger.warn('[FCMSetup] failed to setup foreground listener:', err);
+      }
+    };
+
+    setup();
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
+  }, [isEnabled]);
+
+  return null;
+}
+
 // ─── App ──────────────────────────────────────────────────────────────────────
 export default function App() {
   return (
@@ -208,6 +266,8 @@ export default function App() {
                 externo possível para cobrir todas as rotas. Gated por
                 feature flag dentro do componente. */}
             <CookieBanner />
+            {/* TASK-292: FCM push — foreground listener (toasts quando app aberto) */}
+            <FCMSetup />
             <Suspense fallback={<FullScreenSpinner />}>
               <BannedGate>
               <OnboardingGate>

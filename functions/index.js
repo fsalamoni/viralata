@@ -274,3 +274,16 @@ exports.onCommunityEventCreated = onDocumentCreated(
     try { await runOnCommunityEventCreatedSafe(event); } catch (e) { logger.error(e); }
   },
 );
+
+// ─── TASK-292: FCM push notifications ──────────────────────────────────────────
+const { sendPushNotification } = require('./sendPushNotification');
+const {
+  onAdoptionWorkflowCreated,
+  onAdoptionWorkflowStatusUpdated,
+  onKanbanTaskCreated,
+} = require('./pushNotificationTriggers');
+
+exports.sendPushNotification = sendPushNotification;
+exports.onAdoptionWorkflowCreated = onAdoptionWorkflowCreated;
+exports.onAdoptionWorkflowStatusUpdated = onAdoptionWorkflowStatusUpdated;
+exports.onKanbanTaskCreated = onKanbanTaskCreated;
