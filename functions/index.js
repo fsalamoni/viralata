@@ -25,6 +25,17 @@ const {
   onFosterWrite,
   onVolunteerWrite,
 } = require('./searchSync');
+const {
+  runPropagateVolunteerProfileSnapshotSafe,
+  runNotifyAdminOnNewVolunteerSafe,
+  runNotifyVolunteerOnStatusChangeSafe,
+  runNotifyAdminOnNewParticipationSafe,
+  runNotifyOnCheckInOutSafe,
+} = require('./volunteerTriggers');
+const {
+  aggregateVolunteerHours,
+  sendShiftReminders,
+} = require('./volunteerHoursCron');
 const mockData = require('./mockData');
 
 const DATABASE_ID = 'viralata';
@@ -99,9 +110,51 @@ exports.onClubWrite = onClubWrite;
 exports.onFosterWrite = onFosterWrite;
 exports.onVolunteerWrite = onVolunteerWrite;
 
+// ─── Volunteer triggers (TASK-220) ────────────────────────────────────────
+const { onDocumentCreated: _onDocCreated, onDocumentUpdated: _onDocUpdated } = require('firebase-functions/v2/firestore');
+
+// onUpdate users/{uid}/volunteer_profile/main → propagate to rosters
+exports.runPropagateVolunteerProfileSnapshot = (event) =>
+  runPropagateVolunteerProfileSnapshotSafe(event);
+
+// onCreate clubs/{clubId}/volunteers/{uid} → notify admin
+exports.onVolunteerCreatedNotifyAdmin = _onDocCreated(
+  { document: 'clubs/{clubId}/volunteers/{volunteerUid}', database: DATABASE_ID, region: REGION },
+  async (event) => {
+    try { await runNotifyAdminOnNewVolunteerSafe(event); } catch (e) { logger.error(e); }
+  },
+);
+
+// onUpdate clubs/{clubId}/volunteers/{uid} → notify volunteer on status change
+exports.onVolunteerUpdatedNotifyStatus = _onDocUpdated(
+  { document: 'clubs/{clubId}/volunteers/{volunteerUid}', database: DATABASE_ID, region: REGION },
+  async (event) => {
+    try { await runNotifyVolunteerOnStatusChangeSafe(event); } catch (e) { logger.error(e); }
+  },
+);
+
+// onCreate clubs/{clubId}/volunteer_participations/{pid} → notify admin
+exports.onParticipationCreatedNotifyAdmin = _onDocCreated(
+  { document: 'clubs/{clubId}/volunteer_participations/{participationId}', database: DATABASE_ID, region: REGION },
+  async (event) => {
+    try { await runNotifyAdminOnNewParticipationSafe(event); } catch (e) { logger.error(e); }
+  },
+);
+
+// onUpdate clubs/{clubId}/volunteer_participations/{pid} → notify on check_in/check_out
+exports.onParticipationUpdatedCheckInOut = _onDocUpdated(
+  { document: 'clubs/{clubId}/volunteer_participations/{participationId}', database: DATABASE_ID, region: REGION },
+  async (event) => {
+    try { await runNotifyOnCheckInOutSafe(event); } catch (e) { logger.error(e); }
+  },
+);
+
+// Scheduled crons (TASK-220)
+exports.aggregateVolunteerHours = aggregateVolunteerHours;
+exports.sendShiftReminders = sendShiftReminders;
+
 // ─── Fase 22 / TASK-272: LGPD volunteer privacy (soft-delete + erase) ────────
 const { onCall, HttpsError } = require('firebase-functions/v2/https');
-const { logger } = require('firebase-functions');
 const {
   runSoftDeleteVolunteer,
   runEraseMyVolunteerData,
@@ -109,8 +162,6 @@ const {
   isPlatformAdmin,
   hasShelterPermission,
 } = require('./volunteerPrivacyCore');
-
-const REGION = 'southamerica-east1';
 
 /**
  * softDeleteVolunteer — Admin ou shelter owner/admin llama.
