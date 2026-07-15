@@ -695,8 +695,224 @@
       "collectionGroup": "community_events",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "community_id", "order": "ASCENDING" },
-        { "fieldPath": "starts_at", "order": "ASCENDING" }
+        {
+          "fieldPath": "community_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "starts_at",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "search_pets",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "name_lower",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "search_pets",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "name_prefix_4",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "search_pets",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "breed_tokens",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "search_pets",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "location_lower",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "search_pets",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "shelter_club_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "name_lower",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "search_clubs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "name_lower",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "directory_status",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "search_clubs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "name_prefix_4",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "directory_status",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "search_clubs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "location_lower",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "directory_status",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "search_fosters",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "full_name_lower",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "search_fosters",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "name_prefix_4",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "search_fosters",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "shelter_club_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "full_name_lower",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "search_volunteers",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "name_lower",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "search_volunteers",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "name_prefix_4",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "search_volunteers",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "skills_tokens",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "search_volunteers",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "shelter_club_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "name_lower",
+          "order": "ASCENDING"
+        }
       ]
     }
   ],

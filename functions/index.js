@@ -19,6 +19,12 @@ const { getFirestore, FieldValue } = require('firebase-admin/firestore');
 const { onDocumentCreated } = require('firebase-functions/v2/firestore');
 const { logger } = require('firebase-functions');
 const { isCompatible } = require('./matching');
+const {
+  onPetWrite,
+  onClubWrite,
+  onFosterWrite,
+  onVolunteerWrite,
+} = require('./searchSync');
 const mockData = require('./mockData');
 
 const DATABASE_ID = 'viralata';
@@ -86,3 +92,9 @@ exports.onPetCreatedNotifyRadar = onDocumentCreated(
 exports.loadMockData = mockData.loadMockData;
 exports.clearMockData = mockData.clearMockData;
 exports.getMockStatus = mockData.getMockStatus;
+
+// Search sync (TASK-312)
+exports.onPetWrite = onPetWrite;
+exports.onClubWrite = onClubWrite;
+exports.onFosterWrite = onFosterWrite;
+exports.onVolunteerWrite = onVolunteerWrite;
