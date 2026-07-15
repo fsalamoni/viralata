@@ -34,6 +34,7 @@ import UpcomingEventsSection from '@/modules/communities/components/UpcomingEven
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import { VolunteerSection } from '@/modules/shelter/components/VolunteerSection';
 import { MyFostersSection } from '@/modules/shelter/components/MyFostersSection';
+import { CrossRosterSection } from '@/modules/shelter/components/CrossRosterSection';
 import { AppearanceSettings } from '@/components/AppearanceSettings';
 import { VolunteerProfileForm } from '@/modules/shelter/components/VolunteerProfileForm';
 import { VolunteerMetricsCard } from '@/modules/shelter/components/VolunteerMetricsCard';
@@ -538,6 +539,16 @@ export default function Profile() {
           os 3 cards dispersos. */}
       {volunteerProfileV1 && user?.uid && (
         <VolunteerSection />
+      )}
+
+      {/* TASK-247: Multi-roster agregado (Voluntário + LT) */}
+      {user?.uid && (
+        <CrossRosterSection
+          volunteerData={volunteerProfileV1 ? { shelterId: user?.uid } : null}
+          fosterData={{ activeFosters: [] }}
+          shelterOptions={[]}
+          onJoinVolunteer={() => window.location.assign('/voluntarios')}
+        />
       )}
 
       {/* TASK-133: Meus Lares Temporários */}
