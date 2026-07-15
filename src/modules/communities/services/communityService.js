@@ -24,8 +24,9 @@ import {
   commentInputSchema,
   threadInputSchema,
   threadMessageInputSchema,
+  communityEventInputSchema,
   parseOrThrow,
-} from '@/modules/communities/domain/contentSchemas';
+} from '@/modules/communities/domain/schemas';
 
 function trimmed(value) {
   return String(value ?? '').trim();
@@ -199,15 +200,15 @@ export async function listCommunityEvents(communityId) {
 
 export async function createCommunityEvent(communityId, data, user) {
   if (!user?.uid) throw new Error('Usuário não autenticado.');
-  if (!data.title) throw new Error('Informe o título do evento.');
+  const input = parseOrThrow(communityEventInputSchema, data);
 
   const ref = doc(collection(db, 'community_events'));
   await setDoc(ref, {
     community_id: communityId,
-    title: data.title,
-    description: data.description || '',
-    location: data.location || '',
-    starts_at: data.starts_at || null,
+    title: input.title,
+    description: input.description,
+    location: input.location,
+    starts_at: input.starts_at,
     created_by: user.uid,
     created_at: serverTimestamp()
   });
