@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-15T05:41:49.636Z",
+  "generatedAt": "2026-07-15T06:01:57.208Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -398,11 +398,11 @@
   },
   "activeWorktrees": [
     {
-      "id": "wt-task-338",
-      "branch": "feat/task-338-feature-flags-v2",
-      "head": "a1ac9940a55ad58f28a0ed3c593d7b6c3c7e4600",
-      "headTitle": "feat(task-338): add 7 new SHELTER_* feature flags (default OFF)",
-      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-task-338",
+      "id": "feat-task-271-volunteer-docs",
+      "branch": "feat/task-271-volunteer-docs",
+      "head": "367056e5c0a117129fafb0e7c81d90ac88b790a0",
+      "headTitle": "feat(shelter): TASK-271 volunteer documents — upload, list, delete (RG, CPF, atestado médico)",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/feat-task-271-volunteer-docs",
       "status": "ahead-of-main",
       "commitsAhead": 1,
       "primarySession": null,
@@ -7806,7 +7806,7 @@
       "title": "Storage: upload de documentos de voluntário (RG, CPF, atestado)",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "critical",
       "owner": "unassigned",
       "branch": null,
@@ -7824,7 +7824,9 @@
       "subFrente": "voluntarios",
       "description": "(a) Schema: clubs/{clubId}/volunteers/{uid}/documents/{docId} com {type, file_url, file_name, mime_type, uploaded_at, expires_at}. (b) Service: uploadVolunteerDocument valida mime (image/jpeg,png,pdf), tamanho (max 10MB), tipo ([\"rg\", \"cpf\", \"medical_cert\", \"address_proof\", \"other\"]). (c) Rule: read = próprio + abrigo com volunteers:read; create = próprio; update = abrigo com volunteers:manage; delete = próprio + platform_admin. (d) UI: tab \"Documentos\" no admin + upload widget no perfil. (e) LGPD: retention 5 anos pós-sai.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15T06:01:40",
+      "pr": "0",
+      "resolvedAt": "2026-07-15"
     },
     {
       "id": "TASK-272",
@@ -9543,7 +9545,7 @@
       "title": "Feature flags novas: SHELTER_ADOPTER_DASHBOARD_V1, SHELTER_EVENTS_V1, SHELTER_ADOPTER_PROFILE_V1, SHELTER_SPONSORED_COMMUNITY_V1, SHELTER_COMMUNITY_RICH_EVENTS_V1, SHELTER_COMMUNITY_CHAT_V1, SHELTER_FCM_PUSH_V1",
       "type": "feature",
       "category": "core",
-      "status": "done",
+      "status": "ready",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -9559,9 +9561,7 @@
       "subFrente": "comunidade-adotante-eventos",
       "description": "Adicionar 7 novas flags em src/core/featureFlags.js, todas default OFF. Painel admin /admin/flags lista automaticamente.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-15T05:41:41",
-      "pr": "0",
-      "resolvedAt": "2026-07-15"
+      "updatedAt": "2026-07-11"
     },
     {
       "id": "TASK-339",
@@ -10840,7 +10840,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-15T05:41:41 — via scrum.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-15T06:01:40 — via scrum.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
@@ -10888,7 +10888,7 @@
       </div>
     </div>
     <div class="sprint-info">
-      <span class="pill mono">main @ 98df335</span>
+      <span class="pill mono">main @ 01df286</span>
       <span class="pill">0 worktrees ativos</span>
       <span class="pill goal">Goal: estabilizar pós-22 fases + fechar worktrees</span>
     </div>
