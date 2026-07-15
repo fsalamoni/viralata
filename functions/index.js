@@ -237,6 +237,10 @@ exports.hardDeleteVolunteerDocument = onCall(
   },
 );
 
+// ─── TASK-298: createContract callable (IP + user-agent, Lei 14.063/2020) ─
+const { createContract } = require('./createContract.cjs');
+exports.createContract = createContract;
+
 // ─── TASK-336: Community notifications ──────────────────────────────────
 
 // onCreate community_posts/{postId} → notify community admins
