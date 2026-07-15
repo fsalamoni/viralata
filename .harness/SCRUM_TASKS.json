@@ -559,7 +559,7 @@
       "title": "Smart Search: implementar busca fuzzy client-side (typo-tolerance)",
       "type": "feature",
       "category": "search",
-      "status": "in_review",
+      "status": "done",
       "priority": "high",
       "owner": "mvs_f1e04f28717d42cdba05e221b7b4b6f3",
       "branch": "feat/shelter-smart-search-fuzzy",
@@ -581,7 +581,14 @@
       "evidence": "docs/AUDIT_2026-07-11.md §5.3; decisão TASK-001 (Firestore nativo)",
       "description": "TASK-001 decidido: Firestore nativo. Como Firestore não tem typo-tolerance nativa, implementar busca fuzzy via Cloud Function (Levenshtein/phonetic) ou client-side via lib (Fuse.js, minisearch). Estratégia recomendada: cliente usa Fuse.js para busca local rápida em subset paginado (ex: 200 docs por vez), com debounce de 300ms. Server-side fica só para queries estruturadas (filtros facetados, range, etc).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-13T00:51:08"
+      "updatedAt": "2026-07-15T15:55:00Z",
+      "history": [
+        {
+          "ts": "2026-07-15T15:55:00Z",
+          "to": "done",
+          "reason": "feat já em main, varredura 2026-07-15"
+        }
+      ]
     },
     {
       "id": "TASK-019",
@@ -1504,7 +1511,7 @@
       "title": "Implementar clickwrap de aceite em ações (adoção, LT, doação, voluntariado)",
       "type": "feature",
       "category": "legal",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "mvs_311d078987d0414a90f57ef28b789b18",
       "branch": "feat/legal-docs-v2",
@@ -1530,7 +1537,14 @@
       "evidence": "00_Guia_Implementacao_Legal.md §4.1, §4.2, §4.3, §4.4",
       "description": "Modal/checkbox antes de concluir: (a) Adoção (substituir buildAdoptionTermsAcceptance já existente, gravar no audit_log); (b) Lar Temporário (criar FOSTER_TERMS_TEXT v2, modal de aceite); (c) Doação Financeira (criar DONATION_TERMS_TEXT v2, checkbox no checkout); (d) Voluntariado (volunteerTerms.v2.js já existe, ligar ao signup de voluntário). Cada um com geração dinâmica dos campos (animal_id, adopter_name, etc) + audit_log.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15T15:55:00Z",
+      "history": [
+        {
+          "ts": "2026-07-15T15:55:00Z",
+          "to": "done",
+          "reason": "feat já em main, varredura 2026-07-15"
+        }
+      ]
     },
     {
       "id": "TASK-053",
@@ -4914,7 +4928,7 @@
       "title": "Equipe: perfil público dos membros em /comunidades/{id}/equipe",
       "type": "feature",
       "category": "community",
-      "status": "in_progress",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
@@ -4932,7 +4946,14 @@
       "evidence": "Regra A §1.1 (público) — transparência",
       "description": "BLOCO INDEPENDENTE. Listar membros com foto, bio curta, role. Click abre profile público. LGPD: oculta dados sensíveis.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-15T13:04:39"
+      "updatedAt": "2026-07-15T15:55:00Z",
+      "history": [
+        {
+          "ts": "2026-07-15T15:55:00Z",
+          "to": "done",
+          "reason": "feat já em main, varredura 2026-07-15"
+        }
+      ]
     },
     {
       "id": "TASK-166",
@@ -10465,11 +10486,11 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 371,
-    "done": 285,
-    "inProgress": 4,
-    "inReview": 1,
+    "done": 288,
+    "inProgress": 3,
+    "inReview": 0,
     "blocked": 1,
-    "ready": 73,
+    "ready": 72,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -10499,7 +10520,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-15T15:24:56 — via scrum.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-15T15:55:00 — VARREDURA pós-conflito cron",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
