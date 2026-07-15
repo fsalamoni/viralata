@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-15T19:17:42.120Z",
+  "generatedAt": "2026-07-15T19:30:33.547Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -396,20 +396,7 @@
     "endsAt": "2026-07-18",
     "goal": "Estabilizar produção pós-deploy das 22 fases, fechar 3 worktrees em paralelo, decidir backend da Fase 18, priorizar débitos técnicos"
   },
-  "activeWorktrees": [
-    {
-      "id": "wt-audit-clickwrap",
-      "branch": "feat/task-087-audit-clickwrap-2026-07-15",
-      "head": "d416c7448c5f52e4590c7790f877d151bbcc4696",
-      "headTitle": "chore(scrum): TASK-087 done — auditoria clickwrap",
-      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-audit-clickwrap",
-      "status": "ahead-of-main",
-      "commitsAhead": 2,
-      "primarySession": null,
-      "sessionTitle": null,
-      "focus": []
-    }
-  ],
+  "activeWorktrees": [],
   "activeSessions": [
     {
       "id": "mvs_311d078987d0414a90f57ef28b789b18",
@@ -1424,7 +1411,7 @@
       "title": "Backup imutável (WORM) no GCS, lifecycle 90d",
       "type": "infra",
       "category": "security",
-      "status": "ready",
+      "status": "done",
       "priority": "low",
       "owner": "unassigned",
       "branch": null,
@@ -1441,7 +1428,7 @@
       "evidence": "docs/SHELTER_MGMT_ROADMAP.md §11.7",
       "description": "Configurar bucket GCS com Object Locking (WORM — Write Once Read Many) para backups. Lifecycle: 90d coldline, depois delete. Criptografia at-rest (default GCS) + em trânsito (HTTPS).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15"
     },
     {
       "id": "TASK-039",
@@ -1890,7 +1877,7 @@
       "title": "Implementar clickwrap de aceite em ações (adoção, LT, doação, voluntariado)",
       "type": "feature",
       "category": "legal",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "mvs_311d078987d0414a90f57ef28b789b18",
       "branch": "feat/legal-docs-v2",
@@ -1916,7 +1903,7 @@
       "evidence": "00_Guia_Implementacao_Legal.md §4.1, §4.2, §4.3, §4.4",
       "description": "Modal/checkbox antes de concluir: (a) Adoção (substituir buildAdoptionTermsAcceptance já existente, gravar no audit_log); (b) Lar Temporário (criar FOSTER_TERMS_TEXT v2, modal de aceite); (c) Doação Financeira (criar DONATION_TERMS_TEXT v2, checkbox no checkout); (d) Voluntariado (volunteerTerms.v2.js já existe, ligar ao signup de voluntário). Cada um com geração dinâmica dos campos (animal_id, adopter_name, etc) + audit_log.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15"
     },
     {
       "id": "TASK-053",
@@ -9364,7 +9351,7 @@
       "title": "[SEC-HIGH] Fechar audit_logs create: if isAuth() → if false (client não escreve; só Admin SDK)",
       "type": "security",
       "category": "core",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -9384,7 +9371,8 @@
       "subFrente": "comunidade-adotante-eventos",
       "description": "Mover createAuditLog em core/services/auditService.js para Cloud Function (Admin SDK). Client chama onCall(\"createAuditLog\", {...}) ao invés de escrever direto. Fechar poluição de audit log. Severity: HIGH.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15",
+      "pr": null
     },
     {
       "id": "TASK-331",
@@ -9649,7 +9637,7 @@
       "title": "Vínculo evento ↔ pet (pet_ids: []) + UI de seleção",
       "type": "feature",
       "category": "organizations",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -9668,7 +9656,8 @@
       "subFrente": "comunidade-adotante-eventos",
       "description": "Adicionar pet_ids: string[] em club_events. Multi-select no EventFormDialog.jsx (populado de pets do abrigo). Mostrar pets vinculados no EventDetail.jsx.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15",
+      "pr": null
     },
     {
       "id": "TASK-342",
@@ -10838,12 +10827,12 @@
     "firestoreIndexes": 35,
     "bundleSizeKB": 4125,
     "shelterPhases": "21/22 completas em produção (Fase 18 pendente decisão)",
-    "activeWorktreesAheadOfMain": 1,
+    "activeWorktreesAheadOfMain": 0,
     "mergedWorktreesThisSprint": [
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": "bc170dac971e9799062c9368bb20ee4174d0199d",
+    "mainCommit": "065d7186aa5ed0bfb3a06f107529a9332d82d091",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -10854,11 +10843,11 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 371,
-    "done": 291,
+    "done": 295,
     "inProgress": 4,
     "inReview": 1,
     "blocked": 1,
-    "ready": 67,
+    "ready": 63,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -10921,7 +10910,7 @@
   }
 }
   </script>
-  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-15T19:17:34.517Z">
+  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-15T19:17:42.195Z">
   </head>
 <body>
 
