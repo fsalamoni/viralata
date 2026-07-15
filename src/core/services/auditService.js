@@ -94,6 +94,19 @@ export const AUDIT_ACTION_LABELS = {
   volunteer_consent_withdrawn: 'Consentimento de voluntariado revogado (LGPD)',
   cookie_consent_recorded: 'Consentimento de cookies registrado',
   admin_broadcast_sent: 'Notificação segmentada enviada (admin)',
+  // ─── TASK-350: Community engagement (curtidas, comentários, RSVP, eventos) ───
+  community_post_liked: 'Post da comunidade curtido',
+  community_post_unliked: 'Curtida em post da comunidade removida',
+  community_post_commented: 'Comentário em post da comunidade criado',
+  community_comment_deleted: 'Comentário em post da comunidade removido',
+  community_event_rsvp_created: 'RSVP em evento de comunidade registrado',
+  community_event_rsvp_cancelled: 'RSVP em evento de comunidade cancelado',
+  community_event_created: 'Evento de comunidade criado',
+  community_event_updated: 'Evento de comunidade atualizado',
+  community_event_deleted: 'Evento de comunidade removido',
+  community_forum_thread_created: 'Tópico de fórum de comunidade criado',
+  community_forum_thread_updated: 'Tópico de fórum de comunidade atualizado',
+  community_forum_thread_deleted: 'Tópico de fórum de comunidade removido',
 };
 
 // ─── TASK-217: Categorias de retenção (auditLogPurgeCron) ──────────────
