@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-15T21:54:57.769Z",
+  "generatedAt": "2026-07-15T22:09:21.123Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -396,7 +396,20 @@
     "endsAt": "2026-07-18",
     "goal": "Estabilizar produção pós-deploy das 22 fases, fechar 3 worktrees em paralelo, decidir backend da Fase 18, priorizar débitos técnicos"
   },
-  "activeWorktrees": [],
+  "activeWorktrees": [
+    {
+      "id": "viralata",
+      "branch": "feat/task-281-smoke-volunteer-2026-07-15",
+      "head": "2a675491feb851786fca4fa9ae1a4b05fc34f718",
+      "headTitle": "feat(TASK-281): smoke-volunteer.mjs end-to-end test for volunteer lifecycle",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata",
+      "status": "in-sync",
+      "commitsAhead": 0,
+      "primarySession": null,
+      "sessionTitle": null,
+      "focus": []
+    }
+  ],
   "activeSessions": [
     {
       "id": "mvs_311d078987d0414a90f57ef28b789b18",
@@ -8073,7 +8086,7 @@
       "title": "Smoke test scripts/smoke-volunteer.mjs end-to-end",
       "type": "docs",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
@@ -8095,7 +8108,9 @@
       "subFrente": "voluntarios",
       "description": "Script Node que: (1) cria user de teste via Admin SDK, (2) cria abrigo de teste, (3) chama joinShelterAsVolunteer, (4) verifica audit_log, (5) verifica email enfileirado (mock), (6) admin faz BG check approve, (7) verifica FCM mock, (8) cria participation, (9) check-in, (10) verifica total de horas. Roda contra emulador + prod canário.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15T22:09:12",
+      "pr": "0",
+      "resolvedAt": "2026-07-15"
     },
     {
       "id": "TASK-282",
@@ -10837,7 +10852,7 @@
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": "98213cee7c276336d7a159bc245767d3095148ec",
+    "mainCommit": null,
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -10848,11 +10863,11 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 371,
-    "done": 301,
+    "done": 302,
     "inProgress": 4,
     "inReview": 1,
     "blocked": 1,
-    "ready": 57,
+    "ready": 56,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -10882,7 +10897,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-15T21:54:57.772Z — via sync.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-15T22:09:21.140Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
@@ -10915,7 +10930,7 @@
   }
 }
   </script>
-  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-15T21:54:57.781Z">
+  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-15T22:09:21.182Z">
   </head>
 <body>
 
