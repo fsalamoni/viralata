@@ -649,6 +649,27 @@ Fase 0 (preparação)
 - +12 testes
 - smoke test em produção com flag OFF
 
+**Status: 80% done** (implementado em 2026-07-15)
+
+**Implementado (Fase 13 v1)**:
+- [x] Dashboard pessoal com cards agregados (KanbanBoard + cards reais)
+- [x] Cards clicáveis (link para detail pages)
+- [x] Filtros por status / responsável
+- [x] Tempo real (Firestore onSnapshot)
+- [x] Tabs Visão Geral / Voluntários / Adoção / Saúde
+- [x] Flag `SHELTER_DASHBOARD_V1` (OFF por default)
+- [x] Componente `ShelterAdminDashboard.jsx` (335 linhas)
+- [x] +2 testes
+
+**Fase 13.1 — gaps pendentes**:
+- [ ] Página pública do abrigo `/abrigos/{id}` (visitantes, sem login) — TASK-152
+- [ ] Perfil de voluntário no abrigo com atribuições
+- [ ] Integração com Volunteer Dashboard (cross-shelter)
+- [ ] Integração com KPIs Foster (métricas LT)
+- [ ] Métricas customizáveis (cards salvos por abrigo)
+- [ ] Castrações pendentes (queries real-time)
+- [ ] Medicações pendentes (real-time, alertas visuais)
+
 ### Fase 14 — Central de Pendências (Kanban) · flag `SHELTER_KANBAN` (GRANDE)
 
 **Objetivo**: sistema de kanban com colunas customizáveis, tarefas, drag-and-drop.
