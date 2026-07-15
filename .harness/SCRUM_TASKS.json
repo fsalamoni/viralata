@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-15T02:06:50.724Z",
+  "generatedAt": "2026-07-15T02:28:03.467Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -12,13 +12,13 @@
   },
   "activeWorktrees": [
     {
-      "id": "viralata",
-      "branch": "feat/task-194-audit-action-labels-fired",
-      "head": "5d878858803237e593cb3283e9c429614f8c6203",
-      "headTitle": "feat(task-194): fire AUDIT_ACTION_LABELS for terms/privacy/coc on onboarding + fix foster audit call",
-      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata",
-      "status": "in-sync",
-      "commitsAhead": 0,
+      "id": "task-239-sentry-healthz",
+      "branch": "feat/task-239-sentry-healthz",
+      "head": "ea9e0c51c477ce52d12472b49ccc43a9cb9362ce",
+      "headTitle": "feat(task-239): Sentry integration + /healthz endpoint + bundle-hash script",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/feat/task-239-sentry-healthz",
+      "status": "ahead-of-main",
+      "commitsAhead": 1,
       "primarySession": null,
       "sessionTitle": null,
       "focus": []
@@ -6712,13 +6712,13 @@
       "title": "Sentry SDK + Crashlytics + Remote Config rollout + /healthz + bundle hash script",
       "type": "infra",
       "category": "infra",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
       "flag": null,
       "worktree": null,
-      "pr": null,
+      "pr": "0",
       "tags": [
         "regra-a",
         "voluntarios",
@@ -6732,7 +6732,8 @@
       "evidence": "D:\\viralata\\src\\components\\ErrorBoundary.jsx:2 (apenas recordClientError); D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §Post-deploy",
       "description": "BLOCO INDEPENDENTE. (1) @sentry/react + Crashlytics + Sentry sourcemap upload no build (sentry-cli releases new + upload-sourcemaps), (2) Firebase Remote Config parameter volunteer_profile_v1_rollout_pct (0-100) — modify useFeatureFlag, (3) /healthz endpoint JSON com { status, version, deps: { firestore, auth, storage } }, (4) scripts/bundle-hash.mjs (npm run build | sha256sum), (5) bundle hash no PR description, (6) changelog/release_notes automatizado. Combinar com TASK-223.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11 21:00"
+      "updatedAt": "2026-07-15T02:27:54",
+      "resolvedAt": "2026-07-15"
     },
     {
       "id": "TASK-240",
@@ -10393,12 +10394,12 @@
     "firestoreIndexes": 35,
     "bundleSizeKB": 4125,
     "shelterPhases": "21/22 completas em produção (Fase 18 pendente decisão)",
-    "activeWorktreesAheadOfMain": 0,
+    "activeWorktreesAheadOfMain": 1,
     "mergedWorktreesThisSprint": [
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": null,
+    "mainCommit": "56a86d414c7105359ca8e04e444199610b5e59e1",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -10409,11 +10410,11 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 370,
-    "done": 258,
+    "done": 259,
     "inProgress": 3,
     "inReview": 1,
     "blocked": 0,
-    "ready": 101,
+    "ready": 100,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -10443,7 +10444,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-15T02:06:41 — via scrum.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-15T02:27:54 — via scrum.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
