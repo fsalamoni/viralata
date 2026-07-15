@@ -221,6 +221,148 @@ function buildVolunteerSearchDoc(volunteer) {
   };
 }
 
+// ─── Builders — Adoption Interests (adopter entity) ───────────────────────
+
+/**
+ * Constrói documento de índice para `adoption_interests`.
+ * Compatível com search domain (adopter entity):
+ *   searchableFields: applicant_name, applicant_email, applicant_phone, notes
+ *   filterableFields: shelter_club_id, status, pet_id
+ *
+ * O campo `search_keywords` é um array de tokens normalizados que alimenta
+ * queries `array-contains` no Firestore nativo.
+ */
+function buildAdoptionInterestSearchDoc(interest) {
+  if (!interest) return null;
+  const name = interest.applicant_name || interest.user_name || '';
+  const email = interest.applicant_email || '';
+  const phone = interest.applicant_phone || '';
+  const notes = interest.notes || '';
+
+  // Tokens: nome + email (username, não domínio) + notes
+  const nameTokens = tokenize(name);
+  const emailTokens = email.split('@')[0] ? tokenize(email.split('@')[0]) : [];
+  const notesTokens = tokenize(notes);
+  const allTokens = [...nameTokens, ...emailTokens, ...notesTokens].filter(Boolean);
+
+  return {
+    // IDs e tenancy
+    id: interest.id || null,
+    shelter_club_id: interest.shelter_club_id || null,
+    pet_id: interest.pet_id || null,
+    user_id: interest.user_id || null,
+    // Display (LGPD-safe: email completo não vai para search)
+    applicant_name: name,
+    applicant_name_lower: normalizeText(name),
+    applicant_email_domain: email.includes('@') ? email.split('@')[1] : null,
+    status: interest.status || null,
+    notes: notes.substring(0, 500), // trunca para não inflar doc
+    // Search keywords (array para array-contains queries)
+    search_keywords: allTokens,
+    // Prefixes do nome para starts-with queries
+    name_prefix_3: buildPrefixes(name, 3, 3),
+    name_prefix_4: buildPrefixes(name, 4, 4),
+    name_prefix_5: buildPrefixes(name, 5, 5),
+    // Timestamps
+    created_at: interest.created_at || null,
+    updated_at: interest.updated_at || null,
+  };
+}
+
+// ─── Builders — Exhibitions ──────────────────────────────────────────────
+
+/**
+ * Constrói documento de índice para `exhibitions`.
+ * A collection é `clubs/{clubId}/exhibitions/{exhibitionId}`
+ * (collectionGroup query + filtro shelter_club_id).
+ */
+function buildExhibitionSearchDoc(exhibition) {
+  if (!exhibition) return null;
+  const title = exhibition.title || '';
+  const description = exhibition.description || '';
+  const location = exhibition.location || '';
+  const city = exhibition.city || '';
+  const organizer = exhibition.organizer_name || '';
+
+  return {
+    // IDs e tenancy
+    id: exhibition.id || null,
+    shelter_club_id: exhibition.shelter_club_id || null,
+    organizer_uid: exhibition.organizer_uid || null,
+    // Display
+    title,
+    title_lower: normalizeText(title),
+    description: description.substring(0, 500),
+    location,
+    location_lower: normalizeText(location),
+    city,
+    organizer_name: organizer,
+    status: exhibition.status || null,
+    start_date: exhibition.start_date || exhibition.datetime_start || null,
+    // Tokens
+    title_tokens: tokenize(title),
+    description_tokens: tokenize(description),
+    city_tokens: tokenize(city),
+    organizer_tokens: tokenize(organizer),
+    // Search keywords
+    search_keywords: [
+      ...tokenize(title),
+      ...tokenize(description),
+      ...tokenize(location),
+      ...tokenize(city),
+    ],
+    // Prefixes
+    title_prefix_3: buildPrefixes(title, 3, 3),
+    title_prefix_4: buildPrefixes(title, 4, 4),
+    title_prefix_5: buildPrefixes(title, 5, 5),
+    // Timestamps
+    created_at: exhibition.created_at || null,
+    updated_at: exhibition.updated_at || null,
+  };
+}
+
+// ─── Builders — Timeline (pet_timeline) ───────────────────────────────────
+
+/**
+ * Constrói documento de índice para `timeline`.
+ * A collection é `clubs/{clubId}/pet_timeline/{eventId}`
+ * (collectionGroup query + filtro shelter_club_id).
+ *
+ * Importante: cada entrada na timeline tem apenas `type` e `description`
+ * como searchableFields. Não indexamos `data` (informação estruturada,
+ * não texto livre).
+ */
+function buildTimelineSearchDoc(event) {
+  if (!event) return null;
+  const type = event.type || '';
+  const description = event.description || '';
+  const recordedBy = event.recorded_by_name || '';
+
+  return {
+    // IDs e tenancy
+    id: event.id || null,
+    shelter_club_id: event.shelter_club_id || null,
+    pet_id: event.pet_id || null,
+    recorded_by_uid: event.recorded_by_uid || null,
+    // Display
+    type,
+    description: description.substring(0, 500),
+    recorded_by_name: recordedBy,
+    event_date: event.event_date || null,
+    // Tokens
+    type_tokens: tokenize(type),
+    description_tokens: tokenize(description),
+    recorded_tokens: tokenize(recordedBy),
+    // Search keywords
+    search_keywords: [
+      ...tokenize(type),
+      ...tokenize(description),
+    ],
+    // Timestamps
+    created_at: event.created_at || null,
+  };
+}
+
 // ─── Cloud Functions ────────────────────────────────────────────────────
 
 exports.onPetWrite = onDocumentWritten(
@@ -316,6 +458,118 @@ exports.onVolunteerWrite = onDocumentWritten(
       }
     } catch (err) {
       logger.error('onVolunteerWrite error:', err);
+    }
+  },
+);
+
+// ─── TASK-048.1: 3 entities restantes ───────────────────────────────────
+
+/**
+ * onAdoptionInterestWrite — TASK-048.1
+ *
+ * Mantém `search_adoption_interests/{interestId}` em sync com
+ * `adoption_interests/{interestId}`.
+ *
+ * O documento de índice contém `search_keywords` (tokens normalizados do
+ * nome/email do adotante) que habilita queries array-contains.
+ */
+exports.onAdoptionInterestWrite = onDocumentWritten(
+  { document: 'adoption_interests/{interestId}', database: DATABASE_ID, region: REGION },
+  async (event) => {
+    const interestId = event.params.interestId;
+    const before = event.data?.before.data() ?? null;
+    const after = event.data?.after.data() ?? null;
+
+    try {
+      if (!after) {
+        await db.doc(`search_adoption_interests/${interestId}`).delete().catch(() => {});
+        logger.info(`search_adoption_interests/${interestId} deleted`);
+      } else {
+        const searchDoc = buildAdoptionInterestSearchDoc({ id: interestId, ...after });
+        if (searchDoc) {
+          await db.doc(`search_adoption_interests/${interestId}`).set(searchDoc, { merge: true });
+          logger.info(`search_adoption_interests/${interestId} synced`);
+        }
+      }
+    } catch (err) {
+      logger.error('onAdoptionInterestWrite error:', err);
+    }
+  },
+);
+
+/**
+ * onExhibitionWrite — TASK-048.1
+ *
+ * Mantém `search_exhibitions/{exhibitionId}` em sync com
+ * `clubs/{clubId}/exhibitions/{exhibitionId}`.
+ *
+ * Usa collectionGroup trigger: a path inclui shelter_club_id
+ * no documento para ACL (defesa em profundidade).
+ */
+exports.onExhibitionWrite = onDocumentWritten(
+  { document: 'clubs/{clubId}/exhibitions/{exhibitionId}', database: DATABASE_ID, region: REGION },
+  async (event) => {
+    const exhibitionId = event.params.exhibitionId;
+    const clubId = event.params.clubId;
+    const before = event.data?.before.data() ?? null;
+    const after = event.data?.after.data() ?? null;
+
+    try {
+      if (!after) {
+        await db.doc(`search_exhibitions/${exhibitionId}`).delete().catch(() => {});
+        logger.info(`search_exhibitions/${exhibitionId} deleted`);
+      } else {
+        // Injeta shelter_club_id via parent clubId
+        const searchDoc = buildExhibitionSearchDoc({
+          id: exhibitionId,
+          shelter_club_id: clubId,
+          ...after,
+        });
+        if (searchDoc) {
+          await db.doc(`search_exhibitions/${exhibitionId}`).set(searchDoc, { merge: true });
+          logger.info(`search_exhibitions/${exhibitionId} synced (club=${clubId})`);
+        }
+      }
+    } catch (err) {
+      logger.error('onExhibitionWrite error:', err);
+    }
+  },
+);
+
+/**
+ * onTimelineWrite — TASK-048.1
+ *
+ * Mantém `search_timeline/{eventId}` em sync com
+ * `clubs/{clubId}/pet_timeline/{eventId}`.
+ *
+ * A collection é `pet_timeline` (nome canônico no projeto). Cada evento
+ * referencia shelter_club_id + pet_id para tenancy e ACL.
+ */
+exports.onTimelineWrite = onDocumentWritten(
+  { document: 'clubs/{clubId}/pet_timeline/{eventId}', database: DATABASE_ID, region: REGION },
+  async (event) => {
+    const eventId = event.params.eventId;
+    const clubId = event.params.clubId;
+    const before = event.data?.before.data() ?? null;
+    const after = event.data?.after.data() ?? null;
+
+    try {
+      if (!after) {
+        await db.doc(`search_timeline/${eventId}`).delete().catch(() => {});
+        logger.info(`search_timeline/${eventId} deleted`);
+      } else {
+        const searchDoc = buildTimelineSearchDoc({
+          id: eventId,
+          shelter_club_id: clubId, // inject from parent
+          ...after,
+        });
+        if (searchDoc) {
+          await db.doc(`search_timeline/${eventId}`).set(searchDoc, { merge: true });
+          logger.info(`search_timeline/${eventId} synced (club=${clubId})`);
+        }
+      }
+    } catch (err) {
+      logger.error('onTimelineWrite error:', err);
     }
   },
 );

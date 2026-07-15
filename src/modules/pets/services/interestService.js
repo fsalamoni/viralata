@@ -35,13 +35,29 @@ export async function createInterest(petId, userId, actor, formAnswers = null) {
     throw new Error('Você é o responsável por este pet. Demonstre interesse apenas em pets de outros usuários.');
   }
 
+  // search_keywords: tokens normalizados do nome do adotante para busca
+  //firestore. Equivalente ao normalizeText() do search domain.
+  const rawName = actor?.displayName || '';
+  const nameTokens = rawName
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .split(/[^a-z0-9]+/g)
+    .filter((t) => t && t.length > 1);
+
   const payload = {
     pet_id: petId,
     user_id: userId,
-    user_name: actor?.displayName || '',
+    user_name: rawName,
     user_photo: actor?.photoURL || '',
+    // TASK-048.1: applicant_* para compatibilidade com search domain (adopter entity)
+    applicant_name: rawName,
+    // shelter_club_id: multi-tenant isolation para search queries
+    shelter_club_id: pet.shelter_club_id || null,
     status: 'pending',
     created_at: serverTimestamp(),
+    // TASK-048.1: search_keywords para array-contains queries no Firestore nativo
+    search_keywords: rawName ? nameTokens : [],
   };
   // Respostas do formulário de adoção montado na plataforma (item 5). Só grava
   // quando há de fato respostas — mantém o documento enxuto para pets sem form.
