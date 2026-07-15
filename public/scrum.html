@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-15T20:10:05.837Z",
+  "generatedAt": "2026-07-15T20:15:53.720Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -396,7 +396,20 @@
     "endsAt": "2026-07-18",
     "goal": "Estabilizar produção pós-deploy das 22 fases, fechar 3 worktrees em paralelo, decidir backend da Fase 18, priorizar débitos técnicos"
   },
-  "activeWorktrees": [],
+  "activeWorktrees": [
+    {
+      "id": "viralata",
+      "branch": "feat/task-093-smoke-staging-2026-07-15",
+      "head": "743d820321b6616379172cd1d0704db7a39e7244",
+      "headTitle": "feat(TASK-093): smoke test staging com 28 rotas + CI no deploy.yml",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata",
+      "status": "in-sync",
+      "commitsAhead": 0,
+      "primarySession": null,
+      "sessionTitle": null,
+      "focus": []
+    }
+  ],
   "activeSessions": [
     {
       "id": "mvs_311d078987d0414a90f57ef28b789b18",
@@ -3077,13 +3090,13 @@
       "title": "Sync worktrees: smoke test pós-merge em staging",
       "type": "chore",
       "category": "ci",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": "main",
       "flag": null,
       "worktree": null,
-      "pr": null,
+      "pr": "0",
       "tags": [
         "merge",
         "smoke-test",
@@ -3100,7 +3113,7 @@
       "evidence": "scripts/smoke-routes.mjs (existente)",
       "description": "BLOCO INDEPENDENTE. Após merge de wt/17ff480a em main, rodar smoke test automatizado (25+ rotas). Validar visualmente: rotas /admin/* abrem, paridade ONG/comunidade OK, layout não quebrou.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15"
     },
     {
       "id": "TASK-094",
@@ -10833,7 +10846,7 @@
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": "8b10c10ae63f78d056a13c1f8cfc2c8f7ad1b900",
+    "mainCommit": null,
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -10844,11 +10857,11 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 371,
-    "done": 297,
+    "done": 298,
     "inProgress": 4,
     "inReview": 1,
     "blocked": 1,
-    "ready": 61,
+    "ready": 60,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -10878,7 +10891,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-15T20:10:05.840Z — via sync.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-15T20:15:53.736Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
@@ -10911,7 +10924,7 @@
   }
 }
   </script>
-  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-15T20:09:20.020Z">
+  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-15T20:10:05.849Z">
   </head>
 <body>
 
