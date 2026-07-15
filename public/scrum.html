@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-15T22:46:23.345Z",
+  "generatedAt": "2026-07-15T23:10:24.478Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W29",
@@ -396,7 +396,20 @@
     "endsAt": "2026-07-22",
     "goal": "Implementar 50+ features de UI/UX/infra. Limpar inconsistências. Decisões registradas. Zero tasks in_progress stale."
   },
-  "activeWorktrees": [],
+  "activeWorktrees": [
+    {
+      "id": "viralata",
+      "branch": "feat/task-351-audit-target-corr-2026-07-15",
+      "head": "172b22029e4884657a263bb04ef56cd95205c9de",
+      "headTitle": "feat(audit): TASK-351 add target_user_id + correlation_id to audit_logs",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata",
+      "status": "in-sync",
+      "commitsAhead": 0,
+      "primarySession": null,
+      "sessionTitle": null,
+      "focus": []
+    }
+  ],
   "activeSessions": [
     {
       "id": "mvs_f1e04f28717d42cdba05e221b7b4b6f3",
@@ -9987,7 +10000,7 @@
       "title": "Auditoria: adicionar target_user_id e correlation_id em audit_logs",
       "type": "refactor",
       "category": "core",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
@@ -10006,7 +10019,9 @@
       "subFrente": "comunidade-adotante-eventos",
       "description": "Estender schema de audit_logs. Atualizar todas as createAuditLog calls com target_user_id quando aplicável. Migration path.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15T23:10:16",
+      "pr": "0",
+      "resolvedAt": "2026-07-15"
     },
     {
       "id": "TASK-352",
@@ -11138,7 +11153,7 @@
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": "b4ab04acb77ef19b2e860a328e7f0064f7de7e29",
+    "mainCommit": null,
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -11149,11 +11164,11 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 376,
-    "done": 329,
+    "done": 330,
     "inProgress": 0,
     "inReview": 0,
     "blocked": 0,
-    "ready": 42,
+    "ready": 41,
     "backlog": 4,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -11183,7 +11198,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-15T22:46:23.349Z — via sync.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-15T23:10:24.495Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
@@ -11313,7 +11328,7 @@
   ]
 }
   </script>
-  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-15T22:35:45.458Z">
+  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-15T22:46:23.359Z">
   </head>
 <body>
 
