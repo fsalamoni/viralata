@@ -237,6 +237,10 @@ exports.hardDeleteVolunteerDocument = onCall(
   },
 );
 
+// ─── TASK-291: Email onCall (adoption workflow) ────────────────────────────
+const { sendEmailOnCall } = require('./sendEmailOnCall');
+exports.sendEmailOnCall = sendEmailOnCall;
+
 // ─── TASK-336: Community notifications ──────────────────────────────────
 
 // onCreate community_posts/{postId} → notify community admins
