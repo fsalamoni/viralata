@@ -31,6 +31,91 @@ self.addEventListener('message', (event) => {
   if (event.data === 'SKIP_WAITING') self.skipWaiting();
 });
 
+// ─── TASK-292: FCM Push Notification handler ───────────────────────────────────
+// Intercepta push events do Firebase Cloud Messaging para mostrar
+// notificações mesmo quando o app está em background/fechado.
+// Quando o usuário clica na notificação, abre a URL do deep link.
+
+self.addEventListener('push', (event) => {
+  // Só processa pushes com payload FCM (contêm 'notification' no data)
+  if (!event.data || typeof event.data.json !== 'function') {
+    // Push sem dados estruturados — ignora silenciosamente
+    return;
+  }
+
+  let data;
+  try {
+    data = event.data.json();
+  } catch {
+    return;
+  }
+
+  // FCM pode enviar só `data` (sem `notification`) em algumas situações;
+  // se não tem notification, não mostra push notification native
+  const notification = data.notification;
+  if (!notification) return;
+
+  const options = {
+    body: notification.body || '',
+    icon: '/pwa-192.png',
+    badge: '/pwa-192.png',
+    tag: notification.tag || data.data?.type || 'viralata-push',
+    renotify: true,
+    requireInteraction: false,
+    data: {
+      link: data.fcmOptions?.link || data.data?.link || '/',
+      ...data.data,
+    },
+    actions: [
+      { action: 'open', title: 'Ver' },
+      { action: 'dismiss', title: 'Dispensar' },
+    ],
+    // Android-specific
+    vibrate: [200, 100, 200],
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(notification.title || 'Viralata', options),
+  );
+});
+
+self.addEventListener('notificationclick', (event) => {
+  if (event.action === 'dismiss') {
+    event.notification.close();
+    return;
+  }
+
+  event.notification.close();
+
+  const link = event.notification.data?.link || '/';
+  const urlToOpen = new URL(link, self.location.origin).href;
+
+  event.waitUntil(
+    (async () => {
+      // Tenta focar uma janela existente do app antes de abrir nova
+      const windowClients = await self.clients.matchAll({
+        type: 'window',
+        includeUncontrolled: true,
+      });
+
+      // Procura uma janela já aberta com o app
+      for (const client of windowClients) {
+        if (client.url.includes(self.location.origin) && 'focus' in client) {
+          await client.focus();
+          // Navega para a URL do deep link via postMessage (a página
+          // decide se usa history.pushState ou navigate)
+          client.postMessage({ type: 'DEEP_LINK', url: urlToOpen });
+          return;
+        }
+      }
+
+      // Nenhuma janela aberta — abre nova
+      const newClient = await self.clients.openWindow(urlToOpen);
+      if (newClient) await newClient.focus();
+    })(),
+  );
+});
+
 function isStaticAsset(url) {
   return (
     url.pathname.startsWith('/assets/') ||

@@ -43,6 +43,7 @@ import {
 } from '@/modules/shelter/hooks/useVolunteerProfile';
 import { VolunteerProfileForm } from '@/modules/shelter/components/VolunteerProfileForm';
 import VolunteerSignupCaptcha from '@/modules/shelter/components/VolunteerSignupCaptcha';
+import { useFCMRequest } from '@/modules/notifications/hooks/useFCMRequest';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import { cn } from '@/core/lib/utils';
 
@@ -241,6 +242,9 @@ export default function VolunteerSignup() {
   const acceptTermsMutation = useAcceptVolunteerTerms(user?.uid);
   const joinMutation = useJoinShelterAsVolunteer();
 
+  // TASK-292: FCM push — solicita permissão após ação relevante (signup voluntário)
+  const { requestPushIfAppropriate } = useFCMRequest();
+
   const hasAcceptedTerms = Boolean(profile?.terms_accepted_at)
     && profile?.terms_version === VOLUNTEER_TERMS_VERSION;
   const hasProfile = Boolean(profile?.skills || profile?.availability);
@@ -335,6 +339,9 @@ export default function VolunteerSignup() {
         },
         actor: { uid: user.uid, email: user.email },
       });
+      // TASK-292: após ação relevante (signup voluntário), solicita push permission
+      // se ainda não foi pedido nesta sessão.
+      requestPushIfAppropriate(user.uid);
       toast({ title: '✓ Inscrição confirmada!', description: `Você agora faz parte do ${club?.name || 'abrigo'}.` });
       navigate('/perfil#voluntariadas', { replace: true });
     } catch (err) {

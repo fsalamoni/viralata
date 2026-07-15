@@ -217,6 +217,22 @@ service cloud.firestore {
         allow delete: if isOwner(userId) || isPlatformAdmin();
       }
 
+      // ─── TASK-292: FCM push notification tokens ──────────────────────────────
+      // O array `fcm_tokens[]` em `users/{uid}` é gerenciado pelo client
+      // (fcmService.js) e pelas Cloud Functions (sendPushNotification.js).
+      // O próprio usuário pode atualizar SOMENTE seu próprio array de tokens.
+      // Estrutura de cada entry: { token, created_at, last_used_at, platform }
+      // LGPD Art.7 I/VI: consentimento legítimo para notificações transacionais.
+      // O token é pseudonymous — não identifica pessoa, apenas device.
+      // Opt-out: user remove o token via unregisterFCMToken (mesma regra).
+      allow read: if isOwner(userId) || isPlatformAdmin();
+      allow update: if isOwner(userId) &&
+        // Só permite alterar campos que são do client-side (fcm_tokens + meta).
+        // Impede que o usuário escalone privilégios via Firestore write.
+        request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['fcm_tokens', 'updated_at', 'last_fcm_activity_at']);
+      allow delete: if false;  // Doc do usuário nunca é deletado via client
+
       // ─── Fase 19: Subcoleção `terms_acceptances` (aceites legais) ──
       // Cada aceite é IMUTÁVEL (Lei 14.063/2020 — prova legal). Não pode
       // ser editado nem deletado pelo próprio usuário — apenas lido.

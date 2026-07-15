@@ -177,6 +177,17 @@ export const mockUsers = profiles.map((p, idx) => {
       created_at: daysAgoIso(days),
       created_at_ms: daysAgoMs(days),
       updated_at: daysAgoIso(Math.max(1, days - 7)),
+      // TASK-292: mock FCM tokens for push notification testing
+      ...(idx < 3 ? {
+        fcm_tokens: [
+          {
+            token: `mock_fcm_token_user${idx}_${'a'.repeat(140)}`,
+            created_at: daysAgoIso(Math.max(1, days - 3)),
+            last_used_at: daysAgoIso(Math.max(1, days - 1)),
+            platform: 'web',
+          },
+        ],
+      } : {}),
       ...mockMeta({ kind: 'user', name: p.name }),
     },
   };

@@ -19,6 +19,7 @@ import {
     APPLICATION_STATUS_LABELS,
   APPLICATION_STATUS_TONES,
 } from '@/modules/shelter/domain/operational/adoption';
+import { useFCMRequest } from '@/modules/notifications/hooks/useFCMRequest';
 
 function formatDate(value) {
   const d = value?.toDate ? parseTimestamp(value) : (value ? new Date(value) : null);
@@ -28,6 +29,16 @@ function formatDate(value) {
 
 export function MyAdoptionsSection({ userUid }) {
   const { data: applications = [], isLoading, isError, refetch } = useMyApplications(userUid);
+
+  // TASK-292: solicita push permission após 1ª ação relevante (ver own applications)
+  const { requestPushIfAppropriate } = useFCMRequest();
+
+  // Após carregar applications (ação relevante = candidato se importa com status),
+  // solicita push permission silenciosamente (sem banner invasivo).
+  // O user já está logado e visualizando suas aplicações — momento ideal.
+  if (!isLoading && applications.length > 0) {
+    requestPushIfAppropriate(userUid);
+  }
 
   return (
     <Card id="adocoes" className="rounded-[24px] p-6 lg:p-7">
