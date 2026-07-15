@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-15T08:35:41.403Z",
+  "generatedAt": "2026-07-15T08:58:42.456Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -12,11 +12,11 @@
   },
   "activeWorktrees": [
     {
-      "id": "task-276",
-      "branch": "feat/task-276-volunteer-digest-cron",
-      "head": "17d70d0bf79a33f25b8e47e56b30bb1fce43edf6",
-      "headTitle": "feat(task-276): volunteerDigestCron — daily digest Cloud Function para admins de abrigo",
-      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/task-276",
+      "id": "wt-task-274",
+      "branch": "feat/task-274-capability-matrix",
+      "head": "caadc0feee5da5318eb3165240c9e20e517edfda",
+      "headTitle": "feat(task-274): Atribuições finas (capability matrix) por voluntário",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-task-274",
       "status": "ahead-of-main",
       "commitsAhead": 1,
       "primarySession": null,
@@ -7501,7 +7501,7 @@
       "title": "Atribuições finas (capability matrix) por voluntário",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -7520,7 +7520,9 @@
       "subFrente": "voluntarios",
       "description": "(a) Schema: clubs/{clubId}/volunteer_assignments/{assignmentId} com {volunteer_uid, capability: enum, scope: enum, starts_at, ends_at, assigned_by_uid, assigned_at, notes}. Capability enum: mesma de VOLUNTEER_PARTICIPATION_ROLES + general_help, photography, foster_support. Scope: shelter, pet, event_type, task_id. (b) Service CRUD + Zod + audit. (c) UI: matriz (voluntário × capability) no admin, com toggles e badges de \"atribuído até DD/MM\". (d) Regra: só abrigo com volunteers:manage escreve; próprio voluntário lê os seus.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15T08:58:31",
+      "pr": "0",
+      "resolvedAt": "2026-07-15"
     },
     {
       "id": "TASK-275",
@@ -10416,7 +10418,7 @@
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": "aaaf04ccffe5372371d4740eacef4af71fca9b5a",
+    "mainCommit": "2bf6f6440e58e98628a02eec0972c53df50c062b",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -10427,11 +10429,11 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 370,
-    "done": 270,
+    "done": 271,
     "inProgress": 3,
     "inReview": 1,
     "blocked": 0,
-    "ready": 89,
+    "ready": 88,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -10461,7 +10463,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-15T08:35:27 — via scrum.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-15T08:58:31 — via scrum.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
