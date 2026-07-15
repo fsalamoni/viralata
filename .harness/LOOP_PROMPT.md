@@ -174,6 +174,7 @@ python3 -c "import json; d=json.load(open('.harness/SCRUM_TASKS.json')); done=[t
 - **Varredura 2 (29 tasks)**: 008, 063, 115, 116, 118, 119, 120, 121, 125, 147, 151, 158, 161, 162, 163, 166, 168, 173, 177, 193, 223, 264, 265, 266, 270, 313, 314, 344, 354
 - **Loop turn 2026-07-14 23:51 UTC**: TASK-277 Rate limit volunteer join + accept terms (feat/task-277-rate-limit-2026-07-14)
 - **Loop turn 2026-07-15 00:12 UTC**: TASK-309 Onboarding wizard pet creation (feat/task-309-wizard-pet-create-2026-07-15)
+- **Loop turn 2026-07-15 07:54 UTC**: TASK-338 7 SHELTER_* feature flags (feat/task-338-feature-flags)
 
 ---
 
@@ -189,6 +190,7 @@ python3 -c "import json; d=json.load(open('.harness/SCRUM_TASKS.json')); done=[t
 | TASK-239 | ~~medium~~ **done** | shelter | Sentry + /healthz + bundle-hash |
 
 > **Notas**:
+> - TASK-338 (7 SHELTER_* flags) entregue — feat/task-338-feature-flags, push OK
 > - TASK-239 entregue — feat/task-239-sentry-healthz, push OK, batch pendente (healthCheckCore+test + healthCheck.js + bundle-hash.mjs)
 > - TASK-239 (Sentry /healthz + bundle-hash) entregue — feat/task-239-sentry-healthz, push OK, batch pendente
 > - TASK-269 (onVolunteerParticipationCreated FCM+calendar+email+audit) entregue — feat/task-269-volunteer-fcm-participation, push OK, batch pendente
