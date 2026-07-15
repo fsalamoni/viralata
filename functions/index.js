@@ -241,6 +241,10 @@ exports.hardDeleteVolunteerDocument = onCall(
 const { sendEmailOnCall } = require('./sendEmailOnCall');
 exports.sendEmailOnCall = sendEmailOnCall;
 
+// ─── TASK-344: Generate event .ics (Google Calendar / iCal) ────────────────
+const { generateEventIcs } = require('./generateEventIcs');
+exports.generateEventIcs = generateEventIcs;
+
 // ─── TASK-336: Community notifications ──────────────────────────────────
 
 // onCreate community_posts/{postId} → notify community admins

@@ -1,4 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { httpsCallable } from 'firebase/functions';
+import { functions } from '@/core/config/firebase';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import {
   createClub,
@@ -718,5 +720,22 @@ export function useDeleteLedgerEntry(clubId) {
   return useMutation({
     mutationFn: (entryId) => deleteLedgerEntry(entryId, user),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['club-ledger', clubId] }),
+  });
+}
+
+/* --------------------- ICS / Calendar export (TASK-344) -------------------- */
+
+/**
+ * Gera e baixa o arquivo .ics de um evento.
+ * @returns {UseMutationResult<{ics:string, filename:string}, Error, {eventId:string, appUrl?:string}>}
+ */
+export function useDownloadEventIcs() {
+  return useMutation({
+    mutationFn: async ({ eventId, appUrl }) => {
+      if (!functions) throw new Error('Firebase Functions não inicializado.');
+      const fn = httpsCallable(functions, 'generateEventIcs');
+      const result = await fn({ eventId, appUrl: appUrl || window.location.origin });
+      return result.data;
+    },
   });
 }
