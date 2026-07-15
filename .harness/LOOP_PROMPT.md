@@ -1,4 +1,4 @@
-# LOOP_PROMPT — viralata (atualizado 2026-07-15 08:11 UTC)
+# LOOP_PROMPT — viralata (atualizado 2026-07-15 17:10 UTC)
 
 **Contexto**: /workspace/viralata, branch main, React+Vite+Firebase.
 **Repo**: https://github.com/fsalamoni/viralata.git
@@ -14,59 +14,7 @@
 - **NÃO** cria PR
 - **NÃO** faz merge
 - **NÃO** faz deploy
-
----
-
-## ⛔ ERRO COMETIDO POR OUTROS AGENTES (NÃO REPETIR) ⛔
-
-**CENÁRIO QUE CAUSOU REGRESSÃO EM 2026-07-15**:
-- Agente implementou feat(task-XXX) na branch feat/task-XXX-2026-07-15
-- Fez `chore: TASK-XXX done` no commit dessa branch
-- **MAS NÃO ATUALIZOU .harness/SCRUM_TASKS.json** (status continuou "ready")
-- Resultado: 7+ tasks com feat em branch + métricas erradas no painel público
-
-**REGRA DE OURO**: A branch feat/* só importa DEPOIS que o commit for mergeado em main.
-A task só está done no scrum se o JSON estiver com status="done" + metrics.done recalculado.
-
-**CHECKLIST OBRIGATÓRIO ANTES DE ENCERRAR O TURNO**:
-```bash
-# 1. Scrum update (3 comandos)
-node .harness/scrum.cjs start TASK-XXX
-node .harness/scrum.cjs review TASK-XXX --pr "(batch)" --reason "..."
-node .harness/scrum.cjs done TASK-XXX --pr "(batch)" --reason "..."
-
-# 2. REGRA #1: RECALCULAR metrics
-python3 -c "
-import json
-with open('.harness/SCRUM_TASKS.json') as f: d = json.load(f)
-m = d.setdefault('metrics', {})
-m['totalTasks'] = len(d['tasks'])
-m['done'] = len([t for t in d['tasks'] if t['status']=='done'])
-m['ready'] = len([t for t in d['tasks'] if t['status']=='ready'])
-m['inProgress'] = len([t for t in d['tasks'] if t['status']=='in_progress'])
-m['inReview'] = len([t for t in d['tasks'] if t['status']=='in_review'])
-m['blocked'] = len([t for t in d['tasks'] if t['status']=='blocked'])
-m['backlog'] = len([t for t in d['tasks'] if t['status']=='backlog'])
-with open('.harness/SCRUM_TASKS.json','w') as f: json.dump(d, f, indent=2)
-print('METRICS:', m['done'], '/', m['totalTasks'], 'done')
-"
-
-# 3. Verificação cruzada
-python3 -c "
-import json
-with open('.harness/SCRUM_TASKS.json') as f: d = json.load(f)
-done = [t for t in d['tasks'] if t['status']=='done']
-m = d.get('metrics',{})
-assert len(done) == m.get('done'), f'ALINHAMENTO QUEBRADO: array={len(done)} metrics={m.get("done")}'
-print('ALINHADO OK')
-"
-
-# 4. Commit + push
-git add -A && git commit -m "chore(scrum): TASK-XXX done" && git push origin main
-```
-
-**Se QUALQUER passo falhar, NÃO ENCERRAR O TURNO**. A não-atualização do scrum foi
-a regressão mais grave do projeto em 2 meses.
+- **OBRIGATÓRIO**: REGRA #0 (scrum update) + REGRA #1 (metrics sync)
 
 **A cada 10 tasks OU 4 horas (o que vier primeiro)**: batch PR + merge + deploy.
 
@@ -85,7 +33,7 @@ python3 -c "
 import json
 with open('.harness/SCRUM_TASKS.json') as f: d = json.load(f)
 ready = [t for t in d['tasks'] if t['status'] == 'ready' and t.get('owner') not in ['human', 'human-juridico']]
-print(f'72 tasks ready')
+print(f'{len(ready)} tasks ready')
 "
 ```
 
@@ -124,7 +72,7 @@ print(f'72 tasks ready')
 
 ---
 
-## 🆕 CANDIDATAS (2026-07-15)
+## 🆕 CANDIDATAS (2026-07-15 17:10 UTC)
 
 | ID | Pri | Descrição |
 |---|---|---|
@@ -148,14 +96,19 @@ print(f'72 tasks ready')
 > - TASK-273 ✅ done — Smart Search: adicionar entidade volunteer
 > - TASK-176 ✅ done — Sentry enriched
 > - TASK-239 ✅ done — Sentry SDK + Crashlytics
+> - TASK-059 ✅ done — feat/legal-docs-v2: smoke test /legal/termos-de-uso (termosDeUso.v2)
+> - TASK-052 ✅ done — feat/legal-docs-v2: clickwrap audit_log integration (adoption/foster/donation/volunteer)
+> - TASK-060 ✅ done — feat/legal-docs-v2: 02_Politica_de_Privacidade.md wired as /legal/politica-de-privacidade-v2 (LGPD, 10/07/2026)
 > - Todas as branches feat/* = `fsalamoni/viralata`
 
 ---
 
 ## 📊 MÉTRICAS ATUAIS
 
-- **done=269**, ready=90, in_progress=3
-- **Main**: `102de261904f`
+- **done=288** (was 287 — TASK-060 done: privacy policy v2 page)
+- **ready=70**, in_progress=4
+- **Main**: `691de55`
+- **Branch**: `feat/legal-docs-v2` (50ed5b6, pushed)
 
 ## 🏁 FIM DO TURNO
 
@@ -170,31 +123,3 @@ print(f'72 tasks ready')
 
 ## 🚀 BATCH (a cada 10 tasks)
 - User disser "Mavis, batch" → batch PR + merge + deploy.
-
-
----
-
-## 🆔 REGRA #2 PERMANENTE — IDs únicos (2026-07-15)
-
-**Problema visto**: Ao criar tasks novas, o agente pode escolher um ID que JÁ EXISTE.
-Resultado: IDs duplicados, painel mostra 1 task, JSON tem 2.
-
-**REGRA**: Antes de criar uma task nova, SEMPRE verificar:
-```bash
-python3 -c "
-import json
-with open('.harness/SCRUM_TASKS.json') as f: d = json.load(f)
-existing = [t['id'] for t in d['tasks']]
-new_id = 'TASK-XXX'  # ID que você quer usar
-if new_id in existing:
-    print(f'ERRO: {new_id} JÁ EXISTE! Use TASK-{max([int(i.split("-")[1]) for i in existing if i.startswith("TASK-")])+1}')
-else:
-    print(f'OK: {new_id} está livre')
-"
-```
-
-**Convenção**: Se a task é continuidade de uma decisão recente, use ID >= 600 (reservados para decisões).
-Se a task é continuação de uma sprint normal, use o próximo ID disponível.
-
-**Por quê**: IDs duplicados quebram sync.cjs (que mostra "Updates: 0 / Issues: IDs duplicados: 2")
-e confundem o painel público.
