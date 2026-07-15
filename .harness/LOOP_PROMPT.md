@@ -1,4 +1,4 @@
-# LOOP_PROMPT — viralata (atualizado 2026-07-15 08:11 UTC)
+# LOOP_PROMPT — viralata (atualizado 2026-07-15 11:53 UTC)
 
 **Contexto**: /workspace/viralata, branch main, React+Vite+Firebase.
 **Repo**: https://github.com/fsalamoni/viralata.git
@@ -33,7 +33,7 @@ python3 -c "
 import json
 with open('.harness/SCRUM_TASKS.json') as f: d = json.load(f)
 ready = [t for t in d['tasks'] if t['status'] == 'ready' and t.get('owner') not in ['human', 'human-juridico']]
-print(f'72 tasks ready')
+print(f'{len(ready)} tasks ready')
 "
 ```
 
@@ -72,7 +72,10 @@ print(f'72 tasks ready')
 
 ---
 
-## 🆕 CANDIDATAS (2026-07-15)
+## 🆕 CANDIDATAS (2026-07-15 11:53 UTC)
+
+> **Notas**:
+> - TASK-065 ✅ done — feat/task-065-dpa-abrigos-2026-07-15 (branch pushed, batch PR pending)
 
 | ID | Pri | Descrição |
 |---|---|---|
@@ -90,6 +93,7 @@ print(f'72 tasks ready')
 | TASK-007 | high | Revisão jurídica: avisosLegais.js...
 
 > **Notas**:
+> - TASK-064 ✅ done — /legal/politica-de-doacoes (via LegalPageViewer, was already wired)
 > - TASK-220 ✅ done — feat/task-220-clean (PR #192) merged 2026-07-15
 > - TASK-269 ✅ done — feat/task-268-volunteer-fcm-notify (PR #190)
 > - TASK-312 ✅ done — [INT-SEARCH-001] Sync ativo do search index
@@ -102,8 +106,8 @@ print(f'72 tasks ready')
 
 ## 📊 MÉTRICAS ATUAIS
 
-- **done=269**, ready=90, in_progress=3
-- **Main**: `102de261904f`
+- **done=276**, ready=83, in_progress=3, in_review=1
+- **Feature branch**: `feat/task-065-dpa-abrigos-2026-07-15` (pushed, batch pending)
 
 ## 🏁 FIM DO TURNO
 
