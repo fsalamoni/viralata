@@ -1,4 +1,4 @@
-# LOOP_PROMPT — viralata (atualizado 2026-07-15 19:17 UTC)
+# LOOP_PROMPT — viralata (atualizado 2026-07-15 20:10 UTC)
 
 **Contexto**: /workspace/viralata, branch main, React+Vite+Firebase.
 **Repo**: https://github.com/fsalamoni/viralata.git
@@ -74,7 +74,7 @@ print(f'{len(ready)} tasks ready')
 
 ---
 
-## 🆕 CANDIDATAS (2026-07-15 19:17 UTC)
+## 🆕 CANDIDATAS (2026-07-15 20:10 UTC)
 
 | ID | Pri | Descrição |
 |---|---|---|
@@ -85,23 +85,21 @@ print(f'{len(ready)} tasks ready')
 | TASK-007 | high | Revisão jurídica: avisosLegais.js |
 
 > **Notas**:
-> - TASK-087 ✅ done — feat/task-087-audit-clickwrap-2026-07-15: auditoria clickwrap 4 fluxos críticos (Adoção, Foster, Doação, Voluntariado), gap R01+R02 identificado em docs/AUDIT_ACEITE.md
+> - TASK-340 ✅ done — feat/task-340-event-types-2026-07-15 (TASK-338 was done, unblocked): novos tipos VACCINATION, LECTURE, FUNDRAISING, PET_DAY em CLUB_EVENT_TYPE + UI (TYPE_TONE map) + EventDetail badge dinamico
+> - TASK-087 ✅ done — feat/task-087-audit-clickwrap-2026-07-15: auditoria clickwrap 4 fluxos críticos (Adoção, Foster, Doação, Voluntariado)
 > - TASK-298 ✅ done — feat/task-298-contract-ip-ua-2026-07-15 (contract CF: IP+UA, Lei 14.063/2020)
 > - TASK-220 ✅ done — feat/task-220-clean (PR #192) merged 2026-07-15
 > - TASK-269 ✅ done — feat/task-268-volunteer-fcm-notify (PR #190)
 > - TASK-312 ✅ done — [INT-SEARCH-001] Sync ativo do search index
 > - TASK-273 ✅ done — Smart Search: adicionar entidade volunteer
-> - TASK-176 ✅ done — Sentry enriched
-> - TASK-239 ✅ done — Sentry SDK + Crashlytics
-> - TASK-038 ✅ done — feat/task-038-worm-backup-2026-07-15 (WORM: gcs-worm-setup + gcs-worm-verify, DR_PLAN §6)
 > - Todas as branches feat/* = `fsalamoni/viralata`
 
 ## 📊 MÉTRICAS ATUAIS
 
-- **done=291** (was 290 — TASK-087 done: auditoria clickwrap 4 fluxos)
-- **ready=67**, in_progress=4
-- **Main**: `4447e60`
-- **Branch**: `feat/task-087-audit-clickwrap-2026-07-15`
+- **done=297** (was 296 — TASK-340 done: event types VACCINATION, LECTURE, FUNDRAISING, PET_DAY)
+- **ready=61**, in_progress=4
+- **Main**: `dc0d49d`
+- **Branch**: `feat/task-340-event-types-2026-07-15`
 
 ## 🏁 FIM DO TURNO
 
