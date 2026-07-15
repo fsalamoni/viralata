@@ -9,6 +9,7 @@ import {
   ClipboardList, Search, Sparkles, ArrowRight, CheckCircle2,
 } from 'lucide-react';
 import { usePlatformSettings } from '@/core/lib/FeatureFlagsContext';
+import UpcomingExhibitionsFeed from '@/modules/shelter/components/UpcomingExhibitionsFeed';
 
 const IMPACT_STATS = [
   { value: '500+', label: 'Adoções realizadas' },
