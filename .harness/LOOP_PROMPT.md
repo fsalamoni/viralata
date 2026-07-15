@@ -1,4 +1,4 @@
-# LOOP_PROMPT — viralata (atualizado 2026-07-15 17:10 UTC)
+# LOOP_PROMPT — viralata (atualizado 2026-07-15 19:17 UTC)
 
 **Contexto**: /workspace/viralata, branch main, React+Vite+Firebase.
 **Repo**: https://github.com/fsalamoni/viralata.git
@@ -10,13 +10,13 @@
 
 **A cada turno**:
 - Implementa UMA task
-- Faz commit + push da branch
+- Faz commit + push da branch feat/*
 - **NÃO** cria PR
 - **NÃO** faz merge
 - **NÃO** faz deploy
 - **OBRIGATÓRIO**: REGRA #0 (scrum update) + REGRA #1 (metrics sync)
 
-**A cada 10 tasks OU 4 horas (o que vier primeiro)**: batch PR + merge + deploy.
+**A cada 10 tasks OU 4 horas (o que veio primeiro)**: batch PR + merge + deploy.
 
 ---
 
@@ -51,6 +51,8 @@ print(f'{len(ready)} tasks ready')
    - `node .harness/scrum.cjs review TASK-XXX --pr 0 --reason "feat/xxx pushed (batch)"`
    - `node .harness/scrum.cjs done TASK-XXX --pr 0 --reason "feat/xxx pushed (batch)"`
 
+   Se o scrum.cjs falhar (module not found), atualizar o SCRUM_TASKS.json diretamente via Python.
+
 2. **REGRA #1 — SINCRONIZAR `metrics` DO JSON**:
    ```python
    import json
@@ -67,12 +69,12 @@ print(f'{len(ready)} tasks ready')
    ```
 
 3. `node .harness/sync.cjs --fix`
-4. Commit + push (feature branch) → depois merge na main
-5. Atualizar LOOP_PROMPT.md
+4. Commit + push (main para updates de scrum)
+5. Atualizar LOOP_PROMPT.md no branch feature
 
 ---
 
-## 🆕 CANDIDATAS (2026-07-15 17:10 UTC)
+## 🆕 CANDIDATAS (2026-07-15 19:17 UTC)
 
 | ID | Pri | Descrição |
 |---|---|---|
@@ -82,40 +84,31 @@ print(f'{len(ready)} tasks ready')
 | TASK-006 | high | Revisão jurídica: adoptionTerms.v1.js |
 | TASK-007 | high | Revisão jurídica: avisosLegais.js |
 
-**Top 5 non-human ready:**
-| TASK-291 | critical | [EMAIL-001] Integrar SendGrid ou Resend pra email transacion...
-| TASK-292 | critical | [FCM-001] Integrar Firebase Cloud Messaging pra push notific...
-| TASK-368 | critical | [D-07] Decisão: DPO sign-off antes de qualquer canário em pr...
-| TASK-006 | high | Revisão jurídica: adoptionTerms.v1.js...
-| TASK-007 | high | Revisão jurídica: avisosLegais.js...
-
 > **Notas**:
+> - TASK-087 ✅ done — feat/task-087-audit-clickwrap-2026-07-15: auditoria clickwrap 4 fluxos críticos (Adoção, Foster, Doação, Voluntariado), gap R01+R02 identificado em docs/AUDIT_ACEITE.md
+> - TASK-298 ✅ done — feat/task-298-contract-ip-ua-2026-07-15 (contract CF: IP+UA, Lei 14.063/2020)
 > - TASK-220 ✅ done — feat/task-220-clean (PR #192) merged 2026-07-15
 > - TASK-269 ✅ done — feat/task-268-volunteer-fcm-notify (PR #190)
 > - TASK-312 ✅ done — [INT-SEARCH-001] Sync ativo do search index
 > - TASK-273 ✅ done — Smart Search: adicionar entidade volunteer
 > - TASK-176 ✅ done — Sentry enriched
 > - TASK-239 ✅ done — Sentry SDK + Crashlytics
-> - TASK-059 ✅ done — feat/legal-docs-v2: smoke test /legal/termos-de-uso (termosDeUso.v2)
-> - TASK-052 ✅ done — feat/legal-docs-v2: clickwrap audit_log integration (adoption/foster/donation/volunteer)
-> - TASK-060 ✅ done — feat/legal-docs-v2: 02_Politica_de_Privacidade.md wired as /legal/politica-de-privacidade-v2 (LGPD, 10/07/2026)
+> - TASK-038 ✅ done — feat/task-038-worm-backup-2026-07-15 (WORM: gcs-worm-setup + gcs-worm-verify, DR_PLAN §6)
 > - Todas as branches feat/* = `fsalamoni/viralata`
-
----
 
 ## 📊 MÉTRICAS ATUAIS
 
-- **done=288** (was 287 — TASK-060 done: privacy policy v2 page)
-- **ready=70**, in_progress=4
-- **Main**: `691de55`
-- **Branch**: `feat/legal-docs-v2` (50ed5b6, pushed)
+- **done=291** (was 290 — TASK-087 done: auditoria clickwrap 4 fluxos)
+- **ready=67**, in_progress=4
+- **Main**: `4447e60`
+- **Branch**: `feat/task-087-audit-clickwrap-2026-07-15`
 
 ## 🏁 FIM DO TURNO
 
 1. REGRA #0 (scrum update)
 2. REGRA #1 (metrics sync)
 3. sync.cjs --fix
-4. Commit + push
+4. Commit + push (main para scrum)
 5. Atualizar LOOP_PROMPT.md
 
 ## ⏰ HORÁRIO
