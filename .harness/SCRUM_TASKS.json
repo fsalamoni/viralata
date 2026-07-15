@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-15T13:35:13.965Z",
+  "generatedAt": "2026-07-15T13:36:57.289Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -8211,7 +8211,7 @@
       "title": "[PERM-001] Validar termo version aceito contra ADOPTION_TERMS_VERSION atual",
       "type": "security",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -8230,7 +8230,9 @@
       "subFrente": "abrigos-foster-adocao",
       "description": "submitAdoptionApplication rejeita se terms_version !== ADOPTION_TERMS_VERSION (constante importada). Mensagem clara: \"Termo desatualizado, recarregue a p\u00e1gina\". Previne aceita\u00e7\u00e3o de vers\u00e3o antiga em cache.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15T13:36:57",
+      "pr": "(batch pendente)",
+      "resolvedAt": "2026-07-15"
     },
     {
       "id": "TASK-302",
@@ -10440,11 +10442,11 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 370,
-    "done": 278,
+    "done": 279,
     "inProgress": 4,
     "inReview": 1,
     "blocked": 1,
-    "ready": 79,
+    "ready": 78,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -10474,7 +10476,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 \u2014 removed 58 duplicate IDs (race condition com sess\u00e3o Mavis paralela).",
-    "lastUpdate": "2026-07-15T13:35:03 \u2014 via scrum.cjs (Regra B \u00a7B.1)",
+    "lastUpdate": "2026-07-15T13:36:57 \u2014 via scrum.cjs (Regra B \u00a7B.1)",
     "regraAAnalysis": "2026-07-11 20:10 \u2014 orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4\u00aa re-avalia\u00e7\u00e3o independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, pap\u00e9is, regras, integra\u00e7\u00f5es, p\u00f3s-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 \u2014 Re-avalia\u00e7\u00e3o independente (4 olhos) conclu\u00edda. Compara\u00e7\u00e3o entre meu dependency map (s\u00edntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map n\u00e3o cobriu (TASK-193/194/195 \u2014 defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JUR\u00cdDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navega\u00e7\u00e3o (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) \u2014 ambos complementam meu map. Adicionei tarefas correspondentes. Confian\u00e7a no map: 95%.",
     "semanticEvents": [
