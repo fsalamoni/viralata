@@ -98,3 +98,7 @@ exports.onPetWrite = onPetWrite;
 exports.onClubWrite = onClubWrite;
 exports.onFosterWrite = onFosterWrite;
 exports.onVolunteerWrite = onVolunteerWrite;
+
+// Health check (TASK-239)
+const { healthCheck } = require('./healthCheck');
+exports.healthCheck = healthCheck;
