@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-15T02:28:03.467Z",
+  "generatedAt": "2026-07-15T03:14:36.284Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -12,11 +12,11 @@
   },
   "activeWorktrees": [
     {
-      "id": "task-239-sentry-healthz",
-      "branch": "feat/task-239-sentry-healthz",
-      "head": "ea9e0c51c477ce52d12472b49ccc43a9cb9362ce",
-      "headTitle": "feat(task-239): Sentry integration + /healthz endpoint + bundle-hash script",
-      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/feat/task-239-sentry-healthz",
+      "id": "wt-task122",
+      "branch": "feat/task-122-smart-search-filters",
+      "head": "411709bb3355d566c7ec072e0c5b8dd41339b221",
+      "headTitle": "feat(task-122): useSmartSearch with faceted filters + infinite scroll + fuzzy combine",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-task122",
       "status": "ahead-of-main",
       "commitsAhead": 1,
       "primarySession": null,
@@ -3539,7 +3539,7 @@
     {
       "id": "TASK-122",
       "title": "Hook useSmartSearch com filtros facetados",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "type": "feature",
       "category": "search",
@@ -3547,7 +3547,7 @@
       "branch": "wt/e79e15ca",
       "flag": "SHELTER_SMART_SEARCH",
       "worktree": ".worktrees/wt-e79e15ca",
-      "pr": null,
+      "pr": "0",
       "tags": [
         "react-hook",
         "search",
@@ -3563,7 +3563,8 @@
       "evidence": "",
       "description": "src/hooks/useSmartSearch.js. Recebe {query, filters}. Retorna {results, isLoading, error}. Internamente: se query vazia → useInfiniteQuery em Firestore com filtros; se query não-vazia → combina com fuzzy local (TASK-018).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15T03:14:17",
+      "resolvedAt": "2026-07-15"
     },
     {
       "id": "TASK-123",
@@ -10399,7 +10400,7 @@
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": "56a86d414c7105359ca8e04e444199610b5e59e1",
+    "mainCommit": "e6ca78c406eda898987d33a52e15b3e4191f6174",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -10410,11 +10411,11 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 370,
-    "done": 259,
+    "done": 260,
     "inProgress": 3,
     "inReview": 1,
     "blocked": 0,
-    "ready": 100,
+    "ready": 99,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -10444,7 +10445,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-15T02:27:54 — via scrum.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-15T03:14:17 — via scrum.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
