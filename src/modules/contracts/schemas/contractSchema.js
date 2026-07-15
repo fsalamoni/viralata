@@ -51,6 +51,9 @@ const baseContract = z.object({
   document_version: z.string().min(1).max(100),
   pdf_storage_path: z.string().regex(/^clubs\/[^/]+\/contracts\/[^/]+\.pdf$/),
   pdf_size_bytes: z.number().int().nonnegative(),
+  // TASK-298: IP real do cliente + user-agent — Lei 14.063/2020 Art. 6º + LGPD
+  adopter_ip: z.string().max(100).optional(),
+  adopter_user_agent: z.string().max(500).optional(),
   status: z.enum([
     CONTRACT_STATUS.PENDING_SHELTER_SIGNATURE,
     CONTRACT_STATUS.FULLY_SIGNED,

@@ -270,3 +270,7 @@ exports.onCommunityEventCreated = onDocumentCreated(
     try { await runOnCommunityEventCreatedSafe(event); } catch (e) { logger.error(e); }
   },
 );
+
+// ─── TASK-298: IP + user-agent no aceite do contrato ──────────────────────────
+const { createContractCallable } = require('./createContractCallable');
+exports.createContractCallable = createContractCallable;

@@ -621,13 +621,23 @@ service cloud.firestore {
     );
 
     // Create: adotante (adopter_uid == auth.uid) + abrigo admin
+    // TASK-298: adopter_ip e adopter_user_agent são optional mas, se presentes,
+    // devem respeitar tamanho máximo (anti-injection + LGPD).
     allow create: if isAuth() && (
       isShelterAdmin(clubId) ||
       (
         request.resource.data.adopter_uid == auth.uid &&
         request.resource.data.status == 'pending_shelter_signature' &&
         request.resource.data.document_hash.matches('^[a-f0-9]{64}$') &&
-        request.resource.data.pdf_storage_path.matches('^clubs/[^/]+/contracts/[^/]+\\.pdf$')
+        request.resource.data.pdf_storage_path.matches('^clubs/[^/]+/contracts/[^/]+\\.pdf$') &&
+        (
+          !('adopter_ip' in request.resource.data) ||
+          request.resource.data.adopter_ip.size() <= 100
+        ) &&
+        (
+          !('adopter_user_agent' in request.resource.data) ||
+          request.resource.data.adopter_user_agent.size() <= 500
+        )
       )
     );
 
