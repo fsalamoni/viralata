@@ -98,3 +98,84 @@ exports.onPetWrite = onPetWrite;
 exports.onClubWrite = onClubWrite;
 exports.onFosterWrite = onFosterWrite;
 exports.onVolunteerWrite = onVolunteerWrite;
+
+// ─── Fase 22 / TASK-272: LGPD volunteer privacy (soft-delete + erase) ────────
+const { onCall, HttpsError } = require('firebase-functions/v2/https');
+const { logger } = require('firebase-functions');
+const {
+  runSoftDeleteVolunteer,
+  runEraseMyVolunteerData,
+  runHardDeleteVolunteerDocument,
+  isPlatformAdmin,
+  hasShelterPermission,
+} = require('./volunteerPrivacyCore');
+
+const REGION = 'southamerica-east1';
+
+/**
+ * softDeleteVolunteer — Admin ou shelter owner/admin llama.
+ * @throws HttpsError 'permission-denied' se caller não tem acesso.
+ */
+exports.softDeleteVolunteer = onCall(
+  { region: REGION, cors: true },
+  async (request) => {
+    const callerUid = request.auth?.uid;
+    const { clubId, volunteerUid } = request.data || {};
+
+    if (!callerUid) throw new HttpsError('unauthenticated', 'Callable requer autenticação.');
+    if (!clubId || !volunteerUid) {
+      throw new HttpsError('invalid-argument', 'clubId e volunteerUid são obrigatórios.');
+    }
+
+    const admin = await isPlatformAdmin(callerUid);
+    const shelterOk = await hasShelterPermission(callerUid, clubId);
+    if (!admin && !shelterOk) {
+      throw new HttpsError('permission-denied', 'Sem permissão para excluir voluntário neste abrigo.');
+    }
+
+    const result = await runSoftDeleteVolunteer({
+      clubId, volunteerUid, actorUid: callerUid, logger,
+    });
+    return result;
+  },
+);
+
+/**
+ * eraseMyVolunteerData — voluntário logado pede erasure dos próprios dados.
+ * @throws HttpsError 'permission-denied' se caller.uid !== volunteerUid.
+ */
+exports.eraseMyVolunteerData = onCall(
+  { region: REGION, cors: true },
+  async (request) => {
+    const callerUid = request.auth?.uid;
+    if (!callerUid) throw new HttpsError('unauthenticated', 'Callable requer autenticação.');
+
+    const result = await runEraseMyVolunteerData({
+      uid: callerUid, actorUid: callerUid, logger,
+    });
+    return result;
+  },
+);
+
+/**
+ * hardDeleteVolunteerDocument — platform_admin apaga um doc específico.
+ */
+exports.hardDeleteVolunteerDocument = onCall(
+  { region: REGION, cors: true },
+  async (request) => {
+    const callerUid = request.auth?.uid;
+    const { clubId, collectionPath, docId } = request.data || {};
+
+    if (!callerUid) throw new HttpsError('unauthenticated', 'Callable requer autenticação.');
+    const admin = await isPlatformAdmin(callerUid);
+    if (!admin) throw new HttpsError('permission-denied', 'Apenas platform_admin.');
+    if (!clubId || !collectionPath || !docId) {
+      throw new HttpsError('invalid-argument', 'clubId, collectionPath e docId são obrigatórios.');
+    }
+
+    const result = await runHardDeleteVolunteerDocument({
+      clubId, collectionPath, docId, actorUid: callerUid, logger,
+    });
+    return result;
+  },
+);

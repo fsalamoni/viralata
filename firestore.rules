@@ -1128,13 +1128,20 @@ service cloud.firestore {
       //   volunteer_uid são IMUTÁVEIS.
       // - delete: só platform_admin (hard delete)
       match /volunteers/{volunteerUid} {
+        // TASK-272: soft-deleted volunteers (deleted_at set) só são visíveis
+        // para platform_admin. Impede que abrigo veja dados de voluntário que
+        // pediu erasure LGPD sem necessidade de audit trail público.
         allow read: if isAuth() && (
+          // platform_admin sempre vê (inclusive docs deletados — audit trail)
           isPlatformAdmin() ||
-          isClubOwnerOrAdmin(clubId) ||
-          canEditClubPets(clubId) ||
-          hasClubPermission(clubId, 'volunteers') ||
-          // O próprio voluntário pode ler sua rostagem
-          volunteerUid == request.auth.uid
+          // others: leitura normal APENAS se NÃO deletado
+          (resource.data.get('deleted_at', null) == null && (
+            isClubOwnerOrAdmin(clubId) ||
+            canEditClubPets(clubId) ||
+            hasClubPermission(clubId, 'volunteers') ||
+            // O próprio voluntário pode ler sua rostagem ativa
+            volunteerUid == request.auth.uid
+          ))
         );
         allow create: if isAuth() && (
           request.resource.data.shelter_club_id == clubId &&

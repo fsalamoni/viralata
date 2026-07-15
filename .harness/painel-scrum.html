@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-15T03:55:39.027Z",
+  "generatedAt": "2026-07-15T07:20:45.220Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -398,13 +398,13 @@
   },
   "activeWorktrees": [
     {
-      "id": "viralata",
-      "branch": "feat/task-085-audit-cadastro-2026-07-15",
-      "head": "c68afc30834426c391888699953a3d4fe098be0a",
-      "headTitle": "feat(task-085): audit cadastro + audit_log em onboarding + buildSearchIndexQuery export",
-      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata",
-      "status": "in-sync",
-      "commitsAhead": 0,
+      "id": "task-272-softdelete-volunteer",
+      "branch": "feat/task-272-softdelete-volunteer-2026-07-15",
+      "head": "14c1c61ee7234161c7212ac167518ab7377a4989",
+      "headTitle": "feat(TASK-272): soft-delete + LGPD anonimização de voluntários",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/task-272-softdelete-volunteer",
+      "status": "ahead-of-main",
+      "commitsAhead": 1,
       "primarySession": null,
       "sessionTitle": null,
       "focus": []
@@ -781,13 +781,13 @@
       "title": "Testar layouts com flag STANDARDIZED_PAGE_LAYOUT ON",
       "type": "chore",
       "category": "design",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": "wt/17ff480a",
       "flag": "STANDARDIZED_PAGE_LAYOUT",
       "worktree": ".worktrees/wt-17ff480a",
-      "pr": null,
+      "pr": "0",
       "tags": [
         "test",
         "layout"
@@ -795,7 +795,8 @@
       "blockedBy": [],
       "description": "Ligar STANDARDIZED_PAGE_LAYOUT em ambiente local e navegar todas as rotas autenticadas. Confirmar que não há regressão visual em páginas que usavam max-w-3xl/4xl/5xl/6xl ou padding próprio. Exceções esperadas: Home, ChatPage, topo da ClubDetail.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15T04:29:26",
+      "resolvedAt": "2026-07-15"
     },
     {
       "id": "TASK-012",
@@ -920,13 +921,13 @@
       "title": "Migrar clubs → shelters no Firestore (Fase 22 deep)",
       "type": "refactor",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
       "flag": "SHELTER_CUTOVER",
       "worktree": null,
-      "pr": null,
+      "pr": "0",
       "tags": [
         "migração",
         "fase-22",
@@ -936,7 +937,8 @@
       "evidence": "docs/AUDIT_2026-07-11.md §5.3 — decisão adiada",
       "description": "Fase 22 original previa renomear clubs → shelters no Firestore. Decisão adiada. Quando retomar: dual-read/write, migração de regras, atualização de índices, validação em produção. Hoje funciona via alias.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15T05:05:40",
+      "resolvedAt": "2026-07-15"
     },
     {
       "id": "TASK-018",
@@ -7804,7 +7806,7 @@
       "title": "Storage: upload de documentos de voluntário (RG, CPF, atestado)",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "critical",
       "owner": "unassigned",
       "branch": null,
@@ -7822,14 +7824,16 @@
       "subFrente": "voluntarios",
       "description": "(a) Schema: clubs/{clubId}/volunteers/{uid}/documents/{docId} com {type, file_url, file_name, mime_type, uploaded_at, expires_at}. (b) Service: uploadVolunteerDocument valida mime (image/jpeg,png,pdf), tamanho (max 10MB), tipo ([\"rg\", \"cpf\", \"medical_cert\", \"address_proof\", \"other\"]). (c) Rule: read = próprio + abrigo com volunteers:read; create = próprio; update = abrigo com volunteers:manage; delete = próprio + platform_admin. (d) UI: tab \"Documentos\" no admin + upload widget no perfil. (e) LGPD: retention 5 anos pós-sai.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15T06:01:40",
+      "pr": "0",
+      "resolvedAt": "2026-07-15"
     },
     {
       "id": "TASK-272",
       "title": "Soft-delete voluntário + anonimização LGPD (art. 18)",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "critical",
       "owner": "unassigned",
       "branch": null,
@@ -7847,7 +7851,9 @@
       "subFrente": "voluntarios",
       "description": "(a) Adicionar campo deleted_at, anonymized_at, pseudonym_uid em clubs/{clubId}/volunteers/{uid}. (b) Função softDeleteVolunteer (Cloud Function, Admin SDK): marca deleted_at, anonimiza PII (name → \"Voluntário #{shortId}\", email/phone → null, signature_text → null, mantém FKs para histórico). (c) Função eraseMyVolunteerData (Cloud Function): apaga users/{uid}/volunteer_profile/main + todas as rostagens + participations + documents. (d) API: DELETE /api/volunteer/me (autenticado). (e) Audit log da anonimização. (f) Regra do Firestore: read em roster com deleted_at → 403 exceto platform_admin.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15T07:20:34",
+      "pr": "0",
+      "resolvedAt": "2026-07-15"
     },
     {
       "id": "TASK-273",
@@ -7985,7 +7991,7 @@
       "title": "volunteer_profiles collectionGroup index (bug) — remover ou corrigir",
       "type": "bug",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -8003,7 +8009,9 @@
       "subFrente": "voluntarios",
       "description": "firestore.indexes.json:188-193 tem index volunteer_profiles(shelter_club_id, display_name). Mas a coleção real é users/{uid}/volunteer_profile/main (subcoleção, não collectionGroup com esse nome). Ação: remover o índice órfão. Se a intenção era indexar a subcoleção, o nome correto é volunteer_profile (sem \"s\"). Validar no emulador.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15T05:07:27",
+      "pr": "0",
+      "resolvedAt": "2026-07-15"
     },
     {
       "id": "TASK-279",
@@ -10784,12 +10792,12 @@
     "firestoreIndexes": 35,
     "bundleSizeKB": 4125,
     "shelterPhases": "21/22 completas em produção (Fase 18 pendente decisão)",
-    "activeWorktreesAheadOfMain": 0,
+    "activeWorktreesAheadOfMain": 1,
     "mergedWorktreesThisSprint": [
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": null,
+    "mainCommit": "68a074d0ee9917b04dc7ed577928b357d64da1c4",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -10800,11 +10808,11 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 370,
-    "done": 262,
+    "done": 267,
     "inProgress": 3,
     "inReview": 1,
     "blocked": 0,
-    "ready": 97,
+    "ready": 92,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -10834,7 +10842,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-15T03:55:24 — via scrum.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-15T07:20:34 — via scrum.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
@@ -10867,7 +10875,7 @@
   }
 }
   </script>
-  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-15T03:55:39.090Z">
+  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-15T07:20:45.271Z">
   </head>
 <body>
 

@@ -274,6 +274,8 @@ async function cascadeAnonymizeVolunteerData(uid, actor) {
       radius_km: null,
       transport_available: false,
       has_vehicle: false,
+      anonymized_at: serverTimestamp(),
+      pseudonym_uid: `pseudonym_${uid?.slice?.(0, 16) ?? uid}`,
       updated_at: serverTimestamp(),
     }, { merge: true });
     counts.profile = 1;
@@ -287,6 +289,7 @@ async function cascadeAnonymizeVolunteerData(uid, actor) {
       query(collectionGroup(db, 'volunteers'), where('volunteer_uid', '==', uid)),
     );
     const batch = writeBatch(db);
+    // TASK-272: adicionar deleted_at + anonymized_at + pseudonym_uid
     rosterSnap.forEach((d) => {
       batch.update(d.ref, {
         status: 'left',
@@ -297,6 +300,9 @@ async function cascadeAnonymizeVolunteerData(uid, actor) {
         volunteer_photo_url: null,
         signature_text: null,
         volunteer_name: ANONYMIZED_NAME,
+        deleted_at: new Date().toISOString(),
+        anonymized_at: new Date().toISOString(),
+        pseudonym_uid: `pseudonym_${uid?.slice?.(0, 16) ?? uid}`,
         updated_at: serverTimestamp(),
       });
     });
