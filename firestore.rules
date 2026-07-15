@@ -715,7 +715,11 @@ service cloud.firestore {
           || resource.data.user_id == request.auth.uid
         )
       );
-      allow create: if isAuth();
+      // TASK-330 (SEC-HIGH): create BLOQUEADO para client.
+      // Toda escrita passa pela Cloud Function `createAuditLog` que usa
+      // Admin SDK (bypassa rules). Callable exige auth.uid, então
+      // apenas usuários autenticados conseguem logar (mesmo que indiretamente).
+      allow create: if false;
       allow update, delete: if false; // Imutável
     }
 

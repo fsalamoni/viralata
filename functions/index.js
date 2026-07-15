@@ -168,6 +168,7 @@ const {
   isPlatformAdmin,
   hasShelterPermission,
 } = require('./volunteerPrivacyCore');
+const { createAuditLogCore } = require('./auditLogCore.cjs');
 
 /**
  * softDeleteVolunteer — Admin ou shelter owner/admin llama.
@@ -268,5 +269,58 @@ exports.onCommunityEventCreated = onDocumentCreated(
   { document: 'community_events/{eventId}', database: DATABASE_ID, region: REGION },
   async (event) => {
     try { await runOnCommunityEventCreatedSafe(event); } catch (e) { logger.error(e); }
+  },
+);
+
+// ─── TASK-330: Audit log via callable (SEC-HIGH) ─────────────────────────
+// Substitui a escrita direta do client em audit_logs. Agora o client
+// chama httpsCallable(functions, 'createAuditLog') e o Admin SDK
+// é quem de fato grava no Firestore (bypassa security rules).
+//
+// IP real: CF-Connecting-IP ( CloudFlare ).
+// IAM: allUsers (público autenticado — callable valida auth.uid internamente).
+exports.createAuditLog = onCall(
+  { region: REGION, cors: true },
+  async (request) => {
+    const { action, actor, userId, userName, userEmail, details } = request.data || {};
+    // Callable: request.auth é automaticamente populado pelo Firebase Auth.
+    // Usamos auth.uid para validar que há usuário autenticado.
+    if (!request.auth) {
+      throw new HttpsError('unauthenticated', 'Callable requer autenticação.');
+    }
+    if (!action) {
+      throw new HttpsError('invalid-argument', 'action é obrigatório.');
+    }
+    // actor: se não for passado, usa o auth do callable.
+    const effectiveActor = actor || {
+      uid: request.auth.uid,
+      email: request.auth.token?.email || '',
+      displayName: request.auth.token?.name || '',
+    };
+    // IP real via CloudFlare.
+    const rawIp = request.rawRequest?.headers?.['cf-connecting-ip']
+      || request.rawRequest?.socket?.remoteAddress
+      || 'unknown';
+    const ipAddress = Array.isArray(rawIp) ? rawIp[0] : rawIp;
+    // User-Agent.
+    const userAgent =
+      request.rawRequest?.headers?.['user-agent']
+      || request.rawRequest?.headers?.['User-Agent']
+      || 'unknown';
+    const result = await createAuditLogCore({
+      action,
+      actor: effectiveActor,
+      userId: userId || null,
+      userName: userName || null,
+      userEmail: userEmail || null,
+      details: details || {},
+      ipAddress,
+      userAgent,
+      logger,
+    });
+    if (!result.ok) {
+      throw new HttpsError('internal', `Falha ao gravar audit log: ${result.error}`);
+    }
+    return { ok: true, logId: result.logId };
   },
 );
