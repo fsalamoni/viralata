@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-15T15:25:04.286Z",
+  "generatedAt": "2026-07-15T15:56:13.735Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -398,11 +398,11 @@
   },
   "activeWorktrees": [
     {
-      "id": "wt-e79e15ca",
-      "branch": "feat/task-195-legal-smoke-test-2026-07-15",
-      "head": "1eae1e5071f412c0065c0664e580c87610508699",
-      "headTitle": "feat(TASK-195): add 5 legal v2 slugs to smoke-routes",
-      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-e79e15ca",
+      "id": "task-279",
+      "branch": "feat/task-279-volunteer-terms-immutable-2026-07-15",
+      "head": "aa483aa35472a1eb84eef9a9094574d9757fdae8",
+      "headTitle": "feat(task-279): migrate volunteer terms to immutable terms_acceptances",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/task-279",
       "status": "ahead-of-main",
       "commitsAhead": 1,
       "primarySession": null,
@@ -8027,7 +8027,7 @@
       "title": "acceptVolunteerTerms migrar para terms_acceptances (imutabilidade legal)",
       "type": "refactor",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -8047,7 +8047,9 @@
       "subFrente": "voluntarios",
       "description": "Hoje: users/{uid}/volunteer_profile/main tem campos terms_accepted_at, terms_version (mutáveis). Migração: criar doc em users/{uid}/terms_acceptances/{acceptanceId} (já tem rule imutável em firestore.rules:205-210) com {terms_type: \"volunteer_v1\", terms_version, signature_text_hash, accepted_at, ip, user_agent}. Service acceptVolunteerTerms chama addDoc em terms_acceptances. Profile global mantém referência (last_terms_acceptance_id) mas NÃO é o storage primário. Migration script para usuários que aceitaram antes.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15T15:56:04",
+      "pr": "0",
+      "resolvedAt": "2026-07-15"
     },
     {
       "id": "TASK-280",
@@ -10840,7 +10842,7 @@
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": "0b20709416727ee2be5a425b204c85bfb18c7feb",
+    "mainCommit": "c5bf9d298fe1aea3fdbaca9c153e4e1710cc5cb6",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -10851,11 +10853,11 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 371,
-    "done": 285,
+    "done": 286,
     "inProgress": 4,
     "inReview": 1,
     "blocked": 1,
-    "ready": 73,
+    "ready": 72,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -10885,7 +10887,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-15T15:24:56 — via scrum.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-15T15:56:04 — via scrum.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
@@ -10918,7 +10920,7 @@
   }
 }
   </script>
-  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-15T15:25:04.346Z">
+  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-15T15:56:13.791Z">
   </head>
 <body>
 
