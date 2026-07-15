@@ -25,6 +25,17 @@ const {
   onFosterWrite,
   onVolunteerWrite,
 } = require('./searchSync');
+const {
+  runPropagateVolunteerProfileSnapshotSafe,
+  runNotifyAdminOnNewVolunteerSafe,
+  runNotifyVolunteerOnStatusChangeSafe,
+  runNotifyAdminOnNewParticipationSafe,
+  runNotifyOnCheckInOutSafe,
+} = require('./volunteerTriggers');
+const {
+  aggregateVolunteerHours,
+  sendShiftReminders,
+} = require('./volunteerHoursCron');
 const mockData = require('./mockData');
 
 const DATABASE_ID = 'viralata';
@@ -98,3 +109,48 @@ exports.onPetWrite = onPetWrite;
 exports.onClubWrite = onClubWrite;
 exports.onFosterWrite = onFosterWrite;
 exports.onVolunteerWrite = onVolunteerWrite;
+
+// ─── Volunteer triggers (TASK-220) ────────────────────────────────────────
+// onUpdate users/{uid}/volunteer_profile/main → propagate to rosters
+exports.runPropagateVolunteerProfileSnapshot = (event) =>
+  runPropagateVolunteerProfileSnapshotSafe(event);
+
+// onCreate clubs/{clubId}/volunteers/{uid} → notify admin
+const { onDocumentCreated: _onDocCreated } = require('firebase-functions/v2/firestore');
+exports.onVolunteerCreatedNotifyAdmin = _onDocCreated(
+  { document: 'clubs/{clubId}/volunteers/{volunteerUid}', database: DATABASE_ID, region: REGION },
+  async (event) => {
+    try { await runNotifyAdminOnNewVolunteerSafe(event); } catch (e) { logger.error(e); }
+  },
+);
+
+// onUpdate clubs/{clubId}/volunteers/{uid} → notify volunteer on status change
+const { onDocumentUpdated: _onDocUpdated } = require('firebase-functions/v2/firestore');
+exports.onVolunteerUpdatedNotifyStatus = _onDocUpdated(
+  { document: 'clubs/{clubId}/volunteers/{volunteerUid}', database: DATABASE_ID, region: REGION },
+  async (event) => {
+    try { await runNotifyVolunteerOnStatusChangeSafe(event); } catch (e) { logger.error(e); }
+  },
+);
+
+// onCreate clubs/{clubId}/volunteer_participations/{pid} → notify admin
+const { onDocumentCreated: _onParticCreated } = require('firebase-functions/v2/firestore');
+exports.onParticipationCreatedNotifyAdmin = _onParticCreated(
+  { document: 'clubs/{clubId}/volunteer_participations/{participationId}', database: DATABASE_ID, region: REGION },
+  async (event) => {
+    try { await runNotifyAdminOnNewParticipationSafe(event); } catch (e) { logger.error(e); }
+  },
+);
+
+// onUpdate clubs/{clubId}/volunteer_participations/{pid} → notify on check_in/check_out
+const { onDocumentUpdated: _onParticUpdated } = require('firebase-functions/v2/firestore');
+exports.onParticipationUpdatedCheckInOut = _onParticUpdated(
+  { document: 'clubs/{clubId}/volunteer_participations/{participationId}', database: DATABASE_ID, region: REGION },
+  async (event) => {
+    try { await runNotifyOnCheckInOutSafe(event); } catch (e) { logger.error(e); }
+  },
+);
+
+// Scheduled crons (TASK-220)
+exports.aggregateVolunteerHours = aggregateVolunteerHours;
+exports.sendShiftReminders = sendShiftReminders;
