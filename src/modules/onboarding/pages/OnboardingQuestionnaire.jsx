@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
+import { createAuditLog } from '@/core/services/auditService';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -92,7 +93,7 @@ const OTHER_PET_OPTIONS = [
 ];
 
 export default function OnboardingQuestionnaire() {
-  const { updateUserProfile, userProfile } = useAuth();
+  const { user, updateUserProfile, userProfile } = useAuth();
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState({
@@ -148,6 +149,8 @@ export default function OnboardingQuestionnaire() {
     setSaving(true);
     try {
       const acceptedAt = new Date().toISOString();
+      const actor = { uid: user?.uid, displayName: user?.displayName, email: user?.email };
+
       // Persistimos cada aceite no doc do perfil para servir de prova
       // de aceite (audit trail local). O audit_log canônico fica
       // gravado no `createAuditLog` chamado pelos helpers do módulo
@@ -168,6 +171,14 @@ export default function OnboardingQuestionnaire() {
         onboarding_version: ONBOARDING_QUESTIONNAIRE_VERSION,
         onboarding_completed_at: acceptedAt,
       });
+
+      // TASK-194: disparar AUDIT_ACTION_LABELS para os 3 aceites do cadastro.
+      // Best-effort: falhas no audit não bloqueiam o onboarding.
+      const auditDetails = { terms_version: '2026-07-10', onboarding_version: ONBOARDING_QUESTIONNAIRE_VERSION };
+      await createAuditLog({ action: 'terms_accepted', actor, details: auditDetails }).catch(() => {});
+      await createAuditLog({ action: 'privacy_policy_accepted', actor, details: auditDetails }).catch(() => {});
+      await createAuditLog({ action: 'code_of_conduct_accepted', actor, details: auditDetails }).catch(() => {});
+
       toast.success('Perfil concluído! Bem-vindo ao Viralata 🐾');
       navigate('/feed');
     } catch {
