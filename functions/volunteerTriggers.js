@@ -1,7 +1,7 @@
 /**
  * @fileoverview Cloud Function triggers: módulo de voluntários (Fase 13).
  *
- * Cinco triggers reativos + helpers de idempotência/DLQ, mais um cron
+ * Seis triggers reativos + helpers de idempotência/DLQ, mais um cron
  * opcional de agregação de horas. Padrão de design: o handler de
  * lógica (testável sem `firebase-functions`) fica aqui; a amarração
  * com os triggers (v2) é feita em `functions/index.js` (mesmo padrão
@@ -29,6 +29,10 @@
  *      → onUpdate clubs/{clubId}/volunteer_participations/{participationId}
  *      → Dispara APENAS quando `check_in` ou `check_out` mudam.
  *
+ *   6. onVolunteerParticipationCreated (TASK-269)
+ *      → onCreate clubs/{clubId}/volunteer_participations/{participationId}
+ *      → Notifica o próprio voluntário: FCM + email + calendar + audit log.
+ *
  * Idempotência:
  *   Cada notificação gera um `dedup_id` determinístico:
  *     sha256(prefix + '|' + parts).slice(0, 16)
@@ -49,6 +53,7 @@
 const { initializeApp } = require('firebase-admin/app');
 const { getFirestore, FieldValue } = require('firebase-admin/firestore');
 const crypto = require('crypto');
+const _admin = require('firebase-admin');
 
 if (!global.__viralataInitialized) {
   initializeApp();
@@ -66,6 +71,22 @@ function setLogger(logger) {
   if (logger && typeof logger.info === 'function') {
     _logger = logger;
   }
+}
+
+/**
+ * Injeta um mock de messaging (para testes). Use no beforeAll do test.
+ */
+let _messagingOverride = null;
+function setMessagingOverride(messaging) {
+  _messagingOverride = messaging;
+}
+
+/** Retorna a instância de messaging (mockada em teste ou real em produção). */
+function _getMessaging() {
+  if (_messagingOverride) return _messagingOverride;
+  const admin = _admin;
+  if (!admin.apps.length) admin.initializeApp();
+  return admin.messaging();
 }
 
 const DEDUP_COLLECTION = 'notification_dedup';
@@ -455,6 +476,247 @@ async function runNotifyOnCheckInOut(event) {
 }
 
 // ════════════════════════════════════════════════════════════════════
+// TRIGGER 6 (TASK-269): onCreate volunteer_participation → notifica voluntário
+// FCM + calendar entry + email (volunteer-shift-confirmed-v1) + audit log.
+// ════════════════════════════════════════════════════════════════════
+
+const CALENDAR_COLLECTION = 'calendar';
+const AUDIT_COLLECTION = 'audit_logs';
+
+/**
+ * Determina o título de notificação a partir dos dados da participação.
+ */
+function buildParticipationTitle(data) {
+  const role = data.role ? ` (${data.role})` : '';
+  const label = data.event_label || data.event_type || 'turno';
+  return `Turno confirmado: ${label}${role}`;
+}
+
+/**
+ * Determina a URL de deep-link para a participação.
+ */
+function buildParticipationLink(clubId, participationId) {
+  return `/abrigo/${clubId}/voluntarios/participacoes/${participationId}`;
+}
+
+/**
+ * Envia FCM multicast para o voluntário. Retorna contagem de
+ * tokens notificados. Falha no envio FCM é non-fatal (log + continua).
+ *
+ * @param {string} volunteerUid
+ * @param {object} participationData
+ * @param {string} clubId
+ * @param {string} participationId
+ * @param {string} participationTitle
+ * @param {string} participationLink
+ * @returns {Promise<{tokens: string[], sent: number, failed: number}>}
+ */
+/**
+ * Envia FCM multicast para o voluntário. Retorna contagem de
+ * tokens notificados. Falha no envio FCM é non-fatal (log + continua).
+ *
+ * @param {string} volunteerUid
+ * @param {object} participationData
+ * @param {string} clubId
+ * @param {string} participationId
+ * @param {string} participationTitle
+ * @param {string} participationLink
+ * @param {object} [_injected] - test injection: { messaging?, db? }
+ * @returns {Promise<{tokens: string[], sent: number, failed: number}>}
+ */
+async function sendFCMToVolunteer(volunteerUid, participationData, clubId, participationId, participationTitle, participationLink, _injected = {}) {
+  const _db = _injected.db || db;
+  try {
+    const messaging = _getMessaging();
+
+    const userSnap = await _db.collection('users').doc(volunteerUid).get();
+    const userData = userSnap.data() || {};
+    const tokens = Array.isArray(userData.fcm_tokens) ? userData.fcm_tokens : [];
+    if (!tokens.length) {
+      _logger.info('onVolunteerParticipationCreated: no FCM tokens for volunteer', { volunteer_uid: volunteerUid });
+      return { tokens: [], sent: 0, failed: 0 };
+    }
+
+    const validTokens = tokens.filter((t) => typeof t === 'string' && t.length > 0);
+    if (!validTokens.length) {
+      return { tokens: [], sent: 0, failed: 0 };
+    }
+
+    const message = {
+      notification: {
+        title: participationTitle.slice(0, 140),
+        body: `Você foi confirmado para ${participationData.event_date || 'o turno'}. Toque para ver os detalhes.`.slice(0, 300),
+      },
+      data: {
+        type: 'volunteer_shift_confirmed',
+        participation_id: participationId,
+        club_id: clubId,
+        title: participationData.event_label || '',
+        event_label: participationData.event_label || '',
+        event_date: participationData.event_date || '',
+        role: participationData.role || '',
+        url: participationLink,
+      },
+      tokens: validTokens,
+    };
+
+    let sent = 0;
+    let failed = 0;
+    try {
+      const response = await messaging.sendEachForMulticast(message);
+      sent = response.successCount || 0;
+      failed = response.failureCount || 0;
+    } catch (fcmErr) {
+      _logger.warn('onVolunteerParticipationCreated: FCM sendEachForMulticast failed', {
+        volunteer_uid: volunteerUid,
+        error: fcmErr.message,
+      });
+      failed = validTokens.length;
+    }
+
+    _logger.info('onVolunteerParticipationCreated: FCM sent', {
+      volunteer_uid: volunteerUid,
+      tokens_count: validTokens.length,
+      sent,
+      failed,
+    });
+    return { tokens: validTokens, sent, failed };
+  } catch (err) {
+    _logger.warn('onVolunteerParticipationCreated: FCM error', {
+      volunteer_uid: volunteerUid,
+      error: err.message,
+    });
+    return { tokens: [], sent: 0, failed: 0 };
+  }
+}
+
+/**
+ * Grava entrada no calendário do voluntário em users/{uid}/calendar/{id}.
+ */
+async function writeCalendarEntry(volunteerUid, participationId, participationData, clubId, title) {
+  try {
+    const calendarRef = db.collection('users').doc(volunteerUid).collection(CALENDAR_COLLECTION).doc(participationId);
+    await calendarRef.create({
+      type: 'volunteer_shift',
+      title: title,
+      event_label: participationData.event_label || null,
+      event_type: participationData.event_type || null,
+      event_date: participationData.event_date || null,
+      role: participationData.role || null,
+      club_id: clubId,
+      participation_id: participationId,
+      status: 'confirmed',
+      created_at: new Date().toISOString(),
+      created_at_ms: Date.now(),
+    });
+    _logger.info('onVolunteerParticipationCreated: calendar entry written', {
+      volunteer_uid: volunteerUid,
+      participation_id: participationId,
+    });
+    return true;
+  } catch (err) {
+    if (err?.code === 6 || /already exists/i.test(String(err?.message))) {
+      _logger.info('onVolunteerParticipationCreated: calendar entry already exists (dedup)', {
+        volunteer_uid: volunteerUid,
+        participation_id: participationId,
+      });
+      return false;
+    }
+    _logger.warn('onVolunteerParticipationCreated: calendar write failed', {
+      volunteer_uid: volunteerUid,
+      error: err.message,
+    });
+    return false;
+  }
+}
+
+/**
+ * Grava audit log de confirmação de turno.
+ */
+async function writeAuditLog(volunteerUid, participationId, participationData, clubId, title, fcmResult) {
+  try {
+    const auditRef = db.collection(AUDIT_COLLECTION).doc();
+    await auditRef.create({
+      action: 'volunteer_shift_confirmed',
+      action_label: 'Turno de voluntariado confirmado',
+      actor_id: participationData.created_by || null,
+      actor_name: null,
+      user_id: volunteerUid,
+      details: {
+        club_id: clubId,
+        participation_id: participationId,
+        title,
+        event_label: participationData.event_label || null,
+        event_date: participationData.event_date || null,
+        role: participationData.role || null,
+        fcm_tokens_count: fcmResult.tokens?.length || 0,
+        fcm_sent: fcmResult.sent || 0,
+        fcm_failed: fcmResult.failed || 0,
+      },
+      created_at: new Date().toISOString(),
+      created_at_ms: Date.now(),
+    });
+    _logger.info('onVolunteerParticipationCreated: audit log written', {
+      participation_id: participationId,
+    });
+  } catch (err) {
+    _logger.warn('onVolunteerParticipationCreated: audit log failed', {
+      participation_id: participationId,
+      error: err.message,
+    });
+  }
+}
+
+/**
+ * Core da trigger 6: notifica voluntário via FCM, grava no calendário,
+ * dispara email de confirmação e loga no audit.
+ */
+async function runOnVolunteerParticipationCreated(event, _injected = {}) {
+  const data = event.data?.data();
+  if (!data) return;
+  const { clubId, participationId } = event.params;
+  const volunteerUid = data.volunteer_uid;
+  if (!volunteerUid) {
+    _logger.warn('onVolunteerParticipationCreated: no volunteer_uid', { participation_id: participationId });
+    return;
+  }
+
+  const title = buildParticipationTitle(data);
+  const link = buildParticipationLink(clubId, participationId);
+
+  // FCM (não-fatal se falhar)
+  const fcmResult = await sendFCMToVolunteer(volunteerUid, data, clubId, participationId, title, link, _injected);
+
+  // Calendar entry (idempotente via create)
+  await writeCalendarEntry(volunteerUid, participationId, data, clubId, title);
+
+  // Email de confirmação (non-blocking, best-effort)
+  try {
+    const { sendShiftConfirmationEmail } = require('./volunteerEmails');
+    await sendShiftConfirmationEmail(volunteerUid, {
+      eventLabel: data.event_label || data.event_type || 'turno',
+      eventDate: data.event_date || null,
+      role: data.role || null,
+      clubId,
+    });
+  } catch (emailErr) {
+    _logger.warn('onVolunteerParticipationCreated: email failed', {
+      volunteer_uid: volunteerUid,
+      error: emailErr.message,
+    });
+  }
+
+  // Audit log (non-blocking)
+  await writeAuditLog(volunteerUid, participationId, data, clubId, title, fcmResult);
+
+  _logger.info('onVolunteerParticipationCreated: done', {
+    participation_id: participationId,
+    volunteer_uid: volunteerUid,
+    fcm_sent: fcmResult.sent,
+  });
+}
+
+// ════════════════════════════════════════════════════════════════════
 // PUBLIC: wrappers com try/catch + DLQ. Chamados pelos triggers
 // definidos em `functions/index.js`. Cada um retorna `{ok:true}`
 // (sucesso ou duplicata suprimida) ou `{ok:false, error}`.
@@ -533,6 +795,16 @@ async function runNotifyOnCheckInOutSafe(event) {
   );
 }
 
+async function runOnVolunteerParticipationCreatedSafe(event) {
+  const { clubId, participationId } = event.params || {};
+  const data = event.data?.data?.();
+  return safeRun(
+    'onVolunteerParticipationCreated',
+    { clubId, participationId, volunteer_uid: data?.volunteer_uid },
+    () => runOnVolunteerParticipationCreated(event),
+  );
+}
+
 module.exports = {
   // Core (testável)
   dedupId,
@@ -542,19 +814,29 @@ module.exports = {
   runNotifyVolunteerOnStatusChange,
   runNotifyAdminOnNewParticipation,
   runNotifyOnCheckInOut,
+  runOnVolunteerParticipationCreated,
+  buildParticipationTitle,
+  buildParticipationLink,
+  sendFCMToVolunteer,
+  writeCalendarEntry,
+  writeAuditLog,
   getShelterAdminUids,
   createNotificationForRecipients,
   sendToDLQ,
   setLogger,
+  setMessagingOverride,
   // Wrappers com DLQ (chamados pelos triggers em index.js)
   runPropagateVolunteerProfileSnapshotSafe,
   runNotifyAdminOnNewVolunteerSafe,
   runNotifyVolunteerOnStatusChangeSafe,
   runNotifyAdminOnNewParticipationSafe,
   runNotifyOnCheckInOutSafe,
+  runOnVolunteerParticipationCreatedSafe,
   // Constants
   DEDUP_COLLECTION,
   DLQ_COLLECTION,
   NOTIFICATIONS_COLLECTION,
+  CALENDAR_COLLECTION,
+  AUDIT_COLLECTION,
   PROPAGATE_WATCHED_FIELDS,
 };
