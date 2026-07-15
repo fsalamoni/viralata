@@ -173,6 +173,7 @@ python3 -c "import json; d=json.load(open('.harness/SCRUM_TASKS.json')); done=[t
 - **Varredura 1 (36 tasks)**: 150, 152, 154, 157, 159, 160, 180, 191, 200, 241, 244, 245, 288, 289, 290, 293, 294, 295, 296, 299, 300, 329, 331, 332, 055, 218, 219, 221, 246, 275, 305, 307, 316, 335, 356, 267
 - **Varredura 2 (29 tasks)**: 008, 063, 115, 116, 118, 119, 120, 121, 125, 147, 151, 158, 161, 162, 163, 166, 168, 173, 177, 193, 223, 264, 265, 266, 270, 313, 314, 344, 354
 - **Loop turn 2026-07-14 23:51 UTC**: TASK-277 Rate limit volunteer join + accept terms (feat/task-277-rate-limit-2026-07-14)
+- **Loop turn 2026-07-15 00:12 UTC**: TASK-309 Onboarding wizard pet creation (feat/task-309-wizard-pet-create-2026-07-15)
 
 ---
 
@@ -180,7 +181,6 @@ python3 -c "import json; d=json.load(open('.harness/SCRUM_TASKS.json')); done=[t
 
 | ID | Pri | Categoria | Descrição |
 |---|---|---|---|
-| TASK-309 | high | shelter | [UX-ABRIGO-002] Onboarding wizard do abrigo (5 passos) — verificar duplicação |
 | TASK-312 | high | shelter | [INT-SEARCH-001] Sync ativo do search index (Cloud Function) |
 | TASK-268 | critical | shelter | Cloud Function onVolunteerJoinedShelter (FCM admin) |
 | TASK-269 | critical | shelter | Cloud Function onVolunteerParticipationCreated (FCM voluntário) |
@@ -189,6 +189,7 @@ python3 -c "import json; d=json.load(open('.harness/SCRUM_TASKS.json')); done=[t
 | TASK-239 | medium | shelter | Sentry + Crashlytics |
 
 > **Notas**:
+> - TASK-309 (Onboarding wizard pet creation) entregue — feat/task-309-wizard-pet-create-2026-07-15, push OK, batch pendente
 > - TASK-277 (rate limit volunteer) entregue — feat/task-277-rate-limit-2026-07-14, push OK, batch pendente
 > - TASK-325 (milestone photo/video upload) entregue — feat/milestone-complete-2026-07-14, merge pendente
 > - TASK-273 (Smart Search volunteer entity) entregue — feat/volunteer-search-2026-07-14, merge pendente
