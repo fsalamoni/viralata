@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-15T07:20:45.220Z",
+  "generatedAt": "2026-07-15T07:31:55.602Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -10,20 +10,7 @@
     "endsAt": "2026-07-18",
     "goal": "Estabilizar produção pós-deploy das 22 fases, fechar 3 worktrees em paralelo, decidir backend da Fase 18, priorizar débitos técnicos"
   },
-  "activeWorktrees": [
-    {
-      "id": "task-272-softdelete-volunteer",
-      "branch": "feat/task-272-softdelete-volunteer-2026-07-15",
-      "head": "14c1c61ee7234161c7212ac167518ab7377a4989",
-      "headTitle": "feat(TASK-272): soft-delete + LGPD anonimização de voluntários",
-      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/task-272-softdelete-volunteer",
-      "status": "ahead-of-main",
-      "commitsAhead": 1,
-      "primarySession": null,
-      "sessionTitle": null,
-      "focus": []
-    }
-  ],
+  "activeWorktrees": [],
   "activeSessions": [
     {
       "id": "mvs_311d078987d0414a90f57ef28b789b18",
@@ -10406,12 +10393,12 @@
     "firestoreIndexes": 35,
     "bundleSizeKB": 4125,
     "shelterPhases": "21/22 completas em produção (Fase 18 pendente decisão)",
-    "activeWorktreesAheadOfMain": 1,
+    "activeWorktreesAheadOfMain": 0,
     "mergedWorktreesThisSprint": [
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": "68a074d0ee9917b04dc7ed577928b357d64da1c4",
+    "mainCommit": "98d3b6f10d9ea7c99c064254a729c32a2d67234c",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
