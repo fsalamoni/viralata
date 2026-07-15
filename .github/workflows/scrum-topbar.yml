@@ -31,16 +31,15 @@ jobs:
       - name: Re-embed métricas no painel
         run: |
           node .harness/sync.cjs --fix
-          git diff --quiet public/scrum.html .harness/painel-scrum.html .harness/SCRUM_TASKS.json
-          if [ $? -ne 0 ]; then
+          MAIN_COMMIT=$(git rev-parse HEAD)
+          MAIN_SHORT=$(echo $MAIN_COMMIT | cut -c1-7)
+          if git diff --quiet public/scrum.html .harness/painel-scrum.html .harness/SCRUM_TASKS.json; then
+            echo "Sem mudanças nas métricas"
+          else
             echo "Mudanças detectadas, commitando..."
-            MAIN_COMMIT=$(git rev-parse HEAD)
-            MAIN_SHORT=$(echo $MAIN_COMMIT | cut -c1-7)
             git config user.name "viralata-scrum-bot"
             git config user.email "scrum-bot@viralata.local"
             git add public/scrum.html .harness/painel-scrum.html .harness/SCRUM_TASKS.json
             git commit -m "chore(scrum): sync.cjs --fix re-embed métricas (${MAIN_SHORT})"
             git push origin main
-          else
-            echo "Sem mudanças nas métricas"
           fi
