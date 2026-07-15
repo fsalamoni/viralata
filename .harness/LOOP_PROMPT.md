@@ -14,7 +14,59 @@
 - **NÃO** cria PR
 - **NÃO** faz merge
 - **NÃO** faz deploy
-- **OBRIGATÓRIO**: REGRA #0 (scrum update) + REGRA #1 (metrics sync)
+
+---
+
+## ⛔ ERRO COMETIDO POR OUTROS AGENTES (NÃO REPETIR) ⛔
+
+**CENÁRIO QUE CAUSOU REGRESSÃO EM 2026-07-15**:
+- Agente implementou feat(task-XXX) na branch feat/task-XXX-2026-07-15
+- Fez `chore: TASK-XXX done` no commit dessa branch
+- **MAS NÃO ATUALIZOU .harness/SCRUM_TASKS.json** (status continuou "ready")
+- Resultado: 7+ tasks com feat em branch + métricas erradas no painel público
+
+**REGRA DE OURO**: A branch feat/* só importa DEPOIS que o commit for mergeado em main.
+A task só está done no scrum se o JSON estiver com status="done" + metrics.done recalculado.
+
+**CHECKLIST OBRIGATÓRIO ANTES DE ENCERRAR O TURNO**:
+```bash
+# 1. Scrum update (3 comandos)
+node .harness/scrum.cjs start TASK-XXX
+node .harness/scrum.cjs review TASK-XXX --pr "(batch)" --reason "..."
+node .harness/scrum.cjs done TASK-XXX --pr "(batch)" --reason "..."
+
+# 2. REGRA #1: RECALCULAR metrics
+python3 -c "
+import json
+with open('.harness/SCRUM_TASKS.json') as f: d = json.load(f)
+m = d.setdefault('metrics', {})
+m['totalTasks'] = len(d['tasks'])
+m['done'] = len([t for t in d['tasks'] if t['status']=='done'])
+m['ready'] = len([t for t in d['tasks'] if t['status']=='ready'])
+m['inProgress'] = len([t for t in d['tasks'] if t['status']=='in_progress'])
+m['inReview'] = len([t for t in d['tasks'] if t['status']=='in_review'])
+m['blocked'] = len([t for t in d['tasks'] if t['status']=='blocked'])
+m['backlog'] = len([t for t in d['tasks'] if t['status']=='backlog'])
+with open('.harness/SCRUM_TASKS.json','w') as f: json.dump(d, f, indent=2)
+print('METRICS:', m['done'], '/', m['totalTasks'], 'done')
+"
+
+# 3. Verificação cruzada
+python3 -c "
+import json
+with open('.harness/SCRUM_TASKS.json') as f: d = json.load(f)
+done = [t for t in d['tasks'] if t['status']=='done']
+m = d.get('metrics',{})
+assert len(done) == m.get('done'), f'ALINHAMENTO QUEBRADO: array={len(done)} metrics={m.get("done")}'
+print('ALINHADO OK')
+"
+
+# 4. Commit + push
+git add -A && git commit -m "chore(scrum): TASK-XXX done" && git push origin main
+```
+
+**Se QUALQUER passo falhar, NÃO ENCERRAR O TURNO**. A não-atualização do scrum foi
+a regressão mais grave do projeto em 2 meses.
 
 **A cada 10 tasks OU 4 horas (o que vier primeiro)**: batch PR + merge + deploy.
 
