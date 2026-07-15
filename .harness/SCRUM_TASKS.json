@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-15T12:29:19.925Z",
+  "generatedAt": "2026-07-15T13:07:20.172Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -4913,7 +4913,7 @@
       "title": "Equipe: perfil público dos membros em /comunidades/{id}/equipe",
       "type": "feature",
       "category": "community",
-      "status": "ready",
+      "status": "in_progress",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
@@ -4931,7 +4931,7 @@
       "evidence": "Regra A §1.1 (público) — transparência",
       "description": "BLOCO INDEPENDENTE. Listar membros com foto, bio curta, role. Click abre profile público. LGPD: oculta dados sensíveis.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15T13:04:39"
     },
     {
       "id": "TASK-166",
@@ -7666,7 +7666,7 @@
       "title": "UI helper canManageVolunteers(club, membership, uid) + smoke cross-role",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -7686,7 +7686,9 @@
       "subFrente": "voluntarios",
       "description": "(a) Em src/modules/organizations/domain/permissions.js: canManageVolunteers(club, membership, uid) = hasClubPermission(club, membership, \"volunteers\", uid). (b) Smoke test em tests/e2e/volunteer-flow.spec.ts (Playwright): (1) volunteer_signs_up_to_shelter, (2) admin_approves_application, (3) admin_assigns_to_event, (4) volunteer_checks_in, (5) shelter_receives_digest, (6) volunteer_erases_data. (c) Gating em toda UI de voluntários (substituir canAbriho boolean).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15T13:04:28",
+      "pr": "0",
+      "resolvedAt": "2026-07-15"
     },
     {
       "id": "TASK-281",
@@ -8105,7 +8107,7 @@
       "title": "[CONTRACT-002] Hash SHA-256 do documento no aceite",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "blocked",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -8124,7 +8126,8 @@
       "subFrente": "abrigos-foster-adocao",
       "description": "SingleAcceptanceDialog calcula hash do ADOPTION_TERMS_TEXT + version. Persiste no contracts/{id}.document_hash. Audit log inclui o hash. Adicionar validação no firestore.rules que o hash bate com adoptionTerms.js versão.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15T13:04:39",
+      "evidence": " BLOCKED: Complexo, requer hash + rules update"
     },
     {
       "id": "TASK-298",
@@ -10424,7 +10427,7 @@
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": "4d6664de078fe33f4a2e6b46c9a8e6340f272b85",
+    "mainCommit": "75a17d27fcb880d2b84a62c18dab5f16ae5af0c0",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -10435,11 +10438,11 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 370,
-    "done": 276,
-    "inProgress": 3,
+    "done": 277,
+    "inProgress": 4,
     "inReview": 1,
-    "blocked": 0,
-    "ready": 83,
+    "blocked": 1,
+    "ready": 80,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -10469,7 +10472,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-15T10:46:44 — via scrum.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-15T13:04:39 — via scrum.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
