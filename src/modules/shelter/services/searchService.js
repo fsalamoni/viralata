@@ -31,6 +31,7 @@ import {
   searchOptionsSchema,
   searchResponseSchema,
   buildSearchQuery,
+  buildSearchIndexQuery,
   mapDocToResult,
   rankResults,
   normalizeText,
@@ -142,7 +143,10 @@ export async function searchEntity(entity, filters = {}, options = {}, context =
 
   let plan;
   try {
-    plan = buildSearchQuery(entity, parsedFilters, parsedOptions);
+    // TASK-312: tenta usar coleção denormalizada search_* primeiro.
+    // buildSearchIndexQuery retorna fallback para buildSearchQuery quando
+    // a entity não tem índice disponível (adopter, exhibition).
+    plan = buildSearchIndexQuery(entity, parsedFilters, parsedOptions);
   } catch (err) {
     // tenant isolation: cross-tenant sem shelterId → []
     logger.warn(`[searchEntity] buildSearchQuery falhou: ${err.message}`);

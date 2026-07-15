@@ -769,6 +769,27 @@ service cloud.firestore {
       allow write: if false; // Cloud Function / CI only
     }
 
+    // ─── Search Index (TASK-312) ────────────────────────────────────────────────
+    // Doc: Coleções denormalizadas mantidas por Cloud Functions (Admin SDK).
+    // Writes: Admin SDK (Cloud Functions) — bypassa todas as regras.
+    // Reads: seguem as mesmas regras da coleção fonte.
+    match /search_pets/{petId} {
+      allow read: if isAuth();              // mesmo acesso que /pets (feed auth'd)
+      allow write: if false;                 // Admin SDK only (CF onPetWrite)
+    }
+    match /search_clubs/{clubId} {
+      allow read: if true;                   // público (como /clubs directory)
+      allow write: if false;                 // Admin SDK only (CF onClubWrite)
+    }
+    match /search_fosters/{fosterId} {
+      allow read: if isAuth();              // mesmo acesso que /fosters
+      allow write: if false;                // Admin SDK only (CF onFosterWrite)
+    }
+    match /search_volunteers/{volunteerId} {
+      allow read: if isAuth();              // LGPD: só staff autenticado
+      allow write: if false;               // Admin SDK only (CF onVolunteerWrite)
+    }
+
     // ─── Comunidades (entidade editorial/global) ───────────────────────────────
     match /communities/{communityId} {
       allow read: if true;

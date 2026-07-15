@@ -589,6 +589,187 @@ export function buildSearchQuery(entity, filters = {}, options = {}) {
   };
 }
 
+// ─── Search Index (TASK-312) ───────────────────────────────────────────
+
+/**
+ * Mapa: entity → nome da coleção denormalizada no Firestore.
+ * Estas coleções são preenchidas por Cloud Functions (searchSync.js).
+ */
+export const SEARCH_INDEX_COLLECTIONS = Object.freeze({
+  pet: 'search_pets',
+  shelter: 'search_clubs',
+  foster: 'search_fosters',
+  volunteer: 'search_volunteers',
+  adopter: true,       // não tem índice denormalizado (ainda) → usa coleção fonte
+  exhibition: true,    // não tem índice denormalizado (ainda) → usa coleção fonte
+});
+
+/**
+ * Campo `name_lower` correspondente a cada entity.
+ * Usado para prefix match no índice denormalizado.
+ */
+export const SEARCH_INDEX_NAME_FIELD = Object.freeze({
+  pet: 'name_lower',
+  shelter: 'name_lower',
+  foster: 'full_name_lower',
+  volunteer: 'name_lower',
+  adopter: 'applicant_name',    // fallback: campo original
+  exhibition: 'title',          // fallback: campo original
+});
+
+/**
+ * Constrói um plano de query para a coleção denormalizada `search_*`.
+ *
+ * Vantagens vs `buildSearchQuery`:
+ *  - `name_lower` já está normalizado → prefix match sem normalização no query
+ *  - `breed_tokens`, `name_prefix_*` disponíveis para busca avançada
+ *  - `location_lower` para filtro por localização eficiente
+ *  - menos client-side filtering (índice já é multi-tenant)
+ *
+ * @param {string} entity
+ * @param {object} filters
+ * @param {object} options
+ * @returns {{ collection: string, subcollectionParent: string|null, constraints: object[], requireShelterId: boolean, isPublic: boolean, usesIndex: boolean }}
+ */
+export function buildSearchIndexQuery(entity, filters = {}, options = {}) {
+  if (!_entityIdSet.has(entity)) {
+    throw new Error(`Entity inválida: ${entity}`);
+  }
+  const cfg = SEARCH_ENTITIES[entity];
+  const indexCollection = SEARCH_INDEX_COLLECTIONS[entity];
+
+  // Se a entity não tem coleção denormalizada (indexCollection === true),
+    // ou se a collection sama que a original (sem denormalizar), cai no fallback.
+  // IndexCollection true significa "não temos search_xxx para esta entity".
+  if (indexCollection === true) {
+    return buildSearchQuery(entity, filters, options);
+  }
+
+  const constraints = [];
+  let requireShelterId = false;
+  let subcollectionParent;
+
+  if (cfg.pathType === 'subcollection') {
+    if (!filters.shelterId) {
+      throw new Error(
+        `shelterId é obrigatório para entity "${entity}" (subcollection).`,
+      );
+    }
+    subcollectionParent = filters.shelterId;
+  }
+
+  // ─── Filtros where ──────────────────────────────────────────────────
+  if (cfg.pathType === 'top-level' && cfg.isPublic) {
+    // Entity pública (shelter/club): filtra por directory_status
+    if (filters.status) {
+      constraints.push({
+        type: 'where', field: 'directory_status', op: '==', value: filters.status,
+      });
+    } else if (cfg.filterableFields.directory_status) {
+      constraints.push({
+        type: 'where', field: 'directory_status', op: '==', value: 'public',
+      });
+    }
+  } else {
+    if (cfg.filterableFields.shelter_club_id?.required) {
+      requireShelterId = true;
+    }
+    if (filters.shelterId) {
+      constraints.push({
+        type: 'where', field: 'shelter_club_id', op: '==', value: filters.shelterId,
+      });
+    } else if (requireShelterId) {
+      throw new Error(
+        `shelterId é obrigatório para entity "${entity}" (multi-tenant).`,
+      );
+    }
+    if (filters.status) {
+      constraints.push({
+        type: 'where', field: 'status', op: '==', value: filters.status,
+      });
+    }
+  }
+
+  // Filtros específicos por entity
+  if (entity === 'pet' && filters.species) {
+    constraints.push({
+      type: 'where', field: 'species', op: '==', value: filters.species,
+    });
+  }
+  if (entity === 'foster') {
+    if (filters.petId) {
+      constraints.push({
+        type: 'where', field: 'pet_id', op: '==', value: filters.petId,
+      });
+    }
+    if (filters.adopterUid) {
+      constraints.push({
+        type: 'where', field: 'foster_uid', op: '==', value: filters.adopterUid,
+      });
+    }
+  }
+  if (entity === 'volunteer') {
+    if (Array.isArray(filters.skills) && filters.skills.length > 0) {
+      // Usa skills_tokens no índice
+      const tokens = filters.skills.flatMap((s) => tokenize(s));
+      if (tokens.length === 1) {
+        constraints.push({
+          type: 'where', field: 'skills_tokens', op: 'array-contains', value: tokens[0],
+        });
+      } else {
+        constraints.push({
+          type: 'where', field: 'skills_tokens', op: 'array-contains-any', value: tokens,
+        });
+      }
+    }
+    if (typeof filters.has_vehicle === 'boolean') {
+      constraints.push({
+        type: 'where', field: 'has_vehicle', op: '==', value: filters.has_vehicle,
+      });
+    }
+  }
+
+  if (filters.dateRange) {
+    constraints.push({
+      type: 'where', field: 'created_at', op: '>=', value: `${filters.dateRange.from}T00:00:00.000Z`,
+    });
+    constraints.push({
+      type: 'where', field: 'created_at', op: '<=', value: `${filters.dateRange.to}T23:59:59.999Z`,
+    });
+  }
+
+  // Prefix match no índice denormalizado: usa `name_lower` (já normalizado).
+  // Firestore não faz "contains" em string — usamos >= + < (range).
+  if (filters.query && filters.query.trim().length > 0) {
+    const raw = filters.query.trim();
+    const q = normalizeText(raw); // normaliza para lowercase sem acento
+    const nameField = SEARCH_INDEX_NAME_FIELD[entity] || 'name_lower';
+    if (nameField) {
+      constraints.push({ type: 'where', field: nameField, op: '>=', value: q });
+      constraints.push({ type: 'where', field: nameField, op: '<', value: `${q}\uf8ff` });
+    }
+  }
+
+  // ─── Order + limit ──────────────────────────────────────────────────
+  const orderField = options.orderBy
+    || (cfg.pathType === 'top-level' && cfg.isPublic ? 'name_lower' : 'created_at');
+  const orderDir = (options.orderDirection || 'desc').toLowerCase();
+  constraints.push({ type: 'orderBy', field: orderField, direction: orderDir });
+
+  const limitN = options.maxResultsPerEntity
+    || SEARCH_LIMITS.DEFAULT_MAX_RESULTS_PER_ENTITY;
+  constraints.push({ type: 'limit', value: limitN });
+
+  return {
+    collection: indexCollection,
+    subcollectionParent,
+    constraints,
+    requireShelterId,
+    isPublic: cfg.isPublic,
+    usesIndex: true,
+  };
+}
+
 // ─── Ranking ───────────────────────────────────────────────────────────
 
 /**
