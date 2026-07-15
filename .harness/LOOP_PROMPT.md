@@ -189,6 +189,7 @@ python3 -c "import json; d=json.load(open('.harness/SCRUM_TASKS.json')); done=[t
 | TASK-239 | medium | shelter | Sentry + Crashlytics |
 
 > **Notas**:
+> - TASK-269 (onVolunteerParticipationCreated FCM+calendar+email+audit) entregue — feat/task-269-volunteer-fcm-participation, push OK, batch pendente
 > - TASK-309 (Onboarding wizard pet creation) entregue — feat/task-309-wizard-pet-create-2026-07-15, push OK, batch pendente
 > - TASK-277 (rate limit volunteer) entregue — feat/task-277-rate-limit-2026-07-14, push OK, batch pendente
 > - TASK-325 (milestone photo/video upload) entregue — feat/milestone-complete-2026-07-14, merge pendente
