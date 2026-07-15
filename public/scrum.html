@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-15T21:19:15.171Z",
+  "generatedAt": "2026-07-15T21:29:52.107Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -396,7 +396,20 @@
     "endsAt": "2026-07-18",
     "goal": "Estabilizar produção pós-deploy das 22 fases, fechar 3 worktrees em paralelo, decidir backend da Fase 18, priorizar débitos técnicos"
   },
-  "activeWorktrees": [],
+  "activeWorktrees": [
+    {
+      "id": "viralata",
+      "branch": "feat/task-232-mro-ripd-volunteer-2026-07-15",
+      "head": "ba42432b1e9735b8299d2bc620d81342e3234c5b",
+      "headTitle": "feat(TASK-232): MRO + RIPD voluntariado (LGPD Art. 37/38) + admin/legal-terms",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata",
+      "status": "in-sync",
+      "commitsAhead": 0,
+      "primarySession": null,
+      "sessionTitle": null,
+      "focus": []
+    }
+  ],
   "activeSessions": [
     {
       "id": "mvs_311d078987d0414a90f57ef28b789b18",
@@ -6893,9 +6906,9 @@
       "title": "MRO (LGPD Art. 37) + RIPD (LGPD Art. 38) — produzir docs jurídicas de voluntariado",
       "type": "docs",
       "category": "legal",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
-      "owner": "unassigned",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
       "branch": null,
       "flag": null,
       "worktree": null,
@@ -6913,7 +6926,8 @@
       "evidence": "D:\\viralata\\src\\modules\\shelter\\domain\\legal\\volunteerTerms.v2.js; LGPD Art. 37 (registro de operações) + Art. 38 (RIPD); D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §LGPD",
       "description": "BLOCO INDEPENDENTE. (1) Gerar docs/MRO_VOLUNTEER.md descrevendo 4 operações (criar perfil, aceitar termo, entrar em roster, registrar participation): quê, por quê, com quem, por quanto tempo, base legal, medidas de segurança. (2) Gerar docs/RIPD_VOLUNTEER.md (Relatório de Impacto à Proteção de Dados — mandatório para este caso: múltiplos controllers, child consent se 16-18, background check, geolocalização check-in). (3) Workflow /admin/legal-terms com data de revisão. (4) Arquivar em legal_records/mro_volunteer + legal_records/ripd_volunteer.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11 21:00"
+      "updatedAt": "2026-07-15",
+      "completedAt": "2026-07-15"
     },
     {
       "id": "TASK-233",
@@ -10836,7 +10850,7 @@
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": "845e93e44b51db0c8669bf891c0a6455422d0f83",
+    "mainCommit": null,
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -10847,11 +10861,11 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 371,
-    "done": 300,
+    "done": 301,
     "inProgress": 4,
     "inReview": 1,
     "blocked": 1,
-    "ready": 58,
+    "ready": 57,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -10881,7 +10895,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-15T21:19:15.175Z — via sync.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-15T21:29:52.125Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
@@ -10914,7 +10928,7 @@
   }
 }
   </script>
-  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-15T20:56:08.943Z">
+  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-15T21:19:15.183Z">
   </head>
 <body>
 
