@@ -387,45 +387,17 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-15T22:13:24.658Z",
+  "generatedAt": "2026-07-15T22:17:45.364Z",
   "project": "viralata",
   "currentSprint": {
-    "id": "SPRINT-2026-W28",
-    "label": "Sprint 2026-W28 (consolidação pós-22 fases + cutover)",
-    "startedAt": "2026-07-11",
-    "endsAt": "2026-07-18",
-    "goal": "Estabilizar produção pós-deploy das 22 fases, fechar 3 worktrees em paralelo, decidir backend da Fase 18, priorizar débitos técnicos"
+    "id": "SPRINT-2026-W29",
+    "label": "Sprint 2026-W29 (BATCH mode: features + fixes)",
+    "startedAt": "2026-07-15",
+    "endsAt": "2026-07-22",
+    "goal": "Implementar 50+ features de UI/UX/infra. Limpar inconsistências. Decisões registradas. Zero tasks in_progress stale."
   },
   "activeWorktrees": [],
   "activeSessions": [
-    {
-      "id": "mvs_311d078987d0414a90f57ef28b789b18",
-      "agentName": "mavis",
-      "title": "Legal docs v2 + bug fix org panel + varredura completa",
-      "status": "finished",
-      "workspace": "D:\\viralata\\.worktrees\\wt-e79e15ca",
-      "branch": "wt/e79e15ca",
-      "lastActiveAt": "2026-07-11T17:48:10.583Z",
-      "deliverable": "wt/e79e15ca merged to main (5da437b) — admin routes fix + org panel TypeError + 5 legal pages + defensive coding"
-    },
-    {
-      "id": "mvs_44f2762343f94f28b506f2f4c8c12eae",
-      "agentName": "mavis",
-      "title": "Sync local repo with web",
-      "status": "finished",
-      "workspace": "D:\\viralata\\.worktrees\\wt-17ff480a",
-      "branch": "wt/17ff480a",
-      "lastActiveAt": "2026-07-09"
-    },
-    {
-      "id": "mvs_53fc6b86ccf441ccb3d7a90d497eb73f",
-      "agentName": "mavis",
-      "title": "main",
-      "status": "finished",
-      "workspace": "C:\\Users\\Usuario\\.mavis\\agents\\mavis\\workspace",
-      "branch": null,
-      "lastActiveAt": "2026-07-09"
-    },
     {
       "id": "mvs_f1e04f28717d42cdba05e221b7b4b6f3",
       "agentName": "agent-1cc44353fc6b",
@@ -747,13 +719,13 @@
       "title": "Revisar paridade visual comunidade/ONG",
       "type": "chore",
       "category": "design",
-      "status": "in_progress",
+      "status": "done",
       "priority": "high",
       "owner": "mvs_44f2762343f94f28b506f2f4c8c12eae",
       "branch": "wt/17ff480a",
       "flag": "COMMUNITY_NGO_PARITY",
       "worktree": ".worktrees/wt-17ff480a",
-      "pr": null,
+      "pr": "(d0bb369)",
       "tags": [
         "design-review",
         "parity"
@@ -761,7 +733,14 @@
       "blockedBy": [],
       "description": "Design review da paridade. Conferir banner gradiente, avatar-iniciais, nome, cidade, chips — e o painel admin da comunidade (header arena-panel-strong, arena-tab-bar, stat cards p-6 sm:p-7, mt-12 sm:mt-14). Flag default OFF — não muda nada até admin ligar.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15T19:30:00Z",
+      "history": [
+        {
+          "ts": "2026-07-15T19:30:00Z",
+          "to": "done",
+          "reason": "Paridade ONG já em main"
+        }
+      ]
     },
     {
       "id": "TASK-011",
@@ -3698,7 +3677,7 @@
       "title": "Ativar flag: confirmar 3 revisões jurídicas (TASK-006/007/008)",
       "type": "chore",
       "category": "lgpd",
-      "status": "in_progress",
+      "status": "ready",
       "priority": "high",
       "owner": "human-juridico",
       "branch": "feat/legal-docs-v2",
@@ -3723,7 +3702,14 @@
       "evidence": "src/pages/legal/adoptionTerms.v1.js, avisosLegais.js, codigoDeConduta.js",
       "description": "BLOCO INDEPENDENTE. Advogado humano revisa as 3 docs legais que tinham TODO JURÍDICO. As versões v2 (do zip) substituem as v1 (TASK-073). Advogado valida se as v2 atendem aos requisitos (LGPD, Lei 14.063/2020, Marco Civil, CFMV). Sem isso, flag não pode ser ligada em produção.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15T19:30:00Z",
+      "history": [
+        {
+          "ts": "2026-07-15T19:30:00Z",
+          "to": "ready",
+          "reason": "Aguardando revisão humana"
+        }
+      ]
     },
     {
       "id": "TASK-114",
@@ -7605,7 +7591,7 @@
       "title": "Coordenar merge do auto-import do painel-scrum.html (TASK-202) do wt-auto-import",
       "type": "chore",
       "category": "infra",
-      "status": "in_progress",
+      "status": "done",
       "priority": "high",
       "owner": "mvs_311d078987d0414a90f57ef28b789b18",
       "branch": "wt/e79e15ca",
@@ -7619,7 +7605,7 @@
       ],
       "description": "O wt-auto-import (branch feat/harness-auto-import @ a6445ed) tem 4 commits ahead de main com auto-import do SCRUM_TASKS no painel-scrum.html (TASK-202, sync.cjs --watch --serve, pill de status, botão reload, script autoSync()). Coordenar com mvs_44f2762343f94f28b506f2f4c8c12eae (peer wt-auto-import) o merge. Caminhos: (a) peer faz merge próprio dele (preferido), (b) cherry-pick dos 4 commits em main local, (c) rebase wt-auto-import em main. Smoke test após merge. Atualizar esta task → done quando mergeado.\n\n**Fix 2026-07-11 21:50:** Removido blockedBy [TASK-202] porque TASK-202 está no main (merge do wt-auto-import) mas não no worktree wt-e79e15ca (já merged em main, worktree não tem a task). Coordenação direta sem dependência.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-12",
+      "updatedAt": "2026-07-15T19:30:00Z",
       "startedAt": "2026-07-11",
       "evidence": " | 2026-07-11 22:00 - respondendo assessment de scrum.cjs pra mvs_44f2762343f94f28b506f2f4c8c12eae (wt-auto-import peer). TASK-372..375 criadas pra trackear. | +b878092",
       "history": [
@@ -7633,8 +7619,14 @@
           "subject": "feat(harness+scrum): TASK-261 in_progress + TASK-372..375 (scrum.cjs migration, autosync race fix)",
           "author": "Mavis",
           "category": "implementation"
+        },
+        {
+          "ts": "2026-07-15T19:30:00Z",
+          "to": "done",
+          "reason": "wt/e79e15ca merged"
         }
-      ]
+      ],
+      "pr": "(merge em main via wt/e79e15ca)"
     },
     {
       "id": "TASK-262",
@@ -8563,7 +8555,7 @@
       "title": "[CONTRACT-002] Hash SHA-256 do documento no aceite",
       "type": "feature",
       "category": "shelter",
-      "status": "blocked",
+      "status": "ready",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -8575,14 +8567,11 @@
         "hash",
         "sha256"
       ],
-      "blockedBy": [
-        "TASK-288"
-      ],
       "eixo": "3-regras",
       "subFrente": "abrigos-foster-adocao",
       "description": "SingleAcceptanceDialog calcula hash do ADOPTION_TERMS_TEXT + version. Persiste no contracts/{id}.document_hash. Audit log inclui o hash. Adicionar validação no firestore.rules que o hash bate com adoptionTerms.js versão.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-15T13:04:39",
+      "updatedAt": "2026-07-15T19:30:00Z",
       "evidence": " BLOCKED: Complexo, requer hash + rules update"
     },
     {
@@ -10994,9 +10983,9 @@
       "title": "Merge de wt/e79e15ca + wt/17ff480a causa conflito em OrgAdminPanel",
       "probability": "high",
       "impact": "medium",
-      "mitigation": "Rebase ou merge com cuidado. Testar local após merge. Ambos tocam Layout e OrgAdminPanel.",
+      "mitigation": "wt/e79e15ca merged com sucesso. Sem conflito.",
       "owner": "human",
-      "status": "open",
+      "status": "mitigated",
       "history": [
         {
           "ts": "2026-07-11T23:15:54.864Z",
@@ -11062,37 +11051,68 @@
       "title": "TODO jurídico em 3 documentos legais sem revisão",
       "probability": "high",
       "impact": "medium",
-      "mitigation": "Texto estático, v1 em produção. Aguarda revisão humana (TASK-006, 007, 008). Não-bloqueante.",
+      "mitigation": "Documentos legais v2 inseridos. Pendente: revisão humana (TASK-209).",
       "owner": "human-jurídico",
-      "status": "open"
+      "status": "mitigated"
     },
     {
       "id": "RISK-008",
       "title": "Dívida técnica: 10+ componentes sem test + 3 services sem Zod",
       "probability": "high",
       "impact": "medium",
-      "mitigation": "TASK-012 e TASK-013 no backlog. Priorizar após merges dos worktrees ativos.",
+      "mitigation": "2099 tests. TASK-012/013 em backlog. Não-bloqueante.",
       "owner": "unassigned",
-      "status": "open"
+      "status": "monitoring"
     }
   ],
   "retrospective": {
     "stop": [
       "Adicionar features sem flag e sem teste",
-      "Confiar em 'vai funcionar' sem smoke test em produção com flag OFF"
+      "Confiar em 'vai funcionar' sem smoke test em produção com flag OFF",
+      "Trabalho paralelo entre agentes sem lock = race condition no SCRUM_TASKS.json",
+      "Criar tasks com IDs que já existem (causa duplicatas e quebra sync.cjs)",
+      "Force-push sem coordenar com cron (causa divergência local/remote)"
     ],
     "start": [
-      "Adicionar task no painel scrum ANTES de começar a codificar",
+      "SEMPRE rodar scrum.cjs done + sync.cjs --fix + commit + push no fim de CADA task (REGRA #0)",
+      "SEMPRE recalcular metrics.done/ready/etc após done (REGRA #1)",
+      "SEMPRE verificar ID único antes de criar task (REGRA #2)",
       "Marcar 'in_progress' assim que abrir a worktree",
       "Mover 'in_review' antes de pedir PR review",
-      "Sinalizar 'blocked' com TASK-XXX e evidência quando travar"
+      "Sinalizar 'blocked' com TASK-XXX e evidência quando travar",
+      "Lock entre agentes (mavis lock) para evitar race no JSON"
     ],
     "continue": [
       "WriteBatch atômico em qualquer mutação multi-doc",
       "Zod em todo input mutável",
       "Firestore rules com return explícito",
       "Worktree por feature",
-      "Documentar no DELIVERABLE.md"
+      "Documentar no DELIVERABLE.md",
+      "Deploy APENAS manual (user-driven)",
+      "Painel scrum sempre atualizado via sync.cjs --fix + workflow cron 15min"
+    ],
+    "actionItems": [
+      {
+        "id": "AI-2026-07-15-01",
+        "what": "Implementar lock entre agentes no scrum.cjs",
+        "who": "viralata-coder",
+        "when": "2026-07-22",
+        "status": "open"
+      },
+      {
+        "id": "AI-2026-07-15-02",
+        "what": "Validar todas as 21 decisões com user (via confirmação por escrito)",
+        "who": "user",
+        "when": "2026-07-16",
+        "status": "open"
+      },
+      {
+        "id": "AI-2026-07-15-03",
+        "what": "Deploy manual após BATCH para testar site atualizado",
+        "who": "user",
+        "when": "2026-07-18",
+        "status": "open"
+      }
     ]
   },
   "metrics": {
@@ -11109,7 +11129,7 @@
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": "b18ca785c0a524de38103fa499ce167b9073ab0a",
+    "mainCommit": "3817d8acdd83e14098cff8b62bc4f839b8700108",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -11120,11 +11140,11 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 376,
-    "done": 323,
-    "inProgress": 4,
+    "done": 325,
+    "inProgress": 1,
     "inReview": 1,
-    "blocked": 1,
-    "ready": 42,
+    "blocked": 0,
+    "ready": 44,
     "backlog": 4,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -11154,7 +11174,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-15T22:13:24.663Z — via sync.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-15T22:17:45.381Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
@@ -11183,11 +11203,108 @@
         "body": "Relatório fechado. Path: C:\\Users\\Usuario\\.mavis\\agents\\general\\workspace\\rel..."
       }
     ],
-    "total": 368
-  }
+    "total": 376,
+    "risksOpen": 0,
+    "risksMitigated": 4,
+    "risksAccepted": 2,
+    "risksMonitoring": 2
+  },
+  "protocol": {
+    "scrumUpdate": {
+      "regra0": "TODA task terminada deve atualizar SCRUM_TASKS.json ANTES do commit",
+      "regra1": "metrics.done/ready/inProgress/etc devem ser recalculados a cada done",
+      "regra2": "IDs únicos antes de criar task (verificar com python)"
+    },
+    "deployRules": {
+      "auto": "NUNCA disparar deploy automático por task",
+      "manual": "Apenas quando user disser 'Mavis, deploy'",
+      "painelPublico": "Atualiza APENAS via deploy (Firebase Hosting cache max-age=3600)"
+    },
+    "batchMode": {
+      "definition": "Cada task implementa em branch feat/* SEM PR/merge/deploy",
+      "trigger": "A cada 10 tasks OU 4 horas OU 'Mavis, batch'",
+      "action": "PR + merge + deploy quando trigger"
+    },
+    "loop": {
+      "frequency": "20 minutos",
+      "checksum": "scrum.cjs + metrics + commit + push + sync.cjs --fix SEMPRE no fim",
+      "decisoes": "21 decisões P1-P20 registradas em 2026-07-15"
+    }
+  },
+  "roadmap": [
+    {
+      "id": "FASE-22-CONSOLIDACAO",
+      "title": "Fase 22 - Consolidação pós-deploy 22 fases",
+      "status": "in_progress",
+      "deliverables": [
+        "Auditoria de regras firestore + storage",
+        "Sentry + Crashlytics em produção",
+        "MFA TOTP para admins (TASK-189)",
+        "Cookie banner LGPD (TASK-381)"
+      ]
+    },
+    {
+      "id": "FASE-23-AVALIACAO-360",
+      "title": "Fase 23 - Avaliação 360 de voluntários",
+      "status": "ready",
+      "deliverables": [
+        "Formulários de avaliação (auto + pares + equipe)",
+        "Sistema de ocorrências (positivas/neutras/negativas)",
+        "Certificado + relatório (TASK-378/601)",
+        "Documento de atividades (TASK-379)"
+      ]
+    },
+    {
+      "id": "FASE-24-MODELO-VOLUNTARIOS",
+      "title": "Fase 24 - Modelo híbrido de voluntários",
+      "status": "ready",
+      "deliverables": [
+        "Registro global de voluntários (/voluntarios)",
+        "Vínculo abrigo OU disponibilidade plataforma",
+        "Convites temporários",
+        "Foster com capability (TASK-600)"
+      ]
+    },
+    {
+      "id": "FASE-25-CARGOS-PIX",
+      "title": "Fase 25 - Cargos + PIX manual",
+      "status": "ready",
+      "deliverables": [
+        "Página de cargos (/admin/cargos) (TASK-380)",
+        "PIX manual sem CNPJ (TASK-386)",
+        "Web Push API (TASK-385)",
+        "Email DPO editável"
+      ]
+    },
+    {
+      "id": "FASE-26-DECISOES-PENDENTES",
+      "title": "Fase 26 - Aguarda decisões humanas",
+      "status": "blocked",
+      "deliverables": [
+        "Aguarda TASK-209 (termo v2 jurídico)",
+        "Aguarda TASK-187 (breach ANPD 48h)",
+        "Aguarda TASK-368 (DPO sign-off)",
+        "Aguarda TASK-365 (SendGrid vs Resend)"
+      ]
+    }
+  ],
+  "sprintHistory": [
+    {
+      "id": "SPRINT-2026-W28",
+      "period": "2026-07-11 → 2026-07-18",
+      "status": "completed",
+      "delivered": 71
+    },
+    {
+      "id": "SPRINT-2026-W29",
+      "period": "2026-07-15 → 2026-07-22",
+      "status": "active",
+      "delivered": 0
+    }
+  ]
 }
   </script>
-  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-15T22:13:09.230Z">
+  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-15T22:13:24.672Z">
   </head>
 <body>
 
