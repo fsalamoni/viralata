@@ -719,6 +719,19 @@ service cloud.firestore {
       allow update, delete: if false; // Imutável
     }
 
+    // ─── TASK-291: email_delivery_log (LGPD compliance — auditoria de envio) ────
+    // Logs de envio de email transactional (adoption workflow).
+    // Leitura: platform_admin + próprio usuário (recipient_uid).
+    // Escrita: apenas o próprio usuário ou service account (function).
+    // Imutável: não permite update/delete.
+    match /email_delivery_log/{logId} {
+      allow read: if isPlatformAdmin() || (
+        isAuth() && resource.data.recipient_uid == request.auth.uid
+      );
+      allow create: if isAuth();
+      allow update, delete: if false; // Imutável
+    }
+
     // ─── Configurações da plataforma (feature flags, doc único `global`) ───────
     match /platform_settings/{docId} {
       allow read: if true;
