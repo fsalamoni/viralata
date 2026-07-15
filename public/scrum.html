@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-15T00:31:39.418Z",
+  "generatedAt": "2026-07-15T01:13:25.716Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -399,9 +399,9 @@
   "activeWorktrees": [
     {
       "id": "viralata",
-      "branch": "feat/task-268-volunteer-fcm-notify-2026-07-15",
-      "head": "c2fa914692fa1f0879b5f84de570a1ac3ea2fc26",
-      "headTitle": "feat(TASK-268): onVolunteerJoinedShelter — FCM admin + email + audit log",
+      "branch": "feat/task-269-volunteer-fcm-participation",
+      "head": "6dbb1fd8f04e9499ca6158e7af71e5cea6e464b2",
+      "headTitle": "feat(task-269): Cloud Function onVolunteerParticipationCreated (FCM + calendar + email + audit)",
       "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata",
       "status": "in-sync",
       "commitsAhead": 0,
@@ -7747,7 +7747,7 @@
       "title": "Cloud Function onVolunteerParticipationCreated (FCM ao voluntário)",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "critical",
       "owner": "unassigned",
       "branch": null,
@@ -7765,7 +7765,8 @@
       "subFrente": "voluntarios",
       "description": "Trigger onCreate em clubs/{clubId}/volunteer_participations/{id}. (a) FCM para volunteer_uid com payload {title, event_label, event_date, role, url}. (b) Adiciona ao calendar (escrita em volunteer_uid/calendar/{id} subcollection ou via Google Calendar API). (c) Email template volunteer-shift-confirmed-v1. (d) Audit log.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15",
+      "pr": "0"
     },
     {
       "id": "TASK-270",
@@ -10791,11 +10792,11 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 370,
-    "done": 254,
+    "done": 255,
     "inProgress": 3,
     "inReview": 1,
     "blocked": 0,
-    "ready": 105,
+    "ready": 104,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -10858,7 +10859,7 @@
   }
 }
   </script>
-  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-15T00:12:48.690Z">
+  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-15T00:31:39.494Z">
   </head>
 <body>
 
