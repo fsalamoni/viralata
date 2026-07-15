@@ -22,6 +22,7 @@ export {
   matchContains,
   // Builders
   buildSearchQuery,
+  buildSearchIndexQuery,
   mapDocToResult,
   rankResult,
   rankResults,
