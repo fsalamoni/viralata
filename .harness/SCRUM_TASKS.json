@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-15T07:54:02.854Z",
+  "generatedAt": "2026-07-15T08:10:21.141Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -6163,13 +6163,13 @@
       "title": "Cloud Functions: triggers onWrite (volunteer_profile, roster, participations) + cron hours_logged_total + reminder shift",
       "type": "feature",
       "category": "infra",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
       "flag": null,
       "worktree": null,
-      "pr": null,
+      "pr": "192",
       "tags": [
         "regra-a",
         "voluntarios",
@@ -6183,7 +6183,8 @@
       "evidence": "D:\\viralata\\functions\\index.js (zero triggers pra voluntários); D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_REGRA_A_AUDIT.md §Integrações Cloud Functions",
       "description": "BLOCO INDEPENDENTE. Implementar: (1) onUpdate em users/{uid}/volunteer_profile/main → propagar snapshot pra todos clubs/*/volunteers/{uid} (sync); (2) onCreate em clubs/*/volunteer_participations → notif admin; (3) onUpdate check_in/check_out → notif admin; (4) onSchedule (daily 02:00) → aggregation hours_logged_total em users/{uid}.volunteer_profile; (5) onSchedule (hourly) → reminder shift pra participations com event_date = today. Regra A §A.1.4.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11 20:50"
+      "updatedAt": "2026-07-15",
+      "completedAt": "2026-07-15"
     },
     {
       "id": "TASK-221",
@@ -10400,7 +10401,7 @@
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": "990bc725ed50e3dd939092f1878ca74c41c2347d",
+    "mainCommit": "102de261904faf5a6f223dcac9af9f333ec2194f",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -10411,11 +10412,11 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 370,
-    "done": 268,
+    "done": 269,
     "inProgress": 3,
     "inReview": 1,
     "blocked": 0,
-    "ready": 91,
+    "ready": 90,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
