@@ -1,4 +1,4 @@
-# LOOP_PROMPT — viralata (atualizado 2026-07-15 08:11 UTC)
+# LOOP_PROMPT — viralata (atualizado 2026-07-15 16:32 UTC)
 
 **Contexto**: /workspace/viralata, branch main, React+Vite+Firebase.
 **Repo**: https://github.com/fsalamoni/viralata.git
@@ -142,6 +142,7 @@ print(f'72 tasks ready')
 | TASK-007 | high | Revisão jurídica: avisosLegais.js...
 
 > **Notas**:
+> - TASK-298 ✅ done — feat/task-298-contract-ip-ua-2026-07-15 (contract CF: IP+UA, Lei 14.063/2020)
 > - TASK-220 ✅ done — feat/task-220-clean (PR #192) merged 2026-07-15
 > - TASK-269 ✅ done — feat/task-268-volunteer-fcm-notify (PR #190)
 > - TASK-312 ✅ done — [INT-SEARCH-001] Sync ativo do search index
@@ -154,8 +155,8 @@ print(f'72 tasks ready')
 
 ## 📊 MÉTRICAS ATUAIS
 
-- **done=269**, ready=90, in_progress=3
-- **Main**: `102de261904f`
+- **done=287**, ready=71, in_progress=4
+- **Main**: `691de55`
 
 ## 🏁 FIM DO TURNO
 
