@@ -95,6 +95,21 @@ export const SHELTER_FEATURE_FLAG = Object.freeze({
   SHELTER_PLATFORM_HEALTH: 'shelter_platform_health',
   // Fase 21 — Migração Final + Cutover
   SHELTER_CUTOVER: 'shelter_cutover',
+  // ---- Comunidade / adotante / eventos ----
+  // TASK-338: painel unificado do adotante (/meu-painel)
+  SHELTER_ADOPTER_DASHBOARD_V1: 'shelter_adopter_dashboard_v1',
+  // TASK-338: eventos da Fase 10 (ampliados, vinculados a pets e voluntários)
+  SHELTER_EVENTS_V1: 'shelter_events_v1',
+  // TASK-338: perfil expandido do adotante (preferências, pets interessados, histórico)
+  SHELTER_ADOPTER_PROFILE_V1: 'shelter_adopter_profile_v1',
+  // TASK-338: comunidade patrocinada pelo abrigo (tipo Substack/Open Collective)
+  SHELTER_SPONSORED_COMMUNITY_V1: 'shelter_sponsored_community_v1',
+  // TASK-338: eventos ricos (pet_ids, volunteer_ids, certificados, RSVP pago)
+  SHELTER_COMMUNITY_RICH_EVENTS_V1: 'shelter_community_rich_events_v1',
+  // TASK-338: chat admin↔membros na comunidade
+  SHELTER_COMMUNITY_CHAT_V1: 'shelter_community_chat_v1',
+  // TASK-338: push notifications FCM via Cloud Functions (não só in-app)
+  SHELTER_FCM_PUSH_V1: 'shelter_fcm_push_v1',
 });
 
 /**
@@ -315,6 +330,56 @@ export const SHELTER_FEATURE_FLAG_META = Object.freeze({
       'Migração final: clubs → shelters, remoção de feature flags, '
       + 'validação completa em produção. Liga só no final, depois de '
       + 'todas as outras fases validadas.',
+  },
+  // ---- Comunidade / adotante / eventos (TASK-338) ----
+  [SHELTER_FEATURE_FLAG.SHELTER_ADOPTER_DASHBOARD_V1]: {
+    label: 'Abrigos · painel do adotante',
+    description:
+      'Dashboard unificado /meu-painel com status de aplicações, '
+      + 'pets favoritos, eventos inscritos e histórico de interações. '
+      + 'Habilita a visão adotante completa (Fase 4 expandida).',
+  },
+  [SHELTER_FEATURE_FLAG.SHELTER_EVENTS_V1]: {
+    label: 'Abrigos · eventos ampliados',
+    description:
+      'Tipos de evento ampliados: vacinação, palestra, fundraising, pet day. '
+      + 'Vínculo evento↔pet (pet_ids) e evento↔voluntário. '
+      + 'Habilita a agenda pública + busca de eventos.',
+  },
+  [SHELTER_FEATURE_FLAG.SHELTER_ADOPTER_PROFILE_V1]: {
+    label: 'Abrigos · perfil expandido do adotante',
+    description:
+      'Perfil completo do adotante: preferências de espécie/porte/energia, '
+      + 'pets interessados, histórico de aplicações, avaliações. '
+      + 'Gatilho de matching visual com pets disponíveis.',
+  },
+  [SHELTER_FEATURE_FLAG.SHELTER_SPONSORED_COMMUNITY_V1]: {
+    label: 'Abrigos · comunidade patrocinada',
+    description:
+      'Comunidade vinculada ao abrigo com suporte a posts, fóruns, '
+      + 'eventos e-chat. Tipo Substack/Open Collective: abrigo publica '
+      + 'conteúdo, membros acompanham e podem contribuir financeiramente.',
+  },
+  [SHELTER_FEATURE_FLAG.SHELTER_COMMUNITY_RICH_EVENTS_V1]: {
+    label: 'Abrigos · eventos ricos na comunidade',
+    description:
+      'Eventos com pet_ids, volunteer_ids, certificados PDF gerados via '
+      + 'storage, e RSVP pago (Pix). Integração com Google Calendar '
+      + 'e Jitsi Meet para vídeo-entrevistas.',
+  },
+  [SHELTER_FEATURE_FLAG.SHELTER_COMMUNITY_CHAT_V1]: {
+    label: 'Abrigos · chat admin↔membros na comunidade',
+    description:
+      'Canal de chat onde admins do abrigo/enviolezadores '
+      + 'conversam diretamente com membros da comunidade. '
+      + 'Notificações push para membros quando admin envia mensagem.',
+  },
+  [SHELTER_FEATURE_FLAG.SHELTER_FCM_PUSH_V1]: {
+    label: 'Abrigos · push notifications via FCM',
+    description:
+      'Firebase Cloud Messaging para push notifications nativas (não '
+      + 'só in-app). Welcome, shift reminder, BG check, milestone, '
+      + 'event reminder, e community notifications via Cloud Functions.',
   },
 });
 
