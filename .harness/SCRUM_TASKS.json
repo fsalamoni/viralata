@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-15T19:44:54.097Z",
+  "generatedAt": "2026-07-15T19:47:59.381Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -5511,7 +5511,7 @@
       "title": "Segurança: MFA opcional para admins (TOTP via Firebase)",
       "type": "feature",
       "category": "security",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
@@ -5528,7 +5528,7 @@
       "evidence": "Regra A §1.3 (segurança) + TASK-039",
       "description": "BLOCO INDEPENDENTE. Setup MFA no Profile.jsx (botão \"Ativar MFA\") com QR code TOTP. Prompt de MFA no login pra admin. Firebase Multi-factor Authentication.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15"
     },
     {
       "id": "TASK-190",
@@ -10446,7 +10446,7 @@
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": "4870cf0701056cbc235e7235b04692dc91ae0320",
+    "mainCommit": "fb3d9c6468c9296e2459abd544be724b09ef3058",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -10457,11 +10457,11 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 371,
-    "done": 295,
+    "done": 296,
     "inProgress": 4,
     "inReview": 1,
     "blocked": 1,
-    "ready": 63,
+    "ready": 62,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
