@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-15T14:58:44.031Z",
+  "generatedAt": "2026-07-15T15:11:13.550Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -398,11 +398,11 @@
   },
   "activeWorktrees": [
     {
-      "id": "feat-task-282-volunteer-funnel",
-      "branch": "feat/task-282-volunteer-funnel-2026-07-15",
-      "head": "5b86f2e5feb526818ff7bdd6199c05ec6ba23052",
-      "headTitle": "feat(TASK-282): analytics — volunteer funnel events + dashboard",
-      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/feat-task-282-volunteer-funnel",
+      "id": "wt-cpf-validation",
+      "branch": "feat/task-321-cpf-validation",
+      "head": "31c25febe297e526bb66835848586b678432b53b",
+      "headTitle": "feat(task-321): server-side CPF digit validation callable",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-cpf-validation",
       "status": "ahead-of-main",
       "commitsAhead": 1,
       "primarySession": null,
@@ -10664,6 +10664,24 @@
       "createdAt": "2026-07-14",
       "updatedAt": "2026-07-14T16:16:43",
       "resolvedAt": "2026-07-14"
+    },
+    {
+      "id": "TASK-HOTFIX-001",
+      "title": "[HOTFIX] Home.jsx import UpcomingExhibitionsFeed (landing page em branco)",
+      "description": "PR #177 (TASK-149) adicionou uso de <UpcomingExhibitionsFeed /> no Home.jsx mas o import do componente ficou faltando. Build CI não detectou. Em produção (após deploy de outro commit posterior), o Home crashava com ReferenceError: UpcomingExhibitionsFeed is not defined. ErrorBoundary triggered, usuário via 'Algo deu errado'.\n\n**Fix**: Adicionado `import UpcomingExhibitionsFeed from '@/modules/shelter/components/UpcomingExhibitionsFeed';` em src/pages/Home.jsx\n\n**PR #193 merged em 2026-07-15 15:04 UTC. Deploy concluído.**",
+      "status": "done",
+      "priority": "critical",
+      "category": "hotfix",
+      "owner": "unassigned",
+      "branch": "hotfix/fix-home-import-upcoming-exhibitions-2026-07-15",
+      "pr": "193",
+      "createdAt": "2026-07-15",
+      "updatedAt": "2026-07-15",
+      "tags": [
+        "hotfix",
+        "build",
+        "production-down"
+      ]
     }
   ],
   "definitionOfDone": [
@@ -10821,7 +10839,7 @@
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": "5ce43c14bf547c39019d6ba42fdf3e8c87b8eb4e",
+    "mainCommit": "19a21db2e5e849e56a573da3ac15249a981bf8f2",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -10831,8 +10849,8 @@
     ],
     "openTODOs": 5,
     "openLegalReviews": 3,
-    "totalTasks": 370,
-    "done": 283,
+    "totalTasks": 371,
+    "done": 284,
     "inProgress": 4,
     "inReview": 1,
     "blocked": 1,
@@ -10866,7 +10884,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-15T14:58:35 — via scrum.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-15T15:11 UTC — TASK-321 done (CPF digit validation callable)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
@@ -10899,7 +10917,7 @@
   }
 }
   </script>
-  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-15T13:48:54.149Z">
+  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-15T15:10:45.084Z">
   </head>
 <body>
 
