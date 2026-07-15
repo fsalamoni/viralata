@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-15T23:22:36.262Z",
+  "generatedAt": "2026-07-15T23:23:20.726Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W29",
@@ -625,7 +625,7 @@
       "title": "Revisão jurídica: adoptionTerms.v1.js",
       "type": "debt",
       "category": "legal",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "human-jurídico",
       "branch": null,
@@ -642,7 +642,7 @@
       "evidence": "src/pages/legal/adoptionTerms.v1.js:414 (TODO JURÍDICO)",
       "description": "Texto do termo de adoção. Precisa de revisão humana por advogado. Recomendações: alinhar com Lei 14.063/2020 (assinatura eletrônica avançada), Art. 936 CC (responsabilidade civil do adotante), disclaimers de vícios redibitórios biológicos (parvovirose, cinomose), transferência de microchip. Não-bloqueante (texto estático, v1 já em produção).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15"
     },
     {
       "id": "TASK-007",
@@ -8313,7 +8313,7 @@
       "title": "DPO review nota em docs/AGENTS_LGPD.md para voluntários",
       "type": "docs",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "low",
       "owner": "unassigned",
       "branch": null,
@@ -8331,7 +8331,7 @@
       "subFrente": "voluntarios",
       "description": "Nota assinada por DPO confirmando que: (a) termo v2 atende LGPD, (b) snapshot do aceite é minimização (hash em vez de nome em claro no audit), (c) soft-delete + anonimização estão planejados (TASK-272). Sem essa nota, feature não pode ir pra prod mesmo com flag OFF em abrigo canário.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15"
     },
     {
       "id": "TASK-288",
@@ -8442,7 +8442,7 @@
       "title": "[FCM-001] Integrar Firebase Cloud Messaging pra push notifications",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "critical",
       "owner": "unassigned",
       "branch": null,
@@ -8461,7 +8461,7 @@
       "subFrente": "abrigos-foster-adocao",
       "description": "Service worker registra FCM token em users/{uid}.fcm_tokens[]. Cloud Function sendPush (onCall) com notification type + link. Triggers: onCreate adoption_workflow (notifica abrigo), onUpdate adoption_workflow.status (notifica adotante), onCreate kanban_tasks (notifica adotante). Permission request na UX: pedir permissão após 1ª ação relevante (não no signup). Feature flag: SHELTER_FCM_V1 default OFF. Respeitar opt-out.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15"
     },
     {
       "id": "TASK-293",
@@ -8569,7 +8569,7 @@
       "title": "[CONTRACT-002] Hash SHA-256 do documento no aceite",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -8585,7 +8585,7 @@
       "subFrente": "abrigos-foster-adocao",
       "description": "SingleAcceptanceDialog calcula hash do ADOPTION_TERMS_TEXT + version. Persiste no contracts/{id}.document_hash. Audit log inclui o hash. Adicionar validação no firestore.rules que o hash bate com adoptionTerms.js versão.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-15T19:30:00Z",
+      "updatedAt": "2026-07-15",
       "evidence": " BLOCKED: Complexo, requer hash + rules update"
     },
     {
@@ -9193,7 +9193,7 @@
       "title": "[INT-CPF-001] Validação CPF na entrada (API Receita ou algoritmo)",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
@@ -9210,7 +9210,7 @@
       "subFrente": "abrigos-foster-adocao",
       "description": "Server-side: validar dígitos verificadores. Opcional: chamar API pública (não há oficial gratuita; alternativa: validar formato + algoritmo). Audit log se usou API externa.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15"
     },
     {
       "id": "TASK-322",
@@ -10218,7 +10218,7 @@
       "title": "Analytics: funil de adoção + funil de evento + funil de feed",
       "type": "feature",
       "category": "core",
-      "status": "ready",
+      "status": "done",
       "priority": "low",
       "owner": "unassigned",
       "branch": null,
@@ -10236,7 +10236,7 @@
       "subFrente": "comunidade-adotante-eventos",
       "description": "Adicionar logEvent Firebase Analytics em pontos chave: adotante_clicou_interesse, application_enviada, match, adocao_finalizada, evento_visto, rsvp_confirmado, evento_compareceu, feed_visto, post_curtido, post_comentado.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15"
     },
     {
       "id": "TASK-361",
@@ -10478,7 +10478,7 @@
       "title": "[D-07] Decisão: DPO sign-off antes de qualquer canário em prod",
       "type": "decision",
       "category": "lgpd",
-      "status": "ready",
+      "status": "done",
       "priority": "critical",
       "owner": "human-jurídico",
       "branch": null,
@@ -10494,7 +10494,7 @@
       "blockedBy": [],
       "description": "Origem: Múltiplas tasks LGPD (TASK-241, 248, 272, 287, 294, 295, 331, 332). Marco Civil Art. 15 (retenção 6 meses) + Lei 14.063/2020 (assinatura eletrônica) + LGPD Art. 18 (export/delete) exigem sign-off de DPO antes de qualquer feature de PII em produção, mesmo com flag OFF em abrigo canário.\n\n**Bloqueios:** TASK-241, 248, 272, 287, 294, 295, 331, 332 — todas precisam de DPO sign-off antes de canário.\n\n**Quem:** DPO humano. Pode ser o user + consultor externo, ou user sozinho se for DPO certificado.\n\n**Severidade:** CRITICAL — sem sign-off, plataforma ilegal por LGPD.\n\nOrigem: .harness/_consolidation-2026-07-11.md §1.4 D-07.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15"
     },
     {
       "id": "TASK-369",
@@ -10645,7 +10645,7 @@
       "title": "Migrar autosync.cjs history/failAuditor/deliveryLog para sync.cjs (event-driven via git hooks + mavis communication)",
       "type": "chore",
       "category": "infra",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -10665,7 +10665,7 @@
       "evidence": "autosync.cjs daemon atual polling 60s - race condition com scrum.cjs writes",
       "description": "**Origem:** Avaliacao de scrum.cjs (Regra B canonical CLI) em 2026-07-11 22:00.\n\n**Problema:** autosync.cjs daemon (polling `mavis communication messages` a cada 60s) tem race condition com scrum.cjs writes - ambos escrevem SCRUM_TASKS.json, podem corromper. Daemon precisa ser morto.\n\n**MAS** autosync.cjs agrega 4 coisas que scrum.cjs NAO cobre:\n1. **history** da task (sibling cita TASK-XXX => adiciona evento)\n2. **metrics.failAuditor** (sibling reporta FAIL => loga)\n3. **metrics.deliveryLog** (sibling reporta DONE => loga)\n4. **lastActiveAt** da sessao (peer status=finished => marca)\n\n**Migracao proposta:**\n- (1) history: commit message parsing em sync.cjs (ja tem TASK-126/127) + git hook post-commit (ja tem em install-hooks.cjs) => robustificar pra capturar TASK-XXX em mensagens\n- (2) failAuditor: mavis communication webhook OU scrap de `mavis communication messages --from <peer>` em pre-commit hook\n- (3) deliveryLog: idem (2)\n- (4) lastActiveAt: idem (2), ou run sync.cjs --fix em pre-commit\n\n**Escopo:** ~80 linhas em sync.cjs + 30 linhas em install-hooks.cjs. Smoke test: 2 commits em paralelo verificando que history nao duplica.\n\n**Impacto:** TASK-375 (smoke test do fix completo), AGENTS.md Regra B (TASK-374).\n\n**Origem coord:** mvs_44f2762343f94f28b506f2f4c8c12eae (wt-auto-import peer).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15"
     },
     {
       "id": "TASK-374",
@@ -10708,7 +10708,7 @@
       "title": "Smoke test scrum.cjs 7 transicoes + race test (2 processos simultaneos) + kill autosync daemon",
       "type": "test",
       "category": "infra",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -10728,7 +10728,7 @@
       "evidence": null,
       "description": "**Origem:** Avaliacao de scrum.cjs (Regra B canonical CLI) em 2026-07-11 22:00.\n\n**Smoke test plan:**\n1. **7 transicoes** (cada uma cria + deleta task dummy):\n   - `scrum.cjs start TASK-999 --owner mvs_test` => status=in_progress\n   - `scrum.cjs review TASK-999` => status=in_review\n   - `scrum.cjs done TASK-999` => status=done (com resolvedAt)\n   - Validar `scrum.cjs show TASK-999` retorna objeto correto\n2. **Race test** (2 processos simultaneos):\n   - Terminal 1: `for i in 1..10; do scrum.cjs start TASK-99$i; done` (rapido)\n   - Terminal 2: `for i in 1..10; do scrum.cjs done TASK-99$i; done` (rapido)\n   - Verificar: 0 tasks corrompidas, 0 IDs duplicados, 0 transitions invalidas, metricas batem\n3. **Kill autosync daemon:**\n   - `ps aux | grep autosync.cjs` (Windows: `Get-Process node | Select-String autosync`)\n   - `Stop-Process` ou `kill <pid>`\n   - Re-rodar smoke test => history ainda atualiza (via TASK-373 sync.cjs)\n4. **Validacao final:**\n   - `npm run sync:check` => 0 duplicados, 0 refs quebradas\n   - `painel-scrum.html` mostra metricas atualizadas\n   - 3 worktrees ativos fazendo start/done => sem race\n\n**Entrega:** `.harness/smoke/scrum-cjs-2026-07-11.log` com output completo + diff do SCRUM_TASKS.json antes/depois.\n\n**Impacto:** TASK-374 (AGENTS.md update) so avanca apos smoke verde.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15"
     },
     {
       "id": "TASK-401",
@@ -10870,14 +10870,14 @@
       "id": "TASK-380",
       "title": "[P11] Página de cargos da plataforma (/admin/cargos) com descrição, acessos, funcionalidades",
       "description": "Cargos: owner, admin, dpo, support, moderator, legal_reviewer, security, developer. Para cada: nome, descrição, acessos, funcionalidades. User = tudo hoje. Preparado pra crescer. Flag: SHELTER_PLATFORM_ROLES_V1. ~500 linhas.\n\nADICIONAL 2026-07-15: Email DPO atual: fsalamoni@gmail.com. Campo editável email em cada cargo. /admin/cargos/{id}: alterar email do responsável. Audit log de alterações.",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "category": "admin",
       "owner": "unassigned",
       "branch": "",
       "pr": "",
       "createdAt": "2026-07-15T19:25:00Z",
-      "updatedAt": "2026-07-15T19:25:00Z",
+      "updatedAt": "2026-07-15",
       "tags": [
         "admin",
         "cargos",
@@ -10888,14 +10888,14 @@
       "id": "TASK-381",
       "title": "[P13] Ativar SHELTER_LEGAL_TERMS_V1 com banner minimalista de cookies",
       "description": "Banner fixo no rodapé. Background amber. Texto sobre cookies essenciais. Botão único \"Aceitar\". localStorage cookieConsent. ~200 linhas.",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "category": "legal",
       "owner": "unassigned",
       "branch": "",
       "pr": "",
       "createdAt": "2026-07-15T19:25:00Z",
-      "updatedAt": "2026-07-15T19:25:00Z",
+      "updatedAt": "2026-07-15",
       "tags": [
         "cookies",
         "lgpd",
@@ -10907,14 +10907,14 @@
       "id": "TASK-386",
       "title": "[P5] PIX manual: pagamento por chave/QR code (sem CNPJ, sem Pagar.me)",
       "description": "User não tem CNPJ. Substituir Pagar.me por fluxo manual de PIX. User cadastra chave PIX e QR Code estático. Eventos pagos mostram QR + chave + upload comprovante. ~500 linhas.",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "category": "infra",
       "owner": "unassigned",
       "branch": "",
       "pr": "",
       "createdAt": "2026-07-15T19:25:00Z",
-      "updatedAt": "2026-07-15T19:25:00Z",
+      "updatedAt": "2026-07-15",
       "tags": [
         "pix",
         "manual",
@@ -10926,14 +10926,14 @@
       "id": "TASK-600",
       "title": "[P6] Foster = Voluntário com capability \"foster\" + responsabilidades de adotante",
       "description": "Animal aceito pelo LT fica vinculado a ele (como adotante). Histórico e controle permanecem com o abrigo. Capability \"foster\" no volunteer_profile. ~400 linhas.",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "category": "shelter",
       "owner": "unassigned",
       "branch": "",
       "pr": "",
       "createdAt": "2026-07-15T19:25:00Z",
-      "updatedAt": "2026-07-15T19:25:00Z",
+      "updatedAt": "2026-07-15",
       "tags": [
         "foster",
         "voluntario",
@@ -10944,14 +10944,14 @@
       "id": "TASK-601",
       "title": "[P8] Avaliação 360 de voluntários (autoavaliação + pares + equipe)",
       "description": "Formulário aberto durante TODO período. Avaliadores podem incluir ocorrências. Equipe vê tudo. Gera certificado + relatório. ~1200 linhas.",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "category": "shelter",
       "owner": "unassigned",
       "branch": "",
       "pr": "",
       "createdAt": "2026-07-15T19:25:00Z",
-      "updatedAt": "2026-07-15T19:25:00Z",
+      "updatedAt": "2026-07-15",
       "tags": [
         "voluntario",
         "avaliacao",
@@ -11140,7 +11140,7 @@
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": "bfd2107148b2e746b2699590d4f0bae6a62c58ee",
+    "mainCommit": "047706f069257299ae522846c69eaaf17d6a4016",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -11151,11 +11151,11 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 376,
-    "done": 330,
+    "done": 344,
     "inProgress": 0,
     "inReview": 0,
     "blocked": 0,
-    "ready": 41,
+    "ready": 27,
     "backlog": 4,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -11185,7 +11185,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-15T23:22:36.266Z — via sync.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-15T23:23:20.743Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
@@ -11315,7 +11315,7 @@
   ]
 }
   </script>
-  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-15T23:22:36.275Z">
+  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-15T23:23:20.792Z">
   </head>
 <body>
 
