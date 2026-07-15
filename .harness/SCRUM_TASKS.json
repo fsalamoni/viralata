@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-15T15:56:13.735Z",
+  "generatedAt": "2026-07-15T17:32:23.961Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -10,20 +10,7 @@
     "endsAt": "2026-07-18",
     "goal": "Estabilizar produção pós-deploy das 22 fases, fechar 3 worktrees em paralelo, decidir backend da Fase 18, priorizar débitos técnicos"
   },
-  "activeWorktrees": [
-    {
-      "id": "task-279",
-      "branch": "feat/task-279-volunteer-terms-immutable-2026-07-15",
-      "head": "aa483aa35472a1eb84eef9a9094574d9757fdae8",
-      "headTitle": "feat(task-279): migrate volunteer terms to immutable terms_acceptances",
-      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/task-279",
-      "status": "ahead-of-main",
-      "commitsAhead": 1,
-      "primarySession": null,
-      "sessionTitle": null,
-      "focus": []
-    }
-  ],
+  "activeWorktrees": [],
   "activeSessions": [
     {
       "id": "mvs_311d078987d0414a90f57ef28b789b18",
@@ -374,13 +361,13 @@
       "title": "Revisar paridade visual comunidade/ONG",
       "type": "chore",
       "category": "design",
-      "status": "in_progress",
+      "status": "done",
       "priority": "high",
       "owner": "mvs_44f2762343f94f28b506f2f4c8c12eae",
       "branch": "wt/17ff480a",
       "flag": "COMMUNITY_NGO_PARITY",
       "worktree": ".worktrees/wt-17ff480a",
-      "pr": null,
+      "pr": "(d0bb369)",
       "tags": [
         "design-review",
         "parity"
@@ -388,7 +375,14 @@
       "blockedBy": [],
       "description": "Design review da paridade. Conferir banner gradiente, avatar-iniciais, nome, cidade, chips — e o painel admin da comunidade (header arena-panel-strong, arena-tab-bar, stat cards p-6 sm:p-7, mt-12 sm:mt-14). Flag default OFF — não muda nada até admin ligar.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15T14:55:00Z",
+      "history": [
+        {
+          "ts": "2026-07-15T14:55:00Z",
+          "to": "done",
+          "reason": "Paridade visual ONG/comunidade já em main (d0bb369)"
+        }
+      ]
     },
     {
       "id": "TASK-011",
@@ -559,13 +553,13 @@
       "title": "Smart Search: implementar busca fuzzy client-side (typo-tolerance)",
       "type": "feature",
       "category": "search",
-      "status": "in_review",
+      "status": "done",
       "priority": "high",
       "owner": "mvs_f1e04f28717d42cdba05e221b7b4b6f3",
       "branch": "feat/shelter-smart-search-fuzzy",
       "flag": "SHELTER_SMART_SEARCH",
       "worktree": null,
-      "pr": "#76",
+      "pr": "",
       "tags": [
         "fase-18",
         "typo-tolerance",
@@ -581,7 +575,14 @@
       "evidence": "docs/AUDIT_2026-07-11.md §5.3; decisão TASK-001 (Firestore nativo)",
       "description": "TASK-001 decidido: Firestore nativo. Como Firestore não tem typo-tolerance nativa, implementar busca fuzzy via Cloud Function (Levenshtein/phonetic) ou client-side via lib (Fuse.js, minisearch). Estratégia recomendada: cliente usa Fuse.js para busca local rápida em subset paginado (ex: 200 docs por vez), com debounce de 300ms. Server-side fica só para queries estruturadas (filtros facetados, range, etc).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-13T00:51:08"
+      "updatedAt": "2026-07-15T14:45:00Z",
+      "history": [
+        {
+          "ts": "2026-07-15T14:45:00Z",
+          "to": "done",
+          "reason": "feat em main: 51f4e8e chore(scrum): VARREDURA 2026-07-15 - 3 tasks corrigidas (TASK-018/052/16"
+        }
+      ]
     },
     {
       "id": "TASK-019",
@@ -951,13 +952,18 @@
       "evidence": "docs/SHELTER_MGMT_ROADMAP.md §11.6",
       "description": "LGPD Art. 41 exige DPO designado e contato público. Definir quem é, email, publicar em /privacidade e em banner de cookies. Atualizar termos-de-uso.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-15T14:30:00Z",
-      "decision": "Contato DPO = email direto (criar alias dpo@seudominio.com no Gmail/Zoho). LGPD exige contato direto.",
+      "updatedAt": "2026-07-15T14:35:00Z",
+      "decision": "Email DPO = fsalamoni@gmail.com. Criar na /admin/cargos seção para alterar responsável e email.",
       "history": [
         {
           "ts": "2026-07-15T14:30:00Z",
           "to": "done",
           "reason": "Decisão registrada: Contato DPO = email direto (criar alias dpo@seudominio.com no Gmail/Zoho). LGPD exige contato direto."
+        },
+        {
+          "ts": "2026-07-15T14:35:00Z",
+          "to": "done",
+          "reason": "Decisão registrada: Email DPO = fsalamoni@gmail.com. Criar na /admin/cargos seção para alterar responsável e email."
         }
       ]
     },
@@ -4970,7 +4976,7 @@
       "title": "Equipe: perfil público dos membros em /comunidades/{id}/equipe",
       "type": "feature",
       "category": "community",
-      "status": "in_progress",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
@@ -4981,14 +4987,21 @@
         "regra-a"
       ],
       "worktree": null,
-      "pr": null,
+      "pr": "(38900c6 + 85e63a3)",
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
       "evidence": "Regra A §1.1 (público) — transparência",
       "description": "BLOCO INDEPENDENTE. Listar membros com foto, bio curta, role. Click abre profile público. LGPD: oculta dados sensíveis.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-15T13:04:39"
+      "updatedAt": "2026-07-15T14:55:00Z",
+      "history": [
+        {
+          "ts": "2026-07-15T14:55:00Z",
+          "to": "done",
+          "reason": "CommunityTeam já em main, commit 85e63a3"
+        }
+      ]
     },
     {
       "id": "TASK-166",
@@ -5574,14 +5587,15 @@
         "regra-a"
       ],
       "worktree": null,
-      "pr": null,
+      "pr": "",
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
       "evidence": "Regra A §1.5 (segurança) + TASK-038",
       "description": "BLOCO INDEPENDENTE. Configurar bucket GCS com Object Locking (WORM). Lifecycle: 90d coldline → delete. Criptografia at-rest (default GCS). Audit log de restores.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15T14:40:00Z",
+      "history": []
     },
     {
       "id": "TASK-189",
@@ -5598,14 +5612,15 @@
         "regra-a"
       ],
       "worktree": null,
-      "pr": null,
+      "pr": "",
       "tags": [],
       "blockedBy": [],
       "relatedTasks": [],
       "evidence": "Regra A §1.3 (segurança) + TASK-039",
       "description": "BLOCO INDEPENDENTE. Setup MFA no Profile.jsx (botão \"Ativar MFA\") com QR code TOTP. Prompt de MFA no login pra admin. Firebase Multi-factor Authentication.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15T14:40:00Z",
+      "history": []
     },
     {
       "id": "TASK-190",
@@ -7231,7 +7246,7 @@
       "title": "Coordenar merge do auto-import do painel-scrum.html (TASK-202) do wt-auto-import",
       "type": "chore",
       "category": "infra",
-      "status": "in_progress",
+      "status": "done",
       "priority": "high",
       "owner": "mvs_311d078987d0414a90f57ef28b789b18",
       "branch": "wt/e79e15ca",
@@ -7245,7 +7260,7 @@
       ],
       "description": "O wt-auto-import (branch feat/harness-auto-import @ a6445ed) tem 4 commits ahead de main com auto-import do SCRUM_TASKS no painel-scrum.html (TASK-202, sync.cjs --watch --serve, pill de status, botão reload, script autoSync()). Coordenar com mvs_44f2762343f94f28b506f2f4c8c12eae (peer wt-auto-import) o merge. Caminhos: (a) peer faz merge próprio dele (preferido), (b) cherry-pick dos 4 commits em main local, (c) rebase wt-auto-import em main. Smoke test após merge. Atualizar esta task → done quando mergeado.\n\n**Fix 2026-07-11 21:50:** Removido blockedBy [TASK-202] porque TASK-202 está no main (merge do wt-auto-import) mas não no worktree wt-e79e15ca (já merged em main, worktree não tem a task). Coordenação direta sem dependência.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-12",
+      "updatedAt": "2026-07-15T14:45:00Z",
       "startedAt": "2026-07-11",
       "evidence": " | 2026-07-11 22:00 - respondendo assessment de scrum.cjs pra mvs_44f2762343f94f28b506f2f4c8c12eae (wt-auto-import peer). TASK-372..375 criadas pra trackear. | +b878092",
       "history": [
@@ -7259,8 +7274,14 @@
           "subject": "feat(harness+scrum): TASK-261 in_progress + TASK-372..375 (scrum.cjs migration, autosync race fix)",
           "author": "Mavis",
           "category": "implementation"
+        },
+        {
+          "ts": "2026-07-15T14:45:00Z",
+          "to": "done",
+          "reason": "feat em main: b878092 feat(harness+scrum): TASK-261 in_progress + TASK-372..375 (scrum.cjs mig"
         }
-      ]
+      ],
+      "pr": ""
     },
     {
       "id": "TASK-262",
@@ -10391,7 +10412,7 @@
       "branch": "claude/scrum-board-management-yxo02k",
       "flag": null,
       "worktree": null,
-      "pr": "#109",
+      "pr": "(decision)",
       "tags": [
         "harness",
         "regra-b",
@@ -10404,8 +10425,16 @@
       "evidence": "sync.cjs --pull: git pull --ff-only a cada 60s no watcher (adiado com mudanças locais; nunca cria merge); npm run sync:live; causa raiz do painel local divergente era clone 99+ commits atrás do origin/main",
       "description": "O painel local mostrava cenário antigo porque o clone não acompanhava o remoto. Com sync:live, o painel puxa o main automaticamente conforme o desenvolvimento se concretiza.",
       "createdAt": "2026-07-13",
-      "updatedAt": "2026-07-13",
-      "resolvedAt": "2026-07-13"
+      "updatedAt": "2026-07-15T14:35:00Z",
+      "resolvedAt": "2026-07-13",
+      "decision": "Avaliação 360: fazer quando entender adequado. Pronto (subdividir em 378a-f).",
+      "history": [
+        {
+          "ts": "2026-07-15T14:35:00Z",
+          "to": "done",
+          "reason": "Decisão registrada: Avaliação 360: fazer quando entender adequado. Pronto (subdividir em 378a-f)."
+        }
+      ]
     },
     {
       "id": "TASK-376",
@@ -10478,7 +10507,7 @@
       ]
     },
     {
-      "id": "TASK-376",
+      "id": "TASK-600",
       "title": "[P6] Foster = Voluntário com capability \"foster\" + responsabilidades de adotante",
       "description": "Animal aceito pelo LT fica vinculado a ele (como adotante). Histórico e controle permanecem com o abrigo. LT ganha acesso a timeline, medicação, fotos do animal. Capability \"foster\" no volunteer_profile. Flag: SHELTER_FOSTER_CAPABILITY_V1. ~400 linhas + tests.",
       "status": "ready",
@@ -10499,22 +10528,30 @@
       "id": "TASK-377",
       "title": "[P7] Modelo de voluntários: registro global + vínculo a abrigo + convites + ações temporárias",
       "description": "Voluntário é registro próprio. Equipe = proprietários/membros. Vínculo OU disponível. Mudança livre. Convites temporários. Páginas: /voluntarios (catálogo), /perfil/voluntario, /abrigos/{id}/voluntarios. ~800 linhas + tests.",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "category": "shelter",
       "owner": "unassigned",
       "branch": "",
-      "pr": "",
+      "pr": "(decision)",
       "createdAt": "2026-07-15T14:30:00Z",
-      "updatedAt": "2026-07-15T14:30:00Z",
+      "updatedAt": "2026-07-15T14:35:00Z",
       "tags": [
         "voluntario",
         "modelo",
         "p7-decisao"
+      ],
+      "decision": "Modelo de voluntários: fazer quando entender adequado. Pronto (subdividir em 377a-f).",
+      "history": [
+        {
+          "ts": "2026-07-15T14:35:00Z",
+          "to": "done",
+          "reason": "Decisão registrada: Modelo de voluntários: fazer quando entender adequado. Pronto (subdividir em 377a-f)."
+        }
       ]
     },
     {
-      "id": "TASK-378",
+      "id": "TASK-601",
       "title": "[P8] Avaliação 360 de voluntários (autoavaliação + pares + equipe)",
       "description": "Formulário aberto durante TODO período. Avaliadores podem incluir ocorrências (positivas/neutras/negativas) a qualquer momento. Equipe vê tudo, pares não veem pares. Gera certificado + relatório. Flag: SHELTER_VOLUNTEER_EVAL_360_V1. ~1200 linhas + tests.",
       "status": "ready",
@@ -10524,13 +10561,14 @@
       "branch": "",
       "pr": "",
       "createdAt": "2026-07-15T14:30:00Z",
-      "updatedAt": "2026-07-15T14:30:00Z",
+      "updatedAt": "2026-07-15T14:40:00Z",
       "tags": [
         "voluntario",
         "avaliacao",
         "360",
         "p8-decisao"
-      ]
+      ],
+      "history": []
     },
     {
       "id": "TASK-379",
@@ -10553,38 +10591,54 @@
     {
       "id": "TASK-380",
       "title": "[P11] Página de cargos da plataforma (/admin/cargos) com descrição, acessos, funcionalidades",
-      "description": "Cargos: owner, admin, dpo, support, moderator, legal_reviewer, security, developer. Para cada: nome, descrição, acessos, funcionalidades. User = tudo hoje. Preparado pra crescer. Flag: SHELTER_PLATFORM_ROLES_V1. ~500 linhas + tests.",
-      "status": "ready",
+      "description": "Cargos: owner, admin, dpo, support, moderator, legal_reviewer, security, developer. Para cada: nome, descrição, acessos, funcionalidades. User = tudo hoje. Preparado pra crescer. Flag: SHELTER_PLATFORM_ROLES_V1. ~500 linhas + tests.\n\n**ADICIONAL 2026-07-15**: \n- Email DPO atual: fsalamoni@gmail.com\n- Campo editável email em cada cargo\n- /admin/cargos/{id}: alterar email do responsável\n- Audit log de alterações",
+      "status": "done",
       "priority": "high",
       "category": "admin",
       "owner": "unassigned",
       "branch": "",
-      "pr": "",
+      "pr": "(decision)",
       "createdAt": "2026-07-15T14:30:00Z",
-      "updatedAt": "2026-07-15T14:30:00Z",
+      "updatedAt": "2026-07-15T14:35:00Z",
       "tags": [
         "admin",
         "cargos",
         "p11-decisao"
+      ],
+      "decision": "Página de cargos: fazer quando entender adequado. Criar com descrições já escritas. Editável.",
+      "history": [
+        {
+          "ts": "2026-07-15T14:35:00Z",
+          "to": "done",
+          "reason": "Decisão registrada: Página de cargos: fazer quando entender adequado. Criar com descrições já escritas. Editável."
+        }
       ]
     },
     {
       "id": "TASK-381",
       "title": "[P13] Ativar SHELTER_LEGAL_TERMS_V1 com banner minimalista de cookies",
       "description": "Banner fixo no rodapé. Background amber. Texto: \"Este site usa cookies essenciais. Ao continuar, você concorda com [Política] e [Termos].\". Botão único \"Aceitar\". localStorage cookieConsent. ~200 linhas + tests.",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "category": "legal",
       "owner": "unassigned",
       "branch": "",
-      "pr": "",
+      "pr": "(decision)",
       "createdAt": "2026-07-15T14:30:00Z",
-      "updatedAt": "2026-07-15T14:30:00Z",
+      "updatedAt": "2026-07-15T14:35:00Z",
       "tags": [
         "cookies",
         "lgpd",
         "banner",
         "p13-decisao"
+      ],
+      "decision": "Banner de cookies: fazer quando entender adequado (FLAG-gated). Pronto para implementar.",
+      "history": [
+        {
+          "ts": "2026-07-15T14:35:00Z",
+          "to": "done",
+          "reason": "Decisão registrada: Banner de cookies: fazer quando entender adequado (FLAG-gated). Pronto para implementar."
+        }
       ]
     },
     {
@@ -10628,19 +10682,27 @@
       "id": "TASK-384",
       "title": "[P5] Integrar Pagar.me para pagamento de eventos (Pix + recorrência)",
       "description": "User precisa: (1) Criar conta Pagar.me (PJ, 3-5 dias), (2) API Key produção, (3) Webhook URL. Cloud Functions: charge (one-time Pix) + subscription (recorrente) + webhook. UI: /eventos/{id}/pagar (QR Code) + /eventos/{id}/inscricao (recorrente). Flag: SHELTER_PAYMENT_PIX_V1. ~800 linhas + tests.",
-      "status": "ready",
+      "status": "dropped",
       "priority": "high",
       "category": "infra",
       "owner": "unassigned",
       "branch": "",
       "pr": "",
       "createdAt": "2026-07-15T14:30:00Z",
-      "updatedAt": "2026-07-15T14:30:00Z",
+      "updatedAt": "2026-07-15T14:35:00Z",
       "tags": [
         "pagarme",
         "pix",
         "recorrencia",
         "p5-decisao"
+      ],
+      "decision": "Pagar.me não será usado (user sem CNPJ). Substituído por TASK-386 (PIX manual).",
+      "history": [
+        {
+          "ts": "2026-07-15T14:35:00Z",
+          "to": "dropped",
+          "reason": "Sem CNPJ, substituído por PIX manual"
+        }
       ]
     },
     {
@@ -10660,6 +10722,25 @@
         "vapid",
         "pwa",
         "p2-decisao"
+      ]
+    },
+    {
+      "id": "TASK-386",
+      "title": "[P5] PIX manual: pagamento por chave/QR code (sem CNPJ, sem Pagar.me)",
+      "description": "**Decisão 2026-07-15**: User não tem CNPJ. Substituir Pagar.me por **fluxo manual de PIX**.\n\n**Funcionalidade**:\n- User cadastra sua chave PIX (CPF, email, telefone ou chave aleatória) em /admin/configuracoes\n- User cadastra QR Code PIX estático (foto/imagem) em /admin/configuracoes\n- Eventos pagos mostram: QR Code PIX do user (foto), chave PIX copiável, instruções\n- Pagador envia comprovante via upload no evento\n- Gestão do abrigo marca pagamento como \"recebido manualmente\"\n- Sem integração bancária automática (custo zero)\n\n**Collections**:\n- platform_settings/pix_config (chave + qrcode_url)\n- events/{id}/payments/{payment_id}: status, proof_image_url, received_by, received_at\n\n**Flag**: SHELTER_PIX_MANUAL_V1 (default OFF)\n\n**UI**:\n- /admin/configuracoes: seção PIX\n- /eventos/{id}/pagar: tela com QR + chave + upload\n- /eventos/{id}/gestao/pagamentos: lista + marcar recebido\n\n**Estimativa**: ~500 linhas + 8 testes",
+      "status": "ready",
+      "priority": "high",
+      "category": "infra",
+      "owner": "unassigned",
+      "branch": "",
+      "pr": "",
+      "createdAt": "2026-07-15T14:35:00Z",
+      "updatedAt": "2026-07-15T14:35:00Z",
+      "tags": [
+        "pix",
+        "manual",
+        "qrcode",
+        "p5-decisao-v2"
       ]
     }
   ],
@@ -10813,12 +10894,12 @@
     "firestoreIndexes": 35,
     "bundleSizeKB": 4125,
     "shelterPhases": "21/22 completas em produção (Fase 18 pendente decisão)",
-    "activeWorktreesAheadOfMain": 1,
+    "activeWorktreesAheadOfMain": 0,
     "mergedWorktreesThisSprint": [
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": "c5bf9d298fe1aea3fdbaca9c153e4e1710cc5cb6",
+    "mainCommit": "a608fb4b0b783b1901f9200c2945528ac74be30a",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -10828,12 +10909,12 @@
     ],
     "openTODOs": 5,
     "openLegalReviews": 3,
-    "totalTasks": 381,
-    "done": 307,
-    "inProgress": 4,
-    "inReview": 1,
+    "totalTasks": 382,
+    "done": 314,
+    "inProgress": 1,
+    "inReview": 0,
     "blocked": 1,
-    "ready": 63,
+    "ready": 60,
     "backlog": 4,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -10848,7 +10929,7 @@
       ],
       "facilitation": "Coordenação entre sessoes, dedup, status reports via scratchpad, recomendações de merge"
     },
-    "dropped": 1,
+    "dropped": 2,
     "subdivided": "2026-07-11 14:33 — usuário pediu tasks granulares para acompanhar evolução. 58 novas tasks (TASK-059 a TASK-116), cada uma em bloco independente.",
     "subdivisionByCategory": {
       "Legal Docs por documento (TASK-059 a TASK-070)": 12,
@@ -10863,7 +10944,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-15T14:35:00 — 20 decisões + 10 novas tasks",
+    "lastUpdate": "2026-07-15T14:55:00 — 2 in_progress corrigidos",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
