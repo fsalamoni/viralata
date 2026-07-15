@@ -41,7 +41,8 @@ export async function createRating({ petId, ratedUid, stars, comment }, actor) {
     actor,
   });
 
-  await createAuditLog({ action: 'adoption_rating_created', actor, details: { pet_id: petId, rated_uid: ratedUid } });
+  // TASK-351: targetUserId = voluntário do abrigo que recebeu a avaliação
+  await createAuditLog({ action: 'adoption_rating_created', actor, targetUserId: ratedUid, details: { pet_id: petId } });
 }
 
 /** Avaliação (se houver) que o usuário atual já fez para este pet. */

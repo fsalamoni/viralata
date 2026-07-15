@@ -152,5 +152,6 @@ export async function updateInterestStatus(petId, userId, status, actor, options
     actor: { uid: actor?.uid, displayName: actor?.displayName },
   });
 
-  await createAuditLog({ action: 'interest_status_updated', actor, details: { pet_id: petId, user_id: userId, status } });
+  // TASK-351: targetUserId = voluntário/adotante cujo interesse foi atualizado
+  await createAuditLog({ action: 'interest_status_updated', actor, targetUserId: userId, details: { pet_id: petId, status } });
 }

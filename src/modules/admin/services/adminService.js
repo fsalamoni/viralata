@@ -25,11 +25,12 @@ export async function banUser(uid, reason, actor, bannedUntil = null) {
     banned_until: bannedUntil || null,
     updated_at: serverTimestamp(),
   });
+  // TASK-351: targetUserId = admin agindo sobre outro usuário
   await createAuditLog({
     action: 'user_banned',
     actor,
-    userId: uid,
-    details: { user_id: uid, reason: String(reason).trim(), banned_until: bannedUntil || null },
+    targetUserId: uid,
+    details: { reason: String(reason).trim(), banned_until: bannedUntil || null },
   });
 }
 
@@ -43,7 +44,8 @@ export async function unbanUser(uid, actor) {
     banned_until: null,
     updated_at: serverTimestamp(),
   });
-  await createAuditLog({ action: 'user_unbanned', actor, userId: uid, details: { user_id: uid } });
+  // TASK-351: targetUserId = admin agindo sobre outro usuário
+  await createAuditLog({ action: 'user_unbanned', actor, targetUserId: uid, details: {} });
 }
 
 /** Lista todas as organizações, inclusive fora do diretório público. */

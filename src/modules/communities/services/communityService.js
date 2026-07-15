@@ -474,19 +474,22 @@ export async function listCommunityMembers(communityId) {
 export async function setCommunityMemberRole(communityId, targetUserId, newRole, actor) {
   const memberRef = doc(db, 'community_members', `${communityId}_${targetUserId}`);
   await updateDoc(memberRef, { role: newRole });
-  await createAuditLog({ action: 'community_member_role_updated', actor, details: { community_id: communityId, target_user: targetUserId, role: newRole } });
+  // TASK-351: targetUserId para distinguir actor ≠ target
+  await createAuditLog({ action: 'community_member_role_updated', actor, targetUserId, details: { community_id: communityId, role: newRole } });
 }
 
 export async function setCommunityMemberPermissions(communityId, targetUserId, permissions, actor) {
   const memberRef = doc(db, 'community_members', `${communityId}_${targetUserId}`);
   await updateDoc(memberRef, { permissions });
-  await createAuditLog({ action: 'community_member_permissions_updated', actor, details: { community_id: communityId, target_user: targetUserId, permissions } });
+  // TASK-351: targetUserId para distinguir actor ≠ target
+  await createAuditLog({ action: 'community_member_permissions_updated', actor, targetUserId, details: { community_id: communityId, permissions } });
 }
 
 export async function removeCommunityMember(communityId, targetUserId, actor) {
   const memberRef = doc(db, 'community_members', `${communityId}_${targetUserId}`);
   await deleteDoc(memberRef);
-  await createAuditLog({ action: 'community_member_removed', actor, details: { community_id: communityId, target_user: targetUserId } });
+  // TASK-351: targetUserId para distinguir actor ≠ target
+  await createAuditLog({ action: 'community_member_removed', actor, targetUserId, details: { community_id: communityId } });
 }
 
 // ─── Community Event RSVP ─────────────────────────────────────────────────────

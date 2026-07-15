@@ -161,7 +161,8 @@ export async function completePetAdoption(petId, adoptedByUid, actor) {
   otherInterests.forEach((d) => batch.update(d.ref, { status: 'rejected', updated_at: serverTimestamp() }));
 
   await batch.commit();
-  await createAuditLog({ action: 'adoption_completed', actor, details: { pet_id: petId, adopted_by: adoptedByUid } });
+  // TASK-351: targetUserId = adotante que recebeu o pet
+  await createAuditLog({ action: 'adoption_completed', actor, targetUserId: adoptedByUid, details: { pet_id: petId } });
 
   const otherUserIds = otherInterests.map((d) => d.data().user_id);
   if (otherUserIds.length > 0) {

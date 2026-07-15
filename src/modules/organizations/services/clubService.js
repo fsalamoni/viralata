@@ -321,10 +321,12 @@ export async function setMemberRole(clubId, member, role, actor) {
   // role, então sem isso o membro rebaixado continuaria com acesso de admin.
   if (role !== CLUB_ROLE.ADMIN) updates.permissions = {};
   await updateDoc(doc(db, COL.members, memberDocId(clubId, member.user_id)), updates);
+  // TASK-351: targetUserId = admin agindo sobre outro membro
   await createAuditLog({
     action: role === CLUB_ROLE.ADMIN ? 'club_admin_added' : 'club_admin_removed',
     actor,
-    details: { club_id: clubId, user_id: member.user_id },
+    targetUserId: member.user_id,
+    details: { club_id: clubId },
   });
 }
 
@@ -347,10 +349,12 @@ export async function setMemberPermissions(clubId, member, permissions, actor) {
     permissions: sanitized,
     updated_at: serverTimestamp(),
   });
+  // TASK-351: targetUserId = admin agindo sobre outro membro
   await createAuditLog({
     action: 'club_member_permissions_updated',
     actor,
-    details: { club_id: clubId, user_id: member.user_id, permissions: sanitized },
+    targetUserId: member.user_id,
+    details: { club_id: clubId, permissions: sanitized },
   });
 }
 
@@ -367,7 +371,8 @@ export async function removeMember(clubId, member, actor) {
   }
   await deleteDoc(doc(db, COL.members, memberDocId(clubId, member.user_id)));
   await updateDoc(doc(db, COL.clubs, clubId), { member_count: increment(-1), updated_at: serverTimestamp() }).catch(() => {});
-  await createAuditLog({ action: 'club_member_removed', actor, details: { club_id: clubId, user_id: member.user_id } });
+  // TASK-351: targetUserId = adminRemoveMember sobre outro membro
+  await createAuditLog({ action: 'club_member_removed', actor, targetUserId: member.user_id, details: { club_id: clubId } });
 }
 
 /**
@@ -391,10 +396,12 @@ export async function updateMemberProfile(clubId, member, input, actor) {
   });
   sanitized.updated_at = serverTimestamp();
   await updateDoc(doc(db, COL.members, memberDocId(clubId, member.user_id)), sanitized);
+  // TASK-351: targetUserId = admin ou próprio membro editando outro perfil
   await createAuditLog({
     action: 'club_member_profile_updated',
     actor,
-    details: { club_id: clubId, user_id: member.user_id, fields: Object.keys(sanitized) },
+    targetUserId: member.user_id,
+    details: { club_id: clubId, fields: Object.keys(sanitized) },
   });
 }
 
@@ -491,7 +498,8 @@ export async function approveJoinRequest(request, actor) {
     link: `/comunidade/${request.club_id}`,
     actor,
   });
-  await createAuditLog({ action: 'club_join_approved', actor, details: { club_id: request.club_id, user_id: request.user_id } });
+  // TASK-351: targetUserId = admin aprovando ingresso de request.user_id
+  await createAuditLog({ action: 'club_join_approved', actor, targetUserId: request.user_id, details: { club_id: request.club_id } });
 }
 
 export async function rejectJoinRequest(request, actor) {
@@ -508,7 +516,8 @@ export async function rejectJoinRequest(request, actor) {
     link: `/comunidade/${request.club_id}`,
     actor,
   });
-  await createAuditLog({ action: 'club_join_rejected', actor, details: { club_id: request.club_id, user_id: request.user_id } });
+  // TASK-351: targetUserId = admin rejeitando ingresso de request.user_id
+  await createAuditLog({ action: 'club_join_rejected', actor, targetUserId: request.user_id, details: { club_id: request.club_id } });
 }
 
 /**
@@ -545,7 +554,8 @@ export async function inviteMemberToClub(club, target, inviter, profile) {
     link: `/comunidade/${club.id}`,
     actor: { uid: inviter.uid, displayName: inviterName },
   });
-  await createAuditLog({ action: 'club_member_invited', actor: inviter, details: { club_id: club.id, user_id: target.user_id } });
+  // TASK-351: targetUserId = admin convidando target.user_id
+  await createAuditLog({ action: 'club_member_invited', actor: inviter, targetUserId: target.user_id, details: { club_id: club.id } });
 }
 
 export async function listClubInvites(clubId) {
@@ -624,7 +634,8 @@ export async function inviteMembersToClub(club, targets, inviter, profile) {
 export async function cancelClubInvite(invite, actor) {
   if (!invite?.club_id || !invite?.user_id) throw new Error('Convite inválido.');
   await deleteDoc(doc(db, COL.memberInvites, memberDocId(invite.club_id, invite.user_id)));
-  await createAuditLog({ action: 'club_invite_cancelled', actor, details: { club_id: invite.club_id, user_id: invite.user_id } });
+  // TASK-351: targetUserId = admin cancelando convite de invite.user_id
+  await createAuditLog({ action: 'club_invite_cancelled', actor, targetUserId: invite.user_id, details: { club_id: invite.club_id } });
 }
 
 /* -------------------------------- Events -------------------------------- */

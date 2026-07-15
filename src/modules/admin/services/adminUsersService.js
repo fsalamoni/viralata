@@ -81,11 +81,12 @@ export async function promoteToAdmin(targetUid, actor) {
     updated_at: serverTimestamp(),
   });
 
+  // TASK-351: targetUserId = admin agindo sobre outro usuário
   await createAuditLog({
     action: 'platform_admin_promoted',
     actor,
-    userId: targetUid,
-    details: { target_uid: targetUid, target_email: userSnap.data().email || null },
+    targetUserId: targetUid,
+    details: { target_email: userSnap.data().email || null },
   });
 
   return { ok: true, already: false };
@@ -131,11 +132,12 @@ export async function demoteFromAdmin(targetUid, actor) {
     updated_at: serverTimestamp(),
   });
 
+  // TASK-351: targetUserId = admin agindo sobre outro usuário
   await createAuditLog({
     action: 'platform_admin_demoted',
     actor,
-    userId: targetUid,
-    details: { target_uid: targetUid, target_email: userSnap.data().email || null },
+    targetUserId: targetUid,
+    details: { target_email: userSnap.data().email || null },
   });
 
   return { ok: true, already: false };

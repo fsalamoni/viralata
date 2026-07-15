@@ -138,12 +138,26 @@ export function classifyAuditCategory(action) {
   return 'operational';
 }
 
+// ─── TASK-351: target_user_id + correlation_id ────────────────────────
+//
+// `target_user_id`: UID do usuário diretamente afetado pela ação.
+// Usado quando actor ≠ target (ex: admin bane usuário X).
+// Quando omitted/null, o consumer pode inferir target_user_id = actor_id
+// para ações onde actor==target.
+//
+// `correlation_id`: UUID que encadeia múltiplas entradas de auditoria
+// pertencentes a uma mesma operação lógica (ex: cascade delete de pet
+// + adoção + aceite de termo = mesmo correlation_id). Gerado pelo
+// caller e passado para todas as sub-operações. Valor null/undefined
+// é aceitável — o campo simplesmente não é写入ado.
 export async function createAuditLog({
   action,
   actor,
   userId = null,
   userName = null,
   userEmail = null,
+  targetUserId = null,
+  correlationId = null,
   details = {},
 }) {
   if (!actor?.uid || !action) return;
@@ -165,24 +179,36 @@ export async function createAuditLog({
     || 'client-unknown';
   const user_agent = (typeof navigator !== 'undefined' && navigator.userAgent) || 'unknown';
 
+  const doc = {
+    log_number: Number(`${createdAtMs}${randomNumericSuffix()}`),
+    action,
+    action_label: AUDIT_ACTION_LABELS[action] || action,
+    category: classifyAuditCategory(action),
+    actor_id: actor.uid,
+    actor_name: actorName,
+    actor_email: actor.email || '',
+    user_id: userId || actor.uid,
+    user_name: userName || actorName,
+    user_email: userEmail || actor.email || '',
+    ip_address,
+    user_agent,
+    details,
+    created_at_ms: createdAtMs,
+    created_at: serverTimestamp(),
+  };
+
+  // TASK-351: target_user_id — presente quando actor ≠ target
+  if (targetUserId) {
+    doc.target_user_id = targetUserId;
+  }
+
+  // TASK-351: correlation_id — encadeamento de operações lógicas
+  if (correlationId) {
+    doc.correlation_id = correlationId;
+  }
+
   try {
-    await addDoc(collection(db, 'audit_logs'), {
-      log_number: Number(`${createdAtMs}${randomNumericSuffix()}`),
-      action,
-      action_label: AUDIT_ACTION_LABELS[action] || action,
-      category: classifyAuditCategory(action),
-      actor_id: actor.uid,
-      actor_name: actorName,
-      actor_email: actor.email || '',
-      user_id: userId || actor.uid,
-      user_name: userName || actorName,
-      user_email: userEmail || actor.email || '',
-      ip_address,
-      user_agent,
-      details,
-      created_at_ms: createdAtMs,
-      created_at: serverTimestamp(),
-    });
+    await addDoc(collection(db, 'audit_logs'), doc);
     return { ok: true };
   } catch (err) {
     // Inner try/catch: createAuditLog is the low-level writer and NEVER
