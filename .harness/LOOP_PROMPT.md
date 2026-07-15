@@ -1,4 +1,4 @@
-# LOOP_PROMPT — viralata (atualizado 2026-07-15 08:11 UTC)
+# LOOP_PROMPT — viralata (atualizado 2026-07-15 17:50 UTC)
 
 **Contexto**: /workspace/viralata, branch main, React+Vite+Firebase.
 **Repo**: https://github.com/fsalamoni/viralata.git
@@ -142,6 +142,7 @@ print(f'72 tasks ready')
 | TASK-007 | high | Revisão jurídica: avisosLegais.js...
 
 > **Notas**:
+> - TASK-330 ✅ done — feat/task-330-audit-log-cf (SEC-HIGH): audit log via Cloud Function, client writes blocked in firestore.rules
 > - TASK-220 ✅ done — feat/task-220-clean (PR #192) merged 2026-07-15
 > - TASK-269 ✅ done — feat/task-268-volunteer-fcm-notify (PR #190)
 > - TASK-312 ✅ done — [INT-SEARCH-001] Sync ativo do search index
@@ -154,7 +155,7 @@ print(f'72 tasks ready')
 
 ## 📊 MÉTRICAS ATUAIS
 
-- **done=269**, ready=90, in_progress=3
+- **done=315**, ready=59, in_progress=1
 - **Main**: `102de261904f`
 
 ## 🏁 FIM DO TURNO
