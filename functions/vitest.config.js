@@ -27,6 +27,7 @@ export default defineConfig({
       'firebase-admin/firestore': path.join(mocksDir, 'firebase-admin-firestore.cjs'),
       'firebase-admin/app': path.join(mocksDir, 'firebase-admin-app.cjs'),
       'firebase-functions/v2/scheduler': path.join(mocksDir, 'firebase-functions-v2-scheduler.cjs'),
+      'firebase-functions/v2/firestore': path.join(mocksDir, 'firebase-functions-v2-firestore.cjs'),
     },
   },
   test: {

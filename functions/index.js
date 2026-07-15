@@ -33,6 +33,12 @@ const {
   runNotifyOnCheckInOutSafe,
 } = require('./volunteerTriggers');
 const {
+  runOnCommunityPostCreatedSafe,
+  runOnCommunityPostLikedSafe,
+  runOnCommunityPostCommentedSafe,
+  runOnCommunityEventCreatedSafe,
+} = require('./communityNotifications');
+const {
   aggregateVolunteerHours,
   sendShiftReminders,
 } = require('./volunteerHoursCron');
@@ -228,5 +234,39 @@ exports.hardDeleteVolunteerDocument = onCall(
       clubId, collectionPath, docId, actorUid: callerUid, logger,
     });
     return result;
+  },
+);
+
+// ─── TASK-336: Community notifications ──────────────────────────────────
+
+// onCreate community_posts/{postId} → notify community admins
+exports.onCommunityPostCreated = onDocumentCreated(
+  { document: 'community_posts/{postId}', database: DATABASE_ID, region: REGION },
+  async (event) => {
+    try { await runOnCommunityPostCreatedSafe(event); } catch (e) { logger.error(e); }
+  },
+);
+
+// onCreate community_post_likes/{likeId} → notify post author
+exports.onCommunityPostLiked = onDocumentCreated(
+  { document: 'community_post_likes/{likeId}', database: DATABASE_ID, region: REGION },
+  async (event) => {
+    try { await runOnCommunityPostLikedSafe(event); } catch (e) { logger.error(e); }
+  },
+);
+
+// onCreate community_post_comments/{commentId} → notify post author + commenters
+exports.onCommunityPostCommented = onDocumentCreated(
+  { document: 'community_post_comments/{commentId}', database: DATABASE_ID, region: REGION },
+  async (event) => {
+    try { await runOnCommunityPostCommentedSafe(event); } catch (e) { logger.error(e); }
+  },
+);
+
+// onCreate community_events/{eventId} → notify community admins
+exports.onCommunityEventCreated = onDocumentCreated(
+  { document: 'community_events/{eventId}', database: DATABASE_ID, region: REGION },
+  async (event) => {
+    try { await runOnCommunityEventCreatedSafe(event); } catch (e) { logger.error(e); }
   },
 );
