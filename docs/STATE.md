@@ -13,7 +13,7 @@
 
 ## 0. TL;DR (60 segundos)
 
-**Viralata** é uma plataforma SaaS brasileira (React + Firebase) de adoção responsável de pets + comunidade (ONGs, mural, fórum, eventos). Em **2026-07-11/12** entregamos as **22 fases** do **Sistema de Gestão do Abrigo** (shelter management) em produção. Deploy ativo em `viralata.app` / `viralata.web.app`.
+**Viralata** é uma plataforma SaaS brasileira (React + Firebase) de adoção responsável de pets + comunidade (ONGs, mural, fórum, eventos). Em **2026-07-11/12** entregamos as **22 fases** do **Sistema de Gestão do Abrigo** (shelter management) em produção. Deploy ativo em `https://viralata.web.app/` (Firebase).
 
 - **Status produção**: 22/22 fases shelter ✅ + core platform (ONGs, comunidades, pets) ✅
 - **Testes**: 1.959+ verde, lint 0, build OK, 1959 tests (3 novos) + 11 do TASK-401
@@ -297,7 +297,7 @@ TASK-019 (DNS), 364, 023 (telemedicina), 034 (pen test) / TASK-020-024 (dark mod
 | 9 | `docs/AUDIT_2026-07-11.md` | Auditoria multi-dimensional pós-22 fases | Referência histórica |
 | 10 | `docs/AUDIT_DEEP_2026-07-11.md` | Auditoria profunda (7 bugs reais) | Referência histórica |
 | 11 | `docs/DR_PLAN.md` | Disaster recovery (WORM backups) | Quando mexer em backup |
-| 12 | `docs/DNS_VIRALATA_APP.md` | DNS para viralata.app | Quando mexer em DNS |
+
 | 13 | `docs/legal/` | 11 textos legais v2 (após merge) | Quando mexer em legal |
 | 14 | `AGENTS.md` | Mandato persistente, Regras A+B | SEMPRE — regras de trabalho |
 | 15 | `.harness/SCRUM_PROTOCOL.md` | Protocolo de coordenação entre sessões | Quando coordenar com outras sessões |
