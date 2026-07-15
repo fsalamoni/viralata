@@ -153,6 +153,10 @@ export const CLUB_EVENT_TYPE = Object.freeze({
   SOCIAL: 'social',
   MEETING: 'meeting',
   OTHER: 'other',
+  VACCINATION: 'vaccination',
+  LECTURE: 'lecture',
+  FUNDRAISING: 'fundraising',
+  PET_DAY: 'pet_day',
 });
 
 export const CLUB_EVENT_TYPE_LABELS = Object.freeze({
@@ -160,6 +164,10 @@ export const CLUB_EVENT_TYPE_LABELS = Object.freeze({
   [CLUB_EVENT_TYPE.SOCIAL]: 'Confraternização',
   [CLUB_EVENT_TYPE.MEETING]: 'Reunião',
   [CLUB_EVENT_TYPE.OTHER]: 'Outro',
+  [CLUB_EVENT_TYPE.VACCINATION]: 'Vacinação',
+  [CLUB_EVENT_TYPE.LECTURE]: 'Palestra',
+  [CLUB_EVENT_TYPE.FUNDRAISING]: 'Arrecadação',
+  [CLUB_EVENT_TYPE.PET_DAY]: 'Pet Day',
 });
 
 /**

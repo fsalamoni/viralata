@@ -20,7 +20,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { EmptyState } from '@/components/ui/empty-state';
 import { useMyMembership, useClubEvent } from '@/modules/organizations/hooks/useClubs';
-import { eventTypeLabel, isPrivateEvent } from '@/modules/organizations/domain/constants';
+import { eventTypeLabel, isPrivateEvent, CLUB_EVENT_TYPE } from '@/modules/organizations/domain/constants';
 import { EventFormDialog } from '@/modules/organizations/components/ClubEventsTab';
 import EventDatesPanel from '@/modules/organizations/components/EventDatesPanel';
 import EventParticipantsPanel from '@/modules/organizations/components/EventParticipantsPanel';
@@ -33,6 +33,17 @@ function formatDateTime(value) {
   if (Number.isNaN(d.getTime())) return null;
   return d.toLocaleString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 }
+
+const TYPE_TONE = {
+  [CLUB_EVENT_TYPE.ADOPTION_FAIR]: 'success',
+  [CLUB_EVENT_TYPE.SOCIAL]: 'success',
+  [CLUB_EVENT_TYPE.MEETING]: 'outline',
+  [CLUB_EVENT_TYPE.OTHER]: 'outline',
+  [CLUB_EVENT_TYPE.VACCINATION]: 'success',
+  [CLUB_EVENT_TYPE.LECTURE]: 'outline',
+  [CLUB_EVENT_TYPE.FUNDRAISING]: 'warning',
+  [CLUB_EVENT_TYPE.PET_DAY]: 'success',
+};
 
 export default function EventDetail() {
   const { orgId: clubId, eventId } = useParams();
@@ -95,7 +106,7 @@ export default function EventDetail() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
-              <Badge variant="success" className="rounded-full">{eventTypeLabel(event.type)}</Badge>
+              <Badge variant={TYPE_TONE[event.type] || 'success'} className="rounded-full">{eventTypeLabel(event.type)}</Badge>
               <Badge variant="secondary" className="rounded-full bg-white/15 text-white">
                 {isPrivate ? <Lock className="mr-1 h-3 w-3" /> : <Globe className="mr-1 h-3 w-3" />}
                 {isPrivate ? 'Privado' : 'Público'}
