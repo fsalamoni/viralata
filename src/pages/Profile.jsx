@@ -4,7 +4,8 @@ import { toast } from 'sonner';
 import { useQuery } from '@tanstack/react-query';
 import {
   User, Download, ShieldAlert, PawPrint, Star, ArrowLeft, LogOut, Building2,
-  Home as HomeIcon, Trees, Tractor, Bird, AlertTriangle,
+  Home as HomeIcon, Trees, Tractor, Bird, AlertTriangle, Shield, Key, Smartphone,
+  RefreshCw,
 } from 'lucide-react';
 import { db } from '@/core/config/firebase';
 import { doc, getDoc } from 'firebase/firestore';
@@ -25,6 +26,14 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 import { getRatingsForUser, summarizeRatings } from '@/modules/pets/services/ratingService';
+import { QrCode } from '@/components/ui/qr-code';
+import {
+  getMfaStatus,
+  startMfaEnrollment,
+  confirmMfaEnrollment,
+  disableMfa,
+  regenerateRecoveryCodes,
+} from '@/core/services/mfaService';
 import { exportMyData, downloadDataExport } from '@/core/services/dataExportService';
 import { deleteMyAccount } from '@/core/services/deleteAccountService';
 import PageHero from '@/components/PageHero';
@@ -791,6 +800,9 @@ export default function Profile() {
         </DialogContent>
       </Dialog>
 
+      {/* TASK-189: MFA (TOTP) para admins — UI em /perfil */}
+      <MfaSection />
+
       {/* Privacidade e dados (LGPD) */}
       <Card className="rounded-[24px] p-6">
         <CardHeader className="p-0 pb-1">
@@ -830,6 +842,400 @@ export default function Profile() {
         email={user?.email}
       />
     </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// TASK-189 — MFA (TOTP) Section
+// ═══════════════════════════════════════════════════════════════════════
+
+const MFA_STEPS = {
+  IDLE: 'idle',       // nenhuma ação pendente
+  ENROLLING: 'enrolling', // tem secret+recovery mas MFA.enabled=false
+  CONFIRMING: 'confirming', // quer confirmar (mesmo estado, UX diferencia)
+  DISABLING: 'disabling',   // quer desativar
+  REGEN_STEP: 'regen_step', // quer regenerar — precisa TOTP primeiro
+  REGEN_DONE: 'regen_done', // acabou de regenerar — mostra novos códigos
+};
+
+/**
+ * Seção de MFA (autenticação em dois fatores) em /perfil.
+ *
+ * Fluxos:
+ *  ativar → [startMfaEnrollment] → mostra QR + recovery → confirma com TOTP → [confirmMfaEnrollment]
+ *  desativar → [disableMfa] (TOTP ou recovery)
+ *  regenerar códigos → verifica TOTP → [regenerateRecoveryCodes] → mostra novos
+ */
+function MfaSection() {
+  const { user } = useAuth();
+  const [step, setStep] = useState(MFA_STEPS.IDLE);
+  const [enrollmentData, setEnrollmentData] = useState(null); // { secret, otpauth_uri, recoveryCodes }
+  const [confirmCode, setConfirmCode] = useState('');
+  const [disableCode, setDisableCode] = useState('');
+  const [regenCode, setRegenCode] = useState('');
+  const [newRecoveryCodes, setNewRecoveryCodes] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const { data: mfaStatus, refetch } = useQuery({
+    queryKey: ['mfa-status', user?.uid],
+    queryFn: () => getMfaStatus(user.uid),
+    enabled: Boolean(user?.uid),
+    staleTime: 1000 * 30,
+  });
+
+  const isEnabled = mfaStatus?.enabled;
+  const isEnrolled = mfaStatus?.enrolled;
+
+  // Reset dialog state on close
+  const closeDialog = useCallback(() => {
+    setStep(MFA_STEPS.IDLE);
+    setEnrollmentData(null);
+    setConfirmCode('');
+    setDisableCode('');
+    setRegenCode('');
+    setNewRecoveryCodes(null);
+  }, []);
+
+  // ── Ativar MFA ──────────────────────────────────────────────────────────────
+  async function handleStartEnrollment() {
+    setLoading(true);
+    try {
+      const data = await startMfaEnrollment(user.uid, user.email || user.uid, {
+        uid: user.uid,
+        email: user.email,
+      });
+      setEnrollmentData(data);
+      setStep(MFA_STEPS.ENROLLING);
+    } catch (err) {
+      toast.error('Erro ao iniciar MFA: ' + err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleConfirmEnrollment() {
+    if (!confirmCode.trim() || !/^\d{6}$/.test(confirmCode.trim())) {
+      toast.error('Digite um código de 6 dígitos.');
+      return;
+    }
+    setLoading(true);
+    try {
+      const ok = await confirmMfaEnrollment(user.uid, confirmCode.trim(), {
+        uid: user.uid,
+        email: user.email,
+      });
+      if (ok) {
+        toast.success('Autenticação em dois fatores ativada!');
+        await refetch();
+        closeDialog();
+      } else {
+        toast.error('Código inválido. Verifique o código do seu app autenticador.');
+      }
+    } catch (err) {
+      toast.error('Erro ao confirmar: ' + err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // ── Desativar MFA ─────────────────────────────────────────────────────────
+  async function handleDisableMfa() {
+    if (!disableCode.trim()) {
+      toast.error('Digite um código TOTP ou de recuperação.');
+      return;
+    }
+    setLoading(true);
+    try {
+      const ok = await disableMfa(user.uid, disableCode.trim(), {
+        uid: user.uid,
+        email: user.email,
+      });
+      if (ok) {
+        toast.success('MFA desativado.');
+        await refetch();
+        closeDialog();
+      } else {
+        toast.error('Código inválido. Tente novamente.');
+      }
+    } catch (err) {
+      toast.error('Erro ao desativar: ' + err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // ── Regenerar códigos ─────────────────────────────────────────────────────
+  async function handleRegenerateStep() {
+    if (!regenCode.trim() || !/^\d{6}$/.test(regenCode.trim())) {
+      toast.error('Digite um código TOTP de 6 dígitos.');
+      return;
+    }
+    setLoading(true);
+    try {
+      const codes = await regenerateRecoveryCodes(user.uid, regenCode.trim(), {
+        uid: user.uid,
+        email: user.email,
+      });
+      setNewRecoveryCodes(codes);
+      setStep(MFA_STEPS.REGEN_DONE);
+      toast.success('Novos códigos gerados!');
+    } catch (err) {
+      toast.error('Código inválido: ' + err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const dialogOpen = step !== MFA_STEPS.IDLE;
+
+  return (
+    <>
+      <Card className="rounded-[24px] p-6">
+        <CardHeader className="p-0 pb-1">
+          <CardTitle className="flex items-center gap-2 text-base font-bold">
+            <Shield className="w-[19px] h-[19px] text-primary" /> Segurança — Autenticação em dois fatores
+          </CardTitle>
+          <CardDescription className="text-[12.5px] leading-[1.6]">
+            Proteja sua conta com autenticação em dois fatores (TOTP via app como Google Authenticator ou Authy).
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3 p-0 pt-4">
+          <div className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-card p-3.5">
+            <div className="flex items-center gap-3">
+              <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${isEnabled ? 'bg-emerald-100' : 'bg-muted'}`}>
+                {isEnabled
+                  ? <Key className="h-4 w-4 text-emerald-600" />
+                  : <Smartphone className="h-4 w-4 text-muted-foreground" />}
+              </div>
+              <div>
+                <p className="text-[13.5px] font-bold text-foreground">TOTP (App autenticador)</p>
+                <p className="text-[11.5px] text-muted-foreground">
+                  {isEnabled
+                    ? `Ativado${mfaStatus?.recoveryCodesRemaining != null ? ` · ${mfaStatus.recoveryCodesRemaining} códigos restantes` : ''}`
+                    : isEnrolled
+                    ? 'Em setup — confirme o código para ativar'
+                    : 'Não configurado'}
+                </p>
+              </div>
+            </div>
+            <div className="flex shrink-0 items-center gap-2">
+              {isEnabled ? (
+                <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-emerald-700">
+                  Ativo
+                </span>
+              ) : (
+                <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                  Inativo
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div className="flex gap-2.5">
+            {!isEnabled ? (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleStartEnrollment}
+                disabled={loading}
+                className="h-[44px] flex-1 gap-2 text-[13.5px] font-bold"
+              >
+                <Shield className="w-[17px] h-[17px]" />
+                {loading ? 'Aguarde…' : isEnrolled ? 'Concluir ativação' : 'Ativar MFA'}
+              </Button>
+            ) : (
+              <>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => { setStep(MFA_STEPS.DISABLING); setDisableCode(''); }}
+                  className="h-[44px] flex-1 gap-2 border-destructive/30 text-[13.5px] font-bold text-destructive hover:bg-destructive/10 hover:text-destructive"
+                >
+                  Desativar MFA
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => { setStep(MFA_STEPS.REGEN_STEP); setRegenCode(''); }}
+                  className="h-[44px] flex-1 gap-2 text-[13.5px] font-bold"
+                >
+                  <RefreshCw className="w-[17px] h-[17px]" />
+                  Regenerar códigos
+                </Button>
+              </>
+            )}
+          </div>
+
+          {!isEnabled && (
+            <p className="text-[11.5px] text-muted-foreground">
+              A ativação é opcional mas recomendada para administradores.
+              Você receberá 8 códigos de recuperação — guarde-os em local seguro.
+            </p>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Dialog principal de MFA */}
+      <Dialog open={dialogOpen} onOpenChange={(o) => !o && closeDialog()}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              {step === MFA_STEPS.ENROLLING && <><Shield className="w-5 h-5 text-primary" /> Configurar autenticação em dois fatores</>}
+              {step === MFA_STEPS.DISABLING && <><ShieldAlert className="w-5 h-5 text-destructive" /> Desativar MFA</>}
+              {step === MFA_STEPS.REGEN_STEP && <><RefreshCw className="w-5 h-5 text-primary" /> Regenerar códigos de recuperação</>}
+              {step === MFA_STEPS.REGEN_DONE && <><Key className="w-5 h-5 text-emerald-600" /> Novos códigos de recuperação</>}
+            </DialogTitle>
+            <DialogDescription asChild>
+              <div className="text-[12.5px] leading-[1.6]">
+                {step === MFA_STEPS.ENROLLING && (
+                  <>
+                    <p>Escaneie o QR code com seu app autenticador (Google Authenticator, Authy, 1Password…).</p>
+                    <p className="mt-1.5 rounded-lg bg-amber-50 border border-amber-200 p-2 text-amber-700 font-medium">
+                      ⚠️ Anote ou copie os códigos de recuperação abaixo antes de confirmar.
+                      Eles não aparecem novamente.
+                    </p>
+                  </>
+                )}
+                {step === MFA_STEPS.DISABLING && (
+                  <p>Digite um código do seu app autenticador ou um código de recuperação para confirmar a desativação.</p>
+                )}
+                {step === MFA_STEPS.REGEN_STEP && (
+                  <p>Digite um código do seu app autenticador para gerar novos códigos de recuperação. Os anteriores serão invalidados.</p>
+                )}
+                {step === MFA_STEPS.REGEN_DONE && (
+                  <p className="rounded-lg bg-emerald-50 border border-emerald-200 p-2 text-emerald-700 font-medium">
+                    Novos códigos gerados! Guarde-os em local seguro. Os anteriores foram invalidados.
+                  </p>
+                )}
+              </div>
+            </DialogDescription>
+          </DialogHeader>
+
+          {/* Enrollment: QR code + recovery codes + code input */}
+          {(step === MFA_STEPS.ENROLLING || step === MFA_STEPS.CONFIRMING) && enrollmentData && (
+            <div className="space-y-4">
+              {/* QR Code */}
+              <div className="flex flex-col items-center gap-3 rounded-2xl border border-border bg-card p-4">
+                <QrCode value={enrollmentData.otpauth_uri} size={180} className="rounded-xl" />
+                <p className="text-[11px] text-muted-foreground">Escaneie com Google Authenticator ou Authy</p>
+                <p className="text-[10.5px] font-mono break-all rounded bg-muted px-2 py-1 text-muted-foreground">
+                  {enrollmentData.secret}
+                </p>
+              </div>
+
+              {/* Recovery codes */}
+              <div className="space-y-1.5">
+                <Label className="text-[12px] font-bold text-amber-700">Códigos de recuperação (guarde agora!)</Label>
+                <div className="grid grid-cols-2 gap-1.5 rounded-xl border border-amber-200 bg-amber-50 p-3">
+                  {enrollmentData.recoveryCodes.map((code, i) => (
+                    <span key={i} className="font-mono text-[12px] font-bold text-amber-800">
+                      {code}
+                    </span>
+                  ))}
+                </div>
+                <p className="text-[10.5px] text-muted-foreground">Use um código de recuperação se perder o celular.</p>
+              </div>
+
+              {/* Code input */}
+              <div className="space-y-1.5">
+                <Label htmlFor="mfa-enroll-code" className="text-[12px]">
+                  Código do app (6 dígitos)
+                </Label>
+                <Input
+                  id="mfa-enroll-code"
+                  value={confirmCode}
+                  onChange={(e) => setConfirmCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                  placeholder="000 000"
+                  maxLength={6}
+                  autoComplete="one-time-code"
+                  inputMode="numeric"
+                  className="text-center text-xl tracking-[0.3em] font-mono h-12"
+                  disabled={loading}
+                />
+              </div>
+
+              <DialogFooter>
+                <Button variant="outline" onClick={closeDialog} disabled={loading}>Cancelar</Button>
+                <Button onClick={handleConfirmEnrollment} disabled={loading || confirmCode.length !== 6}>
+                  {loading ? 'Verificando…' : 'Confirmar e ativar'}
+                </Button>
+              </DialogFooter>
+            </div>
+          )}
+
+          {/* Disable MFA */}
+          {step === MFA_STEPS.DISABLING && (
+            <div className="space-y-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="mfa-disable-code" className="text-[12px]">
+                  Código TOTP ou de recuperação
+                </Label>
+                <Input
+                  id="mfa-disable-code"
+                  value={disableCode}
+                  onChange={(e) => setDisableCode(e.target.value.trim())}
+                  placeholder="Código de 6 dígitos ou xxxx-xxxx"
+                  autoComplete="off"
+                  className="h-12 font-mono"
+                  disabled={loading}
+                />
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={closeDialog} disabled={loading}>Cancelar</Button>
+                <Button variant="destructive" onClick={handleDisableMfa} disabled={loading || !disableCode}>
+                  {loading ? 'Desativando…' : 'Desativar MFA'}
+                </Button>
+              </DialogFooter>
+            </div>
+          )}
+
+          {/* Regenerate: step 1 — verify TOTP */}
+          {step === MFA_STEPS.REGEN_STEP && (
+            <div className="space-y-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="mfa-regen-code" className="text-[12px]">Código do app (6 dígitos)</Label>
+                <Input
+                  id="mfa-regen-code"
+                  value={regenCode}
+                  onChange={(e) => setRegenCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                  placeholder="000 000"
+                  maxLength={6}
+                  autoComplete="one-time-code"
+                  inputMode="numeric"
+                  className="text-center text-xl tracking-[0.3em] font-mono h-12"
+                  disabled={loading}
+                />
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={closeDialog} disabled={loading}>Cancelar</Button>
+                <Button onClick={handleRegenerateStep} disabled={loading || regenCode.length !== 6}>
+                  {loading ? 'Gerando…' : 'Gerar novos códigos'}
+                </Button>
+              </DialogFooter>
+            </div>
+          )}
+
+          {/* Regenerate: step 2 — show new codes */}
+          {step === MFA_STEPS.REGEN_DONE && newRecoveryCodes && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50 p-3">
+                {newRecoveryCodes.map((code, i) => (
+                  <span key={i} className="font-mono text-[12px] font-bold text-emerald-800">
+                    {code}
+                  </span>
+                ))}
+              </div>
+              <p className="text-[11px] text-muted-foreground">
+                Guarde estes códigos em local seguro. Os anteriores foram invalidados.
+              </p>
+              <DialogFooter>
+                <Button onClick={closeDialog} className="w-full">Fechar</Button>
+              </DialogFooter>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 
