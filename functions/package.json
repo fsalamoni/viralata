@@ -25,6 +25,6 @@
     "    externas (hoje googleFormsWebhook usa cors:false server-to-server)."
   ],
   "devDependencies": {
-    "vitest": "^4.1.5"
+    "vitest": "^4.1.10"
   }
 }
