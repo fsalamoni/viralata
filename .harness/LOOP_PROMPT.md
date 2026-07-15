@@ -186,9 +186,11 @@ python3 -c "import json; d=json.load(open('.harness/SCRUM_TASKS.json')); done=[t
 | TASK-269 | critical | shelter | Cloud Function onVolunteerParticipationCreated (FCM voluntário) |
 | TASK-291 | high | shelter | Email provider (SendGrid/Resend) — AGUARDA decisão humana |
 | TASK-176 | high | shelter | Sentry enriquecido |
-| TASK-239 | medium | shelter | Sentry + Crashlytics |
+| TASK-239 | ~~medium~~ **done** | shelter | Sentry + /healthz + bundle-hash |
 
 > **Notas**:
+> - TASK-239 entregue — feat/task-239-sentry-healthz, push OK, batch pendente (healthCheckCore+test + healthCheck.js + bundle-hash.mjs)
+> - TASK-239 (Sentry /healthz + bundle-hash) entregue — feat/task-239-sentry-healthz, push OK, batch pendente
 > - TASK-269 (onVolunteerParticipationCreated FCM+calendar+email+audit) entregue — feat/task-269-volunteer-fcm-participation, push OK, batch pendente
 > - TASK-309 (Onboarding wizard pet creation) entregue — feat/task-309-wizard-pet-create-2026-07-15, push OK, batch pendente
 > - TASK-277 (rate limit volunteer) entregue — feat/task-277-rate-limit-2026-07-14, push OK, batch pendente
