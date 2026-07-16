@@ -29,6 +29,18 @@ import {
  *
  * Guias de Implementação Legal v2 (10/07/2026) §4.1 + Lei 14.063/2020.
  */
+/**
+ * Riscos genéricos exibidos no disclaimer do aceite de adoção.
+ * Cobertos pelo Código Civil (vícios redibitórios, art. 441-446)
+ * e Lei 14.064/2020 (proteção animal).
+ */
+const DEFAULT_ADOPTION_RISKS = [
+  'Parvovirose, cinomose, leucemia viral felina (FeLV) e outras doenças virais contagiosas, cujo risco existe mesmo com vacinação adequada.',
+  'Doenças crônicas ou condições pré-existentes (cardíacas, renais, endócrinas) não detectáveis ao exame visual no momento da adoção.',
+  'Comportamento agressivo por medo ou trauma anterior, mesmo após período de adaptação.',
+  'Risco cirúrgico inerente a procedimentos de castração, dentística ou emergência.',
+];
+
 export default function AdoptionFormFill({
   open,
   onOpenChange,
@@ -37,6 +49,8 @@ export default function AdoptionFormFill({
   submitting = false,
   onSubmit,
   prefillSignature = '',
+  /** Array de strings com condições/riscos específicos do animal. Usa default se vazio. */
+  petConditions = [],
 }) {
   const fields = useMemo(() => normalizeForm(form).fields, [form]);
   const [step, setStep] = useState('form'); // 'form' | 'terms'
@@ -169,6 +183,8 @@ export default function AdoptionFormFill({
             prefillSignature={prefillSignature}
             acceptButtonLabel="Aceitar e enviar interesse"
             onAccept={handleTermAccept}
+            disclaimerRisks={petConditions.length > 0 ? petConditions : DEFAULT_ADOPTION_RISKS}
+            disclaimerTitle="Aviso sobre riscos e vícios redibitórios"
             // Não usa onOpenChange para fechar — o caller gerencia
             // via onSubmit + handleClose
           />
