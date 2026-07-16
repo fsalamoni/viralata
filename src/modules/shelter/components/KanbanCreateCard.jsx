@@ -66,7 +66,7 @@ export function KanbanCreateCard({ boardId, columnId, clubId, onClose }) {
         <button
           type="button"
           onClick={onClose}
-          className="px-3 text-xs text-gray-400 hover:text-gray-600 transition-colors"
+          className="px-3 text-xs text-muted-foreground hover:text-foreground transition-colors"
         >
           ✕
         </button>

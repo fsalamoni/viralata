@@ -84,7 +84,7 @@ export function KanbanCard({ card, onClick, isOverlay }) {
       </div>
 
       {/* Título */}
-      <p className={`text-sm font-medium text-gray-800 leading-snug ${done ? 'line-through' : ''}`}>
+      <p className={`text-sm font-medium text-foreground leading-snug ${done ? 'line-through text-muted-foreground' : ''}`}>
         {card.title}
       </p>
 
@@ -92,17 +92,17 @@ export function KanbanCard({ card, onClick, isOverlay }) {
       {(card.due_at || card.assignees?.length > 0 || card.checklist?.length > 0) && (
         <div className="flex items-center gap-3 mt-2">
           {card.due_at && (
-            <span className={`text-xs ${isOverdue(card.due_at) ? 'text-red-500' : 'text-gray-400'}`}>
+            <span className={`text-xs ${isOverdue(card.due_at) ? 'text-destructive font-medium' : 'text-muted-foreground'}`}>
               {new Date(card.due_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
             </span>
           )}
           {card.assignees?.length > 0 && (
-            <span className="text-xs text-gray-400">
+            <span className="text-xs text-muted-foreground">
               👤 {card.assignees.length}
             </span>
           )}
           {card.checklist?.length > 0 && (
-            <span className="text-xs text-gray-400">
+            <span className="text-xs text-muted-foreground">
               ☑ {card.checklist.filter((i) => i.done).length}/{card.checklist.length}
             </span>
           )}

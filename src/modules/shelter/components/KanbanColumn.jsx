@@ -48,8 +48,8 @@ export function KanbanColumn({ column, cards, boardId, clubId, onCardClick }) {
           className="w-2.5 h-2.5 rounded-full flex-shrink-0"
           style={{ backgroundColor: column.color || '#6B7280' }}
         />
-        <span className="text-sm font-semibold text-gray-700 truncate">{column.title}</span>
-        <span className="ml-auto text-xs text-gray-400 bg-gray-200 rounded-full px-1.5 py-0.5">
+        <span className="text-sm font-semibold text-foreground truncate">{column.title}</span>
+        <span className="ml-auto text-xs text-muted-foreground bg-muted/60 rounded-full px-1.5 py-0.5">
           {cards.length}
         </span>
       </div>
@@ -69,7 +69,7 @@ export function KanbanColumn({ column, cards, boardId, clubId, onCardClick }) {
 
         {cards.length === 0 && !addingCard && (
           <p
-            className="text-xs text-gray-400 text-center py-4"
+            className="text-xs text-muted-foreground text-center py-4"
             {...(a11yEnabled ? { role: 'status' } : {})}
           >
             Sem cards
@@ -89,7 +89,7 @@ export function KanbanColumn({ column, cards, boardId, clubId, onCardClick }) {
         ) : (
           <button
             onClick={() => setAddingCard(true)}
-            className="w-full py-1.5 text-xs text-gray-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
+            className="w-full py-1.5 text-xs text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-lg transition-colors"
           >
             + Card
           </button>

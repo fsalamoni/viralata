@@ -150,7 +150,7 @@ export function KanbanBoard({ columns = [], cards = [], boardId, clubId, onCardC
         <div className="flex-shrink-0 w-72">
           <button
             onClick={onAddColumn}
-            className="w-full h-12 border-2 border-dashed border-gray-300 rounded-xl text-gray-400 hover:border-blue-400 hover:text-blue-500 transition-colors text-sm font-medium"
+            className="w-full h-12 border-2 border-dashed border-border rounded-xl text-muted-foreground hover:border-primary/50 hover:text-primary transition-colors text-sm font-medium"
           >
             + Nova coluna
           </button>

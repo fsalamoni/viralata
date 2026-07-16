@@ -61,20 +61,20 @@ export function KanbanCardModal({ card, clubId, boardId, onClose }) {
                 autoFocus
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full text-base font-semibold border border-gray-200 rounded px-2 py-1"
+                className="w-full text-base font-semibold border border-border rounded px-2 py-1"
               />
             ) : (
-              <h2 className="text-base font-semibold text-gray-800">{card.title}</h2>
+              <h2 className="text-base font-semibold text-foreground">{card.title}</h2>
             )}
-            <p className="text-xs text-gray-500 mt-0.5">{CARD_TYPE_LABELS[card.type] || card.type}</p>
+            <p className="text-xs text-muted-foreground mt-0.5">{CARD_TYPE_LABELS[card.type] || card.type}</p>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl leading-none">✕</button>
+          <button onClick={onClose} className="text-muted-foreground hover:text-foreground text-xl leading-none">✕</button>
         </div>
 
         <div className="px-6 py-5 space-y-5 max-h-[60vh] overflow-y-auto">
           {/* Status */}
           <div>
-            <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</label>
+            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Status</label>
             <div className="flex gap-2 mt-1.5 flex-wrap">
               {Object.entries(CARD_STATUS_LABELS).map(([val, label]) => (
                 <button
@@ -83,8 +83,8 @@ export function KanbanCardModal({ card, clubId, boardId, onClose }) {
                   disabled={updateCard.isPending}
                   className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
                     card.status === val
-                      ? 'bg-blue-100 border-blue-300 text-blue-700 font-medium'
-                      : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                      ? 'bg-primary/10 border-primary/30 text-primary font-medium'
+                      : 'border-border text-muted-foreground hover:bg-secondary/40'
                   }`}
                 >
                   {label}
@@ -95,30 +95,30 @@ export function KanbanCardModal({ card, clubId, boardId, onClose }) {
 
           {/* Prioridade */}
           <div>
-            <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Prioridade</label>
+            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Prioridade</label>
             <div className="flex items-center gap-2 mt-1.5">
               <span
                 className="w-3 h-3 rounded-full"
                 style={{ backgroundColor: CARD_PRIORITY_COLORS[card.priority] }}
               />
-              <span className="text-sm text-gray-700">{CARD_PRIORITY_LABELS[card.priority]}</span>
+              <span className="text-sm text-foreground">{CARD_PRIORITY_LABELS[card.priority]}</span>
             </div>
           </div>
 
           {/* Descrição */}
           <div>
-            <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Descrição</label>
+            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Descrição</label>
             {editing ? (
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={3}
-                className="w-full mt-1.5 text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-400 resize-none"
+                className="w-full mt-1.5 text-sm border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ring resize-none"
                 placeholder="Adicione uma descrição..."
               />
             ) : (
-              <p className="mt-1.5 text-sm text-gray-700 whitespace-pre-wrap">
-                {card.description || <span className="text-gray-400 italic">Sem descrição</span>}
+              <p className="mt-1.5 text-sm text-foreground whitespace-pre-wrap">
+                {card.description || <span className="text-muted-foreground italic">Sem descrição</span>}
               </p>
             )}
           </div>
@@ -126,8 +126,8 @@ export function KanbanCardModal({ card, clubId, boardId, onClose }) {
           {/* Checklist */}
           {(card.checklist?.length > 0 || editing) && (
             <div>
-              <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                Checklist {completedCount > 0 && <span className="text-green-600">({completedCount}/{card.checklist.length})</span>}
+              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                Checklist {completedCount > 0 && <span className="text-emerald-600">({completedCount}/{card.checklist.length})</span>}
               </label>
               <div className="mt-1.5 space-y-1">
                 {card.checklist?.map((item, idx) => (
@@ -136,9 +136,9 @@ export function KanbanCardModal({ card, clubId, boardId, onClose }) {
                       type="checkbox"
                       checked={item.done}
                       onChange={() => toggleChecklistItem.mutate({ cardId: card.id, itemIndex: idx })}
-                      className="rounded border-gray-300 text-blue-500"
+                      className="rounded border-input text-primary"
                     />
-                    <span className={`text-sm flex-1 ${item.done ? 'line-through text-gray-400' : 'text-gray-700'}`}>
+                    <span className={`text-sm flex-1 ${item.done ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
                       {item.text}
                     </span>
                   </label>
@@ -150,10 +150,10 @@ export function KanbanCardModal({ card, clubId, boardId, onClose }) {
                     value={newChecklistItem}
                     onChange={(e) => setNewChecklistItem(e.target.value)}
                     placeholder="Novo item..."
-                    className="flex-1 text-sm border border-gray-200 rounded px-2 py-1"
+                    className="flex-1 text-sm border border-border rounded px-2 py-1"
                     onKeyDown={(e) => e.key === 'Enter' && handleAddChecklist()}
                   />
-                  <button onClick={handleAddChecklist} className="text-xs text-blue-500 hover:text-blue-700">Adicionar</button>
+                  <button onClick={handleAddChecklist} className="text-xs text-primary hover:text-primary/70 font-medium">Adicionar</button>
                 </div>
               )}
             </div>
@@ -162,10 +162,10 @@ export function KanbanCardModal({ card, clubId, boardId, onClose }) {
           {/* Dica assignee */}
           {card.assignees?.length > 0 && (
             <div>
-              <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Responsáveis</label>
+              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Responsáveis</label>
               <div className="flex gap-2 mt-1.5 flex-wrap">
                 {card.assignees.map((uid) => (
-                  <span key={uid} className="text-xs bg-gray-100 text-gray-600 rounded-full px-2.5 py-1">
+                  <span key={uid} className="text-xs bg-muted/60 text-muted-foreground rounded-full px-2.5 py-1">
                     👤 {uid}
                   </span>
                 ))}
@@ -175,11 +175,11 @@ export function KanbanCardModal({ card, clubId, boardId, onClose }) {
         </div>
 
         {/* Footer actions */}
-        <div className="px-6 py-4 bg-gray-50 flex items-center justify-between">
+        <div className="px-6 py-4 bg-secondary/30 flex items-center justify-between">
           <button
             onClick={handleDelete}
             disabled={deleteCard.isPending}
-            className="text-sm text-red-500 hover:text-red-700 disabled:opacity-50"
+            className="text-sm text-destructive hover:text-destructive/80 disabled:opacity-50"
           >
             Deletar card
           </button>

@@ -166,10 +166,10 @@ export default function CreateReport() {
           </div>
 
           {/* Preview do PDF */}
-          <div ref={pdfRef} className="bg-white border border-gray-200 rounded-xl p-6 space-y-4 text-sm">
+          <div ref={pdfRef} className="bg-white border border-border rounded-xl p-6 space-y-4 text-sm">
             <div className="text-center space-y-1 border-b pb-4">
               <div className="text-2xl font-bold text-primary">🐾 Viralata</div>
-              <div className="text-lg font-semibold text-gray-900">DENÚNCIA DE MAUS-TRATOS A ANIMAIS</div>
+              <div className="text-lg font-semibold text-foreground">DENÚNCIA DE MAUS-TRATOS A ANIMAIS</div>
               <div className="text-gray-500 text-xs">Plataforma Viralata — viralata.web.app</div>
             </div>
             <div className="grid grid-cols-2 gap-3 text-xs">

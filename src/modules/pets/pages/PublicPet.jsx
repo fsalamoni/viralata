@@ -442,7 +442,7 @@ function HealthBadge({ ok, partial, label }) {
       ) : partial ? (
         <Info className="h-5 w-5 text-amber-500" />
       ) : (
-        <XCircle className="h-5 w-5 text-gray-400" />
+        <XCircle className="h-5 w-5 text-muted-foreground" />
       )}
       <div>
         <div className="font-medium text-sm">{label}</div>
