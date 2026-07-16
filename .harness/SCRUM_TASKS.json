@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-15T12:41:52.672Z",
+  "generatedAt": "2026-07-13T18:17:21.389Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W28",
@@ -13,9 +13,9 @@
   "activeWorktrees": [
     {
       "id": "viralata",
-      "branch": "feat/task-298-ip-ua-contract-2026-07-15",
-      "head": "e459db7b4d7f89ce7134c41136e88c1d64b5ab5f",
-      "headTitle": "chore(scrum): topbar auto-update d0212b5 (workflow)",
+      "branch": "fix/scrum-topbar",
+      "head": "8f98a9283e032328cdbe53349bf5c106cc8b46a8",
+      "headTitle": "chore(scrum): auto-sync 2026-07-13T18:14:36Z",
       "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata",
       "status": "in-sync",
       "commitsAhead": 0,

@@ -192,7 +192,7 @@ function reembedHtml(j) {
  * Patch the auto-sync badge inside the painel HTML without rewriting the
  * whole file. Inserts/updates a small block in <head> showing last sync time.
  */
-function patchSyncBadge(timestampIso) {
+function patchSyncBadge(timestampIso, opts = {}) {
   let html = fs.readFileSync(HTML_PATH, 'utf8');
   const marker = '<!-- auto-sync-badge -->';
   const badge = `<!-- auto-sync-badge --><meta name="auto-sync-last" content="${timestampIso}">`;
@@ -206,6 +206,21 @@ function patchSyncBadge(timestampIso) {
   const pillNew = `<span class="pill mono" id="auto-sync-pill" title="Última sincronização automática">sync ${timestampIso.slice(11, 19)}</span>`;
   if (html.includes(pillMarker)) {
     html = html.replace(/<span class="pill mono" id="auto-sync-pill"[\s\S]*?<\/span>/, pillNew);
+  }
+  if (opts.mainCommit) {
+    const mainShort = opts.mainCommit.slice(0, 7);
+    html = html.replace(
+      /<span class="pill mono">main @ [0-9a-f]+<\/span>/,
+      `<span class="pill mono">main @ ${mainShort}</span>`
+    );
+  }
+  if (typeof opts.worktreeCount === 'number') {
+    const wtc = opts.worktreeCount;
+    const txt = wtc === 0 ? '0 worktrees ativos' : `+${wtc} worktree${wtc > 1 ? 's' : ''} ativo${wtc > 1 ? 's' : ''}`;
+    html = html.replace(
+      /<span class="pill">\+?\d+ worktrees? ativos?<\/span>/,
+      `<span class="pill">${txt}</span>`
+    );
   }
   fs.writeFileSync(HTML_PATH, html, 'utf8');
 }
@@ -242,7 +257,10 @@ function startWatch() {
     try {
       const j = loadJson();
       const size = reembedHtml(j);
-      patchSyncBadge(new Date().toISOString());
+      patchSyncBadge(new Date().toISOString(), {
+        mainCommit: j.metrics?.mainCommit,
+        worktreeCount: j.activeWorktrees?.length || 0,
+      });
       const counts = {};
       j.tasks.forEach(t => { counts[t.status] = (counts[t.status] || 0) + 1; });
       log(`✓ re-embed ok · ${j.tasks.length} tasks · done=${counts.done||0} ready=${counts.ready||0} in_progress=${counts.in_progress||0} in_review=${counts.in_review||0} blocked=${counts.blocked||0} · HTML ${(size/1024).toFixed(1)}KB`);
@@ -396,7 +414,10 @@ function main() {
       // Re-embed do painel (Regra B) — atualiza public/scrum.html
       try {
         const size = reembedHtml(j);
-        patchSyncBadge(new Date().toISOString());
+        patchSyncBadge(new Date().toISOString(), {
+        mainCommit: j.metrics?.mainCommit,
+        worktreeCount: j.activeWorktrees?.length || 0,
+      });
         if (!JSON_OUT && !QUIET) {
           const counts = {};
           j.tasks.forEach(t => { counts[t.status] = (counts[t.status] || 0) + 1; });
