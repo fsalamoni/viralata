@@ -408,19 +408,12 @@
   .border-default-semantic { border-color: hsl(var(--border)); }
   .border-strong-semantic { border-color: hsl(var(--border) / 1.5); }
 
-/* Icon size utilities — padronizar todos os ícones Lucide */
-/* xs=12px, sm=14px, md=16px, lg=20px, xl=24px */
-.icon-xs  { height: 12px; width: 12px; }
-.icon-sm  { height: 14px; width: 14px; }
-.icon-md  { height: 16px; width: 16px; }
-.icon-lg  { height: 20px; width: 20px; }
-.icon-xl  { height: 24px; width: 24px; }
-
-
-/* Global interactive transitions — TASK-619 */
-/* Botões e elementos interativos base */
-button, a, [role="button"] {
-  transition: all 150ms ease-out;
-}
-
+  /* Lucide icon sizes — TASK-615 */
+  /* xs=12px, sm=14px, md=16px, lg=20px, xl=24px. stroke-2 default. */
+  .icon { @apply inline-flex items-center justify-center shrink-0; }
+  .icon-xs { @apply icon h-3 w-3; }        /* 12px */
+  .icon-sm { @apply icon h-3.5 w-3.5; }    /* 14px */
+  .icon-md { @apply icon h-4 w-4; }         /* 16px */
+  .icon-lg { @apply icon h-5 w-5; }        /* 20px */
+  .icon-xl { @apply icon h-6 w-6; }        /* 24px */
 }

@@ -115,7 +115,7 @@ function RostersList({ rosters = [] }) {
 function SectionHeader({ icon: Icon, title, count }) {
   return (
     <h3 className="flex items-center gap-1.5 text-[12.5px] font-bold uppercase tracking-wide text-muted-foreground">
-      <Icon className="h-3.5 w-3.5" aria-hidden="true" />
+      <Icon className="icon-sm" aria-hidden="true" />
       {title}
       {count !== undefined && <span className="text-muted-foreground/60">({count})</span>}
     </h3>
