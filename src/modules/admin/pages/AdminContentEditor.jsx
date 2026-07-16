@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
-import { FileText, Save } from 'lucide-react';
+import { FileText, AlertCircle, CheckCircle2, Info, RotateCcw, Save } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { MarkdownEditor } from '@/components/ui/markdown-editor';
-import { Skeleton } from '@/components/ui/skeleton';
+import { cn } from '@/core/lib/utils';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import {
   getPlatformContent,
@@ -21,6 +22,13 @@ export default function AdminContentEditor() {
   const [body, setBody] = useState(DEFAULT_PLATFORM_CONTENT[PLATFORM_CONTENT_PAGES.TERMOS]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [lastSavedAt, setLastSavedAt] = useState(null);
+
+  // Baseline per page: tracks what was loaded from DB / default
+  const baselineRef = useRef({});
+
+  const baseline = baselineRef.current[page];
+  const dirty = baseline !== undefined && body !== baseline;
 
   const pageClass = useArenaPageClasses('space-y-5');
 
@@ -30,23 +38,45 @@ export default function AdminContentEditor() {
     setLoading(true);
     getPlatformContent(page).then((content) => {
       if (!active) return;
-      setBody(content?.body || DEFAULT_PLATFORM_CONTENT[page]);
+      const initial = content?.body || DEFAULT_PLATFORM_CONTENT[page];
+      setBody(initial);
+      baselineRef.current[page] = initial;
+      setLastSavedAt(null);
       setLoading(false);
     });
     return () => { active = false; };
   }, [page, isPlatformAdmin]);
 
+  // Keep baseline in sync when body changes (user typing)
+  useEffect(() => {
+    if (!loading) {
+      baselineRef.current[page] = body;
+    }
+  }, [body, loading, page]);
+
   if (!isPlatformAdmin) return null;
 
   async function handleSave() {
-    setSaving(true);
-    try {
-      await setPlatformContent(page, body, user);
-      toast.success('Conteúdo salvo.');
-    } catch (e) {
-      toast.error('Erro ao salvar conteúdo.');
-    } finally {
-      setSaving(false);
+    if (dirty) {
+      setSaving(true);
+      try {
+        await setPlatformContent(page, body, user);
+        baselineRef.current[page] = body;
+        const now = new Date();
+        setLastSavedAt(now);
+        toast.success('Conteúdo salvo.');
+      } catch (e) {
+        toast.error('Erro ao salvar conteúdo.');
+      } finally {
+        setSaving(false);
+      }
+    }
+  }
+
+  function handleReset() {
+    const saved = baselineRef.current[page];
+    if (saved !== undefined) {
+      setBody(saved);
     }
   }
 
@@ -83,6 +113,7 @@ export default function AdminContentEditor() {
           <TabsContent key={key} value={key}>
             <section className="arena-section-card">
               <div className="arena-section-card-body space-y-4 p-6 pt-5 sm:p-7 sm:pt-6">
+                {/* Header row: page label + character counter */}
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <p className="text-sm font-semibold text-foreground">
                     {PLATFORM_CONTENT_LABELS[key]}
@@ -101,11 +132,70 @@ export default function AdminContentEditor() {
                 ) : (
                   <>
                     <MarkdownEditor value={body} onChange={setBody} rows={18} maxLength={40000} disabled={saving} />
-                    <div className="flex justify-end">
-                      <Button onClick={handleSave} disabled={saving}>
-                        <Save className="mr-2 h-4 w-4" />
-                        {saving ? 'Salvando...' : 'Salvar alterações'}
-                      </Button>
+
+                    {/* Sticky save bar com dirty indicator + Cancelar + Salvar */}
+                    <div className="sticky bottom-4 z-20">
+                      <div
+                        className={cn(
+                          'flex flex-col items-stretch gap-2 rounded-2xl border bg-white/95 p-3 shadow-[0_18px_42px_-12px_rgba(64,34,18,0.28)] backdrop-blur-xl transition-colors sm:flex-row sm:items-center sm:justify-between',
+                          saving
+                            ? 'border-border/70'
+                            : dirty
+                              ? 'border-amber-300/70 ring-2 ring-amber-100'
+                              : lastSavedAt
+                                ? 'border-emerald-300/60'
+                                : 'border-border/70'
+                        )}
+                      >
+                        <div className="flex items-center gap-2 text-[12.5px]">
+                          {saving ? (
+                            <>
+                              <Skeleton className="h-3.5 w-3.5 rounded-full" />
+                              <span className="text-muted-foreground">Salvando…</span>
+                            </>
+                          ) : dirty ? (
+                            <>
+                              <AlertCircle className="h-4 w-4 text-amber-600" />
+                              <span className="font-semibold text-amber-800">Alterações não salvas</span>
+                            </>
+                          ) : lastSavedAt ? (
+                            <>
+                              <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                              <span className="text-emerald-800">
+                                Salvo às {lastSavedAt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                              </span>
+                            </>
+                          ) : (
+                            <>
+                              <Info className="h-4 w-4 text-muted-foreground" />
+                              <span className="text-muted-foreground">Sem edições pendentes</span>
+                            </>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={handleReset}
+                            disabled={!dirty || saving}
+                            className="gap-1.5"
+                          >
+                            <RotateCcw className="h-3.5 w-3.5" />
+                            Cancelar
+                          </Button>
+                          <Button
+                            type="button"
+                            size="sm"
+                            onClick={handleSave}
+                            disabled={!dirty || saving}
+                            className="min-w-[140px] gap-2"
+                          >
+                            <Save className="h-4 w-4" />
+                            {saving ? 'Salvando…' : 'Salvar alterações'}
+                          </Button>
+                        </div>
+                      </div>
                     </div>
                   </>
                 )}
