@@ -26,7 +26,7 @@ import {
   Building2, MapPin, PawPrint, Heart, Users, Calendar,
   ArrowLeft, Sparkles, Info, HandCoins, MessageCircle, Mail,
   Phone, Globe, Award, HeartHandshake, ExternalLink,
-  Search,
+  Search, BarChart3,
 } from 'lucide-react';
 import { collection, getDocs, query as fsQuery, where, orderBy, limit } from 'firebase/firestore';
 import { db } from '@/core/config/firebase';
@@ -524,7 +524,7 @@ export default function ShelterPublic() {
               }
               setAdoptOpen(true);
             }}
-            className="h-auto flex-col gap-1 py-4"
+            className="h-auto min-h-[64px] flex-col gap-1 py-3"
             aria-label="Quero adotar um pet deste abrigo"
           >
             <PawPrint className="h-5 w-5" />
@@ -542,7 +542,7 @@ export default function ShelterPublic() {
               }
               navigate(`/voluntarios/seja?abrigo=${shelterId}`);
             }}
-            className="h-auto flex-col gap-1 py-4"
+            className="h-auto min-h-[64px] flex-col gap-1 py-3"
             aria-label="Quero ser voluntário deste abrigo"
           >
             <HeartHandshake className="h-5 w-5" />
@@ -560,7 +560,7 @@ export default function ShelterPublic() {
               }
               setDonateOpen(true);
             }}
-            className="h-auto flex-col gap-1 py-4"
+            className="h-auto min-h-[64px] flex-col gap-1 py-3"
             aria-label="Quero fazer uma doação para este abrigo"
           >
             <HandCoins className="h-5 w-5" />
@@ -591,6 +591,13 @@ export default function ShelterPublic() {
 
           {/* Sobre */}
           <TabsContent value="about" className="mt-8 space-y-6">
+            {/* Estatísticas vitais */}
+            <div className="flex items-center gap-2 mb-3">
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 text-primary">
+                <BarChart3 className="h-3 w-3" />
+              </span>
+              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Resumo do abrigo</span>
+            </div>
             <section aria-label="Estatísticas do abrigo" className="grid grid-cols-2 gap-4 sm:grid-cols-4">
               <section className="arena-section-card">
                 <div className="arena-section-card-body flex flex-col items-start gap-2 p-4">
