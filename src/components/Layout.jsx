@@ -3,8 +3,8 @@ import { SkipLink } from '@/components/ui/skip-link';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   PawPrint, Heart, Building2, MessageCircle, User, Menu, X, BookHeart,
-  Plus, Shield, ShieldCheck, AlertTriangle, LogOut, Radar, Users, HeartHandshake,
-  Sun, Moon
+  Plus, Shield, AlertTriangle, LogOut, Radar, Users, HeartHandshake,
+  FileText,
 } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import NotificationsMenu from '@/modules/notifications/components/NotificationsMenu';
@@ -170,6 +170,31 @@ export default function Layout({ children, currentPageName }) {
                     <DropdownMenuItem asChild>
                       <Link to="/denuncias/nova" className="flex items-center gap-2 cursor-pointer text-destructive">
                         <AlertTriangle className="w-4 h-4" /> Fazer Denúncia
+                      </Link>
+                    </DropdownMenuItem>
+                    {/* TASK-041: Documentos Legais — exigidos pelo Guia de Implementação
+                        Legal v2 §5 (links no rodapé E no menu do usuário). Disponíveis
+                        para todos os usuários autenticados, mesmo antes de aceitar
+                        termos pendentes (via LegalGate). */}
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link to="/legal/termos-de-uso" className="flex items-center gap-2 cursor-pointer">
+                        <FileText className="w-4 h-4" /> Termos de Uso
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/legal/politica-de-privacidade" className="flex items-center gap-2 cursor-pointer">
+                        <FileText className="w-4 h-4" /> Política de Privacidade
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/legal/cookies" className="flex items-center gap-2 cursor-pointer">
+                        <FileText className="w-4 h-4" /> Política de Cookies
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/legal/codigo-de-conduta" className="flex items-center gap-2 cursor-pointer">
+                        <FileText className="w-4 h-4" /> Código de Conduta
                       </Link>
                     </DropdownMenuItem>
                     {isPlatformAdmin && (
