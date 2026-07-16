@@ -48,6 +48,10 @@ const TYPE_TONE = {
   [CLUB_EVENT_TYPE.SOCIAL]: 'success',
   [CLUB_EVENT_TYPE.MEETING]: 'outline',
   [CLUB_EVENT_TYPE.OTHER]: 'outline',
+  [CLUB_EVENT_TYPE.VACCINATION]: 'success',
+  [CLUB_EVENT_TYPE.LECTURE]: 'outline',
+  [CLUB_EVENT_TYPE.FUNDRAISING]: 'warning',
+  [CLUB_EVENT_TYPE.PET_DAY]: 'success',
 };
 
 export default function ClubEventsTab({ clubId, isAdmin }) {
