@@ -531,6 +531,13 @@ export default function App() {
                 <Route path="/inicio" element={<Navigate to="/feed" replace />} />
                 <Route path="/clubes" element={<Navigate to="/comunidade" replace />} />
                 <Route path="/atletas" element={<Navigate to="/feed" replace />} />
+                {/* /scrum: servido direto pelo Firebase Hosting em public/scrum.html
+                    via PWA navigateFallbackDenylist (TASK-245). A rota React foi
+                    removida em PR #105 junto com a função ScrumDashboardRedirect.
+                    PR #104 (fix/mock-data) re-adicionou a rota por engano durante
+                    o rebase, mas sem restaurar a função — daí o ReferenceError
+                    no console de produção. Removida aqui (e em PR #108). */}
+
                 {/* ── 404 ──────────────────────────────────────────────── */}
                 <Route path="*" element={<PageNotFound />} />
               </Routes>
