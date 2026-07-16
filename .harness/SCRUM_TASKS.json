@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.1.0",
-  "generatedAt": "2026-07-16T18:50:34.767Z",
+  "generatedAt": "2026-07-16T18:53:49.051Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W29",
@@ -11,6 +11,20 @@
     "goal": "DS_V2 Fase 4 — Reaplicar design system oficial v1.0 bloco a bloco, cada área com feature flag default OFF. Começar pelo Bloco A (docs) ✅, agora Bloco B (tokens + Material Symbols). User valida visualmente cada bloco antes da próxima. Zero regressão em regra de negócio."
   },
   "activeWorktrees": [
+    {
+      "id": "wt-ds-v2-audit",
+      "branch": "feat/ds-v2-audit-2026-07-16",
+      "head": "277c0e08d370d044a30955e5d32b00207318e69e",
+      "headTitle": "Merge branch 'main' of https://github.com/fsalamoni/viralata",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-ds-v2-audit",
+      "status": "in-sync",
+      "commitsAhead": 0,
+      "primarySession": "mvs_311d078987d0414a90f57ef28b789b18",
+      "sessionTitle": "DS_V2_AUDIT — auditoria final (tokens, a11y, contraste)",
+      "focus": [
+        "DS_V2_AUDIT"
+      ]
+    },
     {
       "id": "wt-ds-v2-components",
       "branch": "feat/ds-v2-components-2026-07-16",
@@ -26,16 +40,14 @@
     {
       "id": "wt-ds-v2-motion",
       "branch": "feat/ds-v2-motion-2026-07-16",
-      "head": "cde4c2fef2fd1feeb1218e12a512aa9af4e6b209",
-      "headTitle": "Merge branch 'main' of https://github.com/fsalamoni/viralata",
+      "head": "6b2e551c11f72d9ce504ec1e0278efab35e2c548",
+      "headTitle": "feat(ds-v2): Bloco E · DS_V2_MOTION — useReducedMotionSafe + FadeIn/Stagger/HoverLift",
       "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-ds-v2-motion",
       "status": "in-sync",
       "commitsAhead": 0,
-      "primarySession": "mvs_311d078987d0414a90f57ef28b789b18",
-      "sessionTitle": "DS_V2_MOTION — useReducedMotionSafe + FadeIn/Stagger/HoverLift wrappers",
-      "focus": [
-        "DS_V2_MOTION"
-      ]
+      "primarySession": null,
+      "sessionTitle": null,
+      "focus": []
     },
     {
       "id": "wt-ds-v2-pages-admin",
@@ -11444,12 +11456,12 @@
       "title": "Bloco F · DS_V2_AUDIT — Auditoria final (contraste, foco, semântica, performance)",
       "type": "feature",
       "category": "design",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "mvs_311d078987d0414a90f57ef28b789b18",
-      "branch": null,
+      "branch": "feat/ds-v2-audit-2026-07-16",
       "flag": "DS_V2_AUDIT",
-      "worktree": null,
+      "worktree": ".worktrees/wt-ds-v2-audit",
       "pr": null,
       "tags": [
         "ds-v2",
@@ -11464,7 +11476,8 @@
       ],
       "description": "Rodar grep automatizado por tokens antigos: `bg-emerald-*`, `bg-green-*`, `bg-orange-500` sem ser de DS, classes hardcoded, emojis como imagem. Validar contraste WCAG AA (4.5:1 texto, 3:1 grande) em todas as páginas. Validar foco visível (outline 2px primary + offset 2px). Validar hierarquia semântica (h1, h2, h3 em ordem). Lighthouse score > 90 a11y, > 85 performance. Bundle size delta < +50KB.",
       "createdAt": "2026-07-16",
-      "updatedAt": "2026-07-16"
+      "updatedAt": "2026-07-16T18:53:38",
+      "resolvedAt": "2026-07-16"
     },
     {
       "id": "TASK-711",
@@ -13056,6 +13069,204 @@
       "createdAt": "2026-07-16",
       "updatedAt": "2026-07-16T18:50:34",
       "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-777",
+      "title": "Grep final: tokens literais divergentes",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-audit-2026-07-16",
+      "flag": "DS_V2_AUDIT",
+      "worktree": ".worktrees/wt-ds-v2-audit",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "audit",
+        "tokens"
+      ],
+      "blockedBy": [],
+      "description": "Rodar grep em src/ por: bg-emerald-*, bg-green-*, bg-orange-500, text-orange-*, bg-red-500, cores Tailwind literais (sem ser do DS). Listar resultados.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:53:37",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-778",
+      "title": "Substituir tokens literais por tokens semânticos (badge, admin)",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-audit-2026-07-16",
+      "flag": "DS_V2_AUDIT",
+      "worktree": ".worktrees/wt-ds-v2-audit",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "audit",
+        "fix"
+      ],
+      "blockedBy": [
+        "TASK-777"
+      ],
+      "description": "Substituir bg-emerald-100 → bg-success/15, text-emerald-800 → text-success em badge.jsx, user-avatar.jsx, AdminMockData.jsx. Manter InstallAppButton se for número de passo (semântica separada).",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:53:47",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-779",
+      "title": "Validar foco visível (outline 2px primary + offset 2px)",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-audit-2026-07-16",
+      "flag": "DS_V2_AUDIT",
+      "worktree": ".worktrees/wt-ds-v2-audit",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "audit",
+        "a11y"
+      ],
+      "blockedBy": [
+        "TASK-777"
+      ],
+      "description": "Verificar que todos os elementos interativos têm focus-visible:outline ou focus-visible:ring. Spec §5.3.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:53:47",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-780",
+      "title": "Validar hierarquia semântica (h1, h2, h3)",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "medium",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-audit-2026-07-16",
+      "flag": "DS_V2_AUDIT",
+      "worktree": ".worktrees/wt-ds-v2-audit",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "audit",
+        "a11y"
+      ],
+      "blockedBy": [
+        "TASK-777"
+      ],
+      "description": "Verificar que páginas usam h1, h2, h3 em ordem lógica, sem pular níveis. Spec §5.3.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:53:47",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-781",
+      "title": "Validar prefers-reduced-motion (CSS + framer-motion)",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "medium",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-audit-2026-07-16",
+      "flag": "DS_V2_AUDIT",
+      "worktree": ".worktrees/wt-ds-v2-audit",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "audit",
+        "a11y"
+      ],
+      "blockedBy": [
+        "TASK-777"
+      ],
+      "description": "Confirmar que media query prefers-reduced-motion: reduce desliga animações (CSS já tem em index.css; framer-motion via useReducedMotionSafe). Spec §5.1.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:53:48",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-782",
+      "title": "Escrever docs/AUDIT_DS_V2.md com relatório final",
+      "type": "chore",
+      "category": "docs",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-audit-2026-07-16",
+      "flag": "DS_V2_AUDIT",
+      "worktree": ".worktrees/wt-ds-v2-audit",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "audit",
+        "docs"
+      ],
+      "blockedBy": [
+        "TASK-781"
+      ],
+      "description": "Documento com: (1) resumo do que foi feito na Fase 4; (2) métricas WCAG; (3) bundle size delta; (4) lista de melhorias futuras; (5) como ativar cada feature flag.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:53:48",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-783",
+      "title": "Validar Audit (build + lint + bundle size)",
+      "type": "chore",
+      "category": "ci",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-audit-2026-07-16",
+      "flag": "DS_V2_AUDIT",
+      "worktree": ".worktrees/wt-ds-v2-audit",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "build",
+        "test"
+      ],
+      "blockedBy": [
+        "TASK-782"
+      ],
+      "description": "Build verde, lint sem regressões, bundle size delta aceitável.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:53:48",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-784",
+      "title": "Commit + push do Bloco F",
+      "type": "chore",
+      "category": "ci",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-audit-2026-07-16",
+      "flag": "DS_V2_AUDIT",
+      "worktree": ".worktrees/wt-ds-v2-audit",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "git",
+        "commit"
+      ],
+      "blockedBy": [
+        "TASK-783"
+      ],
+      "description": "Commit único, push só do branch. PR final da Fase 4 com relatório + screenshots.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:53:38",
+      "resolvedAt": "2026-07-16"
     }
   ],
   "definitionOfDone": [
@@ -13299,7 +13510,7 @@
     "mergedWorktreesThisSprint": [
       "feat/ds-v2-docs-2026-07-16"
     ],
-    "mainCommit": "cde4c2fef2fd1feeb1218e12a512aa9af4e6b209",
+    "mainCommit": "277c0e08d370d044a30955e5d32b00207318e69e",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -13309,12 +13520,12 @@
     ],
     "openTODOs": 5,
     "openLegalReviews": 3,
-    "totalTasks": 481,
-    "done": 475,
+    "totalTasks": 489,
+    "done": 484,
     "inProgress": 0,
     "inReview": 0,
     "blocked": 0,
-    "ready": 1,
+    "ready": 0,
     "backlog": 4,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -13344,7 +13555,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-16T18:50:34.785Z — via sync.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-16T18:53:49.071Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
@@ -13379,7 +13590,7 @@
     "risksAccepted": 2,
     "risksMonitoring": 2,
     "lastTaskId": "TASK-717",
-    "lastUpdated": "2026-07-16T18:48:50.435Z",
+    "lastUpdated": "2026-07-16T18:51:17.178Z",
     "dsV2Phase": "Fase 4 — em andamento",
     "dsV2Blocos": {
       "done": [
@@ -13391,20 +13602,19 @@
         "DS_V2_PAGES-ADOPTION",
         "DS_V2_PAGES-ORG",
         "DS_V2_PAGES-ADMIN",
-        "DS_V2_PAGES-CHAT"
-      ],
-      "inProgress": [
+        "DS_V2_PAGES-CHAT",
         "DS_V2_MOTION"
       ],
-      "ready": [
+      "inProgress": [
         "DS_V2_AUDIT"
-      ]
+      ],
+      "ready": []
     },
     "dsV2Tasks": {
-      "total": 75,
+      "total": 83,
       "done": 8,
       "ready": 10,
-      "inProgress": 17
+      "inProgress": 19
     },
     "dsV2Merge": "Bloco A merged to main @ 8e187f6 (2026-07-16 18:08 UTC)",
     "lastTaskDone": "TASK-700 (Bloco A macro)",
