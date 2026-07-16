@@ -50,6 +50,7 @@ const TEXT_BY_SLUG = {
   'termo-voluntariado': () => import('@/modules/shelter/domain/legal/texts/volunteerTerms.v2').then((m) => m.VOLUNTEER_TERMS_TEXT_V2),
   'termo-lar-temporario': () => import('@/modules/shelter/domain/legal/fosterTerms').then((m) => m.FOSTER_TERMS_TEXT),
   'termo-adesao-abrigos': () => import('@/modules/shelter/domain/legal/texts/shelterOnboardingTerms.v1').then((m) => m.SHELTER_ONBOARDING_TERMS_TEXT_V1),
+  'dpa-abrigos': () => import('@/modules/shelter/domain/legal/dpaAbrigos').then((m) => m.DPA_ABRIGOS_TEXT_EXPORT),
 };
 
 export default function LegalPageViewer() {

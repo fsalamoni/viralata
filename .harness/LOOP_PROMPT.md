@@ -1,4 +1,4 @@
-# LOOP_PROMPT — Loop de UX/Design Contínuo (até o user desligar)
+# LOOP_PROMPT — viralata (atualizado 2026-07-15 11:53 UTC)
 
 > **Modo**: autônomo, 24/7, focado em **UX, layout, design, espaçamento, hierarquia visual**.
 > **Objetivo**: ajustar TUDO o que existe na plataforma para que seja **fácil de usar**, **bonito**, **sem sobreposições**, **com hierarquia clara**.
@@ -95,7 +95,10 @@ print(f'{len(ready)} tasks ready')
 
 ---
 
-## CHECKLIST POR TASK
+## 🆕 CANDIDATAS (2026-07-15 11:53 UTC)
+
+> **Notas**:
+> - TASK-065 ✅ done — feat/task-065-dpa-abrigos-2026-07-15 (branch pushed, batch PR pending)
 
 Para cada ajuste:
 
@@ -107,6 +110,7 @@ Para cada ajuste:
 | TASK-007 | high | Revisão jurídica: avisosLegais.js...
 
 > **Notas**:
+> - TASK-064 ✅ done — /legal/politica-de-doacoes (via LegalPageViewer, was already wired)
 > - TASK-220 ✅ done — feat/task-220-clean (PR #192) merged 2026-07-15
 > - TASK-269 ✅ done — feat/task-268-volunteer-fcm-notify (PR #190)
 > - TASK-312 ✅ done — [INT-SEARCH-001] Sync ativo do search index
@@ -120,8 +124,8 @@ Para cada ajuste:
 
 ## ORDEM DE ATAQUE (do mais crítico para o polish)
 
-- **done=288**, ready=70, in_progress=4
-- **Main**: `691de55`
+- **done=276**, ready=83, in_progress=3, in_review=1
+- **Feature branch**: `feat/task-065-dpa-abrigos-2026-07-15` (pushed, batch pending)
 
 ---
 
