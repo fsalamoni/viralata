@@ -56,7 +56,7 @@ export default function Home() {
       {/* TASK-153: contadores agregados (flag home_stats_v1, some se OFF) */}
       <HomeStats />
       {/* Hero */}
-      <section className="relative overflow-hidden px-6 pb-16 pt-14">
+      <section className="relative overflow-hidden px-4 sm:px-6 pb-16 pt-14">
         <div className="relative mx-auto grid max-w-[1180px] items-center gap-12 lg:grid-cols-[1.05fr,0.95fr]">
           <motion.div
             initial="hidden"
@@ -103,7 +103,7 @@ export default function Home() {
       </section>
 
       {/* Impacto */}
-      <section className="relative mx-auto max-w-[1000px] px-6 pb-[72px]">
+      <section className="relative mx-auto max-w-[1000px] px-4 sm:px-6 pb-[72px]">
         <div className="grid grid-cols-2 gap-3.5 rounded-[28px] border border-white bg-card/85 p-5 shadow-[0_24px_60px_-34px_hsl(20_40%_20%/0.35)] backdrop-blur-md sm:grid-cols-4 sm:p-7">
           {IMPACT_STATS.map((stat) => (
             <div key={stat.label} className="p-1.5 text-center">
@@ -120,7 +120,7 @@ export default function Home() {
         whileInView="show"
         viewport={{ once: true, margin: '-80px' }}
         variants={stagger}
-        className="px-6 py-[38px]"
+        className="px-4 sm:px-6 py-[38px]"
       >
         <div className="mx-auto max-w-[900px]">
           <motion.h2 variants={fadeUp} className="mb-11 text-center text-[30px] font-extrabold tracking-[-0.02em] text-foreground">
@@ -149,7 +149,7 @@ export default function Home() {
         whileInView="show"
         viewport={{ once: true, margin: '-80px' }}
         variants={stagger}
-        className="px-6 py-[38px]"
+        className="px-4 sm:px-6 py-[38px]"
       >
         <div className="mx-auto max-w-[1080px]">
           <motion.div variants={fadeUp} className="mb-10 text-center">
@@ -186,7 +186,7 @@ export default function Home() {
         whileInView="show"
         viewport={{ once: true, margin: '-80px' }}
         variants={stagger}
-        className="px-6 py-[38px]"
+        className="px-4 sm:px-6 py-[38px]"
       >
         <div className="mx-auto max-w-[1080px]">
           <motion.h2 variants={fadeUp} className="mb-10 text-center text-[30px] font-extrabold tracking-[-0.02em] text-foreground">
@@ -212,7 +212,7 @@ export default function Home() {
         whileInView="show"
         viewport={{ once: true, margin: '-80px' }}
         variants={fadeUp}
-        className="px-6 pb-[72px]"
+        className="px-4 sm:px-6 pb-[72px]"
       >
         <div className="arena-panel-strong mx-auto max-w-[900px] rounded-[32px] px-8 py-14 text-center">
           <h2 className="text-[28px] font-extrabold text-white">{settings.ui_text.home_final_cta_title}</h2>
@@ -226,12 +226,12 @@ export default function Home() {
       </motion.section>
 
       {/* TASK-149: Próximas vitrines */}
-      <section className="px-6 py-7 max-w-5xl mx-auto">
+      <section className="px-4 sm:px-6 py-7 max-w-5xl mx-auto">
         <UpcomingExhibitionsFeed limit={6} />
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border px-6 py-7 text-center">
+      <footer className="border-t border-border px-4 sm:px-6 py-7 text-center">
         <p className="text-[13px] text-muted-foreground">© {new Date().getFullYear()} Viralata — Adoção responsável de pets</p>
         <div className="mt-2.5 flex flex-wrap justify-center gap-5">
           <Link to="/termos" className="text-[12.5px] text-muted-foreground hover:text-foreground">Termos</Link>

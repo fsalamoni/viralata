@@ -195,7 +195,7 @@ export function Lightbox({
             size="icon"
             variant="ghost"
             onClick={goPrev}
-            className="absolute left-3 top-1/2 -translate-y-1/2 h-10 w-10 text-white hover:bg-white/10"
+            className="absolute left-3 top-1/2 -translate-y-1/2 h-11 w-11 text-white hover:bg-white/10"
             aria-label="Imagem anterior"
             data-testid="lightbox-prev"
           >
@@ -205,7 +205,7 @@ export function Lightbox({
             size="icon"
             variant="ghost"
             onClick={goNext}
-            className="absolute right-3 top-1/2 -translate-y-1/2 h-10 w-10 text-white hover:bg-white/10"
+            className="absolute right-3 top-1/2 -translate-y-1/2 h-11 w-11 text-white hover:bg-white/10"
             aria-label="Próxima imagem"
             data-testid="lightbox-next"
           >

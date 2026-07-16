@@ -33,7 +33,7 @@ function ToolbarButton({ title, onClick, children, disabled }) {
       onMouseDown={(e) => e.preventDefault()}
       onClick={onClick}
       disabled={disabled}
-      className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent/10 hover:text-accent disabled:opacity-40"
+      className="flex h-8 w-8 sm:h-11 sm:w-11 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent/10 hover:text-accent disabled:opacity-40"
     >
       {children}
     </button>

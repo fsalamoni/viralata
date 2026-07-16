@@ -58,7 +58,7 @@ export default function Login() {
       {/* Gradiente decorativo */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_85%_10%,hsl(40,88%,54%,0.22),transparent_40%)]" />
 
-      <div className="relative mx-auto grid min-h-screen max-w-6xl gap-8 px-6 py-8 lg:grid-cols-[1.05fr,0.95fr] lg:items-center">
+      <div className="relative mx-auto grid min-h-screen max-w-6xl gap-8 px-4 sm:px-6 py-8 lg:grid-cols-[1.05fr,0.95fr] lg:items-center">
 
         {/* Painel esquerdo — desktop */}
         <div className="hidden h-full min-h-[42rem] flex-col justify-between rounded-[2.25rem] border border-white/10 bg-white/5 p-14 backdrop-blur-sm lg:flex">

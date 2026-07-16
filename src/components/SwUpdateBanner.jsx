@@ -38,7 +38,7 @@ export default function SwUpdateBanner({ autoReload = false } = {}) {
             Atualizamos o app com correções e melhorias. Recarregue para ver as mudanças.
           </p>
           <div className="mt-3 flex gap-2">
-            <Button size="sm" variant="default" onClick={update} className="h-9">
+            <Button size="sm" variant="default" onClick={update} className="h-9 sm:h-11">
               <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
               Recarregar agora
             </Button>
