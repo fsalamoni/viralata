@@ -31,6 +31,7 @@ import { AuditLogTable } from '@/components/AuditLogTable';
 import { toast } from 'sonner';
 import PageHero from '@/components/PageHero';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function PlatformHealth() {
   const { isPlatformAdmin, user } = useAuth();
@@ -104,14 +105,26 @@ export default function PlatformHealth() {
 
       <Tabs defaultValue="health">
         <TabsList className="arena-admin-tabs grid w-full grid-cols-2 sm:grid-cols-4">
-          <TabsTrigger value="health"><Activity className="h-4 w-4 mr-1" /> Saúde</TabsTrigger>
-          <TabsTrigger value="costs"><DollarSign className="h-4 w-4 mr-1" /> Custos</TabsTrigger>
-          <TabsTrigger value="capacity"><Database className="h-4 w-4 mr-1" /> Capacidade</TabsTrigger>
-          <TabsTrigger value="audit"><ScrollText className="h-4 w-4 mr-1" /> Movimentação</TabsTrigger>
+          <TabsTrigger value="health" className="arena-admin-tab-trigger">
+            <Activity className="h-4 w-4" /> Saúde
+          </TabsTrigger>
+          <TabsTrigger value="costs" className="arena-admin-tab-trigger">
+            <DollarSign className="h-4 w-4" /> Custos
+          </TabsTrigger>
+          <TabsTrigger value="capacity" className="arena-admin-tab-trigger">
+            <Database className="h-4 w-4" /> Capacidade
+          </TabsTrigger>
+          <TabsTrigger value="audit" className="arena-admin-tab-trigger">
+            <ScrollText className="h-4 w-4" /> Movimentação
+          </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="health" className="space-y-4">
-          {health ? (
+        <TabsContent value="health" className="space-y-5">
+          {loading ? (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {[1,2,3,4].map(i => <Skeleton key={i} className="h-28 rounded-2xl" />)}
+            </div>
+          ) : health ? (
             <>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 <StatCard label="Latência p50" value={`${health.firestore.latency_p50}ms`} />
@@ -126,11 +139,11 @@ export default function PlatformHealth() {
                     <p className="arena-section-card-description">Usuários ativos e signups nas últimas 24h</p>
                   </div>
                   <div className="arena-section-card-body">
-                    <p className="text-2xl font-semibold text-foreground">{health.auth.active_users_24h}</p>
+                    <p className="text-2xl font-bold text-foreground">{health.auth.active_users_24h.toLocaleString('pt-BR')}</p>
                     <p className="text-xs text-muted-foreground">usuários ativos</p>
-                    <p className="text-2xl font-semibold text-foreground mt-3">{health.auth.signups_24h}</p>
+                    <p className="text-2xl font-bold text-foreground mt-3">{health.auth.signups_24h.toLocaleString('pt-BR')}</p>
                     <p className="text-xs text-muted-foreground">novos signups</p>
-                    <p className="text-xs text-muted-foreground mt-3">Total acumulado: {health.auth.total_users}</p>
+                    <p className="text-xs text-muted-foreground mt-3">Total acumulado: {health.auth.total_users.toLocaleString('pt-BR')}</p>
                   </div>
                 </section>
                 <section className="arena-section-card">
@@ -139,9 +152,9 @@ export default function PlatformHealth() {
                     <p className="arena-section-card-description">Invocations e erros das Cloud Functions</p>
                   </div>
                   <div className="arena-section-card-body">
-                    <p className="text-2xl font-semibold text-foreground">{health.functions.invocations_24h}</p>
+                    <p className="text-2xl font-bold text-foreground">{health.functions.invocations_24h.toLocaleString('pt-BR')}</p>
                     <p className="text-xs text-muted-foreground">invocations</p>
-                    <p className="text-2xl font-semibold text-foreground mt-3">{health.functions.errors_24h}</p>
+                    <p className="text-2xl font-bold text-foreground mt-3">{health.functions.errors_24h.toLocaleString('pt-BR')}</p>
                     <p className="text-xs text-muted-foreground">erros</p>
                     <p className="text-xs text-muted-foreground mt-3">
                       Última coleta: {new Date(health.generated_at).toLocaleString('pt-BR')}
@@ -151,13 +164,17 @@ export default function PlatformHealth() {
               </div>
             </>
           ) : (
-            <p className="text-sm text-muted-foreground py-8 text-center">
-              {loading ? 'Carregando...' : 'Sem dados ainda — a Cloud Function `platformHealthCron` roda a cada 1h.'}
-            </p>
+            <section className="arena-section-card">
+              <div className="arena-section-card-body py-10 text-center">
+                <p className="text-sm text-muted-foreground">
+                  Sem dados ainda — a Cloud Function <code>platformHealthCron</code> roda a cada 1h.
+                </p>
+              </div>
+            </section>
           )}
         </TabsContent>
 
-        <TabsContent value="costs" className="space-y-4">
+        <TabsContent value="costs" className="space-y-5">
           <section className="arena-section-card">
             <div className="arena-section-card-header">
               <h3 className="arena-section-card-title">Billing do mês atual</h3>
@@ -166,7 +183,9 @@ export default function PlatformHealth() {
               </p>
             </div>
             <div className="arena-section-card-body space-y-4">
-              {billing ? (
+              {loading ? (
+                <Skeleton className="h-24 w-full rounded-xl" />
+              ) : billing ? (
                 <>
                   <p className="text-xs text-muted-foreground">
                     Período: {new Date(billing.period.start).toLocaleDateString('pt-BR')} → {new Date(billing.period.end).toLocaleDateString('pt-BR')}
@@ -179,22 +198,24 @@ export default function PlatformHealth() {
                     <NumberField label="Bandwidth (GB)" step="0.01" value={billingDraft.bandwidth_gb} onChange={(v) => setBillingDraft({ ...billingDraft, bandwidth_gb: v })} />
                     <NumberField label="Custo estimado (USD)" step="0.01" value={billingDraft.estimated_cost_usd} onChange={(v) => setBillingDraft({ ...billingDraft, estimated_cost_usd: v })} />
                   </div>
-                  <Button
-                    type="button"
-                    onClick={async () => {
-                      try {
-                        const period = monthPeriod(new Date());
-                        await upsertBillingSummary(period, billingDraft, user);
-                        toast.success('Resumo de billing atualizado.');
-                        const b = await getBillingSummary(period);
-                        setBilling(b);
-                      } catch (err) {
-                        toast.error('Erro ao salvar: ' + (err?.message || err));
-                      }
-                    }}
-                  >
-                    Salvar resumo do mês
-                  </Button>
+                  <div className="flex justify-end">
+                    <Button
+                      type="button"
+                      onClick={async () => {
+                        try {
+                          const period = monthPeriod(new Date());
+                          await upsertBillingSummary(period, billingDraft, user);
+                          toast.success('Resumo de billing atualizado.');
+                          const b = await getBillingSummary(period);
+                          setBilling(b);
+                        } catch (err) {
+                          toast.error('Erro ao salvar: ' + (err?.message || err));
+                        }
+                      }}
+                    >
+                      Salvar resumo do mês
+                    </Button>
+                  </div>
                 </>
               ) : (
                 <p className="text-sm text-muted-foreground py-4">Carregando billing...</p>
