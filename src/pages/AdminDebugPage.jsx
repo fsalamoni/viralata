@@ -83,7 +83,7 @@ export default function AdminDebugPage() {
 function DebugTabs({ clubId }) {
   return (
     <Tabs defaultValue="dashboard" className="w-full">
-      <TabsList className="flex flex-wrap gap-1">
+      <TabsList className="arena-admin-tabs flex flex-wrap gap-1">
         {TARGET_TABS.map(({ key, label }) => (
           <TabsTrigger key={key} value={key}>{label}</TabsTrigger>
         ))}

@@ -161,7 +161,7 @@ export default function CommunityPublic() {
 
       {/* Tabs */}
       <Tabs value={tab} onValueChange={setTab}>
-        <TabsList>
+        <TabsList className="arena-admin-tabs">
           <TabsTrigger value="mural">Mural</TabsTrigger>
           <TabsTrigger value="sobre">Sobre</TabsTrigger>
         </TabsList>

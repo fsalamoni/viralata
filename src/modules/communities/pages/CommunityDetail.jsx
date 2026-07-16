@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Users, Calendar, MessageSquare, MessageCircle, Info, Settings, Building2 } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
@@ -45,7 +46,16 @@ export default function CommunityDetail() {
   const { user } = useAuth();
   const [community, setCommunity] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('mural');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const urlTab = searchParams.get('tab');
+  const activeTab = TABS_LEGACY.some(t => t.key === urlTab) ? urlTab
+    : TABS_PARITY.some(t => t.key === urlTab) ? urlTab
+    : 'mural';
+  function setActiveTab(tab) {
+    const next = new URLSearchParams(searchParams);
+    next.set('tab', tab);
+    setSearchParams(next, { replace: true });
+  }
 
   // Flag da paridade ONG. Default OFF — quando o admin ligar, a página
   // pública da comunidade passa a usar `<CommunityCover>` (mesmo padrão
@@ -169,7 +179,7 @@ export default function CommunityDetail() {
           (mesmo padrão do "Pedir para ingressar" da ONG). A
           `arena-tab-bar` e o botão ficam em um flex row com
           `border-b` para o delineador. */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className={parityEnabled ? 'w-full' : 'w-full space-y-5'}>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
     <TabsContentStack>        {parityEnabled ? (
           <div className="flex flex-wrap items-end justify-between gap-3 border-b border-border/60 pb-1">
             <div className="w-full sm:w-auto">
@@ -199,7 +209,7 @@ export default function CommunityDetail() {
             )}
           </div>
         ) : (
-          <TabsList className="h-auto w-full flex-wrap justify-start gap-1 rounded-xl bg-transparent p-0 sm:gap-2">
+          <TabsList className="arena-admin-tabs">
             {TABS_LEGACY.map((tab) => (
               <TabsTrigger key={tab.key} value={tab.key} className="rounded-lg data-[state=active]:bg-primary">
                 <tab.icon className="mr-2 h-4 w-4" /> {tab.label}

@@ -305,12 +305,12 @@
 
   /* Tabs admin — variação mais limpa do arena-tab-bar */
   .arena-admin-tabs {
-    @apply sticky top-2 z-10 mb-6 flex h-auto w-full flex-wrap items-center justify-start gap-1.5 rounded-[1.1rem] border border-border/70 bg-card/80 p-1.5 backdrop-blur-xl;
+    @apply sticky top-2 z-10 mb-8 flex h-auto w-full flex-wrap items-center justify-start gap-1.5 rounded-[1.1rem] border border-border/70 bg-card/80 p-1.5 backdrop-blur-xl;
     box-shadow: 0 18px 42px -30px rgba(64, 34, 18, 0.32);
   }
 
   .arena-admin-tab-trigger {
-    @apply inline-flex min-h-9 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-[12.5px] font-semibold text-muted-foreground transition-all hover:text-foreground sm:px-3.5 sm:py-2 sm:text-[13.5px] data-[state=active]:bg-foreground data-[state=active]:text-background;
+    @apply inline-flex min-h-9 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-[12.5px] font-semibold text-muted-foreground transition-all duration-200 hover:text-foreground sm:px-3.5 sm:py-2 sm:text-[13.5px] data-[state=active]:bg-foreground data-[state=active]:text-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
   }
 
   /* Section spacing dentro de TabsContent admin */

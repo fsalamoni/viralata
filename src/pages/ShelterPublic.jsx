@@ -590,7 +590,7 @@ export default function ShelterPublic() {
           </TabsList>
 
           {/* Sobre */}
-          <TabsContent value="about" className="mt-6 space-y-6">
+          <TabsContent value="about" className="mt-8 space-y-6">
             <section aria-label="Estatísticas do abrigo" className="grid grid-cols-2 gap-4 sm:grid-cols-4">
               <section className="arena-section-card">
                 <div className="arena-section-card-body flex flex-col items-start gap-2 p-4">

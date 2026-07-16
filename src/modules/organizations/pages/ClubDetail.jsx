@@ -51,7 +51,14 @@ const TABS = [
 export default function ClubDetail() {
   const { orgId } = useParams();
   const { user, isAuthenticated } = useAuth();
-  const [activeTab, setActiveTab] = useState('general');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const urlTab = searchParams.get('tab');
+  const activeTab = urlTab || 'general';
+  function setActiveTab(tab) {
+    const next = new URLSearchParams(searchParams);
+    next.set('tab', tab);
+    setSearchParams(next, { replace: true });
+  }
 
   const { data: club, isLoading, isError } = useQuery({
     queryKey: ['club', orgId],

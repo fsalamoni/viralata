@@ -60,7 +60,7 @@ export default function PublicDebugPage() {
         <br />clubId: <strong>{clubId}</strong>
       </div>
       <Tabs defaultValue="dashboard" className="w-full">
-        <TabsList className="flex flex-wrap gap-1 mb-4">
+        <TabsList className="arena-admin-tabs flex flex-wrap gap-1 mb-4">
           {TABS.map(({ key, label }) => (
             <TabsTrigger key={key} value={key}>{label}</TabsTrigger>
           ))}

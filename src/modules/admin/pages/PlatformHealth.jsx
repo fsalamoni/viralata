@@ -103,7 +103,7 @@ export default function PlatformHealth() {
       />
 
       <Tabs defaultValue="health">
-        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4">
+        <TabsList className="arena-admin-tabs grid w-full grid-cols-2 sm:grid-cols-4">
           <TabsTrigger value="health"><Activity className="h-4 w-4 mr-1" /> Saúde</TabsTrigger>
           <TabsTrigger value="costs"><DollarSign className="h-4 w-4 mr-1" /> Custos</TabsTrigger>
           <TabsTrigger value="capacity"><Database className="h-4 w-4 mr-1" /> Capacidade</TabsTrigger>
