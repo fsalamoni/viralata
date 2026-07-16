@@ -99,6 +99,8 @@ export const SHELTER_FEATURE_FLAG = Object.freeze({
   SHELTER_FCM_V1: 'shelter_fcm_v1',
   // TASK-790 — CRUD completo de Chamados de Doação (abrigo)
   SHELTER_DONATIONS: 'shelter_donations',
+  // TASK-791 — Prestação de Contas: lançamentos, saldo, exportação pública (LGPD)
+  SHELTER_FINANCE: 'shelter_finance',
 });
 
 /**
@@ -340,6 +342,14 @@ export const SHELTER_FEATURE_FLAG_META = Object.freeze({
       + 'status, e comprovantes. Coleção '
       + '`clubs/{clubId}/shelter_donations` + '
       + '`clubs/{clubId}/shelter_donation_receipts`.',
+  },
+  [SHELTER_FEATURE_FLAG.SHELTER_FINANCE]: {
+    label: 'Abrigos · prestação de contas',
+    description:
+      'Lançamentos de entrada/saída do abrigo, saldo agregado por '
+      + 'período, gráfico de evolução temporal e exportação CSV '
+      + 'pública (LGPD Art. 18 V — transparência financeira). '
+      + 'Coleção `clubs/{clubId}/shelter_ledger`.',
   },
 });
 
