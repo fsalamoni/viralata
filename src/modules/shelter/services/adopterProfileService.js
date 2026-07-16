@@ -12,6 +12,7 @@ import { doc, getDoc, setDoc, updateDoc, serverTimestamp, deleteField } from 'fi
 import { db } from '@/core/config/firebase';
 import { logger } from '@/core/lib/logger';
 import { createAuditLog } from '@/core/services/auditService';
+import { validateCpfServer } from '@/core/services/cpfValidationService';
 import {
   createAdopterProfileSchema,
   updateAdopterProfileSchema,
@@ -47,6 +48,14 @@ export async function createAdopterProfile(input, actor) {
   if (!actor?.uid) throw new Error('actor.uid é obrigatório');
   if (input.user_uid && input.user_uid !== actor.uid) {
     throw new Error('user_uid deve bater com actor.uid');
+  }
+
+  // TASK-321: server-side CPF digit validation (fonte da verdade)
+  if (input.cpf) {
+    const cpfResult = await validateCpfServer(input.cpf);
+    if (!cpfResult.valid) {
+      throw new Error(`CPF inválido: ${cpfResult.reason}`);
+    }
   }
 
   const parsed = createAdopterProfileSchema.parse(input);
@@ -100,6 +109,15 @@ export async function updateAdopterProfile(updates, actor) {
     if (v === null) nullFields.push(k);
     else updatesForParse[k] = v;
   }
+
+  // TASK-321: server-side CPF digit validation (fonte da verdade)
+  if (updatesForParse.cpf) {
+    const cpfResult = await validateCpfServer(updatesForParse.cpf);
+    if (!cpfResult.valid) {
+      throw new Error(`CPF inválido: ${cpfResult.reason}`);
+    }
+  }
+
   const parsed = updateAdopterProfileSchema.parse(updatesForParse);
   if (Object.keys(parsed).length === 0 && nullFields.length === 0) {
     return { changed_fields: [], noop: true };
