@@ -30,7 +30,7 @@ export function KanbanCard({ card, onClick, isOverlay }) {
   } = useSortable({ id: card.id, disabled: isOverlay });
 
   const style = isOverlay
-    ? { boxShadow: '0 8px 24px rgba(0,0,0,0.18)', transform: 'rotate(2deg)' }
+    ? { boxShadow: '0 14px 34px -12px rgba(64,34,18,0.40)', transform: 'rotate(1.5deg)', backdropFilter: 'blur(12px)' }
     : {
         transform: CSS.Transform.toString(transform),
         transition,
@@ -58,11 +58,12 @@ export function KanbanCard({ card, onClick, isOverlay }) {
       ref={setNodeRef}
       style={style}
       className={`
-        bg-white rounded-lg shadow-sm border border-gray-100
-        hover:shadow-md hover:border-blue-200
-        transition-all duration-150 select-none
+        bg-white/90 dark:bg-slate-900/90 rounded-xl shadow-sm border border-white/60
+        dark:border-slate-700/60
+        hover:shadow-[0_14px_34px_-20px_rgba(64,34,18,0.35)] hover:border-primary/30
+        transition-all duration-200 select-none
         flex items-stretch gap-0
-        ${isDragging ? 'ring-2 ring-blue-400' : ''}
+        ${isDragging ? 'ring-2 ring-primary' : ''}
         ${done ? 'opacity-60' : ''}
       `}
       aria-label={ariaLabel}
@@ -73,7 +74,7 @@ export function KanbanCard({ card, onClick, isOverlay }) {
       <div
         {...attributes}
         {...listeners}
-        className="flex items-center px-2 py-3 cursor-grab active:cursor-grabbing text-gray-300 hover:text-gray-500 rounded-l-lg flex-shrink-0"
+        className="flex items-center px-2 py-3 cursor-grab active:cursor-grabbing text-muted-foreground/40 hover:text-muted-foreground transition-colors rounded-l-lg flex-shrink-0"
         aria-label="Arrastar card"
         title="Arrastar para mover"
       >
@@ -90,7 +91,7 @@ export function KanbanCard({ card, onClick, isOverlay }) {
       >
         {/* Tags: tipo + prioridade */}
         <div className="flex items-center gap-1.5 mb-1.5 flex-wrap">
-          <span className="text-xs bg-gray-100 text-gray-600 rounded px-1.5 py-0.5 flex items-center gap-1">
+          <span className="text-xs bg-secondary text-foreground/80 rounded-full px-2.5 py-0.5 flex items-center gap-1.5 font-medium">
             <span>{TYPE_ICONS[card.type] || '📌'}</span>
             <span>{CARD_TYPE_LABELS[card.type] || card.type}</span>
           </span>
@@ -102,7 +103,7 @@ export function KanbanCard({ card, onClick, isOverlay }) {
         </div>
 
         {/* Título */}
-        <p className={`text-sm font-medium text-foreground leading-snug ${done ? 'line-through text-muted-foreground' : ''}`}>
+        <p className={`text-sm font-semibold leading-snug ${done ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
           {card.title}
         </p>
 

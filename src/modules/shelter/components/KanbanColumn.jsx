@@ -33,7 +33,7 @@ export function KanbanColumn({ column, cards, boardId, clubId, onCardClick }) {
     <div
       ref={setNodeRef}
       style={style}
-      className="flex-shrink-0 w-72 flex flex-col bg-gray-50 rounded-xl"
+      className="flex-shrink-0 w-72 flex flex-col bg-secondary/20 dark:bg-slate-800/40 rounded-xl border border-border/40"
       {...(a11yEnabled
         ? { role: 'list', 'aria-label': `Coluna: ${column.title}` }
         : {})}
@@ -89,7 +89,7 @@ export function KanbanColumn({ column, cards, boardId, clubId, onCardClick }) {
         ) : (
           <button
             onClick={() => setAddingCard(true)}
-            className="w-full py-1.5 text-xs text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-lg transition-colors"
+            className="w-full py-1.5 text-xs text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-colors font-medium"
           >
             + Card
           </button>
