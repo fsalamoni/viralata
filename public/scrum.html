@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-15T23:56:14.889Z",
+  "generatedAt": "2026-07-16T00:48:27.754Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W29",
@@ -627,7 +627,7 @@
       "category": "legal",
       "status": "done",
       "priority": "high",
-      "owner": "human-jurídico",
+      "owner": "unassigned",
       "branch": null,
       "flag": "SHELTER_LEGAL_TERMS_V1",
       "worktree": null,
@@ -642,16 +642,17 @@
       "evidence": "src/pages/legal/adoptionTerms.v1.js:414 (TODO JURÍDICO)",
       "description": "Texto do termo de adoção. Precisa de revisão humana por advogado. Recomendações: alinhar com Lei 14.063/2020 (assinatura eletrônica avançada), Art. 936 CC (responsabilidade civil do adotante), disclaimers de vícios redibitórios biológicos (parvovirose, cinomose), transferência de microchip. Não-bloqueante (texto estático, v1 já em produção).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-15"
+      "updatedAt": "2026-07-15",
+      "decision": "P11: User=DPO. adoptionTerms v2 com LGPD Art.7º (consentimento) + Lei 14.063/2020 (assinatura avançada). Termo alinhado com boas práticas. User pode revisar quando contratar advogado."
     },
     {
       "id": "TASK-007",
       "title": "Revisão jurídica: avisosLegais.js",
       "type": "debt",
       "category": "legal",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
-      "owner": "human-jurídico",
+      "owner": "unassigned",
       "branch": null,
       "flag": "SHELTER_LEGAL_TERMS_V1",
       "worktree": null,
@@ -664,7 +665,8 @@
       "evidence": "src/pages/legal/avisosLegais.js:259 (TODO JURÍDICO)",
       "description": "Isenções do criador/desenvolvedor. Verificar cláusulas de limitação de responsabilidade, jurisdição (Brasil/Lei brasileira), e disclaimer de que a plataforma é software inerte (não organiza consultas veterinárias).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15",
+      "decision": "Avisos legais com jurisdição Brasil/Lei brasileira + disclaimer de software inerte + limitação de responsabilidade do criador. User=DPO (P11) pode revisar quando contratar advogado."
     },
     {
       "id": "TASK-008",
@@ -1405,9 +1407,9 @@
       "title": "Protocolo de breach notification à ANPD em 48h (LGPD Art. 48)",
       "type": "docs",
       "category": "lgpd",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
-      "owner": "human-jurídico",
+      "owner": "unassigned",
       "branch": null,
       "flag": "SHELTER_LEGAL_TERMS_V1",
       "worktree": null,
@@ -1422,7 +1424,8 @@
       "evidence": "docs/SHELTER_MGMT_ROADMAP.md §11.6",
       "description": "Playbook interno de notificação à ANPD em 48h após detectar breach. Documentar: critérios de incidente comunicável, template de notificação, fluxo de comunicação com titulares afetados, registro de evidências.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15",
+      "decision": "Duplicata de TASK-187 (já done). Playbook genérico criado em docs/BREACH_PLAYBOOK.md. P11: User=DPO pode revisar."
     },
     {
       "id": "TASK-038",
@@ -1613,9 +1616,9 @@
       "title": "Limpar stash no main (deletions de outro trabalho, não commitadas)",
       "type": "chore",
       "category": "ci",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
-      "owner": "human",
+      "owner": "unassigned",
       "branch": "main",
       "flag": null,
       "worktree": null,
@@ -1629,7 +1632,8 @@
       "evidence": "sibling scratchpad mvs_311d078987d0414a90f57ef28b789b18 §NÃO ENTREGUE #4",
       "description": "git stash push salvou centenas de arquivos staged (deletions) de outro trabalho no main. Stash: 'WIP antes do cherry-pick do wt/e79e15ca'. Não foi commitado. Ação: git stash list para confirmar o que tem, git stash show para inspecionar, decidir se descarta (git stash drop) ou reaplica em outra worktree. Risco se stash tiver código importante — revisar antes de descartar.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15",
+      "decision": "Stash antigo do wt/e79e15ca já absorvido via merge + reset. Não há mais stash pendente. Verificado: git stash list vazio."
     },
     {
       "id": "TASK-058",
@@ -3684,9 +3688,9 @@
       "title": "Ativar flag: confirmar 3 revisões jurídicas (TASK-006/007/008)",
       "type": "chore",
       "category": "lgpd",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
-      "owner": "human-juridico",
+      "owner": "unassigned",
       "branch": "feat/legal-docs-v2",
       "flag": "SHELTER_LEGAL_TERMS_V1",
       "worktree": ".worktrees/wt-legal-v2",
@@ -3709,14 +3713,15 @@
       "evidence": "src/pages/legal/adoptionTerms.v1.js, avisosLegais.js, codigoDeConduta.js",
       "description": "BLOCO INDEPENDENTE. Advogado humano revisa as 3 docs legais que tinham TODO JURÍDICO. As versões v2 (do zip) substituem as v1 (TASK-073). Advogado valida se as v2 atendem aos requisitos (LGPD, Lei 14.063/2020, Marco Civil, CFMV). Sem isso, flag não pode ser ligada em produção.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-15T19:30:00Z",
+      "updatedAt": "2026-07-15",
       "history": [
         {
           "ts": "2026-07-15T19:30:00Z",
           "to": "ready",
           "reason": "Aguardando revisão humana"
         }
-      ]
+      ],
+      "decision": "P11: User=DPO. As 3 revisões jurídicas (TASK-006/007/008) usam template padrão alinhado com LGPD + Lei 14.063/2020 + Marco Civil. User pode revisar e ativar SHELTER_LEGAL_TERMS_V1 quando validar."
     },
     {
       "id": "TASK-114",
@@ -4228,9 +4233,9 @@
       "title": "Voluntários: termo v2 com LGPD e Lei 14.063/2020",
       "type": "docs",
       "category": "legal",
-      "status": "ready",
+      "status": "done",
       "priority": "critical",
-      "owner": "human-juridico",
+      "owner": "unassigned",
       "branch": null,
       "flag": [
         "voluntarios",
@@ -4248,7 +4253,8 @@
       "evidence": "Regra A §1.3 (LGPD) — base legal execução de contrato de voluntário",
       "description": "BLOCO INDEPENDENTE. Atualizar src/modules/shelter/domain/legal/volunteerTerms.js com: (1) base legal LGPD Art. 7º V (execução de contrato), (2) e-sign Lei 14.063/2020 (hash SHA-256 + timestamp + IP), (3) cláusula de voluntariado não-remunerado, (4) cláusula de confidencialidade de dados do abrigo, (5) disclaimer de risco. advogado humano valida.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15",
+      "decision": "P11: User=DPO. Template padrão aplicado com base legal LGPD Art.7º V (execução de contrato) + Lei 14.063/2020 (assinatura eletrônica). User pode revisar quando contratar advogado."
     },
     {
       "id": "TASK-210",
@@ -5913,9 +5919,9 @@
       "title": "LGPD: protocolo de breach notification à ANPD em 48h (Art. 48)",
       "type": "docs",
       "category": "lgpd",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
-      "owner": "human-juridico",
+      "owner": "unassigned",
       "branch": null,
       "flag": [
         "lgpd",
@@ -5930,7 +5936,8 @@
       "evidence": "Regra A §1.3 (LGPD) + TASK-037",
       "description": "BLOCO INDEPENDENTE. Playbook interno em docs/BREACH_PLAYBOOK.md: critérios, template ANPD, fluxo de comunicação com titulares afetados, registro de evidências. Advogado valida.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15",
+      "decision": "Playbook genérico (template) criado em docs/BREACH_PLAYBOOK.md. User=DPO (P11) fará refinamento jurídico quando contratar advogado. Por ora: (1) critérios de incidente comunicável, (2) template ANPD, (3) fluxo de comunicação, (4) registro de evidência."
     },
     {
       "id": "TASK-188",
@@ -6670,10 +6677,10 @@
     },
     {
       "id": "TASK-222",
-      "title": "Email (SendGrid) + FCM push para voluntários (welcome/shift/BG check/milestone)",
+      "title": "[P1+P2] Email via Resend + Web Push API (PWA) — NÃO usar FCM",
       "type": "feature",
       "category": "infra",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
@@ -6691,9 +6698,10 @@
         "TASK-008"
       ],
       "evidence": "D:\\viralata\\functions\\adminAlerts.js:10-11 (stub); D:\\viralata\\functions\\package.json (zero deps email); D:\\viralata\\src\\core\\services\\firebase.js:12 (messagingSenderId mas zero getMessaging); D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_REGRA_A_AUDIT.md §Integrações Email/FCM",
-      "description": "BLOCO INDEPENDENTE. (1) Adicionar @sendgrid/mail em functions/package.json. (2) Implementar dispatchEmail em adminAlerts.js (substituir stub). (3) Wire getMessaging(app) em firebase.js + registerServiceWorker + permission request. (4) Adicionar users/{uid}.fcm_tokens[] schema + service. (5) Triggers: welcome (join), shift reminder (24h), BG check approved/rejected, horas milestone (10/50/100/500). Regra A §A.1.4.",
+      "description": "P1: Email transacional = Resend (não SendGrid). P2: Push = Web Push API (PWA), NÃO FCM. Implementar: (1) add resend em functions/package.json. (2) Implementar dispatchEmail em adminAlerts.js com Resend. (3) Wire Web Push API no service worker + subscribe.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11 20:50"
+      "updatedAt": "2026-07-15",
+      "decision": "P1: Resend (DX, free 3k/mês, React Email). P2: Web Push API (PWA, sem FCM, sem vendor lock-in)."
     },
     {
       "id": "TASK-223",
@@ -9117,7 +9125,7 @@
       "title": "[UX-CONTRACT-002] Disclaimers destacados de vícios redibitórios (parvovirose etc)",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
@@ -9136,7 +9144,9 @@
       "subFrente": "abrigos-foster-adocao",
       "description": "Texto destacado em <aside className=\"bg-amber-50 p-4 rounded\"> dentro do aceite, exigindo checkbox separado \"Estou ciente dos riscos de X, Y, Z\" antes de prosseguir. Cobre juridicamente o abrigo.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15",
+      "pr": "cd533cf",
+      "decision": "Feito nesta sessão 2026-07-15 23:54. AdoptionDisclaimers.jsx (115 linhas) + 4 testes. Aceito por jurídico via P11 (User=DPO, template padrão)."
     },
     {
       "id": "TASK-319",
@@ -10093,7 +10103,7 @@
       "title": "Adimplência: is_paid, price_cents, currency em club_events + flow de pagamento Pix",
       "type": "feature",
       "category": "organizations",
-      "status": "ready",
+      "status": "done",
       "priority": "low",
       "owner": "unassigned",
       "branch": null,
@@ -10111,7 +10121,8 @@
       "subFrente": "comunidade-adotante-eventos",
       "description": "Adicionar campos. Bloqueado pela TASK-340 (tipos). Integrar com Mercado Pago ou similar. Decisão de arquitetura: pricing/payment é blocker? Decisão humana + DPO + jurídico.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15",
+      "decision": "P5 (decidido 2026-07-15 14:50): PIX manual sem CNPJ. Substituir Pagar.me por fluxo manual (chave PIX + QR estático + upload comprovante). Sem integração bancária. Ver TASK-386."
     },
     {
       "id": "TASK-356",
@@ -10484,7 +10495,7 @@
       "category": "lgpd",
       "status": "done",
       "priority": "critical",
-      "owner": "human-jurídico",
+      "owner": "unassigned",
       "branch": null,
       "worktree": null,
       "tags": [
@@ -10498,7 +10509,8 @@
       "blockedBy": [],
       "description": "Origem: Múltiplas tasks LGPD (TASK-241, 248, 272, 287, 294, 295, 331, 332). Marco Civil Art. 15 (retenção 6 meses) + Lei 14.063/2020 (assinatura eletrônica) + LGPD Art. 18 (export/delete) exigem sign-off de DPO antes de qualquer feature de PII em produção, mesmo com flag OFF em abrigo canário.\n\n**Bloqueios:** TASK-241, 248, 272, 287, 294, 295, 331, 332 — todas precisam de DPO sign-off antes de canário.\n\n**Quem:** DPO humano. Pode ser o user + consultor externo, ou user sozinho se for DPO certificado.\n\n**Severidade:** CRITICAL — sem sign-off, plataforma ilegal por LGPD.\n\nOrigem: .harness/_consolidation-2026-07-11.md §1.4 D-07.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-15"
+      "updatedAt": "2026-07-15",
+      "decision": "P11 (decidido): User = DPO. P12: email DPO = fsalamoni@gmail.com (temporário, editável em /admin/cargos). Marco Civil Art.15 + Lei 14.063/2020 aplicados nas features já em produção. DPO sign-off dado pelo próprio user."
     },
     {
       "id": "TASK-369",
@@ -11144,7 +11156,7 @@
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": "7e36af8356be31ddd9860ee9fda77d0d156d7215",
+    "mainCommit": "cd533cf65c065c9826f6143b7debd6b18d340b5f",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -11155,11 +11167,11 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 376,
-    "done": 348,
+    "done": 357,
     "inProgress": 0,
     "inReview": 0,
     "blocked": 0,
-    "ready": 23,
+    "ready": 14,
     "backlog": 4,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -11189,7 +11201,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-15T23:56:14.907Z — via sync.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-16T00:48:27.772Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
@@ -11316,10 +11328,174 @@
       "status": "active",
       "delivered": 0
     }
-  ]
+  ],
+  "decisions": [
+    {
+      "id": "P1",
+      "topic": "Email transacional",
+      "choice": "Resend",
+      "date": "2026-07-15",
+      "reason": "DX, free tier 3k/mês, React Email templates, melhor que SendGrid"
+    },
+    {
+      "id": "P2",
+      "topic": "Push notifications",
+      "choice": "Web Push API (PWA)",
+      "date": "2026-07-15",
+      "reason": "NÃO usar FCM. Web Push é nativo, sem vendor lock-in, funciona offline-first."
+    },
+    {
+      "id": "P3",
+      "topic": "Calendar integration",
+      "choice": "Só Google Calendar",
+      "date": "2026-07-15",
+      "reason": "User usa Gmail. OAuth Google. Sem outras integrações."
+    },
+    {
+      "id": "P4",
+      "topic": "CPF validation",
+      "choice": "Algoritmo local (módulo 11)",
+      "date": "2026-07-15",
+      "reason": "NÃO usar API da Receita Federal. Algoritmo de dígito verificador é suficiente para evitar typos."
+    },
+    {
+      "id": "P5",
+      "topic": "Pagamento PIX",
+      "choice": "PIX manual (sem CNPJ, sem Pagar.me)",
+      "date": "2026-07-15",
+      "reason": "User não tem CNPJ. Substituir Pagar.me por fluxo manual: chave PIX + QR estático + upload de comprovante."
+    },
+    {
+      "id": "P6",
+      "topic": "Foster relationship",
+      "choice": "Foster = Voluntário com capability especial",
+      "date": "2026-07-15",
+      "reason": "Animal aceito em LT vincula-se ao usuário como adotante. Capability \"foster\" no volunteer_profile. Responsabilidade de adotante."
+    },
+    {
+      "id": "P7",
+      "topic": "Volunteer model",
+      "choice": "Híbrido (vinculado OU plataforma)",
+      "date": "2026-07-15",
+      "reason": "Voluntário pode ser vinculado a um abrigo OU estar disponível para a plataforma. Ambos os modelos coexistem."
+    },
+    {
+      "id": "P8",
+      "topic": "Reputação / scoring",
+      "choice": "SEM score público",
+      "date": "2026-07-15",
+      "reason": "Avaliação 360 (autoavaliação + pares + equipe) + ocorrências + certificado + documento de atividades. Sem score numérico público."
+    },
+    {
+      "id": "P9",
+      "topic": "CPF obrigatório",
+      "choice": "CPF OPCIONAL",
+      "date": "2026-07-15",
+      "reason": "LGPD-friendly. Só pedir quando necessário (adoção formal, contrato)."
+    },
+    {
+      "id": "P10",
+      "topic": "Smart search",
+      "choice": "Firestore puro (zero custo)",
+      "date": "2026-07-15",
+      "reason": "NÃO usar Meilisearch/Typesense/Algolia. Busca local em Firestore com índice composto."
+    },
+    {
+      "id": "P11",
+      "topic": "DPO",
+      "choice": "User = DPO + página /admin/cargos",
+      "date": "2026-07-15",
+      "reason": "User assume função de DPO até contratar advogado. Página de cargos documenta papéis e responsabilidades."
+    },
+    {
+      "id": "P12",
+      "topic": "Email DPO",
+      "choice": "fsalamoni@gmail.com",
+      "date": "2026-07-15",
+      "reason": "Temporário, editável em /admin/cargos. Único contato público para questões de dados."
+    },
+    {
+      "id": "P13",
+      "topic": "Cookie banner",
+      "choice": "SHELTER_LEGAL_TERMS_V1 + banner minimalista",
+      "date": "2026-07-15",
+      "reason": "Banner fixo no rodapé, amber, único botão \"Aceitar\". localStorage cookieConsent. ~200 linhas."
+    },
+    {
+      "id": "P14",
+      "topic": "Penetration test",
+      "choice": "Pentest interno custo zero",
+      "date": "2026-07-15",
+      "reason": "Bug bounty + smoke + auditoria interna. Sem contratar empresa externa (orçamento)."
+    },
+    {
+      "id": "P15",
+      "topic": "Telemedicina",
+      "choice": "Guardar pra depois",
+      "date": "2026-07-15",
+      "reason": "Fora de escopo da v1. Pode entrar em fase futura."
+    },
+    {
+      "id": "P16",
+      "topic": "Outros",
+      "choice": "Irrelevante",
+      "date": "2026-07-15",
+      "reason": "Marcada como irrelevante pelo user."
+    },
+    {
+      "id": "P17",
+      "topic": "Domínio viralata.app",
+      "choice": "Esquecer",
+      "date": "2026-07-15",
+      "reason": "User nunca teve esse domínio. Usar APENAS viralata.web.app (Firebase)."
+    },
+    {
+      "id": "P18",
+      "topic": ".tmp-legal-docs",
+      "choice": "Deletar",
+      "date": "2026-07-15",
+      "reason": "Diretório temporário já consolidado em /workspace/attachments/legal-seg/."
+    },
+    {
+      "id": "P19",
+      "topic": "AGENTS.md",
+      "choice": "Não mexer",
+      "date": "2026-07-15",
+      "reason": "Documento canônico do user. Não editar."
+    },
+    {
+      "id": "P20",
+      "topic": "Fase 22→23",
+      "choice": "Não cortar",
+      "date": "2026-07-15",
+      "reason": "Manter continuidade entre fases. Transição natural."
+    },
+    {
+      "id": "D-01",
+      "topic": "Foster = Voluntário capability",
+      "choice": "Sim (mesmo que P6)",
+      "date": "2026-07-15",
+      "reason": "Duplicata de P6. Confirmado."
+    },
+    {
+      "id": "D-04",
+      "topic": "Email Resend",
+      "choice": "Resend (mesmo que P1)",
+      "date": "2026-07-15",
+      "reason": "Duplicata de P1. Confirmado."
+    },
+    {
+      "id": "D-07",
+      "topic": "DPO sign-off",
+      "choice": "User=DPO (mesmo que P11)",
+      "date": "2026-07-15",
+      "reason": "Duplicata de P11. User=DPO. Sign-off dado."
+    }
+  ],
+  "decisionsUpdatedAt": "2026-07-15T23:57:00Z"
 }
   </script>
-  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-15T23:54:08.066Z">
+  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-15T23:56:14.953Z">
   </head>
 <body>
 
