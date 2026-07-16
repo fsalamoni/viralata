@@ -16,15 +16,23 @@ import { FEATURE_FLAG } from '@/core/featureFlags';
 
 import { ptBR } from 'date-fns/locale';
 import { confirmDialog } from '@/components/ui/confirm-provider';
+import { Skeleton } from '@/components/ui/skeleton';
+import { EmptyState } from '@/components/ui/empty-state';
 
 export default function EventsTab({ communityId, isAdmin, membership, community }) {
   const { user } = useAuth();
   const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [eventFilter, setEventFilter] = useState('upcoming'); // 'all' | 'upcoming' | 'past'
   const eventDetailEnabled = useFeatureFlag(FEATURE_FLAG.COMMUNITY_EVENT_DETAIL_V1);
 
   const fetchEvents = () => {
-    listCommunityEvents(communityId).then(setEvents).catch(console.error);
+    setLoading(true);
+    listCommunityEvents(communityId)
+      .then(setEvents)
+      .catch(() => setEvents([]))
+      .finally(() => setLoading(false));
   };
 
   useEffect(() => {
@@ -51,10 +59,24 @@ export default function EventsTab({ communityId, isAdmin, membership, community 
     }
   };
 
+  const now = new Date();
+  const filteredEvents = events.filter(ev => {
+    if (eventFilter === 'upcoming') return !ev.starts_at || new Date(ev.starts_at) >= now;
+    if (eventFilter === 'past') return ev.starts_at && new Date(ev.starts_at) < now;
+    return true;
+  });
+
+  const EVENT_FILTERS = [
+    { label: 'Próximos', value: 'upcoming' },
+    { label: 'Passados', value: 'past' },
+    { label: 'Todos', value: 'all' },
+  ];
+
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold">Próximos Eventos</h2>
+      {/* Header com título e ações */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-2">
+        <h2 className="text-xl font-bold">Eventos</h2>
         {canManageEvents && (
           <Button variant="outline" size="sm" onClick={() => setIsDialogOpen(true)}>
             <Plus className="w-4 h-4 mr-2" /> Novo Evento
@@ -62,14 +84,50 @@ export default function EventsTab({ communityId, isAdmin, membership, community 
         )}
       </div>
 
-      {events.length === 0 ? (
-        <div className="text-center text-muted-foreground py-10">
-          <Calendar className="w-10 h-10 mx-auto mb-3 opacity-20" />
-          Nenhum evento agendado nesta comunidade.
+      {/* Filtros visíveis */}
+      <div className="flex items-center gap-2 flex-wrap">
+        {EVENT_FILTERS.map(f => (
+          <button
+            key={f.value}
+            onClick={() => setEventFilter(f.value)}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+              eventFilter === f.value
+                ? 'bg-primary text-primary-foreground border-primary'
+                : 'border-border bg-card text-muted-foreground hover:border-primary/40 hover:text-primary'
+            }`}
+          >
+            {f.label}
+            <span className={`rounded-full px-1.5 py-0.5 text-[10px] ${
+              eventFilter === f.value ? 'bg-primary-foreground/20' : 'bg-secondary'
+            }`}>
+              {f.value === 'upcoming' ? events.filter(e => !e.starts_at || new Date(e.starts_at) >= now).length
+                : f.value === 'past' ? events.filter(e => e.starts_at && new Date(e.starts_at) < now).length
+                : events.length}
+            </span>
+          </button>
+        ))}
+      </div>
+
+      {/* Skeleton de loading */}
+      {loading ? (
+        <div className="grid gap-4 sm:grid-cols-2">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="rounded-2xl border border-border p-4 space-y-3">
+              <Skeleton className="h-4 w-3/4" />
+              <Skeleton className="h-3 w-full" />
+              <Skeleton className="h-3 w-1/2" />
+            </div>
+          ))}
         </div>
+      ) : filteredEvents.length === 0 ? (
+        <EmptyState
+          icon={Calendar}
+          title={eventFilter === 'upcoming' ? 'Nenhum evento futuro' : eventFilter === 'past' ? 'Nenhum evento passado' : 'Nenhum evento cadastrado'}
+          description={eventFilter === 'upcoming' ? 'Esta comunidade ainda não tem eventos agendados.' : 'Não há eventos para exibir.'}
+        />
       ) : (
         <div className="grid gap-4 sm:grid-cols-2">
-          {events.map(ev => {
+          {filteredEvents.map(ev => {
             const card = (
               <section key={ev.id} className="p-4 flex flex-col gap-3 hover:bg-secondary/10 transition-colors cursor-pointer">
                 <div className="flex justify-between items-start">
