@@ -1,15 +1,15 @@
-# LOOP_PROMPT — viralata (atualizado 2026-07-16 17:14 UTC)
+# LOOP_PROMPT — viralata (atualizado 2026-07-16 21:09 UTC)
 
-**Contexto**: /workspace/viralata, branch main @ 105264d, React+Vite+Firebase.
+**Contexto**: /workspace/viralata, branch main @ ea77b8f, React+Vite+Firebase.
 **Repo**: https://github.com/fsalamoni/viralata.git
 **Sessão**: Mavis root (loop autônomo, 20min, **24/7 sem limite de horário**).
 
-**Última task**: TASK-786 (DS_V2 polish OverviewTab) — done, 486 done, 24 ready.
+**Última task**: TASK-790 (Firestore rules shelter_donations + shelter_donation_receipts + isShelterAdmin helpers) — done, 503 done, 7 ready.
 
 **MODO ATUAL**: MERGE+DEPLOY A CADA TASK (não batch). User pediu 2026-07-16 17:00:
 "para que as tarefas sejam criadas, sejam selecionadas, sejam trabalhadas e concluídas. uma a uma. Cuide para que o desenvolvimento seja criado de forma adequada e entre no main de forma correta, para não termos retrabalho."
 
-**MISSÃO 4-6H**: Implementar TASK-787..810 antes do user voltar.
+**MISSÃO 4-6H**: Implementar TASK-791..810 antes do user voltar.
 
 ---
 
