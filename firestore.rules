@@ -47,6 +47,15 @@ service cloud.firestore {
         || isClubAdmin(clubId)
       );
     }
+    // TASK-790: helper para shelters (aliases de isClubOwnerOrAdmin / isClubMember).
+    // Usado em contracts (TASK-288), interviews (TASK-290) e
+    // shelter_donation_receipts (TASK-790).
+    function isShelterAdmin(clubId) {
+      return isClubOwnerOrAdmin(clubId);
+    }
+    function isShelterAdminOrMember(clubId) {
+      return isClubMember(clubId);
+    }
     function hasEventInvite(eventId) {
       return isAuth() && exists(/databases/$(database)/documents/event_invites/$(eventId + '_' + request.auth.uid));
     }
@@ -1852,6 +1861,65 @@ service cloud.firestore {
         // Apenas campos permitidos para assignee
         request.resource.data.diff(resource.data).affectedKeys()
           .hasOnly(['status', 'log']);
+    }
+
+    // ─── TASK-790: shelter_donations (campanhas de doação do abrigo) ────────
+    // Coleção: clubs/{clubId}/shelter_donations
+    // Lógica: público para leitura (transparência), gravado apenas por
+    // admin/owner do abrigo OU por membros com permissão `donations`.
+    match /shelter_donations/{donationId} {
+      // Leitura pública — transparência das campanhas
+      allow read: if true;
+      // Create/update/delete: admin/owner do abrigo OU membros com permissão donations
+      allow create: if isAuth() && (
+        isClubOwnerOrAdmin(clubId) ||
+        hasClubPermission(clubId, 'donations') ||
+        isPlatformAdmin()
+      );
+      allow update: if isAuth() && (
+        isClubOwnerOrAdmin(clubId) ||
+        hasClubPermission(clubId, 'donations') ||
+        isPlatformAdmin()
+      );
+      allow delete: if isAuth() && (
+        isClubOwnerOrAdmin(clubId) ||
+        hasClubPermission(clubId, 'donations') ||
+        isPlatformAdmin()
+      );
+    }
+
+    // ─── TASK-790: shelter_donation_receipts (comprovantes de doação) ─────────
+    // Coleção: clubs/{clubId}/shelter_donation_receipts
+    // Lógica:
+    //   - Leitura: abrigo admin/members com permissão donations + o próprio
+    //     usuário que enviou + platform_admin
+    //   - Create: qualquer usuário autenticado (enviar comprovante)
+    //   - Update: abrigo com permissão donations (status + admin_note)
+    //   - Delete: abrigo com permissão donations + platform_admin
+    match /shelter_donation_receipts/{receiptId} {
+      allow read: if isAuth() && (
+        isClubOwnerOrAdmin(clubId) ||
+        hasClubPermission(clubId, 'donations') ||
+        isClubMember(clubId) ||
+        resource.data.user_uid == request.auth.uid ||
+        isPlatformAdmin()
+      );
+      allow create: if isAuth() && (
+        // Qualquer usuário logado pode enviar comprovante
+        // (validação de campos é no service)
+        request.resource.data.club_id == clubId &&
+        request.resource.data.user_uid == request.auth.uid
+      );
+      allow update: if isAuth() && (
+        isClubOwnerOrAdmin(clubId) ||
+        hasClubPermission(clubId, 'donations') ||
+        isPlatformAdmin()
+      );
+      allow delete: if isAuth() && (
+        isClubOwnerOrAdmin(clubId) ||
+        hasClubPermission(clubId, 'donations') ||
+        isPlatformAdmin()
+      );
     }
   }
 }
