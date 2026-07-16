@@ -3,7 +3,6 @@ import { toast } from 'sonner';
 import {
   Plus, Trash2, Edit2, Settings, X, Check,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -257,26 +256,26 @@ export default function ClubFinanceTab({ clubId, canManage = false }) {
           topo do card (a correção do problema reportado pelo usuário).
           CardContent com p-6 e space-y-2 para valor generoso. */}
       <div className="pt-4 sm:pt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <Card className="rounded-2xl border-[hsl(150_38%_36%/0.25)] bg-[hsl(150_38%_36%/0.08)]">
-          <CardContent className="space-y-2 p-6 sm:p-7">
+        <section className="arena-section-card rounded-2xl border-[hsl(150_38%_36%/0.25)] bg-[hsl(150_38%_36%/0.08)]">
+          <div className="arena-section-card-body space-y-2 p-6 sm:p-7">
             <div className="text-xs font-semibold uppercase tracking-wider text-[hsl(150_38%_26%)]">Receitas</div>
             <div className="text-2xl font-extrabold text-[hsl(150_38%_24%)] sm:text-3xl">{brl(revenueTotal)}</div>
-          </CardContent>
-        </Card>
-        <Card className="rounded-2xl border-[hsl(9_62%_46%/0.22)] bg-[hsl(9_62%_46%/0.07)]">
-          <CardContent className="space-y-2 p-6 sm:p-7">
+          </div>
+        </section>
+        <section className="arena-section-card rounded-2xl border-[hsl(9_62%_46%/0.22)] bg-[hsl(9_62%_46%/0.07)]">
+          <div className="arena-section-card-body space-y-2 p-6 sm:p-7">
             <div className="text-xs font-semibold uppercase tracking-wider text-[hsl(9_62%_38%)]">Despesas</div>
             <div className="text-2xl font-extrabold text-[hsl(9_62%_36%)] sm:text-3xl">{brl(expenseTotal)}</div>
-          </CardContent>
-        </Card>
-        <Card className="rounded-2xl">
-          <CardContent className="space-y-2 p-6 sm:p-7">
+          </div>
+        </section>
+        <section className="arena-section-card rounded-2xl">
+          <div className="arena-section-card-body space-y-2 p-6 sm:p-7">
             <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Saldo</div>
             <div className={cn('text-2xl font-extrabold sm:text-3xl', balance >= 0 ? 'text-[hsl(150_38%_24%)]' : 'text-[hsl(9_62%_36%)]')}>
               {brl(balance)}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </section>
       </div>
 
       <TimelineChart entries={entries} />
@@ -287,8 +286,8 @@ export default function ClubFinanceTab({ clubId, canManage = false }) {
       </div>
 
       {filtered.length > 0 && (
-        <Card className="rounded-2xl">
-          <CardContent className="divide-y p-0">
+        <section className="arena-section-card rounded-2xl">
+          <div className="arena-section-card-body divide-y p-0">
             {filtered.map((entry) => (
               <div key={entry.id} className="flex items-center gap-3 p-3">
                 <span className={cn('h-2 w-2 shrink-0 rounded-full', entry.type === LEDGER_TYPE.REVENUE ? 'bg-[hsl(150_38%_40%)]' : 'bg-[hsl(9_62%_50%)]')} />
@@ -311,8 +310,8 @@ export default function ClubFinanceTab({ clubId, canManage = false }) {
                 )}
               </div>
             ))}
-          </CardContent>
-        </Card>
+          </div>
+        </section>
       )}
 
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
@@ -379,11 +378,11 @@ export default function ClubFinanceTab({ clubId, canManage = false }) {
 
 function CategoryList({ title, rows, barClassName }) {
   return (
-    <Card className="rounded-2xl">
+    <section className="arena-section-card rounded-2xl">
       {/* p-6 sm:p-7 com pt-6 garante que o título "Receitas por
           categoria" não encoste no topo do card. Lista interna
           com space-y-3.5 pra dar respiração entre as linhas. */}
-      <CardContent className="space-y-4 p-6 pt-6 sm:p-7 sm:pt-7">
+      <div className="arena-section-card-body space-y-4 p-6 pt-6 sm:p-7 sm:pt-7">
         <h3 className="text-sm font-semibold">{title}</h3>
         {rows.length === 0 ? (
           <p className="text-sm text-muted-foreground">Nenhum lançamento no período.</p>
@@ -402,8 +401,8 @@ function CategoryList({ title, rows, barClassName }) {
             ))}
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 
@@ -432,15 +431,15 @@ function TimelineChart({ entries }) {
     // visualmente claro como "aguarde mais dados" sem encostar nas
     // bordas do card de saldo acima.
     return (
-      <Card className="rounded-2xl">
-        <CardContent className="flex min-h-[160px] items-center justify-center p-6 text-center text-sm text-muted-foreground">
+      <section className="arena-section-card rounded-2xl">
+        <div className="arena-section-card-body flex min-h-[160px] items-center justify-center p-6 text-center text-sm text-muted-foreground">
           <p className="max-w-xs">
             {series.length === 0
               ? 'Sem dados ainda para gerar o gráfico de evolução. Conforme você registrar lançamentos, a linha aparece aqui.'
               : 'É preciso pelo menos 2 meses de dados para mostrar a evolução.'}
           </p>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     );
   }
 
@@ -459,12 +458,12 @@ function TimelineChart({ entries }) {
   };
 
   return (
-    <Card className="rounded-2xl">
-      <CardHeader className="p-6 sm:p-7">
-        <CardTitle className="text-base">Evolução mensal</CardTitle>
-        <CardDescription>Receitas e despesas ao longo dos meses</CardDescription>
-      </CardHeader>
-      <CardContent className="p-6 pt-0 sm:p-7 sm:pt-0">
+    <section className="arena-section-card rounded-2xl">
+      <div className="arena-section-card-header">
+        <h3 className="arena-section-card-title">Evolução mensal</h3>
+        <p className="arena-section-card-description">Receitas e despesas ao longo dos meses</p>
+      </div>
+      <div className="arena-section-card-body p-6 pt-0 sm:p-7 sm:pt-0">
         <div className="overflow-x-auto">
           <svg
             viewBox={`0 0 ${W} ${H}`}
@@ -522,8 +521,8 @@ function TimelineChart({ entries }) {
             <span className="h-0.5 w-3" style={{ background: 'hsl(9 62% 46%)', borderTop: '2px dashed hsl(9 62% 46%)' }} /> Despesas
           </span>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 

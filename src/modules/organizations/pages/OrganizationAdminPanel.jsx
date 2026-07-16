@@ -271,101 +271,101 @@ export default function OrganizationAdminPanel() {
       {/* Header do painel admin — padding generoso (p-6 sm:p-10) e
           gap-5 sm:gap-6 entre o avatar e o bloco de texto. Mais respiro
           que o p-5 sm:p-8 antigo. */}
-      <section className="arena-panel-strong overflow-hidden rounded-[1.25rem] p-6 sm:rounded-[2rem] sm:p-10">
-        <div className="flex flex-wrap items-start gap-4">
-          <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-white/15 bg-white/10 text-[19px] font-extrabold text-white">
-            {initials}
+      <section className="arena-admin-header">
+        <div className="arena-admin-header-content">
+          <span className="arena-admin-header-avatar" aria-hidden>
+            {initials || <Building2 className="h-7 w-7" />}
           </span>
-          <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-2xl font-bold text-white sm:text-3xl">{club.name}</h1>
-              <Badge className="rounded-full border-0 bg-white/10 text-white hover:bg-white/10">
-                <ShieldCheck className="mr-1.5 h-3.5 w-3.5" /> Administração
-              </Badge>
+          <div className="arena-admin-header-info">
+            <div className="arena-admin-header-title-row">
+              <h1 className="arena-admin-header-title">{club.name || 'Organização'}</h1>
+              <span className="arena-admin-header-badge">
+                <ShieldCheck className="h-3.5 w-3.5" /> Administração
+              </span>
               {club.community_name && (
-                <Badge className="rounded-full border-0 bg-white/10 text-white hover:bg-white/10">
-                  Comunidade · {club.community_name}
-                </Badge>
+                <span className="arena-admin-header-badge" title="Comunidade vinculada">
+                  <Building2 className="h-3.5 w-3.5" /> {club.community_name}
+                </span>
               )}
               {(club.directory_status || CLUB_DIRECTORY_STATUS.ACTIVE) !== CLUB_DIRECTORY_STATUS.ACTIVE && (
-                <Badge className="rounded-full border-0 bg-white/10 text-white hover:bg-white/10">
+                <span className="arena-admin-header-badge">
                   {CLUB_DIRECTORY_STATUS_LABELS[club.directory_status || CLUB_DIRECTORY_STATUS.ACTIVE]}
-                </Badge>
+                </span>
               )}
             </div>
-            <p className="mt-2 text-sm text-orange-50/80">
-              Painel de administração{location ? ` · ${location}` : ''}
-              {owner && ' · Você é o proprietário'}
+            <p className="arena-admin-header-subtitle">
+              Painel interno de gestão{location ? ` · ${location}` : ''}
+              {owner ? ' · Você é o proprietário' : ''}
             </p>
           </div>
         </div>
       </section>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="arena-tab-bar">
+        <TabsList className="arena-admin-tabs">
           {allVisibleTabs.map((tab) => (
-            <TabsTrigger key={tab.key} value={tab.key} className={cn('arena-tab-pill gap-1.5')}>
+            <TabsTrigger key={tab.key} value={tab.key} className={cn('arena-admin-tab-trigger')}>
               <tab.icon className="h-4 w-4" /> {tab.label}
             </TabsTrigger>
           ))}
         </TabsList>
 
-        <TabsContent value="overview" className="mt-12 px-1 sm:mt-14">
+        <TabsContent value="overview" className="mt-6 sm:mt-8 focus-visible:outline-none">
           <OverviewTab club={club} />
         </TabsContent>
-        <TabsContent value="general" className="mt-12 px-1 sm:mt-14">
+        <TabsContent value="general" className="mt-6 sm:mt-8 focus-visible:outline-none">
           <ClubGeneralAdminTab club={club} />
         </TabsContent>
-        <TabsContent value="animals" className="mt-12 px-1 sm:mt-14">
+        <TabsContent value="animals" className="mt-6 sm:mt-8 focus-visible:outline-none">
           <ClubPetsDataGrid clubId={orgId} canManage={canManageAnimals} />
         </TabsContent>
-        <TabsContent value="feed" className="mt-12 px-1 sm:mt-14">
+        <TabsContent value="feed" className="mt-6 sm:mt-8 focus-visible:outline-none">
           <ClubFeedTab clubId={orgId} club={club} membership={membership} canManageFeed={canManageFeed} />
         </TabsContent>
-        <TabsContent value="donations" className="mt-12 px-1 sm:mt-14">
+        <TabsContent value="donations" className="mt-6 sm:mt-8 focus-visible:outline-none">
           <ClubDonationsTab clubId={orgId} club={club} membership={membership} canManage={canManageDonations} />
         </TabsContent>
-        <TabsContent value="finance" className="mt-12 px-1 sm:mt-14">
+        <TabsContent value="finance" className="mt-6 sm:mt-8 focus-visible:outline-none">
           <ClubFinanceTab clubId={orgId} canManage={canManageFinance} />
         </TabsContent>
         {showReportsTab && (
-          <TabsContent value="reports" className="mt-12 px-1 sm:mt-14">
+          <TabsContent value="reports" className="mt-6 sm:mt-8 focus-visible:outline-none">
             <SafeTab label="reports"><ReportsTab clubId={orgId} /></SafeTab>
           </TabsContent>
         )}
         {showIndicatorsTab && (
-          <TabsContent value="indicators" className="mt-12 px-1 sm:mt-14">
+          <TabsContent value="indicators" className="mt-6 sm:mt-8 focus-visible:outline-none">
             <SafeTab label="indicators"><IndicatorsTab clubId={orgId} /></SafeTab>
           </TabsContent>
         )}
-        <TabsContent value="chat" className="mt-12 px-1 sm:mt-14">
+        <TabsContent value="chat" className="mt-6 sm:mt-8 focus-visible:outline-none">
           <ClubChatAdminTab club={club} />
         </TabsContent>
-        <TabsContent value="team" className="mt-12 px-1 sm:mt-14">
+        <TabsContent value="team" className="mt-6 sm:mt-8 focus-visible:outline-none">
           <ClubTeamTab club={club} viewerMembership={membership} viewerUid={user?.uid} />
         </TabsContent>
-        <TabsContent value="settings" className="mt-12 px-1 sm:mt-14">
+        <TabsContent value="settings" className="mt-6 sm:mt-8 focus-visible:outline-none">
           <ClubAdminTab club={club} />
         </TabsContent>
         {/* Shelter Tabs com Feature Flag Gating. Envolvidos em SafeTab (ErrorBoundary
             local) para isolar falhas de query/componente sem derrubar o painel. */}
         {shelterFoundation && shelterDashboard && (
-          <TabsContent value="dashboard" className="mt-12 px-1 sm:mt-14">
+          <TabsContent value="dashboard" className="mt-6 sm:mt-8 focus-visible:outline-none">
             <SafeTab label="dashboard"><DashboardPage clubId={orgId} /></SafeTab>
           </TabsContent>
         )}
         {shelterFoundation && shelterKanban && (
-          <TabsContent value="kanban" className="mt-12 px-1 sm:mt-14">
+          <TabsContent value="kanban" className="mt-6 sm:mt-8 focus-visible:outline-none">
             <SafeTab label="kanban"><KanbanPage clubId={orgId} /></SafeTab>
           </TabsContent>
         )}
         {shelterFoundation && shelterExhibitions && (
-          <TabsContent value="exhibitions" className="mt-12 px-1 sm:mt-14">
+          <TabsContent value="exhibitions" className="mt-6 sm:mt-8 focus-visible:outline-none">
             <SafeTab label="exhibitions"><ExhibitionsList shelterClubId={orgId} /></SafeTab>
           </TabsContent>
         )}
         {shelterFoundation && shelterVolunteers && shelterVolunteerProfileV1 && canViewVolunteers && (
-          <TabsContent value="volunteers" className="mt-12 px-1 sm:mt-14">
+          <TabsContent value="volunteers" className="mt-6 sm:mt-8 focus-visible:outline-none">
             <SafeTab label="volunteers">
               <VolunteersAdminTab
                 shelterClubId={orgId}
@@ -377,22 +377,22 @@ export default function OrganizationAdminPanel() {
           </TabsContent>
         )}
         {shelterFoundation && shelterHealthRecords && (
-          <TabsContent value="medical_records" className="mt-12 px-1 sm:mt-14">
+          <TabsContent value="medical_records" className="mt-6 sm:mt-8 focus-visible:outline-none">
             <SafeTab label="medical_records"><ShelterPetScopedTab clubId={orgId} kind="medical" /></SafeTab>
           </TabsContent>
         )}
         {shelterFoundation && shelterMedication && (
-          <TabsContent value="medications" className="mt-12 px-1 sm:mt-14">
+          <TabsContent value="medications" className="mt-6 sm:mt-8 focus-visible:outline-none">
             <SafeTab label="medications"><ShelterPetScopedTab clubId={orgId} kind="medications" /></SafeTab>
           </TabsContent>
         )}
         {shelterFoundation && shelterPetTimeline && (
-          <TabsContent value="timeline" className="mt-12 px-1 sm:mt-14">
+          <TabsContent value="timeline" className="mt-6 sm:mt-8 focus-visible:outline-none">
             <SafeTab label="timeline"><ShelterPetScopedTab clubId={orgId} kind="timeline" /></SafeTab>
           </TabsContent>
         )}
         {shelterFoundation && shelterFoster && (
-          <TabsContent value="foster" className="mt-12 px-1 sm:mt-14">
+          <TabsContent value="foster" className="mt-6 sm:mt-8 focus-visible:outline-none">
             <SafeTab label="foster"><FostersList shelterClubId={orgId} canAbriho={canManageTeam} actor={{ uid: user?.uid, displayName: user?.displayName }} /></SafeTab>
           </TabsContent>
         )}
@@ -406,26 +406,36 @@ function OverviewTab({ club }) {
   const { data: pets = [] } = useMyPets(club.id);
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <div className="arena-stats-grid">
         <StatCard value={pets.length} label="Animais cadastrados" />
         <StatCard value={club.member_count || 0} label="Seguidores" />
         <StatCard value={founded || '—'} label="Fundação" />
       </div>
-      <div className="rounded-2xl border border-border bg-card p-6 sm:p-7">
-        <h3 className="mb-2 text-sm font-semibold">Sobre a organização</h3>
-        <p className="whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">
-          {club.description || 'Nenhuma descrição cadastrada ainda.'}
-        </p>
+      <div className="arena-section-card">
+        <div className="arena-section-card-header">
+          <div>
+            <h3 className="arena-section-card-title">Sobre a organização</h3>
+            <p className="arena-section-card-description">Descrição pública visível no diretório.</p>
+          </div>
+        </div>
+        <div className="arena-section-card-body">
+          <p className="whitespace-pre-wrap text-[13.5px] leading-relaxed text-foreground/85">
+            {club.description || 'Nenhuma descrição cadastrada ainda.'}
+          </p>
+        </div>
       </div>
     </div>
   );
 }
 
-function StatCard({ value, label }) {
+function StatCard({ value, label, icon: Icon }) {
   return (
-    <div className="rounded-2xl border border-border bg-card p-6 sm:p-7">
-      <div className="text-[21px] font-extrabold">{value}</div>
-      <div className="mt-1 text-xs font-medium text-muted-foreground">{label}</div>
+    <div className="arena-stat-card">
+      <div className="flex items-start justify-between gap-2">
+        <p className="arena-stat-card-label">{label}</p>
+        {Icon && <Icon className="h-4 w-4 text-muted-foreground/70" />}
+      </div>
+      <div className="arena-stat-card-value">{value}</div>
     </div>
   );
 }

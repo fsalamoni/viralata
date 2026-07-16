@@ -16,7 +16,6 @@
 import { useParams } from 'react-router-dom';
 import { AlertCircle, RefreshCw, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useDashboard } from '@/modules/shelter/hooks/useDashboard';
 import { DashboardCard } from './DashboardCard';
 import MedicationsDueCard from './MedicationsDueCard';
@@ -57,8 +56,8 @@ export function DashboardPage({ clubId: clubIdProp }) {
       </div>
 
       {hasError && (
-        <Card className="border-amber-200 bg-amber-50">
-          <CardContent className="p-4 flex items-start gap-3">
+        <section className="arena-section-card border-amber-200 bg-amber-50">
+          <div className="arena-section-card-body p-4 flex items-start gap-3">
             <AlertCircle className="h-5 w-5 text-amber-700 mt-0.5 shrink-0" aria-hidden="true" />
             <div className="text-sm text-amber-900">
               <p className="font-medium">Alguns dados não puderam ser carregados.</p>
@@ -69,8 +68,8 @@ export function DashboardPage({ clubId: clubIdProp }) {
                   .join(' · ')}
               </p>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </section>
       )}
 
       <div

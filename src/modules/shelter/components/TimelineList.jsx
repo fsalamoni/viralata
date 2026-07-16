@@ -13,7 +13,6 @@
  */
 
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
@@ -105,8 +104,8 @@ export function TimelineList({
   };
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
+    <section className="arena-section-card">
+      <div className="arena-section-card-header">
         <div>
           <CardTitle>Histórico do Animal</CardTitle>
           <p className="text-xs text-muted-foreground mt-1">
@@ -123,8 +122,8 @@ export function TimelineList({
             {showForm ? 'Cancelar' : '+ Adicionar evento'}
           </Button>
         )}
-      </CardHeader>
-      <CardContent>
+      </div>
+      <div className="arena-section-card-body">
         {showForm && (
           <div className="mb-6">
             <TimelineEventForm
@@ -186,8 +185,8 @@ export function TimelineList({
             ))}
           </ol>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 

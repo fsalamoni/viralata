@@ -9,7 +9,6 @@
 
 import { confirmDialog } from '@/components/ui/confirm-provider';
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
@@ -109,8 +108,8 @@ const [actionContext, setActionContext] = useState(null); // { action, fosterId,
 
   return (
     <>
-    <Card>
-      <CardHeader>
+    <section className="arena-section-card">
+      <div className="arena-section-card-header">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
             <CardTitle>Lares Temporários</CardTitle>
@@ -136,8 +135,8 @@ const [actionContext, setActionContext] = useState(null); // { action, fosterId,
             ))}
           </div>
         </div>
-      </CardHeader>
-      <CardContent>
+      </div>
+      <div className="arena-section-card-body">
         {fosterList.length === 0 ? (
           <p className="text-sm text-muted-foreground py-4 text-center">
             Nenhum placement {statusFilter ? `com status ${STATUS_LABELS[statusFilter]}` : 'ainda'}.
@@ -219,8 +218,8 @@ const [actionContext, setActionContext] = useState(null); // { action, fosterId,
             })}
           </ol>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </section>
 
       {/* Modal do Termo de Lar Temporário — substitui o window.prompt.
           Atende Guia de Implementação Legal v2 §4.2 e Lei 14.063/2020. */}

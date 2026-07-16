@@ -8,7 +8,6 @@
  */
 
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
@@ -109,8 +108,8 @@ export function MedicationsList({ petId, shelterClubId, canEdit = false, actor }
   };
 
   return (
-    <Card>
-      <CardHeader>
+    <section className="arena-section-card">
+      <div className="arena-section-card-header">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
             <CardTitle>Medicações</CardTitle>
@@ -136,8 +135,8 @@ export function MedicationsList({ petId, shelterClubId, canEdit = false, actor }
             ))}
           </div>
         </div>
-      </CardHeader>
-      <CardContent>
+      </div>
+      <div className="arena-section-card-body">
         {canEdit && (
           <div className="mb-4">
             <Button size="sm" onClick={() => setShowForm((v) => !v)} variant={showForm ? 'outline' : 'default'}>
@@ -230,7 +229,7 @@ export function MedicationsList({ petId, shelterClubId, canEdit = false, actor }
             })}
           </ol>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }

@@ -19,7 +19,6 @@ import {
   CheckSquare, FileText, PawPrint, Home, Clock, ChevronRight,
 } from 'lucide-react';
 import { PostAdoptionReturnedList } from '@/modules/shelter/components/PostAdoptionReturnedList';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -259,17 +258,17 @@ export function ShelterAdminDashboard({ clubId }) {
         </div>
       ) : (
         <div className="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-3">
-          <Card className="rounded-2xl">
-            <CardHeader>
+          <section className="arena-section-card">
+            <div className="arena-section-card-header">
               <CardTitle className="flex items-center justify-between text-base">
                 <span className="flex items-center gap-2">
                   <CheckSquare className="h-4 w-4 text-primary" /> Minhas tasks
                 </span>
                 <Badge variant="secondary" className="text-[10px]">{tasks.length}</Badge>
               </CardTitle>
-              <CardDescription className="text-xs">Kanban onde sou assignee</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-1.5">
+              <p className="arena-section-card-description">Kanban onde sou assignee</p>
+            </div>
+            <div className="arena-section-card-body space-y-1.5">
               {tasks.length === 0 ? (
                 <p className="text-xs text-muted-foreground italic px-1 py-2">
                   Nenhuma task atribuída a você.
@@ -279,20 +278,20 @@ export function ShelterAdminDashboard({ clubId }) {
                   {tasks.slice(0, 5).map((t) => <TaskRow key={t.id} task={t} />)}
                 </ul>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </section>
 
-          <Card className="rounded-2xl">
-            <CardHeader>
+          <section className="arena-section-card">
+            <div className="arena-section-card-header">
               <CardTitle className="flex items-center justify-between text-base">
                 <span className="flex items-center gap-2">
                   <FileText className="h-4 w-4 text-primary" /> Applications
                 </span>
                 <Badge variant="secondary" className="text-[10px]">{apps.length}</Badge>
               </CardTitle>
-              <CardDescription className="text-xs">Recentes neste abrigo</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-1.5">
+              <p className="arena-section-card-description">Recentes neste abrigo</p>
+            </div>
+            <div className="arena-section-card-body space-y-1.5">
               {apps.length === 0 ? (
                 <p className="text-xs text-muted-foreground italic px-1 py-2">
                   Nenhuma application no abrigo.
@@ -302,20 +301,20 @@ export function ShelterAdminDashboard({ clubId }) {
                   {apps.slice(0, 5).map((a) => <ApplicationRow key={a.id} app={a} />)}
                 </ul>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </section>
 
-          <Card className="rounded-2xl">
-            <CardHeader>
+          <section className="arena-section-card">
+            <div className="arena-section-card-header">
               <CardTitle className="flex items-center justify-between text-base">
                 <span className="flex items-center gap-2">
                   <PawPrint className="h-4 w-4 text-primary" /> Pets cadastrados
                 </span>
                 <Badge variant="secondary" className="text-[10px]">{myPets.length}</Badge>
               </CardTitle>
-              <CardDescription className="text-xs">Pets onde sou criador</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-1.5">
+              <p className="arena-section-card-description">Pets onde sou criador</p>
+            </div>
+            <div className="arena-section-card-body space-y-1.5">
               {myPets.length === 0 ? (
                 <p className="text-xs text-muted-foreground italic px-1 py-2">
                   Você ainda não cadastrou pets.
@@ -325,8 +324,8 @@ export function ShelterAdminDashboard({ clubId }) {
                   {myPets.slice(0, 5).map((p) => <PetRow key={p.id} pet={p} />)}
                 </ul>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </section>
 
           {/* Devoluções pós-adoção (TASK-308) */}
           {clubId && (

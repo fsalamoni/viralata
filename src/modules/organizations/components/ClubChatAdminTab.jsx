@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Send, Loader2, MessageCircle, X, Users, Lock, CheckCircle2, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -42,14 +41,14 @@ export default function ClubChatAdminTab({ club }) {
 
   return (
     <div className="grid grid-cols-1 gap-3 lg:grid-cols-[320px,1fr]">
-      <Card className="rounded-2xl">
-        <CardHeader className="p-6 sm:p-7">
+      <section className="arena-section-card rounded-2xl">
+        <div className="arena-section-card-header">
           <CardTitle className="flex items-center gap-2 text-base">
             <Users className="h-4 w-4 text-primary" /> Conversas
           </CardTitle>
-          <CardDescription>Threads abertas pelo público com esta ONG.</CardDescription>
-        </CardHeader>
-        <CardContent className="p-3 sm:p-4">
+          <p className="arena-section-card-description">Threads abertas pelo público com esta ONG.</p>
+        </div>
+        <div className="arena-section-card-body p-3 sm:p-4">
           {isLoading ? (
             <div className="space-y-2">{[1, 2].map((i) => <Skeleton key={i} className="h-14 rounded-xl" />)}</div>
           ) : threads.length === 0 ? (
@@ -92,22 +91,22 @@ export default function ClubChatAdminTab({ club }) {
               ))}
             </ul>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
-      <Card className="rounded-2xl">
+      <section className="arena-section-card rounded-2xl">
         {!selectedId ? (
-          <CardContent className="flex h-80 items-center justify-center">
+          <div className="arena-section-card-body flex h-80 items-center justify-center">
             <EmptyState
               icon={MessageCircle}
               title="Selecione uma conversa"
               description="Escolha uma thread na lista à esquerda para visualizar e responder."
             />
-          </CardContent>
+          </div>
         ) : (
           <AdminThreadView threadId={selectedId} club={club} key={selectedId} />
         )}
-      </Card>
+      </section>
     </div>
   );
 }
@@ -154,9 +153,9 @@ function AdminThreadView({ threadId, club }) {
 
   if (!thread) {
     return (
-      <CardContent className="flex h-80 items-center justify-center">
+      <div className="arena-section-card-body flex h-80 items-center justify-center">
         <Loader2 className="h-4 w-4 animate-spin" />
-      </CardContent>
+      </div>
     );
   }
 

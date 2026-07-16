@@ -188,19 +188,19 @@ function RescuesReport({ data }) {
         <StatCard label="Gatos resgatados" value={bySpecies.cat || 0} icon={PawPrint} />
         <StatCard label="Outros" value={bySpecies.other || 0} icon={PawPrint} />
       </div>
-      <Card>
+      <section className="arena-section-card">
         <SectionTitle>Resgates por mês</SectionTitle>
         <BarChartComponent data={byMonth} bars={[{ key: 'rescues', name: 'Resgates', color: CHART_COLORS.rescues }]} />
-      </Card>
+      </section>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <Card>
+        <section className="arena-section-card">
           <SectionTitle>Por espécie</SectionTitle>
           <PieChartComponent
             data={speciesData.filter((s) => s.value > 0)}
             colors={[CHART_COLORS.rescues, '#3b82f6', '#a855f7']}
           />
-        </Card>
-        <Card>
+        </section>
+        <section className="arena-section-card">
           <SectionTitle>Resumo</SectionTitle>
           <p className="text-sm text-muted-foreground mb-3">
             No período analisado, foram registrados <strong>{total}</strong> resgates.
@@ -210,7 +210,7 @@ function RescuesReport({ data }) {
               Média mensal: <strong>{Math.round(total / byMonth.length)}</strong> resgates/mes.
             </p>
           )}
-        </Card>
+        </section>
       </div>
     </div>
   );
@@ -235,7 +235,7 @@ function AdoptionsReport({ data }) {
         <StatCard label="Taxa de devolução" value={total > 0 ? `${Math.round((returnsCount / total) * 100)}%` : '0%'} icon={TrendingDown} />
         <StatCard label="Adoções líquidas" value={total - returnsCount} icon={Activity} />
       </div>
-      <Card>
+      <section className="arena-section-card">
         <SectionTitle>Adoções por mês</SectionTitle>
         <BarChartComponent
           data={byMonth}
@@ -244,12 +244,12 @@ function AdoptionsReport({ data }) {
             { key: 'returns', name: 'Devoluções', color: CHART_COLORS.returns },
           ]}
         />
-      </Card>
+      </section>
       {statusData.length > 0 && (
-        <Card>
+        <section className="arena-section-card">
           <SectionTitle>Por status</SectionTitle>
           <PieChartComponent data={statusData} colors={statusData.map((s) => s.color)} />
-        </Card>
+        </section>
       )}
     </div>
   );
@@ -262,7 +262,7 @@ function ComparativeReport({ data }) {
 
   return (
     <div className="space-y-6">
-      <Card>
+      <section className="arena-section-card">
         <SectionTitle>Comparativo anual (resgates vs adoções vs devoluções)</SectionTitle>
         <LineChartComponent
           data={years.map((y) => ({ ...y, label: String(y.year) }))}
@@ -273,7 +273,7 @@ function ComparativeReport({ data }) {
           ]}
           xKey="label"
         />
-      </Card>
+      </section>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
@@ -322,7 +322,7 @@ function BalanceReport({ data }) {
           tone={netBalance >= 0 ? 'success' : 'danger'}
         />
       </div>
-      <Card>
+      <section className="arena-section-card">
         <SectionTitle>Saldo mensal (entradas – saídas)</SectionTitle>
         <BarChartComponent
           data={months}
@@ -332,7 +332,7 @@ function BalanceReport({ data }) {
             { key: 'returns', name: 'Devoluções', color: CHART_COLORS.returns },
           ]}
         />
-      </Card>
+      </section>
     </div>
   );
 }
@@ -358,15 +358,15 @@ function ReturnsReport({ data }) {
         <StatCard label="Taxa de devolução" value={rate != null ? `${Math.round(rate * 100)}%` : '—'} icon={TrendingDown} />
         <StatCard label="Motivos registrados" value={Object.keys(byReason).length} icon={Activity} />
       </div>
-      <Card>
+      <section className="arena-section-card">
         <SectionTitle>Devoluções por mês</SectionTitle>
         <BarChartComponent data={byMonth} bars={[{ key: 'count', name: 'Devoluções', color: CHART_COLORS.returns }]} />
-      </Card>
+      </section>
       {reasonData.length > 0 && (
-        <Card>
+        <section className="arena-section-card">
           <SectionTitle>Por motivo</SectionTitle>
           <PieChartComponent data={reasonData} colors={reasonData.map((r) => r.color)} />
-        </Card>
+        </section>
       )}
     </div>
   );
@@ -388,21 +388,21 @@ function TimeToAdoptionReport({ data }) {
           icon={Calendar}
         />
       </div>
-      <Card>
+      <section className="arena-section-card">
         <SectionTitle>Tempo médio até adoção por mês</SectionTitle>
         <LineChartComponent
           data={byMonth}
           lines={[{ key: 'averageDays', name: 'Dias até adoção', color: CHART_COLORS.adoptions }]}
         />
-      </Card>
-      <Card>
+      </section>
+      <section className="arena-section-card">
         <SectionTitle>Resumo</SectionTitle>
         <p className="text-sm text-muted-foreground">
           Animais levam em média <strong>{averageDays} dias</strong> entre o registro
           e a adoção finalizada. A mediana é de <strong>{medianDays} dias</strong>,
           indicando que metade dos animais é adotada antes desse prazo.
         </p>
-      </Card>
+      </section>
     </div>
   );
 }
@@ -433,10 +433,10 @@ function TimeInShelterReport({ data }) {
           />
         ))}
       </div>
-      <Card>
+      <section className="arena-section-card">
         <SectionTitle>Animais disponíveis por espécie</SectionTitle>
         <PieChartComponent data={speciesData.filter((s) => s.value > 0)} colors={speciesData.map((s) => s.color)} />
-      </Card>
+      </section>
     </div>
   );
 }
@@ -462,10 +462,10 @@ function FostersReport({ data }) {
         <StatCard label="Encerrados" value={ended} icon={Users} />
       </div>
       {envData.length > 0 && (
-        <Card>
+        <section className="arena-section-card">
           <SectionTitle>Por tipo de moradia</SectionTitle>
           <PieChartComponent data={envData} colors={envData.map((e) => e.color)} />
-        </Card>
+        </section>
       )}
     </div>
   );
@@ -493,10 +493,10 @@ function SpayNeuterReport({ data }) {
         <StatCard label="Taxa de castração" value={`${Math.round(neuteredRate * 100)}%`} icon={Scissors} />
       </div>
       {speciesData.length > 0 && (
-        <Card>
+        <section className="arena-section-card">
           <SectionTitle>Por espécie (castrados / total)</SectionTitle>
           <PieChartComponent data={speciesData} colors={speciesData.map((s) => s.color)} />
-        </Card>
+        </section>
       )}
     </div>
   );

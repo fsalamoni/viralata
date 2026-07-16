@@ -9,7 +9,6 @@
 
 import { confirmDialog } from '@/components/ui/confirm-provider';
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
@@ -98,16 +97,16 @@ export function ExhibitionsList({ shelterClubId, actor, onSelect, onCreate }) {
   };
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between gap-2">
+    <section className="arena-section-card">
+      <div className="arena-section-card-header">
         <CardTitle>Vitrines</CardTitle>
         {onCreate && (
           <Button size="sm" onClick={onCreate}>
             + Nova vitrine
           </Button>
         )}
-      </CardHeader>
-      <CardContent>
+      </div>
+      <div className="arena-section-card-body">
         {/* Filtros */}
         <div className="flex flex-wrap gap-2 mb-4">
           <Button
@@ -196,7 +195,7 @@ export function ExhibitionsList({ shelterClubId, actor, onSelect, onCreate }) {
             ))}
           </ul>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }

@@ -160,7 +160,7 @@ function ExhibitionSummary({ data }) {
         <StatCard label="Total participantes" value={totalParticipants} icon={Users} />
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <Card>
+        <section className="arena-section-card">
           <SectionTitle>Vitrines por mês</SectionTitle>
           <BarChartComp
             data={byMonth}
@@ -169,8 +169,8 @@ function ExhibitionSummary({ data }) {
               { key: 'participants', name: 'Participantes', color: CHART_COLORS.participants },
             ]}
           />
-        </Card>
-        <Card>
+        </section>
+        <section className="arena-section-card">
           <SectionTitle>Status das vitrines</SectionTitle>
           {statusData.length > 0 ? (
             <ResponsiveContainer width="100%" height={250}>
@@ -196,7 +196,7 @@ function ExhibitionSummary({ data }) {
           ) : (
             <p className="text-sm text-muted-foreground">Sem vitrines no período.</p>
           )}
-        </Card>
+        </section>
       </div>
     </div>
   );
@@ -209,11 +209,11 @@ function ExhibitionDetail({ data }) {
 
   if (exhibitions.length === 0) {
     return (
-      <Card>
+      <section className="arena-section-card">
         <p className="text-sm text-muted-foreground text-center py-8">
           Nenhuma vitrine registrada ainda.
         </p>
-      </Card>
+      </section>
     );
   }
 
@@ -292,7 +292,7 @@ function VolunteerSummary({ data }) {
         <StatCard label="Média participações" value={avgParticipationsPerVolunteer} icon={Activity} />
         <StatCard label="Voluntários únicos" value={totalVolunteers} icon={Users} />
       </div>
-      <Card>
+      <section className="arena-section-card">
         <SectionTitle>Participações e horas por mês</SectionTitle>
         <LineChartComp
           data={byMonth}
@@ -301,14 +301,14 @@ function VolunteerSummary({ data }) {
             { key: 'hours', name: 'Horas', color: CHART_COLORS.hours },
           ]}
         />
-      </Card>
-      <Card>
+      </section>
+      <section className="arena-section-card">
         <SectionTitle>Transportes por mês</SectionTitle>
         <BarChartComp
           data={byMonth}
           bars={[{ key: 'transports', name: 'Transportes', color: CHART_COLORS.transports }]}
         />
-      </Card>
+      </section>
     </div>
   );
 }
@@ -320,11 +320,11 @@ function VolunteerDetail({ data }) {
 
   if (volunteers.length === 0) {
     return (
-      <Card>
+      <section className="arena-section-card">
         <p className="text-sm text-muted-foreground text-center py-8">
           Nenhuma participação registrada ainda.
         </p>
-      </Card>
+      </section>
     );
   }
 

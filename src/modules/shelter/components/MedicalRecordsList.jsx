@@ -8,7 +8,6 @@
  */
 
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
@@ -65,8 +64,8 @@ export function MedicalRecordsList({ petId, shelterClubId, canEdit = false, acto
   const visible = records.filter((r) => !r.deleted_at);
 
   return (
-    <Card>
-      <CardHeader>
+    <section className="arena-section-card">
+      <div className="arena-section-card-header">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
             <CardTitle>Prontuário Médico</CardTitle>
@@ -85,8 +84,8 @@ export function MedicalRecordsList({ petId, shelterClubId, canEdit = false, acto
             ))}
           </div>
         </div>
-      </CardHeader>
-      <CardContent>
+      </div>
+      <div className="arena-section-card-body">
         {canEdit && (
           <div className="mb-4">
             <Button size="sm" onClick={() => setShowForm((v) => !v)} variant={showForm ? 'outline' : 'default'}>
@@ -170,7 +169,7 @@ export function MedicalRecordsList({ petId, shelterClubId, canEdit = false, acto
             ))}
           </ol>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }

@@ -4,7 +4,6 @@ import {
   Plus, CheckCircle2, HandCoins, QrCode, Copy, Edit2, Trash2, Image as ImageIcon, FileText,
   X, Receipt as ReceiptIcon, ExternalLink, Eye, XCircle,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -174,11 +173,11 @@ function DonationCard({ donation, canManage, onEdit, onDelete, onAddFunds }) {
   const pct = donation.goal > 0 ? Math.min(100, (Number(donation.raised || 0) / donation.goal) * 100) : 0;
   const concluded = donation.status === CAMPAIGN_STATUS.CONCLUDED;
   return (
-    <Card className="rounded-2xl">
+    <section className="arena-section-card rounded-2xl">
       {/* p-6 sm:p-7 com pt-6 sm:pt-7 garante que o título não encoste
           na borda superior do card. space-y-5 dá 20px entre filhos
           (vs 16px antes). Cada bloco interno ganha mais respiração. */}
-      <CardContent className="space-y-5 p-6 pt-6 sm:p-7 sm:pt-7">
+      <div className="arena-section-card-body space-y-5 p-6 pt-6 sm:p-7 sm:pt-7">
         <div className="flex flex-wrap items-start justify-between gap-2">
           <h3 className="text-base font-semibold">{donation.title}</h3>
           <div className="flex flex-wrap items-center gap-1.5">
@@ -270,8 +269,8 @@ function DonationCard({ donation, canManage, onEdit, onDelete, onAddFunds }) {
           onOpenChange={setReceiptOpen}
           donation={donation}
         />
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 
@@ -638,16 +637,16 @@ function ClubReceiptsSection({ clubId }) {
   if (isLoading) return <Skeleton className="h-32 rounded-2xl" />;
 
   return (
-    <Card className="rounded-2xl">
-      <CardHeader className="p-6 sm:p-7">
+    <section className="arena-section-card rounded-2xl">
+      <div className="arena-section-card-header">
         <CardTitle className="flex items-center gap-2 text-base">
           <ReceiptIcon className="h-4 w-4 text-primary" /> Comprovantes recebidos
         </CardTitle>
-        <CardDescription>
+        <p className="arena-section-card-description">
           Total de {receipts.length} {receipts.length === 1 ? 'comprovante' : 'comprovantes'} enviados pelo público.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-3 p-6 pt-0 sm:p-7 sm:pt-0">
+        </p>
+      </div>
+      <div className="arena-section-card-body space-y-3 p-6 pt-0 sm:p-7 sm:pt-0">
         <div className="flex flex-wrap gap-2">
           {['all', ...Object.values(RECEIPT_STATUS)].map((s) => (
             <button
@@ -733,8 +732,8 @@ function ClubReceiptsSection({ clubId }) {
             }
           }}
         />
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 

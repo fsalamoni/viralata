@@ -3,7 +3,6 @@ import { toast } from 'sonner';
 import {
   PlusCircle, Send, Trash2, X, ImagePlus, Loader2, MessageSquare, Pencil,
 } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';

@@ -68,12 +68,14 @@ export default function ClubTeamTab({ club, viewerMembership, viewerUid }) {
   return (
     <div className="space-y-6">
       {viewerCanManageTeam && (
-        <Card className="rounded-xl">
-      <CardHeader className="p-6 sm:p-7">
-          <CardTitle className="text-base">Código de convite</CardTitle>
-          <CardDescription>Compartilhe este código para que novos membros ingressem na organização.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3 p-6 pt-0 sm:p-7 sm:pt-0">
+        <section className="arena-section-card">
+      <div className="arena-section-card-header">
+          <div>
+            <h3 className="arena-section-card-title">Código de convite</h3>
+            <p className="arena-section-card-description">Compartilhe este código para que novos membros ingressem na organização.</p>
+          </div>
+        </div>
+        <div className="arena-section-card-body space-y-3 p-6 pt-0 sm:p-7 sm:pt-0">
             <div className="flex flex-wrap items-center gap-2">
               <code className="rounded-md border border-primary/10 bg-secondary/40 px-4 py-2 text-lg font-bold tracking-[0.25em] text-foreground">
                 {club.invite_code}
@@ -85,8 +87,8 @@ export default function ClubTeamTab({ club, viewerMembership, viewerUid }) {
                 <RefreshCw className="mr-1.5 h-4 w-4" /> Gerar novo
               </Button>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </section>
       )}
 
       {viewerCanManageTeam && (
@@ -143,16 +145,16 @@ function ClubPermissionsCard({ club, viewerMembership, viewerUid }) {
   }, [members, club]);
 
   return (
-    <Card className="rounded-xl">
-      <CardHeader className="p-6 sm:p-7">
-        <CardTitle className="text-base">Permissões da equipe</CardTitle>
-        <CardDescription className="flex items-start gap-2">
+    <section className="arena-section-card">
+      <div className="arena-section-card-header"> className="p-6 sm:p-7">
+        <h3 className="arena-section-card-title">Permissões da equipe</h3>
+        <div className="arena-section-card-description flex items-start gap-2">
           <Info className="mt-[2px] h-3.5 w-3.5 shrink-0" />
           <span>
             Marque ou desmarque para atribuir cada poder a um membro.
             O proprietário sempre tem todas as permissões (não editável).
           </span>
-        </CardDescription>
+        </div>
         {/* Legenda curta das 5 permissões */}
         <ul className="mt-3 grid grid-cols-1 gap-2 text-xs text-muted-foreground sm:grid-cols-2">
           {CLUB_PERMISSION_KEYS.map((key) => (
@@ -165,8 +167,8 @@ function ClubPermissionsCard({ club, viewerMembership, viewerUid }) {
             </li>
           ))}
         </ul>
-      </CardHeader>
-      <CardContent className="space-y-3 p-6 pt-0 sm:p-7 sm:pt-0">
+      </div>
+      <div className="arena-section-card-body space-y-3 p-6 pt-0 sm:p-7 sm:pt-0">
         {isLoading ? (
           <p className="text-sm text-muted-foreground">Carregando…</p>
         ) : sorted.length === 0 ? (
@@ -182,8 +184,8 @@ function ClubPermissionsCard({ club, viewerMembership, viewerUid }) {
             />
           ))
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 
@@ -279,14 +281,14 @@ function ClubMembersCardsSection({ club, viewerMembership, viewerUid }) {
   const [confirmRemove, setConfirmRemove] = useState(null);
 
   return (
-    <Card className="rounded-xl">
-      <CardHeader className="p-6 sm:p-7">
-        <CardTitle className="text-base">Membros da equipe</CardTitle>
-        <CardDescription>
-          Cada membro tem um card com privacidade por campo. Edite as informações e a visibilidade pelo botão de edição.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="p-6 pt-0 sm:p-7 sm:pt-0">
+    <section className="arena-section-card">
+      <div className="arena-section-card-header">
+          <div>
+            <h3 className="arena-section-card-title">Membros da equipe</h3>
+            <p className="arena-section-card-description">Cada membro tem um card com privacidade por campo. Edite as informações e a visibilidade pelo botão de edição.</p>
+          </div>
+        </div>
+      <div className="arena-section-card-body p-6 pt-0 sm:p-7 sm:pt-0">
         {isLoading ? (
           <p className="text-sm text-muted-foreground">Carregando…</p>
         ) : members.length === 0 ? (
@@ -382,7 +384,7 @@ function ClubMembersCardsSection({ club, viewerMembership, viewerUid }) {
             }
           }}
         />
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
