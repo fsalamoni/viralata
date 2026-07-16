@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-16T13:06:43.596Z",
+  "generatedAt": "2026-07-16T13:11:04.916Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W29",
@@ -11101,9 +11101,11 @@
       "category": "design",
       "priority": "high",
       "owner": "unassigned",
-      "status": "ready",
+      "status": "done",
       "createdAt": "2026-07-15",
-      "acceptance": "axe-core 0 erros de focus + skip-link em 10 páginas"
+      "acceptance": "axe-core 0 erros de focus + skip-link em 10 páginas",
+      "updatedAt": "2026-07-16T13:07:17",
+      "resolvedAt": "2026-07-16"
     },
     {
       "id": "TASK-613",
@@ -11189,9 +11191,11 @@
       "category": "design",
       "priority": "high",
       "owner": "unassigned",
-      "status": "ready",
+      "status": "done",
       "createdAt": "2026-07-15",
-      "acceptance": "10 cards de pet refatorados"
+      "acceptance": "10 cards de pet refatorados",
+      "updatedAt": "2026-07-16T13:07:18",
+      "resolvedAt": "2026-07-16"
     },
     {
       "id": "TASK-621",
@@ -11209,7 +11213,7 @@
       "title": "AdminUsers page - hierarquia de filtros (busca + chips + tabs)",
       "type": "ux",
       "category": "design",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -11223,14 +11227,15 @@
       "blockedBy": [],
       "description": "Refatorar AdminUsers para ter hierarquia clara: header com busca, chips de filtro (papel/status), tabs internas. Aplicar arena-section-card em todas as seções.",
       "createdAt": "2026-07-16",
-      "updatedAt": "2026-07-16"
+      "updatedAt": "2026-07-16T13:07:18",
+      "resolvedAt": "2026-07-16"
     },
     {
       "id": "TASK-623",
       "title": "AdminMockData - separar dados perigosos de demo",
       "type": "ux",
       "category": "design",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -11244,7 +11249,8 @@
       "blockedBy": [],
       "description": "AdminMockData deve ter CLAREZA: seção 'DESTRUCTIVE' (com cor de aviso), seção 'SAFE' (verde), e preview antes de aplicar.",
       "createdAt": "2026-07-16",
-      "updatedAt": "2026-07-16"
+      "updatedAt": "2026-07-16T13:07:18",
+      "resolvedAt": "2026-07-16"
     },
     {
       "id": "TASK-624",
@@ -11273,7 +11279,7 @@
       "title": "Profile - hierarquia de seções",
       "type": "ux",
       "category": "design",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -11287,7 +11293,8 @@
       "blockedBy": [],
       "description": "Profile tem 15+ cards empilhados. Quebrar em grupos lógicos com arena-section-card e âncoras no topo. Cada grupo com ícone.",
       "createdAt": "2026-07-16",
-      "updatedAt": "2026-07-16"
+      "updatedAt": "2026-07-16T13:10:46",
+      "resolvedAt": "2026-07-16"
     },
     {
       "id": "TASK-626",
@@ -11596,7 +11603,7 @@
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": "0cb031eba313ab6a15e48ef1ca1381bb0c325819",
+    "mainCommit": "3de6993a1327b62057173144312bde08e4cb3455",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -11607,11 +11614,11 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 406,
-    "done": 377,
+    "done": 382,
     "inProgress": 0,
     "inReview": 0,
     "blocked": 0,
-    "ready": 24,
+    "ready": 19,
     "backlog": 4,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -11641,7 +11648,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-16T13:06:43.600Z — via sync.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-16T13:11:04.921Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
@@ -11936,7 +11943,7 @@
 }
   </script>
 <<<<<<< HEAD
-  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-16T13:04:04.215Z">
+  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-16T13:06:43.610Z">
 =======
   <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-16T03:26:48.025Z">
 >>>>>>> 2fdaf3d (design(ux): TASK-603 - hero home com hierarquia clara - H1 menor mobile, badge compacto, remove chips decorativos)
