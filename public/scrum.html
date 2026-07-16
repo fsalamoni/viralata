@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.1.0",
-  "generatedAt": "2026-07-16T18:40:33.212Z",
+  "generatedAt": "2026-07-16T18:43:01.301Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W29",
@@ -410,6 +410,20 @@
       "focus": []
     },
     {
+      "id": "wt-ds-v2-pages-adoption",
+      "branch": "feat/ds-v2-pages-adoption-2026-07-16",
+      "head": "17e4ad0ede9ebbbf7a5af71c2c00aea6b2cf481d",
+      "headTitle": "merge: resolve conflitos scrum HTML auto-gerado (pós Bloco D.2)",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-ds-v2-pages-adoption",
+      "status": "in-sync",
+      "commitsAhead": 0,
+      "primarySession": "mvs_311d078987d0414a90f57ef28b789b18",
+      "sessionTitle": "DS_V2_PAGES-ADOPTION — AdoptionDetail, AdoptionWizard, MyApplications",
+      "focus": [
+        "DS_V2_PAGES-ADOPTION"
+      ]
+    },
+    {
       "id": "wt-ds-v2-pages-home",
       "branch": "feat/ds-v2-pages-home-2026-07-16",
       "head": "9a1ab00972c35197d5fb32b920df6dacb157f25c",
@@ -424,16 +438,14 @@
     {
       "id": "wt-ds-v2-pages-pets",
       "branch": "feat/ds-v2-pages-pets-2026-07-16",
-      "head": "0d77e30b5828a2ed13745de09a51ca69126017cb",
-      "headTitle": "merge: resolve conflitos scrum HTML auto-gerado (pós Bloco D.1)",
+      "head": "96b4e087fdde4e37c714992d498b93b1c988f2eb",
+      "headTitle": "feat(ds-v2): Bloco D.2 · DS_V2_PAGES-PETS — PetCard (referência) + PetDetail (Avatar)",
       "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-ds-v2-pages-pets",
       "status": "in-sync",
       "commitsAhead": 0,
-      "primarySession": "mvs_311d078987d0414a90f57ef28b789b18",
-      "sessionTitle": "DS_V2_PAGES-PETS — refinar PetCard/PetFeed/PetDetail/CreatePet/MyPets/RadarSettings",
-      "focus": [
-        "DS_V2_PAGES-PETS"
-      ]
+      "primarySession": null,
+      "sessionTitle": null,
+      "focus": []
     },
     {
       "id": "wt-ds-v2-tokens",
@@ -11637,12 +11649,12 @@
       "title": "Bloco D.3 · DS_V2_PAGES-ADOPTION — Propagar spec para fluxo de adoção",
       "type": "feature",
       "category": "design",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "mvs_311d078987d0414a90f57ef28b789b18",
-      "branch": null,
+      "branch": "feat/ds-v2-pages-adoption-2026-07-16",
       "flag": "DS_V2_PAGES-ADOPTION",
-      "worktree": null,
+      "worktree": ".worktrees/wt-ds-v2-pages-adoption",
       "pr": null,
       "tags": [
         "ds-v2",
@@ -11655,7 +11667,8 @@
       ],
       "description": "Ajustar `AdoptionDetail` (timeline + cards de status), `AdoptionWizard` (form wizard com controle segmentado 38px, input 46px), fluxo de interesse, avaliação pós-adoção. Manter 100% das regras de negócio (LGPD, validações, permissões). Flag default OFF.",
       "createdAt": "2026-07-16",
-      "updatedAt": "2026-07-16"
+      "updatedAt": "2026-07-16T18:42:56",
+      "resolvedAt": "2026-07-16"
     },
     {
       "id": "TASK-706",
@@ -12559,6 +12572,155 @@
       "createdAt": "2026-07-16",
       "updatedAt": "2026-07-16T18:40:32",
       "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-744",
+      "title": "Auditar AdoptionDetail + AdoptionWizard contra spec v1.0",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-pages-adoption-2026-07-16",
+      "flag": "DS_V2_PAGES-ADOPTION",
+      "worktree": ".worktrees/wt-ds-v2-pages-adoption",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "adoption",
+        "audit"
+      ],
+      "blockedBy": [],
+      "description": "Gap analysis dos 2 arquivos principais. Verificar uso de arena-section-card, tokens semânticos, Button/Card/Input do Bloco C.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:42:55",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-745",
+      "title": "Refinar AdoptionDetail (timeline + cards de status)",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-pages-adoption-2026-07-16",
+      "flag": "DS_V2_PAGES-ADOPTION",
+      "worktree": ".worktrees/wt-ds-v2-pages-adoption",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "adoption",
+        "detail"
+      ],
+      "blockedBy": [
+        "TASK-744"
+      ],
+      "description": "Refinar uso de Card size=\"default\" no container principal. Avatar do candidato se houver. Botões consistentes (primary, secondary, destructive).",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:43:00",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-746",
+      "title": "Refinar AdoptionWizard (form wizard com Input/Textarea)",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-pages-adoption-2026-07-16",
+      "flag": "DS_V2_PAGES-ADOPTION",
+      "worktree": ".worktrees/wt-ds-v2-pages-adoption",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "adoption",
+        "wizard",
+        "forms"
+      ],
+      "blockedBy": [
+        "TASK-744"
+      ],
+      "description": "Garantir que campos usem Input 46px e Textarea 80px do Bloco C. Progresso do wizard (steps) com arena-tab-pill ou arena-section-card. Botão primário único por step.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:43:00",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-747",
+      "title": "Refinar MyApplications (lista de pedidos)",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "medium",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-pages-adoption-2026-07-16",
+      "flag": "DS_V2_PAGES-ADOPTION",
+      "worktree": ".worktrees/wt-ds-v2-pages-adoption",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "adoption",
+        "list"
+      ],
+      "blockedBy": [
+        "TASK-744"
+      ],
+      "description": "Lista de pedidos com Card size=\"default\" + Avatar + Badge de status. Empty state consistente com EmptyState component.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:43:00",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-748",
+      "title": "Validar Adoption (build + lint + smoke test)",
+      "type": "chore",
+      "category": "ci",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-pages-adoption-2026-07-16",
+      "flag": "DS_V2_PAGES-ADOPTION",
+      "worktree": ".worktrees/wt-ds-v2-pages-adoption",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "build",
+        "test"
+      ],
+      "blockedBy": [
+        "TASK-747"
+      ],
+      "description": "Build verde, lint sem regressões, smoke test dos fluxos.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:43:01",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-749",
+      "title": "Commit + push do Bloco D.3",
+      "type": "chore",
+      "category": "ci",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-pages-adoption-2026-07-16",
+      "flag": "DS_V2_PAGES-ADOPTION",
+      "worktree": ".worktrees/wt-ds-v2-pages-adoption",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "git",
+        "commit"
+      ],
+      "blockedBy": [
+        "TASK-748"
+      ],
+      "description": "Commit único, mensagem descritiva. Push só do branch.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:42:56",
+      "resolvedAt": "2026-07-16"
     }
   ],
   "definitionOfDone": [
@@ -12802,7 +12964,7 @@
     "mergedWorktreesThisSprint": [
       "feat/ds-v2-docs-2026-07-16"
     ],
-    "mainCommit": "0d77e30b5828a2ed13745de09a51ca69126017cb",
+    "mainCommit": "17e4ad0ede9ebbbf7a5af71c2c00aea6b2cf481d",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -12812,12 +12974,12 @@
     ],
     "openTODOs": 5,
     "openLegalReviews": 3,
-    "totalTasks": 448,
-    "done": 437,
+    "totalTasks": 454,
+    "done": 444,
     "inProgress": 0,
     "inReview": 0,
     "blocked": 0,
-    "ready": 6,
+    "ready": 5,
     "backlog": 4,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -12847,7 +13009,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-16T18:40:33.230Z — via sync.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-16T18:43:01.318Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
@@ -12882,20 +13044,20 @@
     "risksAccepted": 2,
     "risksMonitoring": 2,
     "lastTaskId": "TASK-717",
-    "lastUpdated": "2026-07-16T18:37:01.549Z",
+    "lastUpdated": "2026-07-16T18:41:32.780Z",
     "dsV2Phase": "Fase 4 — em andamento",
     "dsV2Blocos": {
       "done": [
         "DS_V2_DOCS",
         "DS_V2_TOKENS",
         "DS_V2_COMPONENTS",
-        "DS_V2_PAGES-HOME"
-      ],
-      "inProgress": [
+        "DS_V2_PAGES-HOME",
         "DS_V2_PAGES-PETS"
       ],
+      "inProgress": [
+        "DS_V2_PAGES-ADOPTION"
+      ],
       "ready": [
-        "DS_V2_PAGES-ADOPTION",
         "DS_V2_PAGES-ORG",
         "DS_V2_PAGES-ADMIN",
         "DS_V2_PAGES-CHAT",
@@ -12904,10 +13066,10 @@
       ]
     },
     "dsV2Tasks": {
-      "total": 42,
+      "total": 48,
       "done": 8,
       "ready": 10,
-      "inProgress": 7
+      "inProgress": 9
     },
     "dsV2Merge": "Bloco A merged to main @ 8e187f6 (2026-07-16 18:08 UTC)",
     "lastTaskDone": "TASK-700 (Bloco A macro)",
@@ -13188,7 +13350,7 @@
 }
   </script>
 <<<<<<< HEAD
-  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-16T18:38:41.342Z">
+  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-16T18:42:57.029Z">
 =======
   <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-16T03:26:48.025Z">
 >>>>>>> 2fdaf3d (design(ux): TASK-603 - hero home com hierarquia clara - H1 menor mobile, badge compacto, remove chips decorativos)
@@ -13206,8 +13368,8 @@
       </div>
     </div>
     <div class="sprint-info">
-      <span class="pill mono">main @ 0d77e30</span>
-      <span class="pill">+4 worktrees ativos</span>
+      <span class="pill mono">main @ 17e4ad0</span>
+      <span class="pill">+5 worktrees ativos</span>
       <span class="pill goal">Goal: estabilizar pós-22 fases + fechar worktrees</span>
     </div>
     <div class="topbar-actions">
