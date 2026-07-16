@@ -19,7 +19,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { EmptyState } from '@/components/ui/empty-state';
 import { useMyMembership, useClubEvent } from '@/modules/organizations/hooks/useClubs';
-import { eventTypeLabel, isPrivateEvent, CLUB_EVENT_TYPE } from '@/modules/organizations/domain/constants';
+import { useMyPets } from '@/modules/pets/hooks/usePets';
+import { eventTypeLabel, isPrivateEvent } from '@/modules/organizations/domain/constants';
 import { EventFormDialog } from '@/modules/organizations/components/ClubEventsTab';
 import EventDatesPanel from '@/modules/organizations/components/EventDatesPanel';
 import EventParticipantsPanel from '@/modules/organizations/components/EventParticipantsPanel';
@@ -50,6 +51,10 @@ export default function EventDetail() {
   const { data: event, isLoading, isError } = useClubEvent(eventId);
   const [editOpen, setEditOpen] = useState(false);
   const [tab, setTab] = useState('detalhes');
+  const { data: shelterPets = [] } = useMyPets(clubId);
+  const linkedPets = event.pet_ids?.length
+    ? shelterPets.filter((p) => event.pet_ids.includes(p.id))
+    : [];
 
   // Hooks de classe dos wrappers. Devem ficar ANTES dos early-returns —
   // chamá-los depois violaria as rules-of-hooks do React.
@@ -153,6 +158,38 @@ export default function EventDetail() {
                 <p className="whitespace-pre-wrap text-sm leading-6 text-muted-foreground">{event.description}</p>
               </div>
             </section>
+          )}
+          {linkedPets.length > 0 && (
+            <Card className="mb-4 rounded-xl">
+              <CardContent className="p-6 sm:p-7">
+                <h3 className="mb-3 text-sm font-semibold text-foreground">Pets deste evento</h3>
+                <div className="flex flex-wrap gap-3">
+                  {linkedPets.map((pet) => (
+                    <Link
+                      key={pet.id}
+                      to={`/pets/${pet.id}`}
+                      className="flex items-center gap-3 rounded-xl border border-border p-3 transition-colors hover:border-primary/50 hover:bg-primary/5"
+                    >
+                      {pet.photos?.length > 0 ? (
+                        <img
+                          src={pet.photos[0]}
+                          alt={pet.title || pet.name || 'Pet'}
+                          className="h-12 w-12 rounded-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted text-muted-foreground text-sm">
+                          {pet.title?.[0] || pet.name?.[0] || '?'}
+                        </div>
+                      )}
+                      <div>
+                        <p className="font-medium text-sm">{pet.title || pet.name}</p>
+                        {pet.species && <p className="text-xs text-muted-foreground capitalize">{pet.species}</p>}
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           )}
           <EventDatesPanel event={event} clubId={clubId} />
         </TabsContent>
