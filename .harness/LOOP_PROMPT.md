@@ -1,8 +1,10 @@
-# LOOP_PROMPT — viralata (atualizado 2026-07-15 17:50 UTC)
+# LOOP_PROMPT — viralata (atualizado 2026-07-15 11:23 UTC)
 
-**Contexto**: /workspace/viralata, branch feat/task-248-volunteer-certificate-2026-07-16, React+Vite+Firebase.
+**Contexto**: /workspace/viralata, branch feat/task-337-event-reminder-cron-2026-07-15, React+Vite+Firebase.
 **Repo**: https://github.com/fsalamoni/viralata.git
 **Sessão**: Mavis root (loop autônomo, 20min, **24/7 sem limite de horário**).
+
+**Última task**: TASK-337 (eventReminderCron — done, 276 done, 83 ready)
 
 ---
 

@@ -25,6 +25,24 @@ const {
   onFosterWrite,
   onVolunteerWrite,
 } = require('./searchSync');
+const {
+  runPropagateVolunteerProfileSnapshotSafe,
+  runNotifyAdminOnNewVolunteerSafe,
+  runNotifyVolunteerOnStatusChangeSafe,
+  runNotifyAdminOnNewParticipationSafe,
+  runNotifyOnCheckInOutSafe,
+} = require('./volunteerTriggers');
+const {
+  runOnCommunityPostCreatedSafe,
+  runOnCommunityPostLikedSafe,
+  runOnCommunityPostCommentedSafe,
+  runOnCommunityEventCreatedSafe,
+} = require('./communityNotifications');
+const {
+  aggregateVolunteerHours,
+  sendShiftReminders,
+} = require('./volunteerHoursCron');
+const { eventReminderCron } = require('./eventReminderCron');
 const mockData = require('./mockData');
 const vt = require('./volunteerTriggers');
 
@@ -159,6 +177,9 @@ exports.onParticipationUpdatedCheckInOut = _onDocUpdated(
 // Scheduled crons (TASK-220)
 exports.aggregateVolunteerHours = aggregateVolunteerHours;
 exports.sendShiftReminders = sendShiftReminders;
+
+// Scheduled cron (TASK-337): event reminder 24h before
+exports.eventReminderCron = eventReminderCron;
 
 // ─── Fase 22 / TASK-272: LGPD volunteer privacy (soft-delete + erase) ────────
 const { onCall, HttpsError } = require('firebase-functions/v2/https');
