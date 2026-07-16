@@ -425,7 +425,7 @@ export default function Profile() {
           </h3>
         </div>
         <div className="arena-section-card-body p-0">
-          <form onSubmit={handleSave} className="space-y-3.5">
+          <form onSubmit={handleSave} className="gap-y-section-md">
             {/* Foto */}
             <div className="flex items-center gap-4">
               <ImageUpload
@@ -441,28 +441,28 @@ export default function Profile() {
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-1.5">
+              <div className="gap-y-section-xs">
                 <Label htmlFor="fullName">Nome completo *</Label>
                 <Input id="fullName" value={fullName} onChange={(e) => updateField('fullName', e.target.value)} placeholder="Seu nome" required />
               </div>
-              <div className="space-y-1.5">
+              <div className="gap-y-section-xs">
                 <Label htmlFor="phone">Telefone / WhatsApp</Label>
                 <Input id="phone" value={phone} onChange={(e) => updateField('phone', e.target.value)} placeholder="(11) 99999-9999" />
               </div>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-3">
-              <div className="sm:col-span-2 space-y-1.5">
+              <div className="sm:col-span-2 gap-y-section-xs">
                 <Label htmlFor="city">Cidade *</Label>
                 <Input id="city" value={city} onChange={(e) => updateField('city', e.target.value)} placeholder="Sua cidade" required />
               </div>
-              <div className="space-y-1.5">
+              <div className="gap-y-section-xs">
                 <Label htmlFor="state">UF *</Label>
                 <Input id="state" value={stateUf} onChange={(e) => updateField('stateUf', e.target.value)} maxLength={2} placeholder="SP" required />
               </div>
             </div>
 
-            <div className="space-y-2">
+            <div className="gap-y-section-sm">
               <Label>Gênero</Label>
               <div className="flex flex-wrap gap-2">
                 {GENDER_OPTIONS.map(({ value, label }) => (
@@ -497,8 +497,8 @@ export default function Profile() {
             Usado pelo algoritmo de match para sugerir pets compatíveis com sua realidade.
           </p>
         </div>
-        <div className="arena-section-card-body space-y-3.5 p-0 pt-4">
-          <div className="space-y-2">
+        <div className="arena-section-card-body gap-y-section-md p-0 pt-4">
+          <div className="gap-y-section-sm">
             <Label>Tipo de moradia</Label>
             <div className="flex flex-col gap-2">
               {HOUSING_OPTIONS.map(({ value, label, icon }) => (
@@ -507,7 +507,7 @@ export default function Profile() {
             </div>
           </div>
 
-          <div className="space-y-2">
+          <div className="gap-y-section-sm">
             <Label>Rotina de passeios</Label>
             <div className="flex flex-wrap gap-2">
               {WALKS_OPTIONS.map(({ value, label }) => (
@@ -516,7 +516,7 @@ export default function Profile() {
             </div>
           </div>
 
-          <div className="space-y-2">
+          <div className="gap-y-section-sm">
             <Label>Orçamento para cuidados do pet</Label>
             <div className="flex flex-wrap gap-2">
               {BUDGET_OPTIONS.map(({ value, label }) => (
@@ -541,7 +541,7 @@ export default function Profile() {
             <Switch checked={hasElderly} onCheckedChange={(value) => updateField('hasElderly', value === true)} />
           </div>
 
-          <div className="space-y-2">
+          <div className="gap-y-section-sm">
             <Label>Já tem outros animais?</Label>
             <div className="grid grid-cols-2 gap-2">
               {OTHER_PET_OPTIONS.map(({ value, label, icon }) => (
@@ -599,7 +599,7 @@ export default function Profile() {
           </div>
           <div className="arena-section-card-body p-0">
             {isVPLoading ? (
-              <div className="space-y-3">
+              <div className="gap-y-section-md">
                 <Skeleton className="h-20 w-full" />
                 <Skeleton className="h-32 w-full" />
                 <Skeleton className="h-20 w-full" />
@@ -656,9 +656,9 @@ export default function Profile() {
               Abrigos onde você é voluntário. Conforme a LGPD (Art. 18, IX), você pode revogar seu consentimento a qualquer momento.
             </p>
           </div>
-          <div className="arena-section-card-body space-y-4 p-0">
+          <div className="arena-section-card-body gap-y-section-lg p-0">
             {isRostersLoading ? (
-              <div className="space-y-2">
+              <div className="gap-y-section-sm">
                 <Skeleton className="h-16 w-full" />
                 <Skeleton className="h-16 w-full" />
               </div>
@@ -674,7 +674,7 @@ export default function Profile() {
                 )}
               />
             ) : (
-              <ul className="space-y-2.5">
+              <ul className="gap-y-section-sm.5">
                 {myRosters.map((r) => (
                   <VolunteerRosterRow
                     key={`${r.shelter_club_id}::${r.id}`}
@@ -686,7 +686,7 @@ export default function Profile() {
             )}
 
             {myRosters.length > 0 && (
-              <div className="mt-4 space-y-2.5 rounded-2xl border border-destructive/20 bg-destructive/[0.04] p-3.5">
+              <div className="mt-4 gap-y-section-sm.5 rounded-2xl border border-destructive/20 bg-destructive/[0.04] p-3.5">
                 <div className="flex items-center gap-2 text-[12px] font-bold uppercase tracking-wider text-destructive/80">
                   <AlertTriangle className="h-3.5 w-3.5" /> Ações irreversíveis
                 </div>
@@ -738,13 +738,13 @@ export default function Profile() {
               <AlertTriangle className="w-5 h-5 text-destructive" /> Sair de todos os abrigos
             </DialogTitle>
             <DialogDescription asChild>
-              <div className="space-y-2 text-[13px]">
+              <div className="gap-y-section-sm text-[13px]">
                 <p>Você deixará de fazer parte de <strong>todas as rostagens</strong> onde é voluntário.</p>
                 <p>Seu perfil global e o histórico de participações serão preservados. Para voltar, peça para um abrigo te convidar novamente.</p>
               </div>
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-1.5">
+          <div className="gap-y-section-xs">
             <Label htmlFor="confirm-sair" className="text-[12px]">Por segurança, digite <span className="font-bold text-destructive">SAIR</span> abaixo</Label>
             <Input
               id="confirm-sair"
@@ -791,14 +791,14 @@ export default function Profile() {
               <AlertTriangle className="w-5 h-5 text-destructive" /> Encerrar voluntariado completamente
             </DialogTitle>
             <DialogDescription asChild>
-              <div className="space-y-2 text-[13px]">
+              <div className="gap-y-section-sm text-[13px]">
                 <p>Esta ação <strong>revoga seu consentimento</strong> de voluntariado (LGPD Art. 18, IX) e remove você de todas as rostagens.</p>
                 <p>O registro do aceite do termo permanece como prova legal (Lei 14.063/2020) por prazo indeterminado. Seu perfil global será marcado como inativo.</p>
                 <p>Para voltar a ser voluntário, será necessário aceitar o termo novamente do zero.</p>
               </div>
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-1.5">
+          <div className="gap-y-section-xs">
             <Label htmlFor="confirm-encerrar" className="text-[12px]">Por segurança, digite <span className="font-bold text-destructive">ENCERRAR</span> abaixo</Label>
             <Input
               id="confirm-encerrar"
@@ -982,15 +982,15 @@ function LeaveOneShelterDialog({ state, setState, onClose }) {
             <LogOut className="w-5 h-5 text-destructive" /> Sair deste abrigo
           </DialogTitle>
           <DialogDescription asChild>
-            <div className="space-y-2 text-[13px]">
+            <div className="gap-y-section-sm text-[13px]">
               <p>Você deixará a rostagem de <strong>{state.roster?.volunteerName || 'este abrigo'}</strong>.</p>
               <p>Seu perfil global de voluntário será mantido e o histórico de participações preservado. Para voltar, peça para o abrigo te convidar novamente.</p>
               <p className="text-[11.5px] text-muted-foreground">O motivo é opcional e nos ajuda a melhorar o programa (LGPD Art. 18, IX).</p>
             </div>
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-3">
-          <div className="space-y-1.5">
+        <div className="gap-y-section-md">
+          <div className="gap-y-section-xs">
             <Label className="text-[12px]">Motivo</Label>
             <div className="grid gap-1.5">
               {VOLUNTEER_EXIT_REASONS.map((value) => (
@@ -1015,7 +1015,7 @@ function LeaveOneShelterDialog({ state, setState, onClose }) {
               ))}
             </div>
           </div>
-          <div className="space-y-1.5">
+          <div className="gap-y-section-xs">
             <Label htmlFor="exit-note" className="text-[12px]">Observação (opcional, até 500 caracteres)</Label>
             <Textarea
               id="exit-note"

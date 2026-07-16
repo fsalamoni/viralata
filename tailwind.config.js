@@ -79,6 +79,17 @@ export default {
           to: { height: '0' },
         },
       },
+      // Espaçamentos semânticos — TASK-604
+      // 7 níveis: xs(8px), sm(12px), md(16px), lg(24px), xl(32px), 2xl(48px), 3xl(64px)
+      spacing: {
+        'section-xs': '0.5rem',  // 8px  — entre items de uma lista compacta
+        'section-sm': '0.75rem', // 12px — gap entre elementos relacionados
+        'section-md': '1rem',    // 16px — gap padrão entre campos de formulário
+        'section-lg': '1.5rem', // 24px — gap entre componentes dentro de uma seção
+        'section-xl': '2rem',    // 32px — gap entre seções vizinhas
+        'section-2xl': '3rem',   // 48px — gap entre grandes blocos
+        'section-3xl': '4rem',  // 64px — gap entre páginas/sections raiz
+      },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',

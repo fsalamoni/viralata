@@ -62,7 +62,7 @@ export default function Home() {
             initial="hidden"
             animate="show"
             variants={stagger}
-            className="space-y-4 text-center lg:text-left lg:space-y-5"
+            className="gap-y-section-lg text-center lg:text-left lg:gap-y-section-lg"
           >
             <motion.span variants={fadeUp} className="arena-chip mx-auto h-[30px] px-3.5 text-[11.5px] font-bold lg:mx-0">
               <PawPrint className="h-3.5 w-3.5 text-primary" /> {settings.ui_text.home_hero_badge}
