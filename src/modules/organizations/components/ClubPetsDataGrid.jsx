@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { toast } from 'sonner';
-import { PlusCircle, Download, Upload, Trash2, UploadCloud, Camera } from 'lucide-react';
+import { PlusCircle, Download, Upload, Trash2, UploadCloud, Camera, LayoutGrid, List, RotateCcw } from 'lucide-react';
 import { useMyPets, useUpdatePet, useCreatePet, useDeletePet } from '@/modules/pets/hooks/usePets';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { uploadImage } from '@/core/services/storageService';
@@ -11,6 +11,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Badge } from '@/components/ui/badge';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { cn } from '@/core/lib/utils';
+import PetCard from '@/modules/pets/components/PetCard';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
@@ -35,6 +37,12 @@ const STATUS_OPTIONS = [
   { value: 'adopted', label: 'Adotado' },
 ];
 
+const STATUS_BADGE_CLASS = {
+  available: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400',
+  in_process: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400',
+  adopted: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400',
+};
+
 function PhotoCell({ pet, clubId, uid, canManage }) {
   const inputRef = useRef(null);
   const updatePet = useUpdatePet();
@@ -55,10 +63,12 @@ function PhotoCell({ pet, clubId, uid, canManage }) {
     }
   }
 
+  const [hover, setHover] = useState(false);
+
   if (!canManage) {
     return (
-      <span className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-[9px] bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--highlight))_100%)] text-white">
-        {pet.photos?.[0] ? <img src={pet.photos[0]} alt="" className="h-full w-full object-cover" /> : <Camera className="h-[15px] w-[15px]" />}
+      <span className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--highlight))_100%)] text-white shadow-sm">
+        {pet.photos?.[0] ? <img src={pet.photos[0]} alt="" className="h-full w-full object-cover" /> : <Camera className="h-[16px] w-[16px]" />}
       </span>
     );
   }
@@ -68,9 +78,22 @@ function PhotoCell({ pet, clubId, uid, canManage }) {
       type="button"
       onClick={() => inputRef.current?.click()}
       disabled={uploading}
-      className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-[9px] bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--highlight))_100%)] text-white"
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      className="relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--highlight))_100%)] text-white shadow-sm transition-all hover:shadow-md"
     >
-      {pet.photos?.[0] ? <img src={pet.photos[0]} alt="" className="h-full w-full object-cover" /> : <Camera className="h-[15px] w-[15px]" />}
+      {pet.photos?.[0] ? <img src={pet.photos[0]} alt="" className="h-full w-full object-cover" /> : <Camera className="h-[16px] w-[16px]" />}
+      {hover && (
+        <span className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 text-white">
+          <Camera className="h-4 w-4" />
+          <span className="mt-0.5 text-[9px] font-medium">Alterar</span>
+        </span>
+      )}
+      {uploading && (
+        <span className="absolute inset-0 flex items-center justify-center bg-black/50">
+          <RotateCcw className="h-4 w-4 animate-spin text-white" />
+        </span>
+      )}
       <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={handleFile} />
     </button>
   );
@@ -100,6 +123,7 @@ export default function ClubPetsDataGrid({ clubId, canManage = true }) {
   const [importing, setImporting] = useState(false);
   const [parsing, setParsing] = useState(false);
   const [addingRow, setAddingRow] = useState(false);
+  const [viewMode, setViewMode] = useState('table'); // 'table' | 'cards'
 
   async function handleFieldChange(petId, field, value) {
     setSavingId(petId);
@@ -220,34 +244,95 @@ export default function ClubPetsDataGrid({ clubId, canManage = true }) {
             ? 'Edite os animais diretamente na planilha ou importe um arquivo em massa.'
             : 'Animais cadastrados por esta organização.'}
         </p>
-        {canManage && (
-          <div className="flex flex-wrap gap-2">
-            <Button variant="outline" size="sm" onClick={handleDownloadTemplate}>
-              <Download className="mr-1.5 h-4 w-4" /> Baixar planilha modelo
-            </Button>
-            <Button variant="outline" size="sm" onClick={() => setImportOpen(true)}>
-              <Upload className="mr-1.5 h-4 w-4" /> Importar planilha
-            </Button>
-            <Button size="sm" onClick={handleAddRow} disabled={addingRow}>
-              <PlusCircle className="mr-1.5 h-4 w-4" /> Nova linha
-            </Button>
-          </div>
-        )}
+        <div className="flex flex-wrap items-center gap-2">
+          {/* View mode toggle — only when pets exist */}
+          {!isLoading && pets.length > 0 && (
+            <div className="flex items-center rounded-lg border border-border bg-card p-0.5">
+              <button
+                type="button"
+                onClick={() => setViewMode('table')}
+                className={cn(
+                  'flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-semibold transition-colors',
+                  viewMode === 'table'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground hover:text-foreground',
+                )}
+              >
+                <List className="h-3.5 w-3.5" /> Planilha
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode('cards')}
+                className={cn(
+                  'flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-semibold transition-colors',
+                  viewMode === 'cards'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground hover:text-foreground',
+                )}
+              >
+                <LayoutGrid className="h-3.5 w-3.5" /> Cards
+              </button>
+            </div>
+          )}
+          {canManage && (
+            <>
+              <Button variant="outline" size="sm" onClick={handleDownloadTemplate}>
+                <Download className="mr-1.5 h-4 w-4" /> Baixar planilha modelo
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => setImportOpen(true)}>
+                <Upload className="mr-1.5 h-4 w-4" /> Importar planilha
+              </Button>
+              <Button size="sm" onClick={handleAddRow} disabled={addingRow}>
+                <PlusCircle className="mr-1.5 h-4 w-4" /> Nova linha
+              </Button>
+            </>
+          )}
+        </div>
       </div>
 
       {isLoading ? (
-        <div className="space-y-2">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}</div>
+        <div className={viewMode === 'cards' ? 'grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4' : 'space-y-2'}>
+          {Array.from({ length: viewMode === 'cards' ? 6 : 3 }).map((_, i) =>
+            viewMode === 'cards' ? (
+              <Skeleton key={i} className="aspect-square rounded-2xl" />
+            ) : (
+              <Skeleton key={i} className="h-12 w-full" />
+            ),
+          )}
+        </div>
       ) : pets.length === 0 ? (
         <EmptyState
           title="Nenhum animal cadastrado"
           description={canManage ? 'Adicione uma linha ou importe uma planilha.' : 'Esta organização ainda não cadastrou animais.'}
         />
+      ) : viewMode === 'cards' ? (
+        // Card view — consistente com a aba pública (ClubPetsPublicTab)
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+          {pets.map((pet) => (
+            <div key={pet.id} className="relative group">
+              <PetCard pet={pet} />
+              {canManage && (
+                <div className="absolute inset-0 z-10 flex items-center justify-center gap-2 rounded-2xl bg-black/60 opacity-0 transition-opacity group-hover:opacity-100">
+                  <button
+                    type="button"
+                    onClick={() => setConfirmDelete(pet)}
+                    className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-destructive shadow-sm transition-transform hover:scale-110"
+                    title="Excluir animal"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
       ) : (
+        // Table view — a tabela original com PhotoCell polido
         <div className="overflow-x-auto rounded-2xl border border-white bg-card shadow-[0_14px_34px_-28px_hsl(20_40%_20%/0.4)]">
           <Table>
             <TableHeader>
               <TableRow className="bg-secondary/60">
-                <TableHead className="w-12 px-4 py-3">Foto</TableHead>
+                <TableHead className="w-14 px-4 py-3">Foto</TableHead>
                 <TableHead className="px-4 py-3">Nome</TableHead>
                 <TableHead className="px-4 py-3">Espécie</TableHead>
                 <TableHead className="px-4 py-3">Porte</TableHead>
@@ -259,19 +344,24 @@ export default function ClubPetsDataGrid({ clubId, canManage = true }) {
             </TableHeader>
             <TableBody>
               {pets.map((pet) => (
-                <TableRow key={pet.id}>
+                <TableRow key={pet.id} className={savingId === pet.id ? 'opacity-60' : ''}>
                   <TableCell className="px-4 py-3">
                     <PhotoCell pet={pet} clubId={clubId} uid={user?.uid} canManage={canManage} />
                   </TableCell>
                   <TableCell className="px-4 py-2.5">
-                    <Input
-                      defaultValue={pet.name || ''}
-                      placeholder="Nome"
-                      readOnly={!canManage}
-                      disabled={savingId === pet.id}
-                      onBlur={canManage ? (e) => { if (e.target.value !== (pet.name || '')) handleFieldChange(pet.id, 'name', e.target.value); } : undefined}
-                      className="h-9 w-32 border-transparent bg-transparent text-sm focus-visible:border-input focus-visible:bg-background"
-                    />
+                    <div className="flex items-center gap-1.5">
+                      <Input
+                        defaultValue={pet.name || ''}
+                        placeholder="Nome"
+                        readOnly={!canManage}
+                        disabled={savingId === pet.id}
+                        onBlur={canManage ? (e) => { if (e.target.value !== (pet.name || '')) handleFieldChange(pet.id, 'name', e.target.value); } : undefined}
+                        className="h-9 w-32 border-transparent bg-transparent text-sm focus-visible:border-input focus-visible:bg-background"
+                      />
+                      {savingId === pet.id && (
+                        <RotateCcw className="h-3.5 w-3.5 animate-spin text-muted-foreground" />
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell className="px-4 py-2.5">
                     <Select value={pet.species} onValueChange={(v) => handleFieldChange(pet.id, 'species', v)} disabled={!canManage || savingId === pet.id}>
@@ -305,10 +395,9 @@ export default function ClubPetsDataGrid({ clubId, canManage = true }) {
                     />
                   </TableCell>
                   <TableCell className="px-4 py-2.5">
-                    <Select value={pet.status} onValueChange={(v) => handleFieldChange(pet.id, 'status', v)} disabled={!canManage || savingId === pet.id}>
-                      <SelectTrigger className="h-9 w-32 border-transparent bg-transparent"><SelectValue /></SelectTrigger>
-                      <SelectContent>{STATUS_OPTIONS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
-                    </Select>
+                    <span className={cn('inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold', STATUS_BADGE_CLASS[pet.status] || STATUS_BADGE_CLASS.available)}>
+                      {STATUS_OPTIONS.find((o) => o.value === pet.status)?.label || '—'}
+                    </span>
                   </TableCell>
                   {canManage && (
                     <TableCell className="px-4 py-2.5 text-center">
