@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.1.0",
-  "generatedAt": "2026-07-16T18:46:33.888Z",
+  "generatedAt": "2026-07-16T18:48:10.269Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W29",
@@ -31,11 +31,9 @@
       "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-ds-v2-pages-admin",
       "status": "in-sync",
       "commitsAhead": 0,
-      "primarySession": "mvs_311d078987d0414a90f57ef28b789b18",
-      "sessionTitle": "DS_V2_PAGES-ADMIN — AdminDashboard, AdminMetrics, AdminPets, AdminUsers, etc",
-      "focus": [
-        "DS_V2_PAGES-ADMIN"
-      ]
+      "primarySession": null,
+      "sessionTitle": null,
+      "focus": []
     },
     {
       "id": "wt-ds-v2-pages-adoption",
@@ -48,6 +46,20 @@
       "primarySession": null,
       "sessionTitle": null,
       "focus": []
+    },
+    {
+      "id": "wt-ds-v2-pages-chat",
+      "branch": "feat/ds-v2-pages-chat-2026-07-16",
+      "head": "f619b21d19588562e2e0add486eed674b4a4d271",
+      "headTitle": "Merge branch 'main' of https://github.com/fsalamoni/viralata",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-ds-v2-pages-chat",
+      "status": "in-sync",
+      "commitsAhead": 0,
+      "primarySession": "mvs_311d078987d0414a90f57ef28b789b18",
+      "sessionTitle": "DS_V2_PAGES-CHAT — ChatPage, Profile, Login, Onboarding, institucionais",
+      "focus": [
+        "DS_V2_PAGES-CHAT"
+      ]
     },
     {
       "id": "wt-ds-v2-pages-home",
@@ -11365,12 +11377,12 @@
       "title": "Bloco D.6 · DS_V2_PAGES-CHAT — Propagar spec para Chat/Perfil/Login/Onboarding/Institucionais",
       "type": "feature",
       "category": "design",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "mvs_311d078987d0414a90f57ef28b789b18",
-      "branch": null,
+      "branch": "feat/ds-v2-pages-chat-2026-07-16",
       "flag": "DS_V2_PAGES-CHAT",
-      "worktree": null,
+      "worktree": ".worktrees/wt-ds-v2-pages-chat",
       "pr": null,
       "tags": [
         "ds-v2",
@@ -11385,7 +11397,8 @@
       ],
       "description": "Ajustar `ChatPage` (mensagens próprias gradiente terracota→mostarda, outras Areia, raio 18/4, input pill 40px), `Profile` (tabs pill), `Login` (card glass 22px), `OnboardingQuestionnaire` (wizard), institucionais (`Terms`, `Legislation`, `PrivacyPolicy` — texto em columnas). Flag default OFF.",
       "createdAt": "2026-07-16",
-      "updatedAt": "2026-07-16"
+      "updatedAt": "2026-07-16T18:48:08",
+      "resolvedAt": "2026-07-16"
     },
     {
       "id": "TASK-709",
@@ -12710,6 +12723,178 @@
       "createdAt": "2026-07-16",
       "updatedAt": "2026-07-16T18:46:27",
       "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-764",
+      "title": "Auditar ChatPage contra spec v1.0 §3.5 Navegação + Chat",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-pages-chat-2026-07-16",
+      "flag": "DS_V2_PAGES-CHAT",
+      "worktree": ".worktrees/wt-ds-v2-pages-chat",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "chat",
+        "audit"
+      ],
+      "blockedBy": [],
+      "description": "Gap analysis do ChatPage. Spec §3.5: mensagens próprias gradiente terracota→mostarda, outras Areia, raio 18/4, input pill 40px. Spec §3.4 Forms.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:48:07",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-765",
+      "title": "Refinar ChatPage (mensagens + input)",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-pages-chat-2026-07-16",
+      "flag": "DS_V2_PAGES-CHAT",
+      "worktree": ".worktrees/wt-ds-v2-pages-chat",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "chat",
+        "refactor"
+      ],
+      "blockedBy": [
+        "TASK-764"
+      ],
+      "description": "MessageBubble: própria = gradiente terracota→mostarda, raio 18 18 4 18. Outras = Areia, raio 18 18 18 4. Input: pill 40px, send button à direita. Avatar nos interlocutores.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:48:08",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-766",
+      "title": "Refinar Profile (tabs + form)",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-pages-chat-2026-07-16",
+      "flag": "DS_V2_PAGES-CHAT",
+      "worktree": ".worktrees/wt-ds-v2-pages-chat",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "profile"
+      ],
+      "blockedBy": [
+        "TASK-764"
+      ],
+      "description": "Tabs pill, Avatar grande no header (56px com anel), form com Input/Textarea do Bloco C.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:48:09",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-767",
+      "title": "Refinar Login + OnboardingQuestionnaire",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-pages-chat-2026-07-16",
+      "flag": "DS_V2_PAGES-CHAT",
+      "worktree": ".worktrees/wt-ds-v2-pages-chat",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "login",
+        "onboarding"
+      ],
+      "blockedBy": [
+        "TASK-764"
+      ],
+      "description": "Login: card glass 22px + form centralizado. Onboarding: wizard steps com arena-tab-pill, Input 46px.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:48:09",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-768",
+      "title": "Refinar institucionais (Terms, Legislation, PrivacyPolicy)",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "medium",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-pages-chat-2026-07-16",
+      "flag": "DS_V2_PAGES-CHAT",
+      "worktree": ".worktrees/wt-ds-v2-pages-chat",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "legal",
+        "institutional"
+      ],
+      "blockedBy": [
+        "TASK-764"
+      ],
+      "description": "Texto em columnas com largura 720px, tipografia Sora H1 30px, corpo Manrope 16px, links primary. PageContainer.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:48:09",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-769",
+      "title": "Validar Chat/Profile/Login (build + lint + smoke test)",
+      "type": "chore",
+      "category": "ci",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-pages-chat-2026-07-16",
+      "flag": "DS_V2_PAGES-CHAT",
+      "worktree": ".worktrees/wt-ds-v2-pages-chat",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "build",
+        "test"
+      ],
+      "blockedBy": [
+        "TASK-768"
+      ],
+      "description": "Build verde, lint sem regressões, smoke test do chat e login.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:48:09",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-770",
+      "title": "Commit + push do Bloco D.6",
+      "type": "chore",
+      "category": "ci",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-pages-chat-2026-07-16",
+      "flag": "DS_V2_PAGES-CHAT",
+      "worktree": ".worktrees/wt-ds-v2-pages-chat",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "git",
+        "commit"
+      ],
+      "blockedBy": [
+        "TASK-769"
+      ],
+      "description": "Commit único, push só do branch.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:48:07",
+      "resolvedAt": "2026-07-16"
     }
   ],
   "definitionOfDone": [
@@ -12953,7 +13138,7 @@
     "mergedWorktreesThisSprint": [
       "feat/ds-v2-docs-2026-07-16"
     ],
-    "mainCommit": "e4c1e6a6d0c2ec2ab1102d2bf759a91edd33d006",
+    "mainCommit": "f619b21d19588562e2e0add486eed674b4a4d271",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -12963,12 +13148,12 @@
     ],
     "openTODOs": 5,
     "openLegalReviews": 3,
-    "totalTasks": 468,
-    "done": 460,
+    "totalTasks": 475,
+    "done": 468,
     "inProgress": 0,
     "inReview": 0,
     "blocked": 0,
-    "ready": 3,
+    "ready": 2,
     "backlog": 4,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -12998,7 +13183,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-16T18:46:33.906Z — via sync.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-16T18:48:10.287Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
@@ -13033,7 +13218,7 @@
     "risksAccepted": 2,
     "risksMonitoring": 2,
     "lastTaskId": "TASK-717",
-    "lastUpdated": "2026-07-16T18:46:25.593Z",
+    "lastUpdated": "2026-07-16T18:48:06.299Z",
     "dsV2Phase": "Fase 4 — em andamento",
     "dsV2Blocos": {
       "done": [
@@ -13043,22 +13228,22 @@
         "DS_V2_PAGES-HOME",
         "DS_V2_PAGES-PETS",
         "DS_V2_PAGES-ADOPTION",
-        "DS_V2_PAGES-ORG"
-      ],
-      "inProgress": [
+        "DS_V2_PAGES-ORG",
         "DS_V2_PAGES-ADMIN"
       ],
+      "inProgress": [
+        "DS_V2_PAGES-CHAT"
+      ],
       "ready": [
-        "DS_V2_PAGES-CHAT",
         "DS_V2_MOTION",
         "DS_V2_AUDIT"
       ]
     },
     "dsV2Tasks": {
-      "total": 62,
+      "total": 69,
       "done": 8,
       "ready": 10,
-      "inProgress": 13
+      "inProgress": 15
     },
     "dsV2Merge": "Bloco A merged to main @ 8e187f6 (2026-07-16 18:08 UTC)",
     "lastTaskDone": "TASK-700 (Bloco A macro)",
