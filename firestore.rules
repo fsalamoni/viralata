@@ -1921,6 +1921,54 @@ service cloud.firestore {
         isPlatformAdmin()
       );
     }
+
+    // ─── TASK-791: shelter_ledger (prestação de contas do abrigo) ────────────
+    // Coleção: clubs/{clubId}/shelter_ledger
+    // Lógica: público para leitura (transparência LGPD Art. 18 V), gravação
+    // apenas por membros com permissão `finance` (ou admin/owner do abrigo).
+    match /shelter_ledger/{entryId} {
+      // Leitura pública — transparência das finanças do abrigo
+      allow read: if true;
+      // Create: abrigo com permissão finance/owner/admin
+      allow create: if isAuth() && (
+        isClubOwnerOrAdmin(clubId) ||
+        hasClubPermission(clubId, 'finance') ||
+        isPlatformAdmin()
+      );
+      // Update: apenas admin/owner (nenhum campo pode ser alterado por um
+      // membro com só permissão finance —ledger entries são imutáveis
+      // após criação para evitar manipulação retroativa de prestação de contas)
+      allow update: if isAuth() && (
+        isClubOwnerOrAdmin(clubId) ||
+        isPlatformAdmin()
+      );
+      // Delete: apenas admin/owner (imutabilidade do ledger)
+      allow delete: if isAuth() && (
+        isClubOwnerOrAdmin(clubId) ||
+        isPlatformAdmin()
+      );
+    }
+
+    // ─── TASK-791: shelter_ledger_categories (categorias customizadas) ─────────
+    // Coleção: clubs/{clubId}/shelter_ledger_categories
+    // Lógica: leitura pública (para dropdown), gravação por admin/owner/finance.
+    match /shelter_ledger_categories/{categoryId} {
+      allow read: if true;
+      allow create: if isAuth() && (
+        isClubOwnerOrAdmin(clubId) ||
+        hasClubPermission(clubId, 'finance') ||
+        isPlatformAdmin()
+      );
+      allow update: if isAuth() && (
+        isClubOwnerOrAdmin(clubId) ||
+        hasClubPermission(clubId, 'finance') ||
+        isPlatformAdmin()
+      );
+      allow delete: if isAuth() && (
+        isClubOwnerOrAdmin(clubId) ||
+        isPlatformAdmin()
+      );
+    }
   }
 }
 
