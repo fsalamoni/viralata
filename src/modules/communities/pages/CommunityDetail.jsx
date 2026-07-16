@@ -211,12 +211,12 @@ export default function CommunityDetail() {
         ) : (
           <TabsList className="arena-admin-tabs">
             {TABS_LEGACY.map((tab) => (
-              <TabsTrigger key={tab.key} value={tab.key} className="rounded-lg data-[state=active]:bg-primary">
+              <TabsTrigger key={tab.key} value={tab.key} className="arena-admin-tab-trigger">
                 <tab.icon className="mr-2 h-4 w-4" /> {tab.label}
               </TabsTrigger>
             ))}
             {canAdmin && (
-              <TabsTrigger value="equipe" className="rounded-lg data-[state=active]:bg-primary">
+              <TabsTrigger value="equipe" className="arena-admin-tab-trigger">
                 <Users className="mr-2 h-4 w-4" /> Equipe
               </TabsTrigger>
             )}
