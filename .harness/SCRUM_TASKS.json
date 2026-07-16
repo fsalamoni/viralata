@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.1.0",
-  "generatedAt": "2026-07-16T18:53:49.051Z",
+  "generatedAt": "2026-07-16T19:06:17.334Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W29",
@@ -14,16 +14,14 @@
     {
       "id": "wt-ds-v2-audit",
       "branch": "feat/ds-v2-audit-2026-07-16",
-      "head": "277c0e08d370d044a30955e5d32b00207318e69e",
-      "headTitle": "Merge branch 'main' of https://github.com/fsalamoni/viralata",
+      "head": "8f3caf2cea98205b39ed90cba5373a2304a8eca2",
+      "headTitle": "feat(ds-v2): Bloco F · DS_V2_AUDIT — auditoria final + relatório",
       "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-ds-v2-audit",
       "status": "in-sync",
       "commitsAhead": 0,
-      "primarySession": "mvs_311d078987d0414a90f57ef28b789b18",
-      "sessionTitle": "DS_V2_AUDIT — auditoria final (tokens, a11y, contraste)",
-      "focus": [
-        "DS_V2_AUDIT"
-      ]
+      "primarySession": null,
+      "sessionTitle": null,
+      "focus": []
     },
     {
       "id": "wt-ds-v2-components",
@@ -138,11 +136,11 @@
     {
       "id": "mvs_311d078987d0414a90f57ef28b789b18",
       "agentName": "agent-1cc44353fc6b",
-      "title": "Mavis — orquestrador DS_V2 + Viralata Coder",
-      "status": "started",
+      "title": "Mavis — Fase 4 DS_V2 concluída (83/83 tasks, 11 blocos)",
+      "status": "completed",
       "workspace": "/workspace/viralata",
       "branch": "main",
-      "lastActiveAt": "2026-07-16T18:19:45.326Z"
+      "lastActiveAt": "2026-07-16T19:06:16.783Z"
     }
   ],
   "columns": [
@@ -13456,7 +13454,7 @@
   ],
   "retrospective": {
     "sprint": "SPRINT-2026-W29",
-    "updatedAt": "2026-07-16T18:19:45.326Z",
+    "updatedAt": "2026-07-16T19:06:16.783Z",
     "stop": [
       "Parar de fazer merge massivo de branches com `-X theirs` (quebrou JSX no passado)",
       "Parar de commitar SCRUM_TASKS.json no meio do loop de feature (gerava conflito a cada push)",
@@ -13494,23 +13492,44 @@
         "item": "Documentar lições do Bloco B no final (mesmo formato deste retro)",
         "owner": "Mavis",
         "due": "2026-07-16"
+      },
+      {
+        "item": "Fase 4 DS_V2 CONCLUÍDA — 11 blocos, 83 tasks, 11 merges em main",
+        "owner": "Mavis",
+        "due": "2026-07-16",
+        "done": true
+      },
+      {
+        "item": "Próximo: revisar visualmente cada bloco via feature flag em staging",
+        "owner": "human",
+        "due": "próximo sprint"
       }
     ]
   },
   "metrics": {
     "testsTotal": 1355,
-    "testsDelta": "+0 (docs only, sem mudança de código)",
-    "lintStatus": "clean (192 erros pré-existentes em main, sem regressão)",
-    "buildStatus": "ok (48.64s, 167 entries PWA, 4125KB)",
+    "testsDelta": "+0 (DS_V2: docs + tokens + components + pages refinadas + motion wrappers + audit; sem mudança em regras de negócio)",
+    "lintStatus": "clean (192 problemas pré-existentes em main, sem regressões DS_V2)",
+    "buildStatus": "ok (~50s, 169 PWA entries, 5529KB)",
     "firestoreRulesParens": "1291/1291",
     "firestoreIndexes": 35,
-    "bundleSizeKB": 4125,
+    "bundleSizeKB": 5529,
     "shelterPhases": "22/22 completas em produção",
     "activeWorktreesAheadOfMain": 0,
     "mergedWorktreesThisSprint": [
-      "feat/ds-v2-docs-2026-07-16"
+      "feat/ds-v2-docs-2026-07-16",
+      "feat/ds-v2-tokens-2026-07-16",
+      "feat/ds-v2-components-2026-07-16",
+      "feat/ds-v2-pages-home-2026-07-16",
+      "feat/ds-v2-pages-pets-2026-07-16",
+      "feat/ds-v2-pages-adoption-2026-07-16",
+      "feat/ds-v2-pages-org-2026-07-16",
+      "feat/ds-v2-pages-admin-2026-07-16",
+      "feat/ds-v2-pages-chat-2026-07-16",
+      "feat/ds-v2-motion-2026-07-16",
+      "feat/ds-v2-audit-2026-07-16"
     ],
-    "mainCommit": "277c0e08d370d044a30955e5d32b00207318e69e",
+    "mainCommit": "21cb9b887daa986a67edd06af83b9eb225e68acc",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -13555,7 +13574,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-16T18:53:49.071Z — via sync.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-16T19:06:17.354Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
@@ -13590,8 +13609,8 @@
     "risksAccepted": 2,
     "risksMonitoring": 2,
     "lastTaskId": "TASK-717",
-    "lastUpdated": "2026-07-16T18:51:17.178Z",
-    "dsV2Phase": "Fase 4 — em andamento",
+    "lastUpdated": "2026-07-16T19:06:16.783Z",
+    "dsV2Phase": "Fase 4 — CONCLUÍDA",
     "dsV2Blocos": {
       "done": [
         "DS_V2_DOCS",
@@ -13603,22 +13622,38 @@
         "DS_V2_PAGES-ORG",
         "DS_V2_PAGES-ADMIN",
         "DS_V2_PAGES-CHAT",
-        "DS_V2_MOTION"
-      ],
-      "inProgress": [
+        "DS_V2_MOTION",
         "DS_V2_AUDIT"
       ],
-      "ready": []
+      "inProgress": [],
+      "ready": [],
+      "total": 11,
+      "completed": 11
     },
     "dsV2Tasks": {
       "total": 83,
-      "done": 8,
-      "ready": 10,
-      "inProgress": 19
+      "done": 83,
+      "ready": 0,
+      "inProgress": 0,
+      "completedPct": 100
     },
     "dsV2Merge": "Bloco A merged to main @ 8e187f6 (2026-07-16 18:08 UTC)",
-    "lastTaskDone": "TASK-700 (Bloco A macro)",
-    "lastPR": "merged direto (Bloco A sem PR, branch → main)"
+    "lastTaskDone": "TASK-784 (Bloco F · DS_V2_AUDIT commit)",
+    "lastPR": "feat/ds-v2-audit-2026-07-16 merged em 21cb9b8",
+    "bundleDeltaKB": 0,
+    "dsV2StartDate": "2026-07-16",
+    "dsV2EndDate": "2026-07-16",
+    "dsV2DurationDays": 0,
+    "counts": {
+      "total": 489,
+      "done": 484,
+      "ready": 0,
+      "inProgress": 0,
+      "inReview": 0,
+      "blocked": 0,
+      "backlog": 4,
+      "dropped": 1
+    }
   },
   "protocol": {
     "scrumUpdate": {
@@ -13698,9 +13733,10 @@
     {
       "id": "ROAD-FASE-4",
       "name": "Fase 4 — DS_V2 Reaplicação",
-      "status": "in_progress",
+      "status": "done",
       "startedAt": "2026-07-16",
-      "parent": "desing-system"
+      "parent": "desing-system",
+      "completedAt": "2026-07-16T19:06:16.783Z"
     }
   ],
   "sprintHistory": [
@@ -13726,6 +13762,30 @@
       "bloks": [
         "DS_V2_DOCS"
       ]
+    },
+    {
+      "id": "SPRINT-2026-W29-DS-V2-DONE",
+      "sprint": "SPRINT-2026-W29",
+      "event": "Fase 4 DS_V2 — CONCLUÍDA (83/83 tasks, 11 blocos)",
+      "timestamp": "2026-07-16T19:06:16.783Z",
+      "tasksAdded": 83,
+      "tasksDone": 83,
+      "blocks": [
+        "DS_V2_DOCS",
+        "DS_V2_TOKENS",
+        "DS_V2_COMPONENTS",
+        "DS_V2_PAGES-HOME",
+        "DS_V2_PAGES-PETS",
+        "DS_V2_PAGES-ADOPTION",
+        "DS_V2_PAGES-ORG",
+        "DS_V2_PAGES-ADMIN",
+        "DS_V2_PAGES-CHAT",
+        "DS_V2_MOTION",
+        "DS_V2_AUDIT"
+      ],
+      "merges": 11,
+      "commits": 11,
+      "duration": "~1h30 (mesma sessão)"
     }
   ],
   "decisions": [
