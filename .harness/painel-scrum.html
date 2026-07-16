@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.1.0",
-  "generatedAt": "2026-07-16T18:32:22.542Z",
+  "generatedAt": "2026-07-16T18:36:12.801Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W29",
@@ -400,15 +400,27 @@
     {
       "id": "wt-ds-v2-components",
       "branch": "feat/ds-v2-components-2026-07-16",
-      "head": "29fec2a2099781a193a8a7b3d593de687c24d6b3",
-      "headTitle": "chore(scrum): Bloco B · DS_V2_TOKENS done — 5 tasks (TASK-720..723) + macro TASK-701",
+      "head": "00f89b6eef64766e167e3695f2644a6c9fc4393d",
+      "headTitle": "feat(ds-v2): Bloco C · DS_V2_COMPONENTS — refatorar 6 componentes contra spec v1.0",
       "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-ds-v2-components",
       "status": "in-sync",
       "commitsAhead": 0,
+      "primarySession": null,
+      "sessionTitle": null,
+      "focus": []
+    },
+    {
+      "id": "wt-ds-v2-pages-home",
+      "branch": "feat/ds-v2-pages-home-2026-07-16",
+      "head": "aa5778431b19c372597b9bc4b5ea8001ea7e1e0f",
+      "headTitle": "merge: integrar scrum-topbar (auto) do origin/main, mantém HTML pós Bloco C",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-ds-v2-pages-home",
+      "status": "in-sync",
+      "commitsAhead": 0,
       "primarySession": "mvs_311d078987d0414a90f57ef28b789b18",
-      "sessionTitle": "DS_V2_COMPONENTS — refatorar Button, Card, Input, Modal, Table, Avatar",
+      "sessionTitle": "DS_V2_PAGES-HOME — refinar Home.jsx contra spec v1.0",
       "focus": [
-        "DS_V2_COMPONENTS"
+        "DS_V2_PAGES-HOME"
       ]
     },
     {
@@ -11560,12 +11572,12 @@
       "title": "Bloco D.1 · DS_V2_PAGES-HOME — Reescrever Home.jsx do zero contra spec",
       "type": "feature",
       "category": "design",
-      "status": "ready",
+      "status": "done",
       "priority": "critical",
       "owner": "mvs_311d078987d0414a90f57ef28b789b18",
-      "branch": null,
+      "branch": "feat/ds-v2-pages-home-2026-07-16",
       "flag": "DS_V2_PAGES-HOME",
-      "worktree": null,
+      "worktree": ".worktrees/wt-ds-v2-pages-home",
       "pr": null,
       "tags": [
         "ds-v2",
@@ -11579,7 +11591,8 @@
       ],
       "description": "Reescrever `src/pages/Home.jsx` do zero contra a spec v1.0. Hero assimétrico (texto+CTA à esquerda, foto+blob à direita), cards de feature, seções de Vitrine, banner herói escuro, CTA final. Sem emoji gigante. Validar com `npm run build` + screenshot. Feature flag default OFF — user ativa após validar visualmente.",
       "createdAt": "2026-07-16",
-      "updatedAt": "2026-07-16"
+      "updatedAt": "2026-07-16T18:36:08",
+      "resolvedAt": "2026-07-16"
     },
     {
       "id": "TASK-704",
@@ -12233,6 +12246,131 @@
       "createdAt": "2026-07-16",
       "updatedAt": "2026-07-16T18:32:12",
       "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-732",
+      "title": "Auditar Home.jsx contra spec v1.0 (gap analysis)",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-pages-home-2026-07-16",
+      "flag": "DS_V2_PAGES-HOME",
+      "worktree": ".worktrees/wt-ds-v2-pages-home",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "home",
+        "audit"
+      ],
+      "blockedBy": [],
+      "description": "Ler src/pages/Home.jsx completo, comparar com spec v1.0 §3 (cards, hero, botões, tipografia, espaçamento). Listar divergências reais. Resultado: lista priorizada do que ajustar.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:34:22",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-733",
+      "title": "Aplicar refinamentos: Icon (Material Symbols) no hero + Avatar nas histórias",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-pages-home-2026-07-16",
+      "flag": "DS_V2_PAGES-HOME",
+      "worktree": ".worktrees/wt-ds-v2-pages-home",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "home",
+        "refactor",
+        "icon",
+        "avatar"
+      ],
+      "blockedBy": [
+        "TASK-732"
+      ],
+      "description": "Trocar PawPrint (lucide) do hero por <Icon kind=\"material\" name=\"pets\" filled> (spec §4.2 ícone de marca). Trocar stories avatares (gradient inline) por <Avatar><AvatarFallback>...</AvatarFallback></Avatar> usando o gradiente oficial.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:36:07",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-734",
+      "title": "Refinar tipografia do hero (Sora 800, H1 spec §2.3)",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "medium",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-pages-home-2026-07-16",
+      "flag": "DS_V2_PAGES-HOME",
+      "worktree": ".worktrees/wt-ds-v2-pages-home",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "home",
+        "typography"
+      ],
+      "blockedBy": [
+        "TASK-733"
+      ],
+      "description": "Ajustar o h1 do hero para 50-56px (Display §2.3) com tracking -0.02em, font-sora. Manter responsivo (28/38/50). H2 das seções: 30px (Sora 800).",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:36:12",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-735",
+      "title": "Validar Home (build + lint + smoke test)",
+      "type": "chore",
+      "category": "ci",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-pages-home-2026-07-16",
+      "flag": "DS_V2_PAGES-HOME",
+      "worktree": ".worktrees/wt-ds-v2-pages-home",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "build",
+        "test"
+      ],
+      "blockedBy": [
+        "TASK-734"
+      ],
+      "description": "npm run build verde, lint sem regressões. Smoke test: Home carrega, hero renderiza, ícones Material Symbols aparecem (testar local ou via http-server).",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:36:12",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-736",
+      "title": "Commit + push do Bloco D.1",
+      "type": "chore",
+      "category": "ci",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-pages-home-2026-07-16",
+      "flag": "DS_V2_PAGES-HOME",
+      "worktree": ".worktrees/wt-ds-v2-pages-home",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "git",
+        "commit"
+      ],
+      "blockedBy": [
+        "TASK-735"
+      ],
+      "description": "Commit único, mensagem descritiva. Push só do branch. PR com screenshots antes/depois do hero.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:36:08",
+      "resolvedAt": "2026-07-16"
     }
   ],
   "definitionOfDone": [
@@ -12476,7 +12614,7 @@
     "mergedWorktreesThisSprint": [
       "feat/ds-v2-docs-2026-07-16"
     ],
-    "mainCommit": "29fec2a2099781a193a8a7b3d593de687c24d6b3",
+    "mainCommit": "aa5778431b19c372597b9bc4b5ea8001ea7e1e0f",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -12486,12 +12624,12 @@
     ],
     "openTODOs": 5,
     "openLegalReviews": 3,
-    "totalTasks": 436,
-    "done": 423,
+    "totalTasks": 441,
+    "done": 429,
     "inProgress": 0,
     "inReview": 0,
     "blocked": 0,
-    "ready": 8,
+    "ready": 7,
     "backlog": 4,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -12521,7 +12659,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-16T18:32:22.560Z — via sync.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-16T18:36:12.820Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
@@ -12556,18 +12694,18 @@
     "risksAccepted": 2,
     "risksMonitoring": 2,
     "lastTaskId": "TASK-717",
-    "lastUpdated": "2026-07-16T18:25:45.219Z",
+    "lastUpdated": "2026-07-16T18:33:35.123Z",
     "dsV2Phase": "Fase 4 — em andamento",
     "dsV2Blocos": {
       "done": [
         "DS_V2_DOCS",
-        "DS_V2_TOKENS"
-      ],
-      "inProgress": [
+        "DS_V2_TOKENS",
         "DS_V2_COMPONENTS"
       ],
+      "inProgress": [
+        "DS_V2_PAGES-HOME"
+      ],
       "ready": [
-        "DS_V2_PAGES-HOME",
         "DS_V2_PAGES-PETS",
         "DS_V2_PAGES-ADOPTION",
         "DS_V2_PAGES-ORG",
@@ -12578,10 +12716,10 @@
       ]
     },
     "dsV2Tasks": {
-      "total": 30,
+      "total": 35,
       "done": 8,
       "ready": 10,
-      "inProgress": 3
+      "inProgress": 5
     },
     "dsV2Merge": "Bloco A merged to main @ 8e187f6 (2026-07-16 18:08 UTC)",
     "lastTaskDone": "TASK-700 (Bloco A macro)",
@@ -12862,7 +13000,7 @@
 }
   </script>
 <<<<<<< HEAD
-  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-16T18:32:22.613Z">
+  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-16T18:36:12.875Z">
 =======
   <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-16T03:26:48.025Z">
 >>>>>>> 2fdaf3d (design(ux): TASK-603 - hero home com hierarquia clara - H1 menor mobile, badge compacto, remove chips decorativos)
@@ -12880,8 +13018,8 @@
       </div>
     </div>
     <div class="sprint-info">
-      <span class="pill mono">main @ 29fec2a</span>
-      <span class="pill">+2 worktrees ativos</span>
+      <span class="pill mono">main @ aa57784</span>
+      <span class="pill">+3 worktrees ativos</span>
       <span class="pill goal">Goal: estabilizar pós-22 fases + fechar worktrees</span>
     </div>
     <div class="topbar-actions">
