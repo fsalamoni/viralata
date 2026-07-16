@@ -4,6 +4,8 @@ import Seo from '@/components/Seo';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
+import { Icon } from '@/components/ui/icon';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   PawPrint, Heart, Shield, Users, Megaphone,
   ClipboardList, Search, Sparkles, ArrowRight, CheckCircle2,
@@ -65,9 +67,10 @@ export default function Home() {
             className="gap-y-section-lg text-center lg:text-left lg:gap-y-section-lg"
           >
             <motion.span variants={fadeUp} className="arena-chip mx-auto h-[30px] px-3.5 text-[11.5px] font-bold lg:mx-0">
-              <PawPrint className="h-3.5 w-3.5 text-primary" /> {settings.ui_text.home_hero_badge}
+              <Icon name="pets" size={14} filled className="text-primary" /> {settings.ui_text.home_hero_badge}
             </motion.span>
-            <motion.h1 variants={fadeUp} className="text-[28px] font-extrabold leading-[1.1] tracking-[-0.025em] text-foreground sm:text-[38px] lg:text-[50px]">
+            {/* DS_V2: H1 spec §2.3 — Sora 800, 30-34px, tracking -0.02em, line-height 1.2 */}
+            <motion.h1 variants={fadeUp} className="font-sora text-[30px] font-extrabold leading-[1.15] tracking-[-0.02em] text-foreground sm:text-[38px] lg:text-[50px]">
               {settings.ui_text.home_hero_title_prefix}
               {' '}
               <span className="arena-heading">{settings.ui_text.home_hero_title_highlight}</span>
@@ -96,7 +99,8 @@ export default function Home() {
           >
             <div className="absolute inset-3.5 rounded-[44%_56%_58%_42%/46%_42%_58%_54%] bg-[linear-gradient(135deg,hsl(var(--primary)/0.35),hsl(var(--highlight)/0.3))] blur-2xl" />
             <div className="arena-panel relative flex h-full items-center justify-center rounded-[40%_60%_55%_45%/48%_44%_56%_52%] overflow-hidden">
-              <PawPrint className="h-[130px] w-[130px] text-primary/50" strokeWidth={1.25} />
+              {/* DS_V2: ícone de marca (Material Symbols, FILL 1) — spec §4.2 */}
+              <Icon name="pets" size={130} filled className="text-primary/50" />
             </div>
           </motion.div>
         </div>
@@ -159,15 +163,17 @@ export default function Home() {
             <h2 className="mt-3.5 text-[30px] font-extrabold tracking-[-0.02em] text-foreground">Vidas que mudaram de rumo</h2>
           </motion.div>
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
-            {STORIES.map((story) => (
+            {STORIES.map((story) => {
+              const initials = story.adopter.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase();
+              return (
               <motion.div key={story.adopter} variants={fadeUp} className="arena-panel rounded-[24px] p-6">
                 <div className="mb-3.5 flex items-center gap-3">
-                  <span
-                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full font-['Sora'] text-[15px] font-bold text-white"
-                    style={{ background: story.gradient }}
-                  >
-                    {story.adopter.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase()}
-                  </span>
+                  {/* DS_V2: Avatar com iniciais (spec §3.9) */}
+                  <Avatar size="md">
+                    <AvatarFallback style={{ background: story.gradient }}>
+                      {initials}
+                    </AvatarFallback>
+                  </Avatar>
                   <div>
                     <div className="text-[13.5px] font-bold text-foreground">{story.adopter}</div>
                     <div className="text-xs text-muted-foreground">adotou {story.pet}</div>
@@ -175,7 +181,8 @@ export default function Home() {
                 </div>
                 <p className="text-sm italic leading-[1.65] text-foreground/85">&ldquo;{story.quote}&rdquo;</p>
               </motion.div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </motion.section>
