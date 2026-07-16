@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.1.0",
-  "generatedAt": "2026-07-16T18:48:10.269Z",
+  "generatedAt": "2026-07-16T18:50:34.767Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W29",
@@ -22,6 +22,20 @@
       "primarySession": null,
       "sessionTitle": null,
       "focus": []
+    },
+    {
+      "id": "wt-ds-v2-motion",
+      "branch": "feat/ds-v2-motion-2026-07-16",
+      "head": "cde4c2fef2fd1feeb1218e12a512aa9af4e6b209",
+      "headTitle": "Merge branch 'main' of https://github.com/fsalamoni/viralata",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-ds-v2-motion",
+      "status": "in-sync",
+      "commitsAhead": 0,
+      "primarySession": "mvs_311d078987d0414a90f57ef28b789b18",
+      "sessionTitle": "DS_V2_MOTION — useReducedMotionSafe + FadeIn/Stagger/HoverLift wrappers",
+      "focus": [
+        "DS_V2_MOTION"
+      ]
     },
     {
       "id": "wt-ds-v2-pages-admin",
@@ -55,11 +69,9 @@
       "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-ds-v2-pages-chat",
       "status": "in-sync",
       "commitsAhead": 0,
-      "primarySession": "mvs_311d078987d0414a90f57ef28b789b18",
-      "sessionTitle": "DS_V2_PAGES-CHAT — ChatPage, Profile, Login, Onboarding, institucionais",
-      "focus": [
-        "DS_V2_PAGES-CHAT"
-      ]
+      "primarySession": null,
+      "sessionTitle": null,
+      "focus": []
     },
     {
       "id": "wt-ds-v2-pages-home",
@@ -11405,12 +11417,12 @@
       "title": "Bloco E · DS_V2_MOTION — Instalar framer-motion + padrões de movimento",
       "type": "feature",
       "category": "design",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "mvs_311d078987d0414a90f57ef28b789b18",
-      "branch": null,
+      "branch": "feat/ds-v2-motion-2026-07-16",
       "flag": "DS_V2_MOTION",
-      "worktree": null,
+      "worktree": ".worktrees/wt-ds-v2-motion",
       "pr": null,
       "tags": [
         "ds-v2",
@@ -11424,7 +11436,8 @@
       ],
       "description": "Instalar `framer-motion` (tree-shakeable, ~30KB gzip). Criar hook `useReducedMotionSafe` que retorna true se `prefers-reduced-motion: reduce`. Criar wrappers: `<FadeIn>` (opacity 0→1, translateY 16→0, 400ms ease, whileInView once: true), `<Stagger>` (delay 80ms, max 6-8 itens), `<HoverLift>` (scale 1.01 + sombra crescente). Aplicar em hero (Home, PetDetail, ClubDetail), grids de cards, modais, dropdowns. NÃO aplicar em hover de botão (CSS puro).",
       "createdAt": "2026-07-16",
-      "updatedAt": "2026-07-16"
+      "updatedAt": "2026-07-16T18:50:34",
+      "resolvedAt": "2026-07-16"
     },
     {
       "id": "TASK-710",
@@ -12895,6 +12908,154 @@
       "createdAt": "2026-07-16",
       "updatedAt": "2026-07-16T18:48:07",
       "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-771",
+      "title": "Auditar uso de framer-motion (já instalado?)",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-motion-2026-07-16",
+      "flag": "DS_V2_MOTION",
+      "worktree": ".worktrees/wt-ds-v2-motion",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "motion",
+        "audit"
+      ],
+      "blockedBy": [],
+      "description": "Verificar se framer-motion está instalado. Listar arquivos que usam.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:48:51",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-772",
+      "title": "Criar hook useReducedMotionSafe",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-motion-2026-07-16",
+      "flag": "DS_V2_MOTION",
+      "worktree": ".worktrees/wt-ds-v2-motion",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "motion",
+        "a11y"
+      ],
+      "blockedBy": [
+        "TASK-771"
+      ],
+      "description": "Hook que retorna true se prefers-reduced-motion: reduce. Usado por todos wrappers para desligar animações.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:50:33",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-773",
+      "title": "Criar wrappers <FadeIn>, <Stagger>, <HoverLift> (motion)",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-motion-2026-07-16",
+      "flag": "DS_V2_MOTION",
+      "worktree": ".worktrees/wt-ds-v2-motion",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "motion",
+        "wrappers"
+      ],
+      "blockedBy": [
+        "TASK-772"
+      ],
+      "description": "FadeIn (opacity 0→1, translateY 16→0, 400ms ease, whileInView once: true). Stagger (delay 80ms, max 6-8 itens). HoverLift (scale 1.01 + sombra crescente, 300ms).",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:50:33",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-774",
+      "title": "Documentar padrões de motion no DESIGN_SYSTEM.md",
+      "type": "chore",
+      "category": "docs",
+      "status": "done",
+      "priority": "medium",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-motion-2026-07-16",
+      "flag": "DS_V2_MOTION",
+      "worktree": ".worktrees/wt-ds-v2-motion",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "motion",
+        "docs"
+      ],
+      "blockedBy": [
+        "TASK-773"
+      ],
+      "description": "Atualizar docs/DESIGN_SYSTEM.md §5.1 com exemplos de uso dos wrappers.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:50:33",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-775",
+      "title": "Validar Motion (build + lint + bundle size)",
+      "type": "chore",
+      "category": "ci",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-motion-2026-07-16",
+      "flag": "DS_V2_MOTION",
+      "worktree": ".worktrees/wt-ds-v2-motion",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "build",
+        "perf"
+      ],
+      "blockedBy": [
+        "TASK-774"
+      ],
+      "description": "Build verde, lint sem regressões, bundle size delta < +30KB. framer-motion é tree-shakeable.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:50:33",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-776",
+      "title": "Commit + push do Bloco E",
+      "type": "chore",
+      "category": "ci",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-motion-2026-07-16",
+      "flag": "DS_V2_MOTION",
+      "worktree": ".worktrees/wt-ds-v2-motion",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "git",
+        "commit"
+      ],
+      "blockedBy": [
+        "TASK-775"
+      ],
+      "description": "Commit único, push só do branch.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:50:34",
+      "resolvedAt": "2026-07-16"
     }
   ],
   "definitionOfDone": [
@@ -13138,7 +13299,7 @@
     "mergedWorktreesThisSprint": [
       "feat/ds-v2-docs-2026-07-16"
     ],
-    "mainCommit": "f619b21d19588562e2e0add486eed674b4a4d271",
+    "mainCommit": "cde4c2fef2fd1feeb1218e12a512aa9af4e6b209",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -13148,12 +13309,12 @@
     ],
     "openTODOs": 5,
     "openLegalReviews": 3,
-    "totalTasks": 475,
-    "done": 468,
+    "totalTasks": 481,
+    "done": 475,
     "inProgress": 0,
     "inReview": 0,
     "blocked": 0,
-    "ready": 2,
+    "ready": 1,
     "backlog": 4,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -13183,7 +13344,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-16T18:48:10.287Z — via sync.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-16T18:50:34.785Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
@@ -13218,7 +13379,7 @@
     "risksAccepted": 2,
     "risksMonitoring": 2,
     "lastTaskId": "TASK-717",
-    "lastUpdated": "2026-07-16T18:48:06.299Z",
+    "lastUpdated": "2026-07-16T18:48:50.435Z",
     "dsV2Phase": "Fase 4 — em andamento",
     "dsV2Blocos": {
       "done": [
@@ -13229,21 +13390,21 @@
         "DS_V2_PAGES-PETS",
         "DS_V2_PAGES-ADOPTION",
         "DS_V2_PAGES-ORG",
-        "DS_V2_PAGES-ADMIN"
-      ],
-      "inProgress": [
+        "DS_V2_PAGES-ADMIN",
         "DS_V2_PAGES-CHAT"
       ],
+      "inProgress": [
+        "DS_V2_MOTION"
+      ],
       "ready": [
-        "DS_V2_MOTION",
         "DS_V2_AUDIT"
       ]
     },
     "dsV2Tasks": {
-      "total": 69,
+      "total": 75,
       "done": 8,
       "ready": 10,
-      "inProgress": 15
+      "inProgress": 17
     },
     "dsV2Merge": "Bloco A merged to main @ 8e187f6 (2026-07-16 18:08 UTC)",
     "lastTaskDone": "TASK-700 (Bloco A macro)",
