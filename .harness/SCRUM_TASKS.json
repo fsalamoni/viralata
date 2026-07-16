@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-15T11:52:49.678Z",
+  "generatedAt": "2026-07-16T00:17:43.248Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W29",
@@ -13,9 +13,9 @@
   "activeWorktrees": [
     {
       "id": "viralata",
-      "branch": "feat/task-065-dpa-abrigos-2026-07-15",
-      "head": "6c7900f4a250455150dbb9dd43f370cb26d35ba4",
-      "headTitle": "feat(task-065): DPA Abrigos page — /legal/dpa-abrigos",
+      "branch": "feat/task-248-volunteer-certificate-2026-07-16",
+      "head": "8980741c6e009e11d868258804a97204a7add10d",
+      "headTitle": "chore(scrum): topbar finalizer 813d2a0 (pós-deploy)",
       "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata",
       "status": "in-sync",
       "commitsAhead": 0,
@@ -7076,7 +7076,7 @@
       "branch": null,
       "flag": null,
       "worktree": null,
-      "pr": null,
+      "pr": "0",
       "tags": [
         "regra-a",
         "voluntarios",
@@ -7090,7 +7090,8 @@
       "evidence": "D:\\viralata\\src\\modules\\shelter\\domain\\legal\\volunteerTerms.v2.js §6.1(e) (emissão declarações); Lei 9.608/1998 Art. 1º §2º; D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §LGPD",
       "description": "BLOCO INDEPENDENTE. (1) Cloud Function generateVolunteerCertificate(uid, period) → PDF, (2) Endpoint /perfil/voluntario/certificado?from=X&to=Y, (3) Botão \"Baixar certificado de horas\" no /perfil#voluntariadas, (4) Storage path volunteer_certificates/{uid}/{date}.pdf, (5) Template com: nome, CPF mascarado, abrigo(s), período, total horas, badge, signature do abrigo, (6) Lei 9.608/1998 atestado oficial + termo v2 §6.1(e) compliance.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-15"
+      "updatedAt": "2026-07-16T00:17:34",
+      "resolvedAt": "2026-07-16"
     },
     {
       "id": "TASK-249",
@@ -10626,13 +10627,13 @@
     ],
     "openTODOs": 5,
     "openLegalReviews": 3,
-    "totalTasks": 370,
-    "done": 276,
-    "inProgress": 3,
-    "inReview": 1,
+    "totalTasks": 376,
+    "done": 349,
+    "inProgress": 0,
+    "inReview": 0,
     "blocked": 0,
-    "ready": 83,
-    "backlog": 6,
+    "ready": 22,
+    "backlog": 4,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
     "contribuicaoCoder": {
@@ -10661,7 +10662,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-15T11:52:41 — via scrum.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-16T00:17:43.264Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
