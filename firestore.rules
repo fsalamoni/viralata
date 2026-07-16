@@ -1269,6 +1269,46 @@ service cloud.firestore {
         allow delete: if isAuth() && isPlatformAdmin();
       }
 
+      // ─── TASK-274: `volunteer_assignments` — atribuições finas de capabilities ──────
+      // Cada documento: {volunteer_uid, capability, scope, scope_value, starts_at, ends_at, assigned_by_uid, assigned_at, notes}
+      // READ: abrigo com volunteers (owner/admin/membro), ou próprio voluntário para os seus
+      // WRITE: apenas abrigo com volunteers:manage
+      // DEL: apenas abrigo com volunteers:manage (ou platform_admin)
+      match /volunteer_assignments/{assignmentId} {
+        allow read: if isAuth() && (
+          isPlatformAdmin() ||
+          isClubOwnerOrAdmin(clubId) ||
+          hasClubPermission(clubId, 'volunteers') ||
+          // Próprio voluntário lê os seus registros
+          resource.data.volunteer_uid == request.auth.uid
+        );
+        allow create: if isAuth() && (
+          isPlatformAdmin() ||
+          isClubOwnerOrAdmin(clubId) ||
+          hasClubPermission(clubId, 'volunteers:manage')
+        ) && (
+          request.resource.data.volunteer_uid is string &&
+          request.resource.data.volunteer_uid.size() > 0 &&
+          request.resource.data.capability is string &&
+          request.resource.data.assigned_by_uid == request.auth.uid
+        );
+        allow update: if isAuth() && (
+          isPlatformAdmin() ||
+          isClubOwnerOrAdmin(clubId) ||
+          hasClubPermission(clubId, 'volunteers:manage')
+        ) && (
+          // Imutáveis: volunteer_uid, capability, assigned_by_uid
+          request.resource.data.volunteer_uid == resource.data.volunteer_uid &&
+          request.resource.data.capability == resource.data.capability &&
+          request.resource.data.assigned_by_uid == resource.data.assigned_by_uid
+        );
+        allow delete: if isAuth() && (
+          isPlatformAdmin() ||
+          isClubOwnerOrAdmin(clubId) ||
+          hasClubPermission(clubId, 'volunteers:manage')
+        );
+      }
+
       // ─── Fase 14: Coleção `dashboard_widgets` (customizável por abrigo) ───
       // Widgets do dashboard — métricas customizadas que o abrigo cria.
       // Multi-tenant: cada widget pertence a UM abrigo (`shelter_club_id`).
