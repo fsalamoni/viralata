@@ -115,6 +115,16 @@ export default function SearchPage() {
             )}
           </div>
 
+          {/* Contador de resultados */}
+          {!isLoading && !hasError && filters && (
+            <p className="text-xs text-muted-foreground mt-2">
+              {results.length === 0
+                ? 'Nenhum resultado'
+                : `${results.length} resultado${results.length === 1 ? '' : 's'}`}
+              {query ? ` para "${query}"` : ''}
+            </p>
+          )}
+
           <div className="mt-4 space-y-2">
             {isLoading && filters && (
               <>
@@ -132,6 +142,13 @@ export default function SearchPage() {
               <p className="py-6 text-center text-sm text-muted-foreground">
                 Nenhum resultado para “{query}”.
               </p>
+            )}
+            {!isLoading && !hasError && filters && results.length === 0 && (
+              <EmptyState
+                icon={Search}
+                title="Nenhum resultado encontrado"
+                description={`Nenhum resultado para "${query}". Tente buscar outro termo ou selecione outro abrigo.`}
+              />
             )}
             {!isLoading && !hasError && results.map((r) => (
               r.entity === 'shelter' && !selectedShelter ? (
