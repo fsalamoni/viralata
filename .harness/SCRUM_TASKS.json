@@ -281,7 +281,7 @@
       "title": "Revis\u00e3o jur\u00eddica: adoptionTerms.v1.js",
       "type": "debt",
       "category": "legal",
-      "status": "done",
+      "status": "ready",
       "priority": "high",
       "owner": "human-jur\u00eddico",
       "branch": null,
@@ -298,15 +298,14 @@
       "evidence": "src/pages/legal/adoptionTerms.v1.js:414 (TODO JUR\u00cdDICO)",
       "description": "Texto do termo de ado\u00e7\u00e3o. Precisa de revis\u00e3o humana por advogado. Recomenda\u00e7\u00f5es: alinhar com Lei 14.063/2020 (assinatura eletr\u00f4nica avan\u00e7ada), Art. 936 CC (responsabilidade civil do adotante), disclaimers de v\u00edcios redibit\u00f3rios biol\u00f3gicos (parvovirose, cinomose), transfer\u00eancia de microchip. N\u00e3o-bloqueante (texto est\u00e1tico, v1 j\u00e1 em produ\u00e7\u00e3o).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-15",
-      "decision": "P11: User=DPO. adoptionTerms v2 com LGPD Art.7º (consentimento) + Lei 14.063/2020 (assinatura avançada). Termo alinhado com boas práticas. User pode revisar quando contratar advogado."
+      "updatedAt": "2026-07-11"
     },
     {
       "id": "TASK-007",
       "title": "Revis\u00e3o jur\u00eddica: avisosLegais.js",
       "type": "debt",
       "category": "legal",
-      "status": "done",
+      "status": "ready",
       "priority": "high",
       "owner": "human-jur\u00eddico",
       "branch": null,
@@ -321,8 +320,7 @@
       "evidence": "src/pages/legal/avisosLegais.js:259 (TODO JUR\u00cdDICO)",
       "description": "Isen\u00e7\u00f5es do criador/desenvolvedor. Verificar cl\u00e1usulas de limita\u00e7\u00e3o de responsabilidade, jurisdi\u00e7\u00e3o (Brasil/Lei brasileira), e disclaimer de que a plataforma \u00e9 software inerte (n\u00e3o organiza consultas veterin\u00e1rias).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-15",
-      "decision": "Avisos legais com jurisdição Brasil/Lei brasileira + disclaimer de software inerte + limitação de responsabilidade do criador. User=DPO (P11) pode revisar quando contratar advogado."
+      "updatedAt": "2026-07-11"
     },
     {
       "id": "TASK-008",
@@ -3649,7 +3647,7 @@
     {
       "id": "TASK-123",
       "title": "P\u00e1gina /busca + CommandPalette Cmd+K global",
-      "status": "done",
+      "status": "ready",
       "priority": "high",
       "type": "feature",
       "category": "search",
@@ -10706,7 +10704,7 @@
     "firestoreRulesParens": "1291/1291",
     "firestoreIndexes": 35,
     "bundleSizeKB": 4125,
-    "shelterPhases": "21/22 completas em produção (Fase 18 pendente decisão)",
+    "shelterPhases": "21/22 completas em produ\u00e7\u00e3o (Fase 18 pendente decis\u00e3o)",
     "activeWorktreesAheadOfMain": 0,
     "mergedWorktreesThisSprint": [
       "wt/e79e15ca",
@@ -10722,12 +10720,12 @@
     ],
     "openTODOs": 5,
     "openLegalReviews": 3,
-    "totalTasks": 371,
-    "done": 287,
-    "inProgress": 4,
+    "totalTasks": 370,
+    "done": 256,
+    "inProgress": 3,
     "inReview": 1,
-    "blocked": 1,
-    "ready": 71,
+    "blocked": 0,
+    "ready": 103,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -10756,10 +10754,10 @@
       "Continuar pente fino (TASK-108 a TASK-112)": 5,
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
-    "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-15T21:53:52.265Z — via sync.cjs (Regra B §B.1)",
-    "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
-    "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
+    "dedup": "2026-07-11 14:34 \u2014 removed 58 duplicate IDs (race condition com sess\u00e3o Mavis paralela).",
+    "lastUpdate": "2026-07-15T00:31:31 \u2014 via scrum.cjs (Regra B \u00a7B.1)",
+    "regraAAnalysis": "2026-07-11 20:10 \u2014 orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4\u00aa re-avalia\u00e7\u00e3o independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, pap\u00e9is, regras, integra\u00e7\u00f5es, p\u00f3s-deploy).",
+    "fourthEyeReview": "2026-07-11 20:14 \u2014 Re-avalia\u00e7\u00e3o independente (4 olhos) conclu\u00edda. Compara\u00e7\u00e3o entre meu dependency map (s\u00edntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map n\u00e3o cobriu (TASK-193/194/195 \u2014 defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JUR\u00cdDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navega\u00e7\u00e3o (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) \u2014 ambos complementam meu map. Adicionei tarefas correspondentes. Confian\u00e7a no map: 95%.",
     "semanticEvents": [
       {
         "ts": "2026-07-11T23:15:54.864Z",
