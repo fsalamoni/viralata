@@ -19,11 +19,18 @@
 
 const { onDocumentWritten } = require('firebase-functions/v2/firestore');
 const { getFirestore } = require('firebase-admin/firestore');
+const { initializeApp } = require('firebase-admin/app');
 const { logger } = require('firebase-functions');
 
 const DATABASE_ID = 'viralata';
 const REGION = 'southamerica-east1';
 
+// Inicializa app lazy para evitar "default Firebase app does not exist" quando
+// este módulo é required antes do index.js chamar initializeApp().
+if (!global.__viralataInitialized) {
+  initializeApp();
+  global.__viralataInitialized = true;
+}
 const db = getFirestore(DATABASE_ID);
 
 // ─── Helpers de normalização ────────────────────────────────────────────
