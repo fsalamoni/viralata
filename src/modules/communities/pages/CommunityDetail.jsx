@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Users, Calendar, MessageSquare, MessageCircle, Info, Settings, Building2 } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useParams, Link, Navigate } from 'react-router-dom';
+import { ArrowLeft, Users, Calendar, MessageSquare, MessageCircle, Info, LogOut } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
@@ -10,65 +9,82 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TabsContentStack, BalancedTabsContent } from '@/components/ui/BalancedTabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
-import { getCommunity, joinCommunity } from '../services/communityService';
-import { deriveCommunityMembershipState } from '../domain/permissions';
-import { useMyCommunityMembership } from '../hooks/useCommunities';
-import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import {
+  getCommunity,
+  joinCommunity,
+  leaveCommunity,
+  getMyCommunityMembership,
+  getCommunityMemberCount,
+} from '../services/communityService';
+import { getClub } from '@/modules/organizations/services/clubService';
 import { toast } from 'sonner';
 
 import MuralTab from '../components/MuralTab';
 import ForumTab from '../components/ForumTab';
 import EventsTab from '../components/EventsTab';
 import AboutTab from '../components/AboutTab';
-import CommunityTeamTab from '../components/CommunityTeamTab';
-import CommunityCover from '../components/CommunityCover';
-import { cn } from '@/core/lib/utils';
-import { parseTimestamp } from '@/core/utils/timestamp';
-
-/** Abas públicas da comunidade (modo padrão, sem `arena-tab-bar`). */
-const TABS_LEGACY = [
-  { key: 'mural', label: 'Mural', icon: MessageSquare },
-  { key: 'forum', label: 'Fórum', icon: MessageCircle },
-  { key: 'eventos', label: 'Eventos', icon: Calendar },
-  { key: 'sobre', label: 'Sobre', icon: Info },
-];
-
-/** Abas públicas no modo paridade ONG (com `arena-tab-bar` da plataforma). */
-const TABS_PARITY = [
-  { key: 'mural', label: 'Mural', icon: MessageSquare },
-  { key: 'forum', label: 'Fórum', icon: MessageCircle },
-  { key: 'eventos', label: 'Eventos', icon: Calendar },
-  { key: 'sobre', label: 'Sobre', icon: Info },
-];
+import PageContainer from '@/components/PageContainer';
 
 export default function CommunityDetail() {
   const { communityId } = useParams();
   const { user } = useAuth();
   const [community, setCommunity] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [searchParams, setSearchParams] = useSearchParams();
-  const urlTab = searchParams.get('tab');
-  const activeTab = TABS_LEGACY.some(t => t.key === urlTab) ? urlTab
-    : TABS_PARITY.some(t => t.key === urlTab) ? urlTab
-    : 'mural';
-  function setActiveTab(tab) {
-    const next = new URLSearchParams(searchParams);
-    next.set('tab', tab);
-    setSearchParams(next, { replace: true });
-  }
+  const [activeTab, setActiveTab] = useState('mural');
+  const [isMember, setIsMember] = useState(false);
+  const [memberCount, setMemberCount] = useState(null);
+  const [confirmLeave, setConfirmLeave] = useState(false);
+  const [leaving, setLeaving] = useState(false);
+  const [legacyOrgRedirect, setLegacyOrgRedirect] = useState(false);
 
-  // Flag da paridade ONG. Default OFF — quando o admin ligar, a página
-  // pública da comunidade passa a usar `<CommunityCover>` (mesmo padrão
-  // visual do `<ClubCover>`) e a `arena-tab-bar` ao invés do
-  // `h-auto w-full flex-wrap` original. Mantém o comportamento atual
-  // byte-a-byte com a flag desligada.
-  const parityEnabled = useFeatureFlag(FEATURE_FLAG.COMMUNITY_NGO_PARITY);
+  const refreshMemberCount = useCallback(() => {
+    getCommunityMemberCount(communityId)
+      .then(setMemberCount)
+      .catch(() => {});
+  }, [communityId]);
+
+  // Associação real (doc determinista `communityId_uid`) — antes o botão
+  // "Participar" reaparecia a cada reload mesmo para quem já era membro.
+  useEffect(() => {
+    if (!user?.uid) {
+      setIsMember(false);
+      return;
+    }
+    getMyCommunityMembership(communityId, user.uid)
+      .then((membership) => setIsMember(Boolean(membership)))
+      .catch(() => {});
+  }, [communityId, user?.uid]);
 
   useEffect(() => {
-    getCommunity(communityId)
-      .then(setCommunity)
-      .catch(() => toast.error('Comunidade não encontrada'))
-      .finally(() => setLoading(false));
+    refreshMemberCount();
+  }, [refreshMemberCount]);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    (async () => {
+      try {
+        const data = await getCommunity(communityId);
+        if (cancelled) return;
+        if (data) {
+          setCommunity(data);
+          return;
+        }
+        // Link legado: notificações antigas apontam `/comunidade/{orgId}` para
+        // o perfil público de uma ORGANIZAÇÃO (rota que hoje pertence às
+        // comunidades). Se o id for de uma organização, redireciona.
+        const club = await getClub(communityId).catch(() => null);
+        if (cancelled) return;
+        if (club) setLegacyOrgRedirect(true);
+        else setCommunity(null);
+      } catch {
+        if (!cancelled) setCommunity(null);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
   }, [communityId]);
 
   const { data: membership } = useMyCommunityMembership(communityId);
@@ -98,63 +114,78 @@ export default function CommunityDetail() {
     if (!user) return toast.error('Faça login para participar');
     try {
       await joinCommunity(communityId, user.uid);
-      // membership vai chegar via useMyCommunityMembership — isMember deriva de lá
+      setIsMember(true);
+      refreshMemberCount();
       toast.success('Você entrou na comunidade!');
     } catch (err) {
       toast.error('Erro ao entrar');
     }
   };
 
-  // Stats para a capa (modo paridade) — derivado aqui para manter
-  // consistência entre o `<CommunityCover>` e qualquer outro componente
-  // que precisar dos mesmos números.
-  const stats = React.useMemo(() => {
-    if (!community) return null;
-    return {
-      members: community.member_count || 1,
-      founded: parseTimestamp(community.created_at)?.getFullYear() ?? null,
-    };
-  }, [community]);
+  const handleLeave = async () => {
+    setLeaving(true);
+    try {
+      await leaveCommunity(communityId, user.uid);
+      setIsMember(false);
+      setConfirmLeave(false);
+      refreshMemberCount();
+      toast.success('Você saiu da comunidade.');
+    } catch {
+      toast.error('Não foi possível sair da comunidade.');
+    } finally {
+      setLeaving(false);
+    }
+  };
 
-  if (loading) return <div className={loadingClass}><Skeleton className="h-64 rounded-3xl" /></div>;
+  if (legacyOrgRedirect) return <Navigate to={`/organizacoes/${communityId}`} replace />;
+  if (loading) {
+    return (
+      <PageContainer className="space-y-6">
+        <Skeleton className="h-64 rounded-3xl" />
+      </PageContainer>
+    );
+  }
   if (!community) {
     return (
-      <div className={loadingClass}>
+      <PageContainer>
         <EmptyState
-          icon={Building2}
+          icon={Users}
           title="Comunidade não encontrada"
-          description="A comunidade que você procura não existe, foi removida ou você não tem permissão para visualizá-la."
-          action={(
-            <Button asChild>
-              <Link to="/comunidade">Ver todas as comunidades</Link>
-            </Button>
-          )}
+          description="A comunidade que você procura não existe ou foi removida."
+          action={<Button asChild><Link to="/comunidade">Voltar para comunidades</Link></Button>}
         />
-      </div>
+      </PageContainer>
     );
   }
 
   return (
-    <div className={successClass}>
+    <PageContainer className="space-y-6">
       <Button variant="ghost" size="sm" asChild>
         <Link to="/comunidade"><ArrowLeft className="mr-2 w-4 h-4" /> Voltar</Link>
       </Button>
 
-      {/* Modo PARIDADE (flag ON): usa o `<CommunityCover>` espelhado do
-          `<ClubCover>` da ONG — banner gradiente, avatar-iniciais
-          sobreposto, nome, cidade e chips Padronizados. O botão "Editar"
-          / "Painel Administrativo" já fica embutido no canto do banner. */}
-      {parityEnabled && (
-        <CommunityCover community={community} stats={stats} isAdmin={canAdmin} />
-      )}
-
-      {/* Modo LEGADO (flag OFF): capa-flat simples com nome + contagem
-          de membros + botões "Editar" / "Participar". Mantido idêntico
-          ao original byte-a-byte. */}
-      {!parityEnabled && (
-        <section className="arena-panel-strong overflow-hidden rounded-3xl relative min-h-[200px] flex items-end p-6">
-          {community.cover_url && (
-            <img src={community.cover_url} alt="" className="absolute inset-0 w-full h-full object-cover opacity-40" />
+      <section className="arena-panel-strong overflow-hidden rounded-3xl relative min-h-[200px] flex items-end p-6">
+        {community.cover_url && (
+          <img src={community.cover_url} alt="" className="absolute inset-0 w-full h-full object-cover opacity-40" />
+        )}
+        <div className="relative z-10 w-full flex flex-wrap justify-between items-end gap-3">
+          <div>
+            <h1 className="text-3xl font-extrabold text-white">{community.name}</h1>
+            <p className="text-orange-50/80 mt-1 flex items-center gap-2">
+              <Users className="w-4 h-4" /> {memberCount ?? community.member_count ?? 1} membro(s)
+            </p>
+          </div>
+          {isMember ? (
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-white/25 bg-white/10 text-white hover:bg-white/15 hover:text-white"
+              onClick={() => setConfirmLeave(true)}
+            >
+              <LogOut className="mr-1.5 h-4 w-4" /> Sair da comunidade
+            </Button>
+          ) : (
+            <Button onClick={handleJoin} variant="default">Participar</Button>
           )}
           <div className="relative z-10 w-full flex justify-between items-end">
             <div>
@@ -223,17 +254,22 @@ export default function CommunityDetail() {
           </TabsList>
         )}
 
-        <BalancedTabsContent value="mural"><MuralTab communityId={communityId} isMember={isMember} isAdmin={canAdmin} membership={membership} community={community} /></BalancedTabsContent>
-        <BalancedTabsContent value="forum"><ForumTab communityId={communityId} /></BalancedTabsContent>
-        <BalancedTabsContent value="eventos"><EventsTab communityId={communityId} isAdmin={canAdmin} membership={membership} community={community} /></BalancedTabsContent>
-        <BalancedTabsContent value="sobre"><AboutTab community={community} /></BalancedTabsContent>
-        {canAdmin && (
-          <BalancedTabsContent value="equipe">
-            <CommunityTeamTab community={community} membership={membership} />
-          </BalancedTabsContent>
-        )}
-      
-    </TabsContentStack></Tabs>
-    </div>
+        <TabsContent value="mural"><MuralTab communityId={communityId} isMember={isMember} /></TabsContent>
+        <TabsContent value="forum"><ForumTab communityId={communityId} isMember={isMember} /></TabsContent>
+        <TabsContent value="eventos"><EventsTab communityId={communityId} isMember={isMember} /></TabsContent>
+        <TabsContent value="sobre"><AboutTab community={community} /></TabsContent>
+      </Tabs>
+
+      <ConfirmDialog
+        open={confirmLeave}
+        onOpenChange={setConfirmLeave}
+        title="Sair da comunidade"
+        description={`Tem certeza que deseja sair de "${community.name}"?`}
+        confirmLabel="Sair"
+        destructive
+        loading={leaving}
+        onConfirm={handleLeave}
+      />
+    </PageContainer>
   );
 }

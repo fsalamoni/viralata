@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import PageHero from '@/components/PageHero';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import { usePlatformSettings } from '@/core/lib/FeatureFlagsContext';
+import PageContainer from '@/components/PageContainer';
 
 const READ_FILTERS = [
   { value: 'all', label: 'Todas' },
@@ -72,10 +73,10 @@ export default function AdminNotifications() {
     });
   }, [notifications, readFilter, search, typeFilter]);
 
-  if (!isPlatformAdmin) return <div className="text-center py-16 text-muted-foreground">Acesso restrito.</div>;
+  if (!isPlatformAdmin) return <PageContainer><div className="text-center py-16 text-muted-foreground">Acesso restrito.</div></PageContainer>;
 
   return (
-    <div className={wrapperClass}>
+    <PageContainer className="space-y-6">
       <PageHero
         eyebrow="Admin"
         title="Notificações"
@@ -218,8 +219,8 @@ export default function AdminNotifications() {
               </tbody>
             </table>
           </div>
-        </div>
-      </section>
-    </div>
+        </CardContent>
+      </Card>
+    </PageContainer>
   );
 }

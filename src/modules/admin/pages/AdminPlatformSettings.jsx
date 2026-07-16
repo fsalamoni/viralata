@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import PageHero from '@/components/PageHero';
-import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
+import PageContainer from '@/components/PageContainer';
 
 export default function AdminPlatformSettings() {
   const { isPlatformAdmin, user } = useAuth();
@@ -34,8 +34,8 @@ export default function AdminPlatformSettings() {
     setLimitsForm(settings.operational_limits);
   }, [settings]);
 
-  if (!isPlatformAdmin) return <div className="py-16 text-center text-muted-foreground">Acesso restrito.</div>;
-  if (isLoading) return <div className="py-16 text-center text-muted-foreground">Carregando configurações...</div>;
+  if (!isPlatformAdmin) return <PageContainer><div className="py-16 text-center text-muted-foreground">Acesso restrito.</div></PageContainer>;
+  if (isLoading) return <PageContainer><div className="py-16 text-center text-muted-foreground">Carregando configurações...</div></PageContainer>;
 
   async function saveSection(section, payload, successMessage) {
     const key = section === 'ui_labels' ? 'labels' : section === 'ui_text' ? 'texts' : 'limits';
@@ -54,7 +54,7 @@ export default function AdminPlatformSettings() {
   }
 
   return (
-    <div className={wrapperClass}>
+    <PageContainer className="flex flex-col gap-6">
       <PageHero
         eyebrow="Admin"
         title="Configurações globais"
@@ -158,7 +158,7 @@ export default function AdminPlatformSettings() {
           </section>
         </div>
       </div>
-    </div>
+    </PageContainer>
   );
 }
 

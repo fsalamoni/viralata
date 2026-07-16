@@ -11,22 +11,9 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { Textarea } from '@/components/ui/textarea';
 import { ImageUpload } from '@/components/ui/image-upload';
 import PageHero from '@/components/PageHero';
-import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
-import { useAdminCommunities, useCreateCommunity, useDeleteCommunity, useUpdateCommunity } from '@/modules/communities/hooks/useCommunities';
-import { COMMUNITY_VISIBILITY, COMMUNITY_VISIBILITY_LABELS } from '@/modules/communities/domain/constants';
-import { sortCommunities } from '@/modules/communities/domain/directory';
-import { confirmDialog } from '@/components/ui/confirm-provider';
-
-const COMMUNITY_INITIAL = {
-  name: '',
-  description: '',
-  city: '',
-  state: '',
-  cover_url: '',
-  featured: false,
-  priority: 0,
-  visibility: COMMUNITY_VISIBILITY.PUBLIC,
-};
+import { useAdminCommunities, useDeleteCommunity, useUpdateCommunity } from '@/modules/communities/hooks/useCommunities';
+import { COMMUNITY_VISIBILITY_LABELS } from '@/modules/communities/domain/constants';
+import PageContainer from '@/components/PageContainer';
 
 export default function AdminCommunities() {
   const { isPlatformAdmin } = useAuth();
@@ -63,7 +50,7 @@ export default function AdminCommunities() {
   if (!isPlatformAdmin) return null;
 
   return (
-    <div className={wrapperClass}>
+    <PageContainer className="flex flex-col gap-6">
       <div className="mb-1.5 flex items-center gap-3">
         <Button variant="ghost" size="sm" asChild>
           <Link to="/admin"><ArrowLeft className="mr-2 w-4 h-4" /> Voltar ao Painel</Link>
@@ -175,7 +162,7 @@ export default function AdminCommunities() {
           )}
         </div>
       </div>
-    </div>
+    </PageContainer>
   );
 }
 

@@ -13,6 +13,13 @@ import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import { listAdminClubs, updateAdminClub } from '@/modules/admin/services/adminService';
 import { useAdminCommunities } from '@/modules/communities/hooks/useCommunities';
 import { CLUB_DIRECTORY_STATUS, CLUB_DIRECTORY_STATUS_LABELS, sortCommunities } from '@/modules/communities/domain/directory';
+import {
+  useAdminCommunities,
+  useCreateCommunity,
+  useDeleteCommunity,
+  useUpdateCommunity,
+} from '@/modules/communities/hooks/useCommunities';
+import PageContainer from '@/components/PageContainer';
 
 const STATUS_OPTIONS = Object.values(CLUB_DIRECTORY_STATUS);
 
@@ -79,21 +86,65 @@ export default function AdminOrganizations() {
   const featuredClubs = clubs.filter((club) => club.featured).length;
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-6 space-y-4">
-      <h1 className="text-xl font-bold text-foreground">Gerenciar Organizações</h1>
-      {loading ? <p className="text-muted-foreground">Carregando...</p> : (
-        <div className="space-y-2">
-          {clubs.map((club) => (
-            <div key={club.id} className="flex items-center gap-3 p-3 rounded-xl border border-border bg-card">
-              <img src={club.logo_url || '/placeholder-pet.svg'} alt="" className="w-12 h-12 rounded-lg object-cover flex-shrink-0" />
-              <div className="flex-1 min-w-0">
-                <p className="font-medium text-sm truncate">{club.name}</p>
-                <div className="flex gap-1 mt-0.5 flex-wrap">
-                  {(club.city || club.state) && (
-                    <Badge variant="secondary" className="text-xs">{[club.city, club.state].filter(Boolean).join(', ')}</Badge>
-                  )}
-                  {club.cnpj && <Badge variant="outline" className="text-xs">CNPJ: {club.cnpj}</Badge>}
-                </div>
+    <PageContainer className="flex flex-col gap-6">
+      <PageHero
+        eyebrow="Admin"
+        title="Comunidades e organizações"
+        description="Controle editorial do diretório, vínculos entre comunidades e organizações, publicação e destaques globais."
+        actions={(
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold text-orange-50/85">
+            <ShieldCheck className="h-3.5 w-3.5" /> Curadoria global
+          </span>
+        )}
+      />
+
+      <div className="grid gap-4 md:grid-cols-4">
+        <SummaryCard icon={Building2} label="Organizações" value={clubs.length} />
+        <SummaryCard icon={FolderTree} label="Comunidades" value={communities.length} />
+        <SummaryCard icon={Sparkles} label="Destaques" value={featuredClubs} />
+        <SummaryCard icon={Users} label="Pendências" value={clubsInReview + clubsSuspended} />
+      </div>
+
+      <Tabs defaultValue="organizations" className="w-full">
+        <TabsList className="arena-tab-bar">
+          <TabsTrigger value="organizations" className="arena-tab-pill">Organizações</TabsTrigger>
+          <TabsTrigger value="communities" className="arena-tab-pill">Comunidades</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="organizations" className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Moderação do diretório</CardTitle>
+              <CardDescription>Defina publicação, destaque e vínculo comunitário de cada organização.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid gap-3 md:grid-cols-[minmax(0,1.6fr)_220px_220px]">
+                <Input
+                  placeholder="Buscar organização, cidade ou comunidade"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+                <select
+                  className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                >
+                  <option value="all">Todos os status</option>
+                  {STATUS_OPTIONS.map((status) => (
+                    <option key={status} value={status}>{CLUB_DIRECTORY_STATUS_LABELS[status]}</option>
+                  ))}
+                </select>
+                <select
+                  className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+                  value={communityFilter}
+                  onChange={(e) => setCommunityFilter(e.target.value)}
+                >
+                  <option value="all">Todas as comunidades</option>
+                  <option value="none">Sem comunidade</option>
+                  {sortedCommunities.map((community) => (
+                    <option key={community.id} value={community.id}>{community.name}</option>
+                  ))}
+                </select>
               </div>
               <div className="flex gap-1.5">
                 <Button asChild size="sm" variant="outline">
@@ -151,11 +202,67 @@ export default function AdminOrganizations() {
                         <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
                           <Building2 className="h-6 w-6" />
                         </div>
-                      )}
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h4 className="font-bold text-foreground">{club.name}</h4>
-                          {club.featured && <Badge variant="warning" className="h-5 px-1.5 text-[10px] uppercase tracking-wider">Destaque</Badge>}
+
+                        <div className="grid flex-1 gap-3 md:grid-cols-3">
+                          <label className="space-y-1 text-xs font-medium text-muted-foreground">
+                            <span>Status</span>
+                            <select
+                              className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+                              value={club.directory_status || CLUB_DIRECTORY_STATUS.ACTIVE}
+                              onChange={(e) => handleClubUpdate(club, { directory_status: e.target.value }, 'Status da organização atualizado.')}
+                              disabled={updateClubMutation.isPending}
+                            >
+                              {STATUS_OPTIONS.map((status) => (
+                                <option key={status} value={status}>{CLUB_DIRECTORY_STATUS_LABELS[status]}</option>
+                              ))}
+                            </select>
+                          </label>
+
+                          <label className="space-y-1 text-xs font-medium text-muted-foreground">
+                            <span>Comunidade</span>
+                            <select
+                              className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+                              value={club.community_id || ''}
+                              onChange={(e) => {
+                                const nextCommunityId = e.target.value;
+                                const selected = nextCommunityId
+                                  ? sortedCommunities.find((item) => item.id === nextCommunityId)
+                                  : null;
+                                handleClubUpdate(
+                                  club,
+                                  { community_id: nextCommunityId, community_name: selected?.name || '' },
+                                  'Comunidade da organização atualizada.',
+                                );
+                              }}
+                              disabled={updateClubMutation.isPending}
+                            >
+                              <option value="">Sem comunidade</option>
+                              {sortedCommunities.map((community) => (
+                                <option key={community.id} value={community.id}>{community.name}</option>
+                              ))}
+                            </select>
+                          </label>
+
+                          <div className="space-y-1 text-xs font-medium text-muted-foreground">
+                            <span>Ações</span>
+                            <div className="flex gap-2">
+                              <Button
+                                type="button"
+                                variant={club.featured ? 'secondary' : 'outline'}
+                                className="flex-1"
+                                onClick={() => handleClubUpdate(club, { featured: !club.featured }, club.featured ? 'Organização removida dos destaques.' : 'Organização marcada como destaque.')}
+                                disabled={updateClubMutation.isPending}
+                              >
+                                <Sparkles className="mr-1.5 h-4 w-4" />
+                                {club.featured ? 'Em destaque' : 'Destacar'}
+                              </Button>
+                              <Button asChild variant="outline" size="icon">
+                                <Link to={`/organizacoes/${club.id}`} aria-label={`Abrir ${club.name}`}>
+                                  <Eye className="h-4 w-4" />
+                                </Link>
+                              </Button>
+                            </div>
+                          </div>
                         </div>
                         <p className="mt-0.5 text-xs text-muted-foreground">
                           {[club.city, club.state].filter(Boolean).join(' / ') || 'Local não informado'}
@@ -223,10 +330,10 @@ export default function AdminOrganizations() {
                 />
               )}
             </div>
-          )}
-        </div>
-      </section>
-    </div>
+          </div>
+        </TabsContent>
+      </Tabs>
+    </PageContainer>
   );
 }
 

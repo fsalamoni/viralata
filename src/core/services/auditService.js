@@ -53,7 +53,14 @@ export const AUDIT_ACTION_LABELS = {
   adoption_rating_created: 'Avaliação pós-adoção registrada',
   abuse_report_created: 'Denúncia de maus-tratos registrada',
   platform_feature_flag_changed: 'Feature flag alterada (admin)',
-  platform_content_updated: 'Conteúdo institucional atualizado (admin)',
+  platform_settings_updated: 'Configurações globais alteradas',
+  community_created: 'Comunidade criada',
+  community_updated: 'Comunidade atualizada',
+  community_deleted: 'Comunidade excluída',
+  community_post_created: 'Post publicado na comunidade',
+  community_post_deleted: 'Post removido da comunidade',
+  community_event_created: 'Evento criado na comunidade',
+  community_event_deleted: 'Evento removido da comunidade',
 };
 
 // ─── TASK-217: Categorias de retenção (auditLogPurgeCron) ──────────────

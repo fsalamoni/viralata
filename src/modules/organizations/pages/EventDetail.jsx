@@ -26,9 +26,7 @@ import { EventFormDialog } from '@/modules/organizations/components/ClubEventsTa
 import EventDatesPanel from '@/modules/organizations/components/EventDatesPanel';
 import EventParticipantsPanel from '@/modules/organizations/components/EventParticipantsPanel';
 import EventChat from '@/modules/organizations/components/EventChat';
-import EventCertificatesPanel from '@/modules/organizations/components/EventCertificatesPanel';
-import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
-import { toast } from 'sonner';
+import PageContainer from '@/components/PageContainer';
 
 function formatDateTime(value) {
   if (!value) return null;
@@ -106,10 +104,10 @@ export default function EventDetail() {
 
   if (isLoading) {
     return (
-      <div className={loadingClass}>
+      <PageContainer className="space-y-6 pb-12">
         <Skeleton className="h-28 rounded-[2rem]" />
         <Skeleton className="h-64 rounded-[2rem]" />
-      </div>
+      </PageContainer>
     );
   }
 
@@ -118,7 +116,7 @@ export default function EventDetail() {
   // Se não carregou, é porque não existe ou o usuário não tem acesso.
   if (isError || !event) {
     return (
-      <div className={errorClass}>
+      <PageContainer className="pb-12">
         <EmptyState
           icon={membership ? CalendarDays : Building2}
           title={membership ? 'Evento não encontrado' : 'Evento indisponível'}
@@ -135,7 +133,7 @@ export default function EventDetail() {
             </Button>
           }
         />
-      </div>
+      </PageContainer>
     );
   }
 
@@ -143,9 +141,9 @@ export default function EventDetail() {
   const when = formatDateTime(event.starts_at);
 
   return (
-    <div className={successClass}>
+    <PageContainer className="space-y-6 pb-12">
       <Button asChild variant="ghost" size="sm">
-        <Link to={`/comunidade/${clubId}?tab=events`}><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para eventos</Link>
+        <Link to={`/organizacoes/${clubId}?tab=events`}><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para eventos</Link>
       </Button>
 
       <section className="arena-panel-strong overflow-hidden rounded-[1.25rem] p-5 sm:rounded-[2rem] sm:p-8">
@@ -255,6 +253,6 @@ export default function EventDetail() {
       </Tabs>
 
       <EventFormDialog clubId={clubId} event={event} open={editOpen} onClose={() => setEditOpen(false)} />
-    </div>
+    </PageContainer>
   );
 }

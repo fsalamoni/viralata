@@ -144,6 +144,22 @@ tom "moderno e humano" pedido. Escala recomendada (Tailwind):
 
 ## 7. Padrões estruturais de layout
 
+- **Container canônico de página** (`src/components/PageContainer.jsx`):
+  toda página interna (não-standalone) usa exatamente
+  `arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8` — a
+  mesma largura do trilho do header, para o conteúdo e a navegação
+  alinharem na mesma coluna e os cards não mudarem de posição entre
+  páginas. Extras da página (`space-y-*`, `pb-*`, `flex`) entram via
+  `className` (mesclado com `cn`/tailwind-merge). Conteúdo que pede
+  leitura estreita (formulários, wizards) restringe um miolo interno
+  (`mx-auto w-full max-w-2xl/3xl`), nunca o container. Exceções
+  full-bleed por desenho: `Home`, `Login`, `OnboardingQuestionnaire`
+  (as `STANDALONE_PAGES` de `Layout.jsx`).
+- **Grids de diretório**: cards de Organizações, Comunidades e do hub
+  usam o MESMO grid (`grid gap-4 sm:grid-cols-2 xl:grid-cols-3`); o Feed
+  de pets usa `sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4` (cards mais
+  densos) dentro do mesmo container — as bordas laterais coincidem em
+  todas as páginas.
 - **Header** (`src/components/Layout.jsx`): trocar o header branco chapado
   por um header "glass" sticky (`bg-white/70 backdrop-blur-xl`, borda
   translúcida), logo com wordmark em gradiente (`bg-clip-text`, no molde de

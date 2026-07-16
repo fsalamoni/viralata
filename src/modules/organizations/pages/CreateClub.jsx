@@ -8,17 +8,7 @@ import { Label } from '@/components/ui/label';
 import { ImageUpload } from '@/components/ui/image-upload';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { useCreateClub } from '@/modules/organizations/hooks/useClubs';
-import { createAuditLog } from '@/core/services/auditService';
-import PageHero from '@/components/PageHero';
-import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
-import SingleAcceptanceDialog from '@/modules/shelter/components/legal/SingleAcceptanceDialog';
-import {
-  SHELTER_ONBOARDING_TERMS_TEXT,
-  SHELTER_ONBOARDING_TERMS_VERSION,
-  buildShelterOnboardingAcceptance,
-} from '@/modules/shelter/domain/legal/shelterOnboardingTerms';
-import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
-import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
+import PageContainer from '@/components/PageContainer';
 
 const INITIAL = {
   name: '',
@@ -111,17 +101,11 @@ export default function CreateClub() {
   };
 
   return (
-    <div className={useArenaPageClasses('arena-page mx-auto max-w-3xl space-y-6 px-5 py-6 pb-12')}>
-      <PageHero
-        eyebrow="Nova organização"
-        title="Cadastrar organização"
-        description="Você será o administrador da organização e poderá convidar sua equipe por meio de um código exclusivo."
-        actions={
-          <Button asChild variant="ghost" size="sm">
-            <Link to="/organizacoes"><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para organizações</Link>
-          </Button>
-        }
-      />
+    <PageContainer className="pb-12">
+      <div className="mx-auto w-full max-w-3xl space-y-6">
+      <Button asChild variant="ghost" size="sm">
+        <Link to="/organizacoes"><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para organizações</Link>
+      </Button>
 
       <section className="arena-panel-strong rounded-lg p-5 sm:p-6">
         <div className="flex items-start gap-3">
@@ -261,5 +245,6 @@ export default function CreateClub() {
         onAccept={handleDpaAccept}
       />
     </div>
+    </PageContainer>
   );
 }

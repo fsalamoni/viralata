@@ -26,24 +26,7 @@ import ClubPetsDataGrid from '@/modules/organizations/components/ClubPetsDataGri
 import ClubFeedTab from '@/modules/organizations/components/ClubFeedTab';
 import ClubDonationsTab from '@/modules/organizations/components/ClubDonationsTab';
 import ClubFinanceTab from '@/modules/organizations/components/ClubFinanceTab';
-import ClubGeneralAdminTab from '@/modules/organizations/components/ClubGeneralAdminTab';
-import ClubChatAdminTab from '@/modules/organizations/components/ClubChatAdminTab';
-import ClubThemedScope from '@/modules/organizations/components/ClubThemedScope';
-import { ShelterPetScopedTab } from '@/modules/organizations/components/ShelterPetScopedTab';
-import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
-import { FEATURE_FLAG } from '@/core/featureFlags';
-import ReportsTab from '@/modules/shelter/components/ReportsTab';
-import IndicatorsTab from '@/modules/shelter/components/IndicatorsTab';
-import { DashboardPage } from '@/modules/shelter/components/DashboardPage';
-import { KanbanPage } from '@/modules/shelter/components/KanbanPage';
-import { ExhibitionsList } from '@/modules/shelter/components/ExhibitionsList';
-import { VolunteersAdminTab } from '@/modules/shelter/components/VolunteersAdminTab';
-import { MedicalRecordsList } from '@/modules/shelter/components/MedicalRecordsList';
-import { MedicationsList } from '@/modules/shelter/components/MedicationsList';
-import { TimelineList } from '@/modules/shelter/components/TimelineList';
-import { FostersList } from '@/modules/shelter/components/FostersList';
-import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
-import { parseTimestamp } from '@/core/utils/timestamp';
+import PageContainer from '@/components/PageContainer';
 
 const TAB_ICONS = {
   overview: LayoutGrid,
@@ -223,29 +206,29 @@ export default function OrganizationAdminPanel() {
     if (isLoading || !isAuthenticated) return;
     if (!club || !membership || !canAccess) {
       toast.error('Você não tem permissão para administrar esta organização.');
-      navigate(`/comunidade/${orgId}`, { replace: true });
+      navigate(`/organizacoes/${orgId}`, { replace: true });
     }
   }, [isLoading, isAuthenticated, club, membership, canAccess, navigate, orgId]);
 
   if (isLoading) {
     return (
-      <div className={loadingClass}>
+      <PageContainer className="space-y-6 pb-12">
         <Skeleton className="h-28 rounded-[2rem]" />
         <Skeleton className="h-96 rounded-[2rem]" />
-      </div>
+      </PageContainer>
     );
   }
 
   if (!club) {
     return (
-      <div className={errorClass}>
+      <PageContainer className="pb-12">
         <EmptyState
           icon={Building2}
           title="Organização não encontrada"
           description="A organização que você procura não existe ou foi removida."
           action={<Button asChild><Link to="/organizacoes">Voltar</Link></Button>}
         />
-      </div>
+      </PageContainer>
     );
   }
 
@@ -259,22 +242,10 @@ export default function OrganizationAdminPanel() {
   const location = [club.city, club.state].filter(Boolean).join(', ');
 
   return (
-    <ClubThemedScope club={club} className={successClass}>
-      <div className="flex flex-col gap-2">
-        <Button asChild variant="ghost" size="sm" className="self-start">
-          <Link to={`/organizacoes/${orgId}`}>
-            <ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para a ONG
-          </Link>
-        </Button>
-        <Breadcrumb
-          items={[
-            { label: 'Início', href: '/', icon: Home },
-            { label: 'Organizações', href: '/organizacoes' },
-            { label: club.name || 'Organização', href: `/organizacoes/${orgId}` },
-            { label: 'Administração' },
-          ]}
-        />
-      </div>
+    <PageContainer className="space-y-6 pb-12">
+      <Button asChild variant="ghost" size="sm">
+        <Link to="/organizacoes"><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar às minhas organizações</Link>
+      </Button>
 
       {/* Header do painel admin — padding generoso (p-6 sm:p-10) e
           gap-5 sm:gap-6 entre o avatar e o bloco de texto. Mais respiro
@@ -405,7 +376,7 @@ export default function OrganizationAdminPanel() {
           </TabsContent>
         )}
       </Tabs>
-    </ClubThemedScope>
+    </PageContainer>
   );
 }
 

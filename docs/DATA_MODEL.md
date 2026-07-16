@@ -93,10 +93,38 @@ dono (regra) **e** pela Cloud Function via `firebase-admin` (ignora
 > `domain/permissions.js` para o modelo de permissões abaixo.
 
 ### `clubs/{id}`
-`name`, `description`, `city`, `state`, `logo_url`, `invite_code`, `cnpj`
-(opcional, ONG formalizada), `donation_link` (opcional, Pix/vaquinha —
-renderizado como QR code em `ClubDetail`), `member_count` (cosmético, nunca
-fonte de verdade), `created_by`, `creator_name`.
+`name`, `description`, `city`, `state`, `logo_url`, `invite_code`,
+`member_count` (cosmético, nunca fonte de verdade), `created_by` (uid do
+proprietário — sempre com as 5 permissões, imutável pela UI), `creator_name`,
+`directory_status` (`active | review | suspended`), `featured` (boolean) e
+`community_id`/`community_name` (vínculo editorial opcional para o diretório).
+
+### `communities/{id}`
+Comunidade de usuários (rota `/comunidade`) e, opcionalmente, vínculo
+editorial para agrupar organizações no diretório (`clubs.community_id`):
+`name`, `description`, `city`, `state`, `cover_url`, `featured`,
+`priority`, `visibility` (`public | hidden`), `owner_id` (uid do criador),
+`invite_code` (ingresso direto pelo diretório), `member_count` (cosmético —
+a contagem real vem de agregação sobre `community_members`). Leitura
+pública; criação autenticada; edição/exclusão do dono ou `platform_admin`.
+
+### Comunidades — conteúdo social
+
+- **`community_members/{communityId_uid}`** — `community_id`, `user_id`,
+  `role` (`admin | member`), `joined_at`. Fonte de verdade de associação.
+- **`community_posts/{id}`** — mural: `community_id`, `author_id`,
+  `author_name`, `author_photo` (desnormalizados), `text`, `attachments`,
+  `likes_count`, `comments_count`, `created_at`.
+- **`community_post_likes/{postId_uid}`** — id determinista; curtida única
+  por usuário, contador mantido por transação.
+- **`community_post_comments/{id}`** — `post_id`, `text`, autor
+  desnormalizado, `created_at`.
+- **`community_forum_threads/{id}`** — `community_id`, `title`, `text`,
+  autor desnormalizado, `messages_count`, `updated_at`.
+- **`community_forum_messages/{id}`** — `thread_id`, `text`, autor
+  desnormalizado, `created_at`.
+- **`community_events/{id}`** — `community_id`, `title`, `description`,
+  `location`, `starts_at`, `created_by`, `creator_name`.
 
 ### `club_members/{clubId_uid}`
 `club_id`, `user_id`, `user_name`, `user_email`, `photo_url`, `role`

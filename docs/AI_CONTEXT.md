@@ -12,23 +12,31 @@ doação com adotantes interessados. Projeto Firebase: `viralata-4cf0b`. Site de
 hosting: `viralata`. UI e textos em **português (pt-BR)**.
 
 Pilares:
-1. **Adoção** — feed de pets com filtro por espécie/porte/idade, questionário
-   de perfil comportamental obrigatório (onboarding), algoritmo de
-   compatibilidade (match), interesse/candidatura, avaliação pós-adoção e
-   "Radar de Pets" (alerta quando um pet compatível é cadastrado).
-2. **Comunidade/Organizações** — diretório de ONGs e lojas parceiras
-   ("organizações", historicamente chamadas de "clubes" no código), com
-   membros por papel, mural, fórum (com enquetes), eventos (datas + RSVP +
-   chat do evento) e planilha de gestão de pets para a equipe.
-3. **Chat** 1:1 e em grupo entre usuários da plataforma.
-4. **Denúncias** de maus-tratos (gera relatório para encaminhar a órgãos
-   competentes — a plataforma não investiga).
-5. **Notificações in-app** (sino) e **auditoria** de ações administrativas.
-6. **LGPD**: consentimento no onboarding, exportação e exclusão de dados
-   pelo próprio usuário.
-
-A plataforma **não vende animais nem intermedia pagamentos** — eventuais
-doações financeiras a ONGs (Pix, vaquinha) são diretas, fora do app.
+1. **Adoção** — feed de pets com filtro por espécie/porte/localização e
+   matching por compatibilidade com o perfil do adotante (moradia, rotina,
+   orçamento, filhos/idosos em casa), cadastro/edição de pet, interesse de
+   adoção, avaliação pós-adoção, radar de pet compatível (alerta), denúncia
+   de maus-tratos. O feed usa UMA única query no Firestore (status +
+   created_at) e aplica espécie/porte/cidade/raio client-side
+   (`pets/domain/feedFilters.js`) — nunca adicionar `where` extra sem
+   pensar no índice composto correspondente.
+2. **Organizações** — ONGs e lojas parceiras, tudo sob `/organizacoes`:
+   diretório público (`/organizacoes`), perfil público
+   (`/organizacoes/:id`, com pets para adoção, campanhas ativas e abas de
+   membros/eventos/mural/fóruns para membros), eventos
+   (`/organizacoes/:id/eventos/:eventId`), hub de gestão
+   (`/organizacoes/hub`) e painel de administração
+   (`/organizacoes/:id/admin`) com permissões granulares por administrador
+   (animais, financeiro, doações, mural, equipe), planilha de animais em
+   massa (edição inline + importação/exportação .xlsx/.csv/.json),
+   chamados de doação e prestação de contas.
+3. **Comunidades** (`/comunidade`) — grupos de usuários independentes das
+   organizações: mural (posts com curtidas e comentários), fórum (tópicos
+   e respostas), eventos, ingresso aberto ou por código de convite.
+4. **Notificações in-app** (sino, painel dropdown) e **auditoria** de ações.
+5. **Painel administrativo da plataforma** (`platform_admin`): pets,
+   organizações, comunidades, denúncias, usuários, métricas, trilha de
+   auditoria.
 
 ## 2. Stack
 
@@ -66,19 +74,22 @@ src/
 │   ├── lib/ThemeContext.jsx         # tema claro/escuro (localStorage + preferência do sistema)
 │   ├── featureFlags.js              # catálogo de flags (hoje: AD_SLOTS)
 │   ├── lib/{logger,utils,useClipboard}.js
-│   ├── domain/types.js              # typedefs JSDoc compartilhados
-│   └── services/  # auditService, notificationService, baseService, storageService,
-│                   # observabilityService, platformSettingsService, platformContentService,
-│                   # dataExportService, deleteAccountService (LGPD)
-├── modules/
-│   ├── pets/          # feed, cadastro, interesse, match, radar, avaliação pós-adoção
-│   ├── organizations/ # organizações (ONGs/lojas): membros, mural, fórum, eventos
-│   ├── onboarding/    # questionário de perfil obrigatório (gate pós-login)
-│   ├── chat/          # conversas 1:1 e grupo
-│   ├── reports/       # denúncia de maus-tratos
-│   ├── notifications/ # hook do sino
-│   └── admin/         # painel da plataforma (pets, denúncias, usuários, orgs, métricas)
-└── pages/  # Home, Login, Profile, Terms, PrivacyPolicy, Legislation, PageNotFound, BannedNotice
+│   ├── domain/types.js           # typedefs JSDoc compartilhados
+│   ├── featureFlags.js
+│   ├── pwa/                      # registerPwa, usePwaInstall
+│   └── services/                 # auditService, notificationService,
+│                                 # baseService, storageService, observabilityService,
+│                                 # platformSettingsService, dataExportService,
+│                                 # deleteAccountService
+└── modules/
+    ├── pets/           # feed, detalhe, cadastro/edição, radar, avaliações, matching
+    ├── organizations/  # organizações: diretório/perfil público + hub/painel de gestão
+    ├── communities/    # comunidades de usuários: mural, fórum, eventos, convite
+    ├── onboarding/     # questionário de perfil de adotante
+    ├── chat/           # conversas 1:1 e grupo
+    ├── notifications/  # hook + painel dropdown do sino
+    ├── reports/        # denúncia de maus-tratos
+    └── admin/          # painel da plataforma (pets, orgs, denúncias, usuários, métricas, auditoria)
 ```
 
 Convenção de camadas por módulo (nem todo módulo tem todas):
@@ -115,41 +126,57 @@ do bundle do Vite — ver seção 8.
 
 | Rota | Acesso | Tela |
 | --- | --- | --- |
-| `/` `/login` `/politica-privacidade` `/termos` `/legislacao` | público | landing, login, conteúdo institucional |
-| `/onboarding` | autenticado | questionário de perfil obrigatório |
-| `/feed` `/pets/:petId` | público (auth opcional) | feed de pets, detalhe do pet |
-| `/pets/new` `/pets/:petId/edit` `/meus-pets` `/radar` | autenticado | cadastrar/editar pet, meus pets, Radar de Pets |
-| `/organizacoes` | público | diretório de organizações |
-| `/organizacoes/criar` `/organizacoes/:orgId` `/organizacoes/:orgId/eventos/:eventId` | autenticado | criar/detalhe/evento de organização |
+| `/` `/login` `/termos` `/legislacao` `/politica-privacidade` | público | home, login, institucionais |
+| `/feed` `/pets/:petId` | público (match usa perfil se logado) | feed de pets, detalhe |
+| `/onboarding` | autenticado, perfil incompleto | questionário de adotante |
+| `/pets/new` `/pets/:petId/edit` `/meus-pets` `/radar` | autenticado | cadastro/edição, meus pets, radar |
+| `/comunidade` | público (diretório) / autenticado (detalhe) | comunidades (grupos de usuários): mural, fórum, eventos |
+| `/comunidade/criar` `/comunidade/:communityId` | autenticado | criar comunidade, detalhe da comunidade |
+| `/organizacoes` `/organizacoes/:orgId` | público | diretório e perfil público de ONGs |
+| `/organizacoes/hub` `/organizacoes/criar` `/organizacoes/:orgId/admin` `/organizacoes/:orgId/eventos/:eventId` | autenticado | hub de gestão, criação, painel de administração, evento |
 | `/chat` `/chat/:conversationId` | autenticado | mensagens |
 | `/denuncias/nova` | autenticado | denúncia de maus-tratos |
-| `/perfil` | autenticado | Profile (dados, LGPD, exclusão de conta) |
-| `/admin` `/admin/pets` `/admin/denuncias` `/admin/usuarios` `/admin/organizacoes` `/admin/metricas` `/admin/conteudo` | platform_admin | painel |
+| `/perfil` | autenticado | dados pessoais, perfil de adotante, LGPD |
+| `/admin` `/admin/pets` `/admin/denuncias` `/admin/usuarios` `/admin/organizacoes` `/admin/comunidades` `/admin/metricas` `/admin/auditoria` `/admin/notificacoes` `/admin/configuracoes` | `platform_admin` | painel administrativo |
 
-Guards: `ProtectedRoute` (auth), `OnboardedRoute` (auth + perfil completo,
-não usado em todas as rotas autenticadas — várias só exigem `ProtectedRoute`
-e deixam o próprio fluxo lidar com perfil incompleto), `AdminRoute`
-(platform_admin), `BannedGate` (bloqueia usuário banido em qualquer rota).
-Redirects legados: `/inicio`→`/feed`, `/clubes`→`/organizacoes`,
-`/atletas`→`/feed` (heranças do fork anterior). Páginas via `React.lazy`.
+Guards: `ProtectedRoute` (auth), `AdminRoute` (`platform_admin`),
+`BannedGate` (bloqueia usuário banido em qualquer rota autenticada).
+Redirects legados: `/inicio`→`/feed`, `/clubes`→`/comunidade`,
+`/atletas`→`/feed`; `/comunidade/:orgId/eventos/:eventId` (antigo caminho
+dos eventos de organização) redireciona para
+`/organizacoes/:orgId/eventos/:eventId`, e links antigos
+`/comunidade/{orgId}` de notificações são resolvidos pelo fallback do
+`CommunityDetail` (detecta id de organização e redireciona) — preserva
+links já gravados no Firestore. Páginas via `React.lazy`.
 `basename = import.meta.env.BASE_URL`.
+
+Layout: todas as páginas internas usam o container canônico
+`src/components/PageContainer.jsx` (mesma largura/paddings do trilho do
+header — ver `docs/DESIGN_SYSTEM.md`, seção 7); `Home`, `Login` e
+`OnboardingQuestionnaire` são standalone (full-bleed).
 
 ## 6. Modelo de dados (Firestore, database `viralata`)
 
 Coleções (todas top-level; ids deterministas quando indicado). Detalhe de
 campos em `docs/DATA_MODEL.md`.
 
-- **Identidade**: `users/{uid}` (perfil, respostas do onboarding, `role`,
-  `banned`).
-- **Pets/adoção**: `pets` · `adoption_interests` (id `petId_userId`) ·
-  `adoption_ratings` (id `petId_raterUid`, avaliação pós-adoção) ·
-  `pet_radars/{uid}` (critérios + liga/desliga do Radar de Pets).
-- **Organizações**: `clubs` (nome de coleção legado; UI chama de
-  "organizações") · `club_members` (id `clubId_uid`) · `club_join_requests` ·
-  `club_member_invites` · `club_posts` (mural) · `club_forum_threads` (+
-  `comments`, `poll_votes`) · `club_events` (+ `dates`, `date_rsvps`,
-  `messages`, `participants`) · `club_event_rsvps` · `event_invites`.
-- **Chat**: `conversations` · `messages` (subcoleção).
+- **Identidade**: `users/{uid}` (perfil + role + perfil de adotante).
+- **Pets**: `pets` (owner pode ser usuário ou organização) ·
+  `adoption_interests` (id `petId_userId`) · `adoption_ratings` ·
+  `pet_radars/{uid}` (alerta assíncrono via Cloud Function).
+- **Organizações**: `clubs` · `club_members` (id `clubId_uid`, `role` +
+  `permissions`) · `club_join_requests`/`club_member_invites`
+  (id `clubId_uid`) · `club_posts` (mural) · `club_forum_threads`
+  (+ `comments`, `poll_votes`) · `club_events` (+ `dates`, `date_rsvps`,
+  `messages`, `participants`) · `club_event_rsvps` · `event_invites` ·
+  `club_campaigns` (chamados de doação) · `club_ledger` (prestação de
+  contas).
+- **Comunidades** (grupos de usuários): `communities` (com `owner_id` e
+  `invite_code`) · `community_members` (id `communityId_uid`) ·
+  `community_posts` · `community_post_likes` (id `postId_uid`) ·
+  `community_post_comments` · `community_forum_threads` ·
+  `community_forum_messages` · `community_events`.
+- **Chat**: `conversations` · `messages`.
 - **Transversal**: `notifications` · `audit_logs` · `abuse_reports` ·
   `platform_settings/global` (feature flags) · `platform_content/{pageKey}`
   (Markdown das páginas institucionais, editável em `/admin/conteudo`).

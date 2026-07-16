@@ -11,6 +11,7 @@ import ConversationList from '@/modules/chat/components/ConversationList';
 import ChatWindow from '@/modules/chat/components/ChatWindow';
 import NewChatDialog from '@/modules/chat/components/NewChatDialog';
 import { cn } from '@/core/lib/utils';
+import PageContainer from '@/components/PageContainer';
 
 export default function ChatPage() {
   const { conversationId: routeConversationId } = useParams();
@@ -69,7 +70,7 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="space-y-4">
+    <PageContainer className="space-y-4">
       {isPreviewMode && (
         <section className="arena-section-card rounded-2xl border-amber-300/70 bg-amber-50/85 p-4 text-sm leading-6 text-amber-950">
           Prévia local sem Firebase: o chat não carrega conversas neste ambiente.
@@ -135,6 +136,6 @@ export default function ChatPage() {
       </section>
 
       <NewChatDialog open={newOpen} onOpenChange={setNewOpen} mode="new" busy={creating} onConfirm={handleCreate} />
-    </div>
+    </PageContainer>
   );
 }

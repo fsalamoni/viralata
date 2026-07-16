@@ -41,28 +41,45 @@ via Cloud Function (ver `docs/AI_CONTEXT.md` seção 8).
 
 ## organizations/ — organizações (ONGs/lojas) e comunidade
 
-Diretório de organizações com associação por papel, mural, fórum (com
-enquetes), eventos e planilha de gestão de pets para a equipe. Nomes de
-arquivo/coleção usam "Club"/"club" (herança do fork anterior) — a UI sempre
-chama isso de "Organização".
+Maior módulo do app. Nomes de arquivo ainda usam "Club" (herança de um
+fork anterior), mas a UI chama isso de "Organizações". Tudo vive sob
+`/organizacoes` (a rota `/comunidade` pertence ao módulo standalone de
+comunidades — ver abaixo):
+- **Público** (`/organizacoes`, `/organizacoes/:id`) — diretório e perfil,
+  abertos a todos: busca, pets para adoção, campanhas ativas, ingressar
+  por código/pedido/convite; membros ganham abas
+  Membros/Eventos/Mural/Fóruns (`?tab=` + `?thread=`).
+- **Gestão** (`/organizacoes/hub`, `/organizacoes/:id/admin`) — hub de
+  gestão (só quem administra alguma organização) e painel de
+  administração, com abas condicionadas por permissão granular.
 
-- **pages**: `ClubsDirectory` (diretório público), `CreateClub` (cadastro,
-  inclui `cnpj` e `donation_link` opcionais), `ClubDetail` (abas), `EventDetail`.
-- **components**: `ClubMembersTab`, `ClubAdminTab` (pedidos de ingresso,
-  convites, membros, toggles de permissão granular por membro), `ClubFeedTab`
-  (mural), `ClubForumsTab` + `ForumThreadView`/`CreateThreadDialog`/
-  `ForumPoll`/`PollBuilder`, `ClubEventsTab` + `EventChat`/
-  `EventParticipantsPanel`/`EventDatesPanel`, `ClubPetsDataGrid` (tabela de
-  gestão de pets da organização, edição inline).
-- **services**: `clubService` (organização, membros, pedidos, convites — ids
-  deterministas `clubId_uid`), `forumService` (tópicos/comentários/enquetes).
-  `organizationService.js` existe com um modelo parecido
-  (`organizations`/`organization_members`/`organization_reports`) mas **não
-  está conectado a nenhuma rota/UI** — código órfão de uma tentativa anterior,
-  mantido porque `firestore.rules` ainda cobre essas coleções; não estender.
-- **domain (puro, testado)**: `forumPoll` (apuração de votos), `constants`
-  (tipos de evento, limites do chat de evento).
-- **hooks**: `useClubs`, `useClubForum`.
+- **pages**: `ClubsDirectory` (`/organizacoes`), `ClubDetail`
+  (`/organizacoes/:id`), `CreateClub` (`/organizacoes/criar`),
+  `EventDetail` (`/organizacoes/:id/eventos/:eventId`), `OrganizationsHub`
+  (`/organizacoes/hub` — "Minhas organizações" + "Descobrir outras"),
+  `OrganizationAdminPanel` (`/organizacoes/:id/admin` — abas Visão Geral,
+  Animais, Mural, Doações, Prestação de Contas, Equipe, Configurações).
+- **components**:
+  - Perfil público: `ClubMembersTab`, `ClubFeedTab` (mural), `ClubEventsTab`
+    + `EventChat`/`EventParticipantsPanel`/`EventDatesPanel`,
+    `ClubForumsTab` + `ForumThreadView`/`CreateThreadDialog`/`ForumPoll`/
+    `PollBuilder`.
+  - Painel de administração: `ClubAdminTab` (aba Configurações — identidade
+    do clube, código de convite, exclusão), `ClubTeamTab` (aba Equipe —
+    convites, pedidos de ingresso, grade de permissões dos admins),
+    `ClubPetsDataGrid` (aba Animais — planilha inline + importação/
+    exportação em massa), `ClubDonationsTab` (aba Doações — chamados de
+    doação com meta/arrecadado/prazo), `ClubFinanceTab` (aba Prestação de
+    Contas — lançamentos por período/categoria).
+- **services**: `clubService` (clube, membros, permissões, eventos, mural,
+  campanhas de doação, financeiro — ids deterministas `clubId_uid`),
+  `forumService`.
+- **domain (puro, testado)**: `permissions` (proprietário + permissões
+  granulares — `isClubOwner`, `hasClubPermission`, `effectiveClubPermissions`),
+  `petImport` (parsing/validação/dedup da planilha de animais),
+  `forumPoll` (enquetes de fórum), `constants` (coleções, enums, rótulos).
+- **hooks**: `useClubs` (a maior parte das queries/mutations do módulo),
+  `useClubForum`.
 
 Ingresso (3 caminhos): **pedir para ingressar** (`club_join_requests` →
 notifica admins → aprovação cria `club_members`), **convite do admin**
@@ -105,11 +122,20 @@ restrito a contexto de adoção, embora uma conversa possa referenciar um pet).
 - `pages/ChatPage`, `hooks/useChat` (inclui `useChatUserDirectory`, que lista
   usuários elegíveis para iniciar conversa a partir da coleção `users`).
 - **components**: `ConversationList`, `ChatWindow`, `MessageBubble`,
-  `ChatComposer` (texto + anexos), `NewChatDialog` (novo direto/grupo ou
-  chamar mais pessoas), `ChatLauncherButton`.
-- **domain**: `conversations.js` (resolução de título/contraparte, preview da
-  última mensagem, testado).
-- Gera notificações `chat_message` / `chat_invite`.
+  `ChatComposer`, `NewChatDialog`.
+- **domain**: `conversations` (resolução/ordenação, testado).
+- Gera notificações `chat_message`/`chat_invite`.
+
+## notifications/ — sino
+
+- `hooks/useNotifications` — hook próprio (não React Query) com
+  `onSnapshot` em `notifications` filtrado por `user_id`; retorna
+  `{ notifications, unreadCount, isLoading, markAsRead }`.
+- `components/NotificationsMenu` — painel dropdown do sino no `Layout`:
+  ícone por `type` (mapa `TYPE_META`), não lidas destacadas, clique marca
+  como lida e navega para `link`, atalho "marcar todas como lidas".
+- Serviço de escrita é compartilhado: `core/services/notificationService.js`
+  (`NOTIFICATION_TYPE`, `createNotification`, `notifyUsers`).
 
 ## reports/ — denúncia de maus-tratos
 
@@ -140,35 +166,41 @@ Painel exclusivo de `platform_admin` (`/admin/*`), sem sub-papéis.
   (`fetchMetricsData`, `groupByMonth`, `groupByField` — funções puras
   testadas, consumem os dados já buscados).
 
-## Fora dos módulos (`src/pages/`, `src/core/`)
+## communities/ — comunidades de usuários
 
-- `pages/Home.jsx` — landing pública. `pages/Login.jsx` — login Google.
-  `pages/Profile.jsx` — dados do usuário, LGPD (exportar/excluir dados via
-  `core/services/dataExportService.js` e `deleteAccountService.js`), link
-  para "meus pets"/"radar". `pages/Terms.jsx`, `PrivacyPolicy.jsx`,
-  `Legislation.jsx` — conteúdo institucional em Markdown, editável por
-  `platform_admin` em `/admin/conteudo` (`AdminContentEditor` +
-  `core/services/platformContentService.js`, coleção `platform_content`).
-  Cada página busca o Markdown salvo e, se ainda não houver edição, usa o
-  texto padrão embutido em `DEFAULT_PLATFORM_CONTENT`. Renderização via
-  `components/ui/markdown-content.jsx`; edição via
-  `components/ui/markdown-editor.jsx`. Layout do cabeçalho compartilhado por
-  `src/components/legal-page.jsx`.
-  `pages/BannedNotice.jsx` — tela de conta suspensa.
-- `components/AdSlot.jsx` — card "conteúdo patrocinado" atrás da feature
-  flag `AD_SLOTS` (`core/featureFlags.js`); sem integração real de ads.
-- `core/services/` — ver `docs/ARCHITECTURE.md` (auditoria, notificações,
-  storage, observabilidade, export/exclusão de dados).
+Grupos sociais independentes das organizações (rota `/comunidade`), com a
+mesma entidade `communities` servindo também de vínculo editorial opcional
+para agrupar organizações no diretório (`clubs.community_id`).
+
+- **pages**: `CommunitiesDirectory` (`/comunidade` — busca, ingresso por
+  código de convite), `CommunityDetail` (`/comunidade/:id` — abas Mural /
+  Fórum / Eventos / Sobre, participar/sair; resolve links legados de
+  organização redirecionando para `/organizacoes/:id`), `CreateCommunity`
+  (`/comunidade/criar`).
+- **components**: `MuralTab` (posts com curtidas — doc determinista
+  `postId_uid` — e comentários expansíveis), `ForumTab` (tópicos +
+  respostas), `EventsTab` (eventos da comunidade), `AboutTab` (descrição +
+  código de convite para o dono).
+- **services**: `communityService` (CRUD, membros — id determinista
+  `communityId_uid` —, posts/curtidas/comentários, fórum, eventos,
+  ingresso por `invite_code`, contagem de membros via
+  `getCountFromServer`).
+- **domain**: `constants` (coleção + visibilidade), `directory` (status do
+  diretório, ordenação e filtros públicos — usado também pelo módulo de
+  organizações).
+- **hooks**: `useCommunities` (diretório/admin CRUD via React Query).
 
 ## Mapa rota → módulo
 
 | Rota | Módulo / arquivo |
 | --- | --- |
-| `/feed`, `/pets/*`, `/meus-pets`, `/radar` | pets/pages/* |
-| `/onboarding` | onboarding/pages/OnboardingQuestionnaire |
-| `/organizacoes/*` | organizations/pages/* |
-| `/chat*` | chat/pages/ChatPage |
-| `/denuncias/nova` | reports/pages/CreateReport |
-| `/perfil` | pages/Profile |
-| `/`, `/login`, `/termos`, `/politica-privacidade`, `/legislacao` | pages/* |
-| `/admin/*` | admin/pages/* |
+| `/`, `/termos`, `/legislacao`, `/politica-privacidade` | `pages/Home`, `pages/Terms`, `pages/Legislation`, `pages/PrivacyPolicy` |
+| `/login` | `pages/Login` |
+| `/onboarding` | `onboarding/pages/OnboardingQuestionnaire` |
+| `/feed`, `/pets/:id`, `/pets/new`, `/pets/:id/edit`, `/meus-pets`, `/radar` | `pets/pages/*` |
+| `/comunidade`, `/comunidade/criar`, `/comunidade/:id` | `communities/pages/*` |
+| `/organizacoes`, `/organizacoes/:id`, `/organizacoes/hub`, `/organizacoes/criar`, `/organizacoes/:id/admin`, `/organizacoes/:id/eventos/:eventId` | `organizations/pages/*` |
+| `/chat*` | `chat/pages/ChatPage` |
+| `/denuncias/nova` | `reports/pages/CreateReport` |
+| `/perfil` | `pages/Profile` |
+| `/admin/*` | `admin/pages/*` |

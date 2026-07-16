@@ -14,6 +14,7 @@ import { toPng } from 'html-to-image';
 import { jsPDF } from 'jspdf';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import PageContainer from '@/components/PageContainer';
 
 export default function CreateReport() {
   const navigate = useNavigate();
@@ -90,7 +91,8 @@ export default function CreateReport() {
   const dateStr = format(new Date(), "dd 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR });
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
+    <PageContainer>
+      <div className="mx-auto w-full max-w-2xl space-y-6">
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="sm" onClick={() => navigate(-1)}><ArrowLeft className="w-4 h-4" /></Button>
         <h1 className="text-2xl font-bold text-foreground">Registrar Denúncia</h1>
@@ -210,5 +212,6 @@ export default function CreateReport() {
         </div>
       )}
     </div>
+    </PageContainer>
   );
 }

@@ -729,12 +729,6 @@ service cloud.firestore {
       allow write: if isPlatformAdmin();
     }
 
-    // ─── Conteúdo institucional editável (Termos, Privacidade, Legislação) ─────
-    match /platform_content/{pageKey} {
-      allow read: if true;
-      allow write: if isPlatformAdmin();
-    }
-
     // ─── Clubes (comunidade) ────────────────────────────────────────────────────
     match /clubs/{clubId} {
       allow read: if true; // Diretório e detalhe públicos
@@ -1458,6 +1452,9 @@ service cloud.firestore {
     // COMUNIDADES E FÓRUNS
     // =========================================================================
     
+    // Bloco único da coleção (antes havia um segundo match duplicado no topo
+    // do arquivo, herdado do modelo editorial — o efeito combinado era este):
+    // leitura pública; criação autenticada; edição/exclusão do dono ou admin.
     match /communities/{communityId} {
       allow read: if true;
       allow create: if isAuth() && request.resource.data.owner_id == request.auth.uid;

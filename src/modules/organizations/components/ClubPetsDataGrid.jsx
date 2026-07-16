@@ -116,7 +116,7 @@ export default function ClubPetsDataGrid({ clubId, canManage = true }) {
     setAddingRow(true);
     try {
       await createPet.mutateAsync({
-        title: '', name: '', species: 'dog', size: 'mini', city: '', status: 'available', photos: [],
+        title: '', name: '', species: 'dog', size: 'mini', city: '', state: '', status: 'available', photos: [],
         owner_id: clubId, owner_type: 'organization',
       });
     } catch {
@@ -247,14 +247,15 @@ export default function ClubPetsDataGrid({ clubId, canManage = true }) {
           <Table>
             <TableHeader>
               <TableRow className="bg-secondary/60">
-                <TableHead className="w-12 px-4 py-3">Foto</TableHead>
-                <TableHead className="px-4 py-3">Nome</TableHead>
-                <TableHead className="px-4 py-3">Espécie</TableHead>
-                <TableHead className="px-4 py-3">Porte</TableHead>
-                <TableHead className="px-4 py-3">Raça</TableHead>
-                <TableHead className="px-4 py-3">Cidade</TableHead>
-                <TableHead className="px-4 py-3">Status</TableHead>
-                {canManage && <TableHead className="w-10 px-4 py-3" />}
+                <TableHead className="w-11">Foto</TableHead>
+                <TableHead>Nome</TableHead>
+                <TableHead>Espécie</TableHead>
+                <TableHead>Porte</TableHead>
+                <TableHead>Raça</TableHead>
+                <TableHead>Cidade</TableHead>
+                <TableHead>UF</TableHead>
+                <TableHead>Status</TableHead>
+                {canManage && <TableHead className="w-9" />}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -304,7 +305,18 @@ export default function ClubPetsDataGrid({ clubId, canManage = true }) {
                       className="h-9 w-28 border-transparent bg-transparent text-sm focus-visible:border-input focus-visible:bg-background"
                     />
                   </TableCell>
-                  <TableCell className="px-4 py-2.5">
+                  <TableCell className="p-0.5">
+                    <Input
+                      defaultValue={pet.state || ''}
+                      placeholder="UF"
+                      maxLength={2}
+                      readOnly={!canManage}
+                      disabled={savingId === pet.id}
+                      onBlur={canManage ? (e) => { const v = e.target.value.toUpperCase(); if (v !== (pet.state || '')) handleFieldChange(pet.id, 'state', v); } : undefined}
+                      className="h-8 w-14 border-transparent bg-transparent text-sm uppercase focus-visible:border-input focus-visible:bg-background"
+                    />
+                  </TableCell>
+                  <TableCell className="p-0.5">
                     <Select value={pet.status} onValueChange={(v) => handleFieldChange(pet.id, 'status', v)} disabled={!canManage || savingId === pet.id}>
                       <SelectTrigger className="h-9 w-32 border-transparent bg-transparent"><SelectValue /></SelectTrigger>
                       <SelectContent>{STATUS_OPTIONS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>

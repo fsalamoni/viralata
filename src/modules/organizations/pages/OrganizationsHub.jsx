@@ -6,14 +6,14 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useClubs, useMyClubs } from '@/modules/organizations/hooks/useClubs';
 import { CLUB_ROLE, CLUB_ROLE_LABELS } from '@/modules/organizations/domain/constants';
 import PageHero from '@/components/PageHero';
-import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
+import PageContainer from '@/components/PageContainer';
 
 /**
- * Hub de gestão de organizações (`/organizacoes`): "Minhas organizações"
+ * Hub de gestão de organizações (`/organizacoes/hub`): "Minhas organizações"
  * (onde o usuário é administrador — abre o painel de administração) e
  * "Descobrir outras organizações" (as demais — abre o perfil público em
- * `/comunidade/:id`). O diretório público completo, com busca, continua em
- * `ClubsDirectory` (`/comunidade`).
+ * `/organizacoes/:id`). O diretório público completo, com busca, é o
+ * `ClubsDirectory` (`/organizacoes`).
  */
 export default function OrganizationsHub() {
   const { data: allClubs = [], isLoading: loadingAll } = useClubs();
@@ -30,7 +30,7 @@ export default function OrganizationsHub() {
   );
 
   return (
-    <div className={useArenaPageClasses('arena-page mx-auto max-w-5xl space-y-8 px-5 py-6 pb-12')}>
+    <PageContainer className="space-y-8 pb-12">
       <PageHero
         eyebrow="Abrigos"
         title="Administre suas organizações em um só lugar"
@@ -104,9 +104,9 @@ export default function OrganizationsHub() {
         ) : (
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {discoverClubs.map((club) => (
-              <Link key={club.id} to={`/comunidade/${club.id}`} className="block">
-                <section className="arena-section-card rounded-[1.25rem]">
-                  <div className="arena-section-card-body flex items-center gap-3 p-4">
+              <Link key={club.id} to={`/organizacoes/${club.id}`} className="block">
+                <Card className="rounded-[1.25rem]">
+                  <CardContent className="flex items-center gap-3 p-4">
                     {club.logo_url ? (
                       <img src={club.logo_url} alt="" className="h-10 w-10 shrink-0 rounded-xl border border-primary/10 object-cover" />
                     ) : (
@@ -125,6 +125,6 @@ export default function OrganizationsHub() {
           </div>
         )}
       </section>
-    </div>
+    </PageContainer>
   );
 }

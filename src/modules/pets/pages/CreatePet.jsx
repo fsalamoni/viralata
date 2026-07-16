@@ -23,6 +23,7 @@ import { RescueStep } from '../components/RescueStep';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import AdoptionFormBuilder from '../components/AdoptionFormBuilder';
 import { normalizeForm } from '../domain/adoptionForm';
+import PageContainer from '@/components/PageContainer';
 
 const schema = z.object({
   title: z.string().min(5, 'Título muito curto').max(100),
@@ -242,7 +243,7 @@ export default function CreatePet() {
   }, [isEditing, existingPet, editingPermissions, navigate, petId]);
 
   if (isEditing && loadingPet) {
-    return <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>;
+    return <PageContainer><div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div></PageContainer>;
   }
 
   const isLastStep = step === STEPS.length - 1;
@@ -257,17 +258,19 @@ export default function CreatePet() {
     || (adminClubs.find((c) => c.donation_link)?.donation_link ?? '');
 
   return (
-    <div className={wrapperClass}>
-      <PageHero
-        eyebrow="Pets"
-        title={isEditing ? 'Editar Pet' : 'Cadastrar Pet para Adoção'}
-        description="Leva menos de 2 minutos — capriche na descrição, ela ajuda a encontrar o lar certo."
-        actions={
-          <Button type="button" variant="ghost" size="sm" onClick={() => navigate(-1)}>
-            <ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar
-          </Button>
-        }
-      />
+    <PageContainer className="pb-24">
+      <div className="mx-auto w-full max-w-2xl">
+      <div className="mb-1.5 flex items-center gap-3">
+        <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
+      </div>
+      <h1 className="font-['Sora'] text-[22px] font-extrabold text-foreground">
+        {isEditing ? 'Editar Pet' : 'Cadastrar Pet para Adoção'}
+      </h1>
+      <p className="mb-6.5 mt-1.5 text-[13px] text-muted-foreground">
+        Leva menos de 2 minutos — capriche na descrição, ela ajuda a encontrar o lar certo.
+      </p>
 
       {!isEditing && adminClubs.length > 0 && (
         <FormField label="Cadastrar em nome de" helper="Selecione o abrigo responsável por este pet." className="mb-5">
@@ -541,5 +544,6 @@ export default function CreatePet() {
         </div>
       </form>
     </div>
+    </PageContainer>
   );
 }

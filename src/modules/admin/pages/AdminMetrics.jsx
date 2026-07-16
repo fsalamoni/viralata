@@ -4,10 +4,9 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip,
 } from 'recharts';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
-import { Button } from '@/components/ui/button';
-import { fetchMetricsData, groupByMonth, groupByDay, groupByField } from '../services/metricsService';
-import PageHero from '@/components/PageHero';
-import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { fetchMetricsData, groupByMonth, groupByField } from '../services/metricsService';
+import PageContainer from '@/components/PageContainer';
 
 export default function AdminMetrics() {
   const { isPlatformAdmin } = useAuth();
@@ -22,7 +21,7 @@ export default function AdminMetrics() {
   }, [isPlatformAdmin]);
 
   if (!isPlatformAdmin) return null;
-  if (loading) return <div className="max-w-5xl mx-auto px-4 py-16 text-center text-muted-foreground">Carregando métricas...</div>;
+  if (loading) return <PageContainer className="py-16 text-center text-muted-foreground">Carregando métricas...</PageContainer>;
 
   if (!isPlatformAdmin) return null;
   if (loading) return <div className={loadingClass}>Carregando métricas...</div>;
@@ -37,8 +36,8 @@ export default function AdminMetrics() {
   const petsByState = groupByField(data.pets, 'state');
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-6 space-y-6">
-      <h1 className="text-xl font-bold text-foreground">Métricas da Plataforma</h1>
+    <PageContainer className="space-y-6">
+      <h1 className="text-2xl font-bold text-foreground">Métricas da Plataforma</h1>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <SummaryCard label="Pets cadastrados" value={data.pets.length} />
@@ -104,9 +103,9 @@ export default function AdminMetrics() {
               <Bar dataKey="count" name="Denúncias" fill="#dd382c" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
-        </div>
-      </section>
-    </div>
+        </CardContent>
+      </Card>
+    </PageContainer>
   );
 }
 

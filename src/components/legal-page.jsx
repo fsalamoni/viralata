@@ -1,6 +1,10 @@
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { cn } from '@/core/lib/utils';
+import PageContainer from '@/components/PageContainer';
+
 export function LegalPage({ eyebrow, title, description, meta, children }) {
   return (
-    <div className="mx-auto max-w-6xl space-y-5">
+    <PageContainer className="space-y-5">
       <section className="arena-panel-strong rounded-lg p-5 sm:p-6">
         <div className="max-w-3xl space-y-3">
           {eyebrow && <p className="text-xs font-semibold uppercase tracking-wider text-highlight">{eyebrow}</p>}
@@ -10,6 +14,6 @@ export function LegalPage({ eyebrow, title, description, meta, children }) {
         </div>
       </section>
       <div className="min-w-0 space-y-4">{children}</div>
-    </div>
+    </PageContainer>
   );
 }

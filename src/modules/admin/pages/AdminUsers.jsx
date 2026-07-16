@@ -25,10 +25,8 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toast } from 'sonner';
-import { ShieldCheck, ShieldOff, ShieldAlert, Lock } from 'lucide-react';
-import PageHero from '@/components/PageHero';
-import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
-import { confirmDialog } from '@/components/ui/confirm-provider';
+import { ShieldOff, ShieldCheck } from 'lucide-react';
+import PageContainer from '@/components/PageContainer';
 
 export default function AdminUsers() {
   const { user, isPlatformAdmin, userProfile } = useAuth();
@@ -107,8 +105,8 @@ export default function AdminUsers() {
   );
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-6 space-y-4">
-      <h1 className="text-xl font-bold text-foreground">Gerenciar Usuários</h1>
+    <PageContainer className="space-y-4">
+      <h1 className="text-2xl font-bold text-foreground">Gerenciar Usuários</h1>
       <Input
         placeholder="Buscar por nome ou e-mail..."
         value={search}
@@ -194,7 +192,7 @@ export default function AdminUsers() {
           </div>
         </section>
       )}
-    </div>
+    </PageContainer>
   );
 }
 

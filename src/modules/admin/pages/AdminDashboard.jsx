@@ -3,11 +3,13 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Shield, PawPrint, Building2, AlertTriangle, Users, BarChart3, FileText } from 'lucide-react';
+import { Shield, PawPrint, Building2, AlertTriangle, Users, BarChart3, ScrollText, Bell, SlidersHorizontal } from 'lucide-react';
+import PageHero from '@/components/PageHero';
+import PageContainer from '@/components/PageContainer';
 
 export default function AdminDashboard() {
   const { isPlatformAdmin } = useAuth();
-  if (!isPlatformAdmin) return <div className="text-center py-16 text-muted-foreground">Acesso restrito.</div>;
+  if (!isPlatformAdmin) return <PageContainer><div className="text-center py-16 text-muted-foreground">Acesso restrito.</div></PageContainer>;
 
   const sections = [
     { icon: PawPrint, title: 'Gerenciar Pets', desc: 'Moderar anúncios, aprovar ou remover pets', link: '/admin/pets', color: 'text-primary' },
@@ -19,11 +21,17 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
-      <div className="flex items-center gap-3">
-        <Shield className="w-6 h-6 text-primary" />
-        <h1 className="text-2xl font-bold text-foreground">Painel Administrativo</h1>
-      </div>
+    <PageContainer className="space-y-6">
+      <PageHero
+        eyebrow="Admin"
+        title="Painel Administrativo"
+        description="Centralize moderação, auditoria, notificações e indicadores da plataforma em um fluxo visual consistente com as demais áreas."
+        actions={(
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold text-orange-50/85">
+            <Shield className="h-3.5 w-3.5" /> Acesso restrito
+          </span>
+        )}
+      />
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {sections.map(({ icon: Icon, title, desc, link, tone }) => (
           <div key={link} className="arena-section-card transition-shadow hover:shadow-[0_18px_40px_-28px_rgba(64,34,18,0.35)]">
@@ -44,6 +52,6 @@ export default function AdminDashboard() {
           </div>
         ))}
       </div>
-    </div>
+    </PageContainer>
   );
 }

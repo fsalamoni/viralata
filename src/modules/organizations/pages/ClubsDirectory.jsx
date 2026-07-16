@@ -18,7 +18,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
-import { hasKnownCoords, lookupCityCoordsByName, filterPetsByRadius } from '@/modules/pets/domain/geoDistance';
+import { hasKnownCoords, lookupCityCoordsByName, filterByRadius } from '@/modules/pets/domain/geoDistance';
 import {
   useClubs,
   useMyClubs,
@@ -35,6 +35,7 @@ import { FEATURE_FLAG } from '@/core/featureFlags';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import { useCommunities } from '@/modules/communities/hooks/useCommunities';
 import { getVisibleCommunityMap } from '@/modules/communities/domain/directory';
+import PageContainer from '@/components/PageContainer';
 
 const RADIUS_OPTIONS = [5, 10, 25, 50, 100];
 
@@ -133,7 +134,7 @@ export default function ClubsDirectory() {
     }
     if (radiusActive) {
       const origin = lookupCityCoordsByName(trimmedCity);
-      list = filterPetsByRadius(list, origin, radius) ?? list;
+      list = filterByRadius(list, origin, radius, trimmedCity) ?? list;
     } else if (trimmedCity) {
       const cityQ = trimmedCity.toLowerCase();
       list = list.filter((c) => String(c.city || '').toLowerCase().includes(cityQ));
@@ -159,27 +160,20 @@ export default function ClubsDirectory() {
   };
 
   return (
-    <div className={useArenaPageClasses('arena-page mx-auto max-w-6xl space-y-8 px-5 py-6 pb-12')}>
-      <Seo title="ONGs e abrigos" description="Diretório de ONGs, abrigos e protetores de animais parceiros do Viralata." />
-      {pageHeroEnabled ? (
-        <>
-          <PageHero
-            eyebrow="ONGs Parceiras"
-            title="Encontre uma organização ou cadastre a sua."
-            description="Gerencie pets para adoção, organize mutirões e mantenha sua equipe conectada em um só lugar."
-            actions={
-              <Button asChild className="bg-white text-foreground hover:bg-secondary">
-                <Link to="/organizacoes/criar"><Plus className="mr-1.5 h-4 w-4" /> Cadastrar organização</Link>
-              </Button>
-            }
-          />
-
-          <section className="arena-section-card rounded-[2rem] border-white/80 bg-white/82">
-            <div className="arena-section-card-body p-6 sm:p-7">
-              <span className="arena-chip">Ingressar com código</span>
-              <h3 className="mt-4 text-2xl font-semibold text-foreground">Tem um convite?</h3>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                Digite o código compartilhado por um administrador para entrar na organização.
+    <PageContainer className="space-y-8 pb-12">
+      <section className="grid grid-cols-1 gap-6 xl:grid-cols-[1.08fr,0.92fr]">
+        <Card className="arena-panel-strong overflow-hidden rounded-[1.25rem] border-0 sm:rounded-[2rem]">
+          <CardContent className="relative p-5 sm:p-8 lg:p-10">
+            <div className="relative max-w-2xl">
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-orange-50/80">
+                <Building2 className="h-3.5 w-3.5" /> ONGs Parceiras
+              </span>
+              <h2 className="mt-5 text-2xl font-semibold leading-tight text-white sm:text-3xl lg:text-4xl">
+                Encontre uma organização ou cadastre a sua.
+              </h2>
+              <p className="mt-4 max-w-xl text-sm leading-7 text-orange-50/75 sm:text-base">
+                Gerencie pets para adoção, organize mutirões e mantenha sua equipe conectada
+                em um só lugar.
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
                 <Button asChild className="bg-white text-foreground hover:bg-orange-50">
@@ -356,7 +350,7 @@ export default function ClubsDirectory() {
           </div>
         </section>
       )}
-    </div>
+    </PageContainer>
   );
 }
 
@@ -369,7 +363,7 @@ function ClubCard({ club, community, myRole, joinState = null, onRequest, reques
   };
   return (
     <Link to={`/organizacoes/${club.id}`} className="block h-full">
-      <Card className="match-surface h-full rounded-[1.75rem] border-border bg-card/85">
+      <Card className="match-surface h-full rounded-[1.75rem] border-white/80 bg-white/85">
         <CardContent className="flex h-full flex-col p-5 sm:p-6">
           <div className="flex items-start justify-between gap-3">
             <h4 className="flex min-w-0 items-center gap-3 text-lg font-semibold text-foreground">

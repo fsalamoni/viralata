@@ -36,30 +36,7 @@ import {
 import { exportMyData, downloadDataExport } from '@/core/services/dataExportService';
 import { deleteMyAccount } from '@/core/services/deleteAccountService';
 import PageHero from '@/components/PageHero';
-import MyAdoptionsSection from '@/modules/shelter/components/MyAdoptionsSection';
-import MyTasksSection from '@/modules/shelter/components/MyTasksSection';
-import UpcomingEventsSection from '@/modules/communities/components/UpcomingEventsSection';
-import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
-import { VolunteerSection } from '@/modules/shelter/components/VolunteerSection';
-import { MyFostersSection } from '@/modules/shelter/components/MyFostersSection';
-import { CrossRosterSection } from '@/modules/shelter/components/CrossRosterSection';
-import { AppearanceSettings } from '@/components/AppearanceSettings';
-import { VolunteerProfileForm } from '@/modules/shelter/components/VolunteerProfileForm';
-import { VolunteerMetricsCard } from '@/modules/shelter/components/VolunteerMetricsCard';
-import {
-  useVolunteerProfile,
-  useUserVolunteerRosters,
-  useLeaveShelter,
-  useWithdrawVolunteerConsent,
-} from '@/modules/shelter/hooks/useVolunteerProfile';
-import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
-import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
-import {
-  VOLUNTEER_EXIT_REASONS,
-  VOLUNTEER_EXIT_REASON_LABELS,
-} from '@/modules/shelter/domain/operational/volunteerProfile';
-import { Heart } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import PageContainer from '@/components/PageContainer';
 
 const GENDER_OPTIONS = [
   { value: 'male', label: 'Masculino' },
@@ -350,11 +327,57 @@ export default function Profile() {
   }
 
   return (
-    <div className="arena-page max-w-2xl mx-auto px-4 py-6 space-y-6">
-      <div className="flex items-center gap-3">
-        <h1 className="text-xl font-bold text-foreground">Meu Perfil</h1>
-        <RatingBadge uid={user?.uid} />
-      </div>
+    <PageContainer className="flex flex-col gap-6 pb-16">
+      <PageHero
+        eyebrow="Meu perfil"
+        title={fullName || user?.email || 'Seu perfil'}
+        description="Atualize seus dados, preferências de adoção e privacidade no mesmo padrão visual das demais áreas autenticadas."
+        actions={(
+          <Button type="button" variant="outline" size="sm" className="border-white/20 bg-white/10 text-white hover:bg-white/15 hover:text-white" onClick={() => navigate('/feed')}>
+            <ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar ao feed
+          </Button>
+        )}
+      >
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+          <div className="flex items-center gap-4">
+            <ImageUpload
+              value={photoUrl}
+              onChange={(value) => updateField('photoUrl', value)}
+              folder="avatar"
+              shape="circle"
+              className="h-16 w-16"
+            />
+            <div className="min-w-[180px] flex-1">
+              <div className="text-[11px] font-bold uppercase tracking-[0.24em] text-orange-100/70">Dados da conta</div>
+              <div className="mt-1 font-['Sora'] text-2xl font-extrabold text-white">{fullName || user?.email}</div>
+              <div className="mt-1 text-[13px] text-orange-50/80">{user?.email}</div>
+              <div className="mt-3 flex flex-wrap items-center gap-2.5">
+                {ratingCount > 0 && (
+                  <div className="flex items-center gap-0.5">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star
+                        key={i}
+                        className="h-[15px] w-[15px]"
+                        style={{ color: i < Math.round(ratingAvg) ? 'hsl(40 88% 54%)' : 'rgba(255,255,255,0.35)' }}
+                        fill={i < Math.round(ratingAvg) ? 'hsl(40 88% 54%)' : 'none'}
+                      />
+                    ))}
+                    <span className="ml-1 text-xs font-bold text-white">{ratingAvg.toFixed(1)}</span>
+                  </div>
+                )}
+                {memberSinceYear && (
+                  <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-medium text-orange-50/85">
+                    Membro desde {memberSinceYear}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+          <div className="max-w-sm text-sm leading-6 text-orange-50/82">
+            Revise seus dados, mantenha o perfil de adotante atualizado e controle a privacidade das suas informações.
+          </div>
+        </div>
+      </PageHero>
 
       {/* Dados pessoais */}
       <Card>
@@ -821,7 +844,7 @@ export default function Profile() {
         onConfirm={handleDeleteAccount}
         email={user?.email}
       />
-    </div>
+    </PageContainer>
   );
 }
 

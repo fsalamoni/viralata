@@ -30,7 +30,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, Heart, MapPin, Trash2, Share2, MessageCircle, FileText, Info, ShieldAlert } from 'lucide-react';
 import { toast } from 'sonner';
-import { confirmDialog } from '@/components/ui/confirm-provider';
+import PageContainer from '@/components/PageContainer';
 
 function useOwnerProfile(ownerId, enabled) {
   return useQuery({
@@ -87,9 +87,29 @@ export default function PetDetail() {
   const shareCardRef = useRef(null);
   const { shareFromNode, generating: sharing } = usePetShareImage();
 
-  const petPermissions = usePetPermissions(pet);
-  const showAdoptionGating = useFeatureFlag(FEATURE_FLAG.PET_ADOPTION_GATING);
-  const wrapperClass = useArenaPageClasses('arena-page max-w-4xl mx-auto px-4 py-6 space-y-6');
+  if (isLoading) {
+    return (
+      <PageContainer>
+        <div className="flex h-64 items-center justify-center"><div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary" /></div>
+      </PageContainer>
+    );
+  }
+  if (!pet) {
+    return (
+      <PageContainer>
+        <div className="py-16 text-center text-muted-foreground">Pet não encontrado.</div>
+      </PageContainer>
+    );
+  }
+
+  const canManage = isOwner || isPlatformAdmin;
+  const managementTab = searchParams.get('tab') === 'info' ? 'info' : 'interests';
+
+  function setManagementTab(value) {
+    const next = new URLSearchParams(searchParams);
+    next.set('tab', value);
+    setSearchParams(next, { replace: true });
+  }
 
   async function handleRate({ ratedUid: target, stars, comment }) {
     try {
@@ -167,12 +187,7 @@ export default function PetDetail() {
   }
 
   return (
-    <div className={wrapperClass}>
-      <Seo
-        title={pet?.name ? `${pet.name} para adoção` : 'Pet para adoção'}
-        description={pet?.description?.slice(0, 160) || 'Conheça este pet disponível para adoção responsável no Viralata.'}
-        image={pet?.photos?.[0]}
-      />
+    <PageContainer className="space-y-6">
       <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
         <ArrowLeft className="w-4 h-4 mr-1" /> Voltar
       </Button>
@@ -380,6 +395,6 @@ export default function PetDetail() {
       <div style={{ position: 'fixed', top: 0, left: '-99999px', pointerEvents: 'none' }} aria-hidden="true">
         <PetShareCard ref={shareCardRef} pet={pet} shareUrl={`${window.location.origin}/pets/${petId}`} />
       </div>
-    </div>
+    </PageContainer>
   );
 }

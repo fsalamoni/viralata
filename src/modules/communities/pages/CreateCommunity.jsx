@@ -10,6 +10,7 @@ import { createCommunity } from '../services/communityService';
 import PageHero from '@/components/PageHero';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import { toast } from 'sonner';
+import PageContainer from '@/components/PageContainer';
 
 export default function CreateCommunity() {
   const navigate = useNavigate();
@@ -34,17 +35,11 @@ export default function CreateCommunity() {
   };
 
   return (
-    <div className={useArenaPageClasses('arena-page mx-auto w-full max-w-2xl space-y-6 px-4 py-6 sm:px-6 lg:px-8')}>
-      <PageHero
-        eyebrow="Comunidade"
-        title="Criar Nova Comunidade"
-        description="Crie um espaço para conectar pessoas em torno de uma causa, cidade ou tipo de pet. Você poderá editar as informações depois."
-        actions={
-          <Button variant="ghost" size="sm" onClick={() => navigate('/comunidade')}>
-            <ArrowLeft className="mr-2 w-4 h-4" /> Voltar
-          </Button>
-        }
-      />
+    <PageContainer>
+      <div className="mx-auto w-full max-w-2xl space-y-6">
+      <Button variant="ghost" size="sm" onClick={() => navigate('/comunidade')}>
+        <ArrowLeft className="mr-2 w-4 h-4" /> Voltar
+      </Button>
 
       <section className="arena-section-card">
         <div className="arena-section-card-body">
@@ -97,5 +92,6 @@ export default function CreateCommunity() {
         </div>
       </section>
     </div>
+    </PageContainer>
   );
 }

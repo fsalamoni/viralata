@@ -174,6 +174,19 @@ function withLayout(pageName, Component) {
   );
 }
 
+// ─── Redirects legados (Organizações) ────────────────────────────────────────
+// O perfil público e os eventos das organizações já moraram em
+// `/comunidade/:orgId[...]` — hoje essa rota pertence ao módulo de
+// comunidades e as organizações vivem em `/organizacoes/:orgId[...]`.
+// Notificações antigas já gravadas no Firestore ainda apontam para o caminho
+// anterior — este redirect preserva os links de evento; links antigos de
+// perfil (`/comunidade/:orgId`) são resolvidos pelo fallback do próprio
+// `CommunityDetail`, que detecta ids de organização e redireciona.
+function LegacyOrgEventRedirect() {
+  const { orgId, eventId } = useParams();
+  return <Navigate to={`/organizacoes/${orgId}/eventos/${eventId}`} replace />;
+}
+
 function RouteTelemetry() {
   const location = useLocation();
   useEffect(() => {
@@ -383,24 +396,12 @@ export default function App() {
                   path="/organizacoes/:orgId/admin"
                   element={<ProtectedRoute>{withLayout('OrganizationAdminPanel', OrganizationAdminPanel)}</ProtectedRoute>}
                 />
-                <Route path="/organizacoes/:orgId" element={<ProtectedRoute>{withLayout('OrganizationDetail', OrganizationDetail)}</ProtectedRoute>} />
-                <Route path="/abrigos/:shelterId" element={withLayout('ShelterPublic', ShelterPublic)} />
-                {/* TASK-288: contratos do abrigo (Lei 14.063/2020) — visível para
-                    admins do abrigo (gate via contractsService). */}
-                <Route
-                  path="/abrigos/:shelterId/contracts"
-                  element={<ProtectedRoute>{withLayout('ShelterContracts', ShelterContractsList)}</ProtectedRoute>}
-                />
-                {/* TASK-290: entrevistas do abrigo — visível para admins do
-                    abrigo (gate via interviewService). */}
-                <Route
-                  path="/abrigos/:shelterId/interviews"
-                  element={<ProtectedRoute>{withLayout('ShelterInterviews', ShelterInterviewsList)}</ProtectedRoute>}
-                />
                 <Route
                   path="/organizacoes/:orgId/eventos/:eventId"
                   element={<ProtectedRoute>{withLayout('EventDetail', EventDetail)}</ProtectedRoute>}
                 />
+                {/* Perfil público da ONG — aberto a visitantes, como o diretório. */}
+                <Route path="/organizacoes/:orgId" element={withLayout('OrganizationDetail', OrganizationDetail)} />
 
                 {/* ── Chat ─────────────────────────────────────────────── */}
                 <Route
@@ -489,12 +490,7 @@ export default function App() {
                 <Route path="/inicio" element={<Navigate to="/feed" replace />} />
                 <Route path="/clubes" element={<Navigate to="/comunidade" replace />} />
                 <Route path="/atletas" element={<Navigate to="/feed" replace />} />
-                {/* /scrum: servido direto pelo Firebase Hosting em public/scrum.html
-                    via PWA navigateFallbackDenylist (TASK-245). A rota React foi
-                    removida em PR #105 junto com a função ScrumDashboardRedirect.
-                    PR #104 (fix/mock-data) re-adicionou a rota por engano durante
-                    o rebase, mas sem restaurar a função — daí o ReferenceError
-                    no console de produção. Removida aqui (e em PR #108). */}
+                <Route path="/comunidade/:orgId/eventos/:eventId" element={<LegacyOrgEventRedirect />} />
 
                 {/* ── 404 ──────────────────────────────────────────────── */}
                 <Route path="*" element={<PageNotFound />} />
