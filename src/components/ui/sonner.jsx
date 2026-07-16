@@ -1,11 +1,22 @@
 import { Toaster as Sonner } from 'sonner';
 
+/**
+ * Toaster padronizado para o app (TASK-617).
+ *
+ * Configurações:
+ * - posição: top-right
+ * - stacking: até 3 toasts visíveis simultaneamente
+ * - durações: success 4s, error 6s, info 3s
+ * - closeButton: sempre visível
+ * - richColors: fundo colorido por tipo (verde/vermelho/azul)
+ */
 export function Toaster(props) {
   return (
     <Sonner
       position="top-right"
       richColors
       closeButton
+      visibleToasts={3}
       toastOptions={{
         durations: {
           success: 4000,
