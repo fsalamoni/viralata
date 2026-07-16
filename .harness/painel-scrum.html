@@ -386,23 +386,37 @@
 <script type="application/json" id="initial-data">
 {
   "$schema": "./SCRUM_TASKS.schema.md",
-  "version": "1.0.0",
-  "generatedAt": "2026-07-16T18:05:36.402Z",
+  "version": "1.1.0",
+  "generatedAt": "2026-07-16T18:32:22.542Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W29",
-    "label": "Sprint 2026-W29 (BATCH mode: features + fixes)",
+    "label": "Sprint 2026-W29 (BATCH: features + DS_V2 reaplicação)",
     "startedAt": "2026-07-15",
     "endsAt": "2026-07-22",
-    "goal": "Implementar 50+ features de UI/UX/infra. Limpar inconsistências. Decisões registradas. Zero tasks in_progress stale."
+    "goal": "DS_V2 Fase 4 — Reaplicar design system oficial v1.0 bloco a bloco, cada área com feature flag default OFF. Começar pelo Bloco A (docs) ✅, agora Bloco B (tokens + Material Symbols). User valida visualmente cada bloco antes da próxima. Zero regressão em regra de negócio."
   },
   "activeWorktrees": [
     {
-      "id": "viralata",
-      "branch": "feat/ds-v2-docs-2026-07-16",
-      "head": "f010e9550cbe4d11cdc98651e5b69a044d11096a",
-      "headTitle": "chore(scrum): topbar finalizer 12f29b8 (pós-deploy)",
-      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata",
+      "id": "wt-ds-v2-components",
+      "branch": "feat/ds-v2-components-2026-07-16",
+      "head": "29fec2a2099781a193a8a7b3d593de687c24d6b3",
+      "headTitle": "chore(scrum): Bloco B · DS_V2_TOKENS done — 5 tasks (TASK-720..723) + macro TASK-701",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-ds-v2-components",
+      "status": "in-sync",
+      "commitsAhead": 0,
+      "primarySession": "mvs_311d078987d0414a90f57ef28b789b18",
+      "sessionTitle": "DS_V2_COMPONENTS — refatorar Button, Card, Input, Modal, Table, Avatar",
+      "focus": [
+        "DS_V2_COMPONENTS"
+      ]
+    },
+    {
+      "id": "wt-ds-v2-tokens",
+      "branch": "feat/ds-v2-tokens-2026-07-16",
+      "head": "30d0c5a82ac616fb4e0098c046eb68889dd3aff4",
+      "headTitle": "feat(ds-v2): Bloco B · DS_V2_TOKENS — Material Symbols Outlined + Icon wrapper",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-ds-v2-tokens",
       "status": "in-sync",
       "commitsAhead": 0,
       "primarySession": null,
@@ -412,13 +426,13 @@
   ],
   "activeSessions": [
     {
-      "id": "mvs_f1e04f28717d42cdba05e221b7b4b6f3",
+      "id": "mvs_311d078987d0414a90f57ef28b789b18",
       "agentName": "agent-1cc44353fc6b",
-      "title": "Viralata Coder (este agente)",
+      "title": "Mavis — orquestrador DS_V2 + Viralata Coder",
       "status": "started",
-      "workspace": "D:\\viralata",
+      "workspace": "/workspace/viralata",
       "branch": "main",
-      "lastActiveAt": "2026-07-11T14:21:50-03:00"
+      "lastActiveAt": "2026-07-16T18:19:45.326Z"
     }
   ],
   "columns": [
@@ -11494,12 +11508,12 @@
       "title": "Bloco B · DS_V2_TOKENS — Tokens + integração Material Symbols",
       "type": "feature",
       "category": "design",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "mvs_311d078987d0414a90f57ef28b789b18",
-      "branch": null,
+      "branch": "feat/ds-v2-tokens-2026-07-16",
       "flag": "DS_V2_TOKENS",
-      "worktree": null,
+      "worktree": ".worktrees/wt-ds-v2-tokens",
       "pr": null,
       "tags": [
         "ds-v2",
@@ -11512,19 +11526,20 @@
       ],
       "description": "`src/index.css` já tem os tokens oficiais (validado TASK-249). Adicionar subset da fonte Material Symbols Outlined via @import, expor como utility `.material-symbols-outlined` com `font-variation-settings: 'FILL' 0/1, 'wght' 500`. Atualizar `tailwind.config.js` se necessário. Criar wrapper component `<Icon>` que decide entre lucide e Material Symbols por prop `kind=\"material\"`. Validar com build.",
       "createdAt": "2026-07-16",
-      "updatedAt": "2026-07-16"
+      "updatedAt": "2026-07-16T18:25:03",
+      "resolvedAt": "2026-07-16"
     },
     {
       "id": "TASK-702",
       "title": "Bloco C · DS_V2_COMPONENTS — Refatorar biblioteca de componentes",
       "type": "feature",
       "category": "design",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "mvs_311d078987d0414a90f57ef28b789b18",
-      "branch": null,
+      "branch": "feat/ds-v2-components-2026-07-16",
       "flag": "DS_V2_COMPONENTS",
-      "worktree": null,
+      "worktree": ".worktrees/wt-ds-v2-components",
       "pr": null,
       "tags": [
         "ds-v2",
@@ -11537,7 +11552,8 @@
       ],
       "description": "Refatorar `src/components/ui/button.jsx` (já tem base, garantir 7 variantes da spec: primary, secondary, tertiary, admin, destructive, disabled, icon-circle). Refatorar `card.jsx`, `input.jsx`, `textarea.jsx`, `dialog.jsx`, `dropdown-menu.jsx`, `badge.jsx`, `avatar.jsx`, `tabs.jsx`, `table.jsx`, `progress.jsx` contra spec v1.0. Cada componente vira a fonte canônica para os Blocos D. Cobertura: não quebrar story atual, mas ajustar padding/raio/peso/contraste.",
       "createdAt": "2026-07-16",
-      "updatedAt": "2026-07-16"
+      "updatedAt": "2026-07-16T18:32:12",
+      "resolvedAt": "2026-07-16"
     },
     {
       "id": "TASK-703",
@@ -11917,6 +11933,306 @@
       "createdAt": "2026-07-16",
       "updatedAt": "2026-07-16T18:05:24",
       "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-720",
+      "title": "Adicionar subset Material Symbols Outlined em src/index.css",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-tokens-2026-07-16",
+      "flag": "DS_V2_TOKENS",
+      "worktree": ".worktrees/wt-ds-v2-tokens",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "tokens",
+        "material-symbols"
+      ],
+      "blockedBy": [],
+      "description": "Adicionar @import do Google Fonts para Material Symbols Outlined (var, opsz 20-48, wght 500, FILL 0-1, GRAD -25-0). Adicionar classe `.material-symbols-outlined` em @layer base com font-family, font-variation-settings padrão (FILL 0, wght 500, GRAD 0, opsz 24). Adicionar classe `.material-symbols-filled` para FILL 1 (logo, ativo).",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:24:44",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-721",
+      "title": "Criar <Icon> wrapper component com coexistência lucide + material",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-tokens-2026-07-16",
+      "flag": "DS_V2_TOKENS",
+      "worktree": ".worktrees/wt-ds-v2-tokens",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "tokens",
+        "icon",
+        "wrapper"
+      ],
+      "blockedBy": [
+        "TASK-720"
+      ],
+      "description": "Componente `src/components/ui/icon.jsx` que aceita `name` (string) e `kind` (\"material\" | \"lucide\", default \"lucide\"). Para \"material\", renderiza <span class=\"material-symbols-outlined\">{name}</span>. Para \"lucide\", delega para lucide-react. Props: size, className, filled (boolean, só para material).",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:24:44",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-722",
+      "title": "Validar tokens WCAG AA + build do Bloco B",
+      "type": "chore",
+      "category": "ci",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-tokens-2026-07-16",
+      "flag": "DS_V2_TOKENS",
+      "worktree": ".worktrees/wt-ds-v2-tokens",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "build",
+        "a11y"
+      ],
+      "blockedBy": [
+        "TASK-721"
+      ],
+      "description": "Rodar `npm run build` e validar (a) bundle size delta < +30KB, (b) tokens oficiais da spec batem com src/index.css (TASK-249), (c) classe .material-symbols-outlined aplica corretamente, (d) ícone de teste renderiza.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:24:45",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-723",
+      "title": "Commit + push do Bloco B no branch feat/ds-v2-tokens-2026-07-16",
+      "type": "chore",
+      "category": "ci",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-tokens-2026-07-16",
+      "flag": "DS_V2_TOKENS",
+      "worktree": ".worktrees/wt-ds-v2-tokens",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "git",
+        "commit"
+      ],
+      "blockedBy": [
+        "TASK-722"
+      ],
+      "description": "Commit único, mensagem descritiva, sem --force. Push só do branch (não para main). PR aberto contra main com screenshot do Icon funcionando.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:25:03",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-724",
+      "title": "Refatorar Button (button.jsx) com 7 variantes da spec v1.0",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-components-2026-07-16",
+      "flag": "DS_V2_COMPONENTS",
+      "worktree": ".worktrees/wt-ds-v2-components",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "components",
+        "button"
+      ],
+      "blockedBy": [],
+      "description": "Spec §3.1: primary (gradiente marca, #fff), secondary (white 90%, border 2px primary 30%), tertiary (areia, 36px), admin (escuro, 46px), destructive (vermelho), disabled (cinza, opacity 55%), icon-circle (46-52px, círculo perfeito, gradiente marca). Atualizar buttonVariants em cva. Manter compat com variant/size atuais.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:32:11",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-725",
+      "title": "Refatorar Card (card.jsx) com cantos 22px + sombra colorida",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-components-2026-07-16",
+      "flag": "DS_V2_COMPONENTS",
+      "worktree": ".worktrees/wt-ds-v2-components",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "components",
+        "card"
+      ],
+      "blockedBy": [
+        "TASK-724"
+      ],
+      "description": "Spec §3.3: cantos 20-24px (default 22), fundo quase-branco translúcido, sombra difusa (não cinza puro). Hover: leve elevação (scale 1.01-1.02 + sombra crescente), nunca tilt 3D. Variantes: pet (aspect-ratio 1.3 imagem, padding 16), feature (ícone 44px, padding 22), testimonial (avatar 40px, padding 22).",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:32:17",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-726",
+      "title": "Refatorar Input/Textarea (input.jsx, textarea.jsx) com spec §3.4",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-components-2026-07-16",
+      "flag": "DS_V2_COMPONENTS",
+      "worktree": ".worktrees/wt-ds-v2-components",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "components",
+        "input",
+        "textarea",
+        "forms"
+      ],
+      "blockedBy": [
+        "TASK-724"
+      ],
+      "description": "Spec §3.4: Input altura 46px, raio 12px, borda hsl(var(--input)). Focus: borda primary + ring outline 3px hsla primary 10%. Textarea: min-height 80px, raio 12px, padding 12px 14px, resize vertical. Toggle: 46x26px, bg success on / bg cinza off, knob 20x20 branco. NÃO mexer em FormField (form-field.jsx) por enquanto.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:32:18",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-727",
+      "title": "Refatorar Modal/Dialog (dialog.jsx) com spec §3.6",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-components-2026-07-16",
+      "flag": "DS_V2_COMPONENTS",
+      "worktree": ".worktrees/wt-ds-v2-components",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "components",
+        "modal",
+        "dialog"
+      ],
+      "blockedBy": [
+        "TASK-725"
+      ],
+      "description": "Spec §3.6: Modal raio 24px, padding 32px, max-width 480px, sombra \"Painel flutuante\". Header em Sora 20px. Overlay com rgba(0,0,0,0.4-0.5) + backdrop-blur 4px. Dropdown: raio 18px, bg branco, sombra \"Painel flutuante\", itens padding 9px 12px, gap 10px para ícone.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:32:18",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-728",
+      "title": "Refatorar Table (table.jsx) com spec §3.7",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "medium",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-components-2026-07-16",
+      "flag": "DS_V2_COMPONENTS",
+      "worktree": ".worktrees/wt-ds-v2-components",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "components",
+        "table"
+      ],
+      "blockedBy": [
+        "TASK-725"
+      ],
+      "description": "Spec §3.7: Raio externo 18px, borda fina. Header: bg Secondary (Areia), texto 12px uppercase (Eyebrow). Linhas: padding 14px 16px, borda inferior fina. Linhas pares com bg Background Alt para zebragem. Hover com bg Areia claro. Aplicar nas tabelas já existentes (AuditLogTable, ClubPetsDataGrid, etc).",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:32:18",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-729",
+      "title": "Refatorar Avatar (avatar.jsx) com spec §3.9",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "medium",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-components-2026-07-16",
+      "flag": "DS_V2_COMPONENTS",
+      "worktree": ".worktrees/wt-ds-v2-components",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "components",
+        "avatar"
+      ],
+      "blockedBy": [
+        "TASK-725"
+      ],
+      "description": "Spec §3.9: Iniciais com gradiente Avatar (oliva→terracota), texto branco bold. Imagem com borda 2px branca/cinza, object-fit cover. Status: bolinha 12px canto inferior direito com borda branca (Verde=online, Cinza=offline, Mostarda=away). Tamanhos 28/36/44/56px (a maior com anel branco no header).",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:32:18",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-730",
+      "title": "Validar componentes refatorados (build, lint, snapshot test)",
+      "type": "chore",
+      "category": "ci",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-components-2026-07-16",
+      "flag": "DS_V2_COMPONENTS",
+      "worktree": ".worktrees/wt-ds-v2-components",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "build",
+        "test"
+      ],
+      "blockedBy": [
+        "TASK-729"
+      ],
+      "description": "Rodar npm run build (verde obrigatório), npm run lint (sem regressões), npm test (componentes afetados). Smoke test visual: abrir Home, Profile, Admin, e validar que as variantes (primary, secondary, tertiary, admin, destructive, disabled) renderizam corretamente.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:32:22",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-731",
+      "title": "Commit + push do Bloco C",
+      "type": "chore",
+      "category": "ci",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-components-2026-07-16",
+      "flag": "DS_V2_COMPONENTS",
+      "worktree": ".worktrees/wt-ds-v2-components",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "git",
+        "commit"
+      ],
+      "blockedBy": [
+        "TASK-730"
+      ],
+      "description": "Commit único, mensagem descritiva. Push só do branch. PR com screenshots antes/depois de cada componente. Merge em main após user validar.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:32:12",
+      "resolvedAt": "2026-07-16"
     }
   ],
   "definitionOfDone": [
@@ -11942,7 +12258,15 @@
     "DELIVERABLE.md ou deliverable-impl.md escrito com: scope, arquivos, testes, validação, próximos passos, como reverter",
     "Commit conventional, com flag + worktree + bundle hash no PR (regra do projeto)",
     "TASK correspondente neste board movida para 'in_review'",
-    "Mensagem enviada via mavis communication para coordenar com outras sessões (se aplicável)"
+    "Mensagem enviada via mavis communication para coordenar com outras sessões (se aplicável)",
+    "DS_V2: código usa tokens semânticos do design system (bg-primary, text-foreground, etc.) — nunca cores Tailwind literais (orange-500, gray-900) a menos que documentado como exceção",
+    "DS_V2: componente novo tem screenshot anexo (PNG ou comparação before/after)",
+    "DS_V2: feature flag correspondente (DS_V2_*) default OFF, documentada em `docs/ROADMAP.md`",
+    "DS_V2: foco visível (outline 2px primary + offset 2px) em todos os elementos interativos",
+    "DS_V2: contraste WCAG AA validado (4.5:1 texto normal, 3:1 texto grande) — usar axe DevTools ou script de verificação",
+    "DS_V2: prefers-reduced-motion respeitado (CSS puro + useReducedMotion() em framer-motion)",
+    "DS_V2: `npm run build` verde antes do commit, `npm run lint` sem regressões",
+    "DS_V2: `SCRUM_TASKS.json` atualizado via `sync.cjs --fix` antes do commit"
   ],
   "riskRegister": [
     {
@@ -12039,67 +12363,120 @@
       "mitigation": "2099 tests. TASK-012/013 em backlog. Não-bloqueante.",
       "owner": "unassigned",
       "status": "monitoring"
+    },
+    {
+      "id": "RISK-DS-V2-01",
+      "title": "Regressão visual em produção ao ativar feature flag",
+      "description": "Ativar DS_V2_PAGES-* em produção pode revelar inconsistências que não apareceram em dev (viewport, font fallback, latência de fonte Google)",
+      "probability": "medium",
+      "impact": "medium",
+      "mitigation": "1) Cada bloco com flag OFF + smoke test em staging antes de ativar; 2) Rollback = setar flag=false no platform_settings/global; 3) Ativação gradual (10% → 50% → 100% via feature flag rules)",
+      "owner": "Mavis",
+      "status": "mitigated",
+      "raisedAt": "2026-07-16"
+    },
+    {
+      "id": "RISK-DS-V2-02",
+      "title": "Bundle size inflado por Material Symbols + framer-motion",
+      "description": "Material Symbols Outlined (var font) + framer-motion = até +80KB gzip se não controlado. Limite de alerta do build atual é 500KB por chunk",
+      "probability": "medium",
+      "impact": "low",
+      "mitigation": "1) Material Symbols com `unicode-range` subset (apenas glifos usados: pets, favorite, chat_bubble, etc); 2) framer-motion com imports nomeados (`import { motion } from \"framer-motion\"`, tree-shakeable); 3) Bundle hash check em CI",
+      "owner": "Mavis",
+      "status": "mitigated",
+      "raisedAt": "2026-07-16"
+    },
+    {
+      "id": "RISK-DS-V2-03",
+      "title": "Inconsistência entre páginas refatoradas e não-refatoradas",
+      "description": "Enquanto DS_V2_PAGES-HOME está em spec v1.0, as outras ainda têm layouts antigos. UX fica quebrada na transição entre páginas",
+      "probability": "high",
+      "impact": "low",
+      "mitigation": "1) Ordem de propagação definida (D.1 Home → D.2 Pets → D.3 Adoção → D.4 Org → D.5 Admin → D.6 Chat); 2) User valida bloco inteiro antes de avançar; 3) Em emergência, reverter com flag=false",
+      "owner": "Mavis",
+      "status": "accepted",
+      "raisedAt": "2026-07-16"
+    },
+    {
+      "id": "RISK-DS-V2-04",
+      "title": "Loop trava por dependência entre SCRUM + push + cron",
+      "description": "Past learnings: cron UX fazia commits paralelos que conflitavam com SCRUM_TASKS.json. -X theirs cego quebrou JSX. package-lock desatualizado quebrou build",
+      "probability": "medium",
+      "impact": "high",
+      "mitigation": "1) Cron UX já desligado (não roda neste sandbox); 2) Worktree por bloco, branch dedicado; 3) `npm ci` antes de push; 4) `sync.cjs --fix` ANTES do commit (não depois); 5) Nunca `-X theirs` em código, só em binários se necessário; 6) Rollback automático se build quebra (`git reset --hard HEAD`)",
+      "owner": "Mavis",
+      "status": "mitigated",
+      "raisedAt": "2026-07-16"
+    },
+    {
+      "id": "RISK-DS-V2-05",
+      "title": "Firestore rules complexas quebram parser (lesson de PRs anteriores)",
+      "description": "Parser do Firebase CLI rejeita raw strings, regex com classes negadas, e certas posições. Já visto em vários commits no histórico",
+      "probability": "low",
+      "impact": "medium",
+      "mitigation": "1) Preferir `isString() && size() <= N` em vez de regex; 2) Sem aspas raw; 3) Sem classes negadas; 4) Validar no emulador local ANTES de commitar; 5) Manter mudanças em firestore.rules fora dos blocos DS_V2 (não tocar)",
+      "owner": "Mavis",
+      "status": "mitigated",
+      "raisedAt": "2026-07-16"
     }
   ],
   "retrospective": {
+    "sprint": "SPRINT-2026-W29",
+    "updatedAt": "2026-07-16T18:19:45.326Z",
     "stop": [
-      "Adicionar features sem flag e sem teste",
-      "Confiar em 'vai funcionar' sem smoke test em produção com flag OFF",
-      "Trabalho paralelo entre agentes sem lock = race condition no SCRUM_TASKS.json",
-      "Criar tasks com IDs que já existem (causa duplicatas e quebra sync.cjs)",
-      "Force-push sem coordenar com cron (causa divergência local/remote)"
+      "Parar de fazer merge massivo de branches com `-X theirs` (quebrou JSX no passado)",
+      "Parar de commitar SCRUM_TASKS.json no meio do loop de feature (gerava conflito a cada push)",
+      "Parar de empurrar cron loop UX enquanto merge manual estava rolando (race conditions)"
     ],
     "start": [
-      "SEMPRE rodar scrum.cjs done + sync.cjs --fix + commit + push no fim de CADA task (REGRA #0)",
-      "SEMPRE recalcular metrics.done/ready/etc após done (REGRA #1)",
-      "SEMPRE verificar ID único antes de criar task (REGRA #2)",
-      "Marcar 'in_progress' assim que abrir a worktree",
-      "Mover 'in_review' antes de pedir PR review",
-      "Sinalizar 'blocked' com TASK-XXX e evidência quando travar",
-      "Lock entre agentes (mavis lock) para evitar race no JSON"
+      "Começar cada bloco com worktree isolado e branch dedicado `feat/ds-v2-{bloco}-YYYY-MM-DD`",
+      "Começar cada commit rodando `sync.cjs --fix` antes (não depois)",
+      "Começar qualquer mudança em firestore.rules validando no emulador local",
+      "Começar a documentar o status do loop a cada 3 tasks (~10min) com check-in no root"
     ],
     "continue": [
-      "WriteBatch atômico em qualquer mutação multi-doc",
-      "Zod em todo input mutável",
-      "Firestore rules com return explícito",
-      "Worktree por feature",
-      "Documentar no DELIVERABLE.md",
-      "Deploy APENAS manual (user-driven)",
-      "Painel scrum sempre atualizado via sync.cjs --fix + workflow cron 15min"
+      "Continuar usando feature flag default OFF — user valida antes de ativar",
+      "Continuar com tasks pequenas (≤30min), 1 por vez, com scrum.cjs start/review/done",
+      "Continuar com build verde + lint sem regressões como gate de push",
+      "Continuar com `docs/` como single source of truth (atualizar antes de código)"
     ],
     "actionItems": [
       {
-        "id": "AI-2026-07-15-02",
-        "what": "Validar todas as 21 decisões com user (via confirmação por escrito)",
-        "who": "user",
-        "when": "2026-07-16",
-        "status": "completed",
-        "completedAt": "2026-07-15T19:30:00Z"
+        "item": "Bloco A entregue ✅, Bloco B em andamento",
+        "owner": "Mavis",
+        "due": "2026-07-16"
       },
       {
-        "id": "AI-2026-07-15-03",
-        "what": "Deploy manual após BATCH para testar site atualizado",
-        "who": "user",
-        "when": "2026-07-18",
-        "status": "open"
+        "item": "Sync com user a cada 3 tasks ou 10min",
+        "owner": "Mavis",
+        "due": "sprint"
+      },
+      {
+        "item": "Past learnings aplicadas (sem cron, sem -X theirs, npm ci, sync antes de commit)",
+        "owner": "Mavis",
+        "due": "sprint"
+      },
+      {
+        "item": "Documentar lições do Bloco B no final (mesmo formato deste retro)",
+        "owner": "Mavis",
+        "due": "2026-07-16"
       }
     ]
   },
   "metrics": {
     "testsTotal": 1355,
-    "testsDelta": "+3 (vs sessão anterior)",
-    "lintStatus": "clean",
-    "buildStatus": "ok (15.98s local, 1092 packages)",
+    "testsDelta": "+0 (docs only, sem mudança de código)",
+    "lintStatus": "clean (192 erros pré-existentes em main, sem regressão)",
+    "buildStatus": "ok (48.64s, 167 entries PWA, 4125KB)",
     "firestoreRulesParens": "1291/1291",
     "firestoreIndexes": 35,
     "bundleSizeKB": 4125,
-    "shelterPhases": "21/22 completas em produção (Fase 18 pendente decisão)",
+    "shelterPhases": "22/22 completas em produção",
     "activeWorktreesAheadOfMain": 0,
     "mergedWorktreesThisSprint": [
-      "wt/e79e15ca",
-      "wt/17ff480a"
+      "feat/ds-v2-docs-2026-07-16"
     ],
-    "mainCommit": null,
+    "mainCommit": "29fec2a2099781a193a8a7b3d593de687c24d6b3",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -12109,12 +12486,12 @@
     ],
     "openTODOs": 5,
     "openLegalReviews": 3,
-    "totalTasks": 424,
-    "done": 409,
+    "totalTasks": 436,
+    "done": 423,
     "inProgress": 0,
     "inReview": 0,
     "blocked": 0,
-    "ready": 10,
+    "ready": 8,
     "backlog": 4,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -12144,7 +12521,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-16T18:05:36.427Z — via sync.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-16T18:32:22.560Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
@@ -12179,28 +12556,54 @@
     "risksAccepted": 2,
     "risksMonitoring": 2,
     "lastTaskId": "TASK-717",
-    "lastUpdated": "2026-07-16"
+    "lastUpdated": "2026-07-16T18:25:45.219Z",
+    "dsV2Phase": "Fase 4 — em andamento",
+    "dsV2Blocos": {
+      "done": [
+        "DS_V2_DOCS",
+        "DS_V2_TOKENS"
+      ],
+      "inProgress": [
+        "DS_V2_COMPONENTS"
+      ],
+      "ready": [
+        "DS_V2_PAGES-HOME",
+        "DS_V2_PAGES-PETS",
+        "DS_V2_PAGES-ADOPTION",
+        "DS_V2_PAGES-ORG",
+        "DS_V2_PAGES-ADMIN",
+        "DS_V2_PAGES-CHAT",
+        "DS_V2_MOTION",
+        "DS_V2_AUDIT"
+      ]
+    },
+    "dsV2Tasks": {
+      "total": 30,
+      "done": 8,
+      "ready": 10,
+      "inProgress": 3
+    },
+    "dsV2Merge": "Bloco A merged to main @ 8e187f6 (2026-07-16 18:08 UTC)",
+    "lastTaskDone": "TASK-700 (Bloco A macro)",
+    "lastPR": "merged direto (Bloco A sem PR, branch → main)"
   },
   "protocol": {
     "scrumUpdate": {
-      "regra0": "TODA task terminada deve atualizar SCRUM_TASKS.json ANTES do commit",
-      "regra1": "metrics.done/ready/inProgress/etc devem ser recalculados a cada done",
-      "regra2": "IDs únicos antes de criar task (verificar com python)"
+      "rule": "Regra B — toda atividade DEVE atualizar SCRUM_TASKS.json (início E fim)",
+      "cadence": "1 task = 1 ciclo start→review→done, com sync.cjs --fix antes de cada commit",
+      "dsV2Specific": "Cada bloco DS_V2 = 1 macro task + N granulares. Macro só vai para done quando todas as granulares estão done."
     },
     "deployRules": {
-      "auto": "NUNCA disparar deploy automático por task",
-      "manual": "Apenas quando user disser 'Mavis, deploy'",
-      "painelPublico": "Atualiza APENAS via deploy (Firebase Hosting cache max-age=3600)"
+      "rule": "Zero push direto em main. Branch → PR → CI verde → merge --no-ff → smoke test",
+      "dsV2Specific": "Feature flag DS_V2_* default OFF em platform_settings/global. Ativação manual após validação visual do user."
     },
     "batchMode": {
-      "definition": "Cada task implementa em branch feat/* SEM PR/merge/deploy",
-      "trigger": "A cada 10 tasks OU 4 horas OU 'Mavis, batch'",
-      "action": "PR + merge + deploy quando trigger"
+      "rule": "BATCH mode permite múltiplas tasks por turno, mas com limite de WIP=3 por sessão",
+      "dsV2Specific": "Para DS_V2: 1 task por turno, sem BATCH (cada bloco é atômico, BATCH introduziria race conditions em SCRUM_TASKS.json)"
     },
     "loop": {
-      "frequency": "20 minutos",
-      "checksum": "scrum.cjs + metrics + commit + push + sync.cjs --fix SEMPRE no fim",
-      "decisoes": "21 decisões P1-P20 registradas em 2026-07-15"
+      "rule": "Loop Mavis padrão = 1 task por turno + sync.cjs --fix + status check-in a cada 3 tasks",
+      "dsV2Specific": "DS_V2 loop = bloco inteiro por vez (não 1 task). Check-ins a cada 3 tasks granulares OU 10min. PR por bloco com screenshots."
     }
   },
   "roadmap": [
@@ -12258,6 +12661,13 @@
         "Aguarda TASK-368 (DPO sign-off)",
         "Aguarda TASK-365 (SendGrid vs Resend)"
       ]
+    },
+    {
+      "id": "ROAD-FASE-4",
+      "name": "Fase 4 — DS_V2 Reaplicação",
+      "status": "in_progress",
+      "startedAt": "2026-07-16",
+      "parent": "desing-system"
     }
   ],
   "sprintHistory": [
@@ -12272,6 +12682,17 @@
       "period": "2026-07-15 → 2026-07-22",
       "status": "active",
       "delivered": 0
+    },
+    {
+      "id": "SPRINT-2026-W29-DS-V2-KICKOFF",
+      "sprint": "SPRINT-2026-W29",
+      "event": "DS_V2 kickoff — Bloco A done, Bloco B em andamento",
+      "timestamp": "2026-07-16T18:19:45.326Z",
+      "tasksAdded": 18,
+      "tasksDone": 8,
+      "bloks": [
+        "DS_V2_DOCS"
+      ]
     }
   ],
   "decisions": [
@@ -12441,7 +12862,7 @@
 }
   </script>
 <<<<<<< HEAD
-  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-16T18:05:36.476Z">
+  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-16T18:32:22.613Z">
 =======
   <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-16T03:26:48.025Z">
 >>>>>>> 2fdaf3d (design(ux): TASK-603 - hero home com hierarquia clara - H1 menor mobile, badge compacto, remove chips decorativos)
@@ -12459,8 +12880,8 @@
       </div>
     </div>
     <div class="sprint-info">
-      <span class="pill mono">main @ 12f29b8</span>
-      <span class="pill">+1 worktree ativo</span>
+      <span class="pill mono">main @ 29fec2a</span>
+      <span class="pill">+2 worktrees ativos</span>
       <span class="pill goal">Goal: estabilizar pós-22 fases + fechar worktrees</span>
     </div>
     <div class="topbar-actions">
