@@ -11,6 +11,7 @@ import { confirmDialog } from '@/components/ui/confirm-provider';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/components/ui/use-toast';
 import {
   FOSTER_STATUS,
@@ -40,13 +41,13 @@ const STATUS_LABELS = {
   cancelled: 'Cancelado',
   interrupted: 'Interrompido',
 };
-const STATUS_TONES = {
-  pending: 'bg-amber-100 text-amber-900',
-  active: 'bg-green-100 text-green-900',
-  extended: 'bg-blue-100 text-blue-900',
-  ended: 'bg-zinc-100 text-zinc-700',
-  cancelled: 'bg-zinc-100 text-zinc-700',
-  interrupted: 'bg-red-100 text-red-900',
+const STATUS_BADGE = {
+  pending: 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300',
+  active: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300',
+  extended: 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300',
+  ended: 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300',
+  cancelled: 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300',
+  interrupted: 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300',
 };
 
 export function FostersList({ shelterClubId, actor, canAbriho = false, isFoster = false }) {
@@ -65,7 +66,29 @@ const [actionContext, setActionContext] = useState(null); // { action, fosterId,
   if (!shelterClubId) {
     return <p className="text-sm text-muted-foreground">Selecione um abrigo.</p>;
   }
-  if (isLoading) return <p className="text-sm text-muted-foreground">Carregando placements…</p>;
+  if (isLoading) {
+    return (
+      <div className="arena-section-card">
+        <div className="arena-section-card-header">
+          <Skeleton className="h-5 w-40 rounded" />
+        </div>
+        <div className="arena-section-card-body space-y-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="rounded-xl border border-white/60 bg-white/60 p-4 shadow-sm">
+              <div className="space-y-2">
+                <div className="flex flex-wrap gap-2">
+                  <Skeleton className="h-5 w-28 rounded-full" />
+                  <Skeleton className="h-5 w-20 rounded-full" />
+                </div>
+                <Skeleton className="h-4 w-48 rounded" />
+                <Skeleton className="h-3 w-64 rounded" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   // Abre o modal de aceite do Termo de Lar Temporário (substitui o
   // antigo window.prompt). Garante conformidade com a Lei 14.063/2020
@@ -149,27 +172,36 @@ const [actionContext, setActionContext] = useState(null); // { action, fosterId,
               const overdue = (f.status === 'active' || f.status === 'extended') &&
                 isFosterOverdue(f.end_date);
               return (
-                <li key={f.id} className="rounded-md border border-border p-3">
-                  <div className="flex flex-wrap items-start gap-3">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex flex-wrap items-center gap-2 mb-1">
-                        <Badge className={STATUS_TONES[f.status] || ''}>
-                          {STATUS_LABELS[f.status] || f.status}
-                        </Badge>
-                        <span className="text-xs text-muted-foreground">
-                          pet: <code className="text-xs">{f.pet_id?.slice(0, 8)}…</code>
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          LT: <code className="text-xs">{f.foster_uid?.slice(0, 8)}…</code>
-                        </span>
-                        {nearEnd && <Badge variant="outline" className="text-amber-700">⚠ Perto do fim</Badge>}
-                        {overdue && <Badge variant="outline" className="text-red-700">🚨 Vencido</Badge>}
-                      </div>
-                      <p className="text-sm text-foreground">
-                        <strong>{f.foster_profile_snapshot?.full_name}</strong>
-                        {f.foster_profile_snapshot?.environment &&
-                          ` • ${f.foster_profile_snapshot.environment.replace(/_/g, ' ')}`}
-                      </p>
+                <li key={f.id} className="arena-section-card">
+                  <div className="arena-section-card-body">
+                    <div className="flex flex-wrap items-start gap-3">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-2 mb-2">
+                          <Badge className={STATUS_BADGE[f.status] || ''}>
+                            {STATUS_LABELS[f.status] || f.status}
+                          </Badge>
+                          <span className="text-xs text-muted-foreground">
+                            pet: <code className="text-xs">{f.pet_id?.slice(0, 8)}…</code>
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            LT: <code className="text-xs">{f.foster_uid?.slice(0, 8)}…</code>
+                          </span>
+                          {nearEnd && (
+                            <Badge variant="outline" className="border-amber-300 text-amber-700 dark:border-amber-600 dark:text-amber-400">
+                              ⚠ Perto do fim
+                            </Badge>
+                          )}
+                          {overdue && (
+                            <Badge variant="outline" className="border-red-300 text-red-700 dark:border-red-600 dark:text-red-400">
+                              🚨 Vencido
+                            </Badge>
+                          )}
+                        </div>
+                        <p className="text-sm text-foreground font-semibold mt-1">
+                          {f.foster_profile_snapshot?.full_name}
+                          {f.foster_profile_snapshot?.environment &&
+                            ` • ${f.foster_profile_snapshot.environment.replace(/_/g, ' ')}`}
+                        </p>
                       <p className="text-xs text-muted-foreground mt-1">
                         Início: {f.start_date?.slice(0, 10)}
                         {' '}→{' '}
@@ -189,28 +221,29 @@ const [actionContext, setActionContext] = useState(null); // { action, fosterId,
                           Avaliação do LT: {'⭐'.repeat(f.foster_rating)}
                         </p>
                       )}
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      {f.status === 'pending' && isFoster && (
-                        <Button size="sm" onClick={() => handleAcceptClick(f.id)}>
-                          Aceitar e assinar termo
-                        </Button>
-                      )}
-                      {(f.status === 'active' || f.status === 'extended') && canAbriho && (
-                        <>
-                          <Button size="sm" variant="outline" onClick={() => handleExtend(f.id, f.end_date)}>
-                            Prorrogar
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        {f.status === 'pending' && isFoster && (
+                          <Button size="sm" onClick={() => handleAcceptClick(f.id)}>
+                            Aceitar e assinar termo
                           </Button>
-                          <Button size="sm" onClick={() => handleEnd(f.id)}>
-                            Finalizar
+                        )}
+                        {(f.status === 'active' || f.status === 'extended') && canAbriho && (
+                          <>
+                            <Button size="sm" variant="outline" onClick={() => handleExtend(f.id, f.end_date)}>
+                              Prorrogar
+                            </Button>
+                            <Button size="sm" onClick={() => handleEnd(f.id)}>
+                              Finalizar
+                            </Button>
+                          </>
+                        )}
+                        {f.status === 'pending' && (canAbriho || isFoster) && (
+                          <Button size="sm" variant="ghost" onClick={() => handleCancel(f.id)}>
+                            Cancelar
                           </Button>
-                        </>
-                      )}
-                      {f.status === 'pending' && (canAbriho || isFoster) && (
-                        <Button size="sm" variant="ghost" onClick={() => handleCancel(f.id)}>
-                          Cancelar
-                        </Button>
-                      )}
+                        )}
+                      </div>
                     </div>
                   </div>
                 </li>
