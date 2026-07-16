@@ -133,7 +133,7 @@ service cloud.firestore {
         (!('microchip_id' in newData) || newData.microchip_id == null ||
           (newData.microchip_id is string &&
            newData.microchip_id.size() == 15 &&
-           newData.microchip_id.matches('^[0-9]{15}$'))) &&
+           newData.microchip_id.matches("^[0-9]{15}$"))) &&
         // asilomar_status: enum se presente
         (!('asilomar_status' in newData) ||
           newData.asilomar_status in ['healthy', 'treatable_rehabilitatable',
@@ -211,7 +211,7 @@ service cloud.firestore {
         allow read: if isAuth() && (isOwner(userId) || isPlatformAdmin());
         allow create: if isOwner(userId) &&
           request.resource.data.get('terms_accepted_at', '') is string &&
-          request.resource.data.get('terms_accepted_at', '').matches('^\\d{4}-\\d{2}-\\d{2}T') &&
+          request.resource.data.get('terms_accepted_at', '').matches("^\\d{4}-\\d{2}-\\d{2}T") &&
           request.resource.data.get('signature_text', '').size() >= 2;
         allow update: if isOwner(userId);
         allow delete: if isOwner(userId) || isPlatformAdmin();
@@ -588,8 +588,8 @@ service cloud.firestore {
       (
         request.resource.data.adopter_uid == auth.uid &&
         request.resource.data.status == 'pending_shelter_signature' &&
-        request.resource.data.document_hash.matches('^[a-f0-9]{64}$') &&
-        request.resource.data.pdf_storage_path.matches('^clubs/[^/]+/contracts/[^/]+\.pdf$')
+        request.resource.data.document_hash.matches("^[a-f0-9]{64}$") &&
+        request.resource.data.pdf_storage_path.matches("^clubs/[^/]+/contracts/[^/]+\.pdf$")
       )
     );
 
@@ -1068,7 +1068,7 @@ service cloud.firestore {
           request.resource.data.volunteer_name is string &&
           request.resource.data.volunteer_name.size() >= 2 &&
           request.resource.data.terms_accepted_at is string &&
-          request.resource.data.terms_accepted_at.matches('^\\d{4}-\\d{2}-\\d{2}T') &&
+          request.resource.data.terms_accepted_at.matches("^\\d{4}-\\d{2}-\\d{2}T") &&
           // TASK-226: App Check gate. Criações via auto-join (voluntário
           // público) precisam ter passado pelo hCaptcha client-side +
           // App Check server-side. Admins de abrigo continuam livres
