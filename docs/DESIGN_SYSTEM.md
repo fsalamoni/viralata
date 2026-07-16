@@ -177,6 +177,47 @@ Estrutura fixa: **Feed · Abrigos · Voluntários · Comunidade · Chat** — se
 - **Mobile (Barra Inferior)**: Fundo escuro (`hsl 20,25%,13%`), raio 20px, padding 14px 28px. Ícones Material preenchidos para ativos, vazados para inativos.
   - *Botão Central*: Elevado (-10px Y), bg gradiente de marca, sombra forte.
 
+### 3.5.1. Padrão de Navegação em 2 Camadas (Admin Tabs)
+
+**Quando usar**: Qualquer painel admin (ONG, abrigo, comunidade, plataforma)
+que tenha **mais de 5 abas top-level** (OrganizationAdminPanel tinha 19
+antes; CommunityAdminPanel tinha 4-7 dependendo das flags).
+
+**Estrutura**:
+1. **Camada 1 (topo)**: 5-7 GRUPOS semânticos no `TabsList`.
+   - `arena-admin-tabs` (CSS): 1 fileira, scroll horizontal elegante.
+   - `arena-admin-tab-trigger`: pílula com ícone + label.
+   - Ativo: `bg-foreground text-background`.
+2. **Camada 2 (dentro do `TabsContent` do grupo)**: SUB-ABAS como pills
+   horizontais no `arena-subtab-bar`.
+   - Mesma forma da 1ª linha (rounded-[1.1rem], border, p-1.5,
+     backdrop-blur-xl), só com font-size 1px menor e shadow mais discreto.
+   - `arena-subtab-trigger`: pílula menor, com `data-active` para estado.
+3. **Hierarquia visual**:
+   - 1ª linha: `sticky top-2` (mantém grupos visíveis ao rolar).
+   - 2ª linha: `sticky top-[68px]` (gruda logo abaixo da 1ª).
+4. **Estado na URL**: `?tab=group:sub` (ex: `?tab=operational:medical_records`).
+   - Deep-link funcional. Reload preserva o estado.
+
+**Quando NÃO usar**:
+- Se a página tem **≤ 5 abas totais**, mantenha tabs simples.
+- Se a página é pública (landing, perfil, busca), use 1 fileira só.
+
+**Arquivos de referência**:
+- CSS: `src/index.css` § "Arena Admin System" (arena-admin-tabs, arena-subtab-bar, arena-admin-tab-trigger, arena-subtab-trigger)
+- Componente: `src/modules/organizations/pages/OrganizationAdminPanel.jsx`
+- Doc de funcionalidades: `docs/SHELTER_ADMIN_FUNCTIONALITIES.md`
+- Tutorial / auditoria: `docs/AUDIT_DS_V2.md`
+
+**Checklist ao aplicar em nova página**:
+- [ ] Quantas abas top-level a página tem? Se > 5, agrupar.
+- [ ] Quais são os 5-7 grupos semânticos? (visão geral / operacional / pessoas / engajamento / financeiro / configurações — pode variar)
+- [ ] Mapear cada aba antiga para o grupo (ex: 'pets' → 'operational').
+- [ ] Implementar `?tab=group:sub` na URL state.
+- [ ] Validar que ambas as linhas cabem em desktop ≥ 1024px.
+- [ ] Validar que em mobile o scroll horizontal aparece e funciona.
+- [ ] Verificar que a 2ª linha fica sticky logo abaixo da 1ª ao rolar.
+
 ### 3.6. Overlays & Menus
 
 - **Menu Dropdown**: Raio 18px, bg branco, sombra "Painel flutuante". Itens com padding 9px 12px, gap 10px para ícone. Hover cinza muito claro.

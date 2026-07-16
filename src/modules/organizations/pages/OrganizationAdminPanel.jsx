@@ -399,14 +399,14 @@ export default function OrganizationAdminPanel() {
 
         {/* === GRUPO: Operacional === */}
         <TabsContent value="operational" className="mt-6 sm:mt-8 focus-visible:outline-none">
-          <div className="arena-subtab-bar mb-6 flex flex-nowrap items-center gap-1.5 overflow-x-auto rounded-[1rem] border border-border/60 bg-white/60 p-1 backdrop-blur">
+          <div className="arena-subtab-bar">
             {subsByGroup.operational.map((sub) => (
               <button
                 key={sub.key}
                 type="button"
                 onClick={() => setActiveTab('operational', sub.key)}
                 data-active={sub.key === activeSubKey}
-                className="inline-flex min-h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-[12.5px] font-semibold text-muted-foreground transition-all hover:text-foreground data-[active=true]:bg-foreground data-[active=true]:text-background"
+                className="arena-subtab-trigger"
               >
                 <sub.icon className="h-3.5 w-3.5" /> {sub.label}
               </button>
@@ -426,14 +426,14 @@ export default function OrganizationAdminPanel() {
 
         {/* === GRUPO: Pessoas === */}
         <TabsContent value="people" className="mt-6 sm:mt-8 focus-visible:outline-none">
-          <div className="arena-subtab-bar mb-6 flex flex-nowrap items-center gap-1.5 overflow-x-auto rounded-[1rem] border border-border/60 bg-white/60 p-1 backdrop-blur">
+          <div className="arena-subtab-bar">
             {subsByGroup.people.map((sub) => (
               <button
                 key={sub.key}
                 type="button"
                 onClick={() => setActiveTab('people', sub.key)}
                 data-active={sub.key === activeSubKey}
-                className="inline-flex min-h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-[12.5px] font-semibold text-muted-foreground transition-all hover:text-foreground data-[active=true]:bg-foreground data-[active=true]:text-background"
+                className="arena-subtab-trigger"
               >
                 <sub.icon className="h-3.5 w-3.5" /> {sub.label}
               </button>
@@ -457,14 +457,14 @@ export default function OrganizationAdminPanel() {
 
         {/* === GRUPO: Engajamento === */}
         <TabsContent value="engagement" className="mt-6 sm:mt-8 focus-visible:outline-none">
-          <div className="arena-subtab-bar mb-6 flex flex-nowrap items-center gap-1.5 overflow-x-auto rounded-[1rem] border border-border/60 bg-white/60 p-1 backdrop-blur">
+          <div className="arena-subtab-bar">
             {subsByGroup.engagement.map((sub) => (
               <button
                 key={sub.key}
                 type="button"
                 onClick={() => setActiveTab('engagement', sub.key)}
                 data-active={sub.key === activeSubKey}
-                className="inline-flex min-h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-[12.5px] font-semibold text-muted-foreground transition-all hover:text-foreground data-[active=true]:bg-foreground data-[active=true]:text-background"
+                className="arena-subtab-trigger"
               >
                 <sub.icon className="h-3.5 w-3.5" /> {sub.label}
               </button>
@@ -482,14 +482,14 @@ export default function OrganizationAdminPanel() {
 
         {/* === GRUPO: Financeiro === */}
         <TabsContent value="finance" className="mt-6 sm:mt-8 focus-visible:outline-none">
-          <div className="arena-subtab-bar mb-6 flex flex-nowrap items-center gap-1.5 overflow-x-auto rounded-[1rem] border border-border/60 bg-white/60 p-1 backdrop-blur">
+          <div className="arena-subtab-bar">
             {subsByGroup.finance.map((sub) => (
               <button
                 key={sub.key}
                 type="button"
                 onClick={() => setActiveTab('finance', sub.key)}
                 data-active={sub.key === activeSubKey}
-                className="inline-flex min-h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-[12.5px] font-semibold text-muted-foreground transition-all hover:text-foreground data-[active=true]:bg-foreground data-[active=true]:text-background"
+                className="arena-subtab-trigger"
               >
                 <sub.icon className="h-3.5 w-3.5" /> {sub.label}
               </button>
@@ -507,14 +507,14 @@ export default function OrganizationAdminPanel() {
 
         {/* === GRUPO: Configurações === */}
         <TabsContent value="settings" className="mt-6 sm:mt-8 focus-visible:outline-none">
-          <div className="arena-subtab-bar mb-6 flex flex-nowrap items-center gap-1.5 overflow-x-auto rounded-[1rem] border border-border/60 bg-white/60 p-1 backdrop-blur">
+          <div className="arena-subtab-bar">
             {subsByGroup.settings.map((sub) => (
               <button
                 key={sub.key}
                 type="button"
                 onClick={() => setActiveTab('settings', sub.key)}
                 data-active={sub.key === activeSubKey}
-                className="inline-flex min-h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-[12.5px] font-semibold text-muted-foreground transition-all hover:text-foreground data-[active=true]:bg-foreground data-[active=true]:text-background"
+                className="arena-subtab-trigger"
               >
                 <sub.icon className="h-3.5 w-3.5" /> {sub.label}
               </button>
