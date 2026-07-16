@@ -1,6 +1,6 @@
-# LOOP_PROMPT — viralata (atualizado 2026-07-15 22:30 UTC)
+# LOOP_PROMPT — viralata (atualizado 2026-07-16 00:18 UTC)
 
-**Contexto**: /workspace/viralata, branch main, React+Vite+Firebase.
+**Contexto**: /workspace/viralata, branch feat/task-248-volunteer-certificate-2026-07-16, React+Vite+Firebase.
 **Repo**: https://github.com/fsalamoni/viralata.git
 **Sessão**: Mavis root (loop autônomo, 20min, **24/7 sem limite de horário**).
 
@@ -87,18 +87,15 @@ print(f'{len(ready)} tasks ready')
 > - TASK-188 ✅ done — feat/task-188-gcs-worm-backup-2026-07-15: WORM backup GCS — Object Locking (90d retenção) + lifecycle Standard→Coldline(90d)→Delete(120d) + IAM hardening + Uniform bucket-level access. Infra: infra/gcs-backup-bucket.sh + functions/setupGcsBackupBucket.js (callable CF) + setupGcsBackupBucketCore.cjs (23 testes). docs/DR_PLAN.md §6 atualizado.
 > - TASK-352 ✅ done — feat/task-352-pinned-posts-2026-07-15: posts fixados/desselvados — pinned+pinned_at em community_posts, togglePostPin() c/ audit log, banner carrossel em MuralTabAdmin, botão Pin/PinOff (admin), firestore.rules pinned-only-by-admin
 > - TASK-291 ✅ done — feat/task-291-email-oncall-2026-07-15: sendEmail onCall callable c/ 7 templates de adoção + sendEmailOnCallCore.cjs + 222 testes ✅ + firestore.rules email_delivery_log
+> - TASK-248 ✅ done — feat/task-248-volunteer-certificate-2026-07-16: certificate PDF (Lei 9.608/1998), generateVolunteerCertificate CF, VolunteerMetricsCard button, useVolunteerCertificate hook
 > - TASK-342 ✅ done — feat/task-342-event-volunteers-2026-07-15: volunteer_ids + volunteer_shifts em club_events, multi-select no EventFormDialog, shifts editor, EventDetail aba Escalas
-> - TASK-340 ✅ done — feat/task-340-event-types-2026-07-15: novos tipos VACCINATION, LECTURE, FUNDRAISING, PET_DAY em CLUB_EVENT_TYPE + UI
-> - TASK-087 ✅ done — feat/task-087-audit-clickwrap-2026-07-15: auditoria clickwrap 4 fluxos críticos
-> - TASK-298 ✅ done — feat/task-298-contract-ip-ua-2026-07-15 (contract CF: IP+UA, Lei 14.063/2020)
 > - Todas as branches feat/* = `fsalamoni/viralata`
 
 ## 📊 MÉTRICAS ATUAIS
 
-- **done=329** (was 328 — TASK-188 done: WORM backup GCS)
-- **ready=42**, in_progress=0
-- **Main**: `3ddfa6a`
-- **Branch**: `feat/task-188-gcs-worm-backup-2026-07-15`
+- **done=349** (was 348 — TASK-248 done: volunteer certificate PDF)
+- **ready=22**, in_progress=0
+- **Branch**: `feat/task-248-volunteer-certificate-2026-07-16`
 
 ## 🏁 FIM DO TURNO
 
