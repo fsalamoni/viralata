@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
+import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -259,14 +260,21 @@ export default function OrganizationAdminPanel() {
 
   return (
     <ClubThemedScope club={club} className={successClass}>
-      <Button asChild variant="ghost" size="sm">
-        {/* Saindo do painel admin, o usuário volta direto à PÁGINA
-            PÚBLICA da ONG (perfil / home), não à central de organizações.
-            Comportamento esperado em qualquer aba do painel admin. */}
-        <Link to={`/organizacoes/${orgId}`}>
-          <ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para a ONG
-        </Link>
-      </Button>
+      <div className="flex flex-col gap-2">
+        <Button asChild variant="ghost" size="sm" className="self-start">
+          <Link to={`/organizacoes/${orgId}`}>
+            <ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para a ONG
+          </Link>
+        </Button>
+        <Breadcrumb
+          items={[
+            { label: 'Início', href: '/', icon: Home },
+            { label: 'Organizações', href: '/organizacoes' },
+            { label: club.name || 'Organização', href: `/organizacoes/${orgId}` },
+            { label: 'Administração' },
+          ]}
+        />
+      </div>
 
       {/* Header do painel admin — padding generoso (p-6 sm:p-10) e
           gap-5 sm:gap-6 entre o avatar e o bloco de texto. Mais respiro
