@@ -724,77 +724,19 @@ export function useDeleteLedgerEntry(clubId) {
   });
 }
 
-/* ──────────── TASK-343: Event certificates ─────────────────────────────── */
-
-// Lazy-cached callable refs (same pattern as mockDataService.js)
-let _genCertFn = null;
-function getGenCertFn() {
-  if (!functions) return null;
-  if (!_genCertFn) _genCertFn = httpsCallable(functions, 'generateEventCertificate');
-  return _genCertFn;
-}
+/* --------------------- ICS / Calendar export (TASK-344) -------------------- */
 
 /**
- * Fetch the existing certificate record for a user in an event.
- * Stored at club_events/{eventId}/certificates/{userId}.
+ * Gera e baixa o arquivo .ics de um evento.
+ * @returns {UseMutationResult<{ics:string, filename:string}, Error, {eventId:string, appUrl?:string}>}
  */
-export async function getEventCertificate(eventId, userId) {
-  const { getFirestore } = await import('firebase/firestore');
-  const { doc, getDoc } = await import('firebase/firestore');
-  const db = getFirestore();
-  const ref = doc(db, 'club_events', eventId, 'certificates', userId);
-  const snap = await getDoc(ref);
-  return snap.exists ? { id: snap.id, ...snap.data() } : null;
-}
-
-/**
- * Trigger certificate generation via Cloud Function.
- * Returns { url, issuedAt, eventId, userId, alreadyExists }.
- */
-export async function generateEventCertificate(eventId, userId) {
-  const fn = getGenCertFn();
-  if (!fn) {
-    logger.warn('generateEventCertificate: functions não inicializado');
-    return null;
-  }
-  try {
-    const res = await fn({ eventId, userId });
-    return res.data || null;
-  } catch (err) {
-    logger.warn('generateEventCertificate: falhou', { error: String(err) });
-    throw err;
-  }
-}
-
-/**
- * useMyEventCertificate — read-only query for the current user's certificate
- * in a given event. Returns null if no certificate exists yet.
- */
-export function useMyEventCertificate(eventId) {
-  const { user } = useAuth();
-  return useQuery({
-    queryKey: ['event-certificate', eventId, user?.uid],
-    queryFn: () => getEventCertificate(eventId, user.uid),
-    enabled: !!eventId && !!user?.uid,
-    staleTime: 5 * 60 * 1000, // 5 min — certificate is immutable once issued
-  });
-}
-
-/**
- * useGenerateEventCertificate — mutation to generate (or retrieve existing)
- * certificate for a given user in an event. Admin use.
- */
-export function useGenerateEventCertificate(eventId) {
-  const qc = useQueryClient();
+export function useDownloadEventIcs() {
   return useMutation({
-    mutationFn: (userId) => generateEventCertificate(eventId, userId),
-    onSuccess: (data) => {
-      if (data?.userId) {
-        qc.setQueryData(
-          ['event-certificate', eventId, data.userId],
-          data.alreadyExists ? data : { id: data.userId, ...data }
-        );
-      }
+    mutationFn: async ({ eventId, appUrl }) => {
+      if (!functions) throw new Error('Firebase Functions não inicializado.');
+      const fn = httpsCallable(functions, 'generateEventIcs');
+      const result = await fn({ eventId, appUrl: appUrl || window.location.origin });
+      return result.data;
     },
   });
 }
