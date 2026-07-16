@@ -25,6 +25,7 @@ import {
 } from '@/modules/shelter/hooks/useVolunteerProfile';
 import { VolunteerProfileForm } from '@/modules/shelter/components/VolunteerProfileForm';
 import { VolunteerMetricsCard } from '@/modules/shelter/components/VolunteerMetricsCard';
+import { MyTasksSection } from '@/modules/shelter/components/MyTasksSection';
 import { VolunteerShiftsBrowse } from '@/modules/shelter/components/VolunteerShiftsBrowse';
 import { VolunteerAuditTrail } from '@/modules/shelter/components/VolunteerAuditTrail';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
@@ -164,7 +165,7 @@ export default function VolunteerProfile() {
 
         {/* Resumo rápido (cards) */}
         {!isLoading && profile && (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="arena-stats-grid">
             <QuickInfoCard title="Habilidades" icon={Heart}>
               {profile.skills?.length > 0 ? (
                 <ul className="flex flex-wrap gap-1">
@@ -193,6 +194,14 @@ export default function VolunteerProfile() {
             <h2 className="text-base font-semibold mb-2">Impacto</h2>
             <VolunteerMetricsCard uid={user.uid} />
           </section>
+        )}
+        {/* Minhas tarefas pendentes */}
+        {profile && (
+          <section aria-label="Tarefas pendentes">
+            <h2 className="text-base font-semibold mb-2">Minhas tarefas</h2>
+            <MyTasksSection userUid={user.uid} />
+          </section>
+        )}
         )}
 
         {/* Form de edição */}
