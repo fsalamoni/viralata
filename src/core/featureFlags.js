@@ -461,6 +461,8 @@ export const DEFAULT_FEATURE_FLAGS = Object.freeze({
   // As chaves vêm de SHELTER_FEATURE_FLAG no módulo shelter/.
   // TASK-792: SHELTER_DASHBOARD ativado.
   [SHELTER_FEATURE_FLAG.SHELTER_DASHBOARD]: true,
+  // TASK-793: SHELTER_KANBAN ativado.
+  [SHELTER_FEATURE_FLAG.SHELTER_KANBAN]: true,
   ...(SHELTER_FEATURE_FLAG
     ? Object.fromEntries(Object.values(SHELTER_FEATURE_FLAG).map((k) => [k, false]))
     : {}),
