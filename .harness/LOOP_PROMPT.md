@@ -97,17 +97,97 @@ print(f'{len(ready)} tasks ready')
 
 ---
 
-## 🆕 CANDIDATAS (2026-07-15 11:53 UTC)
+## 🎯 MISSÃO DO TURNO (20 min) — MODO FEATURE (BATCH)
+
+1. **Investigue ANTES de codar** (NÃO leia tudo):
+   - 1-2 greps para ver arquivos relacionados
+   - `head -50 arquivo.jsx` para entender o contexto
+   - Verifique schemas/domínio antes de escrever código
+2. **Implemente com feature flag** (`SHELTER_*` ou conforme categoria, default OFF).
+3. **Test**: 2+ tests smoke no mínimo.
+4. **Worktree** + branch `feat/<slug>-2026-07-14`.
+5. **Commit + push da branch** (SEM PR, SEM merge, SEM deploy).
+6. **OBRIGATÓRIO ao final** — REGRA #0 + #1:
+   ```bash
+   cd /workspace/viralata
+   node .harness/scrum.cjs start TASK-XXX  # ao começar
+   
+   # ... implementar, build, test ...
+   
+   # Push da branch (SEM PR)
+   cd .worktrees/wt-<slug>
+   git add -A
+   git commit -m "feat: ..."
+   git push -u origin feat/<slug>-2026-07-14
+   
+   # Limpar worktree
+   cd /workspace/viralata
+   git worktree remove --force .worktrees/wt-<slug>
+   git worktree prune
+   
+   # REGRA #0: marcar done (pr=0 pois ainda não é PR)
+   node .harness/scrum.cjs done TASK-XXX --pr 0 --reason "feat/<slug> pushed (batch pendente)"
+   
+   # REGRA #1: metrics sync
+   python3 -c "import json; d=json.load(open('.harness/SCRUM_TASKS.json')); m=d.setdefault('metrics',{}); m['totalTasks']=len(d['tasks']); m['done']=len([t for t in d['tasks'] if t['status']=='done']); m['ready']=len([t for t in d['tasks'] if t['status']=='ready']); m['inProgress']=len([t for t in d['tasks'] if t['status']=='in_progress']); m['inReview']=len([t for t in d['tasks'] if t['status']=='in_review']); m['blocked']=len([t for t in d['tasks'] if t['status']=='blocked']); m['backlog']=len([t for t in d['tasks'] if t['status']=='backlog']); json.dump(d, open('.harness/SCRUM_TASKS.json','w'), indent=2)"
+   
+   # Re-embed + commit + push do scrum update
+   node .harness/sync.cjs --fix
+   git add -A
+   git commit -m "chore(scrum): TASK-XXX done (batch pendente)"
+   git pull --rebase --autostash origin main
+   git push origin main
+   ```
+7. **NÃO** criar PR. **NÃO** fazer merge. **NÃO** fazer deploy. (Aguardar batch.)
+8. **ATUALIZE O `LOOP_PROMPT.md`** ao final: remova task da lista, adicione nova candidata, faça commit + push.
+
+---
+
+## ✅ TASKS CONCLUÍDAS NESTE LOOP (NÃO pegar)
+
+- TASK-315 A11Y WCAG AA — kanban roles, dialog aria-label, icon button aria-labels (feat/a11y-improvements-2026-07-14)
+- TASK-308 PostAdoptionReturnDialog + PostAdoptionPauseDialog (PR #189)
+- TASK-148 PostEventLog (PR #176)
+- TASK-136 PublicHealthRecord (PR #175)
+- TASK-149 UpcomingExhibitionsFeed (PR #177)
+- TASK-181 EventsUnified (PR #178)
+- TASK-323 Lightbox acessível (PR #179)
+- TASK-306 FosterDashboard (PR #180)
+- TASK-311 ShelterAdminDashboard (PR #181)
+- TASK-324 Pets similares (PR #184)
+- TASK-334 CommunityEventDetail + RSVP (PR #183)
+- TASK-207, 264, 265, 266, 267, 132, 133, 134, 401, 402 (Fases anteriores)
+- **Varredura 1 (36 tasks)**: 150, 152, 154, 157, 159, 160, 180, 191, 200, 241, 244, 245, 288, 289, 290, 293, 294, 295, 296, 299, 300, 329, 331, 332, 055, 218, 219, 221, 246, 275, 305, 307, 316, 335, 356, 267
+- **Varredura 2 (29 tasks)**: 008, 063, 115, 116, 118, 119, 120, 121, 125, 147, 151, 158, 161, 162, 163, 166, 168, 173, 177, 193, 223, 264, 265, 266, 270, 313, 314, 344, 354
+- **Loop turn 2026-07-14 23:51 UTC**: TASK-277 Rate limit volunteer join + accept terms (feat/task-277-rate-limit-2026-07-14)
+- **Loop turn 2026-07-15 00:12 UTC**: TASK-309 Onboarding wizard pet creation (feat/task-309-wizard-pet-create-2026-07-15)
+- **Loop turn 2026-07-15 07:54 UTC**: TASK-338 7 SHELTER_* feature flags (feat/task-338-feature-flags)
+
+---
+
+## 🆕 CANDIDATAS ATUALIZADAS (próximas 12, priorizadas por impacto visual)
+
+| ID | Pri | Categoria | Descrição |
+|---|---|---|---|
+| TASK-312 | high | shelter | [INT-SEARCH-001] Sync ativo do search index (Cloud Function) |
+| TASK-268 | critical | shelter | Cloud Function onVolunteerJoinedShelter (FCM admin) |
+| TASK-269 | critical | shelter | Cloud Function onVolunteerParticipationCreated (FCM voluntário) |
+| TASK-291 | high | shelter | Email provider (SendGrid/Resend) — AGUARDA decisão humana |
+| TASK-176 | high | shelter | Sentry enriquecido |
+| TASK-239 | ~~medium~~ **done** | shelter | Sentry + /healthz + bundle-hash |
 
 > **Notas**:
-> - TASK-330 ✅ done — feat/task-330-audit-log-cf (SEC-HIGH): audit log via Cloud Function, client writes blocked in firestore.rules
-> - TASK-220 ✅ done — feat/task-220-clean (PR #192) merged 2026-07-15
-> - TASK-269 ✅ done — feat/task-268-volunteer-fcm-notify (PR #190)
-> - TASK-312 ✅ done — [INT-SEARCH-001] Sync ativo do search index
-> - TASK-273 ✅ done — Smart Search: adicionar entidade volunteer
-> - TASK-176 ✅ done — Sentry enriched
-> - TASK-239 ✅ done — Sentry SDK + Crashlytics
-> - Todas as branches feat/* = `fsalamoni/viralata`
+> - TASK-338 (7 SHELTER_* flags) entregue — feat/task-338-feature-flags, push OK
+> - TASK-239 entregue — feat/task-239-sentry-healthz, push OK, batch pendente (healthCheckCore+test + healthCheck.js + bundle-hash.mjs)
+> - TASK-239 (Sentry /healthz + bundle-hash) entregue — feat/task-239-sentry-healthz, push OK, batch pendente
+> - TASK-269 (onVolunteerParticipationCreated FCM+calendar+email+audit) entregue — feat/task-269-volunteer-fcm-participation, push OK, batch pendente
+> - TASK-309 (Onboarding wizard pet creation) entregue — feat/task-309-wizard-pet-create-2026-07-15, push OK, batch pendente
+> - TASK-277 (rate limit volunteer) entregue — feat/task-277-rate-limit-2026-07-14, push OK, batch pendente
+> - TASK-325 (milestone photo/video upload) entregue — feat/milestone-complete-2026-07-14, merge pendente
+> - TASK-273 (Smart Search volunteer entity) entregue — feat/volunteer-search-2026-07-14, merge pendente
+> - TASK-315, TASK-308, TASK-302, TASK-176 entregues em batch (verificar com git log antes de pegar)
+> - TASK-310, TASK-326 feitas pelo cron (verificar com git log antes de pegar)
+> - TASK-053 CookieBanner audit: component OK — gated por SHELTER_LEGAL_TERMS_V1, botoes corretos, localStorage + audit log, 16 tests
 
 ---
 
