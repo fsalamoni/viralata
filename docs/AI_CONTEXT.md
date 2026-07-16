@@ -42,8 +42,10 @@ Pilares:
 
 - **React 18 + Vite**, JSX (sem TypeScript; `typecheck` via JSDoc/`jsconfig.json`).
 - **Tailwind + shadcn/ui** (Radix) — primitivos em `src/components/ui/`.
-  Design system com tokens semânticos (paleta terracota/creme/oliva/mustarda)
-  — ver `docs/DESIGN_SYSTEM.md`.
+  Design system oficial v1.0 com tokens semânticos (paleta
+  terracota/creme/oliva/mostarda) — ver `docs/DESIGN_SYSTEM.md` e
+  `docs/ROADMAP.md` → **Fase 4 (DS_V2)** para o plano de aplicação
+  bloco a bloco.
 - **Firebase**: Auth (Google), **Firestore** (database nomeada `viralata`,
   não a `(default)`), Storage, Hosting (site `viralata`). **Cloud Functions**
   pontuais em `functions/` (Node 20) — hoje só o gatilho do Radar de Pets;
@@ -52,8 +54,10 @@ Pilares:
 - **Vitest** (unit, ~61 testes no app + testes próprios em `functions/`) +
   **Playwright** (E2E/QA visual).
 - **react-router-dom** (BrowserRouter), **react-hook-form + zod**, `sonner`
-  (toasts), `date-fns`, `lucide-react`, `framer-motion` (animações de
-  scroll/entrada), `recharts` (gráficos do admin), `qrcode`, `html-to-image`.
+  (toasts), `date-fns`, `lucide-react` (ícones padrão — usado em 204
+  arquivos; spec v1.0 convive com Material Symbols Outlined via
+  `DS_V2_TOKENS`), `framer-motion` (instalar via `DS_V2_MOTION`),
+  `recharts` (gráficos do admin), `qrcode`, `html-to-image`.
 
 ## 3. Arquitetura em uma frase
 
@@ -260,7 +264,13 @@ npm --prefix functions test   # Vitest das Cloud Functions
 - `docs/ARCHITECTURE.md` — camadas, design system, Firebase, PWA, testes, CI/CD.
 - `docs/DATA_MODEL.md` — coleções, campos, relacionamentos, resumo das regras.
 - `docs/MODULES.md` — o que cada módulo faz, arquivos-chave e fluxos.
-- `docs/DESIGN_SYSTEM.md` — identidade visual: paleta, tipografia, motion.
-- `docs/ROADMAP.md` — histórico do plano de execução por fases (Fases 0-2
-  concluídas; Fase 3 lista follow-ups funcionais conhecidos, não
-  implementados).
+- `docs/DESIGN_SYSTEM.md` — **especificação oficial v1.0** do design
+  system: paleta, tipografia, espaçamento, raios, sombras, componentes,
+  ícones, motion, voz, acessibilidade.
+- `docs/design-system-v2/` — snapshot portátil da v1.0 em 5 formatos
+  (`.md` canônico, `.json` tokens, `.html` preview, `.fig` placeholder,
+  `.pdf`). Não editar; é material de referência.
+- `docs/ROADMAP.md` — histórico do plano de execução por fases. **Fases
+  0-3 concluídas (paleta terracota antiga). Fase 4 (DS_V2) em
+  andamento**: reaplicação da spec v1.0 por bloco, cada um com
+  feature flag default OFF.

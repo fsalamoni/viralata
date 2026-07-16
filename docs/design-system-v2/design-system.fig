@@ -1,0 +1,72 @@
+{
+  "document": {
+    "id": "0:0",
+    "name": "Design System Viralata",
+    "type": "DOCUMENT",
+    "children": [
+      {
+        "id": "1:1",
+        "name": "Cover",
+        "type": "CANVAS",
+        "backgroundColor": { "r": 0.97, "g": 0.96, "b": 0.94, "a": 1 }
+      },
+      {
+        "id": "2:1",
+        "name": "Tokens",
+        "type": "CANVAS",
+        "children": [
+          { "id": "2:2", "name": "Colors", "type": "FRAME" },
+          { "id": "2:3", "name": "Typography", "type": "FRAME" },
+          { "id": "2:4", "name": "Spacing & Radius", "type": "FRAME" },
+          { "id": "2:5", "name": "Shadows & Effects", "type": "FRAME" }
+        ]
+      },
+      {
+        "id": "3:1",
+        "name": "Components",
+        "type": "CANVAS",
+        "children": [
+          { "id": "3:2", "name": "Buttons", "type": "COMPONENT_SET" },
+          { "id": "3:3", "name": "Chips & Badges", "type": "COMPONENT_SET" },
+          { "id": "3:4", "name": "Cards", "type": "COMPONENT_SET" },
+          { "id": "3:5", "name": "Forms", "type": "COMPONENT_SET" },
+          { "id": "3:6", "name": "Navigation", "type": "COMPONENT_SET" },
+          { "id": "3:7", "name": "Overlays", "type": "COMPONENT_SET" },
+          { "id": "3:8", "name": "Tables", "type": "COMPONENT_SET" },
+          { "id": "3:9", "name": "Avatars", "type": "COMPONENT_SET" }
+        ]
+      },
+      {
+        "id": "4:1",
+        "name": "Icons",
+        "type": "CANVAS",
+        "children": [
+          { "id": "4:2", "name": "Material Symbols Outlined", "type": "FRAME" }
+        ]
+      },
+      {
+        "id": "5:1",
+        "name": "Brand",
+        "type": "CANVAS",
+        "children": [
+          { "id": "5:2", "name": "Logo", "type": "COMPONENT_SET" }
+        ]
+      }
+    ]
+  },
+  "components": {
+    "button-primary": { "name": "Button/Primary", "description": "Ação principal" },
+    "button-secondary": { "name": "Button/Secondary", "description": "Ação alternativa" },
+    "card-pet": { "name": "Card/Pet", "description": "Card de exibição de pet" }
+  },
+  "styles": {
+    "color-primary": { "name": "Primary / Terracota", "styleType": "FILL" },
+    "color-secondary": { "name": "Secondary / Areia", "styleType": "FILL" },
+    "text-h1": { "name": "Heading / H1", "styleType": "TEXT" },
+    "text-body": { "name": "Body / Default", "styleType": "TEXT" },
+    "effect-shadow-floating": { "name": "Shadow / Floating Panel", "styleType": "EFFECT" }
+  },
+  "meta": {
+    "note": "Este é um arquivo representativo/simulado do formato .fig. O Figma usa um formato binário proprietário fechado, mas esta estrutura JSON representa a organização de páginas, componentes e estilos que devem ser criados no Figma."
+  }
+}

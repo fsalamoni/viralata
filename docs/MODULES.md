@@ -1,7 +1,8 @@
 # MODULES
 
 > O que cada módulo faz, arquivos-chave e fluxos principais. Panorama em
-> `docs/AI_CONTEXT.md`; dados em `docs/DATA_MODEL.md`.
+> `docs/AI_CONTEXT.md`; dados em `docs/DATA_MODEL.md`; design visual em
+> `docs/DESIGN_SYSTEM.md` (spec v1.0 oficial).
 
 ## pets/ — núcleo (feed, adoção, match, radar)
 

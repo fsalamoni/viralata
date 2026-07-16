@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700;800&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,300..600,0..1,-25..0&display=swap" rel="stylesheet">
+<style>
+@keyframes fadeUp { from { opacity:0; transform:translateY(14px);} to { opacity:1; transform:translateY(0);} }
+@keyframes popIn { from { opacity:0; transform:scale(.94);} to { opacity:1; transform:scale(1);} }
+body{margin:0;background:hsl(38,45%,97%);font-family:'Manrope',sans-serif;color:hsl(20,25%,13%);-webkit-font-smoothing:antialiased;}
+a{color:hsl(17,72%,43%);text-decoration:none;}
+a:hover{color:hsl(17,72%,35%);}
+*{box-sizing:border-box;}
+</style>
+</helmet>
+
+<div style="display:flex;align-items:flex-start;min-height:100vh;">
+
+<aside style="position:sticky;top:0;width:268px;flex-shrink:0;height:100vh;overflow-y:auto;background:hsl(30,45%,99%);border-right:1px solid hsl(30,20%,88%);padding:24px 18px 32px;">
+  <a href="#top" style="display:flex;align-items:center;gap:10px;padding:4px 6px 18px;">
+    <span style="display:flex;height:34px;width:34px;flex-shrink:0;align-items:center;justify-content:center;border-radius:11px;background:linear-gradient(135deg,hsl(17,72%,43%) 0%,hsl(40,88%,54%) 100%);box-shadow:0 10px 20px -10px rgba(64,34,18,0.6);">
+      <span style="font-family:'Material Symbols Outlined';font-size:18px;color:#fff;font-variation-settings:'FILL' 1,'wght' 500;">pets</span>
+    </span>
+    <span>
+      <span style="display:block;font-family:'Sora',sans-serif;font-size:13.5px;font-weight:800;color:hsl(20,25%,13%);">Design System</span>
+      <span style="display:block;font-size:10.5px;font-weight:700;color:hsl(20,12%,50%);">Viralata · v1.0</span>
+    </span>
+  </a>
+  <a href="Viralata.dc.html" style="display:flex;align-items:center;gap:5px;margin:0 6px 22px;font-size:11.5px;font-weight:700;color:hsl(20,12%,45%);">
+    <span style="font-family:'Material Symbols Outlined';font-size:15px;">arrow_back</span>Ver a plataforma
+  </a>
+  <sc-for list="{{ navGroups }}" as="g" hint-placeholder-count="3">
+    <div style="margin-bottom:20px;">
+      <div style="padding:0 6px 8px;font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:0.12em;color:hsl(20,12%,55%);">{{ g.group }}</div>
+      <sc-for list="{{ g.items }}" as="it" hint-placeholder-count="6">
+        <a href="{{ it.href }}" style="display:block;padding:7px 6px;border-radius:9px;font-size:13px;font-weight:600;color:hsl(20,25%,20%);">{{ it.label }}</a>
+      </sc-for>
+    </div>
+  </sc-for>
+</aside>
+
+<main id="top" style="flex:1;min-width:0;padding:56px 72px 140px;">
+  <div style="max-width:760px;margin-bottom:80px;">
+    <span style="display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 14px;border-radius:999px;background:hsla(17,72%,45%,0.1);font-size:11.5px;font-weight:700;color:hsl(17,72%,38%);">Documentação de design</span>
+    <h1 style="margin:16px 0 0;font-family:'Sora',sans-serif;font-size:42px;font-weight:800;letter-spacing:-0.02em;">Design System · Viralata</h1>
+    <p style="margin:14px 0 0;font-size:15px;line-height:1.7;color:hsl(20,12%,37%);max-width:640px;">Guia de referência visual da plataforma de adoção responsável Viralata. Reúne princípios, fundamentos (cor, tipografia, espaçamento, ícones) e todos os componentes de UI em uso — para manter consistência ao adicionar novas telas e funcionalidades.</p>
+    <p style="margin:14px 0 0;font-size:12px;color:hsl(20,12%,55%);">Fonte: github.com/fsalamoni/viralata · Este documento é independente e não altera o design da plataforma.</p>
+  </div>
+
+  <section id="principios" style="margin-bottom:88px;">
+    <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:8px;"><span style="font-size:11px;font-weight:800;color:hsl(17,72%,43%);">01</span><h2 style="margin:0;font-family:'Sora',sans-serif;font-size:26px;font-weight:800;">Princípios</h2></div>
+    <p style="margin:0 0 28px;max-width:640px;font-size:14px;line-height:1.6;color:hsl(20,12%,37%);">As quatro premissas que orientam toda decisão de design na plataforma.</p>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">
+      <sc-for list="{{ principles }}" as="pr" hint-placeholder-count="4">
+        <div style="border-radius:20px;background:rgba(255,255,255,0.8);border:1px solid rgba(255,255,255,0.9);padding:22px;box-shadow:0 20px 50px -32px rgba(64,34,18,0.28);">
+          <span style="display:flex;height:40px;width:40px;align-items:center;justify-content:center;border-radius:13px;background:linear-gradient(135deg,hsl(17,72%,43%),hsl(40,88%,54%));color:#fff;margin-bottom:12px;"><span style="font-family:'Material Symbols Outlined';font-size:20px;">{{ pr.icon }}</span></span>
+          <h3 style="margin:0 0 6px;font-size:14.5px;font-weight:700;">{{ pr.title }}</h3>
+          <p style="margin:0;font-size:12.5px;line-height:1.55;color:hsl(20,12%,37%);">{{ pr.desc }}</p>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section id="cores" style="margin-bottom:88px;">
+    <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:8px;"><span style="font-size:11px;font-weight:800;color:hsl(17,72%,43%);">02</span><h2 style="margin:0;font-family:'Sora',sans-serif;font-size:26px;font-weight:800;">Cores</h2></div>
+    <p style="margin:0 0 28px;max-width:640px;font-size:14px;line-height:1.6;color:hsl(20,12%,37%);">Paleta "quente e terrosa" — terracota como cor de ação, tons de areia e creme como base, oliva e mostarda como apoio. Máximo 1–2 cores de fundo por tela.</p>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;">
+      <sc-for list="{{ colorTokens }}" as="c" hint-placeholder-count="12">
+        <div style="border-radius:16px;overflow:hidden;border:1px solid hsl(30,20%,88%);background:#fff;">
+          <div style="height:64px;background:{{ c.bg }};"></div>
+          <div style="padding:12px 14px;">
+            <div style="font-size:12.5px;font-weight:700;">{{ c.name }}</div>
+            <div style="font-size:11px;font-family:monospace;color:hsl(20,12%,50%);margin:2px 0 6px;">{{ c.var }} · hsl({{ c.hsl }})</div>
+            <div style="font-size:11.5px;line-height:1.4;color:hsl(20,12%,40%);">{{ c.usage }}</div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section id="gradientes" style="margin-bottom:88px;">
+    <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:8px;"><span style="font-size:11px;font-weight:800;color:hsl(17,72%,43%);">03</span><h2 style="margin:0;font-family:'Sora',sans-serif;font-size:26px;font-weight:800;">Gradientes</h2></div>
+    <p style="margin:0 0 28px;max-width:640px;font-size:14px;line-height:1.6;color:hsl(20,12%,37%);">Usados com moderação — CTAs, marca e superfícies de destaque. Nunca em blocos de texto longos.</p>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;">
+      <sc-for list="{{ gradients }}" as="gr" hint-placeholder-count="4">
+        <div style="border-radius:18px;overflow:hidden;border:1px solid hsl(30,20%,88%);background:#fff;">
+          <div style="height:56px;background:{{ gr.css }};"></div>
+          <div style="padding:12px 16px;">
+            <div style="font-size:13px;font-weight:700;">{{ gr.name }}</div>
+            <div style="font-size:11.5px;color:hsl(20,12%,40%);margin-top:3px;">{{ gr.usage }}</div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section id="tipografia" style="margin-bottom:88px;">
+    <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:8px;"><span style="font-size:11px;font-weight:800;color:hsl(17,72%,43%);">04</span><h2 style="margin:0;font-family:'Sora',sans-serif;font-size:26px;font-weight:800;">Tipografia</h2></div>
+    <p style="margin:0 0 28px;max-width:640px;font-size:14px;line-height:1.6;color:hsl(20,12%,37%);"><strong>Sora</strong> (700/800) para títulos, com leve tracking negativo. <strong>Manrope</strong> (400–800) para todo o resto — corpo, botões, legendas.</p>
+    <div style="display:flex;flex-direction:column;border-radius:20px;border:1px solid hsl(30,20%,88%);background:#fff;overflow:hidden;">
+      <div style="display:flex;align-items:baseline;gap:20px;padding:22px 24px;border-bottom:1px solid hsl(30,20%,92%);">
+        <span style="width:180px;flex-shrink:0;font-size:11px;font-weight:700;color:hsl(20,12%,50%);">Display · Sora 800<br/>56px / -0.03em</span>
+        <span style="font-family:'Sora',sans-serif;font-size:44px;font-weight:800;letter-spacing:-0.03em;line-height:1.1;">Encontre seu companheiro</span>
+      </div>
+      <div style="display:flex;align-items:baseline;gap:20px;padding:20px 24px;border-bottom:1px solid hsl(30,20%,92%);">
+        <span style="width:180px;flex-shrink:0;font-size:11px;font-weight:700;color:hsl(20,12%,50%);">H1 · Sora 800<br/>30–34px</span>
+        <span style="font-family:'Sora',sans-serif;font-size:30px;font-weight:800;letter-spacing:-0.02em;">Painel administrativo</span>
+      </div>
+      <div style="display:flex;align-items:baseline;gap:20px;padding:20px 24px;border-bottom:1px solid hsl(30,20%,92%);">
+        <span style="width:180px;flex-shrink:0;font-size:11px;font-weight:700;color:hsl(20,12%,50%);">H2 · Sora 800<br/>26–30px</span>
+        <span style="font-family:'Sora',sans-serif;font-size:27px;font-weight:800;letter-spacing:-0.02em;">Vidas que mudaram de rumo</span>
+      </div>
+      <div style="display:flex;align-items:baseline;gap:20px;padding:18px 24px;border-bottom:1px solid hsl(30,20%,92%);">
+        <span style="width:180px;flex-shrink:0;font-size:11px;font-weight:700;color:hsl(20,12%,50%);">H3 · Sora 700<br/>16–19px</span>
+        <span style="font-family:'Sora',sans-serif;font-size:17px;font-weight:700;">Match inteligente</span>
+      </div>
+      <div style="display:flex;align-items:baseline;gap:20px;padding:18px 24px;border-bottom:1px solid hsl(30,20%,92%);">
+        <span style="width:180px;flex-shrink:0;font-size:11px;font-weight:700;color:hsl(20,12%,50%);">Corpo grande · Manrope 400<br/>17.5px / 1.6</span>
+        <span style="font-size:17.5px;line-height:1.6;max-width:420px;">O Viralata conecta pets que precisam de um lar com famílias que têm amor para dar.</span>
+      </div>
+      <div style="display:flex;align-items:baseline;gap:20px;padding:18px 24px;border-bottom:1px solid hsl(30,20%,92%);">
+        <span style="width:180px;flex-shrink:0;font-size:11px;font-weight:700;color:hsl(20,12%,50%);">Corpo · Manrope 500<br/>14px / 1.6</span>
+        <span style="font-size:14px;line-height:1.6;max-width:420px;color:hsl(20,12%,37%);">Cachorro dócil, castrado e vacinado. Convive bem com crianças e outros cães.</span>
+      </div>
+      <div style="display:flex;align-items:baseline;gap:20px;padding:18px 24px;border-bottom:1px solid hsl(30,20%,92%);">
+        <span style="width:180px;flex-shrink:0;font-size:11px;font-weight:700;color:hsl(20,12%,50%);">Pequeno · Manrope 600<br/>12.5–13.5px</span>
+        <span style="font-size:13px;font-weight:600;color:hsl(20,12%,37%);">Há 75 dias no Viralata</span>
+      </div>
+      <div style="display:flex;align-items:baseline;gap:20px;padding:18px 24px;">
+        <span style="width:180px;flex-shrink:0;font-size:11px;font-weight:700;color:hsl(20,12%,50%);">Eyebrow · Manrope 700<br/>11px / +0.24em / maiúsc.</span>
+        <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.24em;color:hsl(17,72%,43%);">Adoção responsável</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="espacamento" style="margin-bottom:88px;">
+    <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:8px;"><span style="font-size:11px;font-weight:800;color:hsl(17,72%,43%);">05</span><h2 style="margin:0;font-family:'Sora',sans-serif;font-size:26px;font-weight:800;">Espaçamento & Raios</h2></div>
+    <p style="margin:0 0 24px;max-width:640px;font-size:14px;line-height:1.6;color:hsl(20,12%,37%);">Escala de espaçamento em incrementos de 4px. Raios generosos e cantos arredondados reforçam a sensação orgânica e acolhedora.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div style="border-radius:18px;border:1px solid hsl(30,20%,88%);background:#fff;padding:22px 24px;">
+        <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:hsl(20,12%,50%);margin-bottom:14px;">Espaçamento</div>
+        <sc-for list="{{ spacingScale }}" as="s" hint-placeholder-count="9">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:9px;">
+            <span style="width:34px;flex-shrink:0;font-size:12px;font-family:monospace;color:hsl(20,12%,45%);">{{ s.px }}px</span>
+            <span style="display:block;height:10px;border-radius:4px;background:hsl(38,42%,88%);width:{{ s.px }}px;"></span>
+          </div>
+        </sc-for>
+      </div>
+      <div style="border-radius:18px;border:1px solid hsl(30,20%,88%);background:#fff;padding:22px 24px;">
+        <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:hsl(20,12%,50%);margin-bottom:14px;">Raios</div>
+        <sc-for list="{{ radiusScale }}" as="r" hint-placeholder-count="5">
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">
+            <span style="display:block;height:38px;width:38px;flex-shrink:0;background:hsl(17,72%,43%);border-radius:{{ r.demo }};"></span>
+            <div><div style="font-size:12.5px;font-weight:700;">{{ r.label }}</div><div style="font-size:11px;color:hsl(20,12%,45%);">{{ r.value }} · {{ r.usage }}</div></div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <section id="sombras" style="margin-bottom:88px;">
+    <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:8px;"><span style="font-size:11px;font-weight:800;color:hsl(17,72%,43%);">06</span><h2 style="margin:0;font-family:'Sora',sans-serif;font-size:26px;font-weight:800;">Sombras & Superfícies</h2></div>
+    <p style="margin:0 0 24px;max-width:640px;font-size:14px;line-height:1.6;color:hsl(20,12%,37%);">Sombras difusas e quentes (nunca cinza puro) dão profundidade sem parecer pesadas. Superfícies de vidro (glass) aparecem sobre fundos com glow.</p>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px;">
+      <sc-for list="{{ shadowTokens }}" as="sh" hint-placeholder-count="4">
+        <div style="text-align:center;">
+          <div style="height:70px;border-radius:16px;background:#fff;box-shadow:{{ sh.value }};margin-bottom:12px;"></div>
+          <div style="font-size:12px;font-weight:700;">{{ sh.label }}</div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="border-radius:24px;padding:40px;background:radial-gradient(circle at 20% 20%,hsla(17,72%,80%,0.5),transparent 40%),radial-gradient(circle at 85% 10%,hsla(40,88%,78%,0.4),transparent 32%),hsl(34,40%,93%);">
+      <div style="max-width:340px;border-radius:22px;background:rgba(255,255,255,0.8);border:1px solid rgba(255,255,255,0.9);backdrop-filter:blur(14px);box-shadow:0 24px 60px -28px rgba(64,34,18,0.28);padding:20px;">
+        <div style="font-size:12.5px;font-weight:700;margin-bottom:4px;">Painel de vidro (glass)</div>
+        <div style="font-size:11.5px;line-height:1.5;color:hsl(20,12%,40%);">rgba(255,255,255,.8) + borda rgba(255,255,255,.9) + backdrop-blur 8–20px, sempre sobre fundo com glow radial.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="icones" style="margin-bottom:88px;">
+    <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:8px;"><span style="font-size:11px;font-weight:800;color:hsl(17,72%,43%);">07</span><h2 style="margin:0;font-family:'Sora',sans-serif;font-size:26px;font-weight:800;">Ícones</h2></div>
+    <p style="margin:0 0 24px;max-width:640px;font-size:14px;line-height:1.6;color:hsl(20,12%,37%);"><strong>Material Symbols Outlined</strong>, peso 500. Preenchido (FILL 1) apenas para estados ativos/afetivos (marca, curtir). Sem emoji na interface — só em conteúdo gerado por usuários no mural.</p>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;">
+      <sc-for list="{{ icons }}" as="ic" hint-placeholder-count="20">
+        <div style="display:flex;align-items:center;gap:10px;border-radius:14px;background:#fff;border:1px solid hsl(30,20%,90%);padding:12px;">
+          <span style="display:flex;height:32px;width:32px;flex-shrink:0;align-items:center;justify-content:center;border-radius:10px;background:hsl(38,42%,93%);"><span style="font-family:'Material Symbols Outlined';font-size:18px;color:hsl(17,72%,40%);">{{ ic.glyph }}</span></span>
+          <div style="min-width:0;"><div style="font-size:12px;font-weight:700;font-family:monospace;">{{ ic.glyph }}</div><div style="font-size:10.5px;color:hsl(20,12%,50%);">{{ ic.usage }}</div></div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section id="botoes" style="margin-bottom:88px;">
+    <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:8px;"><span style="font-size:11px;font-weight:800;color:hsl(17,72%,43%);">08</span><h2 style="margin:0;font-family:'Sora',sans-serif;font-size:26px;font-weight:800;">Botões</h2></div>
+    <p style="margin:0 0 24px;max-width:640px;font-size:14px;line-height:1.6;color:hsl(20,12%,37%);">Sempre em formato pílula (999px). Uma única ação primária por tela.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start;">
+      <sc-for list="{{ buttons }}" as="b" hint-placeholder-count="6">
+        <div style="text-align:center;">
+          <span style="display:inline-flex;align-items:center;justify-content:center;height:46px;padding:0 24px;border-radius:999px;background:{{ b.bg }};color:{{ b.color }};border:{{ b.border }};font-weight:700;font-size:14px;opacity:{{ b.opacity }};">{{ b.text }}</span>
+          <div style="margin-top:8px;font-size:11px;color:hsl(20,12%,45%);max-width:150px;">{{ b.note }}</div>
+        </div>
+      </sc-for>
+      <div style="text-align:center;">
+        <div style="display:flex;gap:10px;">
+          <span style="display:flex;height:46px;width:46px;align-items:center;justify-content:center;border-radius:999px;border:1px solid hsl(30,20%,88%);background:#fff;color:hsl(9,62%,46%);"><span style="font-family:'Material Symbols Outlined';font-size:22px;">close</span></span>
+          <span style="display:flex;height:52px;width:52px;align-items:center;justify-content:center;border-radius:999px;background:linear-gradient(135deg,hsl(17,72%,43%),hsl(40,88%,54%));color:#fff;"><span style="font-family:'Material Symbols Outlined';font-size:24px;">favorite</span></span>
+        </div>
+        <div style="margin-top:8px;font-size:11px;color:hsl(20,12%,45%);max-width:150px;">Ícone circular — swipe de descoberta</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="chips" style="margin-bottom:88px;">
+    <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:8px;"><span style="font-size:11px;font-weight:800;color:hsl(17,72%,43%);">09</span><h2 style="margin:0;font-family:'Sora',sans-serif;font-size:26px;font-weight:800;">Chips & Badges</h2></div>
+    <div style="display:flex;flex-direction:column;gap:20px;">
+      <div>
+        <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:hsl(20,12%,50%);margin-bottom:10px;">Status de pet</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <sc-for list="{{ statusChips }}" as="sc" hint-placeholder-count="3">
+            <span style="padding:6px 14px;border-radius:999px;font-size:12px;font-weight:700;background:{{ sc.bg }};color:{{ sc.color }};">{{ sc.label }}</span>
+          </sc-for>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:hsl(20,12%,50%);margin-bottom:10px;">Filtro (ativo / inativo)</div>
+        <div style="display:flex;gap:10px;">
+          <span style="height:36px;display:inline-flex;align-items:center;padding:0 16px;border-radius:999px;background:hsl(17,72%,43%);color:#fff;font-size:13px;font-weight:700;">Cães</span>
+          <span style="height:36px;display:inline-flex;align-items:center;padding:0 16px;border-radius:999px;background:#fff;color:hsl(20,25%,13%);border:1px solid hsl(30,20%,88%);font-size:13px;font-weight:600;">Gatos</span>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:hsl(20,12%,50%);margin-bottom:10px;">Tags de característica</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <sc-for list="{{ tagChips }}" as="t" hint-placeholder-count="3">
+            <span style="padding:5px 12px;border-radius:999px;background:hsl(38,42%,91%);font-size:12px;font-weight:600;color:hsl(20,30%,20%);">{{ t }}</span>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="cards" style="margin-bottom:88px;">
+    <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:8px;"><span style="font-size:11px;font-weight:800;color:hsl(17,72%,43%);">10</span><h2 style="margin:0;font-family:'Sora',sans-serif;font-size:26px;font-weight:800;">Cards</h2></div>
+    <p style="margin:0 0 24px;max-width:640px;font-size:14px;line-height:1.6;color:hsl(20,12%,37%);">Cantos 20–24px, fundo quase-branco translúcido, sombra difusa. Hover: leve elevação, sem tilt 3D.</p>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;">
+      <div style="border-radius:22px;overflow:hidden;background:#fff;border:1px solid hsl(30,20%,90%);">
+        <div style="aspect-ratio:1.3;background:hsl(38,42%,88%);display:flex;align-items:center;justify-content:center;font-size:11.5px;color:hsl(20,12%,50%);">foto do pet</div>
+        <div style="padding:16px;">
+          <div style="display:flex;justify-content:space-between;"><h3 style="margin:0;font-family:'Sora',sans-serif;font-size:16px;font-weight:700;">Bolinha</h3><span style="font-size:11px;color:hsl(20,12%,50%);">Médio</span></div>
+          <p style="margin:4px 0 10px;font-size:12px;color:hsl(20,12%,37%);">SRD · Adulto · 2 anos</p>
+          <span style="display:flex;align-items:center;justify-content:center;height:36px;border-radius:999px;background:hsl(38,42%,91%);font-size:12.5px;font-weight:700;">Ver perfil</span>
+        </div>
+        <div style="padding:0 16px 12px;font-size:10.5px;color:hsl(20,12%,50%);">Card de pet — feed, abrigo, busca</div>
+      </div>
+      <div style="border-radius:22px;background:#fff;border:1px solid hsl(30,20%,90%);padding:22px;">
+        <span style="display:flex;height:44px;width:44px;align-items:center;justify-content:center;border-radius:15px;background:hsla(17,72%,45%,0.12);color:hsl(17,72%,38%);margin-bottom:14px;"><span style="font-family:'Material Symbols Outlined';font-size:22px;">favorite</span></span>
+        <h3 style="margin:0 0 6px;font-size:15.5px;font-weight:700;">Match inteligente</h3>
+        <p style="margin:0;font-size:13px;line-height:1.55;color:hsl(20,12%,37%);">Algoritmo que cruza seu perfil com as necessidades do pet.</p>
+        <div style="margin-top:14px;font-size:10.5px;color:hsl(20,12%,50%);">Feature card — página inicial</div>
+      </div>
+      <div style="border-radius:22px;background:#fff;border:1px solid hsl(30,20%,90%);padding:22px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="display:flex;height:40px;width:40px;align-items:center;justify-content:center;border-radius:999px;background:linear-gradient(135deg,hsl(86,30%,32%),hsl(17,72%,43%));color:#fff;font-size:13px;font-weight:700;">FR</span>
+          <div><div style="font-size:12.5px;font-weight:700;">Fernanda Rocha</div><div style="font-size:11px;color:hsl(20,12%,45%);">adotou Simba</div></div>
+        </div>
+        <p style="margin:0;font-size:12.5px;font-style:italic;line-height:1.6;color:hsla(20,25%,13%,0.85);">"O questionário de compatibilidade fez toda diferença."</p>
+        <div style="margin-top:12px;font-size:10.5px;color:hsl(20,12%,50%);">Card de depoimento — histórias reais</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="formularios" style="margin-bottom:88px;">
+    <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:8px;"><span style="font-size:11px;font-weight:800;color:hsl(17,72%,43%);">11</span><h2 style="margin:0;font-family:'Sora',sans-serif;font-size:26px;font-weight:800;">Formulários</h2></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:720px;">
+      <div>
+        <label style="display:block;font-size:12px;font-weight:700;margin-bottom:6px;">Campo de texto</label>
+        <input placeholder="Seu nome" style="width:100%;height:46px;border-radius:12px;border:1px solid hsl(30,20%,85%);padding:0 14px;font-family:Manrope,sans-serif;font-size:14px;"/>
+      </div>
+      <div>
+        <label style="display:block;font-size:12px;font-weight:700;margin-bottom:6px;">Controle segmentado</label>
+        <div style="display:flex;gap:8px;">
+          <span style="height:38px;display:inline-flex;align-items:center;padding:0 14px;border-radius:999px;background:hsl(17,72%,43%);color:#fff;font-size:12.5px;font-weight:700;">Pequeno</span>
+          <span style="height:38px;display:inline-flex;align-items:center;padding:0 14px;border-radius:999px;background:#fff;border:1px solid hsl(30,20%,88%);font-size:12.5px;font-weight:600;">Médio</span>
+        </div>
+      </div>
+      <div style="grid-column:span 2;">
+        <label style="display:block;font-size:12px;font-weight:700;margin-bottom:6px;">Área de texto</label>
+        <textarea placeholder="Conte um pouco..." style="width:100%;min-height:80px;border-radius:12px;border:1px solid hsl(30,20%,85%);padding:12px 14px;font-family:Manrope,sans-serif;font-size:14px;resize:vertical;"></textarea>
+      </div>
+      <div>
+        <label style="display:block;font-size:12px;font-weight:700;margin-bottom:6px;">Interruptor (on / off)</label>
+        <div style="display:flex;gap:14px;">
+          <span style="display:flex;align-items:center;height:26px;width:46px;border-radius:999px;background:hsl(150,38%,36%);padding:3px;"><span style="display:block;height:20px;width:20px;margin-left:auto;border-radius:999px;background:#fff;"></span></span>
+          <span style="display:flex;align-items:center;height:26px;width:46px;border-radius:999px;background:hsl(30,20%,85%);padding:3px;"><span style="display:block;height:20px;width:20px;border-radius:999px;background:#fff;"></span></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="navegacao" style="margin-bottom:88px;">
+    <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:8px;"><span style="font-size:11px;font-weight:800;color:hsl(17,72%,43%);">12</span><h2 style="margin:0;font-family:'Sora',sans-serif;font-size:26px;font-weight:800;">Navegação</h2></div>
+    <p style="margin:0 0 20px;max-width:640px;font-size:14px;line-height:1.6;color:hsl(20,12%,37%);">Estrutura fixa: Feed · Abrigos · Voluntários · Comunidade · Chat — sempre no mesmo lugar, mesmo com muitas funcionalidades.</p>
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      <div style="display:flex;gap:6px;border-radius:999px;background:#fff;border:1px solid hsl(30,20%,90%);padding:6px;width:fit-content;">
+        <span style="padding:8px 16px;border-radius:999px;background:hsl(17,72%,43%);color:#fff;font-size:13px;font-weight:700;">Feed</span>
+        <span style="padding:8px 16px;border-radius:999px;color:hsla(20,25%,13%,0.7);font-size:13px;font-weight:600;">Abrigos</span>
+        <span style="padding:8px 16px;border-radius:999px;color:hsla(20,25%,13%,0.7);font-size:13px;font-weight:600;">Comunidade</span>
+      </div>
+      <div style="display:flex;gap:36px;border-radius:20px;background:hsl(20,25%,13%);padding:14px 28px;width:fit-content;">
+        <span style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#fff;"><span style="font-family:'Material Symbols Outlined';font-size:22px;">pets</span><span style="font-size:10px;font-weight:700;">Feed</span></span>
+        <span style="display:flex;flex-direction:column;align-items:center;gap:3px;color:rgba(255,255,255,0.5);"><span style="font-family:'Material Symbols Outlined';font-size:22px;">apartment</span><span style="font-size:10px;font-weight:700;">ONGs</span></span>
+        <span style="display:flex;align-items:center;justify-content:center;height:44px;width:44px;border-radius:999px;background:linear-gradient(135deg,hsl(17,72%,43%),hsl(40,88%,54%));color:#fff;transform:translateY(-10px);box-shadow:0 10px 20px -8px rgba(64,34,18,0.6);"><span style="font-family:'Material Symbols Outlined';font-size:24px;">add</span></span>
+        <span style="display:flex;flex-direction:column;align-items:center;gap:3px;color:rgba(255,255,255,0.5);"><span style="font-family:'Material Symbols Outlined';font-size:22px;">chat_bubble</span><span style="font-size:10px;font-weight:700;">Chat</span></span>
+        <span style="display:flex;flex-direction:column;align-items:center;gap:3px;color:rgba(255,255,255,0.5);"><span style="font-family:'Material Symbols Outlined';font-size:22px;">person</span><span style="font-size:10px;font-weight:700;">Perfil</span></span>
+      </div>
+      <div style="font-size:11px;color:hsl(20,12%,50%);">Topo: menu pílula (desktop) · Base: barra com botão central elevado (mobile/PWA)</div>
+    </div>
+  </section>
+
+  <section id="overlays" style="margin-bottom:88px;">
+    <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:8px;"><span style="font-size:11px;font-weight:800;color:hsl(17,72%,43%);">13</span><h2 style="margin:0;font-family:'Sora',sans-serif;font-size:26px;font-weight:800;">Overlays & Menus</h2></div>
+    <div style="display:grid;grid-template-columns:260px 1fr;gap:20px;max-width:720px;">
+      <div style="border-radius:18px;background:#fff;border:1px solid hsl(30,20%,88%);box-shadow:0 24px 60px -28px rgba(64,34,18,0.28);padding:8px;">
+        <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;font-size:13px;font-weight:600;"><span style="font-family:'Material Symbols Outlined';font-size:18px;">person</span>Meu Perfil</div>
+        <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;font-size:13px;font-weight:600;"><span style="font-family:'Material Symbols Outlined';font-size:18px;">favorite</span>Meus Pets</div>
+        <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;font-size:13px;font-weight:600;color:hsl(9,62%,46%);"><span style="font-family:'Material Symbols Outlined';font-size:18px;">warning</span>Fazer Denúncia</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;gap:10px;padding:12px;border-radius:14px;background:hsla(17,72%,45%,0.06);">
+          <span style="font-family:'Material Symbols Outlined';font-size:19px;color:hsl(17,72%,43%);">favorite</span>
+          <div><div style="font-size:12.5px;font-weight:700;">Novo interesse em adoção</div><div style="font-size:11.5px;color:hsl(20,12%,45%);">Não lida — fundo destacado</div></div>
+        </div>
+        <div style="display:flex;gap:10px;padding:12px;border-radius:14px;">
+          <span style="font-family:'Material Symbols Outlined';font-size:19px;color:hsl(17,72%,43%);">event</span>
+          <div><div style="font-size:12.5px;font-weight:700;">Novo evento publicado</div><div style="font-size:11.5px;color:hsl(20,12%,45%);">Lida — sem destaque</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="tabelas" style="margin-bottom:88px;">
+    <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:8px;"><span style="font-size:11px;font-weight:800;color:hsl(17,72%,43%);">14</span><h2 style="margin:0;font-family:'Sora',sans-serif;font-size:26px;font-weight:800;">Tabelas & Listas</h2></div>
+    <p style="margin:0 0 20px;max-width:640px;font-size:14px;line-height:1.6;color:hsl(20,12%,37%);">Sem grades tradicionais — listas de linhas com cantos arredondados, usadas em admin e financeiro.</p>
+    <div style="border-radius:18px;background:#fff;border:1px solid hsl(30,20%,88%);padding:4px 20px;max-width:640px;">
+      <div style="display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid hsl(30,20%,92%);">
+        <div style="flex:1;"><div style="font-size:13.5px;font-weight:700;">Marina Castro</div><div style="font-size:11.5px;color:hsl(20,12%,45%);">marina.castro@viralata.demo</div></div>
+        <span style="padding:4px 12px;border-radius:999px;background:hsl(38,42%,91%);font-size:11px;font-weight:700;">Adotante</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;">
+        <div><span style="font-weight:600;font-size:13px;">Ração para 30 dias</span><span style="color:hsl(20,12%,45%);font-size:13px;"> — doação anônima</span></div>
+        <span style="font-weight:700;color:hsl(150,38%,30%);font-size:13px;">+ R$ 1.850</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="chat" style="margin-bottom:88px;">
+    <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:8px;"><span style="font-size:11px;font-weight:800;color:hsl(17,72%,43%);">15</span><h2 style="margin:0;font-family:'Sora',sans-serif;font-size:26px;font-weight:800;">Chat</h2></div>
+    <div style="max-width:420px;border-radius:20px;background:#fff;border:1px solid hsl(30,20%,88%);padding:18px;display:flex;flex-direction:column;gap:10px;">
+      <div style="align-self:flex-start;max-width:75%;padding:10px 14px;border-radius:16px 16px 16px 4px;background:hsl(38,42%,93%);font-size:13.5px;">Oi! Tenho interesse no Bolinha.</div>
+      <div style="align-self:flex-end;max-width:75%;padding:10px 14px;border-radius:16px 16px 4px 16px;background:linear-gradient(135deg,hsl(17,72%,43%),hsl(40,88%,54%));color:#fff;font-size:13.5px;">Que ótimo! Quando pode vir conhecê-lo?</div>
+      <div style="display:flex;gap:8px;margin-top:6px;">
+        <span style="flex:1;height:40px;border-radius:999px;border:1px solid hsl(30,20%,85%);"></span>
+        <span style="display:flex;height:40px;width:40px;align-items:center;justify-content:center;border-radius:999px;background:linear-gradient(135deg,hsl(17,72%,43%),hsl(40,88%,54%));color:#fff;"><span style="font-family:'Material Symbols Outlined';font-size:18px;">send</span></span>
+      </div>
+    </div>
+  </section>
+
+  <section id="progresso" style="margin-bottom:88px;">
+    <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:8px;"><span style="font-size:11px;font-weight:800;color:hsl(17,72%,43%);">16</span><h2 style="margin:0;font-family:'Sora',sans-serif;font-size:26px;font-weight:800;">Progresso & Métricas</h2></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:640px;">
+      <div style="border-radius:18px;background:#fff;border:1px solid hsl(30,20%,88%);padding:18px;">
+        <div style="font-size:13px;font-weight:700;margin-bottom:8px;">Ração para 30 dias</div>
+        <div style="height:8px;border-radius:999px;background:hsl(38,42%,91%);overflow:hidden;margin-bottom:8px;"><div style="height:100%;width:70%;background:linear-gradient(90deg,hsl(17,72%,43%),hsl(40,88%,54%));"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:11.5px;color:hsl(20,12%,45%);"><span>R$ 4.250</span><span>meta R$ 6.000</span></div>
+      </div>
+      <div style="text-align:center;padding:18px;">
+        <div style="font-family:'Sora',sans-serif;font-size:32px;font-weight:800;background:linear-gradient(90deg,hsl(16,68%,26%),hsl(16,60%,42%),hsl(42,88%,52%));-webkit-background-clip:text;background-clip:text;color:transparent;">500+</div>
+        <div style="font-size:12px;font-weight:600;color:hsl(20,12%,37%);">Adoções realizadas</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="avatares" style="margin-bottom:88px;">
+    <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:8px;"><span style="font-size:11px;font-weight:800;color:hsl(17,72%,43%);">17</span><h2 style="margin:0;font-family:'Sora',sans-serif;font-size:26px;font-weight:800;">Avatares</h2></div>
+    <p style="margin:0 0 20px;max-width:640px;font-size:14px;line-height:1.6;color:hsl(20,12%,37%);">Sempre iniciais sobre gradiente oliva→terracota — nunca fotos genéricas de perfil.</p>
+    <div style="display:flex;align-items:center;gap:20px;">
+      <span style="display:flex;height:28px;width:28px;align-items:center;justify-content:center;border-radius:999px;background:linear-gradient(135deg,hsl(86,30%,32%),hsl(17,72%,43%));color:#fff;font-size:10px;font-weight:700;">VC</span>
+      <span style="display:flex;height:36px;width:36px;align-items:center;justify-content:center;border-radius:999px;background:linear-gradient(135deg,hsl(86,30%,32%),hsl(17,72%,43%));color:#fff;font-size:12px;font-weight:700;">VC</span>
+      <span style="display:flex;height:44px;width:44px;align-items:center;justify-content:center;border-radius:999px;background:linear-gradient(135deg,hsl(86,30%,32%),hsl(17,72%,43%));color:#fff;font-size:14px;font-weight:700;">VC</span>
+      <span style="display:flex;height:56px;width:56px;align-items:center;justify-content:center;border-radius:999px;border:2px solid #fff;background:linear-gradient(135deg,hsl(86,30%,32%),hsl(17,72%,43%));color:#fff;font-size:17px;font-weight:700;box-shadow:0 6px 16px -8px rgba(64,34,18,0.5);">VC</span>
+      <span style="font-size:11px;color:hsl(20,12%,50%);">28 / 36 / 44 / 56px — a maior com anel branco (header)</span>
+    </div>
+  </section>
+
+  <section id="banners" style="margin-bottom:88px;">
+    <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:8px;"><span style="font-size:11px;font-weight:800;color:hsl(17,72%,43%);">18</span><h2 style="margin:0;font-family:'Sora',sans-serif;font-size:26px;font-weight:800;">Banners & Heróis</h2></div>
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      <div style="border-radius:24px;padding:28px 32px;color:#fff;background:linear-gradient(145deg,hsl(16,60%,30%),hsl(20,35%,18%) 55%,hsl(20,25%,11%));">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.2em;color:rgba(253,186,140,0.75);">Feed de adoção</div>
+        <div style="margin-top:6px;font-family:'Sora',sans-serif;font-size:22px;font-weight:800;">Cabeçalho de página interna</div>
+        <div style="margin-top:14px;font-size:11px;color:rgba(255,255,255,0.6);">Usado em Feed, Abrigos, Voluntários, Comunidade, Admin</div>
+      </div>
+      <div style="border-radius:24px;padding:28px 32px;text-align:center;color:#fff;background:radial-gradient(circle at top right,hsla(42,88%,60%,0.25),transparent 26%),linear-gradient(145deg,hsl(16,60%,30%),hsl(20,35%,18%) 55%,hsl(20,25%,11%));">
+        <div style="font-family:'Sora',sans-serif;font-size:20px;font-weight:800;">CTA final — "Pronto para mudar uma vida?"</div>
+        <div style="margin-top:10px;font-size:11px;color:rgba(255,255,255,0.6);">Usado 1x por página, ao final do fluxo</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="motion" style="margin-bottom:88px;">
+    <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:8px;"><span style="font-size:11px;font-weight:800;color:hsl(17,72%,43%);">19</span><h2 style="margin:0;font-family:'Sora',sans-serif;font-size:26px;font-weight:800;">Motion & Animação</h2></div>
+    <div style="border-radius:18px;background:#fff;border:1px solid hsl(30,20%,88%);padding:6px 24px;max-width:680px;">
+      <sc-for list="{{ motionTokens }}" as="m" hint-placeholder-count="5">
+        <div style="display:flex;gap:20px;padding:14px 0;border-bottom:1px solid hsl(30,20%,92%);">
+          <span style="width:190px;flex-shrink:0;font-size:12.5px;font-weight:700;">{{ m.name }}</span>
+          <span style="font-size:12.5px;color:hsl(20,12%,40%);">{{ m.value }}</span>
+        </div>
+      </sc-for>
+    </div>
+    <div style="display:flex;gap:16px;margin-top:20px;">
+      <div style="width:140px;height:80px;border-radius:16px;background:hsl(38,42%,91%);animation:fadeUp .6s ease both;"></div>
+      <div style="width:140px;height:80px;border-radius:16px;background:hsl(38,42%,91%);animation:popIn .6s ease both;"></div>
+      <div style="align-self:center;font-size:11px;color:hsl(20,12%,50%);">← reproduzem uma vez ao carregar a página (fadeUp / popIn)</div>
+    </div>
+  </section>
+
+  <section id="voz" style="margin-bottom:88px;">
+    <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:8px;"><span style="font-size:11px;font-weight:800;color:hsl(17,72%,43%);">20</span><h2 style="margin:0;font-family:'Sora',sans-serif;font-size:26px;font-weight:800;">Voz & Tom</h2></div>
+    <p style="margin:0 0 20px;max-width:640px;font-size:14px;line-height:1.6;color:hsl(20,12%,37%);">Caloroso e direto — nunca corporativo, nunca gírias em excesso. Emoji só em posts de comunidade (conteúdo de usuário), nunca na interface do produto.</p>
+    <div style="display:flex;flex-direction:column;gap:10px;max-width:640px;">
+      <sc-for list="{{ voiceDo }}" as="v" hint-placeholder-count="3">
+        <div style="display:flex;gap:10px;align-items:flex-start;padding:12px 16px;border-radius:14px;background:hsla(150,38%,36%,0.08);">
+          <span style="font-family:'Material Symbols Outlined';font-size:18px;color:hsl(150,38%,30%);flex-shrink:0;margin-top:1px;">check_circle</span>
+          <span style="font-size:13px;line-height:1.55;">{{ v }}</span>
+        </div>
+      </sc-for>
+      <sc-for list="{{ voiceAvoid }}" as="v" hint-placeholder-count="2">
+        <div style="display:flex;gap:10px;align-items:flex-start;padding:12px 16px;border-radius:14px;background:hsla(9,62%,46%,0.06);">
+          <span style="font-family:'Material Symbols Outlined';font-size:18px;color:hsl(9,62%,46%);flex-shrink:0;margin-top:1px;">cancel</span>
+          <span style="font-size:13px;line-height:1.55;color:hsl(20,12%,35%);">{{ v }}</span>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section id="logo" style="margin-bottom:88px;">
+    <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:8px;"><span style="font-size:11px;font-weight:800;color:hsl(17,72%,43%);">21</span><h2 style="margin:0;font-family:'Sora',sans-serif;font-size:26px;font-weight:800;">Logo & Marca</h2></div>
+    <div style="display:flex;flex-wrap:wrap;gap:40px;align-items:center;margin-bottom:20px;">
+      <div style="display:flex;align-items:center;gap:12px;padding:20px;border:1px dashed hsl(30,20%,80%);border-radius:16px;">
+        <span style="display:flex;height:52px;width:52px;align-items:center;justify-content:center;border-radius:17px;background:linear-gradient(135deg,hsl(17,72%,43%),hsl(40,88%,54%));"><span style="font-family:'Material Symbols Outlined';font-size:26px;color:#fff;font-variation-settings:'FILL' 1,'wght' 500;">pets</span></span>
+        <span style="font-family:'Sora',sans-serif;font-size:24px;font-weight:800;background:linear-gradient(90deg,hsl(16,68%,26%),hsl(16,60%,42%),hsl(42,88%,52%));-webkit-background-clip:text;background-clip:text;color:transparent;">Viralata</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="display:flex;height:34px;width:34px;align-items:center;justify-content:center;border-radius:11px;background:linear-gradient(135deg,hsl(17,72%,43%),hsl(40,88%,54%));"><span style="font-family:'Material Symbols Outlined';font-size:18px;color:#fff;font-variation-settings:'FILL' 1,'wght' 500;">pets</span></span>
+        <span style="font-size:11px;color:hsl(20,12%,50%);">Tamanho mínimo — cabeçalho</span>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;max-width:520px;">
+      <div style="font-size:12.5px;color:hsl(20,12%,37%);">— Não recolorir o ícone da pata fora do gradiente terracota→mostarda.</div>
+      <div style="font-size:12.5px;color:hsl(20,12%,37%);">— Não esticar ou distorcer o wordmark.</div>
+      <div style="font-size:12.5px;color:hsl(20,12%,37%);">— Nunca sobre fotos ruidosas sem um scrim escuro por trás.</div>
+      <div style="font-size:12.5px;color:hsl(20,12%,37%);">— Não existe logo/marca desenhada além deste ícone tipográfico — nenhuma marca oficial foi fornecida.</div>
+    </div>
+  </section>
+
+  <section id="acessibilidade" style="margin-bottom:20px;">
+    <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:8px;"><span style="font-size:11px;font-weight:800;color:hsl(17,72%,43%);">22</span><h2 style="margin:0;font-family:'Sora',sans-serif;font-size:26px;font-weight:800;">Acessibilidade</h2></div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:760px;">
+      <div style="border-radius:16px;background:hsl(38,45%,97%);border:1px solid hsl(30,20%,88%);padding:16px;">
+        <div style="padding:10px;border-radius:10px;background:hsl(17,72%,43%);color:#fff;font-size:13px;font-weight:700;text-align:center;margin-bottom:8px;">AA · 4.6:1</div>
+        <div style="font-size:11.5px;color:hsl(20,12%,45%);">Texto branco sobre terracota — contraste aprovado</div>
+      </div>
+      <div style="border-radius:16px;background:#fff;border:1px solid hsl(30,20%,88%);padding:16px;">
+        <div style="display:flex;align-items:center;justify-content:center;height:44px;width:44px;margin:0 auto 8px;border-radius:12px;border:2px dashed hsl(17,72%,43%);"><span style="font-family:'Material Symbols Outlined';font-size:20px;">favorite</span></div>
+        <div style="font-size:11.5px;color:hsl(20,12%,45%);text-align:center;">Alvo de toque mínimo — 44×44px</div>
+      </div>
+      <div style="border-radius:16px;background:#fff;border:1px solid hsl(30,20%,88%);padding:16px;">
+        <span style="display:inline-flex;height:36px;padding:0 16px;align-items:center;border-radius:999px;background:hsl(17,72%,43%);color:#fff;font-size:12.5px;font-weight:700;outline:2px solid hsl(40,88%,54%);outline-offset:2px;">Foco visível</span>
+        <div style="font-size:11.5px;color:hsl(20,12%,45%);margin-top:10px;">Anel de foco sempre visível em elementos navegáveis por teclado</div>
+      </div>
+    </div>
+    <p style="margin:16px 0 0;font-size:12px;color:hsl(20,12%,45%);">Todas as animações respeitam <code>prefers-reduced-motion</code>.</p>
+  </section>
+</main>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  navGroups = [
+    { group:'Fundamentos', items:[
+      {href:'#principios',label:'Princípios'},{href:'#cores',label:'Cores'},{href:'#gradientes',label:'Gradientes'},
+      {href:'#tipografia',label:'Tipografia'},{href:'#espacamento',label:'Espaçamento & Raios'},
+      {href:'#sombras',label:'Sombras & Superfícies'},{href:'#icones',label:'Ícones'} ] },
+    { group:'Componentes', items:[
+      {href:'#botoes',label:'Botões'},{href:'#chips',label:'Chips & Badges'},{href:'#cards',label:'Cards'},
+      {href:'#formularios',label:'Formulários'},{href:'#navegacao',label:'Navegação'},{href:'#overlays',label:'Overlays & Menus'},
+      {href:'#tabelas',label:'Tabelas & Listas'},{href:'#chat',label:'Chat'},{href:'#progresso',label:'Progresso & Métricas'},
+      {href:'#avatares',label:'Avatares'},{href:'#banners',label:'Banners & Heróis'} ] },
+    { group:'Diretrizes', items:[
+      {href:'#motion',label:'Motion & Animação'},{href:'#voz',label:'Voz & Tom'},{href:'#logo',label:'Logo & Marca'},
+      {href:'#acessibilidade',label:'Acessibilidade'} ] },
+  ];
+
+  principles = [
+    { icon:'visibility', title:'Clareza', desc:'Hierarquia visual óbvia. Uma ação primária por tela, textos diretos, nunca fazer o usuário adivinhar o próximo passo.' },
+    { icon:'explore', title:'Navegação intuitiva', desc:'Estrutura estável (Feed, Abrigos, Voluntários, Comunidade, Chat) — muitas funcionalidades, sempre no mesmo lugar.' },
+    { icon:'favorite', title:'Empatia & apego', desc:'Fotos grandes, tom caloroso, histórias reais. O pet é sempre protagonista visual.' },
+    { icon:'spa', title:'Organicidade', desc:'Formas orgânicas, cantos generosos, superfícies de vidro — nunca aspecto corporativo ou "feito por IA".' },
+  ];
+
+  colorTokens = [
+    { name:'Primary · Terracota', var:'--primary', hsl:'17 72% 43%', bg:'hsl(17,72%,43%)', usage:'Ações principais, CTAs, wordmark' },
+    { name:'Primary Foreground', var:'--primary-foreground', hsl:'40 45% 98%', bg:'hsl(40,45%,98%)', usage:'Texto sobre fundo primary' },
+    { name:'Secondary · Areia', var:'--secondary', hsl:'38 42% 91%', bg:'hsl(38,42%,91%)', usage:'Chips neutros, fundos suaves' },
+    { name:'Accent · Oliva', var:'--accent', hsl:'86 30% 32%', bg:'hsl(86,30%,32%)', usage:'Avatares, badges de comunidade' },
+    { name:'Highlight · Mostarda', var:'--highlight', hsl:'40 88% 54%', bg:'hsl(40,88%,54%)', usage:'Gradiente CTA, badge "em processo"' },
+    { name:'Success', var:'--success', hsl:'150 38% 36%', bg:'hsl(150,38%,36%)', usage:'Status "disponível", confirmações' },
+    { name:'Destructive', var:'--destructive', hsl:'9 62% 46%', bg:'hsl(9,62%,46%)', usage:'Denúncias, exclusões, alertas' },
+    { name:'Background', var:'--background', hsl:'38 45% 97%', bg:'hsl(38,45%,97%)', usage:'Fundo base de todas as páginas' },
+    { name:'Background Alt', var:'--background-alt', hsl:'34 40% 94%', bg:'hsl(34,40%,94%)', usage:'Seções alternadas' },
+    { name:'Foreground', var:'--foreground', hsl:'20 25% 13%', bg:'hsl(20,25%,13%)', usage:'Texto principal' },
+    { name:'Muted Foreground', var:'--muted-foreground', hsl:'20 12% 37%', bg:'hsl(20,12%,37%)', usage:'Texto secundário, legendas' },
+    { name:'Border', var:'--border', hsl:'30 20% 88%', bg:'hsl(30,20%,88%)', usage:'Bordas de inputs, cards, divisores' },
+  ];
+
+  gradients = [
+    { name:'Gradiente de marca', css:'linear-gradient(135deg,hsl(17,72%,43%),hsl(40,88%,54%))', usage:'Botões primários, CTA final, ícone do logo' },
+    { name:'Wordmark', css:'linear-gradient(90deg,hsl(16,68%,26%),hsl(16,60%,42%),hsl(42,88%,52%))', usage:'Texto "Viralata" e títulos com destaque' },
+    { name:'Banner escuro', css:'linear-gradient(145deg,hsl(16,60%,30%),hsl(20,35%,18%) 55%,hsl(20,25%,11%))', usage:'Cabeçalhos internos, CTA final, admin' },
+    { name:'Avatar', css:'linear-gradient(135deg,hsl(86,30%,32%),hsl(17,72%,43%))', usage:'Avatares com iniciais, ícones de equipe' },
+  ];
+
+  spacingScale = [4,8,12,16,20,24,32,40,48,64,96].map(px => ({ px }));
+
+  radiusScale = [
+    { label:'Pill', value:'999px', demo:'999px', usage:'Botões, chips, inputs de busca' },
+    { label:'Card', value:'22–24px', demo:'22px', usage:'Cards de pet, abrigo, painéis' },
+    { label:'Banner', value:'28–32px', demo:'30% 40% 30% 40%', usage:'Cabeçalhos, CTA final' },
+    { label:'Pequeno', value:'12–14px', demo:'13px', usage:'Miniaturas, badges quadrados' },
+    { label:'Orgânico (blob)', value:'40/60/55/45%', demo:'40% 60% 55% 45%/48% 44% 56% 52%', usage:'Moldura de foto — Home, 1x por página' },
+  ];
+
+  shadowTokens = [
+    { label:'Painel flutuante', value:'0 24px 60px -28px rgba(64,34,18,.28)' },
+    { label:'Botão / CTA', value:'0 18px 38px -22px rgba(64,34,18,.7)' },
+    { label:'Banner escuro', value:'0 30px 80px -28px rgba(43,20,8,.62)' },
+    { label:'Hover leve', value:'0 20px 50px -30px rgba(64,34,18,.3)' },
+  ];
+
+  icons = [
+    {glyph:'pets',usage:'Marca, feed de cães/gatos'},{glyph:'favorite',usage:'Curtir, interesse, doação'},
+    {glyph:'groups',usage:'Comunidade'},{glyph:'chat_bubble',usage:'Chat'},
+    {glyph:'apartment',usage:'Abrigos / ONGs'},{glyph:'volunteer_activism',usage:'Voluntariado'},
+    {glyph:'person',usage:'Perfil'},{glyph:'radar',usage:'Radar de pets'},
+    {glyph:'warning',usage:'Denúncia'},{glyph:'shield',usage:'Admin / segurança'},
+    {glyph:'notifications',usage:'Notificações'},{glyph:'location_on',usage:'Localização'},
+    {glyph:'check_circle',usage:'Confirmação / sucesso'},{glyph:'auto_awesome',usage:'Destaque / match'},
+    {glyph:'campaign',usage:'Aviso / mural'},{glyph:'admin_panel_settings',usage:'Painel de gestão'},
+    {glyph:'send',usage:'Enviar mensagem'},{glyph:'bolt',usage:'Descobrir / swipe'},
+    {glyph:'verified',usage:'ONG verificada'},{glyph:'medical_services',usage:'Saúde do pet'},
+  ];
+
+  buttons = [
+    { text:'Ver Pets para Adoção', bg:'linear-gradient(135deg,hsl(17,72%,43%),hsl(40,88%,54%))', color:'#fff', border:'none', opacity:1, note:'Primário — uma por tela' },
+    { text:'Cadastrar meu Pet', bg:'rgba(255,255,255,0.9)', color:'hsl(20,25%,13%)', border:'2px solid hsla(17,72%,43%,0.3)', opacity:1, note:'Secundário — ação alternativa' },
+    { text:'Ver perfil', bg:'hsl(38,42%,91%)', color:'hsl(20,30%,20%)', border:'none', opacity:1, note:'Terciário/neutro — dentro de cards' },
+    { text:'Painel de gestão', bg:'hsl(20,15%,20%)', color:'#fff', border:'none', opacity:1, note:'Administrativo — contexto restrito' },
+    { text:'Enviar denúncia', bg:'hsl(9,62%,46%)', color:'#fff', border:'none', opacity:1, note:'Crítico — usar com moderação' },
+    { text:'Continuar', bg:'transparent', color:'hsl(20,12%,55%)', border:'2px solid hsl(30,20%,88%)', opacity:0.55, note:'Desabilitado' },
+  ];
+
+  statusChips = [
+    { label:'Disponível', bg:'hsla(150,38%,36%,0.14)', color:'hsl(150,38%,26%)' },
+    { label:'Em processo de adoção', bg:'hsla(40,88%,54%,0.2)', color:'hsl(30,60%,30%)' },
+    { label:'Adotado', bg:'hsla(20,12%,50%,0.16)', color:'hsl(20,12%,35%)' },
+  ];
+  tagChips = ['Castrado','Bom com crianças','Vacinado'];
+
+  motionTokens = [
+    { name:'Entrada (fade + slide)', value:'opacity 0→1, translateY 14–16px→0, 400–600ms ease, uma vez (whileInView)' },
+    { name:'Pop (imagem / hero)', value:'scale .92–.94→1 + opacity, 600ms ease' },
+    { name:'Hover em card', value:'sombra cresce + scale 1.01–1.02, nunca tilt 3D' },
+    { name:'Stagger em grid', value:'70–90ms entre itens, máx. 6–8 itens' },
+    { name:'Redução de movimento', value:'sempre respeitar prefers-reduced-motion' },
+  ];
+
+  voiceDo = [
+    '"O Viralata conecta pets que precisam de um lar com famílias que têm amor para dar."',
+    '"Encontre o pet ideal com base no seu espaço, rotina e estilo de vida."',
+    '"Denuncie casos de maus-tratos ou abandono. Sua identidade fica confidencial."',
+  ];
+  voiceAvoid = [
+    '"Nossa plataforma disponibiliza uma solução integrada de matching entre ativos caninos e usuários finais." — jargão corporativo',
+    '"Bora adotar um mano peludo?? 🐶🔥" — gírias e emoji em excesso na UI',
+  ];
+
+  renderVals() {
+    return {
+      navGroups: this.navGroups, principles: this.principles, colorTokens: this.colorTokens,
+      gradients: this.gradients, spacingScale: this.spacingScale, radiusScale: this.radiusScale,
+      shadowTokens: this.shadowTokens, icons: this.icons, buttons: this.buttons,
+      statusChips: this.statusChips, tagChips: this.tagChips, motionTokens: this.motionTokens,
+      voiceDo: this.voiceDo, voiceAvoid: this.voiceAvoid,
+    };
+  }
+}
+
+</script>
+</body>
+</html>

@@ -3,12 +3,11 @@
 > Plano de organização do desenvolvimento por fases. **Leia primeiro
 > `docs/STATE.md`** — o documento canônico de estado atual, atualizado em
 > cada movimento, com índice dos demais docs e o plano de ataque.
-> Ver `docs/DESIGN_SYSTEM.md` para o fundamento visual detalhado por trás
-> das Fases 0 e 1 abaixo. **Fases 0, 1 e 2 estão concluídas, e a maior
-> parte da Fase 3 também** — ver "O que já está entregue" abaixo. O que
-> resta na Fase 3 depende de decisão externa (conta de ads real) ou é
-> limitação estrutural documentada (cobertura de cidades do filtro de raio,
-> CVE do `xlsx` sem patch no npm).
+> Ver `docs/DESIGN_SYSTEM.md` para a **especificação oficial v1.0 do
+> design system**. **Fases 0, 1, 2 e 3 estão concluídas (com a paleta
+> terracota antiga)**. A **Fase 4 — DS_V2 Reaplicação** é o trabalho
+> atual: aplicar a spec v1.0 oficial nas áreas que ainda divergem,
+> bloco a bloco, com feature flag individual.
 
 ## Roadmap paralelo: Sistema de Gestão do Abrigo
 
@@ -259,3 +258,88 @@ política de rede do time) ou é uma limitação estrutural documentada:
   usado nas entregas anteriores.
 - Commits pequenos e coerentes por lote, com mensagem descritiva, seguindo
   o padrão já usado no histórico do repositório.
+
+---
+
+## Fase 4 — DS_V2: Reaplicação do Design System oficial v1.0
+
+**Status:** 🟡 em andamento (Bloco A em execução, 2026-07-16).
+
+### Contexto
+
+O **design system oficial v1.0** foi finalizado e está documentado em
+`docs/DESIGN_SYSTEM.md` (especificação canônica) e em
+`docs/design-system-v2/` (snapshot portátil em vários formatos). Ele
+redefine a paleta terracota/creme/oliva/mostarda, a biblioteca de
+componentes, padrões de cards, formulários, modais, tabelas, navegação,
+ícones, motion e tom de voz.
+
+A Fase 1 deste roadmap (Fases 0/1/2 da timeline original) aplicou a
+paleta terracota, mas:
+- (a) partes da UI ainda ignoram os tokens (`bg-orange-500` cru, header
+  branco chapado, emoji como imagem);
+- (b) a biblioteca de componentes não foi revisitada de forma sistemática
+  (cada página pode estar usando uma variação diferente de Card, Button,
+  Modal, etc.);
+- (c) ícones são `lucide-react` em 204 arquivos — a spec v1.0 referencia
+  Material Symbols Outlined, mas a migração não é custo-efetiva. **Decisão:
+  coexistência pragmática** — lucide continua, Material Symbols entra
+  para novos componentes / áreas reescritas / ícones de marca;
+- (d) `framer-motion` não está instalado — a Fase 4 inclui a instalação
+  e aplicação parcimoniosa (só em hero, grids, modais, dropdowns);
+- (e) auditoria final de contraste WCAG AA, foco visível, hierarquia
+  semântica ainda não foi rodada de forma sistemática.
+
+### Estrutura de blocos
+
+A Fase 4 é dividida em **6 macroblocos**, cada um isolado por uma
+**feature flag própria default OFF** (mesma convenção das 22 fases
+`SHELTER_*`):
+
+| Flag | Bloco | Escopo | Status |
+|---|---|---|---|
+| `DS_V2_DOCS` | A. Doc oficial | Reescrever `docs/DESIGN_SYSTEM.md` com spec v1.0 + sincronizar `ROADMAP.md`, `AI_CONTEXT.md`, `MODULES.md` + material de referência em `docs/design-system-v2/` | 🟡 em execução |
+| `DS_V2_TOKENS` | B. Tokens + Iconografia | `src/index.css` (já OK), tailwind config, integrar Material Symbols Outlined como subset (coexistência com lucide) | ⏸ aguardando A |
+| `DS_V2_COMPONENTS` | C. Biblioteca | Refatorar `Button`, `Card`, `Input`, `Modal`, `Table`, `Avatar`, `Badge`, `Chip`, `Dialog`, `DropdownMenu` contra spec v1.0 — vira a fonte canônica para D | ⏸ aguardando B |
+| `DS_V2_PAGES-HOME` | D.1 Home | Reescrever `src/pages/Home.jsx` do zero contra spec (vitrine, valida a linha estética antes de propagar) | ⏸ aguardando C |
+| `DS_V2_PAGES-PETS` | D.2 Pets | `PetFeed`, `PetCard`, `PetDetail`, `CreatePet`, `MyPets`, `RadarSettings` | ⏸ aguardando D.1 |
+| `DS_V2_PAGES-ADOPTION` | D.3 Adoção | `AdoptionDetail`, `AdoptionWizard`, fluxo de interesse, avaliação | ⏸ aguardando D.2 |
+| `DS_V2_PAGES-ORG` | D.4 Organizações | `ClubsDirectory`, `ClubDetail`, `CreateClub`, `EventDetail`, `OrganizationsHub`, `OrganizationAdminPanel` + sub-abas | ⏸ aguardando D.3 |
+| `DS_V2_PAGES-ADMIN` | D.5 Admin + Dashboard | `AdminDashboard`, `AdminPets`, `AdminReports`, `AdminUsers`, `AdminOrganizations`, `AdminCommunities`, `AdminMetrics`, `AdminContentEditor` | ⏸ aguardando D.4 |
+| `DS_V2_PAGES-CHAT` | D.6 Chat + Perfil | `ChatPage`, `Profile`, `Login`, `OnboardingQuestionnaire`, institucionais (`Terms`, `Legislation`, `PrivacyPolicy`) | ⏸ aguardando D.5 |
+| `DS_V2_MOTION` | E. Movimento | Instalar `framer-motion`, hook `useReducedMotion`, fade+slide `whileInView` (uma vez), stagger 70-90ms (max 6-8 itens), hover-lift (scale 1.01-1.02 + sombra), transições de rota 150ms | ⏸ aguardando D.6 |
+| `DS_V2_AUDIT` | F. Auditoria final | `grep` por tokens antigos, contraste WCAG AA (4.5:1 texto / 3:1 grande), foco visível, hierarquia semântica, performance, bundle size, lighthouse | ⏸ aguardando E |
+
+### Workflow por bloco
+
+Cada bloco segue o mesmo ritual:
+
+1. **Worktree isolado** — branch `feat/ds-v2-{bloco}-2026-07-XX`, com
+   `git worktree add`.
+2. **Tasks SCRUM granulares** — 1 task por unidade coesa (≤30min cada),
+   `scrum.cjs start → review → done` em ordem.
+3. **Status do SCRUM** atualizado a cada 3 tasks ou ~10min (ver
+   `.harness/LOOP_PROMPT.md`).
+4. **`npm run build` antes de qualquer push** — se quebrar, reverter
+   imediatamente com `git reset --hard HEAD`. Nunca `git push --force`
+   cego.
+5. **PR por bloco** com screenshots, descrição do que mudou e feature
+   flag explícita.
+6. **User valida visualmente** e ativa a flag no `platform_settings/global`.
+7. **Limpeza automática** no fim: deletar branch após merge, deletar
+   worktree órfão, fechar PRs antigos.
+
+### Garantias
+
+- **Nada de regra de negócio** — só camada visual/estrutural.
+- **Flag OFF por default** — usuário só vê após ativar.
+- **Past learnings aplicadas**:
+  - Sem cron atrapalhando merges em massa
+  - Sem `-X theirs` cego em código
+  - `npm ci` antes de push (validar `package-lock.json`)
+  - Pattern de init Firebase em CFs:
+    `if (!global.__viralataInitialized) initializeApp(); global.__viralataInitialized = true;`
+  - Pattern de wrapper `.js` para `.cjs` em Cloud Functions
+  - Firestore rules: sem `[^/]`, sem `r'...'`, preferir `isString() && size() <= N`
+- **Sem retrabalho**: tasks pequenas (≤30min), worktree por bloco, merge
+  sequencial e validado.

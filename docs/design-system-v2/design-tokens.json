@@ -1,0 +1,1299 @@
+{
+  "metadata": {
+    "name": "Design System Viralata",
+    "version": "1.0.0",
+    "description": "Design System completo para a plataforma de adoção responsável Viralata. Reúne princípios, fundamentos (cor, tipografia, espaçamento, ícones) e todos os componentes de UI.",
+    "organization": "Viralata",
+    "repository": "github.com/fsalamoni/viralata",
+    "lastUpdated": "2024",
+    "status": "active"
+  },
+  "principles": {
+    "description": "As quatro premissas que orientam toda decisão de design na plataforma",
+    "items": [
+      {
+        "id": "clarity",
+        "icon": "visibility",
+        "title": "Clareza",
+        "description": "Hierarquia visual óbvia. Uma ação primária por tela, textos diretos, nunca fazer o usuário adivinhar o próximo passo."
+      },
+      {
+        "id": "intuitive-navigation",
+        "icon": "explore",
+        "title": "Navegação intuitiva",
+        "description": "Estrutura estável (Feed, Abrigos, Voluntários, Comunidade, Chat) — muitas funcionalidades, sempre no mesmo lugar."
+      },
+      {
+        "id": "empathy",
+        "icon": "favorite",
+        "title": "Empatia & apego",
+        "description": "Fotos grandes, tom caloroso, histórias reais. O pet é sempre protagonista visual."
+      },
+      {
+        "id": "organicity",
+        "icon": "spa",
+        "title": "Organicidade",
+        "description": "Formas orgânicas, cantos generosos, superfícies de vidro — nunca aspecto corporativo ou 'feito por IA'."
+      }
+    ]
+  },
+  "colors": {
+    "description": "Paleta 'quente e terrosa' — terracota como cor de ação, tons de areia e creme como base, oliva e mostarda como apoio. Máximo 1–2 cores de fundo por tela.",
+    "palette": [
+      {
+        "id": "primary",
+        "name": "Primary · Terracota",
+        "variable": "--primary",
+        "hsl": "17 72% 43%",
+        "hex": "#C85A28",
+        "rgb": "200, 90, 40",
+        "usage": "Ações principais, CTAs, wordmark",
+        "semantics": "action"
+      },
+      {
+        "id": "primary-foreground",
+        "name": "Primary Foreground",
+        "variable": "--primary-foreground",
+        "hsl": "40 45% 98%",
+        "hex": "#FFFBF5",
+        "rgb": "255, 251, 245",
+        "usage": "Texto sobre fundo primary",
+        "semantics": "text-on-primary"
+      },
+      {
+        "id": "secondary",
+        "name": "Secondary · Areia",
+        "variable": "--secondary",
+        "hsl": "38 42% 91%",
+        "hex": "#EDE4D6",
+        "rgb": "237, 228, 214",
+        "usage": "Chips neutros, fundos suaves",
+        "semantics": "neutral-light"
+      },
+      {
+        "id": "accent",
+        "name": "Accent · Oliva",
+        "variable": "--accent",
+        "hsl": "86 30% 32%",
+        "hex": "#5A7A2E",
+        "rgb": "90, 122, 46",
+        "usage": "Avatares, badges de comunidade",
+        "semantics": "accent"
+      },
+      {
+        "id": "highlight",
+        "name": "Highlight · Mostarda",
+        "variable": "--highlight",
+        "hsl": "40 88% 54%",
+        "hex": "#FFC107",
+        "rgb": "255, 193, 7",
+        "usage": "Gradiente CTA, badge 'em processo'",
+        "semantics": "highlight"
+      },
+      {
+        "id": "success",
+        "name": "Success",
+        "variable": "--success",
+        "hsl": "150 38% 36%",
+        "hex": "#26A65B",
+        "rgb": "38, 166, 91",
+        "usage": "Status 'disponível', confirmações",
+        "semantics": "success"
+      },
+      {
+        "id": "destructive",
+        "name": "Destructive",
+        "variable": "--destructive",
+        "hsl": "9 62% 46%",
+        "hex": "#E74C3C",
+        "rgb": "231, 76, 60",
+        "usage": "Denúncias, exclusões, alertas",
+        "semantics": "error"
+      },
+      {
+        "id": "background",
+        "name": "Background",
+        "variable": "--background",
+        "hsl": "38 45% 97%",
+        "hex": "#F8F5F0",
+        "rgb": "248, 245, 240",
+        "usage": "Fundo base de todas as páginas",
+        "semantics": "background"
+      },
+      {
+        "id": "background-alt",
+        "name": "Background Alt",
+        "variable": "--background-alt",
+        "hsl": "34 40% 94%",
+        "hex": "#F0EBE3",
+        "rgb": "240, 235, 227",
+        "usage": "Seções alternadas",
+        "semantics": "background-secondary"
+      },
+      {
+        "id": "foreground",
+        "name": "Foreground",
+        "variable": "--foreground",
+        "hsl": "20 25% 13%",
+        "hex": "#2D1F14",
+        "rgb": "45, 31, 20",
+        "usage": "Texto principal",
+        "semantics": "text-primary"
+      },
+      {
+        "id": "muted-foreground",
+        "name": "Muted Foreground",
+        "variable": "--muted-foreground",
+        "hsl": "20 12% 37%",
+        "hex": "#6B5D52",
+        "rgb": "107, 93, 82",
+        "usage": "Texto secundário, legendas",
+        "semantics": "text-secondary"
+      },
+      {
+        "id": "border",
+        "name": "Border",
+        "variable": "--border",
+        "hsl": "30 20% 88%",
+        "hex": "#E0D5C7",
+        "rgb": "224, 213, 199",
+        "usage": "Bordas de inputs, cards, divisores",
+        "semantics": "border"
+      }
+    ]
+  },
+  "gradients": {
+    "description": "Usados com moderação — CTAs, marca e superfícies de destaque. Nunca em blocos de texto longos.",
+    "items": [
+      {
+        "id": "brand",
+        "name": "Gradiente de marca",
+        "css": "linear-gradient(135deg, hsl(17,72%,43%), hsl(40,88%,54%))",
+        "direction": "135deg",
+        "stops": [
+          {"color": "hsl(17,72%,43%)", "position": "0%"},
+          {"color": "hsl(40,88%,54%)", "position": "100%"}
+        ],
+        "usage": "Botões primários, CTA final, ícone do logo",
+        "semantics": "primary-gradient"
+      },
+      {
+        "id": "wordmark",
+        "name": "Wordmark",
+        "css": "linear-gradient(90deg, hsl(16,68%,26%), hsl(16,60%,42%), hsl(42,88%,52%))",
+        "direction": "90deg",
+        "stops": [
+          {"color": "hsl(16,68%,26%)", "position": "0%"},
+          {"color": "hsl(16,60%,42%)", "position": "50%"},
+          {"color": "hsl(42,88%,52%)", "position": "100%"}
+        ],
+        "usage": "Texto 'Viralata' e títulos com destaque",
+        "semantics": "text-gradient"
+      },
+      {
+        "id": "banner-dark",
+        "name": "Banner escuro",
+        "css": "linear-gradient(145deg, hsl(16,60%,30%), hsl(20,35%,18%) 55%, hsl(20,25%,11%))",
+        "direction": "145deg",
+        "stops": [
+          {"color": "hsl(16,60%,30%)", "position": "0%"},
+          {"color": "hsl(20,35%,18%)", "position": "55%"},
+          {"color": "hsl(20,25%,11%)", "position": "100%"}
+        ],
+        "usage": "Cabeçalhos internos, CTA final, admin",
+        "semantics": "dark-gradient"
+      },
+      {
+        "id": "avatar",
+        "name": "Avatar",
+        "css": "linear-gradient(135deg, hsl(86,30%,32%), hsl(17,72%,43%))",
+        "direction": "135deg",
+        "stops": [
+          {"color": "hsl(86,30%,32%)", "position": "0%"},
+          {"color": "hsl(17,72%,43%)", "position": "100%"}
+        ],
+        "usage": "Avatares com iniciais, ícones de equipe",
+        "semantics": "avatar-gradient"
+      }
+    ]
+  },
+  "typography": {
+    "description": "Sora (700/800) para títulos, com leve tracking negativo. Manrope (400–800) para todo o resto — corpo, botões, legendas.",
+    "fonts": [
+      {
+        "id": "sora",
+        "family": "Sora",
+        "source": "Google Fonts",
+        "weights": [600, 700, 800],
+        "usage": "Títulos e display",
+        "fallback": "sans-serif"
+      },
+      {
+        "id": "manrope",
+        "family": "Manrope",
+        "source": "Google Fonts",
+        "weights": [400, 500, 600, 700, 800],
+        "usage": "Corpo, botões, legendas",
+        "fallback": "sans-serif"
+      }
+    ],
+    "scales": [
+      {
+        "id": "display",
+        "name": "Display",
+        "font": "Sora",
+        "size": "56px",
+        "weight": 800,
+        "lineHeight": 1.1,
+        "letterSpacing": "-0.03em",
+        "usage": "Títulos heróis, landing pages",
+        "example": "Encontre seu companheiro"
+      },
+      {
+        "id": "h1",
+        "name": "H1",
+        "font": "Sora",
+        "size": "30-34px",
+        "weight": 800,
+        "lineHeight": 1.2,
+        "letterSpacing": "-0.02em",
+        "usage": "Títulos de página",
+        "example": "Painel administrativo"
+      },
+      {
+        "id": "h2",
+        "name": "H2",
+        "font": "Sora",
+        "size": "26-30px",
+        "weight": 800,
+        "lineHeight": 1.2,
+        "letterSpacing": "-0.02em",
+        "usage": "Títulos de seção",
+        "example": "Vidas que mudaram de rumo"
+      },
+      {
+        "id": "h3",
+        "name": "H3",
+        "font": "Sora",
+        "size": "16-19px",
+        "weight": 700,
+        "lineHeight": 1.3,
+        "letterSpacing": "0em",
+        "usage": "Subtítulos, card titles",
+        "example": "Match inteligente"
+      },
+      {
+        "id": "body-large",
+        "name": "Corpo grande",
+        "font": "Manrope",
+        "size": "17.5px",
+        "weight": 400,
+        "lineHeight": 1.6,
+        "letterSpacing": "0em",
+        "usage": "Texto longo, descrições",
+        "example": "O Viralata conecta pets que precisam de um lar com famílias que têm amor para dar."
+      },
+      {
+        "id": "body",
+        "name": "Corpo",
+        "font": "Manrope",
+        "size": "14px",
+        "weight": 500,
+        "lineHeight": 1.6,
+        "letterSpacing": "0em",
+        "usage": "Texto principal, parágrafos",
+        "example": "Cachorro dócil, castrado e vacinado. Convive bem com crianças e outros cães."
+      },
+      {
+        "id": "small",
+        "name": "Pequeno",
+        "font": "Manrope",
+        "size": "12.5-13.5px",
+        "weight": 600,
+        "lineHeight": 1.4,
+        "letterSpacing": "0em",
+        "usage": "Labels, legendas, metadados",
+        "example": "Há 75 dias no Viralata"
+      },
+      {
+        "id": "eyebrow",
+        "name": "Eyebrow",
+        "font": "Manrope",
+        "size": "11px",
+        "weight": 700,
+        "lineHeight": 1.2,
+        "letterSpacing": "0.24em",
+        "textTransform": "uppercase",
+        "usage": "Rótulos de categoria, badges",
+        "example": "Adoção responsável"
+      }
+    ]
+  },
+  "spacing": {
+    "description": "Escala de espaçamento em incrementos de 4px. Reforça a sensação orgânica e acolhedora.",
+    "scale": [4, 8, 12, 16, 20, 24, 32, 40, 48, 64, 96],
+    "tokens": [
+      {"value": 4, "unit": "px", "variable": "--space-1", "usage": "Micro spacing, ícone gaps"},
+      {"value": 8, "unit": "px", "variable": "--space-2", "usage": "Pequeno gap entre elementos"},
+      {"value": 12, "unit": "px", "variable": "--space-3", "usage": "Padding pequeno"},
+      {"value": 16, "unit": "px", "variable": "--space-4", "usage": "Padding padrão, gap médio"},
+      {"value": 20, "unit": "px", "variable": "--space-5", "usage": "Padding maior"},
+      {"value": 24, "unit": "px", "variable": "--space-6", "usage": "Padding generoso, gap grande"},
+      {"value": 32, "unit": "px", "variable": "--space-8", "usage": "Seção interna"},
+      {"value": 40, "unit": "px", "variable": "--space-10", "usage": "Gap entre cards"},
+      {"value": 48, "unit": "px", "variable": "--space-12", "usage": "Seção grande"},
+      {"value": 64, "unit": "px", "variable": "--space-16", "usage": "Espaço entre seções"},
+      {"value": 96, "unit": "px", "variable": "--space-24", "usage": "Espaço vertical grande"}
+    ]
+  },
+  "radius": {
+    "description": "Raios generosos e cantos arredondados reforçam a sensação orgânica e acolhedora.",
+    "scales": [
+      {
+        "id": "pill",
+        "name": "Pill",
+        "value": "999px",
+        "usage": "Botões, chips, inputs de busca",
+        "examples": ["Botões primários", "Chips de filtro", "Inputs de busca"]
+      },
+      {
+        "id": "card",
+        "name": "Card",
+        "value": "22-24px",
+        "usage": "Cards de pet, abrigo, painéis",
+        "examples": ["Cards de pet", "Cards de abrigo", "Painéis informativos"]
+      },
+      {
+        "id": "banner",
+        "name": "Banner",
+        "value": "28-32px",
+        "usage": "Cabeçalhos, CTA final",
+        "examples": ["Cabeçalhos de página", "CTAs finais", "Banners heróis"]
+      },
+      {
+        "id": "small",
+        "name": "Pequeno",
+        "value": "12-14px",
+        "usage": "Miniaturas, badges quadrados",
+        "examples": ["Badges", "Miniaturas", "Ícones com fundo"]
+      },
+      {
+        "id": "organic",
+        "name": "Orgânico (blob)",
+        "value": "40% 60% 55% 45% / 48% 44% 56% 52%",
+        "usage": "Moldura de foto — Home, 1x por página",
+        "examples": ["Moldura de foto hero", "Imagem de destaque"]
+      }
+    ]
+  },
+  "shadows": {
+    "description": "Sombras difusas e quentes (nunca cinza puro) dão profundidade sem parecer pesadas.",
+    "tokens": [
+      {
+        "id": "floating-panel",
+        "name": "Painel flutuante",
+        "value": "0 24px 60px -28px rgba(64, 34, 18, 0.28)",
+        "usage": "Modais, dropdowns, cards flutuantes",
+        "elevation": "high"
+      },
+      {
+        "id": "button-cta",
+        "name": "Botão / CTA",
+        "value": "0 18px 38px -22px rgba(64, 34, 18, 0.7)",
+        "usage": "Botões primários, CTAs",
+        "elevation": "medium-high"
+      },
+      {
+        "id": "banner-dark",
+        "name": "Banner escuro",
+        "value": "0 30px 80px -28px rgba(43, 20, 8, 0.62)",
+        "usage": "Cabeçalhos escuros, banners",
+        "elevation": "very-high"
+      },
+      {
+        "id": "hover-light",
+        "name": "Hover leve",
+        "value": "0 20px 50px -30px rgba(64, 34, 18, 0.3)",
+        "usage": "Estados hover, elevação leve",
+        "elevation": "low"
+      }
+    ]
+  },
+  "glass": {
+    "description": "Superfícies de vidro (glass) aparecem sobre fundos com glow.",
+    "token": {
+      "background": "rgba(255, 255, 255, 0.8)",
+      "border": "1px solid rgba(255, 255, 255, 0.9)",
+      "backdropFilter": "blur(14px)",
+      "boxShadow": "0 24px 60px -28px rgba(64, 34, 18, 0.28)",
+      "usage": "Painéis flutuantes, overlays, cards especiais",
+      "guidelines": [
+        "Sempre sobre fundo com glow radial",
+        "Usar backdrop-filter blur 8-20px",
+        "Manter transparência 80%",
+        "Borda sempre 90% transparente"
+      ]
+    }
+  },
+  "icons": {
+    "description": "Material Symbols Outlined, peso 500. Preenchido (FILL 1) apenas para estados ativos/afetivos.",
+    "library": "Material Symbols Outlined",
+    "weight": 500,
+    "size": "20-24px",
+    "guidelines": [
+      "Usar peso 500 como padrão",
+      "FILL 1 apenas para: marca, curtir, ativo",
+      "Sem emoji na interface — só em conteúdo gerado por usuários",
+      "Máximo 2-3 ícones por card",
+      "Sempre com padding/espaço ao redor"
+    ],
+    "icons": [
+      {"glyph": "pets", "usage": "Marca, feed de cães/gatos", "semantics": "primary"},
+      {"glyph": "favorite", "usage": "Curtir, interesse, doação", "semantics": "action"},
+      {"glyph": "groups", "usage": "Comunidade", "semantics": "navigation"},
+      {"glyph": "chat_bubble", "usage": "Chat", "semantics": "navigation"},
+      {"glyph": "apartment", "usage": "Abrigos / ONGs", "semantics": "navigation"},
+      {"glyph": "volunteer_activism", "usage": "Voluntariado", "semantics": "navigation"},
+      {"glyph": "person", "usage": "Perfil", "semantics": "navigation"},
+      {"glyph": "radar", "usage": "Radar de pets", "semantics": "discovery"},
+      {"glyph": "warning", "usage": "Denúncia", "semantics": "alert"},
+      {"glyph": "shield", "usage": "Admin / segurança", "semantics": "admin"},
+      {"glyph": "notifications", "usage": "Notificações", "semantics": "notification"},
+      {"glyph": "location_on", "usage": "Localização", "semantics": "location"},
+      {"glyph": "check_circle", "usage": "Confirmação / sucesso", "semantics": "success"},
+      {"glyph": "auto_awesome", "usage": "Destaque / match", "semantics": "highlight"},
+      {"glyph": "campaign", "usage": "Aviso / mural", "semantics": "announcement"},
+      {"glyph": "admin_panel_settings", "usage": "Painel de gestão", "semantics": "admin"},
+      {"glyph": "send", "usage": "Enviar mensagem", "semantics": "action"},
+      {"glyph": "bolt", "usage": "Descobrir / swipe", "semantics": "discovery"},
+      {"glyph": "verified", "usage": "ONG verificada", "semantics": "verified"},
+      {"glyph": "medical_services", "usage": "Saúde do pet", "semantics": "health"}
+    ]
+  },
+  "components": {
+    "buttons": {
+      "description": "Sempre em formato pílula (999px). Uma única ação primária por tela.",
+      "variants": [
+        {
+          "id": "primary",
+          "name": "Primário",
+          "height": "46px",
+          "padding": "0 24px",
+          "borderRadius": "999px",
+          "background": "linear-gradient(135deg, hsl(17,72%,43%), hsl(40,88%,54%))",
+          "color": "#fff",
+          "border": "none",
+          "fontSize": "14px",
+          "fontWeight": 700,
+          "shadow": "0 18px 38px -22px rgba(64,34,18,0.7)",
+          "usage": "Uma por tela — ação principal",
+          "states": {
+            "default": {"opacity": 1},
+            "hover": {"transform": "scale(1.02)", "shadow": "0 20px 45px -20px rgba(64,34,18,0.8)"},
+            "active": {"transform": "scale(0.98)"},
+            "disabled": {"opacity": 0.5}
+          }
+        },
+        {
+          "id": "secondary",
+          "name": "Secundário",
+          "height": "46px",
+          "padding": "0 24px",
+          "borderRadius": "999px",
+          "background": "rgba(255,255,255,0.9)",
+          "color": "hsl(20,25%,13%)",
+          "border": "2px solid hsla(17,72%,43%,0.3)",
+          "fontSize": "14px",
+          "fontWeight": 700,
+          "usage": "Ação alternativa",
+          "states": {
+            "default": {"opacity": 1},
+            "hover": {"background": "rgba(255,255,255,1)", "borderColor": "hsla(17,72%,43%,0.5)"},
+            "active": {"transform": "scale(0.98)"}
+          }
+        },
+        {
+          "id": "tertiary",
+          "name": "Terciário/Neutro",
+          "height": "36px",
+          "padding": "0 16px",
+          "borderRadius": "999px",
+          "background": "hsl(38,42%,91%)",
+          "color": "hsl(20,30%,20%)",
+          "border": "none",
+          "fontSize": "12.5px",
+          "fontWeight": 700,
+          "usage": "Dentro de cards, ações secundárias",
+          "states": {
+            "default": {"opacity": 1},
+            "hover": {"background": "hsl(38,42%,85%)"}
+          }
+        },
+        {
+          "id": "admin",
+          "name": "Administrativo",
+          "height": "46px",
+          "padding": "0 24px",
+          "borderRadius": "999px",
+          "background": "hsl(20,15%,20%)",
+          "color": "#fff",
+          "border": "none",
+          "fontSize": "14px",
+          "fontWeight": 700,
+          "usage": "Contexto restrito, painel admin",
+          "states": {
+            "default": {"opacity": 1},
+            "hover": {"background": "hsl(20,15%,15%)"}
+          }
+        },
+        {
+          "id": "destructive",
+          "name": "Crítico",
+          "height": "46px",
+          "padding": "0 24px",
+          "borderRadius": "999px",
+          "background": "hsl(9,62%,46%)",
+          "color": "#fff",
+          "border": "none",
+          "fontSize": "14px",
+          "fontWeight": 700,
+          "usage": "Denúncias, exclusões — usar com moderação",
+          "states": {
+            "default": {"opacity": 1},
+            "hover": {"background": "hsl(9,62%,40%)"}
+          }
+        },
+        {
+          "id": "disabled",
+          "name": "Desabilitado",
+          "height": "46px",
+          "padding": "0 24px",
+          "borderRadius": "999px",
+          "background": "transparent",
+          "color": "hsl(20,12%,55%)",
+          "border": "2px solid hsl(30,20%,88%)",
+          "fontSize": "14px",
+          "fontWeight": 700,
+          "opacity": 0.55,
+          "usage": "Estado desabilitado",
+          "states": {
+            "default": {"opacity": 0.55},
+            "cursor": "not-allowed"
+          }
+        },
+        {
+          "id": "icon-circle",
+          "name": "Ícone Circular",
+          "height": "46-52px",
+          "width": "46-52px",
+          "borderRadius": "999px",
+          "background": "linear-gradient(135deg, hsl(17,72%,43%), hsl(40,88%,54%))",
+          "color": "#fff",
+          "usage": "Swipe de descoberta, ações rápidas",
+          "examples": ["Botão de fechar", "Botão de curtir"]
+        }
+      ]
+    },
+    "chips": {
+      "description": "Elementos compactos para filtros, status e tags.",
+      "variants": [
+        {
+          "id": "status-available",
+          "name": "Status: Disponível",
+          "padding": "6px 14px",
+          "borderRadius": "999px",
+          "background": "hsla(150,38%,36%,0.14)",
+          "color": "hsl(150,38%,26%)",
+          "fontSize": "12px",
+          "fontWeight": 700,
+          "usage": "Pet disponível para adoção"
+        },
+        {
+          "id": "status-in-process",
+          "name": "Status: Em processo",
+          "padding": "6px 14px",
+          "borderRadius": "999px",
+          "background": "hsla(40,88%,54%,0.2)",
+          "color": "hsl(30,60%,30%)",
+          "fontSize": "12px",
+          "fontWeight": 700,
+          "usage": "Pet em processo de adoção"
+        },
+        {
+          "id": "status-adopted",
+          "name": "Status: Adotado",
+          "padding": "6px 14px",
+          "borderRadius": "999px",
+          "background": "hsla(20,12%,50%,0.16)",
+          "color": "hsl(20,12%,35%)",
+          "fontSize": "12px",
+          "fontWeight": 700,
+          "usage": "Pet já adotado"
+        },
+        {
+          "id": "filter-active",
+          "name": "Filtro Ativo",
+          "height": "36px",
+          "padding": "0 16px",
+          "borderRadius": "999px",
+          "background": "hsl(17,72%,43%)",
+          "color": "#fff",
+          "fontSize": "13px",
+          "fontWeight": 700,
+          "usage": "Filtro selecionado"
+        },
+        {
+          "id": "filter-inactive",
+          "name": "Filtro Inativo",
+          "height": "36px",
+          "padding": "0 16px",
+          "borderRadius": "999px",
+          "background": "#fff",
+          "color": "hsl(20,25%,13%)",
+          "border": "1px solid hsl(30,20%,88%)",
+          "fontSize": "13px",
+          "fontWeight": 600,
+          "usage": "Filtro não selecionado"
+        },
+        {
+          "id": "tag",
+          "name": "Tag de Característica",
+          "padding": "5px 12px",
+          "borderRadius": "999px",
+          "background": "hsl(38,42%,91%)",
+          "color": "hsl(20,30%,20%)",
+          "fontSize": "12px",
+          "fontWeight": 600,
+          "usage": "Tags: Castrado, Vacinado, etc.",
+          "examples": ["Castrado", "Bom com crianças", "Vacinado"]
+        }
+      ]
+    },
+    "cards": {
+      "description": "Cantos 20–24px, fundo quase-branco translúcido, sombra difusa. Hover: leve elevação, sem tilt 3D.",
+      "variants": [
+        {
+          "id": "pet-card",
+          "name": "Card de Pet",
+          "borderRadius": "22px",
+          "background": "#fff",
+          "border": "1px solid hsl(30,20%,90%)",
+          "shadow": "0 24px 60px -28px rgba(64,34,18,0.28)",
+          "structure": {
+            "image": {"aspectRatio": "1.3", "background": "hsl(38,42%,88%)"},
+            "content": {"padding": "16px"},
+            "title": {"fontSize": "16px", "fontWeight": 700, "font": "Sora"},
+            "metadata": {"fontSize": "12px", "color": "hsl(20,12%,37%)"},
+            "button": {"type": "tertiary", "fullWidth": true}
+          },
+          "usage": "Feed, abrigo, busca",
+          "states": {
+            "hover": {"transform": "scale(1.01)", "shadow": "0 28px 70px -26px rgba(64,34,18,0.35)"}
+          }
+        },
+        {
+          "id": "feature-card",
+          "name": "Feature Card",
+          "borderRadius": "22px",
+          "background": "#fff",
+          "border": "1px solid hsl(30,20%,90%)",
+          "padding": "22px",
+          "structure": {
+            "icon": {"size": "44px", "background": "hsla(17,72%,45%,0.12)"},
+            "title": {"fontSize": "15.5px", "fontWeight": 700},
+            "description": {"fontSize": "13px", "color": "hsl(20,12%,37%)"}
+          },
+          "usage": "Página inicial, destaques"
+        },
+        {
+          "id": "testimonial-card",
+          "name": "Card de Depoimento",
+          "borderRadius": "22px",
+          "background": "#fff",
+          "border": "1px solid hsl(30,20%,90%)",
+          "padding": "22px",
+          "structure": {
+            "avatar": {"size": "40px", "borderRadius": "999px", "background": "linear-gradient(135deg, hsl(86,30%,32%), hsl(17,72%,43%))"},
+            "name": {"fontSize": "12.5px", "fontWeight": 700},
+            "action": {"fontSize": "11px", "color": "hsl(20,12%,45%)"},
+            "quote": {"fontSize": "12.5px", "fontStyle": "italic", "color": "hsla(20,25%,13%,0.85)"}
+          },
+          "usage": "Histórias reais, depoimentos"
+        }
+      ]
+    },
+    "forms": {
+      "description": "Inputs, textareas, toggles e controles segmentados.",
+      "elements": [
+        {
+          "id": "text-input",
+          "name": "Campo de Texto",
+          "height": "46px",
+          "borderRadius": "12px",
+          "border": "1px solid hsl(30,20%,85%)",
+          "padding": "0 14px",
+          "fontSize": "14px",
+          "fontFamily": "Manrope, sans-serif",
+          "states": {
+            "default": {"borderColor": "hsl(30,20%,85%)"},
+            "focus": {"borderColor": "hsl(17,72%,43%)", "outline": "none", "boxShadow": "0 0 0 3px hsla(17,72%,43%,0.1)"},
+            "error": {"borderColor": "hsl(9,62%,46%)"}
+          }
+        },
+        {
+          "id": "textarea",
+          "name": "Área de Texto",
+          "minHeight": "80px",
+          "borderRadius": "12px",
+          "border": "1px solid hsl(30,20%,85%)",
+          "padding": "12px 14px",
+          "fontSize": "14px",
+          "fontFamily": "Manrope, sans-serif",
+          "resize": "vertical",
+          "usage": "Descrições, mensagens longas"
+        },
+        {
+          "id": "segmented-control",
+          "name": "Controle Segmentado",
+          "height": "38px",
+          "borderRadius": "999px",
+          "usage": "Seleção entre 2-4 opções",
+          "states": {
+            "active": {"background": "hsl(17,72%,43%)", "color": "#fff", "fontWeight": 700},
+            "inactive": {"background": "#fff", "border": "1px solid hsl(30,20%,88%)", "color": "hsl(20,25%,13%)", "fontWeight": 600}
+          }
+        },
+        {
+          "id": "toggle",
+          "name": "Interruptor (Toggle)",
+          "height": "26px",
+          "width": "46px",
+          "borderRadius": "999px",
+          "states": {
+            "on": {"background": "hsl(150,38%,36%)", "knob": {"marginLeft": "auto"}},
+            "off": {"background": "hsl(30,20%,85%)", "knob": {"marginLeft": "0"}}
+          },
+          "knob": {"height": "20px", "width": "20px", "borderRadius": "999px", "background": "#fff"}
+        }
+      ]
+    },
+    "navigation": {
+      "description": "Estrutura fixa: Feed · Abrigos · Voluntários · Comunidade · Chat — sempre no mesmo lugar.",
+      "variants": [
+        {
+          "id": "tab-menu",
+          "name": "Menu em Abas (Desktop)",
+          "layout": "horizontal",
+          "borderRadius": "999px",
+          "background": "#fff",
+          "border": "1px solid hsl(30,20%,90%)",
+          "padding": "6px",
+          "items": ["Feed", "Abrigos", "Comunidade"],
+          "states": {
+            "active": {"background": "hsl(17,72%,43%)", "color": "#fff", "fontWeight": 700},
+            "inactive": {"color": "hsla(20,25%,13%,0.7)", "fontWeight": 600}
+          },
+          "usage": "Desktop, menu principal"
+        },
+        {
+          "id": "bottom-nav",
+          "name": "Barra de Navegação (Mobile)",
+          "layout": "horizontal",
+          "borderRadius": "20px",
+          "background": "hsl(20,25%,13%)",
+          "padding": "14px 28px",
+          "height": "fit-content",
+          "items": [
+            {"icon": "pets", "label": "Feed", "position": "active"},
+            {"icon": "apartment", "label": "ONGs"},
+            {"icon": "add", "label": "Novo", "position": "center-elevated"},
+            {"icon": "chat_bubble", "label": "Chat"},
+            {"icon": "person", "label": "Perfil"}
+          ],
+          "centerButton": {
+            "height": "44px",
+            "width": "44px",
+            "borderRadius": "999px",
+            "background": "linear-gradient(135deg, hsl(17,72%,43%), hsl(40,88%,54%))",
+            "color": "#fff",
+            "transform": "translateY(-10px)",
+            "shadow": "0 10px 20px -8px rgba(64,34,18,0.6)"
+          },
+          "usage": "Mobile, PWA, ação central"
+        }
+      ]
+    },
+    "overlays": {
+      "description": "Modais, menus dropdown, painéis flutuantes.",
+      "variants": [
+        {
+          "id": "dropdown-menu",
+          "name": "Menu Dropdown",
+          "borderRadius": "18px",
+          "background": "#fff",
+          "border": "1px solid hsl(30,20%,88%)",
+          "shadow": "0 24px 60px -28px rgba(64,34,18,0.28)",
+          "padding": "8px",
+          "items": [
+            {"icon": "person", "label": "Meu Perfil"},
+            {"icon": "favorite", "label": "Meus Pets"},
+            {"icon": "warning", "label": "Fazer denúncia", "color": "hsl(9,62%,46%)"}
+          ],
+          "itemStyle": {
+            "padding": "9px 12px",
+            "borderRadius": "10px",
+            "fontSize": "13px",
+            "fontWeight": 600,
+            "gap": "10px"
+          }
+        },
+        {
+          "id": "modal",
+          "name": "Modal",
+          "borderRadius": "24px",
+          "background": "#fff",
+          "border": "1px solid hsl(30,20%,88%)",
+          "shadow": "0 24px 60px -28px rgba(64,34,18,0.28)",
+          "padding": "32px",
+          "maxWidth": "480px",
+          "structure": {
+            "header": {"fontSize": "20px", "fontWeight": 800, "font": "Sora"},
+            "content": {"fontSize": "14px", "lineHeight": 1.6, "marginTop": "16px"},
+            "footer": {"marginTop": "24px", "display": "flex", "gap": "12px"}
+          }
+        }
+      ]
+    },
+    "tables": {
+      "description": "Tabelas para listagem de dados, com alternância de cores e hover.",
+      "structure": {
+        "borderRadius": "18px",
+        "border": "1px solid hsl(30,20%,88%)",
+        "overflow": "hidden",
+        "header": {
+          "background": "hsl(38,42%,91%)",
+          "padding": "14px 16px",
+          "fontSize": "12px",
+          "fontWeight": 800,
+          "textTransform": "uppercase",
+          "letterSpacing": "0.08em",
+          "color": "hsl(20,12%,50%)"
+        },
+        "row": {
+          "padding": "14px 16px",
+          "borderBottom": "1px solid hsl(30,20%,92%)",
+          "fontSize": "14px",
+          "states": {
+            "default": {"background": "#fff"},
+            "alternate": {"background": "hsl(38,45%,97%)"},
+            "hover": {"background": "hsl(38,42%,93%)"}
+          }
+        }
+      }
+    },
+    "chat": {
+      "description": "Interface de chat com mensagens, avatares e input.",
+      "structure": {
+        "message": {
+          "own": {
+            "background": "linear-gradient(135deg, hsl(17,72%,43%), hsl(40,88%,54%))",
+            "color": "#fff",
+            "borderRadius": "18px 18px 4px 18px",
+            "padding": "12px 16px",
+            "maxWidth": "70%"
+          },
+          "other": {
+            "background": "hsl(38,42%,91%)",
+            "color": "hsl(20,25%,13%)",
+            "borderRadius": "18px 18px 18px 4px",
+            "padding": "12px 16px",
+            "maxWidth": "70%"
+          }
+        },
+        "input": {
+          "borderRadius": "999px",
+          "border": "1px solid hsl(30,20%,88%)",
+          "padding": "12px 16px",
+          "fontSize": "14px",
+          "display": "flex",
+          "alignItems": "center",
+          "gap": "8px"
+        }
+      }
+    },
+    "progress": {
+      "description": "Barras de progresso, indicadores e métricas.",
+      "variants": [
+        {
+          "id": "progress-bar",
+          "name": "Barra de Progresso",
+          "height": "8px",
+          "borderRadius": "999px",
+          "background": "hsl(30,20%,88%)",
+          "fill": {
+            "background": "linear-gradient(90deg, hsl(17,72%,43%), hsl(40,88%,54%))",
+            "borderRadius": "999px"
+          }
+        },
+        {
+          "id": "metric-card",
+          "name": "Card de Métrica",
+          "borderRadius": "18px",
+          "background": "#fff",
+          "border": "1px solid hsl(30,20%,88%)",
+          "padding": "20px",
+          "structure": {
+            "label": {"fontSize": "12px", "fontWeight": 700, "color": "hsl(20,12%,50%)"},
+            "value": {"fontSize": "28px", "fontWeight": 800, "font": "Sora", "marginTop": "8px"},
+            "change": {"fontSize": "12px", "color": "hsl(150,38%,36%)", "marginTop": "8px"}
+          }
+        }
+      ]
+    },
+    "avatars": {
+      "description": "Avatares com iniciais, imagens e estados.",
+      "variants": [
+        {
+          "id": "avatar-initials",
+          "name": "Avatar com Iniciais",
+          "sizes": ["32px", "40px", "48px", "56px"],
+          "borderRadius": "999px",
+          "background": "linear-gradient(135deg, hsl(86,30%,32%), hsl(17,72%,43%))",
+          "color": "#fff",
+          "fontSize": "13px",
+          "fontWeight": 700,
+          "display": "flex",
+          "alignItems": "center",
+          "justifyContent": "center"
+        },
+        {
+          "id": "avatar-image",
+          "name": "Avatar com Imagem",
+          "sizes": ["32px", "40px", "48px", "56px"],
+          "borderRadius": "999px",
+          "border": "2px solid hsl(30,20%,88%)",
+          "objectFit": "cover"
+        },
+        {
+          "id": "avatar-status",
+          "name": "Avatar com Status",
+          "base": "avatar-image",
+          "statusIndicator": {
+            "size": "12px",
+            "borderRadius": "999px",
+            "border": "2px solid #fff",
+            "position": "absolute",
+            "bottom": "-2px",
+            "right": "-2px",
+            "states": {
+              "online": {"background": "hsl(150,38%,36%)"},
+              "offline": {"background": "hsl(20,12%,50%)"},
+              "away": {"background": "hsl(40,88%,54%)"}
+            }
+          }
+        }
+      ]
+    },
+    "banners": {
+      "description": "Banners heróis, cabeçalhos e avisos.",
+      "variants": [
+        {
+          "id": "hero-banner",
+          "name": "Banner Herói",
+          "borderRadius": "28-32px",
+          "background": "linear-gradient(145deg, hsl(16,60%,30%), hsl(20,35%,18%) 55%, hsl(20,25%,11%))",
+          "padding": "40-60px",
+          "minHeight": "300px",
+          "structure": {
+            "title": {"fontSize": "44px", "fontWeight": 800, "font": "Sora", "color": "#fff"},
+            "subtitle": {"fontSize": "17.5px", "lineHeight": 1.6, "color": "rgba(255,255,255,0.9)", "marginTop": "16px"},
+            "cta": {"marginTop": "24px"}
+          }
+        },
+        {
+          "id": "alert-banner",
+          "name": "Banner de Alerta",
+          "borderRadius": "16px",
+          "padding": "16px",
+          "display": "flex",
+          "gap": "12px",
+          "alignItems": "flex-start",
+          "variants": {
+            "info": {"background": "hsla(17,72%,45%,0.1)", "borderLeft": "4px solid hsl(17,72%,43%)"},
+            "success": {"background": "hsla(150,38%,36%,0.1)", "borderLeft": "4px solid hsl(150,38%,36%)"},
+            "warning": {"background": "hsla(40,88%,54%,0.15)", "borderLeft": "4px solid hsl(40,88%,54%)"},
+            "error": {"background": "hsla(9,62%,46%,0.1)", "borderLeft": "4px solid hsl(9,62%,46%)"}
+          }
+        }
+      ]
+    }
+  },
+  "motion": {
+    "description": "Animações sutis que reforçam feedback e hierarquia.",
+    "tokens": [
+      {
+        "id": "entrance",
+        "name": "Entrada (fade + slide)",
+        "properties": {
+          "opacity": "0→1",
+          "transform": "translateY(14-16px)→0",
+          "duration": "400-600ms",
+          "easing": "ease",
+          "trigger": "whileInView"
+        },
+        "usage": "Elementos ao entrar na viewport"
+      },
+      {
+        "id": "pop",
+        "name": "Pop (imagem / hero)",
+        "properties": {
+          "transform": "scale(0.92-0.94)→1",
+          "opacity": "0→1",
+          "duration": "600ms",
+          "easing": "ease"
+        },
+        "usage": "Imagens, heróis, elementos de destaque"
+      },
+      {
+        "id": "hover-card",
+        "name": "Hover em card",
+        "properties": {
+          "transform": "scale(1.01-1.02)",
+          "shadow": "cresce",
+          "duration": "300ms",
+          "easing": "ease",
+          "note": "Nunca tilt 3D"
+        },
+        "usage": "Cards ao passar mouse"
+      },
+      {
+        "id": "stagger",
+        "name": "Stagger em grid",
+        "properties": {
+          "delay": "70-90ms entre itens",
+          "maxItems": "6-8",
+          "duration": "400-600ms"
+        },
+        "usage": "Grids de cards, listas"
+      },
+      {
+        "id": "reduced-motion",
+        "name": "Redução de movimento",
+        "properties": {
+          "mediaQuery": "prefers-reduced-motion: reduce",
+          "action": "Desabilitar todas as animações"
+        },
+        "usage": "Acessibilidade — sempre respeitar"
+      }
+    ]
+  },
+  "voice": {
+    "description": "Tom de voz: caloroso, empático, direto e acessível.",
+    "do": [
+      "O Viralata conecta pets que precisam de um lar com famílias que têm amor para dar.",
+      "Encontre o pet ideal com base no seu espaço, rotina e estilo de vida.",
+      "Denuncie casos de maus-tratos ou abandono. Sua identidade fica confidencial."
+    ],
+    "avoid": [
+      "Nossa plataforma disponibiliza uma solução integrada de matching entre ativos caninos e usuários finais. (jargão corporativo)",
+      "Bora adotar um mano peludo?? 🐶🔥 (gírias e emoji em excesso na UI)"
+    ],
+    "guidelines": [
+      "Sempre foco no pet como protagonista",
+      "Usar primeira pessoa quando apropriado",
+      "Evitar jargão técnico",
+      "Ser direto e claro",
+      "Reforçar empatia e responsabilidade"
+    ]
+  },
+  "logo": {
+    "description": "Logo Viralata com marca de pata e gradiente.",
+    "variants": [
+      {
+        "id": "logo-full",
+        "name": "Logo Completo",
+        "components": ["Ícone (pata com gradiente)", "Wordmark (Viralata)"],
+        "usage": "Header, branding principal"
+      },
+      {
+        "id": "logo-icon",
+        "name": "Ícone (Marca de Pata)",
+        "background": "linear-gradient(135deg, hsl(17,72%,43%), hsl(40,88%,54%))",
+        "borderRadius": "11px",
+        "size": "34px",
+        "icon": "pets",
+        "color": "#fff",
+        "shadow": "0 10px 20px -10px rgba(64,34,18,0.6)",
+        "usage": "Favicon, avatar, marca"
+      },
+      {
+        "id": "wordmark",
+        "name": "Wordmark (Viralata)",
+        "font": "Sora",
+        "fontSize": "24px",
+        "fontWeight": 800,
+        "background": "linear-gradient(90deg, hsl(16,68%,26%), hsl(16,60%,42%), hsl(42,88%,52%))",
+        "backgroundClip": "text",
+        "webkitBackgroundClip": "text",
+        "color": "transparent",
+        "usage": "Títulos, branding"
+      }
+    ]
+  },
+  "accessibility": {
+    "description": "Diretrizes de acessibilidade WCAG 2.1 AA.",
+    "guidelines": [
+      {
+        "criterion": "Contraste de cores",
+        "requirement": "Mínimo 4.5:1 para texto normal, 3:1 para texto grande",
+        "implementation": "Testar com ferramentas de contraste"
+      },
+      {
+        "criterion": "Redução de movimento",
+        "requirement": "Respeitar prefers-reduced-motion",
+        "implementation": "@media (prefers-reduced-motion: reduce) { * { animation: none !important; } }"
+      },
+      {
+        "criterion": "Foco visível",
+        "requirement": "Todos os elementos interativos devem ter foco visível",
+        "implementation": "outline: 2px solid hsl(17,72%,43%); outline-offset: 2px;"
+      },
+      {
+        "criterion": "Hierarquia semântica",
+        "requirement": "Usar h1, h2, h3 em ordem lógica",
+        "implementation": "Estrutura HTML semântica"
+      },
+      {
+        "criterion": "Labels em inputs",
+        "requirement": "Todos os inputs devem ter labels associados",
+        "implementation": "<label for='input-id'>Label</label><input id='input-id'>"
+      },
+      {
+        "criterion": "Alt text em imagens",
+        "requirement": "Descrever conteúdo relevante",
+        "implementation": "<img alt='Descrição do pet' src='...'>"
+      }
+    ]
+  },
+  "responsive": {
+    "description": "Breakpoints e diretrizes responsivas.",
+    "breakpoints": [
+      {
+        "name": "Mobile",
+        "minWidth": "320px",
+        "maxWidth": "639px",
+        "guidelines": [
+          "Stack vertical",
+          "Padding: 16px",
+          "Font sizes reduzidas 10-15%",
+          "Barra de navegação inferior",
+          "Botões full-width"
+        ]
+      },
+      {
+        "name": "Tablet",
+        "minWidth": "640px",
+        "maxWidth": "1023px",
+        "guidelines": [
+          "Grid 2 colunas",
+          "Padding: 24px",
+          "Menu topo ou lateral",
+          "Cards maiores"
+        ]
+      },
+      {
+        "name": "Desktop",
+        "minWidth": "1024px",
+        "maxWidth": "1440px",
+        "guidelines": [
+          "Grid 3-4 colunas",
+          "Padding: 32-40px",
+          "Menu topo fixo",
+          "Sidebar opcional"
+        ]
+      },
+      {
+        "name": "Large Desktop",
+        "minWidth": "1441px",
+        "guidelines": [
+          "Max-width: 1440px",
+          "Centralizar conteúdo",
+          "Espaço em branco generoso"
+        ]
+      }
+    ]
+  },
+  "patterns": {
+    "page-layout": {
+      "description": "Padrão de layout para páginas internas.",
+      "structure": {
+        "header": {
+          "height": "60-80px",
+          "background": "#fff",
+          "border": "1px solid hsl(30,20%,88%)",
+          "padding": "0 32px",
+          "display": "flex",
+          "alignItems": "center",
+          "justifyContent": "space-between",
+          "position": "sticky",
+          "top": 0,
+          "zIndex": 100,
+          "shadow": "0 2px 8px rgba(0,0,0,0.04)"
+        },
+        "sidebar": {
+          "width": "268px",
+          "background": "hsl(30,45%,99%)",
+          "border": "1px solid hsl(30,20%,88%)",
+          "padding": "24px 18px",
+          "position": "sticky",
+          "top": 0,
+          "height": "100vh",
+          "overflowY": "auto",
+          "display": "none",
+          "mediaQuery": "@media (min-width: 1024px) { display: block; }"
+        },
+        "main": {
+          "flex": 1,
+          "minWidth": 0,
+          "padding": "56px 72px 140px",
+          "maxWidth": "1200px",
+          "margin": "0 auto"
+        }
+      }
+    },
+    "card-grid": {
+      "description": "Padrão de grid de cards.",
+      "structure": {
+        "display": "grid",
+        "gridTemplateColumns": "repeat(auto-fit, minmax(280px, 1fr))",
+        "gap": "18px",
+        "padding": "24px",
+        "mediaQueries": {
+          "mobile": "grid-template-columns: 1fr;",
+          "tablet": "grid-template-columns: repeat(2, 1fr);",
+          "desktop": "grid-template-columns: repeat(3, 1fr);"
+        }
+      }
+    },
+    "form-layout": {
+      "description": "Padrão de formulário.",
+      "structure": {
+        "maxWidth": "720px",
+        "display": "flex",
+        "flexDirection": "column",
+        "gap": "24px",
+        "fieldGroup": {
+          "display": "flex",
+          "flexDirection": "column",
+          "gap": "8px"
+        },
+        "twoColumn": {
+          "display": "grid",
+          "gridTemplateColumns": "1fr 1fr",
+          "gap": "16px",
+          "mediaQuery": "@media (max-width: 640px) { grid-template-columns: 1fr; }"
+        }
+      }
+    }
+  }
+}
