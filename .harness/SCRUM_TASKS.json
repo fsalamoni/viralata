@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.1.0",
-  "generatedAt": "2026-07-16T19:54:02.627Z",
+  "generatedAt": "2026-07-16T20:05:05.356Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W29",
@@ -12,11 +12,11 @@
   },
   "activeWorktrees": [
     {
-      "id": "wt-admin-tabs-harmonicas",
-      "branch": "feat/admin-tabs-harmonicas-2026-07-16",
-      "head": "12304f3fd8527c215e17666025cf330037f0670f",
-      "headTitle": "fix(admin): reorganizar 19 abas em 6 grupos semânticos + scroll horizontal",
-      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-admin-tabs-harmonicas",
+      "id": "wt-admin-harmonize",
+      "branch": "feat/admin-harmonize-2layer-2026-07-16",
+      "head": "95f999be677e6154997647f4bf1c04fe0adfb946",
+      "headTitle": "fix(admin): harmonizar 2ª linha (sub-pills) com 1ª linha + DS_V2 doc",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-admin-harmonize",
       "status": "in-sync",
       "commitsAhead": 0,
       "primarySession": null,
@@ -13933,7 +13933,7 @@
       "feat/ds-v2-motion-2026-07-16",
       "feat/ds-v2-audit-2026-07-16"
     ],
-    "mainCommit": "dd9ca9e4ba8041feab53f46dfef52753eb604948",
+    "mainCommit": "0af296caff1da051609de6c0eae2b9288e205758",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -13978,7 +13978,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-16T19:54:02.647Z — via sync.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-16T20:05:05.382Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
