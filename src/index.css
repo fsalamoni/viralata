@@ -355,4 +355,56 @@
   .arena-empty-state-description {
     @apply max-w-md text-[13px] text-muted-foreground;
   }
+
+  /* Skeleton loading states — TASK-610 */
+  .arena-skeleton-text {
+    @apply h-4 rounded bg-muted animate-pulse;
+  }
+
+  .arena-skeleton-header {
+    @apply h-7 rounded bg-muted animate-pulse;
+  }
+
+  .arena-skeleton-avatar {
+    @apply h-10 w-10 rounded-full bg-muted animate-pulse;
+  }
+
+  .arena-skeleton-avatar-sm {
+    @apply h-8 w-8 rounded-full bg-muted animate-pulse;
+  }
+
+  .arena-skeleton-list {
+    @apply space-y-2;
+  }
+
+  .arena-skeleton-list-item {
+    @apply flex items-center gap-3 rounded-lg p-3;
+  }
+
+  .arena-skeleton-card {
+    @apply rounded-2xl border border-border/40 bg-white p-5 sm:p-6;
+  }
+
+  .arena-skeleton-line {
+    @apply h-4 w-full rounded bg-muted/70 animate-pulse;
+  }
+
+  .arena-skeleton-line-sm {
+    @apply h-3 w-2/3 rounded bg-muted/70 animate-pulse;
+  }
+
+  .arena-skeleton-line-xs {
+    @apply h-3 w-1/3 rounded bg-muted/70 animate-pulse;
+  }
+
+  /* Cores semânticas — TASK-614 */
+  .bg-canvas { background-color: hsl(var(--background)); }
+  .bg-surface { background-color: hsl(var(--card)); }
+  .bg-elevated { background-color: hsl(var(--popover)); }
+  .text-primary-semantic { color: hsl(var(--foreground)); }
+  .text-secondary-semantic { color: hsl(var(--secondary-foreground)); }
+  .text-tertiary-semantic { color: hsl(var(--muted-foreground)); }
+  .border-subtle { border-color: hsl(var(--border) / 0.5); }
+  .border-default-semantic { border-color: hsl(var(--border)); }
+  .border-strong-semantic { border-color: hsl(var(--border) / 1.5); }
 }

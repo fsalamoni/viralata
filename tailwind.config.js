@@ -94,6 +94,28 @@ export default {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
       },
+
+      // Escala tipográfica semântica — TASK-613
+      fontSize: {
+        'display': ['3rem', { lineHeight: '1.1', fontWeight: '700', letterSpacing: '-0.02em' }],
+        'h1': ['2rem', { lineHeight: '1.2', fontWeight: '700', letterSpacing: '-0.01em' }],
+        'h2': ['1.5rem', { lineHeight: '1.25', fontWeight: '600' }],
+        'h3': ['1.125rem', { lineHeight: '1.35', fontWeight: '600' }],
+        'body': ['0.9375rem', { lineHeight: '1.5', fontWeight: '400' }],
+        'small': ['0.8125rem', { lineHeight: '1.5', fontWeight: '400' }],
+        'tiny': ['0.71875rem', { lineHeight: '1.4', fontWeight: '400' }],
+      },
+
+      // Escala tipográfica semântica — TASK-613
+      fontSize: {
+        'display': ['3rem', { lineHeight: '1.1', fontWeight: '700', letterSpacing: '-0.02em' }],
+        'h1': ['2rem', { lineHeight: '1.2', fontWeight: '700', letterSpacing: '-0.01em' }],
+        'h2': ['1.5rem', { lineHeight: '1.25', fontWeight: '600' }],
+        'h3': ['1.125rem', { lineHeight: '1.35', fontWeight: '600' }],
+        'body': ['0.9375rem', { lineHeight: '1.5', fontWeight: '400' }],
+        'small': ['0.8125rem', { lineHeight: '1.5', fontWeight: '400' }],
+        'tiny': ['0.71875rem', { lineHeight: '1.4', fontWeight: '400' }],
+      },
     },
   },
   plugins: [animate],

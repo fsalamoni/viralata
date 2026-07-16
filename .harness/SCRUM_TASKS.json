@@ -10700,9 +10700,10 @@
       "category": "design",
       "priority": "medium",
       "owner": "unassigned",
-      "status": "ready",
+      "status": "done",
       "createdAt": "2026-07-15",
-      "acceptance": "arena-skeleton classes + 20 telas com loading states"
+      "acceptance": "arena-skeleton classes + 20 telas com loading states",
+      "updatedAt": "2026-07-16T13:46:49.884Z"
     },
     {
       "id": "TASK-611",
@@ -10736,9 +10737,10 @@
       "category": "design",
       "priority": "medium",
       "owner": "unassigned",
-      "status": "ready",
+      "status": "done",
       "createdAt": "2026-07-15",
-      "acceptance": "Nenhum text-[NNpx] ad-hoc. Apenas text-display/h1/h2/h3/body/small/tiny"
+      "acceptance": "Nenhum text-[NNpx] ad-hoc. Apenas text-display/h1/h2/h3/body/small/tiny",
+      "updatedAt": "2026-07-16T13:46:49.890Z"
     },
     {
       "id": "TASK-614",
@@ -10747,9 +10749,10 @@
       "category": "design",
       "priority": "medium",
       "owner": "unassigned",
-      "status": "ready",
+      "status": "done",
       "createdAt": "2026-07-15",
-      "acceptance": "Nenhum bg-white/50 hard-coded. Apenas tokens semânticos"
+      "acceptance": "Nenhum bg-white/50 hard-coded. Apenas tokens semânticos",
+      "updatedAt": "2026-07-16T13:46:49.891Z"
     },
     {
       "id": "TASK-615",
