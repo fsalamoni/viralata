@@ -6,7 +6,6 @@ import { toast } from 'sonner';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { ImageUpload } from '@/components/ui/image-upload';
@@ -82,12 +81,12 @@ export default function AdminCommunities() {
       />
 
       <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Nova comunidade</CardTitle>
-            <CardDescription>Crie editorias ou agrupadores próprios para organizar ONGs, protetores e frentes locais.</CardDescription>
-          </CardHeader>
-          <CardContent>
+        <section className="arena-section-card">
+          <div className="arena-section-card-header">
+            <h3 className="arena-section-card-title">Nova comunidade</h3>
+            <p className="arena-section-card-description">Crie editorias ou agrupadores próprios para organizar ONGs, protetores e frentes locais.</p>
+          </div>
+          <div className="arena-section-card-body">
             <form className="space-y-4" onSubmit={handleCommunityCreate}>
               <div className="space-y-2">
                 <label className="text-sm font-medium text-foreground">Capa</label>
@@ -151,14 +150,14 @@ export default function AdminCommunities() {
                 {createCommunity.isPending ? 'Criando...' : 'Criar comunidade'}
               </Button>
             </form>
-          </CardContent>
-        </Card>
+          </div>
+        </section>
 
         <div className="space-y-4">
           {isLoading ? (
-            <Card><CardContent className="p-6 text-sm text-muted-foreground">Carregando comunidades...</CardContent></Card>
+            <section className="arena-section-card"><div className="arena-section-card-body p-6 text-sm text-muted-foreground">Carregando comunidades...</div></section>
           ) : sortedCommunities.length === 0 ? (
-            <Card><CardContent className="p-6 text-sm text-muted-foreground">Nenhuma comunidade criada ainda.</CardContent></Card>
+            <section className="arena-section-card"><div className="arena-section-card-body p-6 text-sm text-muted-foreground">Nenhuma comunidade criada ainda.</div></section>
           ) : (
             sortedCommunities.map((community) => (
               <CommunityCard
@@ -193,12 +192,12 @@ function CommunityCard({ community, organizationCount, onDelete }) {
   }
 
   return (
-    <Card>
-      <CardHeader className="pb-4">
+    <section className="arena-section-card">
+      <div className="arena-section-card-header">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <CardTitle className="text-base">{community.name}</CardTitle>
-            <CardDescription>{community.member_count || 0} membro(s) vinculados</CardDescription>
+            <h3 className="arena-section-card-title">{community.name}</h3>
+            <p className="arena-section-card-description">{community.member_count || 0} membro(s) vinculados</p>
           </div>
           <div className="flex flex-wrap gap-1.5">
             <Badge variant={community.featured ? 'warning' : 'secondary'}>
@@ -207,8 +206,8 @@ function CommunityCard({ community, organizationCount, onDelete }) {
             <Badge variant="outline">{COMMUNITY_VISIBILITY_LABELS[community.visibility || COMMUNITY_VISIBILITY.PUBLIC]}</Badge>
           </div>
         </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
+      </div>
+      <div className="arena-section-card-body space-y-4">
         {form.cover_url && (
           <img src={form.cover_url} alt="" className="h-36 w-full rounded-2xl border border-primary/10 object-cover" />
         )}
@@ -280,7 +279,7 @@ function CommunityCard({ community, organizationCount, onDelete }) {
             <Trash2 className="mr-1.5 h-4 w-4" /> Excluir
           </Button>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }

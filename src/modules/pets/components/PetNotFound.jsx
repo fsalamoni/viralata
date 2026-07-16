@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Search, ArrowLeft } from 'lucide-react';
 
 /**
@@ -13,8 +12,8 @@ export default function PetNotFound({ petId }) {
   const navigate = useNavigate();
   return (
     <div className="mx-auto max-w-2xl px-5 py-12">
-      <Card className="rounded-[1.75rem] border-dashed">
-        <CardContent className="flex flex-col items-center gap-4 py-12 text-center">
+      <section className="arena-section-card rounded-[1.75rem] border-dashed">
+        <div className="arena-section-card-body flex flex-col items-center gap-4 py-12 text-center">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted">
             <Search className="h-7 w-7 text-muted-foreground" />
           </div>
@@ -34,8 +33,8 @@ export default function PetNotFound({ petId }) {
               <Link to="/feed">Explorar pets no feed</Link>
             </Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     </div>
   );
 }

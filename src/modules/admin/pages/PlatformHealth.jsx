@@ -14,7 +14,6 @@
 
 import React, { useEffect, useState, useMemo } from 'react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -121,25 +120,25 @@ export default function PlatformHealth() {
                 <StatCard label="Uptime 30d" value={`${health.hosting.uptime_30d}%`} />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-base">Auth (24h)</CardTitle>
-                    <CardDescription>Usuários ativos e signups nas últimas 24h</CardDescription>
-                  </CardHeader>
-                  <CardContent>
+                <section className="arena-section-card">
+                  <div className="arena-section-card-header">
+                    <h3 className="arena-section-card-title">Auth (24h)</h3>
+                    <p className="arena-section-card-description">Usuários ativos e signups nas últimas 24h</p>
+                  </div>
+                  <div className="arena-section-card-body">
                     <p className="text-2xl font-semibold text-foreground">{health.auth.active_users_24h}</p>
                     <p className="text-xs text-muted-foreground">usuários ativos</p>
                     <p className="text-2xl font-semibold text-foreground mt-3">{health.auth.signups_24h}</p>
                     <p className="text-xs text-muted-foreground">novos signups</p>
                     <p className="text-xs text-muted-foreground mt-3">Total acumulado: {health.auth.total_users}</p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-base">Functions (24h)</CardTitle>
-                    <CardDescription>Invocations e erros das Cloud Functions</CardDescription>
-                  </CardHeader>
-                  <CardContent>
+                  </div>
+                </section>
+                <section className="arena-section-card">
+                  <div className="arena-section-card-header">
+                    <h3 className="arena-section-card-title">Functions (24h)</h3>
+                    <p className="arena-section-card-description">Invocations e erros das Cloud Functions</p>
+                  </div>
+                  <div className="arena-section-card-body">
                     <p className="text-2xl font-semibold text-foreground">{health.functions.invocations_24h}</p>
                     <p className="text-xs text-muted-foreground">invocations</p>
                     <p className="text-2xl font-semibold text-foreground mt-3">{health.functions.errors_24h}</p>
@@ -147,8 +146,8 @@ export default function PlatformHealth() {
                     <p className="text-xs text-muted-foreground mt-3">
                       Última coleta: {new Date(health.generated_at).toLocaleString('pt-BR')}
                     </p>
-                  </CardContent>
-                </Card>
+                  </div>
+                </section>
               </div>
             </>
           ) : (
@@ -159,14 +158,14 @@ export default function PlatformHealth() {
         </TabsContent>
 
         <TabsContent value="costs" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Billing do mês atual</CardTitle>
-              <CardDescription>
+          <section className="arena-section-card">
+            <div className="arena-section-card-header">
+              <h3 className="arena-section-card-title">Billing do mês atual</h3>
+              <p className="arena-section-card-description">
                 Marque manualmente o uso (Fase 21 MVP). Integração com Firebase Billing API no roadmap.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
+              </p>
+            </div>
+            <div className="arena-section-card-body space-y-4">
               {billing ? (
                 <>
                   <p className="text-xs text-muted-foreground">
@@ -200,19 +199,19 @@ export default function PlatformHealth() {
               ) : (
                 <p className="text-sm text-muted-foreground py-4">Carregando billing...</p>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </section>
         </TabsContent>
 
         <TabsContent value="capacity" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Tamanho das collections</CardTitle>
-              <CardDescription>
+          <section className="arena-section-card">
+            <div className="arena-section-card-header">
+              <h3 className="arena-section-card-title">Tamanho das collections</h3>
+              <p className="arena-section-card-description">
                 Contadores via <code>count()</code> do Firestore. Coleções com 0 docs aparecem mesmo assim.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
+              </p>
+            </div>
+            <div className="arena-section-card-body">
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
                 {collections.map((c) => (
                   <div key={c.name} className="rounded-md border border-border bg-secondary/40 p-2">
@@ -224,16 +223,16 @@ export default function PlatformHealth() {
                   <p className="text-sm text-muted-foreground py-4 col-span-full">Sem dados de contagem ainda.</p>
                 )}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </section>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Queries lentas (7d)</CardTitle>
-                <CardDescription>Top 10 queries mais lentas registradas</CardDescription>
-              </CardHeader>
-              <CardContent>
+            <section className="arena-section-card">
+              <div className="arena-section-card-header">
+                <h3 className="arena-section-card-title">Queries lentas (7d)</h3>
+                <p className="arena-section-card-description">Top 10 queries mais lentas registradas</p>
+              </div>
+              <div className="arena-section-card-body">
                 {slow.length === 0 ? (
                   <p className="text-sm text-muted-foreground py-4">Sem queries lentas registradas.</p>
                 ) : (
@@ -246,17 +245,17 @@ export default function PlatformHealth() {
                     ))}
                   </ul>
                 )}
-              </CardContent>
-            </Card>
+              </div>
+            </section>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Heurística de índices faltando</CardTitle>
-                <CardDescription>
+            <section className="arena-section-card">
+              <div className="arena-section-card-header">
+                <h3 className="arena-section-card-title">Heurística de índices faltando</h3>
+                <p className="arena-section-card-description">
                   Fingerprints de queries lentas (heurística simples — Fase 21 MVP).
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
+                </p>
+              </div>
+              <div className="arena-section-card-body">
                 {missing.fingerprints.length === 0 ? (
                   <p className="text-sm text-muted-foreground py-4">
                     Sem fingerprints registrados. Integração completa com Firebase Console é roadmap.
@@ -271,8 +270,8 @@ export default function PlatformHealth() {
                     ))}
                   </ul>
                 )}
-              </CardContent>
-            </Card>
+              </div>
+            </section>
           </div>
         </TabsContent>
 
@@ -289,12 +288,12 @@ export default function PlatformHealth() {
 
 function StatCard({ label, value }) {
   return (
-    <Card>
-      <CardContent className="pt-6 text-center">
+    <section className="arena-section-card">
+      <div className="arena-section-card-body pt-6 text-center">
         <p className="text-2xl font-bold text-foreground">{value}</p>
         <p className="text-xs text-muted-foreground mt-1">{label}</p>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 

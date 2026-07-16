@@ -20,7 +20,6 @@ import {
   DialogFooter, DialogClose,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -305,8 +304,8 @@ export function JoinVolunteerModal({
 
           {step === 'confirm' && (
             <div className="space-y-3">
-              <Card>
-                <CardContent className="p-4 space-y-3 text-sm">
+              <section className="arena-section-card">
+                <div className="arena-section-card-body p-4 space-y-3 text-sm">
                   <div className="flex items-center gap-2">
                     <Building2 className="h-4 w-4 text-muted-foreground" />
                     <span className="font-medium">Abrigo:</span>
@@ -333,8 +332,8 @@ export function JoinVolunteerModal({
                   <p className="text-xs text-muted-foreground border-t pt-2">
                     Termo de voluntariado v{VOLUNTEER_TERMS_VERSION} aceito.
                   </p>
-                </CardContent>
-              </Card>
+                </div>
+              </section>
             </div>
           )}
 

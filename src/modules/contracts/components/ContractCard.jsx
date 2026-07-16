@@ -1,7 +1,6 @@
 /**
  * @fileoverview ContractCard — card de contrato na lista (TASK-288).
  */
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { FileText, Download, ShieldCheck } from 'lucide-react';
@@ -22,23 +21,23 @@ const STATUS_VARIANT = {
 export function ContractCard({ contract, onDownload, onSign, canSign = false }) {
   const { id, pet_id, adopter_uid, status, created_at, document_version, pdf_storage_path } = contract;
   return (
-    <Card>
-      <CardHeader>
+    <section className="arena-section-card">
+      <div className="arena-section-card-header">
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="flex items-center gap-2 text-base">
+            <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base">
               <FileText className="h-4 w-4" /> Contrato {id.slice(0, 12)}…
-            </CardTitle>
-            <CardDescription className="text-xs">
+            </h3>
+            <p className="arena-section-card-description">
               Pet: {pet_id} · Adotante: {adopter_uid.slice(0, 12)}… · v{document_version}
-            </CardDescription>
+            </p>
           </div>
           <Badge variant={STATUS_VARIANT[status] || 'outline'}>
             {STATUS_LABEL[status] || status}
           </Badge>
         </div>
-      </CardHeader>
-      <CardContent>
+      </div>
+      <div className="arena-section-card-body">
         <p className="text-xs text-muted-foreground mb-3">
           Criado em {new Date(created_at).toLocaleString('pt-BR')}
         </p>
@@ -52,7 +51,7 @@ export function ContractCard({ contract, onDownload, onSign, canSign = false }) 
             </Button>
           )}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }

@@ -15,7 +15,6 @@ import {
   Home, ArrowLeft, PawPrint, Star, Calendar, CheckCircle2,
   Heart, AlertCircle, ShieldCheck,
 } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -84,7 +83,7 @@ function PetCard({ placement }) {
   const StatusIcon = meta.icon || CheckCircle2;
 
   return (
-    <Card className="overflow-hidden rounded-2xl">
+    <section className="arena-section-card overflow-hidden rounded-2xl">
       {placement.pet_photo_url ? (
         <div className="aspect-[4/3] overflow-hidden bg-muted">
           <img
@@ -99,7 +98,7 @@ function PetCard({ placement }) {
           <PawPrint className="h-12 w-12 text-muted-foreground/40" aria-hidden="true" />
         </div>
       )}
-      <CardContent className="p-4 space-y-2">
+      <div className="arena-section-card-body p-4 space-y-2">
         <div className="flex items-start justify-between gap-2">
           <h3 className="font-semibold text-sm leading-tight line-clamp-1">
             {placement.pet_name}
@@ -118,8 +117,8 @@ function PetCard({ placement }) {
             <span>Finalizado em {formatDate(placement.ended_at)}</span>
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 
@@ -127,13 +126,13 @@ function LoadingSkeleton() {
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
       {Array.from({ length: 6 }, (_, i) => (
-        <Card key={i} className="overflow-hidden rounded-2xl">
+        <section key={i} className="arena-section-card overflow-hidden rounded-2xl">
           <Skeleton className="aspect-[4/3]" />
-          <CardContent className="p-4 space-y-2">
+          <div className="arena-section-card-body p-4 space-y-2">
             <Skeleton className="h-4 w-3/4" />
             <Skeleton className="h-5 w-1/2" />
-          </CardContent>
-        </Card>
+          </div>
+        </section>
       ))}
     </div>
   );

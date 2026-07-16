@@ -14,7 +14,6 @@ import { useMemo, useState, useCallback, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, Copy, Check, List } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import PageHero from '@/components/PageHero';
 import { VOLUNTEER_TERMS_TEXT_V2 } from '@/modules/shelter/domain/legal/texts/volunteerTerms.v2';
 import { VOLUNTEER_TERMS_VERSION } from '@/modules/shelter/domain/legal/volunteerTerms';
@@ -106,14 +105,14 @@ export default function VolunteerTermPreview() {
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[18rem_minmax(0,1fr)]">
         {/* Sumário (TOC) */}
         <aside aria-label="Sumário do termo" className="lg:sticky lg:top-20 lg:self-start">
-          <Card>
-            <CardHeader className="space-y-1">
-              <CardTitle className="flex items-center gap-2 text-sm">
+          <section className="arena-section-card">
+            <div className="arena-section-card-header">
+              <h3 className="arena-section-card-title" className="flex items-center gap-2 text-sm">
                 <List className="h-4 w-4 text-primary" aria-hidden="true" />
                 Sumário
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
+              </h3>
+            </div>
+            <div className="arena-section-card-body p-0">
               <nav>
                 <ol className="divide-y divide-border/60">
                   {sections.map((s) => (
@@ -131,8 +130,8 @@ export default function VolunteerTermPreview() {
                   ))}
                 </ol>
               </nav>
-            </CardContent>
-          </Card>
+            </div>
+          </section>
         </aside>
 
         {/* Texto integral */}

@@ -12,7 +12,6 @@ import { Users } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
@@ -130,9 +129,9 @@ export function VolunteersRoster({ shelterClubId, actor, canAbriho }) {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Voluntários ({volunteers.length})</CardTitle>
+    <section className="arena-section-card">
+      <div className="arena-section-card-header">
+        <h3 className="arena-section-card-title">Voluntários ({volunteers.length})</h3>
         <div className="flex gap-2 flex-wrap pt-2">
           <Button
             size="sm"
@@ -152,8 +151,8 @@ export function VolunteersRoster({ shelterClubId, actor, canAbriho }) {
             </Button>
           ))}
         </div>
-      </CardHeader>
-      <CardContent>
+      </div>
+      <div className="arena-section-card-body">
         {volunteers.length === 0 ? (
           <EmptyState
             icon={Users}
@@ -231,7 +230,7 @@ export function VolunteersRoster({ shelterClubId, actor, canAbriho }) {
             ))}
           </ul>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }

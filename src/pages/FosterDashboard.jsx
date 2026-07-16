@@ -20,7 +20,6 @@ import {
   Home, Calendar, CheckCircle2, XCircle, AlertCircle, Star,
   PawPrint, ChevronRight, Loader2, Heart, MessageSquare,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -74,8 +73,8 @@ function daysUntil(iso) {
 
 function StatCard({ title, count, icon: Icon, accent = 'primary', footer }) {
   return (
-    <Card className="rounded-2xl">
-      <CardContent className="p-5">
+    <section className="arena-section-card rounded-2xl">
+      <div className="arena-section-card-body p-5">
         <div className="flex items-start justify-between">
           <div>
             <p className="text-xs uppercase tracking-wide text-muted-foreground font-medium">
@@ -106,8 +105,8 @@ function StatCard({ title, count, icon: Icon, accent = 'primary', footer }) {
             <Icon className="h-5 w-5" />
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 

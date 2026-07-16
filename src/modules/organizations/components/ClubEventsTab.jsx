@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import { CalendarDays, MapPin, Pencil, Plus, Repeat, Trash2, Users, ArrowRight, Globe, Lock } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -109,8 +108,8 @@ function EventCard({ event, clubId, isAdmin }) {
   };
 
   return (
-    <Card className="rounded-xl">
-      <CardContent className="p-4">
+    <section className="arena-section-card rounded-xl">
+      <div className="arena-section-card-body p-4">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
@@ -166,8 +165,8 @@ function EventCard({ event, clubId, isAdmin }) {
           loading={deleteEvent.isPending}
           onConfirm={handleDelete}
         />
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 

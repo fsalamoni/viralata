@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { Check, Copy, RefreshCw, Edit2, Trash2, Mail, Phone, MessageCircle, Lock, Info } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useClipboard } from '@/core/lib/useClipboard';

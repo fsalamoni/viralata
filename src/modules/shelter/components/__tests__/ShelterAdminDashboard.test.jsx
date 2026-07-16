@@ -37,10 +37,14 @@ describe('ShelterAdminDashboard (TASK-311)', () => {
     let err = null;
     try {
       await act(async () => {
+        const { QueryClient, QueryClientProvider } = await import('@tanstack/react-query');
+        const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
         root.render(
-          <MemoryRouter>
-            <ShelterAdminDashboard clubId="test-club" />
-          </MemoryRouter>
+          <QueryClientProvider client={qc}>
+            <MemoryRouter>
+              <ShelterAdminDashboard clubId="test-club" />
+            </MemoryRouter>
+          </QueryClientProvider>
         );
       });
     } catch (e) {

@@ -4,7 +4,6 @@
  */
 import { useState } from 'react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
-import { Card, CardContent } from '@/components/ui/card';
 import { InterviewCard } from '../components/InterviewCard';
 import { listInterviewsByClub, completeInterview, cancelInterview, evaluateInterview } from '../services/interviewService';
 import { useQuery } from '@tanstack/react-query';
@@ -51,8 +50,8 @@ export function ShelterInterviewsList({ clubId }) {
         <h1 className="text-2xl font-bold">Entrevistas</h1>
         <p className="text-muted-foreground">Gerencie as entrevistas de adoção com os candidatos</p>
       </div>
-      <Card>
-        <CardContent className="p-4 flex gap-2 flex-wrap">
+      <section className="arena-section-card">
+        <div className="arena-section-card-body p-4 flex gap-2 flex-wrap">
           {['all', 'proposed', 'scheduled', 'completed', 'evaluated', 'cancelled'].map((s) => (
             <button
               key={s}
@@ -63,8 +62,8 @@ export function ShelterInterviewsList({ clubId }) {
               {s === 'all' ? 'Todas' : s}
             </button>
           ))}
-        </CardContent>
-      </Card>
+        </div>
+      </section>
       {isLoading && <p>Carregando…</p>}
       {!isLoading && filtered.length === 0 && (
         <p className="text-muted-foreground">Nenhuma entrevista encontrada.</p>

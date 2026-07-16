@@ -21,7 +21,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent } from '@/components/ui/card';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
@@ -214,8 +213,8 @@ export function DashboardWidgetManager({ clubId, trigger }) {
               </p>
             )}
             {widgetsQuery.data?.map((w) => (
-              <Card key={w.id} className="border">
-                <CardContent className="p-3 flex items-center justify-between gap-3">
+              <section key={w.id} className="border">
+                <div className="arena-section-card-body p-3 flex items-center justify-between gap-3">
                   <div className="min-w-0 flex-1">
                     <p className="font-medium truncate">{w.title}</p>
                     <p className="text-xs text-muted-foreground truncate">
@@ -236,8 +235,8 @@ export function DashboardWidgetManager({ clubId, trigger }) {
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </section>
             ))}
             <Button onClick={startCreate} className="w-full gap-1.5">
               <Plus className="h-4 w-4" />

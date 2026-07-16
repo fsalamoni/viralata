@@ -67,71 +67,71 @@ export function MyTasksSection({ userUid }) {
 
   if (isLoading) {
     return (
-      <Card className="rounded-[24px] p-6 lg:p-7">
-        <CardHeader className="p-0 pb-4">
-          <CardTitle className="flex items-center gap-2 text-base font-bold">
+      <section className="arena-section-card rounded-[24px] p-6 lg:p-7">
+        <div className="arena-section-card-header">
+          <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base font-bold">
             <CheckSquare className="w-[19px] h-[19px] text-primary" /> Minhas tarefas
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2 p-0">
+          </h3>
+        </div>
+        <div className="arena-section-card-body space-y-2 p-0">
           <Skeleton className="h-16 w-full" />
           <Skeleton className="h-16 w-full" />
           <Skeleton className="h-16 w-full" />
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     );
   }
 
   if (isError) {
     return (
-      <Card className="rounded-[24px] p-6 lg:p-7">
-        <CardHeader className="p-0 pb-4">
-          <CardTitle className="flex items-center gap-2 text-base font-bold">
+      <section className="arena-section-card rounded-[24px] p-6 lg:p-7">
+        <div className="arena-section-card-header">
+          <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base font-bold">
             <CheckSquare className="w-[19px] h-[19px] text-primary" /> Minhas tarefas
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-0">
+          </h3>
+        </div>
+        <div className="arena-section-card-body p-0">
           <p className="text-sm text-muted-foreground">
             Não foi possível carregar suas tarefas agora.
           </p>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     );
   }
 
   if (cards.length === 0) {
     return (
-      <Card className="rounded-[24px] p-6 lg:p-7">
-        <CardHeader className="p-0 pb-4">
-          <CardTitle className="flex items-center gap-2 text-base font-bold">
+      <section className="arena-section-card rounded-[24px] p-6 lg:p-7">
+        <div className="arena-section-card-header">
+          <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base font-bold">
             <CheckSquare className="w-[19px] h-[19px] text-primary" /> Minhas tarefas
-          </CardTitle>
-          <CardDescription className="text-[12.5px] leading-[1.6]">
+          </h3>
+          <p className="arena-section-card-description">
             Cards do Kanban onde você é responsável (assignee), em todos os abrigos onde você participa.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="p-0">
+          </p>
+        </div>
+        <div className="arena-section-card-body p-0">
           <EmptyState
             icon={CheckSquare}
             title="Nenhuma tarefa atribuída a você"
             description="Quando algum abrigo te designar como responsável por um card, ele aparece aqui."
           />
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     );
   }
 
   return (
-    <Card className="rounded-[24px] p-6 lg:p-7">
-      <CardHeader className="p-0 pb-4">
-        <CardTitle className="flex items-center gap-2 text-base font-bold">
+    <section className="arena-section-card rounded-[24px] p-6 lg:p-7">
+      <div className="arena-section-card-header">
+        <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base font-bold">
           <CheckSquare className="w-[19px] h-[19px] text-primary" /> Minhas tarefas
-        </CardTitle>
-        <CardDescription className="text-[12.5px] leading-[1.6]">
+        </h3>
+        <p className="arena-section-card-description">
           {cards.length} {cards.length === 1 ? 'card' : 'cards'} onde você é responsável, em todos os abrigos.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="p-0">
+        </p>
+      </div>
+      <div className="arena-section-card-body p-0">
         <ul className="space-y-2" role="list" aria-label="Cards onde você é assignee">
           {cards.map((card) => {
             const overdue = isOverdue(card.due_at, card.status);
@@ -203,8 +203,8 @@ export function MyTasksSection({ userUid }) {
             );
           })}
         </ul>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 

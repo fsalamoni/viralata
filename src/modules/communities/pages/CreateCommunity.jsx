@@ -5,7 +5,6 @@ import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { ImageUpload } from '@/components/ui/image-upload';
 import { createCommunity } from '../services/communityService';
 import PageHero from '@/components/PageHero';
@@ -47,8 +46,8 @@ export default function CreateCommunity() {
         }
       />
 
-      <Card>
-        <CardContent>
+      <section className="arena-section-card">
+        <div className="arena-section-card-body">
           <form onSubmit={onSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label>Capa da Comunidade</Label>
@@ -95,8 +94,8 @@ export default function CreateCommunity() {
               {loading ? 'Criando...' : 'Criar Comunidade'}
             </Button>
           </form>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     </div>
   );
 }

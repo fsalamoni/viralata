@@ -39,7 +39,6 @@ import {
   ShieldCheck, Stethoscope, Bug, Pill, Calendar, User, Building2,
   AlertCircle, FileText,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Badge } from '@/components/ui/badge';
@@ -237,79 +236,79 @@ export function PublicHealthRecord({ petId, shelterClubId, maxResults = 50 }) {
   // ─── Skeleton ─────────────────────────────────────────────────────
   if (loading) {
     return (
-      <Card data-testid="public-health-record-skeleton">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <section data-testid="public-health-record-skeleton">
+        <div className="arena-section-card-header">
+          <h3 className="arena-section-card-title" className="flex items-center gap-2">
             <Stethoscope className="h-5 w-5 text-primary" />
             Saúde
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
+          </h3>
+        </div>
+        <div className="arena-section-card-body space-y-3">
           <Skeleton className="h-5 w-40" />
           <Skeleton className="h-16 w-full" />
           <Skeleton className="h-16 w-full" />
           <Skeleton className="h-16 w-2/3" />
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     );
   }
 
   // ─── Erro ─────────────────────────────────────────────────────────
   if (error) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <section className="arena-section-card">
+        <div className="arena-section-card-header">
+          <h3 className="arena-section-card-title" className="flex items-center gap-2">
             <Stethoscope className="h-5 w-5 text-primary" />
             Saúde
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </h3>
+        </div>
+        <div className="arena-section-card-body">
           <EmptyState
             icon={AlertCircle}
             title="Não foi possível carregar o histórico"
             description={error}
           />
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     );
   }
 
   // ─── Empty state ──────────────────────────────────────────────────
   if (totalPublic === 0) {
     return (
-      <Card data-testid="public-health-record-empty">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <section data-testid="public-health-record-empty">
+        <div className="arena-section-card-header">
+          <h3 className="arena-section-card-title" className="flex items-center gap-2">
             <Stethoscope className="h-5 w-5 text-primary" />
             Saúde
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </h3>
+        </div>
+        <div className="arena-section-card-body">
           <EmptyState
             icon={FileText}
             title="Histórico de saúde em construção"
             description="Este pet ainda não tem registros de saúde públicos disponíveis. Quando o abrigo cadastrar vacinas, vermifugação ou antipulgas, eles aparecerão aqui."
           />
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     );
   }
 
   // ─── Render com dados ─────────────────────────────────────────────
   return (
-    <Card data-testid="public-health-record">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+    <section data-testid="public-health-record">
+      <div className="arena-section-card-header">
+        <h3 className="arena-section-card-title" className="flex items-center gap-2">
           <Stethoscope className="h-5 w-5 text-primary" />
           Saúde
-        </CardTitle>
+        </h3>
         <p className="text-xs text-muted-foreground mt-1">
           {totalPublic} registro(s) público(s) — apenas itens não sensíveis
           são exibidos (LGPD).
         </p>
-      </CardHeader>
-      <CardContent className="space-y-5">
+      </div>
+      <div className="arena-section-card-body space-y-5">
         {Object.entries(CATEGORY_LABELS).map(([cat, label]) => {
           const items = grouped[cat];
           if (!items || items.length === 0) return null;
@@ -386,8 +385,8 @@ export function PublicHealthRecord({ petId, shelterClubId, maxResults = 50 }) {
             </section>
           );
         })}
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 

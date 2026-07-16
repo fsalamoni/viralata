@@ -16,7 +16,6 @@ import { Filter, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
@@ -72,9 +71,9 @@ export function SmartSearchFilters({
   );
 
   return (
-    <Card className={cn('w-full', className)}>
-      <CardHeader className={compact ? 'p-3' : undefined}>
-        <CardTitle className="flex items-center gap-2 text-sm">
+    <section className={cn('w-full', className)}>
+      <div className="arena-section-card-header">
+        <h3 className="arena-section-card-title" className="flex items-center gap-2 text-sm">
           <Filter className="h-4 w-4" />
           Filtros
           {hasFilters && (
@@ -89,9 +88,9 @@ export function SmartSearchFilters({
               Limpar
             </Button>
           )}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className={cn('space-y-3', compact && 'p-3 pt-0')}>
+        </h3>
+      </div>
+      <div className="arena-section-card-body" className={cn('space-y-3', compact && 'p-3 pt-0')}>
         {allowEntitySelector && (
           <div className="space-y-1.5">
             <Label htmlFor="filter-entity" className="text-xs">Entidade</Label>
@@ -184,8 +183,8 @@ export function SmartSearchFilters({
             />
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 

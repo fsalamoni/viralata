@@ -8,7 +8,6 @@
  */
 
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -105,9 +104,9 @@ export function ParticipationForm({ shelterClubId, actor, defaultVolunteer, onSa
   }
 
   return (
-    <Card>
-      <CardHeader><CardTitle>Nova participation</CardTitle></CardHeader>
-      <CardContent>
+    <section className="arena-section-card">
+      <div className="arena-section-card-header"><h3 className="arena-section-card-title">Nova participation</h3></div>
+      <div className="arena-section-card-body">
         <form onSubmit={handleSubmit} className="space-y-3">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
@@ -235,7 +234,7 @@ export function ParticipationForm({ shelterClubId, actor, defaultVolunteer, onSa
             {createMutation.isPending ? 'Salvando…' : 'Registrar participation'}
           </Button>
         </form>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }

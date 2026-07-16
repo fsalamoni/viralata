@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Heart, Home as HomeIcon, Building2, ChevronRight, Calendar, Award } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/core/lib/utils';
@@ -38,22 +37,22 @@ export function CrossRosterSection({ volunteerData, fosterData, shelterOptions =
   }, [fosterData?.activeFosters]);
 
   return (
-    <Card className="rounded-[24px] p-6 lg:p-7" data-testid="cross-roster-section">
-      <CardHeader className="p-0 pb-4">
-        <CardTitle className="flex items-center gap-2 text-base font-bold">
+    <section className="rounded-[24px] p-6 lg:p-7" data-testid="cross-roster-section">
+      <div className="arena-section-card-header">
+        <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base font-bold">
           <Building2 className="w-[19px] h-[19px] text-primary" />
           Sua atuação na rede
-        </CardTitle>
-        <CardDescription className="text-[12.5px]">
+        </h3>
+        <p className="arena-section-card-description">
           {isVolunteer && isFoster
             ? 'Voluntário e Lar Temporário — seu impacto consolidado.'
             : isVolunteer
             ? 'Voluntário — veja escalas abertas e certificados.'
             : 'Lar Temporário — cadastre-se como voluntário também.'}
-        </CardDescription>
-      </CardHeader>
+        </p>
+      </div>
 
-      <CardContent className="p-0 space-y-4">
+      <div className="arena-section-card-body p-0 space-y-4">
         {/* Badges agregados */}
         <div className="flex flex-wrap gap-2">
           {isVolunteer && (
@@ -146,8 +145,8 @@ export function CrossRosterSection({ volunteerData, fosterData, shelterOptions =
             </Link>
           )}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 

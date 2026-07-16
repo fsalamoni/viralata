@@ -6,7 +6,6 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { Send } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -60,17 +59,17 @@ export function BroadcastComposer() {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-base">
+    <section className="arena-section-card">
+      <div className="arena-section-card-header">
+        <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base">
           <Send className="h-4.5 w-4.5 text-primary" /> Enviar notificação segmentada
-        </CardTitle>
-        <CardDescription>
+        </h3>
+        <p className="arena-section-card-description">
           Escolha o segmento, escreva a mensagem e confirme o alcance antes do disparo.
           Tudo fica registrado no audit log.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+        </p>
+      </div>
+      <div className="arena-section-card-body">
         <form onSubmit={handleSend} className="space-y-3">
           <div className="grid gap-3 sm:grid-cols-2">
             <label className="space-y-1 text-xs font-medium text-muted-foreground">
@@ -110,8 +109,8 @@ export function BroadcastComposer() {
             </Button>
           </div>
         </form>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 

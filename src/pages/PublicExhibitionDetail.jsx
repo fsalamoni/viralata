@@ -19,7 +19,6 @@ import {
   Calendar, Clock, MapPin, Building2, PawPrint, Heart, Phone, Mail,
   ExternalLink, AlertCircle, ArrowLeft,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -158,7 +157,7 @@ export default function PublicExhibitionDetail() {
       </Button>
 
       {/* Capa */}
-      <Card className="overflow-hidden">
+      <section className="arena-section-card overflow-hidden">
         {exhibition.cover_url ? (
           <img
             src={exhibition.cover_url}
@@ -173,7 +172,7 @@ export default function PublicExhibitionDetail() {
             <Calendar className="h-16 w-16 text-white opacity-50" aria-hidden="true" />
           </div>
         )}
-        <CardContent className="p-6 space-y-3">
+        <div className="arena-section-card-body p-6 space-y-3">
           <div className="flex items-start justify-between gap-3 flex-wrap">
             <h1 className="text-2xl sm:text-3xl font-bold flex-1">
               {exhibition.title || 'Vitrinha'}
@@ -236,19 +235,19 @@ export default function PublicExhibitionDetail() {
               </div>
             )}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
       {/* Pets participantes */}
       {pets.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+        <section className="arena-section-card">
+          <div className="arena-section-card-header">
+            <h3 className="arena-section-card-title" className="flex items-center gap-2">
               <PawPrint className="h-5 w-5 text-primary" />
               Pets participantes ({pets.length})
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+            </h3>
+          </div>
+          <div className="arena-section-card-body">
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
               {pets.map((pet, idx) => (
                 <Link
@@ -276,8 +275,8 @@ export default function PublicExhibitionDetail() {
                 </Link>
               ))}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </section>
       )}
 
       {/* TASK-208: voluntários escalados */}
@@ -289,8 +288,8 @@ export default function PublicExhibitionDetail() {
       )}
 
       {/* Ações */}
-      <Card>
-        <CardContent className="p-6 space-y-3">
+      <section className="arena-section-card">
+        <div className="arena-section-card-body p-6 space-y-3">
           <h2 className="font-semibold flex items-center gap-2">
             <Heart className="h-5 w-5 text-rose-500" />
             Quer participar?
@@ -338,8 +337,8 @@ export default function PublicExhibitionDetail() {
               )}
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     </div>
   );
 }

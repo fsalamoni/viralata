@@ -5,7 +5,6 @@ import {
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent } from '@/components/ui/card';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import {
@@ -79,8 +78,8 @@ export default function ClubPostCard({ post, club, membership, currentUserUid, r
   const files = attachments.filter((a) => !isImageAttachment(a));
 
   return (
-    <Card className="rounded-2xl">
-      <CardContent className="p-6 pt-6 sm:p-7 sm:pt-7">
+    <section className="arena-section-card rounded-2xl">
+      <div className="arena-section-card-body p-6 pt-6 sm:p-7 sm:pt-7">
         <div className="flex items-start gap-3">
           {authorPhoto ? (
             <img src={authorPhoto} alt="" className="h-10 w-10 shrink-0 rounded-full border border-border object-cover" />
@@ -213,7 +212,7 @@ export default function ClubPostCard({ post, club, membership, currentUserUid, r
             )}
           </div>
         </div>
-      </CardContent>
+      </div>
       {confirmDelete && (
         <ConfirmDeleteWrapper post={post} onClose={() => setConfirmDelete(false)} />
       )}
@@ -226,7 +225,7 @@ export default function ClubPostCard({ post, club, membership, currentUserUid, r
           onOpenChange={(o) => !o && setZoomImage(null)}
         />
       )}
-    </Card>
+    </section>
   );
 }
 

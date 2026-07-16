@@ -3,7 +3,6 @@ import { Star } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 /**
  * Formulário de avaliação pós-adoção. Exibido a quem ainda não avaliou a
@@ -24,11 +23,11 @@ export default function RatingForm({ ratedUid, ratedLabel, onSubmit, submitting 
   }
 
   return (
-    <Card>
-      <CardHeader className="pb-3">
-        <CardTitle className="text-base">Avalie {ratedLabel}</CardTitle>
-      </CardHeader>
-      <CardContent>
+    <section className="arena-section-card">
+      <div className="arena-section-card-header">
+        <h3 className="arena-section-card-title">Avalie {ratedLabel}</h3>
+      </div>
+      <div className="arena-section-card-body">
         <form onSubmit={handleSubmit} className="space-y-3">
           <div className="flex gap-1">
             {[1, 2, 3, 4, 5].map((n) => (
@@ -59,7 +58,7 @@ export default function RatingForm({ ratedUid, ratedLabel, onSubmit, submitting 
             {submitting ? 'Enviando...' : 'Enviar avaliação'}
           </Button>
         </form>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }

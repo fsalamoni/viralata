@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { toast } from 'sonner';
 import { Save, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -38,12 +37,12 @@ export default function CommunityAdminTab({ community }) {
 
   return (
     <div className="space-y-4">
-      <Card className="rounded-xl">
-        <CardHeader className="p-4 sm:p-5">
-          <CardTitle className="text-base">Editar comunidade</CardTitle>
-          <CardDescription>Atualize as informações exibidas para os membros.</CardDescription>
-        </CardHeader>
-        <CardContent className="p-4 pt-0 sm:p-5 sm:pt-0">
+      <section className="arena-section-card rounded-xl">
+        <div className="arena-section-card-header">
+          <h3 className="arena-section-card-title">Editar comunidade</h3>
+          <p className="arena-section-card-description">Atualize as informações exibidas para os membros.</p>
+        </div>
+        <div className="arena-section-card-body p-4 pt-0 sm:p-5 sm:pt-0">
           <form onSubmit={handleSave} className="space-y-4">
             <div className="space-y-2">
               <Label>Capa da Comunidade</Label>
@@ -87,8 +86,8 @@ export default function CommunityAdminTab({ community }) {
               <Save className="mr-1.5 h-4 w-4" /> {updateCommunity.isPending ? 'Salvando…' : 'Salvar alterações'}
             </Button>
           </form>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     </div>
   );
 }

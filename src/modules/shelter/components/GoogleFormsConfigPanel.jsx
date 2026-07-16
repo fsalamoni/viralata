@@ -12,7 +12,6 @@
 
 import { confirmDialog } from '@/components/ui/confirm-provider';
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -101,11 +100,11 @@ export function GoogleFormsConfigPanel({ shelterClubId, canAdmin = false, actor 
   };
 
   return (
-    <Card>
-      <CardHeader>
+    <section className="arena-section-card">
+      <div className="arena-section-card-header">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <CardTitle>Integração Google Forms</CardTitle>
+            <h3 className="arena-section-card-title">Integração Google Forms</h3>
             <p className="text-xs text-muted-foreground mt-1">
               Receba applications de visitantes anônimos (via Google Forms) sem precisar de login.
             </p>
@@ -114,8 +113,8 @@ export function GoogleFormsConfigPanel({ shelterClubId, canAdmin = false, actor 
             {formData.enabled ? 'Ativa' : 'Inativa'}
           </Badge>
         </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
+      </div>
+      <div className="arena-section-card-body space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
             <Label htmlFor="enabled">Status</Label>
@@ -206,8 +205,8 @@ export function GoogleFormsConfigPanel({ shelterClubId, canAdmin = false, actor 
             </Button>
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 

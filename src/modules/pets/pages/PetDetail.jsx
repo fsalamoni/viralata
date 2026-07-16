@@ -25,7 +25,6 @@ import { hasQuestions } from '../domain/adoptionForm';
 import { usePetShareImage } from '../hooks/usePetShareImage';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, Heart, MapPin, Trash2, Share2, MessageCircle, FileText, Info, ShieldAlert } from 'lucide-react';
 import { toast } from 'sonner';
@@ -397,8 +396,8 @@ export default function PetDetail() {
           transition={{ duration: 0.25 }}
           className="mt-6"
         >
-          <Card className="border-highlight/50 bg-highlight/5">
-            <CardContent className="space-y-3 py-4">
+          <section className="arena-section-card border-highlight/50 bg-highlight/5">
+            <div className="arena-section-card-body space-y-3 py-4">
               <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
                 <ShieldAlert className="h-4 w-4 text-highlight" />
                 Por que não posso adotar ou conversar?
@@ -416,8 +415,8 @@ export default function PetDetail() {
                   <Link to="/onboarding">Completar perfil de adotante</Link>
                 </Button>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </section>
         </motion.div>
       )}
 

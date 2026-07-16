@@ -17,7 +17,6 @@
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { Ban, History, ShieldCheck } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -94,18 +93,18 @@ export function BanUserSection({ users, actor, onChanged }) {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-base">
+    <section className="arena-section-card">
+      <div className="arena-section-card-header">
+        <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base">
           <Ban className="h-4.5 w-4.5 text-destructive" /> Banimento de usuários
-        </CardTitle>
-        <CardDescription>
+        </h3>
+        <p className="arena-section-card-description">
           Busque um usuário para banir (motivo + prazo), ou gerencie os banidos abaixo.
           Toda ação fica no audit log; o usuário banido vê o motivo e o prazo, e pode
           recorrer pelo e-mail de contato.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-3">
+        </p>
+      </div>
+      <div className="arena-section-card-body space-y-3">
         <Input
           placeholder="Buscar usuário por nome ou e-mail…"
           value={search}
@@ -152,7 +151,7 @@ export function BanUserSection({ users, actor, onChanged }) {
             </li>
           ))}
         </ul>
-      </CardContent>
+      </div>
 
       {/* Dialog de banimento (TASK-178) */}
       <Dialog open={Boolean(banTarget)} onOpenChange={(o) => { if (!o) setBanTarget(null); }}>
@@ -219,7 +218,7 @@ export function BanUserSection({ users, actor, onChanged }) {
           )}
         </DialogContent>
       </Dialog>
-    </Card>
+    </section>
   );
 }
 

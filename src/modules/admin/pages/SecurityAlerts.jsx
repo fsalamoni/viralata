@@ -17,7 +17,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Shield, AlertTriangle, Filter, RotateCw, CheckCircle2 } from 'lucide-react';
 import PageHero from '@/components/PageHero';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
@@ -173,16 +172,16 @@ export default function SecurityAlerts() {
         <StatCard label="Altos" value={stats.high} icon={AlertTriangle} accent="orange" />
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg">
+      <section className="arena-section-card">
+        <div className="arena-section-card-header">
+          <h3 className="arena-section-card-title" className="flex items-center gap-2 text-lg">
             <Filter className="h-4 w-4" /> Filtros
-          </CardTitle>
-          <CardDescription>
+          </h3>
+          <p className="arena-section-card-description">
             Refine a lista por severidade, tipo ou status. A assinatura é em tempo real.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-3 sm:flex-row sm:items-end">
+          </p>
+        </div>
+        <div className="arena-section-card-body flex flex-col gap-3 sm:flex-row sm:items-end">
           <label className="flex flex-col gap-1 text-xs font-medium text-muted-foreground">
             Severidade
             <select
@@ -224,8 +223,8 @@ export default function SecurityAlerts() {
           >
             <RotateCw className="mr-2 h-3.5 w-3.5" /> Limpar
           </Button>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
       {permissionDenied && (
         <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800">

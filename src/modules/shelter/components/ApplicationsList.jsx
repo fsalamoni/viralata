@@ -10,7 +10,6 @@
 
 import { useState } from 'react';
 import { useQueries } from '@tanstack/react-query';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
@@ -166,11 +165,11 @@ export function ApplicationsList({ shelterClubId, canAdmin = false, actor }) {
   };
 
   return (
-    <Card>
-      <CardHeader>
+    <section className="arena-section-card">
+      <div className="arena-section-card-header">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <CardTitle>Applications de Adoção</CardTitle>
+            <h3 className="arena-section-card-title">Applications de Adoção</h3>
             <p className="text-xs text-muted-foreground mt-1">
               {apps.length} application(s)
               {statusFilter ? ` com status ${APPLICATION_STATUS_LABELS[statusFilter]}` : ''}
@@ -216,8 +215,8 @@ export function ApplicationsList({ shelterClubId, canAdmin = false, actor }) {
             </div>
           </div>
         </div>
-      </CardHeader>
-      <CardContent>
+      </div>
+      <div className="arena-section-card-body">
         {apps.length === 0 ? (
           <p className="text-sm text-muted-foreground py-4 text-center">
             Nenhuma application {statusFilter ? `com status ${APPLICATION_STATUS_LABELS[statusFilter]}` : 'ainda'}.
@@ -307,8 +306,8 @@ export function ApplicationsList({ shelterClubId, canAdmin = false, actor }) {
             isSubmitting={decideMutation.isPending}
           />
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 

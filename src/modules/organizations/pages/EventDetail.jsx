@@ -15,7 +15,6 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -137,12 +136,12 @@ export default function EventDetail() {
 
         <TabsContent value="detalhes" className="mt-12 px-1 sm:mt-14">
           {event.description && (
-            <Card className="mb-4 rounded-xl">
-              <CardContent className="p-6 sm:p-7">
+            <section className="arena-section-card mb-4 rounded-xl">
+              <div className="arena-section-card-body p-6 sm:p-7">
                 <h3 className="mb-1 text-sm font-semibold text-foreground">Sobre o evento</h3>
                 <p className="whitespace-pre-wrap text-sm leading-6 text-muted-foreground">{event.description}</p>
-              </CardContent>
-            </Card>
+              </div>
+            </section>
           )}
           <EventDatesPanel event={event} clubId={clubId} />
         </TabsContent>

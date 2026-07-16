@@ -19,7 +19,6 @@ import {
   CalendarCheck, ShieldCheck, ScrollText,
 } from 'lucide-react';
 import PageHero from '@/components/PageHero';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
@@ -123,17 +122,17 @@ export default function VolunteerProgram() {
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {HOW_IT_WORKS.map(({ icon: Icon, title, description }) => (
-            <Card key={title} className="overflow-hidden">
-              <CardHeader className="space-y-2 p-4 sm:p-5">
+            <section key={title} className="arena-section-card overflow-hidden">
+              <div className="arena-section-card-header">
                 <div className="flex h-9 w-9 items-center justify-center rounded-md bg-primary text-primary-foreground">
                   <Icon className="h-4 w-4" aria-hidden="true" />
                 </div>
-                <CardTitle className="text-sm">{title}</CardTitle>
-              </CardHeader>
-              <CardContent className="px-4 pb-4 pt-0 text-sm text-foreground/80 sm:px-5 sm:pb-5">
+                <h3 className="arena-section-card-title">{title}</h3>
+              </div>
+              <div className="arena-section-card-body px-4 pb-4 pt-0 text-sm text-foreground/80 sm:px-5 sm:pb-5">
                 {description}
-              </CardContent>
-            </Card>
+              </div>
+            </section>
           ))}
         </div>
       </section>
@@ -148,8 +147,8 @@ export default function VolunteerProgram() {
             Você contribui com a causa animal e ainda recebe benefícios práticos.
           </p>
         </div>
-        <Card>
-          <CardContent className="grid grid-cols-1 gap-4 p-4 sm:p-5 sm:grid-cols-2">
+        <section className="arena-section-card">
+          <div className="arena-section-card-body grid grid-cols-1 gap-4 p-4 sm:p-5 sm:grid-cols-2">
             <div className="flex gap-3">
               <HeartHandshake className="h-5 w-5 shrink-0 text-primary" aria-hidden="true" />
               <div>
@@ -186,8 +185,8 @@ export default function VolunteerProgram() {
                 </p>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </section>
       </section>
 
       {/* FAQ */}

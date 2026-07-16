@@ -99,7 +99,7 @@ export function ExhibitionsList({ shelterClubId, actor, onSelect, onCreate }) {
   return (
     <section className="arena-section-card">
       <div className="arena-section-card-header">
-        <CardTitle>Vitrines</CardTitle>
+        <h3 className="arena-section-card-title">Vitrines</h3>
         {onCreate && (
           <Button size="sm" onClick={onCreate}>
             + Nova vitrine

@@ -20,7 +20,6 @@ import {
   Calendar, MapPin, Building2, Users, Filter, Sparkles, ArrowRight,
   Clock, Heart, Search,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -80,8 +79,8 @@ function UnifiedCard({ item, type }) {
       className="block group"
       data-testid={`unified-event-${type}-${item.id}`}
     >
-      <Card className="h-full hover:shadow-md transition-shadow hover:border-primary/40">
-        <CardContent className="p-4 space-y-2">
+      <section className="arena-section-card h-full hover:shadow-md transition-shadow hover:border-primary/40">
+        <div className="arena-section-card-body p-4 space-y-2">
           <div className="flex items-start justify-between gap-2">
             <Badge
               className={cn(
@@ -121,8 +120,8 @@ function UnifiedCard({ item, type }) {
               <span className="truncate">{item.shelter_name || item.community_name}</span>
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     </Link>
   );
 }

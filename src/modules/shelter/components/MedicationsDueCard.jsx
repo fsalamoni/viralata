@@ -12,7 +12,6 @@ import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Pill, AlertTriangle, CheckCircle2 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -66,19 +65,19 @@ export function MedicationsDueCard({ shelterClubId }) {
   });
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-base">
+    <section className="arena-section-card">
+      <div className="arena-section-card-header">
+        <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base">
           <Pill className="h-4.5 w-4.5 text-primary" /> Medicações
-        </CardTitle>
-        <CardDescription>
+        </h3>
+        <p className="arena-section-card-description">
           {medications.length} ativa(s) · {dueRows.length} dose(s) pendente(s)
           {overdueCount > 0 && (
             <span className="ml-1 font-semibold text-destructive">· {overdueCount} atrasada(s)</span>
           )}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-2">
+        </p>
+      </div>
+      <div className="arena-section-card-body space-y-2">
         {isLoading && <Skeleton className="h-16 w-full rounded-lg" />}
         {isError && (
           <p className="text-sm text-muted-foreground">Não foi possível carregar as medicações.</p>
@@ -114,8 +113,8 @@ export function MedicationsDueCard({ shelterClubId }) {
             </Button>
           </div>
         ))}
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 

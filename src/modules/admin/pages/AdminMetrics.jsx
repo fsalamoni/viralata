@@ -4,7 +4,6 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip,
 } from 'recharts';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { fetchMetricsData, groupByMonth, groupByDay, groupByField } from '../services/metricsService';
 import PageHero from '@/components/PageHero';
@@ -67,9 +66,9 @@ export default function AdminMetrics() {
         <SummaryCard label="Denúncias" value={data.reports.length} />
       </div>
 
-      <Card>
-        <CardHeader><CardTitle className="text-base">Adoções por mês</CardTitle></CardHeader>
-        <CardContent className="h-64">
+      <section className="arena-section-card">
+        <div className="arena-section-card-header"><h3 className="arena-section-card-title">Adoções por mês</h3></div>
+        <div className="arena-section-card-body h-64">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={adoptionsByMonth}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -79,12 +78,12 @@ export default function AdminMetrics() {
               <Bar dataKey="count" name="Adoções" fill="#c55026" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
-      <Card>
-        <CardHeader><CardTitle className="text-base">Crescimento de usuários</CardTitle></CardHeader>
-        <CardContent className="h-64">
+      <section className="arena-section-card">
+        <div className="arena-section-card-header"><h3 className="arena-section-card-title">Crescimento de usuários</h3></div>
+        <div className="arena-section-card-body h-64">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={usersByMonth}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -94,12 +93,12 @@ export default function AdminMetrics() {
               <Line type="monotone" dataKey="count" name="Novos usuários" stroke="#607246" strokeWidth={2} dot={false} />
             </LineChart>
           </ResponsiveContainer>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
-      <Card>
-        <CardHeader><CardTitle className="text-base">Pets por estado</CardTitle></CardHeader>
-        <CardContent className="h-64">
+      <section className="arena-section-card">
+        <div className="arena-section-card-header"><h3 className="arena-section-card-title">Pets por estado</h3></div>
+        <div className="arena-section-card-body h-64">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={petsByState} layout="vertical" margin={{ left: 24 }}>
               <CartesianGrid strokeDasharray="3 3" horizontal={false} />
@@ -109,12 +108,12 @@ export default function AdminMetrics() {
               <Bar dataKey="count" name="Pets" fill="#f1b527" radius={[0, 4, 4, 0]} />
             </BarChart>
           </ResponsiveContainer>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
-      <Card>
-        <CardHeader><CardTitle className="text-base">Denúncias por mês</CardTitle></CardHeader>
-        <CardContent className="h-64">
+      <section className="arena-section-card">
+        <div className="arena-section-card-header"><h3 className="arena-section-card-title">Denúncias por mês</h3></div>
+        <div className="arena-section-card-body h-64">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={reportsByMonth}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -124,19 +123,19 @@ export default function AdminMetrics() {
               <Bar dataKey="count" name="Denúncias" fill="#dd382c" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     </div>
   );
 }
 
 function SummaryCard({ label, value }) {
   return (
-    <Card>
-      <CardContent className="pt-6 text-center">
+    <section className="arena-section-card">
+      <div className="arena-section-card-body pt-6 text-center">
         <p className="text-2xl font-bold text-foreground">{value}</p>
         <p className="text-xs text-muted-foreground mt-1">{label}</p>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }

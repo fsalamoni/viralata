@@ -25,7 +25,6 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { ShieldCheck, ShieldOff, Search, ShieldAlert, Lock } from 'lucide-react';
 import PageHero from '@/components/PageHero';
@@ -125,8 +124,8 @@ export default function AdminUsers() {
       />
 
       {!isOwner && (
-        <Card className="border-amber-300/50 bg-amber-50">
-          <CardContent className="py-4 flex items-start gap-3">
+        <section className="arena-section-card border-amber-300/50 bg-amber-50">
+          <div className="arena-section-card-body py-4 flex items-start gap-3">
             <ShieldAlert className="h-5 w-5 text-amber-600 mt-0.5" />
             <div className="flex-1 text-sm">
               <p className="font-semibold text-amber-900">Modo somente leitura</p>
@@ -135,18 +134,18 @@ export default function AdminUsers() {
                 Você ainda vê a lista, mas as ações ficam desabilitadas.
               </p>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </section>
       )}
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Platform Admins atuais ({admins.length})</CardTitle>
-          <CardDescription>
+      <section className="arena-section-card">
+        <div className="arena-section-card-header">
+          <h3 className="arena-section-card-title">Platform Admins atuais ({admins.length})</h3>
+          <p className="arena-section-card-description">
             Admins com acesso a /admin. O self-demote está sempre bloqueado.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-2">
+          </p>
+        </div>
+        <div className="arena-section-card-body space-y-2">
           {loading ? (
             <p className="text-sm text-muted-foreground">Carregando...</p>
           ) : filteredAdmins.length === 0 ? (
@@ -166,18 +165,18 @@ export default function AdminUsers() {
               />
             ))
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
       {isOwner && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Promover alguém a platform_admin</CardTitle>
-            <CardDescription>
+        <section className="arena-section-card">
+          <div className="arena-section-card-header">
+            <h3 className="arena-section-card-title">Promover alguém a platform_admin</h3>
+            <p className="arena-section-card-description">
               Candidatos: usuários ativos que ainda não são platform_admin.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-2">
+            </p>
+          </div>
+          <div className="arena-section-card-body space-y-2">
             {nonAdminCandidates.length === 0 ? (
               <p className="text-sm text-muted-foreground text-center py-6">
                 Nenhum candidato disponível.
@@ -192,8 +191,8 @@ export default function AdminUsers() {
                 />
               ))
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </section>
       )}
 
       {/* TASK-178/179: banimento com motivo/prazo + timeline por usuário */}

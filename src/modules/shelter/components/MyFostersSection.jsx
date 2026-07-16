@@ -12,7 +12,6 @@ import {
   Home, Calendar, CheckCircle2, XCircle, Loader2, AlertCircle,
   PawPrint, ChevronRight,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -149,17 +148,17 @@ export function MyFostersSection({ userUid }) {
   if (!userUid) return null;
 
   return (
-    <Card className="rounded-[24px] border-emerald-200" data-testid="my-fosters-section">
-      <CardHeader className="p-6 pb-3">
-        <CardTitle className="flex items-center gap-2 text-base font-bold">
+    <section className="rounded-[24px] border-emerald-200" data-testid="my-fosters-section">
+      <div className="arena-section-card-header">
+        <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base font-bold">
           <Home className="h-5 w-5 text-emerald-700" />
           Meus Lares Temporários
-        </CardTitle>
-        <CardDescription className="text-[12.5px]">
+        </h3>
+        <p className="arena-section-card-description">
           Pets que você acolheu ou está acolhendo temporariamente.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="p-6 pt-0 space-y-4">
+        </p>
+      </div>
+      <div className="arena-section-card-body p-6 pt-0 space-y-4">
         {loading ? (
           <div className="space-y-2">
             <Skeleton className="h-16 w-full" />
@@ -188,8 +187,8 @@ export function MyFostersSection({ userUid }) {
             <PlacementsList placements={placements} status="cancelled" />
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 

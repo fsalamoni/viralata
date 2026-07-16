@@ -1,6 +1,5 @@
 import React from 'react';
 import { AlertTriangle } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
 /**
@@ -12,8 +11,8 @@ import { Button } from '@/components/ui/button';
  */
 export default function ErrorState({ message = 'Não foi possível carregar os dados agora.', onRetry }) {
   return (
-    <Card>
-      <CardContent className="flex flex-col items-center gap-3 p-8 text-center">
+    <section className="arena-section-card">
+      <div className="arena-section-card-body flex flex-col items-center gap-3 p-8 text-center">
         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10 text-destructive">
           <AlertTriangle className="h-5 w-5" />
         </div>
@@ -21,7 +20,7 @@ export default function ErrorState({ message = 'Não foi possível carregar os d
         {onRetry && (
           <Button variant="outline" size="sm" onClick={onRetry}>Tentar novamente</Button>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }

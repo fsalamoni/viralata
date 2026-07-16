@@ -112,7 +112,7 @@ const [actionContext, setActionContext] = useState(null); // { action, fosterId,
       <div className="arena-section-card-header">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <CardTitle>Lares Temporários</CardTitle>
+            <h3 className="arena-section-card-title">Lares Temporários</h3>
             <p className="text-xs text-muted-foreground mt-1">
               {fosterList.length} placement(s) {statusFilter ? `com status ${STATUS_LABELS[statusFilter]}` : ''}
             </p>

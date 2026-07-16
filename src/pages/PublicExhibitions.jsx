@@ -8,7 +8,6 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { Calendar, MapPin, Building2, Clock, ExternalLink, Sparkles } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -46,8 +45,8 @@ function formatTime(iso) {
 
 function ExhibitionCard({ ex }) {
   return (
-    <Card className="hover:shadow-md transition-shadow" data-testid={`exhibition-${ex.id}`}>
-      <CardContent className="p-4">
+    <section className="arena-section-card hover:shadow-md transition-shadow" data-testid={`exhibition-${ex.id}`}>
+      <div className="arena-section-card-body p-4">
         <div className="flex items-start justify-between gap-2 mb-2">
           <h3 className="font-semibold text-base line-clamp-2 flex-1">
             {ex.title || 'Vitrinha'}
@@ -100,8 +99,8 @@ function ExhibitionCard({ ex }) {
             </a>
           </Button>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 
@@ -183,8 +182,8 @@ export default function PublicExhibitions() {
         kicker="EVENTOS"
       />
 
-      <Card>
-        <CardContent className="p-4 space-y-3">
+      <section className="arena-section-card">
+        <div className="arena-section-card-body p-4 space-y-3">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <div>
               <Label htmlFor="status">Status</Label>
@@ -221,8 +220,8 @@ export default function PublicExhibitions() {
               </label>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
       {loading && (
         <div className="space-y-3">

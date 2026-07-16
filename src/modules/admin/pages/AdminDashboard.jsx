@@ -2,7 +2,6 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Shield, PawPrint, Building2, AlertTriangle, Users, BarChart3, ScrollText, Bell, SlidersHorizontal, Flag, Activity, DollarSign, Database, Siren } from 'lucide-react';
 import PageHero from '@/components/PageHero';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
@@ -44,22 +43,22 @@ export default function AdminDashboard() {
       />
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {sections.map(({ icon: Icon, title, desc, link, tone }) => (
-          <Card key={link} className="transition-shadow hover:shadow-[0_18px_40px_-28px_rgba(64,34,18,0.35)]">
-            <CardHeader className="pb-2">
-              <CardTitle className="flex items-center gap-2.5 text-base">
+          <section key={link} className="transition-shadow hover:shadow-[0_18px_40px_-28px_rgba(64,34,18,0.35)]">
+            <div className="arena-section-card-header">
+              <h3 className="arena-section-card-title" className="flex items-center gap-2.5 text-base">
                 <span className={`flex h-9 w-9 items-center justify-center rounded-xl ${tone}`}>
                   <Icon className="w-4 h-4" />
                 </span>
                 {title}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
+              </h3>
+            </div>
+            <div className="arena-section-card-body space-y-3">
               <p className="text-sm text-muted-foreground">{desc}</p>
               <Button asChild variant="outline" size="sm">
                 <Link to={link}>Acessar</Link>
               </Button>
-            </CardContent>
-          </Card>
+            </div>
+          </section>
         ))}
       </div>
     </div>

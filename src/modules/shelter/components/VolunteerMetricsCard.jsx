@@ -20,7 +20,6 @@ import React, { useMemo } from 'react';
 import {
   Activity, Clock, Car, TrendingUp, Building2, Heart, Calendar,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -49,77 +48,77 @@ export function VolunteerMetricsCard({ uid, shelterNames: _shelterNames }) {
 
   if (isLoading) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <section className="arena-section-card">
+        <div className="arena-section-card-header">
+          <h3 className="arena-section-card-title" className="flex items-center gap-2">
             <Activity className="h-5 w-5 text-primary" />
             Métricas de Voluntariado
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
+          </h3>
+        </div>
+        <div className="arena-section-card-body space-y-3">
           <Skeleton className="h-12 w-full" />
           <Skeleton className="h-12 w-3/4" />
           <Skeleton className="h-12 w-1/2" />
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     );
   }
 
   if (isError || !metrics) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <section className="arena-section-card">
+        <div className="arena-section-card-header">
+          <h3 className="arena-section-card-title" className="flex items-center gap-2">
             <Activity className="h-5 w-5 text-primary" />
             Métricas de Voluntariado
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </h3>
+        </div>
+        <div className="arena-section-card-body">
           <EmptyState
             icon={Activity}
             title="Não foi possível carregar as métricas"
             description="Tente recarregar a página."
           />
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     );
   }
 
   if (metrics.totalParticipations === 0) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <section className="arena-section-card">
+        <div className="arena-section-card-header">
+          <h3 className="arena-section-card-title" className="flex items-center gap-2">
             <Activity className="h-5 w-5 text-primary" />
             Métricas de Voluntariado
-          </CardTitle>
-          <CardDescription>
+          </h3>
+          <p className="arena-section-card-description">
             Suas estatísticas aparecerão aqui após sua primeira participação.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+          </p>
+        </div>
+        <div className="arena-section-card-body">
           <EmptyState
             icon={Heart}
             title="Nenhuma participação ainda"
             description="Participe de uma ação em um abrigo para começar a acumular métricas."
           />
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+    <section className="arena-section-card">
+      <div className="arena-section-card-header">
+        <h3 className="arena-section-card-title" className="flex items-center gap-2">
           <Activity className="h-5 w-5 text-primary" />
           Métricas de Voluntariado
-        </CardTitle>
-        <CardDescription>
+        </h3>
+        <p className="arena-section-card-description">
           Estatísticas agregadas de todas as suas participações em abrigos
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+        </p>
+      </div>
+      <div className="arena-section-card-body">
         <dl
           className="grid grid-cols-2 sm:grid-cols-3 gap-4"
           aria-label="Métricas globais de voluntariado"
@@ -190,8 +189,8 @@ export function VolunteerMetricsCard({ uid, shelterNames: _shelterNames }) {
             </span>
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 

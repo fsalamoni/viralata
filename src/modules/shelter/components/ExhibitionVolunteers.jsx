@@ -13,7 +13,6 @@
 
 import { useState, useEffect } from 'react';
 import { Users, Clock, UserCheck, UserX } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -80,59 +79,59 @@ export function ExhibitionVolunteers({ shelterClubId, exhibitionId, max = 20 }) 
 
   if (loading) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <section className="arena-section-card">
+        <div className="arena-section-card-header">
+          <h3 className="arena-section-card-title" className="flex items-center gap-2">
             <Users className="h-5 w-5 text-primary" />
             Voluntários escalados
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2">
+          </h3>
+        </div>
+        <div className="arena-section-card-body space-y-2">
           <Skeleton className="h-12 w-full" />
           <Skeleton className="h-12 w-full" />
           <Skeleton className="h-12 w-2/3" />
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     );
   }
 
   if (error) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <section className="arena-section-card">
+        <div className="arena-section-card-header">
+          <h3 className="arena-section-card-title" className="flex items-center gap-2">
             <Users className="h-5 w-5 text-primary" />
             Voluntários escalados
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </h3>
+        </div>
+        <div className="arena-section-card-body">
           <EmptyState
             icon={Users}
             title="Não foi possível carregar"
             description={error}
           />
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     );
   }
 
   if (participations.length === 0) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <section className="arena-section-card">
+        <div className="arena-section-card-header">
+          <h3 className="arena-section-card-title" className="flex items-center gap-2">
             <Users className="h-5 w-5 text-primary" />
             Voluntários escalados
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </h3>
+        </div>
+        <div className="arena-section-card-body">
           <EmptyState
             icon={Users}
             title="Nenhum voluntário escalado ainda"
             description="Conforme voluntários confirmarem presença, eles aparecerão aqui."
           />
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     );
   }
 
@@ -140,12 +139,12 @@ export function ExhibitionVolunteers({ shelterClubId, exhibitionId, max = 20 }) 
   const completedCount = participations.filter((p) => p.status === 'completed').length;
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+    <section className="arena-section-card">
+      <div className="arena-section-card-header">
+        <h3 className="arena-section-card-title" className="flex items-center gap-2">
           <Users className="h-5 w-5 text-primary" />
           Voluntários escalados ({participations.length})
-        </CardTitle>
+        </h3>
         <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
           {checkedInCount > 0 && (
             <span className="inline-flex items-center gap-1 text-emerald-700">
@@ -158,8 +157,8 @@ export function ExhibitionVolunteers({ shelterClubId, exhibitionId, max = 20 }) 
             </span>
           )}
         </div>
-      </CardHeader>
-      <CardContent>
+      </div>
+      <div className="arena-section-card-body">
         <ul
           className="space-y-2"
           aria-label="Lista de voluntários escalados"
@@ -201,8 +200,8 @@ export function ExhibitionVolunteers({ shelterClubId, exhibitionId, max = 20 }) 
             );
           })}
         </ul>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 

@@ -10,7 +10,6 @@
 
 import { Link } from 'react-router-dom';
 import { Heart } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useMyApplications } from '@/modules/shelter/hooks/useAdoptionApplications';
@@ -41,16 +40,16 @@ export function MyAdoptionsSection({ userUid }) {
   }
 
   return (
-    <Card id="adocoes" className="rounded-[24px] p-6 lg:p-7">
-      <CardHeader className="p-0 pb-1">
-        <CardTitle className="flex items-center gap-2 text-base font-bold">
+    <section id="adocoes" className="rounded-[24px] p-6 lg:p-7">
+      <div className="arena-section-card-header">
+        <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base font-bold">
           <Heart className="w-[19px] h-[19px] text-accent" /> Minhas adoções
-        </CardTitle>
-        <CardDescription className="text-[12.5px]">
+        </h3>
+        <p className="arena-section-card-description">
           Histórico dos seus pedidos de adoção em todos os abrigos.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="p-0 pt-4">
+        </p>
+      </div>
+      <div className="arena-section-card-body p-0 pt-4">
         {isLoading && (
           <div className="space-y-2">
             <Skeleton className="h-14 w-full rounded-lg" />
@@ -111,8 +110,8 @@ export function MyAdoptionsSection({ userUid }) {
             ))}
           </ol>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 

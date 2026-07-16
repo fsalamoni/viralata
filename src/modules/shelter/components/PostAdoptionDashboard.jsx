@@ -12,7 +12,6 @@
  */
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -63,11 +62,11 @@ export function PostAdoptionDashboard() {
 
   if (!user) {
     return (
-      <Card>
-        <CardContent className="p-6">
+      <section className="arena-section-card">
+        <div className="arena-section-card-body p-6">
           <p>Faça login para ver suas tasks de pós-adoção.</p>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     );
   }
 
@@ -90,30 +89,30 @@ export function PostAdoptionDashboard() {
       )}
 
       {!isLoading && tasks.length === 0 && (
-        <Card>
-          <CardContent className="p-6 text-muted-foreground">
+        <section className="arena-section-card">
+          <div className="arena-section-card-body p-6 text-muted-foreground">
             <CheckCircle2 className="h-8 w-8 mb-2 text-green-600" />
             <p>Você não tem tasks pendentes de pós-adoção. 🎉</p>
             <p className="text-sm mt-2">
               Quando você adotar um pet, o abrigo poderá agendar check-ins, fotos e relatos.
             </p>
-          </CardContent>
-        </Card>
+          </div>
+        </section>
       )}
 
       {Object.entries(byClub).map(([clubId, { name, items }]) => (
-        <Card key={clubId}>
-          <CardHeader>
-            <CardTitle className="text-base">
+        <section key={clubId}>
+          <div className="arena-section-card-header">
+            <h3 className="arena-section-card-title" className="text-base">
               <Link to={`/abrigos/${clubId}`} className="hover:underline">
                 {name}
               </Link>
-            </CardTitle>
-            <CardDescription>
+            </h3>
+            <p className="arena-section-card-description">
               {items.length} task{items.length !== 1 ? 's' : ''}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+            </p>
+          </div>
+          <div className="arena-section-card-body">
             <div className="space-y-2">
               {items.map((task) => {
                 const Icon = TASK_ICONS[taskTypeLabel(task)] || TASK_ICONS.default;
@@ -147,8 +146,8 @@ export function PostAdoptionDashboard() {
                 );
               })}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </section>
       ))}
     </div>
   );

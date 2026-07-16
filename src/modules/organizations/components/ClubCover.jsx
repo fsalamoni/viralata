@@ -38,7 +38,7 @@ export default function ClubCover({ club, stats, isAdmin }) {
       {/* BANNER FULL-WIDTH com gradiente personalizado. max-h impede
           que em telas grandes o card cresça demais. */}
       <div
-        className="relative h-44 max-h-[260px] w-full overflow-hidden sm:h-52"
+        className="relative h-52 w-full overflow-hidden sm:h-60 lg:h-64"
         style={{ background: 'var(--cover-gradient, linear-gradient(135deg, hsl(20 90% 50%) 0%, hsl(350 80% 55%) 100%))' }}
       >
 
@@ -50,7 +50,7 @@ export default function ClubCover({ club, stats, isAdmin }) {
           <div className="absolute right-3 top-3 z-20 sm:right-6 sm:top-4">
             <Link
               to={`/organizacoes/${club.id}/admin`}
-              className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3.5 py-1.5 text-xs font-semibold text-white backdrop-blur-sm transition-colors hover:bg-white/25"
+              className="inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-white/20 px-3.5 py-1.5 text-xs font-semibold text-white backdrop-blur-md transition-colors hover:bg-white/30"
             >
               <Settings className="h-3.5 w-3.5" />
               Painel Administrativo
@@ -79,7 +79,7 @@ export default function ClubCover({ club, stats, isAdmin }) {
               Quando a ONG não tem logo enviado, usamos o gradiente do
               card como fundo (consistência visual com a personalização). */}
           <div
-            className="flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-2xl border-4 border-background shadow-lg sm:h-32 sm:w-32"
+            className="flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-3xl border-[5px] border-background shadow-xl sm:h-32 sm:w-32"
             style={{ background: 'var(--cover-gradient, linear-gradient(135deg, hsl(28 88% 60%) 0%, hsl(348 78% 60%) 100%))' }}
           >
             {club.logo_url ? (
@@ -99,7 +99,7 @@ export default function ClubCover({ club, stats, isAdmin }) {
               empurrados pra dar mais respiração final. */}
           <div className="min-w-0 flex-1 pt-1 sm:pt-2">
             <h1
-              className="text-2xl font-bold tracking-tight drop-shadow sm:text-3xl"
+              className="text-[26px] font-extrabold tracking-tight drop-shadow-md sm:text-3xl lg:text-[34px]"
               style={{ color: 'hsl(var(--cover-name, 0 0% 100%))' }}
             >
               {club.name}

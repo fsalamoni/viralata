@@ -13,7 +13,6 @@ import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ChevronLeft, Heart, BookOpen, Calendar, MapPin, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 import PageHero from '@/components/PageHero';
@@ -75,17 +74,17 @@ function StatusBanner({ profile }) {
 
 function QuickInfoCard({ title, icon: Icon, children }) {
   return (
-    <Card>
-      <CardHeader className="p-4 pb-2">
-        <CardTitle className="flex items-center gap-1.5 text-sm font-semibold">
+    <section className="arena-section-card">
+      <div className="arena-section-card-header">
+        <h3 className="arena-section-card-title" className="flex items-center gap-1.5 text-sm font-semibold">
           <Icon className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
           {title}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="p-4 pt-0">
+        </h3>
+      </div>
+      <div className="arena-section-card-body p-4 pt-0">
         {children}
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 
@@ -216,8 +215,8 @@ export default function VolunteerProfile() {
             <ul className="space-y-2">
               {activeRosters.map((r) => (
                 <li key={r.id}>
-                  <Card>
-                    <CardContent className="p-3 flex items-center justify-between gap-3">
+                  <section className="arena-section-card">
+                    <div className="arena-section-card-body p-3 flex items-center justify-between gap-3">
                       <div className="min-w-0">
                         <p className="font-medium truncate">
                           {r.shelter_name || r.club_id}
@@ -231,8 +230,8 @@ export default function VolunteerProfile() {
                           Ver abrigo <ExternalLink className="h-3 w-3 ml-1" />
                         </Link>
                       </Button>
-                    </CardContent>
-                  </Card>
+                    </div>
+                  </section>
                 </li>
               ))}
             </ul>

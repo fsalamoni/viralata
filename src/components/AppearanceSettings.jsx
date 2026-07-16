@@ -15,7 +15,6 @@
 
 import { useState } from 'react';
 import { Monitor, Eye, EyeOff, MousePointer, Smartphone, Minimize2, Sparkles } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -104,18 +103,18 @@ export function AppearanceSettings() {
   const setReduceMotion = (value) => setPrefs({ reduceMotion: value });
 
   return (
-    <Card data-testid="appearance-settings">
-      <CardHeader className="p-6 pb-3">
-        <CardTitle className="flex items-center gap-2 text-base font-bold">
+    <section data-testid="appearance-settings">
+      <div className="arena-section-card-header">
+        <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base font-bold">
           <Sparkles className="h-5 w-5 text-primary" aria-hidden="true" />
           Aparência
-        </CardTitle>
-        <CardDescription className="text-[12.5px]">
+        </h3>
+        <p className="arena-section-card-description">
           Personalize como os elementos do site aparecem. Mudanças são aplicadas imediatamente
           e salvas automaticamente.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="p-6 pt-2 space-y-5">
+        </p>
+      </div>
+      <div className="arena-section-card-body p-6 pt-2 space-y-5">
         {/* Footer */}
         <div>
           <button
@@ -238,8 +237,8 @@ export function AppearanceSettings() {
             Salvo às {status.syncedAt.toLocaleTimeString('pt-BR')}
           </p>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 

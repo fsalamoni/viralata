@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Mail, MessageCircle, Phone, Lock, Eye, EyeOff, Briefcase } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Badge } from '@/components/ui/badge';
@@ -113,21 +112,21 @@ function MemberCard({ member, viewerContext, onStartChat }) {
 
   if (!hasVisibleField) {
     return (
-      <Card className="rounded-2xl">
-        <CardContent className="p-7 text-center text-xs text-muted-foreground">
+      <section className="arena-section-card rounded-2xl">
+        <div className="arena-section-card-body p-7 text-center text-xs text-muted-foreground">
           <Lock className="mx-auto mb-2 h-4 w-4" />
           As informações deste membro estão restritas no momento.
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     );
   }
 
   return (
-    <Card className="rounded-2xl">
+    <section className="arena-section-card rounded-2xl">
       {/* p-6 sm:p-7 com pt-6 garante que o nome do membro não
           encoste no topo do card. space-y-4 entre as seções internas
           do card (header / bio / ações). */}
-      <CardContent className="space-y-4 p-6 pt-6 sm:p-7 sm:pt-7">
+      <div className="arena-section-card-body space-y-4 p-6 pt-6 sm:p-7 sm:pt-7">
         <div className="flex items-start gap-3">
           {member.photo_url ? (
             <img src={member.photo_url} alt="" className="h-12 w-12 shrink-0 rounded-full border border-border object-cover" />
@@ -190,7 +189,7 @@ function MemberCard({ member, viewerContext, onStartChat }) {
             <EyeOff className="h-3 w-3" /> Algumas informações estão ocultas para você.
           </p>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }

@@ -32,7 +32,6 @@ import {
   UserPlus,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ImageUpload } from '@/components/ui/image-upload';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -424,20 +423,20 @@ export default function ShelterOnboardingWizard() {
       </div>
 
       {/* Step content */}
-      <Card className="mb-6 overflow-hidden">
-        <CardHeader className="border-b border-primary/10 bg-white/45 p-4 sm:p-5">
-          <CardTitle className="text-base">
+      <section className="arena-section-card mb-6 overflow-hidden">
+        <div className="arena-section-card-header">
+          <h3 className="arena-section-card-title">
             Passo {step + 1} — {STEPS[step].label}
-          </CardTitle>
-          <CardDescription>
+          </h3>
+          <p className="arena-section-card-description">
             {step === 0 && 'Adicione a identidade visual do seu abrigo.'}
             {step === 1 && 'Informe o endereço e canais de contato.'}
             {step === 2 && 'Convide um coordenador ou voluntário-chave.'}
             {step === 3 && 'Leia e assine o Termo de Adesão e DPA.'}
             {step === 4 && 'Cadastre o primeiro pet ou pule esta etapa.'}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="p-4 sm:p-5">
+          </p>
+        </div>
+        <div className="arena-section-card-body p-4 sm:p-5">
           {step === 0 && <StepLogoCapa form={form} setForm={setForm} />}
           {step === 1 && <StepEndereco form={form} setForm={setForm} />}
           {step === 2 && <StepEquipe form={form} setForm={setForm} />}
@@ -454,8 +453,8 @@ export default function ShelterOnboardingWizard() {
             </div>
           )}
           {step === 4 && <StepPrimeiroPet form={form} setForm={setForm} />}
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
       {/* Navigation */}
       <div className="flex items-center justify-between">

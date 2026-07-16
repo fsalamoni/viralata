@@ -68,7 +68,7 @@ export function MedicalRecordsList({ petId, shelterClubId, canEdit = false, acto
       <div className="arena-section-card-header">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <CardTitle>Prontuário Médico</CardTitle>
+            <h3 className="arena-section-card-title">Prontuário Médico</h3>
             <p className="text-xs text-muted-foreground mt-1">
               {visible.length} registro(s) {typeFilter ? `(${MEDICAL_RECORD_LABELS[typeFilter]})` : ''}
             </p>

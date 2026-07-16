@@ -15,7 +15,6 @@ import {
   Heart, Building2, CheckCircle2, Sparkles, MapPin, Calendar,
   ChevronRight, ExternalLink,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -135,23 +134,23 @@ export function VolunteerSection() {
   const hasRosters = rosters.length > 0;
 
   return (
-    <Card className="rounded-[24px] border-primary/20" data-testid="volunteer-section">
-      <CardHeader className="p-6 pb-4">
+    <section className="rounded-[24px] border-primary/20" data-testid="volunteer-section">
+      <div className="arena-section-card-header">
         <div className="flex items-start justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-2">
             <Heart className="h-5 w-5 text-primary" aria-hidden="true" />
-            <CardTitle className="text-base font-bold">Voluntariado</CardTitle>
+            <h3 className="arena-section-card-title">Voluntariado</h3>
           </div>
           <VolunteerStatusBadge profile={profile} />
         </div>
-        <CardDescription className="text-[12.5px]">
+        <p className="arena-section-card-description">
           {isVolunteer
             ? 'Continue ajudando os abrigos. Veja abaixo seu impacto, habilidades e abrigos onde atua.'
             : 'Torne-se voluntário e ajude animais a encontrar um lar.'}
-        </CardDescription>
-      </CardHeader>
+        </p>
+      </div>
 
-      <CardContent className="p-6 pt-0 space-y-5">
+      <div className="arena-section-card-body p-6 pt-0 space-y-5">
         {/* Resumo rápido (sempre visível) */}
         {profileLoading || rostersLoading ? (
           <div className="space-y-2">
@@ -265,8 +264,8 @@ export function VolunteerSection() {
             }
           />
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 

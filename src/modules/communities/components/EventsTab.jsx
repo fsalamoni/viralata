@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { Calendar, Plus, MapPin, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { listCommunityEvents, createCommunityEvent, deleteCommunityEvent } from '../services/communityService';
@@ -72,7 +71,7 @@ export default function EventsTab({ communityId, isAdmin, membership, community 
         <div className="grid gap-4 sm:grid-cols-2">
           {events.map(ev => {
             const card = (
-              <Card key={ev.id} className="p-4 flex flex-col gap-3 hover:bg-secondary/10 transition-colors cursor-pointer">
+              <section key={ev.id} className="p-4 flex flex-col gap-3 hover:bg-secondary/10 transition-colors cursor-pointer">
                 <div className="flex justify-between items-start">
                   <h3 className="font-bold text-base">{ev.title}</h3>
                   {canManageEvents && (
@@ -96,7 +95,7 @@ export default function EventsTab({ communityId, isAdmin, membership, community 
                     </div>
                   )}
                 </div>
-              </Card>
+              </section>
             );
             if (eventDetailEnabled) {
               return (

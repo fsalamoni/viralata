@@ -18,7 +18,6 @@ import {
   Clock, Heart, Stethoscope, Home, ArrowRight, PawPrint,
   Calendar, MapPin, AlertCircle,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Badge } from '@/components/ui/badge';
@@ -109,71 +108,71 @@ export function PublicPetTimeline({ petId, shelterClubId }) {
 
   if (loading) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <section className="arena-section-card">
+        <div className="arena-section-card-header">
+          <h3 className="arena-section-card-title" className="flex items-center gap-2">
             <Clock className="h-5 w-5 text-primary" />
             História do pet
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
+          </h3>
+        </div>
+        <div className="arena-section-card-body space-y-3">
           <Skeleton className="h-16 w-full" />
           <Skeleton className="h-16 w-full" />
           <Skeleton className="h-16 w-2/3" />
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     );
   }
 
   if (error) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <section className="arena-section-card">
+        <div className="arena-section-card-header">
+          <h3 className="arena-section-card-title" className="flex items-center gap-2">
             <Clock className="h-5 w-5 text-primary" />
             História do pet
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </h3>
+        </div>
+        <div className="arena-section-card-body">
           <EmptyState
             icon={AlertCircle}
             title="Não foi possível carregar a história"
             description="Tente recarregar a página."
           />
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     );
   }
 
   if (events.length === 0) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <section className="arena-section-card">
+        <div className="arena-section-card-header">
+          <h3 className="arena-section-card-title" className="flex items-center gap-2">
             <Clock className="h-5 w-5 text-primary" />
             História do pet
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </h3>
+        </div>
+        <div className="arena-section-card-body">
           <EmptyState
             icon={Clock}
             title="História em construção"
             description="A história deste pet será atualizada em breve."
           />
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+    <section className="arena-section-card">
+      <div className="arena-section-card-header">
+        <h3 className="arena-section-card-title" className="flex items-center gap-2">
           <Clock className="h-5 w-5 text-primary" />
           História do pet
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
+        </h3>
+      </div>
+      <div className="arena-section-card-body">
         <ol
           className="relative border-l-2 border-border ml-2 space-y-4"
           aria-label="Eventos da história do pet"
@@ -211,8 +210,8 @@ export function PublicPetTimeline({ petId, shelterClubId }) {
             );
           })}
         </ol>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 

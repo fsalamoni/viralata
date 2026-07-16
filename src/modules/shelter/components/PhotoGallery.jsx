@@ -10,7 +10,6 @@
  */
 
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
@@ -83,11 +82,11 @@ export function PhotoGallery({ petId, shelterClubId, canEdit = false, actor }) {
   };
 
   return (
-    <Card>
-      <CardHeader>
+    <section className="arena-section-card">
+      <div className="arena-section-card-header">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <CardTitle>Galeria de Fotos</CardTitle>
+            <h3 className="arena-section-card-title">Galeria de Fotos</h3>
             <p className="text-xs text-muted-foreground mt-1">
               {tab === 'gallery'
                 ? `${photos.length} foto(s) ${categoryFilter ? `(${PHOTO_CATEGORY_LABELS[categoryFilter]})` : ''}`
@@ -111,8 +110,8 @@ export function PhotoGallery({ petId, shelterClubId, canEdit = false, actor }) {
             </Button>
           </div>
         </div>
-      </CardHeader>
-      <CardContent>
+      </div>
+      <div className="arena-section-card-body">
         {tab === 'gallery' && (
           <>
             {canEdit && (
@@ -241,7 +240,7 @@ export function PhotoGallery({ petId, shelterClubId, canEdit = false, actor }) {
             )}
           </>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }

@@ -3,7 +3,6 @@ import { toast } from 'sonner';
 import { Users, Check, HelpCircle, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 import { UserAvatar } from '@/components/ui/user-avatar';
@@ -58,8 +57,8 @@ export default function CommunityEventParticipantsPanel({ event, communityId }) 
   return (
     <div className="space-y-4">
       {/* Minha RSVP card */}
-      <Card className="rounded-xl">
-        <CardContent className="flex flex-wrap items-center justify-between gap-3 p-4">
+      <section className="arena-section-card rounded-xl">
+        <div className="arena-section-card-body flex flex-wrap items-center justify-between gap-3 p-4">
           <div>
             <h3 className="text-sm font-semibold text-foreground">
               {myRsvp
@@ -106,8 +105,8 @@ export default function CommunityEventParticipantsPanel({ event, communityId }) 
               </Button>
             )}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
       {/* Resumo */}
       <div className="flex flex-wrap gap-2 text-xs">
@@ -126,8 +125,8 @@ export default function CommunityEventParticipantsPanel({ event, communityId }) 
       </div>
 
       {/* Lista de participantes */}
-      <Card className="rounded-xl">
-        <CardContent className="space-y-4 p-4">
+      <section className="arena-section-card rounded-xl">
+        <div className="arena-section-card-body space-y-4 p-4">
           <div className="flex items-center gap-2">
             <Users className="h-5 w-5 text-primary" />
             <h3 className="text-base font-semibold text-foreground">Respostas</h3>
@@ -181,8 +180,8 @@ export default function CommunityEventParticipantsPanel({ event, communityId }) 
               )}
             </>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     </div>
   );
 }

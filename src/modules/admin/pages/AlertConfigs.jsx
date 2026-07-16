@@ -25,7 +25,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { Bell, Trash2, Power, PowerOff, Pencil, Plus, AlertTriangle } from 'lucide-react';
 import PageHero from '@/components/PageHero';
@@ -177,16 +176,16 @@ export default function AlertConfigs() {
       />
 
       {showForm && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">
+        <section className="arena-section-card">
+          <div className="arena-section-card-header">
+            <h3 className="arena-section-card-title">
               {editing ? 'Editar configuração' : 'Nova configuração'}
-            </CardTitle>
-            <CardDescription>
+            </h3>
+            <p className="arena-section-card-description">
               Threshold e canais. A Cloud Function `adminAlerts` envia via Slack/Email quando o limite é ultrapassado.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
+            </p>
+          </div>
+          <div className="arena-section-card-body space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <label className="space-y-1 text-xs font-medium text-muted-foreground">
                 <span>Tipo de alerta</span>
@@ -290,18 +289,18 @@ export default function AlertConfigs() {
                 {editing ? 'Salvar alterações' : 'Criar config'}
               </Button>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </section>
       )}
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Configurações ativas ({configs.length})</CardTitle>
-          <CardDescription>
+      <section className="arena-section-card">
+        <div className="arena-section-card-header">
+          <h3 className="arena-section-card-title">Configurações ativas ({configs.length})</h3>
+          <p className="arena-section-card-description">
             Cada config dispara quando a métrica ultrapassa o threshold. Auditoria no `audit_logs`.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-2">
+          </p>
+        </div>
+        <div className="arena-section-card-body space-y-2">
           {loading ? (
             <p className="text-sm text-muted-foreground">Carregando...</p>
           ) : configs.length === 0 ? (
@@ -351,17 +350,17 @@ export default function AlertConfigs() {
               </div>
             ))
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Eventos recentes ({events.length})</CardTitle>
-          <CardDescription>
+      <section className="arena-section-card">
+        <div className="arena-section-card-header">
+          <h3 className="arena-section-card-title">Eventos recentes ({events.length})</h3>
+          <p className="arena-section-card-description">
             Cada disparo de alerta. Use para auditar e depurar.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+          </p>
+        </div>
+        <div className="arena-section-card-body">
           {events.length === 0 ? (
             <p className="text-sm text-muted-foreground text-center py-6 flex items-center justify-center gap-2">
               <AlertTriangle className="h-4 w-4" />
@@ -394,8 +393,8 @@ export default function AlertConfigs() {
               ))}
             </ul>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     </div>
   );
 }

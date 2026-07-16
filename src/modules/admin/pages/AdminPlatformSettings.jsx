@@ -8,7 +8,6 @@ import { PLATFORM_SETTINGS_DEFAULTS } from '@/core/platformSettings';
 import {
   updatePlatformSettingsSection,
 } from '@/core/services/platformSettingsService';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -69,12 +68,12 @@ export default function AdminPlatformSettings() {
 
       <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
         <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Rótulos configuráveis</CardTitle>
-              <CardDescription>CTA do cabeçalho, atalhos mobile e chamadas da home.</CardDescription>
-            </CardHeader>
-            <CardContent className="grid gap-4">
+          <section className="arena-section-card">
+            <div className="arena-section-card-header">
+              <h3 className="arena-section-card-title">Rótulos configuráveis</h3>
+              <p className="arena-section-card-description">CTA do cabeçalho, atalhos mobile e chamadas da home.</p>
+            </div>
+            <div className="arena-section-card-body grid gap-4">
               <TextField label="Botão do cabeçalho" value={labelsForm.header_create_pet_cta} onChange={(value) => setLabelsForm((prev) => ({ ...prev, header_create_pet_cta: value }))} />
               <TextField label="Atalho mobile central" value={labelsForm.mobile_create_pet_cta} onChange={(value) => setLabelsForm((prev) => ({ ...prev, mobile_create_pet_cta: value }))} />
               <TextField label="CTA principal da home" value={labelsForm.home_primary_cta} onChange={(value) => setLabelsForm((prev) => ({ ...prev, home_primary_cta: value }))} />
@@ -88,15 +87,15 @@ export default function AdminPlatformSettings() {
                   Restaurar padrões
                 </Button>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </section>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Textos institucionais</CardTitle>
-              <CardDescription>Mensagens de entrada e descrição do feed visíveis para todos os usuários.</CardDescription>
-            </CardHeader>
-            <CardContent className="grid gap-4">
+          <section className="arena-section-card">
+            <div className="arena-section-card-header">
+              <h3 className="arena-section-card-title">Textos institucionais</h3>
+              <p className="arena-section-card-description">Mensagens de entrada e descrição do feed visíveis para todos os usuários.</p>
+            </div>
+            <div className="arena-section-card-body grid gap-4">
               <TextField label="Badge da home" value={textsForm.home_hero_badge} onChange={(value) => setTextsForm((prev) => ({ ...prev, home_hero_badge: value }))} />
               <div className="grid gap-4 md:grid-cols-3">
                 <TextField label="Título da home · início" value={textsForm.home_hero_title_prefix} onChange={(value) => setTextsForm((prev) => ({ ...prev, home_hero_title_prefix: value }))} />
@@ -115,17 +114,17 @@ export default function AdminPlatformSettings() {
                   Restaurar padrões
                 </Button>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </section>
         </div>
 
         <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Parâmetros operacionais</CardTitle>
-              <CardDescription>Limites de carregamento para os fluxos atuais de notificações.</CardDescription>
-            </CardHeader>
-            <CardContent className="grid gap-4">
+          <section className="arena-section-card">
+            <div className="arena-section-card-header">
+              <h3 className="arena-section-card-title">Parâmetros operacionais</h3>
+              <p className="arena-section-card-description">Limites de carregamento para os fluxos atuais de notificações.</p>
+            </div>
+            <div className="arena-section-card-body grid gap-4">
               <NumberField label="Itens no dropdown de notificações" value={limitsForm.notifications_dropdown_limit} onChange={(value) => setLimitsForm((prev) => ({ ...prev, notifications_dropdown_limit: value }))} min={5} max={50} />
               <NumberField label="Itens no painel admin de notificações" value={limitsForm.admin_notifications_limit} onChange={(value) => setLimitsForm((prev) => ({ ...prev, admin_notifications_limit: value }))} min={50} max={500} />
               <div className="flex flex-wrap gap-2">
@@ -136,18 +135,18 @@ export default function AdminPlatformSettings() {
                   Restaurar padrões
                 </Button>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </section>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Flags de atualizações</CardTitle>
-              <CardDescription>
+          <section className="arena-section-card">
+            <div className="arena-section-card-header">
+              <h3 className="arena-section-card-title">Flags de atualizações</h3>
+              <p className="arena-section-card-description">
                 Recursos aditivos que podem ser ativados sem alterar os fluxos principais. Movemos
                 o toggle para uma página dedicada, mais fácil de achar.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
+              </p>
+            </div>
+            <div className="arena-section-card-body">
               <Button asChild>
                 <Link to="/admin/flags" className="inline-flex items-center gap-2">
                   <Flag className="h-4 w-4" />
@@ -155,8 +154,8 @@ export default function AdminPlatformSettings() {
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
-            </CardContent>
-          </Card>
+            </div>
+          </section>
         </div>
       </div>
     </div>

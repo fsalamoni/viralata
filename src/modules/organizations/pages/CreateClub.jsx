@@ -5,7 +5,6 @@ import { Building2, ArrowLeft, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ImageUpload } from '@/components/ui/image-upload';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { useCreateClub } from '@/modules/organizations/hooks/useClubs';
@@ -124,12 +123,12 @@ export default function CreateClub() {
         }
       />
 
-      <Card className="overflow-hidden">
-        <CardHeader className="border-b border-primary/10 bg-white/45 p-4 sm:p-5">
-          <CardTitle className="text-base text-foreground">Dados da organização</CardTitle>
-          <CardDescription>Apenas o nome é obrigatório. Quanto mais completo, melhor para a comunidade encontrar você.</CardDescription>
-        </CardHeader>
-        <CardContent className="p-4 sm:p-5">
+      <section className="arena-section-card overflow-hidden">
+        <div className="arena-section-card-header">
+          <h3 className="arena-section-card-title">Dados da organização</h3>
+          <p className="arena-section-card-description">Apenas o nome é obrigatório. Quanto mais completo, melhor para a comunidade encontrar você.</p>
+        </div>
+        <div className="arena-section-card-body p-4 sm:p-5">
           {!isAuthenticated && (
             <p className="mb-4 rounded-md border border-highlight/40 bg-highlight/[0.14] p-3 text-sm text-[hsl(30,60%,24%)]">
               Você precisa estar autenticado para criar uma organização.
@@ -225,8 +224,8 @@ export default function CreateClub() {
               {createClub.isPending ? 'Criando…' : 'Continuar para o Termo de Adesão'}
             </Button>
           </form>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
       {/* Modal do Termo de Adesão + DPA — abre DEPOIS do submit do form,
           ANTES de criar o clube. */}

@@ -12,7 +12,6 @@
  */
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -117,11 +116,11 @@ export function AdopterProfileForm({ actorUid, actorDisplayName }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <Card>
-        <CardHeader>
+      <section className="arena-section-card">
+        <div className="arena-section-card-header">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
-              <CardTitle>Perfil do Adotante</CardTitle>
+              <h3 className="arena-section-card-title">Perfil do Adotante</h3>
               <p className="text-xs text-muted-foreground mt-1">
                 Quanto mais completo, mais rápido o abrigo te conhece.
               </p>
@@ -130,8 +129,8 @@ export function AdopterProfileForm({ actorUid, actorDisplayName }) {
               {completeness}% completo
             </Badge>
           </div>
-        </CardHeader>
-        <CardContent className="space-y-6">
+        </div>
+        <div className="arena-section-card-body space-y-6">
           {/* Identidade */}
           <Section title="Identidade">
             <Field id="full_name" label="Nome completo" required>
@@ -427,8 +426,8 @@ export function AdopterProfileForm({ actorUid, actorDisplayName }) {
               {isSaving ? 'Salvando…' : isCreating ? 'Criar perfil' : 'Salvar alterações'}
             </Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     </form>
   );
 }

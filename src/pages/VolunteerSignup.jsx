@@ -22,7 +22,6 @@ import {
   ChevronRight, ChevronLeft, ShieldCheck, AlertCircle, Loader2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -87,50 +86,50 @@ function Stepper({ current }) {
 
 function SoonMessage() {
   return (
-    <Card className="border-amber-300 bg-amber-50">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-amber-900">
+    <section className="arena-section-card border-amber-300 bg-amber-50">
+      <div className="arena-section-card-header">
+        <h3 className="arena-section-card-title" className="flex items-center gap-2 text-amber-900">
           <AlertCircle className="h-5 w-5" aria-hidden="true" />
           Inscrição de voluntários em breve
-        </CardTitle>
-        <CardDescription className="text-amber-800">
+        </h3>
+        <p className="arena-section-card-description" className="text-amber-800">
           A plataforma de inscrição pública de voluntários está em rollout gradual. Se você
           faz parte de um abrigo parceiro, peça ao seu administrador que habilite a
           feature flag <code>shelter_volunteer_profile_v1</code>.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="flex flex-wrap gap-2">
+        </p>
+      </div>
+      <div className="arena-section-card-body flex flex-wrap gap-2">
         <Button asChild variant="outline" size="sm">
           <Link to="/voluntarios">Voltar ao programa</Link>
         </Button>
         <Button asChild variant="ghost" size="sm">
           <Link to="/voluntarios/termo">Ler o termo</Link>
         </Button>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 
 function NotAuthed() {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+    <section className="arena-section-card">
+      <div className="arena-section-card-header">
+        <h3 className="arena-section-card-title" className="flex items-center gap-2">
           <ShieldCheck className="h-5 w-5 text-primary" aria-hidden="true" />
           Você precisa estar logado(a)
-        </CardTitle>
-        <CardDescription>
+        </h3>
+        <p className="arena-section-card-description">
           Para se inscrever como voluntário, entre com sua conta Google. Leva menos de 1 minuto.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+        </p>
+      </div>
+      <div className="arena-section-card-body">
         <Button asChild>
           <Link to="/login" state={{ from: { pathname: '/voluntarios/seja' } }}>
             Entrar para continuar
           </Link>
         </Button>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 
@@ -368,14 +367,14 @@ export default function VolunteerSignup() {
 
       {/* ── Step 1: Termo ── */}
       {step === 'terms' && (
-        <Card>
-          <CardHeader>
-            <CardTitle>1. Leia e aceite o termo de voluntariado</CardTitle>
-            <CardDescription>
+        <section className="arena-section-card">
+          <div className="arena-section-card-header">
+            <h3 className="arena-section-card-title">1. Leia e aceite o termo de voluntariado</h3>
+            <p className="arena-section-card-description">
               Versão {VOLUNTEER_TERMS_VERSION}. Rolagem até o fim é obrigatória.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
+            </p>
+          </div>
+          <div className="arena-section-card-body space-y-3">
             <div
               tabIndex={0}
               role="document"
@@ -440,21 +439,21 @@ export default function VolunteerSignup() {
                 )}
               </Button>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </section>
       )}
 
       {/* ── Step 2: Perfil ── */}
       {step === 'profile' && (
-        <Card>
-          <CardHeader>
-            <CardTitle>2. Seu perfil de voluntário</CardTitle>
-            <CardDescription>
+        <section className="arena-section-card">
+          <div className="arena-section-card-header">
+            <h3 className="arena-section-card-title">2. Seu perfil de voluntário</h3>
+            <p className="arena-section-card-description">
               Habilidades, disponibilidade, raio de atuação e logística. O abrigo usa isso para
               convocá-lo(a) nas atividades certas.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
+            </p>
+          </div>
+          <div className="arena-section-card-body space-y-4">
             <VolunteerProfileForm
               uid={user.uid}
               actor={{ uid: user.uid, email: user.email }}
@@ -473,20 +472,20 @@ export default function VolunteerSignup() {
               💡 Salve o perfil acima antes de avançar. Use o botão “Continuar” se já estiver
               tudo preenchido.
             </p>
-          </CardContent>
-        </Card>
+          </div>
+        </section>
       )}
 
       {/* ── Step 3: Abrigo ── */}
       {step === 'shelter' && (
-        <Card>
-          <CardHeader>
-            <CardTitle>3. Escolha um abrigo parceiro</CardTitle>
-            <CardDescription>
+        <section className="arena-section-card">
+          <div className="arena-section-card-header">
+            <h3 className="arena-section-card-title">3. Escolha um abrigo parceiro</h3>
+            <p className="arena-section-card-description">
               Você vai entrar na rostagem deste abrigo. Pode mudar de ideia depois pelo seu perfil.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
+            </p>
+          </div>
+          <div className="arena-section-card-body space-y-4">
             <ShelterPicker
               clubs={clubs}
               isLoading={isClubsLoading}
@@ -505,20 +504,20 @@ export default function VolunteerSignup() {
                 Continuar <ChevronRight className="ml-1 h-3.5 w-3.5" aria-hidden="true" />
               </Button>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </section>
       )}
 
       {/* ── Step 4: Confirmar ── */}
       {step === 'confirm' && (
-        <Card>
-          <CardHeader>
-            <CardTitle>4. Confirme sua inscrição</CardTitle>
-            <CardDescription>
+        <section className="arena-section-card">
+          <div className="arena-section-card-header">
+            <h3 className="arena-section-card-title">4. Confirme sua inscrição</h3>
+            <p className="arena-section-card-description">
               Revise os dados e conclua a inscrição na rostagem do abrigo.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
+            </p>
+          </div>
+          <div className="arena-section-card-body space-y-4">
             <dl className="grid grid-cols-1 gap-2 rounded-md border border-border bg-white/65 p-3 text-sm sm:grid-cols-2">
               <div>
                 <dt className="text-xs font-medium text-muted-foreground">Nome</dt>
@@ -570,8 +569,8 @@ export default function VolunteerSignup() {
               Ao confirmar, criamos seu registro na rostagem do abrigo e disparamos um
               e-mail de boas-vindas (Lei 9.608/98 art. 2º-B).
             </p>
-          </CardContent>
-        </Card>
+          </div>
+        </section>
       )}
     </div>
   );

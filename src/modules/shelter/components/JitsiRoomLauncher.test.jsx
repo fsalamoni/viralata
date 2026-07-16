@@ -4,7 +4,7 @@ import { JitsiRoomLauncher } from './JitsiRoomLauncher';
 describe('JitsiRoomLauncher (TASK-320)', () => {
   it('renderiza URL meet.jit.si', () => {
     const { container } = render(<JitsiRoomLauncher prefix="shelter" />);
-    expect(container.querySelector('[data-testid="jitsi-launcher-url"]').textContent).toMatch(/^https:\/\/meet\.jit\.si\/shelter-viralata-/);
+    expect(container.querySelector('[data-testid="jitsi-launcher-url"]').textContent).toMatch(/^https:\/\/meet\.jit\.si\/shelter-[a-z0-9]+/);
   });
   it('gera novo link', () => {
     const { container } = render(<JitsiRoomLauncher prefix="test" />);

@@ -18,7 +18,6 @@ import { Link } from 'react-router-dom';
 import {
   Calendar, MapPin, Building2, ArrowRight, Sparkles, Clock,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -57,8 +56,8 @@ function ExhibitionMiniCard({ ex }) {
       className="block group"
       data-testid={`upcoming-exhibition-${ex.id}`}
     >
-      <Card className="h-full hover:shadow-md transition-shadow hover:border-primary/40">
-        <CardContent className="p-4 space-y-2">
+      <section className="arena-section-card h-full hover:shadow-md transition-shadow hover:border-primary/40">
+        <div className="arena-section-card-body p-4 space-y-2">
           <div className="flex items-start justify-between gap-2">
             <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
               <Calendar className="h-3 w-3" />
@@ -92,8 +91,8 @@ function ExhibitionMiniCard({ ex }) {
               <span>{ex.animals_count} {ex.animals_count === 1 ? 'animal' : 'animais'}</span>
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     </Link>
   );
 }

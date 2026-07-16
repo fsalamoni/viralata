@@ -22,7 +22,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { createAuditLog } from '@/core/services/auditService';
@@ -144,8 +143,8 @@ export function CookieBanner() {
       aria-label="Aviso de cookies"
       className="fixed inset-x-0 bottom-0 z-50 px-3 pb-3 sm:px-4 sm:pb-4"
     >
-      <Card className="mx-auto max-w-3xl border-primary/30 bg-white/95 shadow-lg backdrop-blur">
-        <CardContent className="space-y-3 p-4 sm:p-5">
+      <section className="arena-section-card mx-auto max-w-3xl border-primary/30 bg-white/95 shadow-lg backdrop-blur">
+        <div className="arena-section-card-body space-y-3 p-4 sm:p-5">
           <div className="space-y-1.5">
             <h2 className="text-sm font-semibold text-foreground sm:text-base">
               Esta plataforma usa cookies 🍪
@@ -203,8 +202,8 @@ export function CookieBanner() {
               Aceitar Todos
             </Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     </div>
   );
 }

@@ -8,7 +8,6 @@ import { ArrowLeft, Heart, MapPin, Trash2, CheckCircle2, XCircle,
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { useInterestsByUser, useDeleteInterest } from '../hooks/usePets';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { toast } from 'sonner';
@@ -73,8 +72,8 @@ export default function MyInterests() {
         <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
           <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
         </Button>
-        <Card className="rounded-[1.75rem] border-dashed">
-          <CardContent className="flex flex-col items-center gap-3 py-12 text-center">
+        <section className="arena-section-card rounded-[1.75rem] border-dashed">
+          <div className="arena-section-card-body flex flex-col items-center gap-3 py-12 text-center">
             <Heart className="h-12 w-12 text-muted-foreground/40" />
             <h2 className="text-lg font-semibold">Você ainda não demonstrou interesse em nenhum pet</h2>
             <p className="text-sm text-muted-foreground max-w-md">
@@ -85,8 +84,8 @@ export default function MyInterests() {
             <Button asChild className="mt-2">
               <Link to="/feed">Explorar pets no feed</Link>
             </Button>
-          </CardContent>
-        </Card>
+          </div>
+        </section>
       </div>
     );
   }
@@ -193,7 +192,7 @@ function InterestCard({ interest, pet, petLoading, onOpen, onRemove }) {
   const photoUrl = pet?.photos?.[0]?.url || pet?.photos?.[0] || null;
 
   return (
-    <Card className={`overflow-hidden rounded-[1.75rem] border-border/60 ${grayscale ? 'bg-muted/40' : ''}`}>
+    <section className={`overflow-hidden rounded-[1.75rem] border-border/60 ${grayscale ? 'bg-muted/40' : ''}`}>
       <button
         type="button"
         onClick={onOpen}
@@ -222,7 +221,7 @@ function InterestCard({ interest, pet, petLoading, onOpen, onRemove }) {
         </div>
       </button>
 
-      <CardContent className="space-y-3 p-4">
+      <div className="arena-section-card-body space-y-3 p-4">
         <div>
           <h3 className={`text-base font-bold leading-tight ${grayscale ? 'text-muted-foreground' : 'text-foreground'}`}>
             {pet?.title || pet?.name || (petLoading ? 'Carregando...' : 'Pet')}
@@ -259,8 +258,8 @@ function InterestCard({ interest, pet, petLoading, onOpen, onRemove }) {
             </Button>
           )}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 

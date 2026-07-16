@@ -9,7 +9,6 @@
 
 import { useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
@@ -88,9 +87,9 @@ export function ParticipationsList({
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-3 flex-wrap">
+    <section className="arena-section-card">
+      <div className="arena-section-card-header">
+        <h3 className="arena-section-card-title" className="flex items-center gap-3 flex-wrap">
           Participations ({participations.length})
           <Badge className="bg-blue-100 text-blue-900">
             {totalHours.toFixed(1)}h total
@@ -101,9 +100,9 @@ export function ParticipationsList({
           {completed > 0 && (
             <Badge className="bg-green-100 text-green-900">{completed} concluídas</Badge>
           )}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
+        </h3>
+      </div>
+      <div className="arena-section-card-body">
         {participations.length === 0 ? (
           <p className="text-sm text-muted-foreground">Nenhuma participation registrada.</p>
         ) : (
@@ -164,7 +163,7 @@ export function ParticipationsList({
             })}
           </ul>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }

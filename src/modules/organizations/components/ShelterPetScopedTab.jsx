@@ -15,7 +15,6 @@
 import React, { useMemo, useState } from 'react';
 import { PawPrint, ChevronRight, Stethoscope, Pill, Clock } from 'lucide-react';
 import { useMyPets } from '@/modules/pets/hooks/usePets';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -84,9 +83,9 @@ export function ShelterPetScopedTab({ clubId, kind = 'medical' }) {
         </p>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
           {pets.map((pet) => (
-            <Card
+            <section
               key={pet.id}
-              className="cursor-pointer transition-colors hover:bg-muted/40"
+              className="arena-section-card cursor-pointer transition-colors hover:bg-muted/40"
               onClick={() => setSelectedPetId(pet.id)}
               role="button"
               tabIndex={0}
@@ -98,19 +97,19 @@ export function ShelterPetScopedTab({ clubId, kind = 'medical' }) {
               }}
               data-testid={`pet-card-${pet.id}`}
             >
-              <CardHeader className="flex flex-row items-center gap-3 space-y-0 p-4">
+              <div className="arena-section-card-header">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
                   <PawPrint className="h-5 w-5" aria-hidden="true" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <CardTitle className="truncate text-base">{pet.name || 'Sem nome'}</CardTitle>
+                  <h3 className="arena-section-card-title">{pet.name || 'Sem nome'}</h3>
                   <p className="truncate text-xs text-muted-foreground">
                     {pet.species || '—'} · {pet.breed || '—'}
                   </p>
                 </div>
                 <ChevronRight className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
-              </CardHeader>
-            </Card>
+              </div>
+            </section>
           ))}
         </div>
       </div>

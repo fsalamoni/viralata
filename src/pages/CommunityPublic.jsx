@@ -16,7 +16,6 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Users, MapPin, MessageSquare, Lock } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -101,14 +100,14 @@ export default function CommunityPublic() {
   if (!community) {
     return (
       <div className="container mx-auto p-4">
-        <Card>
-          <CardContent className="p-6">
+        <section className="arena-section-card">
+          <div className="arena-section-card-body p-6">
             <p className="text-muted-foreground">Comunidade não encontrada.</p>
             <Link to="/comunidade" className="text-primary hover:underline">
               ← Ver todas as comunidades
             </Link>
-          </CardContent>
-        </Card>
+          </div>
+        </section>
       </div>
     );
   }
@@ -135,8 +134,8 @@ export default function CommunityPublic() {
       </div>
 
       {/* Meta + CTA */}
-      <Card>
-        <CardContent className="p-4 flex items-center justify-between gap-4 flex-wrap">
+      <section className="arena-section-card">
+        <div className="arena-section-card-body p-4 flex items-center justify-between gap-4 flex-wrap">
           <div className="flex gap-4 text-sm text-muted-foreground">
             <span className="flex items-center gap-1">
               <Users className="h-4 w-4" /> {community.member_count} membros
@@ -157,8 +156,8 @@ export default function CommunityPublic() {
               </Link>
             </Button>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
       {/* Tabs */}
       <Tabs value={tab} onValueChange={setTab}>
@@ -170,19 +169,19 @@ export default function CommunityPublic() {
           <MuralTab communityId={community.id} variant="public" posts={posts} />
         </TabsContent>
         <TabsContent value="sobre">
-          <Card>
-            <CardHeader>
-              <CardTitle>Sobre a comunidade</CardTitle>
-            </CardHeader>
-            <CardContent>
+          <section className="arena-section-card">
+            <div className="arena-section-card-header">
+              <h3 className="arena-section-card-title">Sobre a comunidade</h3>
+            </div>
+            <div className="arena-section-card-body">
               <p className="text-sm">{community.description || 'Sem descrição.'}</p>
               {community.created_at && (
                 <p className="text-xs text-muted-foreground mt-2">
                   Criada em {new Date(community.created_at).toLocaleDateString('pt-BR')}
                 </p>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </section>
         </TabsContent>
       </Tabs>
     </div>

@@ -4,7 +4,6 @@
  */
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
-import { Card, CardContent } from '@/components/ui/card';
 import { ContractCard } from '../components/ContractCard';
 import { collectionGroup, query, where, getDocs } from 'firebase/firestore';
 import { db } from '@/core/config/firebase';
@@ -41,11 +40,11 @@ export function MyContracts() {
       </div>
       {isLoading && <p>Carregando…</p>}
       {!isLoading && contracts.length === 0 && (
-        <Card>
-          <CardContent className="p-4 text-muted-foreground">
+        <section className="arena-section-card">
+          <div className="arena-section-card-body p-4 text-muted-foreground">
             Você ainda não tem contratos de adoção assinados.
-          </CardContent>
-        </Card>
+          </div>
+        </section>
       )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {contracts.map((c) => (

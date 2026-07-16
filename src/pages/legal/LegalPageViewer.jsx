@@ -28,7 +28,6 @@ import Seo from '@/components/Seo';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { Copy, Check, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { LegalPage, LegalSection } from '@/components/legal-page';
 import PageNotFound from '@/pages/PageNotFound';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
@@ -192,25 +191,25 @@ export default function LegalPageViewer() {
         </ul>
       </LegalSection>
 
-      <Card className="overflow-hidden border-primary/20 bg-white/65">
-        <CardHeader className="border-b border-primary/10 bg-white/45 p-4 sm:p-5">
+      <section className="arena-section-card overflow-hidden border-primary/20 bg-white/65">
+        <div className="arena-section-card-header">
           <div className="flex items-center gap-3">
             <ArrowLeft className="h-4 w-4 text-muted-foreground" />
             <div className="space-y-1">
-              <CardTitle className="text-base text-foreground">Voltar</CardTitle>
-              <CardDescription>
+              <h3 className="arena-section-card-title">Voltar</h3>
+              <p className="arena-section-card-description">
                 Se você chegou aqui por um link em um e-mail ou notificação, retorne ao local
                 de origem para concluir a ação desejada.
-              </CardDescription>
+              </p>
             </div>
           </div>
-        </CardHeader>
-        <CardContent className="p-4 text-sm text-muted-foreground sm:p-5">
+        </div>
+        <div className="arena-section-card-body p-4 text-sm text-muted-foreground sm:p-5">
           <p>
             Para dúvidas sobre este documento, escreva para <a className="text-primary underline" href="mailto:legal@viralata.org">legal@viralata.org</a>.
           </p>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     </LegalPage>
   );
 }

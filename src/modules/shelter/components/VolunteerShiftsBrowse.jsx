@@ -17,7 +17,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { collection, query, where, orderBy, limit, getDocs } from 'firebase/firestore';
 import { db } from '@/core/config/firebase';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -128,70 +127,70 @@ export function VolunteerShiftsBrowse({ actor, max = 30 }) {
 
   if (loading) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <section className="arena-section-card">
+        <div className="arena-section-card-header">
+          <h3 className="arena-section-card-title" className="flex items-center gap-2">
             <Calendar className="h-5 w-5 text-primary" />
             Escalas abertas
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2">
+          </h3>
+        </div>
+        <div className="arena-section-card-body space-y-2">
           <Skeleton className="h-20 w-full" />
           <Skeleton className="h-20 w-full" />
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     );
   }
 
   if (error) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <section className="arena-section-card">
+        <div className="arena-section-card-header">
+          <h3 className="arena-section-card-title" className="flex items-center gap-2">
             <Calendar className="h-5 w-5 text-primary" />
             Escalas abertas
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </h3>
+        </div>
+        <div className="arena-section-card-body">
           <EmptyState
             icon={Calendar}
             title="Erro ao carregar escalas"
             description={error}
           />
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     );
   }
 
   if (shifts.length === 0) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <section className="arena-section-card">
+        <div className="arena-section-card-header">
+          <h3 className="arena-section-card-title" className="flex items-center gap-2">
             <Calendar className="h-5 w-5 text-primary" />
             Escalas abertas
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </h3>
+        </div>
+        <div className="arena-section-card-body">
           <EmptyState
             icon={Calendar}
             title="Nenhuma escala aberta no momento"
             description="Volte mais tarde — os abrigos abrem escalas frequentemente."
           />
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+    <section className="arena-section-card">
+      <div className="arena-section-card-header">
+        <h3 className="arena-section-card-title" className="flex items-center gap-2">
           <Calendar className="h-5 w-5 text-primary" />
           Escalas abertas ({shifts.length})
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
+        </h3>
+      </div>
+      <div className="arena-section-card-body">
         <ul className="space-y-3" aria-label="Escalas abertas para candidatura">
           {shifts.map((s) => {
             const dur = durationHours(s.start_at, s.end_at);
@@ -244,8 +243,8 @@ export function VolunteerShiftsBrowse({ actor, max = 30 }) {
             );
           })}
         </ul>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 

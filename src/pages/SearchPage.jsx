@@ -16,7 +16,6 @@ import { useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { Search, Building2, PawPrint } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -39,8 +38,8 @@ function ResultCard({ result }) {
   const to = meta.url ? meta.url(result) : '#';
   return (
     <Link to={to} className="block">
-      <Card className="transition-colors hover:bg-secondary/30">
-        <CardContent className="flex items-center gap-3 p-3.5">
+      <section className="arena-section-card transition-colors hover:bg-secondary/30">
+        <div className="arena-section-card-body flex items-center gap-3 p-3.5">
           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10">
             <Icon className="h-4.5 w-4.5 text-primary" />
           </span>
@@ -51,8 +50,8 @@ function ResultCard({ result }) {
             )}
           </div>
           <Badge variant="outline" className="shrink-0 text-[10px]">{meta.label || result.entity}</Badge>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     </Link>
   );
 }

@@ -14,7 +14,6 @@ import { Link } from 'react-router-dom';
 import {
   Dog, Users, Building2, Home, CalendarDays, ChevronRight, Search,
 } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -127,13 +126,13 @@ function EntityGroup({ entity, results, query, defaultCollapsed = false }) {
         </Badge>
       </button>
       {!collapsed && (
-        <Card>
-          <CardContent className="p-2">
+        <section className="arena-section-card">
+          <div className="arena-section-card-body p-2">
             {results.map((r) => (
               <ResultItem key={`${r.entity}-${r.id}`} result={r} query={query} />
             ))}
-          </CardContent>
-        </Card>
+          </div>
+        </section>
       )}
     </div>
   );

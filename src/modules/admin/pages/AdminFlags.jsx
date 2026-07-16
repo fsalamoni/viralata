@@ -5,7 +5,6 @@ import { FEATURE_FLAG_META } from '@/core/featureFlags';
 import { usePlatformSettings } from '@/core/lib/FeatureFlagsContext';
 import { setFeatureFlag, listFeatureFlagHistory, markFlagsMigrationApplied } from '@/core/services/platformSettingsService';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import PageHero from '@/components/PageHero';
@@ -100,18 +99,18 @@ export default function AdminFlags() {
         </Button>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base">
+      <section className="arena-section-card">
+        <div className="arena-section-card-header">
+          <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base">
             <Flag className="h-4 w-4 text-primary" /> Feature flags
-          </CardTitle>
-          <CardDescription>
+          </h3>
+          <p className="arena-section-card-description">
             Cada flag é um interruptor isolado — ative apenas quando a feature
             estiver pronta para todos os usuários. Nenhuma alteração no banco é
             necessária para ligar ou desligar.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3">
+          </p>
+        </div>
+        <div className="arena-section-card-body space-y-3">
           {flags.map(([flagKey, meta]) => {
             const isOn = Boolean(settings.feature_flags[flagKey]);
             const isSaving = savingFlag === flagKey;
@@ -146,12 +145,12 @@ export default function AdminFlags() {
               </div>
             );
           })}
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
       {/* TASK-167: histórico de mudanças (quem ligou, quando, de→para, motivo) */}
-      <Card>
-        <CardContent className="p-5">
+      <section className="arena-section-card">
+        <div className="arena-section-card-body p-5">
           <h3 className="mb-3 text-sm font-bold">Histórico de mudanças</h3>
           {flagHistory.length === 0 ? (
             <p className="text-sm text-muted-foreground">Nenhuma mudança registrada ainda.</p>
@@ -176,8 +175,8 @@ export default function AdminFlags() {
               ))}
             </ol>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
       <p className="text-center text-xs text-muted-foreground">
         Flag nova? Cadastre em <code className="rounded bg-secondary px-1.5 py-0.5">src/core/featureFlags.js</code>{' '}

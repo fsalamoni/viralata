@@ -8,7 +8,6 @@ import {
   Plus,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -97,7 +96,7 @@ export default function ClubForumsTab({ clubId, isAdmin, initialThreadId, onThre
                 className="cursor-pointer rounded-xl transition-colors hover:border-primary/40"
                 onClick={() => select(thread.id)}
               >
-                <CardContent className="p-4">
+                <div className="arena-section-card-body p-4">
                   <div className="flex items-start gap-3">
                     <UserAvatar name={thread.author_name} photoUrl={thread.author_photo} size="md" />
                     <div className="min-w-0 flex-1">
@@ -116,8 +115,8 @@ export default function ClubForumsTab({ clubId, isAdmin, initialThreadId, onThre
                       </div>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </section>
             );
           })}
         </div>

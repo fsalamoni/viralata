@@ -12,7 +12,6 @@
 
 import { confirmDialog } from '@/components/ui/confirm-provider';
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -352,11 +351,11 @@ export function ExhibitionDetails({ shelterClubId, exhibitionId, actor, onBack }
   return (
     <div className="space-y-4">
       {/* Cabeçalho */}
-      <Card>
-        <CardHeader className="flex flex-row items-start justify-between gap-2">
+      <section className="arena-section-card">
+        <div className="arena-section-card-header">
           <div className="flex-1 min-w-0">
             <div className="flex flex-wrap items-center gap-2">
-              <CardTitle className="truncate">{exhibition.title}</CardTitle>
+              <h3 className="arena-section-card-title">{exhibition.title}</h3>
               <Badge className={STATUS_TONES[exhibition.status]}>
                 {EXHIBITION_STATUS_LABELS[exhibition.status]}
               </Badge>
@@ -434,15 +433,15 @@ export function ExhibitionDetails({ shelterClubId, exhibitionId, actor, onBack }
               </Button>
             )}
           </div>
-        </CardHeader>
-      </Card>
+        </div>
+      </section>
 
       {/* Animais */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Animais ({totalExhibitionAnimals(exhibition)})</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <section className="arena-section-card">
+        <div className="arena-section-card-header">
+          <h3 className="arena-section-card-title">Animais ({totalExhibitionAnimals(exhibition)})</h3>
+        </div>
+        <div className="arena-section-card-body space-y-4">
           {/* Internos */}
           <div>
             <h4 className="text-sm font-semibold mb-2">Internos ({exhibition.pet_ids?.length || 0})</h4>
@@ -530,16 +529,16 @@ export function ExhibitionDetails({ shelterClubId, exhibitionId, actor, onBack }
               </form>
             )}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
       {/* Escalas */}
       {exhibition.requires_volunteers && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Escalas ({shifts.filter((s) => !s.deleted_at).length})</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
+        <section className="arena-section-card">
+          <div className="arena-section-card-header">
+            <h3 className="arena-section-card-title">Escalas ({shifts.filter((s) => !s.deleted_at).length})</h3>
+          </div>
+          <div className="arena-section-card-body space-y-3">
             {shifts.filter((s) => !s.deleted_at).length === 0 ? (
               <p className="text-xs text-muted-foreground">Nenhuma escala cadastrada.</p>
             ) : (
@@ -600,17 +599,17 @@ export function ExhibitionDetails({ shelterClubId, exhibitionId, actor, onBack }
                 </Button>
               </form>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </section>
       )}
 
       {/* Post-event log */}
       {(exhibition.status === 'active' || exhibition.status === 'completed') && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Destino dos animais ({logs.length})</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
+        <section className="arena-section-card">
+          <div className="arena-section-card-header">
+            <h3 className="arena-section-card-title">Destino dos animais ({logs.length})</h3>
+          </div>
+          <div className="arena-section-card-body space-y-3">
             {logs.length === 0 ? (
               <p className="text-xs text-muted-foreground">Nenhum destino registrado ainda.</p>
             ) : (
@@ -659,8 +658,8 @@ export function ExhibitionDetails({ shelterClubId, exhibitionId, actor, onBack }
                 + Registrar destino
               </Button>
             </form>
-          </CardContent>
-        </Card>
+          </div>
+        </section>
       )}
 
       {/* TASK-148: Dialog dedicado para registrar destino de cada animal

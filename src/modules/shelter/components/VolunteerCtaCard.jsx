@@ -11,7 +11,6 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { HeartHandshake } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
 import { JoinVolunteerModal } from '@/modules/shelter/components/JoinVolunteerModal';
@@ -23,8 +22,8 @@ export function VolunteerCtaCard({ clubId, clubName }) {
 
   return (
     <>
-    <Card className="rounded-[24px] border-primary/20 bg-primary/5">
-      <CardContent className="flex flex-wrap items-center gap-4 p-5 sm:p-6">
+    <section className="arena-section-card rounded-[24px] border-primary/20 bg-primary/5">
+      <div className="arena-section-card-body flex flex-wrap items-center gap-4 p-5 sm:p-6">
         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary/10">
           <HeartHandshake className="h-6 w-6 text-primary" />
         </div>
@@ -46,8 +45,8 @@ export function VolunteerCtaCard({ clubId, clubName }) {
             Inscrever-se
           </Button>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
       <JoinVolunteerModal
         open={modalOpen}
         onOpenChange={setModalOpen}

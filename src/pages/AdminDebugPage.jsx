@@ -13,7 +13,6 @@ import { useSearchParams } from 'react-router-dom';
 import { Skeleton } from '@/components/ui/skeleton';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Bug } from 'lucide-react';
 
@@ -57,16 +56,16 @@ export default function AdminDebugPage() {
         <p className="text-sm text-muted-foreground mb-2">
           Adicione <code className="bg-muted px-1 rounded">?debug=1</code> na URL para ativar.
         </p>
-        <Card>
-          <CardHeader>
-            <CardTitle>Estado</CardTitle>
-          </CardHeader>
-          <CardContent className="text-sm space-y-1">
+        <section className="arena-section-card">
+          <div className="arena-section-card-header">
+            <h3 className="arena-section-card-title">Estado</h3>
+          </div>
+          <div className="arena-section-card-body text-sm space-y-1">
             <p>isAuthenticated: <strong>{String(isAuthenticated)}</strong></p>
             <p>user: <strong>{user?.email || 'null'}</strong></p>
             <p>clubId (param): <strong>{clubId}</strong></p>
-          </CardContent>
-        </Card>
+          </div>
+        </section>
       </div>
     );
   }
@@ -91,18 +90,18 @@ function DebugTabs({ clubId }) {
       </TabsList>
       {TARGET_TABS.map(({ key }) => (
         <TabsContent key={key} value={key} className="mt-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Render: {key}</CardTitle>
-            </CardHeader>
-            <CardContent>
+          <section className="arena-section-card">
+            <div className="arena-section-card-header">
+              <h3 className="arena-section-card-title">Render: {key}</h3>
+            </div>
+            <div className="arena-section-card-body">
               <Suspense fallback={<Skeleton className="h-40" />}>
                 <ErrorBoundary>
                   <DebugRender kind={key} clubId={clubId} />
                 </ErrorBoundary>
               </Suspense>
-            </CardContent>
-          </Card>
+            </div>
+          </section>
         </TabsContent>
       ))}
     </Tabs>

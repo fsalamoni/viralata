@@ -15,7 +15,6 @@ import {
   Home, Heart, MapPin, Clock, Calendar, User, ChevronRight,
   Sparkles, Filter, ArrowLeft,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -93,8 +92,8 @@ export default function PublicFosterPrograms() {
         kicker="VOLUNTARIADO"
       />
 
-      <Card>
-        <CardContent className="p-4 space-y-3">
+      <section className="arena-section-card">
+        <div className="arena-section-card-body p-4 space-y-3">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <div>
               <Label htmlFor="city">Cidade</Label>
@@ -122,8 +121,8 @@ export default function PublicFosterPrograms() {
               </p>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
       {loading && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -162,8 +161,8 @@ export default function PublicFosterPrograms() {
         </div>
       )}
 
-      <Card className="bg-emerald-50/50 border-emerald-200">
-        <CardContent className="p-6">
+      <section className="arena-section-card bg-emerald-50/50 border-emerald-200">
+        <div className="arena-section-card-body p-6">
           <div className="flex items-start gap-3">
             <Sparkles className="h-5 w-5 text-emerald-600 mt-1 shrink-0" />
             <div className="text-sm">
@@ -179,8 +178,8 @@ export default function PublicFosterPrograms() {
               </ul>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     </div>
   );
 }
@@ -188,7 +187,7 @@ export default function PublicFosterPrograms() {
 function FosterCard({ placement }) {
   const tone = STATUS_TONE[placement.status] || STATUS_TONE.pending;
   return (
-    <Card className="hover:shadow-md transition-shadow overflow-hidden" data-testid={`foster-${placement.id}`}>
+    <section className="hover:shadow-md transition-shadow overflow-hidden" data-testid={`foster-${placement.id}`}>
       {placement.pet_photo_url ? (
         <img
           src={placement.pet_photo_url}
@@ -200,7 +199,7 @@ function FosterCard({ placement }) {
           <Heart className="h-12 w-12 text-rose-400" aria-hidden="true" />
         </div>
       )}
-      <CardContent className="p-4 space-y-2">
+      <div className="arena-section-card-body p-4 space-y-2">
         <div className="flex items-start justify-between gap-2">
           <h3 className="font-semibold text-base line-clamp-1 flex-1">
             {placement.pet_name || 'Pet'}
@@ -261,7 +260,7 @@ function FosterCard({ placement }) {
             Quero ser LT
           </a>
         </Button>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }

@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { Radar as RadarIcon, ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { useMyRadar, useSetRadarActive } from '../hooks/usePets';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Skeleton } from '@/components/ui/skeleton';
 import PageHero from '@/components/PageHero';
@@ -29,17 +28,17 @@ export default function RadarSettings() {
         }
       />
 
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base">Como funciona</CardTitle>
-          <CardDescription>
+      <section className="arena-section-card">
+        <div className="arena-section-card-header">
+          <h3 className="arena-section-card-title">Como funciona</h3>
+          <p className="arena-section-card-description">
             O Radar usa o seu perfil de adotante (moradia, rotina, família e orçamento) — o mesmo
             usado no feed — para avisar você em tempo real. Mantenha seu{' '}
             <Link to="/perfil" className="text-primary underline">perfil</Link> atualizado para
             receber alertas mais precisos.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+          </p>
+        </div>
+        <div className="arena-section-card-body">
           {isLoading ? (
             <Skeleton className="h-14 w-full rounded-lg" />
           ) : (
@@ -64,8 +63,8 @@ export default function RadarSettings() {
               Complete seu perfil de adotante antes de ativar o radar.
             </p>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     </div>
   );
 }

@@ -13,7 +13,6 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UserAvatar } from '@/components/ui/user-avatar';
@@ -81,7 +80,7 @@ export default function ForumThreadView({ clubId, threadId, isAdmin, onBack, onD
     return (
       <div className="space-y-3">
         <Button variant="ghost" size="sm" onClick={onBack}><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar</Button>
-        <Card className="rounded-xl"><CardContent className="p-6 text-center text-sm text-muted-foreground">Tópico não encontrado ou removido.</CardContent></Card>
+        <section className="arena-section-card rounded-xl"><div className="arena-section-card-body p-6 text-center text-sm text-muted-foreground">Tópico não encontrado ou removido.</div></section>
       </div>
     );
   }
@@ -161,8 +160,8 @@ export default function ForumThreadView({ clubId, threadId, isAdmin, onBack, onD
       </div>
 
       {/* Tópico */}
-      <Card className="rounded-xl">
-        <CardContent className="p-5">
+      <section className="arena-section-card rounded-xl">
+        <div className="arena-section-card-body p-5">
           <div className="flex items-start gap-3">
             <UserAvatar name={thread.author_name} photoUrl={thread.author_photo} size="md" />
             <div className="min-w-0 flex-1">
@@ -191,8 +190,8 @@ export default function ForumThreadView({ clubId, threadId, isAdmin, onBack, onD
               )}
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
       {/* Comentários */}
       <div className="flex items-center gap-2 px-1 text-sm font-semibold text-foreground/80">
@@ -273,8 +272,8 @@ function ForumComment({ comment, clubId, threadId, canModerate }) {
   };
 
   return (
-    <Card className="rounded-xl">
-      <CardContent className="p-4">
+    <section className="arena-section-card rounded-xl">
+      <div className="arena-section-card-body p-4">
         <div className="flex items-start gap-3">
           <UserAvatar name={comment.author_name} photoUrl={comment.author_photo} size="sm" />
           <div className="min-w-0 flex-1">
@@ -331,8 +330,8 @@ function ForumComment({ comment, clubId, threadId, canModerate }) {
           loading={busy}
           onConfirm={handleDelete}
         />
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 
@@ -359,8 +358,8 @@ function CommentComposer({ thread, clubId, threadId }) {
   };
 
   return (
-    <Card className="rounded-xl">
-      <CardContent className="space-y-3 p-4">
+    <section className="arena-section-card rounded-xl">
+      <div className="arena-section-card-body space-y-3 p-4">
         <div className="text-sm font-semibold text-foreground/80">Adicionar comentário</div>
         <MarkdownEditor value={body} onChange={setBody} rows={3} maxLength={FORUM_LIMITS.COMMENT_MAX} placeholder="Participe da discussão…" />
         <PendingAttachmentList items={attachments.items} onRemove={attachments.remove} />
@@ -370,7 +369,7 @@ function CommentComposer({ thread, clubId, threadId }) {
             <Send className="mr-1.5 h-4 w-4" /> {submitting ? 'Enviando…' : 'Comentar'}
           </Button>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }

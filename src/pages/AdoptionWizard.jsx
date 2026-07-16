@@ -23,7 +23,6 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { ArrowLeft, ArrowRight, CheckCircle2, PawPrint, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -172,14 +171,14 @@ export default function AdoptionWizard() {
         ))}
       </ol>
 
-      <Card className="rounded-[24px] p-6 lg:p-7">
+      <section className="arena-section-card rounded-[24px] p-6 lg:p-7">
         {step === 0 && (
           <>
-            <CardHeader className="p-0 pb-4">
-              <CardTitle className="text-base font-bold">Confirme o pet</CardTitle>
-              <CardDescription>Você está iniciando um pedido de adoção responsável.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4 p-0">
+            <div className="arena-section-card-header">
+              <h3 className="arena-section-card-title">Confirme o pet</h3>
+              <p className="arena-section-card-description">Você está iniciando um pedido de adoção responsável.</p>
+            </div>
+            <div className="arena-section-card-body space-y-4 p-0">
               <div className="flex items-center gap-4">
                 <img
                   src={pet.photos?.[0] || '/placeholder-pet.svg'}
@@ -197,17 +196,17 @@ export default function AdoptionWizard() {
                 O pedido será analisado pelo abrigo responsável. Você acompanha o andamento em{' '}
                 <span className="font-medium text-foreground">Perfil → Minhas adoções</span>.
               </p>
-            </CardContent>
+            </div>
           </>
         )}
 
         {step === 1 && (
           <>
-            <CardHeader className="p-0 pb-4">
-              <CardTitle className="text-base font-bold">Sobre você</CardTitle>
-              <CardDescription>O abrigo usa estes dados para entrar em contato.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3.5 p-0">
+            <div className="arena-section-card-header">
+              <h3 className="arena-section-card-title">Sobre você</h3>
+              <p className="arena-section-card-description">O abrigo usa estes dados para entrar em contato.</p>
+            </div>
+            <div className="arena-section-card-body space-y-3.5 p-0">
               <div className="space-y-1.5">
                 <Label htmlFor="aw_name">Nome completo *</Label>
                 <Input id="aw_name" value={form.full_name} onChange={(e) => setField('full_name', e.target.value)} required />
@@ -222,17 +221,17 @@ export default function AdoptionWizard() {
                   <Input id="aw_phone" value={form.phone} onChange={(e) => setField('phone', e.target.value)} />
                 </div>
               </div>
-            </CardContent>
+            </div>
           </>
         )}
 
         {step === 2 && (
           <>
-            <CardHeader className="p-0 pb-4">
-              <CardTitle className="text-base font-bold">Questionário</CardTitle>
-              <CardDescription>Ajuda o abrigo a avaliar a compatibilidade do lar.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3.5 p-0">
+            <div className="arena-section-card-header">
+              <h3 className="arena-section-card-title">Questionário</h3>
+              <p className="arena-section-card-description">Ajuda o abrigo a avaliar a compatibilidade do lar.</p>
+            </div>
+            <div className="arena-section-card-body space-y-3.5 p-0">
               <div className="space-y-1.5">
                 <Label>Tipo de moradia</Label>
                 <div className="flex flex-wrap gap-2">
@@ -279,22 +278,22 @@ export default function AdoptionWizard() {
                   <Label htmlFor={`aw_${key}`} className="text-sm font-normal">{label}</Label>
                 </div>
               ))}
-            </CardContent>
+            </div>
           </>
         )}
 
         {step === 3 && (
           <>
-            <CardHeader className="p-0 pb-4">
-              <CardTitle className="flex items-center gap-2 text-base font-bold">
+            <div className="arena-section-card-header">
+              <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base font-bold">
                 <FileText className="h-[19px] w-[19px] text-primary" /> Termo de Adoção Responsável
-              </CardTitle>
-              <CardDescription>
+              </h3>
+              <p className="arena-section-card-description">
                 Versão {ADOPTION_TERMS_VERSION}. Leia até o fim para habilitar o aceite
                 (Lei 14.063/2020 — assinatura eletrônica).
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3.5 p-0">
+              </p>
+            </div>
+            <div className="arena-section-card-body space-y-3.5 p-0">
               <div
                 ref={termsRef}
                 onScroll={handleTermsScroll}
@@ -324,12 +323,12 @@ export default function AdoptionWizard() {
                   O aceite fica registrado com data, versão e hash SHA-256 do documento.
                 </p>
               </div>
-            </CardContent>
+            </div>
           </>
         )}
 
         {step === 4 && (
-          <CardContent className="flex flex-col items-center gap-3 p-0 py-6 text-center">
+          <div className="arena-section-card-body flex flex-col items-center gap-3 p-0 py-6 text-center">
             <CheckCircle2 className="h-12 w-12 text-primary" />
             <h2 className="text-lg font-bold">Pedido enviado! 🎉</h2>
             <p className="max-w-md text-sm text-muted-foreground">
@@ -344,7 +343,7 @@ export default function AdoptionWizard() {
                 <Link to="/perfil#adocoes">Minhas adoções</Link>
               </Button>
             </div>
-          </CardContent>
+          </div>
         )}
 
         {step < 4 && (
@@ -363,7 +362,7 @@ export default function AdoptionWizard() {
             )}
           </div>
         )}
-      </Card>
+      </section>
     </div>
   );
 }

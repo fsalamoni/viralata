@@ -14,7 +14,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { ImageUpload } from '@/components/ui/image-upload';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
@@ -393,13 +392,13 @@ export default function Profile() {
       </PageHero>
 
       {/* Dados pessoais */}
-      <Card className="rounded-[24px] p-6 lg:p-7">
-        <CardHeader className="p-0 pb-4">
-          <CardTitle className="flex items-center gap-2 text-base font-bold">
+      <section className="arena-section-card rounded-[24px] p-6 lg:p-7">
+        <div className="arena-section-card-header">
+          <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base font-bold">
             <User className="w-[19px] h-[19px] text-primary" /> Dados pessoais
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-0">
+          </h3>
+        </div>
+        <div className="arena-section-card-body p-0">
           <form onSubmit={handleSave} className="space-y-3.5">
             {/* Foto */}
             <div className="flex items-center gap-4">
@@ -459,20 +458,20 @@ export default function Profile() {
               {busy ? 'Salvando...' : 'Salvar perfil'}
             </Button>
           </form>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
       {/* Perfil de adotante */}
-      <Card className="rounded-[24px] p-6 lg:p-7">
-        <CardHeader className="p-0 pb-1">
-          <CardTitle className="flex items-center gap-2 text-base font-bold">
+      <section className="arena-section-card rounded-[24px] p-6 lg:p-7">
+        <div className="arena-section-card-header">
+          <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base font-bold">
             <PawPrint className="w-[19px] h-[19px] text-accent" /> Perfil de adotante
-          </CardTitle>
-          <CardDescription className="text-[12.5px]">
+          </h3>
+          <p className="arena-section-card-description">
             Usado pelo algoritmo de match para sugerir pets compatíveis com sua realidade.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3.5 p-0 pt-4">
+          </p>
+        </div>
+        <div className="arena-section-card-body space-y-3.5 p-0 pt-4">
           <div className="space-y-2">
             <Label>Tipo de moradia</Label>
             <div className="flex flex-col gap-2">
@@ -528,8 +527,8 @@ export default function Profile() {
           <Button onClick={handleSave} disabled={busy} className="w-full">
             {busy ? 'Salvando...' : 'Salvar perfil de adotante'}
           </Button>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
       {/* TASK-401: Preferências visuais */}
       {user?.uid && <AppearanceSettings />}
@@ -559,16 +558,16 @@ export default function Profile() {
           estiver ON. Quando o user já tem profile, mostra o form em modo
           edit; quando não tem, mostra empty state com CTA para /voluntarios. */}
       {volunteerProfileV1 && (
-        <Card className="rounded-[24px] p-6 lg:p-7">
-          <CardHeader className="p-0 pb-4">
-            <CardTitle className="flex items-center gap-2 text-base font-bold">
+        <section className="arena-section-card rounded-[24px] p-6 lg:p-7">
+          <div className="arena-section-card-header">
+            <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base font-bold">
               <Heart className="w-[19px] h-[19px] text-primary" /> Voluntariado
-            </CardTitle>
-            <CardDescription className="text-[12.5px]">
+            </h3>
+            <p className="arena-section-card-description">
               Cadastre suas habilidades, disponibilidade e logística para participar de ações nos abrigos.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="p-0">
+            </p>
+          </div>
+          <div className="arena-section-card-body p-0">
             {isVPLoading ? (
               <div className="space-y-3">
                 <Skeleton className="h-20 w-full" />
@@ -594,8 +593,8 @@ export default function Profile() {
                 }
               />
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </section>
       )}
 
       {/* TASK-129: Minhas adoções — histórico cross-abrigo de applications */}
@@ -614,16 +613,16 @@ export default function Profile() {
           Lista todas as rostagens (per-shelter) do voluntário, com botão
           "Sair deste abrigo" + ações globais de revogação de consentimento. */}
       {volunteerProfileV1 && (
-        <Card className="rounded-[24px] p-6 lg:p-7">
-          <CardHeader className="p-0 pb-4">
-            <CardTitle className="flex items-center gap-2 text-base font-bold">
+        <section className="arena-section-card rounded-[24px] p-6 lg:p-7">
+          <div className="arena-section-card-header">
+            <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base font-bold">
               <Building2 className="w-[19px] h-[19px] text-primary" /> Minhas voluntariadas
-            </CardTitle>
-            <CardDescription className="text-[12.5px] leading-[1.6]">
+            </h3>
+            <p className="arena-section-card-description">
               Abrigos onde você é voluntário. Conforme a LGPD (Art. 18, IX), você pode revogar seu consentimento a qualquer momento.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4 p-0">
+            </p>
+          </div>
+          <div className="arena-section-card-body space-y-4 p-0">
             {isRostersLoading ? (
               <div className="space-y-2">
                 <Skeleton className="h-16 w-full" />
@@ -682,8 +681,8 @@ export default function Profile() {
                 </p>
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </section>
       )}
 
       {/* TASK-242: Diálogo de saída por abrigo (com feedback opcional). */}
@@ -803,14 +802,14 @@ export default function Profile() {
       </Dialog>
 
       {/* Privacidade e dados (LGPD) */}
-      <Card className="rounded-[24px] p-6">
-        <CardHeader className="p-0 pb-1">
-          <CardTitle className="text-base font-bold">Privacidade e dados</CardTitle>
-          <CardDescription className="text-[12.5px] leading-[1.6]">
+      <section className="arena-section-card rounded-[24px] p-6">
+        <div className="arena-section-card-header">
+          <h3 className="arena-section-card-title">Privacidade e dados</h3>
+          <p className="arena-section-card-description">
             Em conformidade com a LGPD, baixe uma cópia dos seus dados ou exclua sua conta quando quiser.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-2.5 p-0 pt-4">
+          </p>
+        </div>
+        <div className="arena-section-card-body flex flex-col gap-2.5 p-0 pt-4">
           <Button variant="outline" onClick={handleExportData} disabled={exporting} className="h-[46px] w-full gap-2 text-[13.5px] font-bold">
             <Download className="w-[18px] h-[18px]" />
             {exporting ? 'Preparando arquivo...' : 'Baixar meus dados'}
@@ -823,8 +822,8 @@ export default function Profile() {
             <ShieldAlert className="w-[18px] h-[18px]" />
             Excluir minha conta
           </Button>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
       {/* TASK-295: confirmação dupla (email + senha) via reauth.
           O PasswordConfirmDialog recebe a senha e chama reauthenticateWithCredential

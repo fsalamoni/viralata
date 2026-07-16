@@ -7,7 +7,6 @@ import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { formatAuditDate } from '@/core/services/auditService';
 import { NOTIFICATION_TYPE, normalizeNotificationLink, resolveNotificationTarget } from '@/core/services/notificationService';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import PageHero from '@/components/PageHero';
@@ -91,12 +90,12 @@ export default function AdminNotifications() {
       {/* TASK-174: broadcast segmentado */}
       <BroadcastComposer />
 
-      <Card>
-        <CardHeader className="border-b border-border">
-          <CardTitle className="text-base">Fila recente de notificações</CardTitle>
-          <CardDescription>Confira links originais, destinos normalizados e status de leitura.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4 p-6 sm:p-7">
+      <section className="arena-section-card">
+        <div className="arena-section-card-header">
+          <h3 className="arena-section-card-title">Fila recente de notificações</h3>
+          <p className="arena-section-card-description">Confira links originais, destinos normalizados e status de leitura.</p>
+        </div>
+        <div className="arena-section-card-body space-y-4 p-6 sm:p-7">
           {error && <p className="text-sm text-destructive">{error}</p>}
 
           <div className="grid gap-3 md:grid-cols-[minmax(0,2fr)_180px_180px]">
@@ -219,8 +218,8 @@ export default function AdminNotifications() {
               </tbody>
             </table>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     </div>
   );
 }

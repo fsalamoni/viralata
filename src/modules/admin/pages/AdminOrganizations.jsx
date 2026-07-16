@@ -6,7 +6,6 @@ import { toast } from 'sonner';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import PageHero from '@/components/PageHero';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
@@ -103,12 +102,12 @@ export default function AdminOrganizations() {
         <SummaryCard icon={ShieldCheck} label="Pendências" value={clubsInReview + clubsSuspended} />
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Moderação do diretório</CardTitle>
-          <CardDescription>Defina publicação, destaque e vínculo comunitário de cada organização.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <section className="arena-section-card">
+        <div className="arena-section-card-header">
+          <h3 className="arena-section-card-title">Moderação do diretório</h3>
+          <p className="arena-section-card-description">Defina publicação, destaque e vínculo comunitário de cada organização.</p>
+        </div>
+        <div className="arena-section-card-body space-y-4">
           <div className="grid gap-3 md:grid-cols-[minmax(0,1.6fr)_220px_220px]">
             <Input
               placeholder="Buscar organização, cidade ou comunidade"
@@ -221,16 +220,16 @@ export default function AdminOrganizations() {
               )}
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     </div>
   );
 }
 
 function SummaryCard({ icon: Icon, label, value }) {
   return (
-    <Card>
-      <CardContent className="flex items-center gap-3 p-4">
+    <section className="arena-section-card">
+      <div className="arena-section-card-body flex items-center gap-3 p-4">
         <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
           <Icon className="h-5 w-5" />
         </span>
@@ -238,7 +237,7 @@ function SummaryCard({ icon: Icon, label, value }) {
           <div className="text-xl font-bold text-foreground">{value}</div>
           <div className="text-xs text-muted-foreground">{label}</div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }

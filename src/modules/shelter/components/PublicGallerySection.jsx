@@ -12,7 +12,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Images, X } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { listPublicShelterPhotos } from '@/modules/shelter/services/galleryService';
@@ -36,16 +35,16 @@ export function PublicGallerySection({ clubId }) {
   if (photos.length === 0) return null;
 
   return (
-    <Card className="rounded-[24px]">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-base font-bold">
+    <section className="arena-section-card rounded-[24px]">
+      <div className="arena-section-card-header">
+        <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base font-bold">
           <Images className="h-[19px] w-[19px] text-primary" /> Galeria
-        </CardTitle>
-        <CardDescription className="text-[12.5px]">
+        </h3>
+        <p className="arena-section-card-description">
           Momentos de resgates, adoções e eventos deste abrigo.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+        </p>
+      </div>
+      <div className="arena-section-card-body">
         <ul className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6">
           {photos.map((photo) => (
             <li key={photo.id}>
@@ -65,7 +64,7 @@ export function PublicGallerySection({ clubId }) {
             </li>
           ))}
         </ul>
-      </CardContent>
+      </div>
 
       <Dialog open={Boolean(selected)} onOpenChange={(o) => { if (!o) setSelected(null); }}>
         <DialogContent className="max-w-2xl p-2">
@@ -89,7 +88,7 @@ export function PublicGallerySection({ clubId }) {
           )}
         </DialogContent>
       </Dialog>
-    </Card>
+    </section>
   );
 }
 

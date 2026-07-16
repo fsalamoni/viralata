@@ -10,7 +10,6 @@ import { useSearchParams } from 'react-router-dom';
 import { Skeleton } from '@/components/ui/skeleton';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 // Componentes lazy diretamente
 import { DashboardPage } from '@/modules/shelter/components/DashboardPage';
@@ -68,18 +67,18 @@ export default function PublicDebugPage() {
         </TabsList>
         {TABS.map(({ key, render }) => (
           <TabsContent key={key} value={key} className="mt-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Render: {key}</CardTitle>
-              </CardHeader>
-              <CardContent>
+            <section className="arena-section-card">
+              <div className="arena-section-card-header">
+                <h3 className="arena-section-card-title">Render: {key}</h3>
+              </div>
+              <div className="arena-section-card-body">
                 <Suspense fallback={<Skeleton className="h-40" />}>
                   <ErrorBoundary>
                     {render(clubId)}
                   </ErrorBoundary>
                 </Suspense>
-              </CardContent>
-            </Card>
+              </div>
+            </section>
           </TabsContent>
         ))}
       </Tabs>

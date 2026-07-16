@@ -10,7 +10,6 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { MessageCircle, Lock, Users, Eye, MessageSquare, Plus } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
@@ -85,14 +84,14 @@ export default function CommunityForumPublic() {
   if (!community) {
     return (
       <div className="container mx-auto p-4">
-        <Card>
-          <CardContent className="p-6">
+        <section className="arena-section-card">
+          <div className="arena-section-card-body p-6">
             <p className="text-muted-foreground">Comunidade não encontrada.</p>
             <Link to="/comunidade" className="text-primary hover:underline">
               ← Ver todas as comunidades
             </Link>
-          </CardContent>
-        </Card>
+          </div>
+        </section>
       </div>
     );
   }
@@ -130,12 +129,12 @@ export default function CommunityForumPublic() {
 
       {/* Lista de threads */}
       {threads.length === 0 ? (
-        <Card>
-          <CardContent className="p-6 text-muted-foreground text-center">
+        <section className="arena-section-card">
+          <div className="arena-section-card-body p-6 text-muted-foreground text-center">
             <MessageCircle className="h-8 w-8 mx-auto mb-2 opacity-50" />
             <p>Nenhuma thread ainda. Seja o primeiro a postar!</p>
-          </CardContent>
-        </Card>
+          </div>
+        </section>
       ) : (
         <div className="space-y-2">
           {threads.map((thread) => (
@@ -144,16 +143,16 @@ export default function CommunityForumPublic() {
               to={`/comunidades/${community.id}/forum/${thread.id}`}
               className="block"
             >
-              <Card className="hover:bg-muted/30 transition-colors">
-                <CardHeader className="p-4">
+              <section className="arena-section-card hover:bg-muted/30 transition-colors">
+                <div className="arena-section-card-header">
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
-                      <CardTitle className="text-base truncate">
+                      <h3 className="arena-section-card-title">
                         {thread.title || '(sem título)'}
-                      </CardTitle>
-                      <CardDescription className="text-xs line-clamp-2 mt-1">
+                      </h3>
+                      <p className="arena-section-card-description">
                         {thread.body || thread.excerpt || 'Sem descrição.'}
-                      </CardDescription>
+                      </p>
                       <p className="text-xs text-muted-foreground mt-1">
                         por {thread.author_name || 'anônimo'} ·{' '}
                         {thread.created_at && new Date(thread.created_at).toLocaleDateString('pt-BR')}
@@ -170,22 +169,22 @@ export default function CommunityForumPublic() {
                       </Badge>
                     </div>
                   </div>
-                </CardHeader>
-              </Card>
+                </div>
+              </section>
             </Link>
           ))}
         </div>
       )}
 
       {/* Meta footer */}
-      <Card>
-        <CardContent className="p-3 text-xs text-muted-foreground flex items-center justify-between">
+      <section className="arena-section-card">
+        <div className="arena-section-card-body p-3 text-xs text-muted-foreground flex items-center justify-between">
           <span className="flex items-center gap-1">
             <Users className="h-3 w-3" /> {community.member_count} membros
           </span>
           <span>Read-only — login para participar</span>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     </div>
   );
 }

@@ -1,7 +1,6 @@
 /**
  * @fileoverview InterviewCard — card de entrevista (TASK-290).
  */
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Calendar, Video, Phone, MapPin, CheckCircle2, XCircle, Star, ClipboardList } from 'lucide-react';
@@ -42,23 +41,23 @@ export function InterviewCard({ interview, onComplete, onEvaluate, onCancel, can
   const total = (checklist || []).length;
 
   return (
-    <Card>
-      <CardHeader>
+    <section className="arena-section-card">
+      <div className="arena-section-card-header">
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="text-base flex items-center gap-2">
+            <h3 className="arena-section-card-title" className="text-base flex items-center gap-2">
               <ClipboardList className="h-4 w-4" /> Entrevista
-            </CardTitle>
-            <CardDescription className="text-xs">
+            </h3>
+            <p className="arena-section-card-description">
               {applicant_name} · {id.slice(0, 12)}…
-            </CardDescription>
+            </p>
           </div>
           <Badge variant={STATUS_VARIANT[status] || 'outline'}>
             {STATUS_LABEL[status] || status}
           </Badge>
         </div>
-      </CardHeader>
-      <CardContent>
+      </div>
+      <div className="arena-section-card-body">
         <div className="space-y-2 text-sm">
           {scheduled_at && (
             <p className="flex items-center gap-2 text-muted-foreground">
@@ -108,7 +107,7 @@ export function InterviewCard({ interview, onComplete, onEvaluate, onCancel, can
             )}
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }

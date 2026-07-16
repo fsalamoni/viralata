@@ -8,7 +8,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { cn } from '@/core/lib/utils';
@@ -259,15 +258,15 @@ export default function CommunityAdminPanel() {
               padrão visual do `OrganizationAdminPanel` que tem um card
               `border-destructive/30` no fim da aba Configurações). */}
           {parityEnabled && (isAdmin || owner) && (
-            <Card className="rounded-xl border-destructive/30">
-              <CardHeader className="p-6 sm:p-7">
-                <CardTitle className="text-base text-destructive">Zona de risco</CardTitle>
-                <CardDescription>
+            <section className="arena-section-card rounded-xl border-destructive/30">
+              <div className="arena-section-card-header">
+                <h3 className="arena-section-card-title">Zona de risco</h3>
+                <p className="arena-section-card-description">
                   A exclusão da comunidade remove membros, mural, fórum e eventos.
                   Não pode ser desfeita.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="p-6 pt-0 sm:p-7 sm:pt-0">
+                </p>
+              </div>
+              <div className="arena-section-card-body p-6 pt-0 sm:p-7 sm:pt-0">
                 <Button
                   variant="destructive"
                   onClick={() => setConfirmDelete(true)}
@@ -275,8 +274,8 @@ export default function CommunityAdminPanel() {
                 >
                   <Trash2 className="mr-1.5 h-4 w-4" /> Excluir comunidade
                 </Button>
-              </CardContent>
-            </Card>
+              </div>
+            </section>
           )}
           <ConfirmDialog
             open={confirmDelete}

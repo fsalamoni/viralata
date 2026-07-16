@@ -26,7 +26,6 @@
  */
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -148,11 +147,11 @@ export function VolunteerProfileForm({ uid, actor, existing, readOnly = false, o
   return (
     <form onSubmit={handleSave} className="space-y-6">
       {!readOnly && !hasAcceptedTerms && (
-        <Card className="border-amber-300 bg-amber-50">
-          <CardHeader>
-            <CardTitle className="text-amber-900">{getVolunteerTermsLabel()}</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
+        <section className="arena-section-card border-amber-300 bg-amber-50">
+          <div className="arena-section-card-header">
+            <h3 className="arena-section-card-title">{getVolunteerTermsLabel()}</h3>
+          </div>
+          <div className="arena-section-card-body space-y-3">
             <p className="text-sm text-amber-900 whitespace-pre-line">{VOLUNTEER_TERMS_TEXT}</p>
             <div className="space-y-1">
               <Label htmlFor="signature">Assinatura (digite seu nome completo)</Label>
@@ -174,13 +173,13 @@ export function VolunteerProfileForm({ uid, actor, existing, readOnly = false, o
             <p className="text-xs text-amber-800">
               ⚠ O aceite é gravado como snapshot (LGPD) e referenciado nas rostagens dos abrigos.
             </p>
-          </CardContent>
-        </Card>
+          </div>
+        </section>
       )}
 
-      <Card>
-        <CardHeader><CardTitle>Habilidades</CardTitle></CardHeader>
-        <CardContent>
+      <section className="arena-section-card">
+        <div className="arena-section-card-header"><h3 className="arena-section-card-title">Habilidades</h3></div>
+        <div className="arena-section-card-body">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {VOLUNTEER_SKILLS.map((skill) => (
               <label key={skill} className="flex items-center gap-2 p-2 border rounded cursor-pointer hover:bg-muted/30">
@@ -192,14 +191,14 @@ export function VolunteerProfileForm({ uid, actor, existing, readOnly = false, o
               </label>
             ))}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Disponibilidade</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2">
+      <section className="arena-section-card">
+        <div className="arena-section-card-header">
+          <h3 className="arena-section-card-title">Disponibilidade</h3>
+        </div>
+        <div className="arena-section-card-body space-y-2">
           {availability.length === 0 && (
             <p className="text-sm text-muted-foreground">Nenhum horário cadastrado.</p>
           )}
@@ -235,12 +234,12 @@ export function VolunteerProfileForm({ uid, actor, existing, readOnly = false, o
           <Button type="button" variant="outline" size="sm" onClick={addAvailability}>
             + Adicionar horário
           </Button>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
-      <Card>
-        <CardHeader><CardTitle>Logística</CardTitle></CardHeader>
-        <CardContent className="space-y-3">
+      <section className="arena-section-card">
+        <div className="arena-section-card-header"><h3 className="arena-section-card-title">Logística</h3></div>
+        <div className="arena-section-card-body space-y-3">
           <div className="space-y-1">
             <Label htmlFor="radius">Raio de atuação (km)</Label>
             <Input
@@ -267,12 +266,12 @@ export function VolunteerProfileForm({ uid, actor, existing, readOnly = false, o
             />
             <span className="text-sm">Tenho veículo próprio</span>
           </label>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
-      <Card>
-        <CardHeader><CardTitle>Observações</CardTitle></CardHeader>
-        <CardContent>
+      <section className="arena-section-card">
+        <div className="arena-section-card-header"><h3 className="arena-section-card-title">Observações</h3></div>
+        <div className="arena-section-card-body">
           <textarea
             className="w-full border rounded p-2 text-sm min-h-[80px]"
             value={notes}
@@ -280,8 +279,8 @@ export function VolunteerProfileForm({ uid, actor, existing, readOnly = false, o
             maxLength={2000}
             placeholder="Disponibilidade específica, restrições, observações para os abrigos…"
           />
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
       <div className="flex items-center gap-3">
         {!readOnly && (

@@ -15,7 +15,6 @@ import {
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
@@ -175,8 +174,8 @@ export default function ClubsDirectory() {
             }
           />
 
-          <Card className="rounded-[2rem] border-white/80 bg-white/82">
-            <CardContent className="p-6 sm:p-7">
+          <section className="arena-section-card rounded-[2rem] border-white/80 bg-white/82">
+            <div className="arena-section-card-body p-6 sm:p-7">
               <span className="arena-chip">Ingressar com código</span>
               <h3 className="mt-4 text-2xl font-semibold text-foreground">Tem um convite?</h3>
               <p className="mt-2 text-sm leading-6 text-muted-foreground">
@@ -197,13 +196,13 @@ export default function ClubsDirectory() {
                   {joinClub.isPending ? 'Entrando…' : 'Ingressar'}
                 </Button>
               </form>
-            </CardContent>
-          </Card>
+            </div>
+          </section>
         </>
       ) : (
         <section className="grid grid-cols-1 gap-6 xl:grid-cols-[1.08fr,0.92fr]">
-          <Card className="arena-panel-strong overflow-hidden rounded-[1.25rem] border-0 sm:rounded-[2rem]">
-            <CardContent className="relative p-5 sm:p-8 lg:p-10">
+          <section className="arena-section-card arena-panel-strong overflow-hidden rounded-[1.25rem] border-0 sm:rounded-[2rem]">
+            <div className="arena-section-card-body relative p-5 sm:p-8 lg:p-10">
               <div className="relative max-w-2xl">
                 <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-orange-50/80">
                   <Building2 className="h-3.5 w-3.5" /> ONGs Parceiras
@@ -221,11 +220,11 @@ export default function ClubsDirectory() {
                   </Button>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </section>
 
-          <Card className="rounded-[2rem] border-white/80 bg-white/82">
-            <CardContent className="p-6 sm:p-7">
+          <section className="arena-section-card rounded-[2rem] border-white/80 bg-white/82">
+            <div className="arena-section-card-body p-6 sm:p-7">
               <span className="arena-chip">Ingressar com código</span>
               <h3 className="mt-4 text-2xl font-semibold text-foreground">Tem um convite?</h3>
               <p className="mt-2 text-sm leading-6 text-muted-foreground">
@@ -246,8 +245,8 @@ export default function ClubsDirectory() {
                   {joinClub.isPending ? 'Entrando…' : 'Ingressar'}
                 </Button>
               </form>
-            </CardContent>
-          </Card>
+            </div>
+          </section>
         </section>
       )}
 
@@ -273,11 +272,11 @@ export default function ClubsDirectory() {
           </div>
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {visibleCommunities.slice(0, 6).map((community) => (
-              <Card key={community.id} className="overflow-hidden rounded-[1.75rem] border-white/80 bg-white/88">
+              <section key={community.id} className="overflow-hidden rounded-[1.75rem] border-white/80 bg-white/88">
                 {community.cover_url && (
                   <img src={community.cover_url} alt="" className="h-32 w-full object-cover" />
                 )}
-                <CardContent className="space-y-3 p-5">
+                <div className="arena-section-card-body space-y-3 p-5">
                   <div className="flex items-center gap-2">
                     <Badge variant={community.featured ? 'warning' : 'secondary'}>
                       {community.featured ? 'Destaque' : 'Comunidade'}
@@ -295,15 +294,15 @@ export default function ClubsDirectory() {
                   <Button type="button" variant="outline" size="sm" onClick={() => setCommunityId(community.id)}>
                     Ver organizações desta comunidade
                   </Button>
-                </CardContent>
-              </Card>
+                </div>
+              </section>
             ))}
           </div>
         </section>
       )}
 
-      <Card className="rounded-[2rem] border-white/80 bg-white/82">
-        <CardContent className="p-4 sm:p-5">
+      <section className="arena-section-card rounded-[2rem] border-white/80 bg-white/82">
+        <div className="arena-section-card-body p-4 sm:p-5">
           <div className="relative">
             <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/70" />
             <Input
@@ -383,16 +382,16 @@ export default function ClubsDirectory() {
           <div className="mt-4 border-t border-foreground/10 pt-4 text-sm text-muted-foreground">
             <span className="font-semibold text-foreground">{filtered.length}</span> organização(ões) encontrada(s).
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
       {isPreviewMode && (
-        <Card className="rounded-[2rem] border-amber-300/70 bg-amber-50/85">
-          <CardContent className="p-5 text-sm leading-6 text-amber-950">
+        <section className="arena-section-card rounded-[2rem] border-amber-300/70 bg-amber-50/85">
+          <div className="arena-section-card-body p-5 text-sm leading-6 text-amber-950">
             Prévia local sem Firebase: as organizações não são carregadas neste ambiente.
             {authUnavailableReason ? ` ${authUnavailableReason}` : ''}
-          </CardContent>
-        </Card>
+          </div>
+        </section>
       )}
 
       {isLoading ? (
@@ -402,8 +401,8 @@ export default function ClubsDirectory() {
           ))}
         </div>
       ) : filtered.length === 0 ? (
-        <Card className="rounded-[2rem] border-white/80 bg-white/82">
-          <CardContent className="flex flex-col items-center px-4 py-10 text-center sm:px-10 sm:py-12">
+        <section className="arena-section-card rounded-[2rem] border-white/80 bg-white/82">
+          <div className="arena-section-card-body flex flex-col items-center px-4 py-10 text-center sm:px-10 sm:py-12">
             <div className="flex h-16 w-16 items-center justify-center rounded-[1.5rem] bg-primary/10 text-primary">
               <Building2 className="h-8 w-8" />
             </div>
@@ -418,8 +417,8 @@ export default function ClubsDirectory() {
                 <Link to="/organizacoes/criar"><Plus className="mr-1.5 h-4 w-4" /> Criar</Link>
               </Button>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </section>
       ) : (
         <section className="space-y-4">
           <div>
@@ -454,8 +453,8 @@ function ClubCard({ club, community, myRole, joinState = null, onRequest, reques
   };
   return (
     <Link to={`/organizacoes/${club.id}`} className="block h-full">
-      <Card className="match-surface h-full rounded-[1.75rem] border-white/80 bg-white/85">
-        <CardContent className="flex h-full flex-col p-5 sm:p-6">
+      <section className="arena-section-card match-surface h-full rounded-[1.75rem] border-white/80 bg-white/85">
+        <div className="arena-section-card-body flex h-full flex-col p-5 sm:p-6">
           <div className="flex items-start justify-between gap-3">
             <h4 className="flex min-w-0 items-center gap-3 text-lg font-semibold text-foreground">
               {club.logo_url ? (
@@ -513,8 +512,8 @@ function ClubCard({ club, community, myRole, joinState = null, onRequest, reques
               <Badge variant="warning" className="mt-3 w-full justify-center rounded-full py-1.5">Você foi convidado — abrir</Badge>
             )}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     </Link>
   );
 }

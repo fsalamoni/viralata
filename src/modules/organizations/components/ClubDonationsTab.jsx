@@ -639,9 +639,9 @@ function ClubReceiptsSection({ clubId }) {
   return (
     <section className="arena-section-card rounded-2xl">
       <div className="arena-section-card-header">
-        <CardTitle className="flex items-center gap-2 text-base">
+        <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base">
           <ReceiptIcon className="h-4 w-4 text-primary" /> Comprovantes recebidos
-        </CardTitle>
+        </h3>
         <p className="arena-section-card-description">
           Total de {receipts.length} {receipts.length === 1 ? 'comprovante' : 'comprovantes'} enviados pelo público.
         </p>

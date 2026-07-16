@@ -16,7 +16,6 @@ import { Link, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { ArrowLeft, CheckCircle2, Circle, XCircle, FileText, Undo2, PauseCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -138,15 +137,15 @@ export default function AdoptionDetail() {
         </Link>
       </Button>
 
-      <Card className="rounded-[24px] p-6 lg:p-7">
-        <CardHeader className="p-0 pb-4">
+      <section className="arena-section-card rounded-[24px] p-6 lg:p-7">
+        <div className="arena-section-card-header">
           <div className="flex flex-wrap items-center gap-2">
-            <CardTitle className="text-base font-bold">Pedido de adoção</CardTitle>
+            <h3 className="arena-section-card-title">Pedido de adoção</h3>
             <Badge className={APPLICATION_STATUS_TONES[app.status] || ''}>
               {APPLICATION_STATUS_LABELS[app.status] || app.status}
             </Badge>
           </div>
-          <CardDescription className="text-[12.5px]">
+          <p className="arena-section-card-description" className="text-[12.5px]">
             Enviado em {formatDateTime(app.created_at) || '—'}
             {app.pet_id && (
               <>
@@ -154,9 +153,9 @@ export default function AdoptionDetail() {
                 <Link to={`/pet/${app.pet_id}`} className="text-primary underline">Ver pet</Link>
               </>
             )}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="p-0">
+          </p>
+        </div>
+        <div className="arena-section-card-body p-0">
           <ol className="relative ml-2 space-y-5 border-l border-border pl-5">
             {timeline.map((step) => (
               <li key={step.key} className="relative">
@@ -213,8 +212,8 @@ export default function AdoptionDetail() {
               </Button>
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
       {/* Dialogs */}
       {showPostAdoptionActions && (

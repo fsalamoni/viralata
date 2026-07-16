@@ -24,7 +24,6 @@ import {
   Scissors, Pill, Clock, ClipboardList, Calendar, BarChart3, List,
   Bug, Syringe, Stethoscope, MoreHorizontal,
 } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DASHBOARD_TONE_CLASSES } from '@/modules/shelter/domain/operational/dashboard';
 import { cn } from '@/core/lib/utils';
@@ -65,15 +64,15 @@ export function DashboardCard({
   // Skeleton
   if (isLoading) {
     return (
-      <Card
+      <section
         data-testid={testId || `dashboard-card-skeleton`}
-        className={cn('arena-panel border-2', className)}
+        className={cn('arena-section-card arena-panel border-2', className)}
       >
-        <CardContent className="p-4 sm:p-6 space-y-3">
+        <div className="arena-section-card-body p-4 sm:p-6 space-y-3">
           <Skeleton className="h-4 w-1/2" />
           <Skeleton className="h-8 w-1/3" />
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     );
   }
 
@@ -83,10 +82,10 @@ export function DashboardCard({
   const numberSize = size === 'sm' ? 'text-3xl' : size === 'lg' ? 'text-5xl' : 'text-4xl';
 
   const content = (
-    <Card
+    <section
       data-testid={testId || `dashboard-card-${title}`}
       className={cn(
-        'arena-panel border-2 transition-all',
+        'arena-section-card arena-panel border-2 transition-all',
         toneClass,
         (href || onClick) && 'hover:shadow-md hover:border-primary/40 cursor-pointer',
         className,
@@ -102,7 +101,7 @@ export function DashboardCard({
         }
       }}
     >
-      <CardContent className="p-4 sm:p-6">
+      <div className="arena-section-card-body p-4 sm:p-6">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
             <p className="text-sm font-medium opacity-80 line-clamp-1">{title}</p>
@@ -134,8 +133,8 @@ export function DashboardCard({
             </div>
           )}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 
   if (href) {

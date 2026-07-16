@@ -112,7 +112,7 @@ export function MedicationsList({ petId, shelterClubId, canEdit = false, actor }
       <div className="arena-section-card-header">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <CardTitle>Medicações</CardTitle>
+            <h3 className="arena-section-card-title">Medicações</h3>
             <p className="text-xs text-muted-foreground mt-1">
               {meds.length} medicação(ões) {statusFilter ? `(${MEDICATION_STATUS_LABELS[statusFilter]})` : ''}
             </p>

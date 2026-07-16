@@ -22,7 +22,6 @@ import {
   HeartHandshake, Users, Sparkles, MapPin, Clock,
   CheckCircle2, Loader2,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Button } from '@/components/ui/button';
@@ -217,12 +216,12 @@ export default function ClubVolunteersPublicTab({ clubId, club }) {
   return (
     <div className="space-y-6">
       {/* Stats banner com contagem em aria-live */}
-      <Card
-        className="rounded-2xl border-primary/20 bg-primary/5"
+      <section
+        className="arena-section-card rounded-2xl border-primary/20 bg-primary/5"
         role="region"
         aria-label="Contagem de voluntários"
       >
-        <CardContent className="flex flex-wrap items-center gap-4 p-5 sm:p-6">
+        <div className="arena-section-card-body flex flex-wrap items-center gap-4 p-5 sm:p-6">
           <span
             className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10"
             aria-hidden="true"
@@ -249,8 +248,8 @@ export default function ClubVolunteersPublicTab({ clubId, club }) {
           >
             <HeartHandshake className="mr-2 h-4 w-4" /> Quero ser voluntário
           </Button>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
       {/* Vagas abertas (configurável pelo abrigo) */}
       {roles.length > 0 && (
@@ -265,8 +264,8 @@ export default function ClubVolunteersPublicTab({ clubId, club }) {
           <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2" role="list">
             {roles.map((role) => (
               <li key={role.id}>
-                <Card>
-                  <CardContent className="p-4">
+                <section className="arena-section-card">
+                  <div className="arena-section-card-body p-4">
                     <div className="flex items-start gap-3">
                       <span
                         className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-100"
@@ -299,8 +298,8 @@ export default function ClubVolunteersPublicTab({ clubId, club }) {
                         </div>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                </section>
               </li>
             ))}
           </ul>
@@ -320,14 +319,14 @@ export default function ClubVolunteersPublicTab({ clubId, club }) {
         </TabsList>
 
         <TabsContent value="about" className="mt-4 space-y-4 outline-none">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Como você pode ajudar</CardTitle>
-              <CardDescription>
+          <section className="arena-section-card">
+            <div className="arena-section-card-header">
+              <h3 className="arena-section-card-title">Como você pode ajudar</h3>
+              <p className="arena-section-card-description">
                 Existem muitas formas de contribuir com este abrigo
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
+              </p>
+            </div>
+            <div className="arena-section-card-body">
               <ul className="space-y-2 text-sm text-foreground" role="list">
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
@@ -352,8 +351,8 @@ export default function ClubVolunteersPublicTab({ clubId, club }) {
                   Quero me inscrever
                 </Button>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </section>
         </TabsContent>
 
         <TabsContent value="volunteers" className="mt-4 outline-none">
@@ -369,8 +368,8 @@ export default function ClubVolunteersPublicTab({ clubId, club }) {
                 const name = m.display_name || m.name || 'Voluntário';
                 return (
                   <li key={m.id}>
-                    <Card>
-                      <CardContent className="flex items-center gap-3 p-4">
+                    <section className="arena-section-card">
+                      <div className="arena-section-card-body flex items-center gap-3 p-4">
                         <div
                           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 font-semibold text-primary"
                           aria-hidden="true"
@@ -385,8 +384,8 @@ export default function ClubVolunteersPublicTab({ clubId, club }) {
                             Voluntário
                           </p>
                         </div>
-                      </CardContent>
-                    </Card>
+                      </div>
+                    </section>
                   </li>
                 );
               })}

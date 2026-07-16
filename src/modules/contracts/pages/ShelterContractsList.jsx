@@ -4,7 +4,6 @@
  */
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
-import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { ContractCard } from '../components/ContractCard';
 import { listContractsByClub, shelterSignContract } from '../services/contractsService';
@@ -51,16 +50,16 @@ export function ShelterContractsList({ clubId }) {
         <h1 className="text-2xl font-bold">Contratos do abrigo</h1>
         <p className="text-muted-foreground">Gerencie contratos de adoção assinados digitalmente (Lei 14.063/2020)</p>
       </div>
-      <Card>
-        <CardContent className="p-4">
+      <section className="arena-section-card">
+        <div className="arena-section-card-body p-4">
           <Input
             placeholder="Buscar por pet, adotante ou ID…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="max-w-md"
           />
-        </CardContent>
-      </Card>
+        </div>
+      </section>
       {isLoading && <p>Carregando…</p>}
       {!isLoading && filtered.length === 0 && (
         <p className="text-muted-foreground">Nenhum contrato encontrado.</p>

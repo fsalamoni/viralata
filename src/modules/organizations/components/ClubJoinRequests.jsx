@@ -1,7 +1,6 @@
 import React from 'react';
 import { toast } from 'sonner';
 import { Check, X } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { UserAvatar } from '@/components/ui/user-avatar';
@@ -23,15 +22,15 @@ export function ClubJoinRequests({ club }) {
   };
 
   return (
-    <Card className="rounded-xl">
-      <CardHeader className="p-6 sm:p-7">
-        <CardTitle className="flex items-center gap-2 text-base">
+    <section className="arena-section-card rounded-xl">
+      <div className="arena-section-card-header">
+        <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base">
           Pedidos de ingresso
           {requests.length > 0 && <Badge variant="warning" className="rounded-full">{requests.length}</Badge>}
-        </CardTitle>
-        <CardDescription>Pessoas que pediram para entrar na organização.</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-2 p-6 pt-0 sm:p-7 sm:pt-0">
+        </h3>
+        <p className="arena-section-card-description">Pessoas que pediram para entrar na organização.</p>
+      </div>
+      <div className="arena-section-card-body space-y-2 p-6 pt-0 sm:p-7 sm:pt-0">
         {isLoading ? (
           <p className="text-sm text-muted-foreground">Carregando…</p>
         ) : requests.length === 0 ? (
@@ -55,7 +54,7 @@ export function ClubJoinRequests({ club }) {
             </div>
           ))
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }

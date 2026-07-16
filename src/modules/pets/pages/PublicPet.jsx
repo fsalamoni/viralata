@@ -34,7 +34,6 @@ import { db } from '@/core/config/firebase';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Seo from '@/components/Seo';
@@ -127,8 +126,8 @@ export default function PublicPet() {
   if (notFound || !pet) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
-        <Card className="max-w-md w-full">
-          <CardContent className="p-8 text-center space-y-4">
+        <section className="arena-section-card max-w-md w-full">
+          <div className="arena-section-card-body p-8 text-center space-y-4">
             <PawPrint className="h-12 w-12 mx-auto text-muted-foreground" />
             <h1 className="text-2xl font-bold">Pet não encontrado</h1>
             <p className="text-muted-foreground">
@@ -137,8 +136,8 @@ export default function PublicPet() {
             <Button asChild>
               <Link to="/feed">Ver outros pets</Link>
             </Button>
-          </CardContent>
-        </Card>
+          </div>
+        </section>
       </div>
     );
   }
@@ -315,22 +314,22 @@ export default function PublicPet() {
 
         {/* Sobre */}
         {pet.description && (
-          <Card>
-            <CardContent className="p-5">
+          <section className="arena-section-card">
+            <div className="arena-section-card-body p-5">
               <h2 className="text-lg font-bold mb-2 flex items-center gap-2">
                 <Info className="h-4 w-4" /> Sobre
               </h2>
               <p className="text-foreground/85 whitespace-pre-line leading-relaxed">
                 {pet.description}
               </p>
-            </CardContent>
-          </Card>
+            </div>
+          </section>
         )}
 
         {/* Saúde pública */}
         {(pet.vaccinated || pet.neutered !== undefined || pet.dewormed !== undefined) && (
-          <Card>
-            <CardContent className="p-5">
+          <section className="arena-section-card">
+            <div className="arena-section-card-body p-5">
               <h2 className="text-lg font-bold mb-3 flex items-center gap-2">
                 <CheckCircle2 className="h-4 w-4" /> Saúde
               </h2>
@@ -343,14 +342,14 @@ export default function PublicPet() {
                 <HealthBadge ok={pet.neutered === true} label="Castrado" />
                 <HealthBadge ok={pet.dewormed === true} label="Vermifugado" />
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </section>
         )}
 
         {/* Requisitos */}
         {(pet.needs_yard || pet.needs_screened_apt || pet.good_with_kids === false || pet.good_with_dogs === false || pet.good_with_cats === false) && (
-          <Card>
-            <CardContent className="p-5">
+          <section className="arena-section-card">
+            <div className="arena-section-card-body p-5">
               <h2 className="text-lg font-bold mb-3 flex items-center gap-2">
                 <Users className="h-4 w-4" /> Perfil ideal do lar
               </h2>
@@ -361,14 +360,14 @@ export default function PublicPet() {
                 {pet.good_with_dogs === false && <li>• Sem outros cachorros</li>}
                 {pet.good_with_cats === false && <li>• Sem gatos</li>}
               </ul>
-            </CardContent>
-          </Card>
+            </div>
+          </section>
         )}
 
         {/* Card do abrigo (se aplicável) */}
         {owner && (
-          <Card>
-            <CardContent className="p-5">
+          <section className="arena-section-card">
+            <div className="arena-section-card-body p-5">
               <h2 className="text-lg font-bold mb-3 flex items-center gap-2">
                 <Building2 className="h-4 w-4" /> Responsável
               </h2>
@@ -395,8 +394,8 @@ export default function PublicPet() {
                   </Button>
                 )}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </section>
         )}
 
         {/* TASK-135: timeline pública do pet (read-only) */}
@@ -409,8 +408,8 @@ export default function PublicPet() {
         {petId && <PublicHealthRecord petId={petId} shelterClubId={pet?.shelter_club_id} />}
 
         {/* Aviso LGPD / segurança */}
-        <Card className="border-amber-200 bg-amber-50/50">
-          <CardContent className="p-4 flex gap-3 text-sm">
+        <section className="arena-section-card border-amber-200 bg-amber-50/50">
+          <div className="arena-section-card-body p-4 flex gap-3 text-sm">
             <ShieldAlert className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
             <div className="text-amber-900">
               <strong>Adoção responsável:</strong> visite o pet antes de
@@ -418,8 +417,8 @@ export default function PublicPet() {
               antecipados. Em caso de dúvida,{' '}
               <Link to="/legislacao" className="underline">consulte nosso guia</Link>.
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </section>
 
         {/* Footer CTA */}
         <div className="text-center pt-4 pb-8">

@@ -16,7 +16,6 @@ import {
   MessageSquare, Heart, MessageCircle, User, MapPin,
   Filter, Sparkles,
 } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -46,8 +45,8 @@ function formatRelative(iso) {
 
 function PostCard({ post }) {
   return (
-    <Card className="hover:shadow-md transition-shadow" data-testid={`post-${post.id}`}>
-      <CardContent className="p-4 space-y-3">
+    <section className="hover:shadow-md transition-shadow" data-testid={`post-${post.id}`}>
+      <div className="arena-section-card-body p-4 space-y-3">
         <div className="flex items-start gap-3">
           <UserAvatar
             photoUrl={post.author_photo}
@@ -104,8 +103,8 @@ function PostCard({ post }) {
             {post.comments_count || 0}
           </span>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 
@@ -155,8 +154,8 @@ export default function PublicMuralFeed() {
         kicker="COMUNIDADES"
       />
 
-      <Card>
-        <CardContent className="p-4 space-y-3">
+      <section className="arena-section-card">
+        <div className="arena-section-card-body p-4 space-y-3">
           <div>
             <Label htmlFor="search">Buscar posts</Label>
             <Input
@@ -169,8 +168,8 @@ export default function PublicMuralFeed() {
           <p className="text-xs text-muted-foreground">
             {filtered.length} {filtered.length === 1 ? 'post' : 'posts'} encontrado{filtered.length === 1 ? '' : 's'}
           </p>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
       {loading && (
         <div className="space-y-3">
@@ -209,8 +208,8 @@ export default function PublicMuralFeed() {
         </div>
       )}
 
-      <Card className="bg-blue-50/50 border-blue-200">
-        <CardContent className="p-6">
+      <section className="arena-section-card bg-blue-50/50 border-blue-200">
+        <div className="arena-section-card-body p-6">
           <div className="flex items-start gap-3">
             <Sparkles className="h-5 w-5 text-blue-600 mt-1 shrink-0" />
             <div className="text-sm">
@@ -226,8 +225,8 @@ export default function PublicMuralFeed() {
               </Button>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     </div>
   );
 }

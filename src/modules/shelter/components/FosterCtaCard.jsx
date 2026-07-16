@@ -10,7 +10,6 @@
 import { Link } from 'react-router-dom';
 import { Home as HomeIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
 
@@ -19,8 +18,8 @@ export function FosterCtaCard({ clubId, clubName }) {
   if (!enabled || !clubId) return null;
 
   return (
-    <Card className="rounded-[24px] border-emerald-200 bg-emerald-50" data-testid="foster-cta-card">
-      <CardContent className="flex flex-wrap items-center gap-4 p-5 sm:p-6">
+    <section className="rounded-[24px] border-emerald-200 bg-emerald-50" data-testid="foster-cta-card">
+      <div className="arena-section-card-body flex flex-wrap items-center gap-4 p-5 sm:p-6">
         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-emerald-100">
           <HomeIcon className="h-6 w-6 text-emerald-700" />
         </div>
@@ -38,8 +37,8 @@ export function FosterCtaCard({ clubId, clubName }) {
             <Link to={`/lares-temporarios/novo?abrigo=${clubId}`}>Quero ser LT</Link>
           </Button>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 

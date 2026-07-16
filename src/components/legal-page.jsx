@@ -1,4 +1,3 @@
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { cn } from '@/core/lib/utils';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import PageHero from './PageHero';
@@ -26,8 +25,8 @@ export function LegalPage({ eyebrow, title, description, meta, children }) {
 
 export function LegalSection({ icon: Icon, title, description, children, className }) {
   return (
-    <Card className={cn('overflow-hidden', className)}>
-      <CardHeader className="border-b border-primary/10 bg-white/45 p-4 sm:p-5">
+    <section className={cn('overflow-hidden', className)}>
+      <div className="arena-section-card-header">
         <div className="flex items-start gap-3">
           {Icon && (
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground shadow-sm">
@@ -35,15 +34,15 @@ export function LegalSection({ icon: Icon, title, description, children, classNa
             </div>
           )}
           <div className="min-w-0 space-y-1">
-            <CardTitle className="text-base text-foreground">{title}</CardTitle>
-            {description && <CardDescription>{description}</CardDescription>}
+            <h3 className="arena-section-card-title">{title}</h3>
+            {description && <p className="arena-section-card-description">{description}</p>}
           </div>
         </div>
-      </CardHeader>
-      <CardContent className="space-y-3 p-4 text-sm leading-6 text-foreground/80 sm:p-5">
+      </div>
+      <div className="arena-section-card-body space-y-3 p-4 text-sm leading-6 text-foreground/80 sm:p-5">
         {children}
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 

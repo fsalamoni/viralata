@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
@@ -79,8 +78,8 @@ export default function EventDatesPanel({ event, clubId }) {
       </div>
 
       {adding && (
-        <Card className="rounded-xl border-primary/30">
-          <CardContent className="p-4">
+        <section className="arena-section-card rounded-xl border-primary/30">
+          <div className="arena-section-card-body p-4">
             <form onSubmit={handleAdd} className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <Label htmlFor="new_date_time">Data e hora *</Label>
@@ -99,8 +98,8 @@ export default function EventDatesPanel({ event, clubId }) {
                 <Button type="submit" size="sm" disabled={addDate.isPending}>Adicionar</Button>
               </div>
             </form>
-          </CardContent>
-        </Card>
+          </div>
+        </section>
       )}
 
       {isLoading ? (
@@ -179,7 +178,7 @@ function DateCard({ event, date, rsvps }) {
   };
 
   return (
-    <Card className="overflow-hidden rounded-xl">
+    <section className="arena-section-card overflow-hidden rounded-xl">
       {/* Cabeçalho colapsável */}
       <button
         type="button"
@@ -203,7 +202,7 @@ function DateCard({ event, date, rsvps }) {
       </button>
 
       {open && (
-        <CardContent className="border-t border-border p-4">
+        <div className="arena-section-card-body border-t border-border p-4">
           <PresenceSection
             date={date}
             editing={editing}
@@ -218,7 +217,7 @@ function DateCard({ event, date, rsvps }) {
             onRsvp={handleRsvp}
             rsvpPending={setRsvp.isPending}
           />
-        </CardContent>
+        </div>
       )}
 
       <ConfirmDialog
@@ -231,7 +230,7 @@ function DateCard({ event, date, rsvps }) {
         loading={deleteDate.isPending}
         onConfirm={handleDelete}
       />
-    </Card>
+    </section>
   );
 }
 

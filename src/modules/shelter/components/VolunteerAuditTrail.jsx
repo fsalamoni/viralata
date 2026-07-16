@@ -17,7 +17,6 @@ import {
   Shield, UserPlus, FileCheck, UserCog, Link2, UserMinus,
   Calendar, LogIn, LogOut, ShieldOff, FileText, Filter,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -110,51 +109,51 @@ export function VolunteerAuditTrail({ volunteerUid, max = 50 }) {
 
   if (loading) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <section className="arena-section-card">
+        <div className="arena-section-card-header">
+          <h3 className="arena-section-card-title" className="flex items-center gap-2">
             <Shield className="h-5 w-5 text-primary" />
             Histórico de auditoria
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2">
+          </h3>
+        </div>
+        <div className="arena-section-card-body space-y-2">
           <Skeleton className="h-12 w-full" />
           <Skeleton className="h-12 w-full" />
           <Skeleton className="h-12 w-2/3" />
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     );
   }
 
   if (error) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <section className="arena-section-card">
+        <div className="arena-section-card-header">
+          <h3 className="arena-section-card-title" className="flex items-center gap-2">
             <Shield className="h-5 w-5 text-primary" />
             Histórico de auditoria
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </h3>
+        </div>
+        <div className="arena-section-card-body">
           <EmptyState
             icon={Shield}
             title="Não foi possível carregar"
             description={error}
           />
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+    <section className="arena-section-card">
+      <div className="arena-section-card-header">
+        <h3 className="arena-section-card-title" className="flex items-center gap-2">
           <Shield className="h-5 w-5 text-primary" />
           Histórico de auditoria ({filtered.length})
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-3">
+        </h3>
+      </div>
+      <div className="arena-section-card-body space-y-3">
         <div className="flex items-end gap-3">
           <div className="flex-1">
             <Label htmlFor="action-filter">Filtrar por ação</Label>
@@ -219,8 +218,8 @@ export function VolunteerAuditTrail({ volunteerUid, max = 50 }) {
             })}
           </ol>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 

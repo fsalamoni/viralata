@@ -15,7 +15,6 @@ import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
 import { useCreateExhibition } from '@/modules/shelter/hooks/useExhibitions';
 
@@ -103,11 +102,11 @@ export function ExhibitionForm({ shelterClubId, actor, onCreated, onCancel }) {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Nova vitrine</CardTitle>
-      </CardHeader>
-      <CardContent>
+    <section className="arena-section-card">
+      <div className="arena-section-card-header">
+        <h3 className="arena-section-card-title">Nova vitrine</h3>
+      </div>
+      <div className="arena-section-card-body">
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* 1. Básicos */}
           <section className="space-y-3">
@@ -243,8 +242,8 @@ export function ExhibitionForm({ shelterClubId, actor, onCreated, onCancel }) {
             </Button>
           </div>
         </form>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 

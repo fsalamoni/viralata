@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 import { Mail, MoreVertical, Phone, Shield, ShieldCheck, UserMinus } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -84,8 +83,8 @@ export default function ClubMembersTab({ clubId, isAdmin, club }) {
         const isSelf = member.user_id === user?.uid;
         const isOwner = isClubOwner(club, member);
         return (
-          <Card key={member.id} className="rounded-xl">
-            <CardContent className="flex items-center gap-3 p-3 sm:p-4">
+          <section key={member.id} className="rounded-xl">
+            <div className="arena-section-card-body flex items-center gap-3 p-3 sm:p-4">
               {member.photo_url ? (
                 <img src={member.photo_url} alt="" className="h-11 w-11 shrink-0 rounded-full border border-primary/10 object-cover" />
               ) : (
@@ -142,8 +141,8 @@ export default function ClubMembersTab({ clubId, isAdmin, club }) {
                   </DropdownMenuContent>
                 </DropdownMenu>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </section>
         );
       })}
 

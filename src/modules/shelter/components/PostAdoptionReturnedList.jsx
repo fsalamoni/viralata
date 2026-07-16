@@ -9,7 +9,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { Undo2, Calendar, MessageSquare, ChevronDown, ChevronUp } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
@@ -127,17 +126,17 @@ export function PostAdoptionReturnedList({ shelterClubId }) {
   if (!enabled) return null;
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-base font-bold">
+    <section className="arena-section-card">
+      <div className="arena-section-card-header">
+        <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base font-bold">
           <Undo2 className="h-4 w-4 text-destructive" />
           Devoluções pós-adoção
-        </CardTitle>
-        <CardDescription className="text-[12.5px]">
+        </h3>
+        <p className="arena-section-card-description">
           Histórico de adoções devolvidas ao abrigo.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+        </p>
+      </div>
+      <div className="arena-section-card-body">
         {isLoading && (
           <div className="space-y-2">
             <Skeleton className="h-16 w-full rounded-xl" />
@@ -161,8 +160,8 @@ export function PostAdoptionReturnedList({ shelterClubId }) {
             ))}
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 

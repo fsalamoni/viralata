@@ -35,7 +35,6 @@ import { isClubPubliclyVisible } from '@/modules/communities/domain/directory';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -170,8 +169,8 @@ function PetMiniCard({ pet, linkPrefix = '/pets' }) {
 /** Card de vitrine */
 function ExhibitionCard({ exhibition }) {
   return (
-    <Card>
-      <CardContent className="p-4">
+    <section className="arena-section-card">
+      <div className="arena-section-card-body p-4">
         <div className="flex items-start gap-3">
           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
             <Calendar className="h-5 w-5 text-primary" />
@@ -189,8 +188,8 @@ function ExhibitionCard({ exhibition }) {
             )}
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 
@@ -205,8 +204,8 @@ function TeamMemberCard({ member }) {
   }[role] || 'Equipe';
 
   return (
-    <Card>
-      <CardContent className="flex items-center gap-3 p-4">
+    <section className="arena-section-card">
+      <div className="arena-section-card-body flex items-center gap-3 p-4">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 font-semibold text-primary">
           {name.slice(0, 1).toUpperCase()}
         </div>
@@ -214,8 +213,8 @@ function TeamMemberCard({ member }) {
           <p className="truncate text-sm font-semibold text-foreground">{name}</p>
           <p className="truncate text-xs text-muted-foreground">{roleLabel}</p>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 
@@ -593,8 +592,8 @@ export default function ShelterPublic() {
           {/* Sobre */}
           <TabsContent value="about" className="mt-6 space-y-6">
             <section aria-label="Estatísticas do abrigo" className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-              <Card>
-                <CardContent className="flex flex-col items-start gap-2 p-4">
+              <section className="arena-section-card">
+                <div className="arena-section-card-body flex flex-col items-start gap-2 p-4">
                   <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
                     <PawPrint className="h-5 w-5 text-primary" />
                   </span>
@@ -602,10 +601,10 @@ export default function ShelterPublic() {
                     {animalsCount.toLocaleString('pt-BR')}
                   </p>
                   <p className="text-xs text-muted-foreground">Animais disponíveis</p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="flex flex-col items-start gap-2 p-4">
+                </div>
+              </section>
+              <section className="arena-section-card">
+                <div className="arena-section-card-body flex flex-col items-start gap-2 p-4">
                   <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-pink-100">
                     <Heart className="h-5 w-5 text-pink-600" />
                   </span>
@@ -613,10 +612,10 @@ export default function ShelterPublic() {
                     {adoptionsCount.toLocaleString('pt-BR')}
                   </p>
                   <p className="text-xs text-muted-foreground">Adoções concretizadas</p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="flex flex-col items-start gap-2 p-4">
+                </div>
+              </section>
+              <section className="arena-section-card">
+                <div className="arena-section-card-body flex flex-col items-start gap-2 p-4">
                   <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100">
                     <Users className="h-5 w-5 text-blue-600" />
                   </span>
@@ -624,10 +623,10 @@ export default function ShelterPublic() {
                     {(club.member_count || 0).toLocaleString('pt-BR')}
                   </p>
                   <p className="text-xs text-muted-foreground">Membros da equipe</p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="flex flex-col items-start gap-2 p-4">
+                </div>
+              </section>
+              <section className="arena-section-card">
+                <div className="arena-section-card-body flex flex-col items-start gap-2 p-4">
                   <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100">
                     <Calendar className="h-5 w-5 text-amber-600" />
                   </span>
@@ -635,37 +634,37 @@ export default function ShelterPublic() {
                     {exhibitions.length.toLocaleString('pt-BR')}
                   </p>
                   <p className="text-xs text-muted-foreground">Vitrines agendadas</p>
-                </CardContent>
-              </Card>
+                </div>
+              </section>
             </section>
 
             {/* Localização */}
             {(club.city || club.state) && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-base">
+              <section className="arena-section-card">
+                <div className="arena-section-card-header">
+                  <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base">
                     <MapPin className="h-4 w-4" /> Localização
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
+                  </h3>
+                </div>
+                <div className="arena-section-card-body">
                   <p className="text-sm text-foreground">
                     {[club.city, club.state].filter(Boolean).join(' / ')}
                   </p>
-                </CardContent>
-              </Card>
+                </div>
+              </section>
             )}
 
             {/* Últimas adoções */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-base">
+            <section className="arena-section-card">
+              <div className="arena-section-card-header">
+                <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base">
                   <Sparkles className="h-4 w-4" /> Últimas adoções
-                </CardTitle>
-                <CardDescription>
+                </h3>
+                <p className="arena-section-card-description">
                   Pets que encontraram um lar através deste abrigo.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
+                </p>
+              </div>
+              <div className="arena-section-card-body">
                 {isAdoptionsLoading ? (
                   <div className="space-y-2">
                     <Skeleton className="h-12 w-full" />
@@ -684,22 +683,22 @@ export default function ShelterPublic() {
                     ))}
                   </ul>
                 )}
-              </CardContent>
-            </Card>
+              </div>
+            </section>
           </TabsContent>
 
           {/* Pets */}
           <TabsContent value="pets" className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-base">
+            <section className="arena-section-card">
+              <div className="arena-section-card-header">
+                <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base">
                   <PawPrint className="h-4 w-4" /> Pets disponíveis
-                </CardTitle>
-                <CardDescription>
+                </h3>
+                <p className="arena-section-card-description">
                   Animais que estão atualmente sob cuidado deste abrigo.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
+                </p>
+              </div>
+              <div className="arena-section-card-body">
                 {isPetsLoading ? (
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                     {Array.from({ length: 6 }).map((_, i) => (
@@ -731,22 +730,22 @@ export default function ShelterPublic() {
                     </Button>
                   </div>
                 )}
-              </CardContent>
-            </Card>
+              </div>
+            </section>
           </TabsContent>
 
           {/* Vitrines */}
           <TabsContent value="exhibitions" className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-base">
+            <section className="arena-section-card">
+              <div className="arena-section-card-header">
+                <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base">
                   <Calendar className="h-4 w-4" /> Próximas vitrines
-                </CardTitle>
-                <CardDescription>
+                </h3>
+                <p className="arena-section-card-description">
                   Feiras de adoção e eventos do abrigo.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
+                </p>
+              </div>
+              <div className="arena-section-card-body">
                 {isExhibitionsLoading ? (
                   <div className="space-y-2">
                     <Skeleton className="h-16 w-full" />
@@ -767,22 +766,22 @@ export default function ShelterPublic() {
                     ))}
                   </ul>
                 )}
-              </CardContent>
-            </Card>
+              </div>
+            </section>
           </TabsContent>
 
           {/* Equipe */}
           <TabsContent value="team" className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-base">
+            <section className="arena-section-card">
+              <div className="arena-section-card-header">
+                <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base">
                   <Users className="h-4 w-4" /> Nossa equipe
-                </CardTitle>
-                <CardDescription>
+                </h3>
+                <p className="arena-section-card-description">
                   Voluntários e coordenadores que cuidam dos pets.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
+                </p>
+              </div>
+              <div className="arena-section-card-body">
                 {isTeamLoading ? (
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                     {Array.from({ length: 6 }).map((_, i) => (
@@ -804,23 +803,23 @@ export default function ShelterPublic() {
                     ))}
                   </ul>
                 )}
-              </CardContent>
-            </Card>
+              </div>
+            </section>
           </TabsContent>
 
           {/* Contato */}
           <TabsContent value="contact" className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-base">
+            <section className="arena-section-card">
+              <div className="arena-section-card-header">
+                <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base">
                   <MessageCircle className="h-4 w-4" /> Contato
-                </CardTitle>
-                <CardDescription>
+                </h3>
+                <p className="arena-section-card-description">
                   Entre em contato com o abrigo para tirar dúvidas, oferecer
                   doações ou agendar uma visita.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
+                </p>
+              </div>
+              <div className="arena-section-card-body space-y-3">
                 {club.email && (
                   <a
                     href={`mailto:${club.email}`}
@@ -858,8 +857,8 @@ export default function ShelterPublic() {
                     uma conversa.
                   </p>
                 )}
-              </CardContent>
-            </Card>
+              </div>
+            </section>
           </TabsContent>
         </Tabs>
 

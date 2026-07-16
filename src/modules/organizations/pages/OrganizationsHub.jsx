@@ -2,7 +2,6 @@ import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Building2, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useClubs, useMyClubs } from '@/modules/organizations/hooks/useClubs';
 import { CLUB_ROLE, CLUB_ROLE_LABELS } from '@/modules/organizations/domain/constants';
@@ -53,17 +52,17 @@ export default function OrganizationsHub() {
             {[1, 2].map((i) => <Skeleton key={i} className="h-32 rounded-[1.5rem]" />)}
           </div>
         ) : myAdminClubs.length === 0 ? (
-          <Card className="rounded-[1.5rem] border-dashed">
-            <CardContent className="p-8 text-center text-sm text-muted-foreground">
+          <section className="arena-section-card rounded-[1.5rem] border-dashed">
+            <div className="arena-section-card-body p-8 text-center text-sm text-muted-foreground">
               Você ainda não administra nenhuma organização. Cadastre a sua ou peça acesso a uma existente.
-            </CardContent>
-          </Card>
+            </div>
+          </section>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {myAdminClubs.map((club) => (
               <Link key={club.id} to={`/organizacoes/${club.id}/admin`} className="block h-full">
-                <Card className="match-surface h-full rounded-[1.5rem]">
-                  <CardContent className="flex h-full flex-col gap-3 p-5">
+                <section className="arena-section-card match-surface h-full rounded-[1.5rem]">
+                  <div className="arena-section-card-body flex h-full flex-col gap-3 p-5">
                     <div className="flex items-center gap-3">
                       {club.logo_url ? (
                         <img src={club.logo_url} alt="" className="h-11 w-11 shrink-0 rounded-2xl border border-primary/10 object-cover" />
@@ -83,8 +82,8 @@ export default function OrganizationsHub() {
                     <div className="mt-auto flex items-center gap-1.5 text-sm font-medium text-foreground">
                       Abrir gestão <ArrowRight className="h-4 w-4" />
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                </section>
               </Link>
             ))}
           </div>
@@ -106,8 +105,8 @@ export default function OrganizationsHub() {
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {discoverClubs.map((club) => (
               <Link key={club.id} to={`/comunidade/${club.id}`} className="block">
-                <Card className="rounded-[1.25rem]">
-                  <CardContent className="flex items-center gap-3 p-4">
+                <section className="arena-section-card rounded-[1.25rem]">
+                  <div className="arena-section-card-body flex items-center gap-3 p-4">
                     {club.logo_url ? (
                       <img src={club.logo_url} alt="" className="h-10 w-10 shrink-0 rounded-xl border border-primary/10 object-cover" />
                     ) : (
@@ -119,8 +118,8 @@ export default function OrganizationsHub() {
                       <div className="truncate text-sm font-semibold">{club.name}</div>
                       <div className="truncate text-xs text-muted-foreground">{club.city || 'Cidade não informada'}</div>
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                </section>
               </Link>
             ))}
           </div>

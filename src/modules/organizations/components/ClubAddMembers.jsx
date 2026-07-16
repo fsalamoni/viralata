@@ -2,7 +2,6 @@ import React, { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { Check, Search, UserPlus, Users, X } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { listAllUsers } from '@/modules/admin/services/adminService';
@@ -83,12 +82,12 @@ export function ClubAddMembers({ club }) {
   };
 
   return (
-    <Card className="rounded-xl">
-      <CardHeader className="p-6 sm:p-7">
-        <CardTitle className="flex items-center gap-2 text-base"><UserPlus className="h-4 w-4" /> Adicionar membros</CardTitle>
-        <CardDescription>Selecione usuários da plataforma e envie convites. Eles recebem um aviso e decidem aceitar.</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-3 p-6 pt-0 sm:p-7 sm:pt-0">
+    <section className="arena-section-card rounded-xl">
+      <div className="arena-section-card-header">
+        <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base"><UserPlus className="h-4 w-4" /> Adicionar membros</h3>
+        <p className="arena-section-card-description">Selecione usuários da plataforma e envie convites. Eles recebem um aviso e decidem aceitar.</p>
+      </div>
+      <div className="arena-section-card-body space-y-3 p-6 pt-0 sm:p-7 sm:pt-0">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
@@ -174,7 +173,7 @@ export function ClubAddMembers({ club }) {
             </div>
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }

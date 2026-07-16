@@ -4,7 +4,6 @@ import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import { Search, Download } from 'lucide-react';
 import { db } from '@/core/config/firebase';
 import { AUDIT_ACTION_LABELS, formatAuditDate } from '@/core/services/auditService';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
@@ -176,12 +175,12 @@ export function AuditLogTable({ title, description, userId, className = '' }) {
   }, [filters, pageSize]);
 
   return (
-    <Card className={`overflow-hidden ${className}`}>
-      <CardHeader className="border-b border-border bg-card p-6 sm:p-7">
-        <CardTitle className="text-base text-foreground">{title}</CardTitle>
-        {description && <CardDescription>{description}</CardDescription>}
-      </CardHeader>
-      <CardContent className="space-y-4 p-6 sm:p-7">
+    <section className={`overflow-hidden ${className}`}>
+      <div className="arena-section-card-header">
+        <h3 className="arena-section-card-title">{title}</h3>
+        {description && <p className="arena-section-card-description">{description}</p>}
+      </div>
+      <div className="arena-section-card-body space-y-4 p-6 sm:p-7">
         {error && <p className="text-sm text-destructive">{error}</p>}
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-6">
           <FilterInput label="Ator" value={filters.actor} onChange={(value) => updateFilter(setFilters, 'actor', value)} placeholder="Nome, e-mail ou UID" />
@@ -322,8 +321,8 @@ export function AuditLogTable({ title, description, userId, className = '' }) {
             </Button>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 

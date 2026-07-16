@@ -24,7 +24,6 @@ import {
   loadAll, clearAll, getStatus, getMockSummary, getMockVersion,
 } from '@/mocks/mockDataService';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import PageHero from '@/components/PageHero';
@@ -246,18 +245,18 @@ export default function AdminMockData() {
 
       {/* Action cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <Card className="border-emerald-500/20">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
+        <section className="arena-section-card border-emerald-500/20">
+          <div className="arena-section-card-header">
+            <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base">
               <Database className="h-4 w-4 text-emerald-600" />
               Carregar dados demo
-            </CardTitle>
-            <CardDescription>
+            </h3>
+            <p className="arena-section-card-description">
               Cria/atualiza {totalDocs} documentos em {summary.length} coleções. Idempotente —
               rodar novamente apenas sobrescreve os mesmos IDs determinísticos.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
+            </p>
+          </div>
+          <div className="arena-section-card-body space-y-3">
             <ul className="space-y-1 text-xs text-muted-foreground">
               <li>• 10 perfis de usuários (com perfis públicos e diretório)</li>
               <li>• 3 ONGs e 2 comunidades editoriais com membros, eventos, mural, fórum, doações, prestação de contas</li>
@@ -281,21 +280,21 @@ export default function AdminMockData() {
                 <Link to="/feed">Ver feed</Link>
               </Button>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </section>
 
-        <Card className="border-rose-500/20">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
+        <section className="arena-section-card border-rose-500/20">
+          <div className="arena-section-card-header">
+            <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base">
               <Trash2 className="h-4 w-4 text-rose-600" />
               Limpar dados demo
-            </CardTitle>
-            <CardDescription>
+            </h3>
+            <p className="arena-section-card-description">
               Remove apenas documentos com <code className="rounded bg-secondary px-1.5 py-0.5">_mock: true</code>.
               Coleções imutáveis (audit_logs) podem falhar — o relatório mostra o que ficou.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
+            </p>
+          </div>
+          <div className="arena-section-card-body space-y-3">
             <ul className="space-y-1 text-xs text-muted-foreground">
               <li>• Segurança: usuários reais não são afetados (filtro por tag)</li>
               <li>• Relatório por coleção: {`{ coleção: docs removidos }`}</li>
@@ -324,23 +323,23 @@ export default function AdminMockData() {
                 <RefreshCw className={`mr-1 h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} /> Atualizar status
               </Button>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </section>
       </div>
 
       {/* Status por coleção */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base">
+      <section className="arena-section-card">
+        <div className="arena-section-card-header">
+          <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base">
             <BarChart3 className="h-4 w-4 text-primary" />
             Status por coleção
-          </CardTitle>
-          <CardDescription>
+          </h3>
+          <p className="arena-section-card-description">
             Documentos com <code className="rounded bg-secondary px-1.5 py-0.5">_mock: true</code> atualmente
             no Firestore. <strong>{status.total}</strong> no total, de <strong>{totalDocs}</strong> possíveis.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+          </p>
+        </div>
+        <div className="arena-section-card-body">
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
             {summary.map((s) => {
               const loaded = status.byCollection[s.collection] ?? 0;
@@ -382,29 +381,29 @@ export default function AdminMockData() {
               );
             })}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
       {/* Resultado da última operação */}
       {lastResult && (
-        <Card className={lastResult.ok ? 'border-emerald-500/30' : 'border-amber-500/30'}>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
+        <section className={lastResult.ok ? 'border-emerald-500/30' : 'border-amber-500/30'}>
+          <div className="arena-section-card-header">
+            <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base">
               {lastResult.ok ? (
                 <CheckCircle2 className="h-4 w-4 text-emerald-600" />
               ) : (
                 <AlertTriangle className="h-4 w-4 text-amber-600" />
               )}
               Última operação: {lastResult.op === 'load' ? 'carga' : 'limpeza'} · {lastResult.at?.toLocaleString?.('pt-BR') || ''}
-            </CardTitle>
-            <CardDescription>
+            </h3>
+            <p className="arena-section-card-description">
               {lastResult.errors.length === 0
                 ? `Concluído sem erros — ${lastResult.total} documentos processados.`
                 : `Concluído com ${lastResult.errors.length} aviso(s) — verifique abaixo.`}
-            </CardDescription>
-          </CardHeader>
+            </p>
+          </div>
           {lastResult.errors.length > 0 && (
-            <CardContent>
+            <div className="arena-section-card-body">
               <ul className="space-y-1 text-xs">
                 {lastResult.errors.map((e, idx) => (
                   <li key={idx} className="rounded-lg bg-rose-500/5 px-2.5 py-1.5 text-rose-700">
@@ -412,9 +411,9 @@ export default function AdminMockData() {
                   </li>
                 ))}
               </ul>
-            </CardContent>
+            </div>
           )}
-        </Card>
+        </section>
       )}
 
       {/* Phase indicator (enquanto busy) */}

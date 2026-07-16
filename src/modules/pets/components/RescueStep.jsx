@@ -13,7 +13,6 @@
  *  - `unhealthy_untreatable`: não tratável
  *  - `unknown`: desconhecido (avaliação pendente)
  */
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -46,8 +45,8 @@ export function RescueStep({ form, setValue }) {
   return (
     <div className="space-y-4">
       {/* Intro / microcopy */}
-      <Card>
-        <CardContent className="p-4 text-sm text-muted-foreground flex gap-2">
+      <section className="arena-section-card">
+        <div className="arena-section-card-body p-4 text-sm text-muted-foreground flex gap-2">
           <AlertCircle className="h-4 w-4 text-amber-500 flex-shrink-0 mt-0.5" />
           <p>
             <strong>Sobre o Status Asilomar:</strong> convenção internacional
@@ -55,17 +54,17 @@ export function RescueStep({ form, setValue }) {
             e perspectivas de adoção. Auxilia na tomada de decisão ética e
             padroniza relatórios de transparência.
           </p>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
       {/* Identificação do resgate */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2">
+      <section className="arena-section-card">
+        <div className="arena-section-card-header">
+          <h3 className="arena-section-card-title" className="text-base flex items-center gap-2">
             <User className="h-4 w-4" /> Identificação do resgate
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
+          </h3>
+        </div>
+        <div className="arena-section-card-body space-y-3">
           <div>
             <Label htmlFor="rescue_name">Nome do resgatador / tutor original</Label>
             <Input
@@ -99,20 +98,20 @@ export function RescueStep({ form, setValue }) {
               />
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
       {/* Localização */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2">
+      <section className="arena-section-card">
+        <div className="arena-section-card-header">
+          <h3 className="arena-section-card-title" className="text-base flex items-center gap-2">
             <MapPin className="h-4 w-4" /> Local do resgate
-          </CardTitle>
-          <CardDescription className="text-xs">
+          </h3>
+          <p className="arena-section-card-description">
             Endereço aproximado (não exigir precisão por privacidade).
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3">
+          </p>
+        </div>
+        <div className="arena-section-card-body space-y-3">
           <div>
             <Label htmlFor="rescue_address">Endereço (rua, bairro)</Label>
             <Input
@@ -176,17 +175,17 @@ export function RescueStep({ form, setValue }) {
               />
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
       {/* Classificação */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2">
+      <section className="arena-section-card">
+        <div className="arena-section-card-header">
+          <h3 className="arena-section-card-title" className="text-base flex items-center gap-2">
             <Heart className="h-4 w-4" /> Classificação
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
+          </h3>
+        </div>
+        <div className="arena-section-card-body space-y-3">
           <div>
             <Label htmlFor="intake_type">Tipo de intake</Label>
             <Select value={form.intake_type || ''} onValueChange={(v) => update('intake_type', v)}>
@@ -244,8 +243,8 @@ export function RescueStep({ form, setValue }) {
               maxLength={2000}
             />
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     </div>
   );
 }

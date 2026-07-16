@@ -4,7 +4,6 @@ import { Trash2, UserPlus, Users, Globe, Lock, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 import { UserAvatar } from '@/components/ui/user-avatar';
@@ -91,8 +90,8 @@ export default function EventParticipantsPanel({ event, clubId }) {
   return (
     <div className="space-y-4">
       {/* Visibilidade */}
-      <Card className="rounded-xl">
-        <CardContent className="flex flex-wrap items-center justify-between gap-3 p-4">
+      <section className="arena-section-card rounded-xl">
+        <div className="arena-section-card-body flex flex-wrap items-center justify-between gap-3 p-4">
           <div className="flex items-center gap-2">
             {isPrivate ? <Lock className="h-5 w-5 text-highlight-foreground" /> : <Globe className="h-5 w-5 text-primary" />}
             <div>
@@ -122,12 +121,12 @@ export default function EventParticipantsPanel({ event, clubId }) {
               <Lock className="mr-1.5 h-4 w-4" /> Privado
             </Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
       {/* Minha participação no evento (a confirmação por data fica em cada data) */}
-      <Card className="rounded-xl">
-        <CardContent className="flex flex-wrap items-center justify-between gap-3 p-4">
+      <section className="arena-section-card rounded-xl">
+        <div className="arena-section-card-body flex flex-wrap items-center justify-between gap-3 p-4">
           <div>
             <h3 className="text-sm font-semibold text-foreground">
               {amParticipant ? 'Você participa deste evento' : amInvited ? 'Você foi convidado' : 'Participe deste evento'}
@@ -145,12 +144,12 @@ export default function EventParticipantsPanel({ event, clubId }) {
               {amInvited ? 'Aceitar convite' : 'Participar'}
             </Button>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
       {/* Participantes / convidados */}
-      <Card className="rounded-xl">
-        <CardContent className="space-y-4 p-4">
+      <section className="arena-section-card rounded-xl">
+        <div className="arena-section-card-body space-y-4 p-4">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <Users className="h-5 w-5 text-primary" />
@@ -203,8 +202,8 @@ export default function EventParticipantsPanel({ event, clubId }) {
               })}
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
       <InviteDialog
         open={inviteOpen}

@@ -42,7 +42,7 @@ export default function ClubGeneralTab({ club, stats }) {
   return (
     <div className="space-y-10 sm:space-y-14">
       {/* STATS CARDS — 3 colunas com gradiente personalizado */}
-      <section className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+      <section className="arena-stats-grid sm:!grid-cols-3">
         <StatCard
           icon={PawPrint}
           value={animals}
@@ -210,22 +210,16 @@ export default function ClubGeneralTab({ club, stats }) {
 /** Card de estatística com gradiente personalizado (cover). */
 function StatCard({ icon: Icon, value, label }) {
   return (
-    <div
-      className="rounded-2xl border border-border/40 p-6 shadow-sm sm:p-7"
-      style={{
-        background: 'linear-gradient(135deg, hsl(var(--cover-from) / 0.07) 0%, hsl(var(--cover-to) / 0.07) 100%)',
-      }}
-    >
-      <div
-        className="flex h-11 w-11 items-center justify-center rounded-xl text-white"
-        style={{ background: 'var(--cover-gradient)' }}
-      >
-        <Icon className="h-5 w-5" />
+    <div className="arena-stat-card">
+      <div className="flex items-start justify-between gap-2">
+        <p className="arena-stat-card-label">{label}</p>
+        {Icon && (
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            <Icon className="h-4 w-4" />
+          </span>
+        )}
       </div>
-      <p className="mt-4 text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
-        {value}
-      </p>
-      <p className="mt-1 text-sm text-muted-foreground">{label}</p>
+      <div className="arena-stat-card-value">{value}</div>
     </div>
   );
 }

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Loader2, Palette, RotateCcw, Save, Type } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -119,17 +118,17 @@ export default function ClubThemingSection({ club }) {
   }));
 
   return (
-    <Card className="rounded-xl overflow-hidden">
-      <CardHeader className="p-6 sm:p-7">
-        <CardTitle className="flex items-center gap-2 text-base">
+    <section className="arena-section-card rounded-xl overflow-hidden">
+      <div className="arena-section-card-header">
+        <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base">
           <Palette className="h-4 w-4 text-primary" /> Personalização visual
-        </CardTitle>
-        <CardDescription>
+        </h3>
+        <p className="arena-section-card-description">
           Escolha as cores dos botões, fundos, do card principal e do
           nome da sua ONG. As mudanças entram em vigor quando você salvar.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-5 p-6 pt-0 sm:p-7 sm:pt-0">
+        </p>
+      </div>
+      <div className="arena-section-card-body space-y-5 p-6 pt-0 sm:p-7 sm:pt-0">
 
         {/* PREVIEW — CARD DA ONG (markup espelha ClubCover.jsx para
             fidelidade total). */}
@@ -238,7 +237,7 @@ export default function ClubThemingSection({ club }) {
             {updateClub.isPending ? 'Salvando…' : 'Salvar personalização'}
           </Button>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }

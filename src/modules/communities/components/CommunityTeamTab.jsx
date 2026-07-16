@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 import { Shield, ShieldAlert, Trash2, MoreVertical, Crown } from 'lucide-react';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { Badge } from '@/components/ui/badge';
@@ -25,12 +24,12 @@ export default function CommunityTeamTab({ community, membership }) {
 
   return (
     <div className="space-y-4">
-      <Card className="rounded-xl">
-        <CardHeader className="p-4 sm:p-5">
-          <CardTitle className="text-base">Membros da Comunidade</CardTitle>
-          <CardDescription>Gerencie os membros e suas permissões.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3 p-4 pt-0 sm:p-5 sm:pt-0">
+      <section className="arena-section-card rounded-xl">
+        <div className="arena-section-card-header">
+          <h3 className="arena-section-card-title">Membros da Comunidade</h3>
+          <p className="arena-section-card-description">Gerencie os membros e suas permissões.</p>
+        </div>
+        <div className="arena-section-card-body space-y-3 p-4 pt-0 sm:p-5 sm:pt-0">
           <div className="space-y-2">
             {members.map((member) => (
               <MemberItem
@@ -41,8 +40,8 @@ export default function CommunityTeamTab({ community, membership }) {
               />
             ))}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     </div>
   );
 }

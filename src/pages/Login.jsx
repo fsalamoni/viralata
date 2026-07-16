@@ -4,7 +4,6 @@ import { toast } from 'sonner';
 import { PawPrint } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
 const LOGIN_HIGHLIGHTS = [
   'Encontre o pet ideal com base no seu espaço, rotina e estilo de vida.',
@@ -100,8 +99,8 @@ export default function Login() {
 
         {/* Card de login */}
         <div className="flex items-center justify-center">
-          <Card className="w-full max-w-[420px] rounded-[28px] border-white bg-card p-0 text-center shadow-[0_30px_70px_-30px_hsl(20_40%_20%/0.4)]">
-            <CardHeader className="px-[30px] pb-0 pt-9">
+          <section className="arena-section-card w-full max-w-[420px] rounded-[28px] border-white bg-card p-0 text-center shadow-[0_30px_70px_-30px_hsl(20_40%_20%/0.4)]">
+            <div className="arena-section-card-header">
               {/* Logo mobile */}
               <Link to="/" className="mx-auto mb-4 inline-flex items-center gap-3 text-foreground lg:hidden">
                 <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--highlight))_100%)] shadow-[0_10px_24px_-12px_rgba(64,34,18,0.6)]">
@@ -115,15 +114,15 @@ export default function Login() {
                 <PawPrint className="h-[26px] w-[26px]" />
               </div>
 
-              <CardTitle className="mt-[18px] text-2xl font-extrabold text-foreground">
+              <h3 className="arena-section-card-title">
                 Bem-vindo ao Viralata
-              </CardTitle>
-              <CardDescription className="mt-2.5 text-[13.5px] leading-[1.6] text-muted-foreground">
+              </h3>
+              <p className="arena-section-card-description">
                 Use sua conta Google para acessar a plataforma e encontrar ou cadastrar pets para adoção responsável.
-              </CardDescription>
-            </CardHeader>
+              </p>
+            </div>
 
-            <CardContent className="space-y-0 px-[30px] pb-9 pt-6">
+            <div className="arena-section-card-body space-y-0 px-[30px] pb-9 pt-6">
               <Button
                 onClick={onClick}
                 disabled={busy || !isAuthAvailable}
@@ -147,8 +146,8 @@ export default function Login() {
                 </Link>
                 . O Viralata é 100% gratuito e não realiza venda de animais.
               </p>
-            </CardContent>
-          </Card>
+            </div>
+          </section>
         </div>
       </div>
     </div>

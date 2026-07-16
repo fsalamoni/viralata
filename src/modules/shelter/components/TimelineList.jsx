@@ -107,7 +107,7 @@ export function TimelineList({
     <section className="arena-section-card">
       <div className="arena-section-card-header">
         <div>
-          <CardTitle>Histórico do Animal</CardTitle>
+          <h3 className="arena-section-card-title">Histórico do Animal</h3>
           <p className="text-xs text-muted-foreground mt-1">
             {visibleEvents.length} evento(s) registrado(s)
             {_showInternal ? ' (incluindo notas internas)' : ''}
