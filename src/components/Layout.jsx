@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { SkipLink } from '@/components/ui/skip-link';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
-  PawPrint, Heart, Building2, MessageCircle, Bell, User, Menu, X,
-  Plus, Shield, AlertTriangle, LogOut, Radar, Sun, Moon,
+  PawPrint, Heart, Building2, MessageCircle, User, Menu, X, BookHeart,
+  Plus, Shield, ShieldCheck, AlertTriangle, LogOut, Radar, Users, HeartHandshake,
+  Sun, Moon
 } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
-import { useTheme } from '@/core/lib/ThemeContext';
-import { useNotifications } from '@/modules/notifications/hooks/useNotifications';
+import NotificationsMenu from '@/modules/notifications/components/NotificationsMenu';
 import { Button } from '@/components/ui/button';
 import SwUpdateBanner from '@/components/SwUpdateBanner';
 import LegalFooter from '@/components/LegalFooter';
@@ -27,8 +27,8 @@ const STANDALONE_PAGES = ['Home', 'Login', 'OnboardingQuestionnaire'];
 // avatar, como especificado no handoff.
 const NAV_ITEMS = [
   { label: 'Feed', icon: PawPrint, to: '/feed' },
-  // Diretório e perfil de ONGs são públicos — o item aparece também deslogado.
-  { label: 'Organizações', icon: Building2, to: '/organizacoes' },
+  { label: 'Abrigos', icon: Building2, to: '/organizacoes', auth: true },
+  { label: 'Voluntários', icon: HeartHandshake, to: '/voluntarios' },
   { label: 'Comunidade', icon: Users, to: '/comunidade' },
   { label: 'Chat', icon: MessageCircle, to: '/chat', auth: true },
 ];
@@ -61,8 +61,7 @@ export default function Layout({ children, currentPageName }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, userProfile, isAuthenticated, isPlatformAdmin, signOut } = useAuth();
-  const { data: notifications = [] } = useNotifications(user?.uid);
-  const { theme, toggleTheme } = useTheme();
+  const { settings } = usePlatformSettings();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   if (STANDALONE_PAGES.includes(currentPageName)) {
@@ -89,8 +88,8 @@ export default function Layout({ children, currentPageName }) {
   return (
     <div className="arena-page min-h-screen flex flex-col">
       {/* Header */}
-      <header className="sticky top-0 z-40 border-b border-border bg-card/70 backdrop-blur-xl">
-        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-4 safe-px">
+      <header className="sticky top-0 z-40 border-b border-border/70 bg-background/80 backdrop-blur-xl">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4 safe-px">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 flex-shrink-0 group">
             <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--highlight))_100%)] text-white shadow-[0_10px_24px_-12px_rgba(64,34,18,0.6)] transition-transform group-hover:-rotate-6">
@@ -120,15 +119,8 @@ export default function Layout({ children, currentPageName }) {
 
           {/* Ações direita */}
           <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleTheme}
-              aria-label={theme === 'dark' ? 'Ativar tema claro' : 'Ativar tema escuro'}
-              title={theme === 'dark' ? 'Ativar tema claro' : 'Ativar tema escuro'}
-            >
-              {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-            </Button>
+            {/* Dark mode toggle — sempre visível */}
+            <ColorModeToggle />
             {isAuthenticated ? (
               <>
                 {/* Cadastrar Pet — presente no cabeçalho em todas as páginas (item 2) */}
@@ -143,7 +135,7 @@ export default function Layout({ children, currentPageName }) {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <button className="flex items-center gap-2 rounded-full focus:outline-none focus:ring-2 focus:ring-ring">
-                      <Avatar className="w-8 h-8 ring-2 ring-card">
+                      <Avatar className="w-8 h-8 ring-2 ring-white">
                         <AvatarImage src={photoURL} />
                         <AvatarFallback className="bg-secondary text-secondary-foreground text-xs font-bold">{initials}</AvatarFallback>
                       </Avatar>
@@ -178,31 +170,6 @@ export default function Layout({ children, currentPageName }) {
                     <DropdownMenuItem asChild>
                       <Link to="/denuncias/nova" className="flex items-center gap-2 cursor-pointer text-destructive">
                         <AlertTriangle className="w-4 h-4" /> Fazer Denúncia
-                      </Link>
-                    </DropdownMenuItem>
-                    {/* TASK-041: Documentos Legais — exigidos pelo Guia de Implementação
-                        Legal v2 §5 (links no rodapé E no menu do usuário). Disponíveis
-                        para todos os usuários autenticados, mesmo antes de aceitar
-                        termos pendentes (via LegalGate). */}
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild>
-                      <Link to="/legal/termos-de-uso" className="flex items-center gap-2 cursor-pointer">
-                        <FileText className="w-4 h-4" /> Termos de Uso
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to="/legal/politica-de-privacidade" className="flex items-center gap-2 cursor-pointer">
-                        <FileText className="w-4 h-4" /> Política de Privacidade
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to="/legal/cookies" className="flex items-center gap-2 cursor-pointer">
-                        <FileText className="w-4 h-4" /> Política de Cookies
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to="/legal/codigo-de-conduta" className="flex items-center gap-2 cursor-pointer">
-                        <FileText className="w-4 h-4" /> Código de Conduta
                       </Link>
                     </DropdownMenuItem>
                     {isPlatformAdmin && (
@@ -243,8 +210,13 @@ export default function Layout({ children, currentPageName }) {
 
         {/* Mobile Nav */}
         {mobileOpen && (
-          <div className="md:hidden border-t border-border bg-card/90 backdrop-blur-xl px-4 py-3 space-y-1 safe-px">
-            {NAV_ITEMS.filter((item) => !item.auth || isAuthenticated).map(({ label, icon: Icon, to }) => (
+          <div
+            id="mobile-nav-menu"
+            role="navigation"
+            aria-label="Menu principal (mobile)"
+            className="md:hidden border-t border-border/70 bg-background/95 backdrop-blur-xl px-4 py-3 space-y-1 safe-px"
+          >
+            {[...NAV_ITEMS, ...MOBILE_MENU_EXTRA_ITEMS].filter((item) => !item.auth || isAuthenticated).map(({ label, icon: Icon, to }) => (
               <Link
                 key={to}
                 to={to}
@@ -254,7 +226,7 @@ export default function Layout({ children, currentPageName }) {
                   'flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
                   location.pathname.startsWith(to)
                     ? 'bg-primary text-primary-foreground'
-                    : 'text-foreground/70 hover:bg-secondary/70'
+                    : 'text-foreground/80 hover:bg-secondary/70'
                 )}
               >
                 <Icon className="w-4 h-4" />

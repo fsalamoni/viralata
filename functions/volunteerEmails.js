@@ -103,53 +103,10 @@ async function sendBackgroundCheckStatusEmail(uid, status) {
   });
 }
 
-/**
- * Envia email de confirmação de turno ao voluntário.
- * Tipo: transactional (consentimento implícito pela participação).
- * Template: volunteer-shift-confirmed-v1.
- *
- * @param {string} uid - uid do voluntário
- * @param {string} eventDate - data formatada do evento (string)
- * @param {string} eventLabel - label/título do evento
- * @param {string} role - papel do voluntário no turno
- * @param {string|null} shelterName - nome do abrigo
- */
-async function sendVolunteerShiftConfirmedEmail(uid, eventDate, eventLabel, role, shelterName) {
-  const prefs = await getUserEmailPrefs(uid);
-  if (!prefs.email) return { ok: false, reason: 'no_email' };
-
-  const provider = getEmailProvider();
-  const shelterLine = shelterName ? ` no <strong>${shelterName}</strong>` : '';
-  const roleLine = role ? `<li><strong>Papel:</strong> ${role}</li>` : '';
-
-  return provider.send({
-    to: prefs.email,
-    subject: `Turno confirmado: ${eventLabel}`,
-    text: `Seu turno foi confirmado!
-
-Evento: ${eventLabel}
-Data: ${eventDate}${role ? '\nPapel: ' + role : ''}${shelterName ? '\nAbrigo: ' + shelterName : ''}
-
-Acesse /abrigo/*/voluntarios/participacoes para ver os detalhes.`,
-    html: `<h2>🎉 Turno confirmado!</h2>
-<p>Seu turno foi registrado com sucesso.</p>
-<ul>
-  <li><strong>Evento:</strong> ${eventLabel}</li>
-  <li><strong>Data:</strong> ${eventDate}</li>
-  ${roleLine}
-  <li><strong>Status:</strong> ✅ Confirmado</li>
-</ul>
-${shelterName ? `<p>Você vai atuar<strong>${shelterLine}</strong>.</p>` : ''}
-<p><a href="https://viralata.app/perfil#voluntariadas">Ver meus turnos</a></p>
-<p style="font-size:12px;color:#888">Se não for você, ignore este email.</p>`,
-  });
-}
-
 module.exports = {
   sendVolunteerWelcomeEmail,
   sendShiftReminderEmail,
   sendMilestoneEmail,
   sendBackgroundCheckStatusEmail,
-  sendVolunteerShiftConfirmedEmail,
   getUserEmailPrefs,
 };

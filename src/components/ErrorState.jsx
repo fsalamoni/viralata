@@ -11,9 +11,9 @@ import { Button } from '@/components/ui/button';
  */
 export default function ErrorState({ message = 'Não foi possível carregar os dados agora.', onRetry }) {
   return (
-    <Card>
-      <CardContent className="flex flex-col items-center gap-3 p-8 text-center">
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive text-destructive">
+    <section className="arena-section-card">
+      <div className="arena-section-card-body flex flex-col items-center gap-3 p-8 text-center">
+        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10 text-destructive">
           <AlertTriangle className="h-5 w-5" />
         </div>
         <p className="text-sm text-muted-foreground">{message}</p>

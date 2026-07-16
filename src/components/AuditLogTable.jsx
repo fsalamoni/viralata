@@ -175,26 +175,88 @@ export function AuditLogTable({ title, description, userId, className = '' }) {
   }, [filters, pageSize]);
 
   return (
-    <Card className={`overflow-hidden ${className}`}>
-      <CardHeader className="border-b border-primary/10 bg-card/45 p-4 sm:p-5">
-        <CardTitle className="text-base text-foreground">{title}</CardTitle>
-        {description && <CardDescription>{description}</CardDescription>}
-      </CardHeader>
-      <CardContent className="space-y-4 p-4 sm:p-5">
+    <section className={`overflow-hidden ${className}`}>
+      <div className="arena-section-card-header">
+        <h3 className="arena-section-card-title">{title}</h3>
+        {description && <p className="arena-section-card-description">{description}</p>}
+      </div>
+      <div className="arena-section-card-body space-y-4 p-6 sm:p-7">
         {error && <p className="text-sm text-destructive">{error}</p>}
-        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
-          <FilterInput label="Nº" value={filters.log_number} onChange={(value) => updateFilter(setFilters, 'log_number', value)} />
-          <FilterInput label="Usuário" value={filters.user_name} onChange={(value) => updateFilter(setFilters, 'user_name', value)} />
-          <FilterInput label="Data/hora" value={filters.created_at} onChange={(value) => updateFilter(setFilters, 'created_at', value)} />
-          <FilterInput label="Ação" value={filters.action_label} onChange={(value) => updateFilter(setFilters, 'action_label', value)} />
-          <FilterInput label="Detalhes" value={filters.details} onChange={(value) => updateFilter(setFilters, 'details', value)} />
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-6">
+          <FilterInput label="Ator" value={filters.actor} onChange={(value) => updateFilter(setFilters, 'actor', value)} placeholder="Nome, e-mail ou UID" />
+          <FilterInput label="Alvo" value={filters.target} onChange={(value) => updateFilter(setFilters, 'target', value)} placeholder="Usuário afetado" />
+          <label className="space-y-1 text-xs font-medium text-muted-foreground">
+            <span>Tipo de ação</span>
+            <select
+              className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+              value={filters.action}
+              onChange={(e) => updateFilter(setFilters, 'action', e.target.value)}
+            >
+              <option value="all">Todas</option>
+              {actionOptions.map((action) => (
+                <option key={action} value={action}>
+                  {AUDIT_ACTION_LABELS[action] || action}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="space-y-1 text-xs font-medium text-muted-foreground">
+            <span>Módulo</span>
+            <select
+              className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+              value={filters.module}
+              onChange={(e) => updateFilter(setFilters, 'module', e.target.value)}
+            >
+              {Object.entries(MODULE_LABELS).map(([value, label]) => (
+                <option key={value} value={value}>{label}</option>
+              ))}
+            </select>
+          </label>
+          <label className="space-y-1 text-xs font-medium text-muted-foreground">
+            <span>Período inicial</span>
+            <Input type="date" value={filters.startDate} onChange={(e) => updateFilter(setFilters, 'startDate', e.target.value)} />
+          </label>
+          <label className="space-y-1 text-xs font-medium text-muted-foreground">
+            <span>Período final</span>
+            <Input type="date" value={filters.endDate} onChange={(e) => updateFilter(setFilters, 'endDate', e.target.value)} />
+          </label>
+        </div>
+        <div className="grid gap-2 md:grid-cols-[minmax(0,1fr)_auto]">
+          <FilterInput label="Busca geral" value={filters.search} onChange={(value) => updateFilter(setFilters, 'search', value)} placeholder="Nº do log, ação ou detalhes" />
+          <div className="flex items-end">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full md:w-auto"
+              onClick={() => setFilters({
+                actor: '',
+                target: '',
+                action: 'all',
+                module: 'all',
+                startDate: '',
+                endDate: '',
+                search: '',
+              })}
+            >
+              Limpar filtros
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className="ml-2 w-full md:w-auto"
+              onClick={() => exportLogsCsv(filteredLogs)}
+              disabled={filteredLogs.length === 0}
+            >
+              <Download className="mr-1.5 h-4 w-4" /> Exportar CSV
+            </Button>
+          </div>
         </div>
 
         <div className="arena-table-wrap">
           <table className="min-w-[980px] w-full text-sm">
             <caption className="sr-only">Lista de registros de auditoria da plataforma</caption>
             <thead>
-              <tr className="border-b border-primary-foreground/20 bg-primary text-left text-primary-foreground">
+              <tr className="border-b border-border bg-secondary text-left text-secondary-foreground">
                 <th className="py-3 pl-4 pr-3 font-semibold">Nº</th>
                 <th className="py-3 px-3 font-semibold">Usuário</th>
                 <th className="py-3 px-3 font-semibold">Data e horário</th>
@@ -202,15 +264,15 @@ export function AuditLogTable({ title, description, userId, className = '' }) {
                 <th className="py-3 px-3 font-semibold">Informações</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-primary/10 bg-card/65">
+            <tbody className="divide-y divide-border bg-card">
               {visibleLogs.map((log) => (
-                <tr key={log.id} className="transition-colors hover:bg-primary/10">
+                <tr key={log.id} className="transition-colors hover:bg-secondary/50">
                   <td className="py-3 pl-4 pr-3 font-mono text-xs text-muted-foreground">{log.log_number || '—'}</td>
                   <td className="py-3 px-3">
                     <div className="font-medium text-foreground">{log.user_name || log.actor_name || '—'}</div>
                     <div className="text-xs text-muted-foreground">{log.user_email || log.actor_email || ''}</div>
                   </td>
-                  <td className="py-3 px-3 text-foreground">{formatAuditDate(log.created_at, log.created_at_ms)}</td>
+                  <td className="py-3 px-3 text-foreground/80">{formatAuditDate(log.created_at, log.created_at_ms)}</td>
                   <td className="py-3 px-3 font-medium text-foreground">
                     {log.action_label || AUDIT_ACTION_LABELS[log.action] || log.action}
                   </td>
@@ -269,8 +331,8 @@ function FilterInput({ label, value, onChange, placeholder = '' }) {
     <label className="space-y-1 text-xs font-medium text-muted-foreground">
       <span>{label}</span>
       <div className="relative">
-        <Search className="pointer-events-none absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-        <Input value={value} onChange={(e) => onChange(e.target.value)} className="pl-8" />
+        <Search className="pointer-events-none absolute left-2 top-2.5 h-4 w-4 text-muted-foreground/80" />
+        <Input value={value} onChange={(e) => onChange(e.target.value)} className="pl-8" placeholder={placeholder} />
       </div>
     </label>
   );

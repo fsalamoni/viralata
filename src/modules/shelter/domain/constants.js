@@ -89,43 +89,14 @@ export const SHELTER_FEATURE_FLAG = Object.freeze({
   //  - Banner de Cookies (LGPD)
   //  - 5 páginas legais estáticas (/legal/*)
   SHELTER_LEGAL_TERMS_V1: 'shelter_legal_terms_v1',
-  // Fase 22 — Painel do Adotante + Comunidades + Eventos
-  // Dashboard unificado do adotante: aplicações, eventos, pets favoritados
-  SHELTER_ADOPTER_DASHBOARD_V1: 'shelter_adopter_dashboard_v1',
-  // Eventos ampliados: tipos diversos (vacinação, palestra, fundraising, pet day)
-  // com vínculo pet↔evento e vínculo voluntário↔evento
-  SHELTER_EVENTS_V1: 'shelter_events_v1',
-  // Perfil expandido do adotante: preferências de busca, gate legal, questionário
-  SHELTER_ADOPTER_PROFILE_V1: 'shelter_adopter_profile_v1',
-  // Comunidade apoiada pelo abrigo (membros, posts, chat admin, certificados)
-  SHELTER_SPONSORED_COMMUNITY_V1: 'shelter_sponsored_community_v1',
-  // Eventos enriquecidos da comunidade: RSVP, chat, pinned posts, busca global
-  SHELTER_COMMUNITY_RICH_EVENTS_V1: 'shelter_community_rich_events_v1',
-  // Chat admin de comunidade (canal onde admin fala com membros)
-  SHELTER_COMMUNITY_CHAT_V1: 'shelter_community_chat_v1',
-  // FCM push notifications: service worker + token registration + sendPush onCall
-  SHELTER_FCM_PUSH_V1: 'shelter_fcm_push_v1',
   // Fase 19 — Segurança Avançada
   SHELTER_SECURITY_HARDENING: 'shelter_security_hardening',
   // Fase 20 — Painel de Saúde da Plataforma
   SHELTER_PLATFORM_HEALTH: 'shelter_platform_health',
   // Fase 21 — Migração Final + Cutover
   SHELTER_CUTOVER: 'shelter_cutover',
-  // ---- Comunidade / adotante / eventos ----
-  // TASK-338: painel unificado do adotante (/meu-painel)
-  SHELTER_ADOPTER_DASHBOARD_V1: 'shelter_adopter_dashboard_v1',
-  // TASK-338: eventos da Fase 10 (ampliados, vinculados a pets e voluntários)
-  SHELTER_EVENTS_V1: 'shelter_events_v1',
-  // TASK-338: perfil expandido do adotante (preferências, pets interessados, histórico)
-  SHELTER_ADOPTER_PROFILE_V1: 'shelter_adopter_profile_v1',
-  // TASK-338: comunidade patrocinada pelo abrigo (tipo Substack/Open Collective)
-  SHELTER_SPONSORED_COMMUNITY_V1: 'shelter_sponsored_community_v1',
-  // TASK-338: eventos ricos (pet_ids, volunteer_ids, certificados, RSVP pago)
-  SHELTER_COMMUNITY_RICH_EVENTS_V1: 'shelter_community_rich_events_v1',
-  // TASK-338: chat admin↔membros na comunidade
-  SHELTER_COMMUNITY_CHAT_V1: 'shelter_community_chat_v1',
-  // TASK-338: push notifications FCM via Cloud Functions (não só in-app)
-  SHELTER_FCM_PUSH_V1: 'shelter_fcm_push_v1',
+  // TASK-292 — Firebase Cloud Messaging: push notifications
+  SHELTER_FCM_V1: 'shelter_fcm_v1',
 });
 
 /**
@@ -328,70 +299,6 @@ export const SHELTER_FEATURE_FLAG_META = Object.freeze({
       + 'legislacao-animal). Todos os aceites registram '
       + '`terms_accepted_at` + `terms_version` para auditoria LGPD.',
   },
-  [SHELTER_FEATURE_FLAG.SHELTER_ADOPTER_DASHBOARD_V1]: {
-    label: 'Abrigos · painel do adotante',
-    description:
-      'Dashboard unificado do adotante em /meu-painel com: '
-      + 'aplicações em andamento (pipeline visual), eventos criados/participados, '
-      + 'pets favoritados, e notifications. Filtros por status + busca. '
-      + 'Inclui CTA "Encontrar pet" para vazio. '
-      + 'Feature flag que protege toda a rota /meu-painel e sub-rotas.',
-  },
-  [SHELTER_FEATURE_FLAG.SHELTER_EVENTS_V1]: {
-    label: 'Abrigos · eventos ampliados',
-    description:
-      'Tipos de evento diversos (vacinação, palestra, fundraising, pet day). '
-      + 'Vínculo pet↔evento (pet_ids: string[]) com UI de seleção. '
-      + 'Vínculo voluntário↔evento (interface com Agente A). '
-      + 'Certificados de evento (storage + download PDF). '
-      + 'RSVP, disponibilidade, escalas por turno/role.',
-  },
-  [SHELTER_FEATURE_FLAG.SHELTER_ADOPTER_PROFILE_V1]: {
-    label: 'Abrigos · perfil expandido do adotante',
-    description:
-      'Feed preferences (porte, espécie, idade, energia), gate legal '
-      + '(aceite LGPD Art. 14 para 16-18 anos com responsável), '
-      + 'questionnaire versionado, e analytics de funil. '
-      + 'Habilita preferências na busca e no matching de pets.',
-  },
-  [SHELTER_FEATURE_FLAG.SHELTER_SPONSORED_COMMUNITY_V1]: {
-    label: 'Abrigos · comunidade apoiada',
-    description:
-      'Comunidade pertencente ao abrigo: membros, posts com '
-      + 'likes/comments, pinned posts, forum threads, '
-      + 'eventos (RSVP + reminder 24h), '
-      + 'convite de membros (search + invite + pending/accepted/declined), '
-      + 'e certificados de participação em PDF. '
-      + 'Inclui auditoria de post_liked, post_commented, event_rsvp, event_created, event_deleted.',
-  },
-  [SHELTER_FEATURE_FLAG.SHELTER_COMMUNITY_RICH_EVENTS_V1]: {
-    label: 'Abrigos · eventos enriquecidos de comunidade',
-    description:
-      'Eventos internos da comunidade com: chat admin (admin fala com membros), '
-      + 'busca global de comunidades (text + city + state), '
-      + 'convite de membros, e cloud functions para '
-      + 'notificações (post_created, post_liked, post_commented, event_created) '
-      + 'e reminder 24h antes do evento.',
-  },
-  [SHELTER_FEATURE_FLAG.SHELTER_COMMUNITY_CHAT_V1]: {
-    label: 'Abrigos · chat admin de comunidade',
-    description:
-      'Canal onde admin de comunidade fala diretamente com membros. '
-      + 'Sub-coleção messages em community com thread opcional. '
-      + 'Notificação push ao membro quando admin envia mensagem.',
-  },
-  [SHELTER_FEATURE_FLAG.SHELTER_FCM_PUSH_V1]: {
-    label: 'Abrigos · push notifications (FCM)',
-    description:
-      'Firebase Cloud Messaging: service worker registra FCM token em '
-      + 'users/{uid}.fcm_tokens[]. onCall sendPush(notifType, uid, payload). '
-      + 'Triggers: onCreate adoption_workflow (notifica abrigo), '
-      + 'onUpdate adoption_workflow.status (notifica adotante), '
-      + 'onCreate kanban_tasks (notifica adotante), '
-      + 'onCreate community_post (notifica membros). '
-      + 'Permission UX: pede após 1ª ação relevante (não no signup). '
-      + 'Respeita opt-out. Flag-gated SHELTER_FCM_PUSH_V1.',
-  },
   [SHELTER_FEATURE_FLAG.SHELTER_SECURITY_HARDENING]: {
     label: 'Abrigos · segurança avançada',
     description:
@@ -411,55 +318,16 @@ export const SHELTER_FEATURE_FLAG_META = Object.freeze({
       + 'validação completa em produção. Liga só no final, depois de '
       + 'todas as outras fases validadas.',
   },
-  // ---- Comunidade / adotante / eventos (TASK-338) ----
-  [SHELTER_FEATURE_FLAG.SHELTER_ADOPTER_DASHBOARD_V1]: {
-    label: 'Abrigos · painel do adotante',
+  [SHELTER_FEATURE_FLAG.SHELTER_FCM_V1]: {
+    label: 'Abrigos · push notifications (FCM v1)',
     description:
-      'Dashboard unificado /meu-painel com status de aplicações, '
-      + 'pets favoritos, eventos inscritos e histórico de interações. '
-      + 'Habilita a visão adotante completa (Fase 4 expandida).',
-  },
-  [SHELTER_FEATURE_FLAG.SHELTER_EVENTS_V1]: {
-    label: 'Abrigos · eventos ampliados',
-    description:
-      'Tipos de evento ampliados: vacinação, palestra, fundraising, pet day. '
-      + 'Vínculo evento↔pet (pet_ids) e evento↔voluntário. '
-      + 'Habilita a agenda pública + busca de eventos.',
-  },
-  [SHELTER_FEATURE_FLAG.SHELTER_ADOPTER_PROFILE_V1]: {
-    label: 'Abrigos · perfil expandido do adotante',
-    description:
-      'Perfil completo do adotante: preferências de espécie/porte/energia, '
-      + 'pets interessados, histórico de aplicações, avaliações. '
-      + 'Gatilho de matching visual com pets disponíveis.',
-  },
-  [SHELTER_FEATURE_FLAG.SHELTER_SPONSORED_COMMUNITY_V1]: {
-    label: 'Abrigos · comunidade patrocinada',
-    description:
-      'Comunidade vinculada ao abrigo com suporte a posts, fóruns, '
-      + 'eventos e-chat. Tipo Substack/Open Collective: abrigo publica '
-      + 'conteúdo, membros acompanham e podem contribuir financeiramente.',
-  },
-  [SHELTER_FEATURE_FLAG.SHELTER_COMMUNITY_RICH_EVENTS_V1]: {
-    label: 'Abrigos · eventos ricos na comunidade',
-    description:
-      'Eventos com pet_ids, volunteer_ids, certificados PDF gerados via '
-      + 'storage, e RSVP pago (Pix). Integração com Google Calendar '
-      + 'e Jitsi Meet para vídeo-entrevistas.',
-  },
-  [SHELTER_FEATURE_FLAG.SHELTER_COMMUNITY_CHAT_V1]: {
-    label: 'Abrigos · chat admin↔membros na comunidade',
-    description:
-      'Canal de chat onde admins do abrigo/enviolezadores '
-      + 'conversam diretamente com membros da comunidade. '
-      + 'Notificações push para membros quando admin envia mensagem.',
-  },
-  [SHELTER_FEATURE_FLAG.SHELTER_FCM_PUSH_V1]: {
-    label: 'Abrigos · push notifications via FCM',
-    description:
-      'Firebase Cloud Messaging para push notifications nativas (não '
-      + 'só in-app). Welcome, shift reminder, BG check, milestone, '
-      + 'event reminder, e community notifications via Cloud Functions.',
+      'Firebase Cloud Messaging: service worker registra FCM token em '
+      + '`users/{uid}.fcm_tokens[]`; Cloud Function sendPushNotification '
+      + 'onCall com type + link. Triggers: onCreate adoption_workflow '
+      + '(→ abrigo), onUpdate adoption_workflow.status (→ adotante), '
+      + 'onCreate kanban_tasks (→ assignee). Permissão pedida após 1ª '
+      + 'ação relevante (não no signup). Respeita opt-out via token '
+      + 'removal. LGPD Art.7 VI — consentimento legítimo.',
   },
 });
 

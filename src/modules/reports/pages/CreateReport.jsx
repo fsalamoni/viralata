@@ -14,7 +14,6 @@ import { toPng } from 'html-to-image';
 import { jsPDF } from 'jspdf';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import PageContainer from '@/components/PageContainer';
 
 export default function CreateReport() {
   const navigate = useNavigate();
@@ -91,15 +90,17 @@ export default function CreateReport() {
   const dateStr = format(new Date(), "dd 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR });
 
   return (
-    <PageContainer>
-      <div className="mx-auto w-full max-w-2xl space-y-6">
-      <div className="flex items-center gap-3">
-        <Button variant="ghost" size="sm" onClick={() => navigate(-1)}><ArrowLeft className="w-4 h-4" /></Button>
-        <h1 className="text-2xl font-bold text-foreground">Registrar Denúncia</h1>
-      </div>
-      <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-800">
-        <strong>Importante:</strong> Esta denúncia ficará registrada na plataforma. Ao concluir, você poderá baixar um PDF formatado para entregar à Delegacia de Crimes Ambientais ou à Polícia Civil.
-      </div>
+    <div className={useArenaPageClasses('arena-page mx-auto max-w-2xl space-y-6 px-4 py-6')}>
+      <PageHero
+        eyebrow="Denúncia"
+        title="Registrar Denúncia"
+        description="Esta denúncia ficará registrada na plataforma. Ao concluir, você poderá baixar um PDF formatado para entregar à Delegacia de Crimes Ambientais ou à Polícia Civil."
+        actions={
+          <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
+            <ArrowLeft className="mr-1.5 w-4 h-4" /> Voltar
+          </Button>
+        }
+      />
 
       {!reportId ? (
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -129,7 +130,7 @@ export default function CreateReport() {
               </Button>
             </div>
             {coords && (
-              <p className="text-xs text-primary">
+              <p className="text-xs text-[hsl(150,38%,32%)]">
                 📍 Coordenadas: {coords.lat.toFixed(6)}, {coords.lng.toFixed(6)}
               </p>
             )}
@@ -142,7 +143,7 @@ export default function CreateReport() {
                 <div key={i} className="relative w-20 h-20 rounded-lg overflow-hidden border">
                   <img src={src} alt="" className="w-full h-full object-cover" />
                   <button type="button" onClick={() => { setPhotos((p) => p.filter((_, j) => j !== i)); setPhotoFiles((p) => p.filter((_, j) => j !== i)); }}
-                    className="absolute top-0.5 right-0.5 bg-destructive text-white rounded-full w-4 h-4 text-xs flex items-center justify-center">×</button>
+                    className="absolute top-0.5 right-0.5 bg-black/50 text-white rounded-full w-4 h-4 text-xs flex items-center justify-center">×</button>
                 </div>
               ))}
               {photos.length < 5 && (
@@ -154,13 +155,13 @@ export default function CreateReport() {
             </div>
           </div>
 
-          <Button type="submit" disabled={saving} className="w-full bg-destructive hover:bg-destructive text-white" size="lg">
+          <Button type="submit" disabled={saving} variant="destructive" className="w-full" size="lg">
             {saving ? 'Registrando...' : 'Registrar Denúncia'}
           </Button>
         </form>
       ) : (
         <div className="space-y-4">
-          <div className="bg-primary/10 border border-primary/20 rounded-xl p-4 text-primary">
+          <div className="rounded-xl border border-[hsl(150,38%,36%,0.35)] bg-[hsl(150,38%,36%,0.12)] p-4 text-[hsl(150,38%,22%)]">
             ✅ Denúncia registrada! Protocolo: <strong>{reportId}</strong>
           </div>
 
@@ -169,7 +170,7 @@ export default function CreateReport() {
             <div className="text-center space-y-1 border-b pb-4">
               <div className="text-2xl font-bold text-primary">🐾 Viralata</div>
               <div className="text-lg font-semibold text-foreground">DENÚNCIA DE MAUS-TRATOS A ANIMAIS</div>
-              <div className="text-muted-foreground text-xs">Plataforma Viralata — viralata.web.app</div>
+              <div className="text-gray-500 text-xs">Plataforma Viralata — viralata.web.app</div>
             </div>
             <div className="grid grid-cols-2 gap-3 text-xs">
               <div><strong>Data/Hora:</strong> {dateStr}</div>
@@ -180,12 +181,12 @@ export default function CreateReport() {
             {(address || coords) && (
               <div className="text-xs">
                 <strong>Local:</strong> {address}
-                {coords && <span className="ml-2 text-muted-foreground">(GPS: {coords.lat.toFixed(5)}, {coords.lng.toFixed(5)})</span>}
+                {coords && <span className="ml-2 text-gray-500">(GPS: {coords.lat.toFixed(5)}, {coords.lng.toFixed(5)})</span>}
               </div>
             )}
             <div>
               <strong className="text-xs">Descrição do ocorrido:</strong>
-              <p className="mt-1 text-xs text-foreground whitespace-pre-wrap">{description}</p>
+              <p className="mt-1 text-xs text-gray-700 whitespace-pre-wrap">{description}</p>
             </div>
             {photos.length > 0 && (
               <div>
@@ -197,7 +198,7 @@ export default function CreateReport() {
                 </div>
               </div>
             )}
-            <div className="border-t pt-3 text-xs text-muted-foreground text-center">
+            <div className="border-t pt-3 text-xs text-gray-400 text-center">
               Este documento foi gerado automaticamente pela plataforma Viralata e pode ser apresentado às autoridades competentes.
             </div>
           </div>
@@ -212,6 +213,5 @@ export default function CreateReport() {
         </div>
       )}
     </div>
-    </PageContainer>
   );
 }

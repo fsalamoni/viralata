@@ -31,9 +31,6 @@ import {
   FOSTER_TERMS_TEXT,
   FOSTER_TERMS_VERSION,
 } from '@/modules/shelter/domain/legal/fosterTerms';
-import { useClub, useMyMembership } from '@/modules/organizations/hooks/useClubs';
-import { useAuth } from '@/core/lib/FirebaseAuthContext';
-import { canManageClubTeam } from '@/modules/organizations/domain/permissions';
 
 const STATUS_LABELS = {
   pending: 'Aguardando aceite',
@@ -64,15 +61,6 @@ const [actionContext, setActionContext] = useState(null); // { action, fosterId,
   const endMutation = useEndFoster(shelterClubId);
   const cancelMutation = useCancelFoster(shelterClubId);
   const { toast } = useToast();
-
-  // TASK-280: permission gate — replaces boolean canAbriho prop.
-  const { data: club } = useClub(shelterClubId);
-  const { data: membership } = useMyMembership(shelterClubId);
-  const { user } = useAuth();
-  const uid = user?.uid;
-  const canManageTeam = canAbriho === undefined
-    ? canManageClubTeam(club, membership, uid)
-    : Boolean(canAbriho);
 
   if (!shelterClubId) {
     return <p className="text-sm text-muted-foreground">Selecione um abrigo.</p>;
@@ -208,7 +196,7 @@ const [actionContext, setActionContext] = useState(null); // { action, fosterId,
                           Aceitar e assinar termo
                         </Button>
                       )}
-                      {(f.status === 'active' || f.status === 'extended') && canManageTeam && (
+                      {(f.status === 'active' || f.status === 'extended') && canAbriho && (
                         <>
                           <Button size="sm" variant="outline" onClick={() => handleExtend(f.id, f.end_date)}>
                             Prorrogar
@@ -218,7 +206,7 @@ const [actionContext, setActionContext] = useState(null); // { action, fosterId,
                           </Button>
                         </>
                       )}
-                      {f.status === 'pending' && (canManageTeam || isFoster) && (
+                      {f.status === 'pending' && (canAbriho || isFoster) && (
                         <Button size="sm" variant="ghost" onClick={() => handleCancel(f.id)}>
                           Cancelar
                         </Button>

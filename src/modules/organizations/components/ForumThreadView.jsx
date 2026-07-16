@@ -80,7 +80,7 @@ export default function ForumThreadView({ clubId, threadId, isAdmin, onBack, onD
     return (
       <div className="space-y-3">
         <Button variant="ghost" size="sm" onClick={onBack}><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar</Button>
-        <Card className="rounded-xl"><CardContent className="p-6 text-center text-sm text-muted-foreground">Tópico não encontrado ou removido.</CardContent></Card>
+        <section className="arena-section-card rounded-xl"><div className="arena-section-card-body p-6 text-center text-sm text-muted-foreground">Tópico não encontrado ou removido.</div></section>
       </div>
     );
   }
@@ -194,7 +194,7 @@ export default function ForumThreadView({ clubId, threadId, isAdmin, onBack, onD
       </section>
 
       {/* Comentários */}
-      <div className="flex items-center gap-2 px-1 text-sm font-semibold text-foreground">
+      <div className="flex items-center gap-2 px-1 text-sm font-semibold text-foreground/80">
         <MessageSquare className="h-4 w-4 text-primary" />
         {comments.length} comentário(s)
       </div>
@@ -280,12 +280,12 @@ function ForumComment({ comment, clubId, threadId, canModerate }) {
             <div className="flex items-center justify-between gap-2">
               <div className="min-w-0 text-sm">
                 <span className="font-medium text-foreground">{comment.author_name}</span>
-                <span className="ml-2 text-xs text-muted-foreground">{timeAgo(comment.created_at_ms)}{comment.edited ? ' · editado' : ''}</span>
+                <span className="ml-2 text-xs text-muted-foreground/80">{timeAgo(comment.created_at_ms)}{comment.edited ? ' · editado' : ''}</span>
               </div>
               {(isAuthor || canDelete) && !editing && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0 text-muted-foreground"><MoreVertical className="h-4 w-4" /></Button>
+                    <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0 text-muted-foreground/80"><MoreVertical className="h-4 w-4" /></Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     {isAuthor && comment.body && (
@@ -358,9 +358,9 @@ function CommentComposer({ thread, clubId, threadId }) {
   };
 
   return (
-    <Card className="rounded-xl">
-      <CardContent className="space-y-3 p-4">
-        <div className="text-sm font-semibold text-foreground">Adicionar comentário</div>
+    <section className="arena-section-card rounded-xl">
+      <div className="arena-section-card-body space-y-3 p-4">
+        <div className="text-sm font-semibold text-foreground/80">Adicionar comentário</div>
         <MarkdownEditor value={body} onChange={setBody} rows={3} maxLength={FORUM_LIMITS.COMMENT_MAX} placeholder="Participe da discussão…" />
         <PendingAttachmentList items={attachments.items} onRemove={attachments.remove} />
         <div className="flex flex-wrap items-center justify-between gap-2">

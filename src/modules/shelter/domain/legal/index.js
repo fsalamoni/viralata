@@ -220,14 +220,6 @@ export const LEGAL_PAGES = Object.freeze([
     acceptance_required: true,
     acceptance_target: 'shelter_terms_accepted',
   },
-  {
-    slug: 'dpa-abrigos',
-    title: 'DPA — Acordo de Tratamento de Dados',
-    description: 'Data Processing Agreement entre o Abrigo (Controlador) e a Viralata (Operadora), conforme LGPD.',
-    version: '2026-07-10',
-    acceptance_required: true,
-    acceptance_target: 'dpa_accepted',
-  },
 ]);
 
 /**

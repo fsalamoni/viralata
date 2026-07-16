@@ -11,7 +11,6 @@ import ConversationList from '@/modules/chat/components/ConversationList';
 import ChatWindow from '@/modules/chat/components/ChatWindow';
 import NewChatDialog from '@/modules/chat/components/NewChatDialog';
 import { cn } from '@/core/lib/utils';
-import PageContainer from '@/components/PageContainer';
 
 export default function ChatPage() {
   const { conversationId: routeConversationId } = useParams();
@@ -70,14 +69,14 @@ export default function ChatPage() {
   };
 
   return (
-    <PageContainer className="space-y-4">
+    <div className="space-y-4">
       {isPreviewMode && (
         <section className="arena-section-card rounded-2xl border-amber-300/70 bg-amber-50/85 p-4 text-sm leading-6 text-amber-950">
           Prévia local sem Firebase: o chat não carrega conversas neste ambiente.
         </section>
       )}
 
-      <Card className="grid h-[calc(100dvh-11rem)] min-h-[30rem] grid-cols-1 overflow-hidden rounded-2xl border-border bg-card/85 lg:grid-cols-[20rem,1fr] xl:grid-cols-[22rem,1fr]">
+      <section className="arena-section-card grid h-[calc(100dvh-11rem)] min-h-[30rem] grid-cols-1 overflow-hidden rounded-2xl border-border bg-card/90 lg:grid-cols-[20rem,1fr] xl:grid-cols-[22rem,1fr]">
         {/* Lista de conversas */}
         <aside className={cn('flex min-h-0 flex-col border-r border-primary/10', selectedConversation && 'hidden lg:flex')}>
           <div className="space-y-3 border-b border-primary/10 p-3">
@@ -88,7 +87,7 @@ export default function ChatPage() {
               </Button>
             </div>
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/80" />
               <Input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -136,6 +135,6 @@ export default function ChatPage() {
       </section>
 
       <NewChatDialog open={newOpen} onOpenChange={setNewOpen} mode="new" busy={creating} onConfirm={handleCreate} />
-    </PageContainer>
+    </div>
   );
 }

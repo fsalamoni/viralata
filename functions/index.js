@@ -42,9 +42,7 @@ const {
   aggregateVolunteerHours,
   sendShiftReminders,
 } = require('./volunteerHoursCron');
-const { eventReminderCron } = require('./eventReminderCron');
 const mockData = require('./mockData');
-const vt = require('./volunteerTriggers');
 
 const DATABASE_ID = 'viralata';
 const REGION = 'southamerica-east1';
@@ -107,23 +105,6 @@ exports.onPetCreatedNotifyRadar = onDocumentCreated(
   },
 );
 
-// Trigger 6: onCreate volunteer_participations → notifica voluntário
-// (FCM + calendar + email + audit) — TASK-269
-exports.onVolunteerParticipationCreated = onDocumentCreated(
-  {
-    document: 'clubs/{clubId}/volunteer_participations/{participationId}',
-    database: DATABASE_ID,
-    region: REGION,
-  },
-  async (event) => {
-    try {
-      await vt.runNotifyVolunteerOnParticipationCreatedSafe(event);
-    } catch (err) {
-      logger.error('onVolunteerParticipationCreated failed:', err);
-    }
-  },
-);
-
 // Mock data (admin SDK, bypassa Firestore rules)
 exports.loadMockData = mockData.loadMockData;
 exports.clearMockData = mockData.clearMockData;
@@ -178,9 +159,6 @@ exports.onParticipationUpdatedCheckInOut = _onDocUpdated(
 exports.aggregateVolunteerHours = aggregateVolunteerHours;
 exports.sendShiftReminders = sendShiftReminders;
 
-// Scheduled cron (TASK-337): event reminder 24h before
-exports.eventReminderCron = eventReminderCron;
-
 // ─── Fase 22 / TASK-272: LGPD volunteer privacy (soft-delete + erase) ────────
 const { onCall, HttpsError } = require('firebase-functions/v2/https');
 const {
@@ -190,7 +168,6 @@ const {
   isPlatformAdmin,
   hasShelterPermission,
 } = require('./volunteerPrivacyCore');
-const { createAuditLogCore } = require('./auditLogCore.cjs');
 
 /**
  * softDeleteVolunteer — Admin ou shelter owner/admin llama.
@@ -264,10 +241,6 @@ exports.hardDeleteVolunteerDocument = onCall(
 const { sendEmailOnCall } = require('./sendEmailOnCall');
 exports.sendEmailOnCall = sendEmailOnCall;
 
-// ─── TASK-344: Generate event .ics (Google Calendar / iCal) ────────────────
-const { generateEventIcs } = require('./generateEventIcs');
-exports.generateEventIcs = generateEventIcs;
-
 // ─── TASK-336: Community notifications ──────────────────────────────────
 
 // onCreate community_posts/{postId} → notify community admins
@@ -302,6 +275,15 @@ exports.onCommunityEventCreated = onDocumentCreated(
   },
 );
 
-// ─── TASK-298: IP + user-agent no aceite do contrato ──────────────────────────
-const { createContractCallable } = require('./createContractCallable');
-exports.createContractCallable = createContractCallable;
+// ─── TASK-292: FCM push notifications ──────────────────────────────────────────
+const { sendPushNotification } = require('./sendPushNotification');
+const {
+  onAdoptionWorkflowCreated,
+  onAdoptionWorkflowStatusUpdated,
+  onKanbanTaskCreated,
+} = require('./pushNotificationTriggers');
+
+exports.sendPushNotification = sendPushNotification;
+exports.onAdoptionWorkflowCreated = onAdoptionWorkflowCreated;
+exports.onAdoptionWorkflowStatusUpdated = onAdoptionWorkflowStatusUpdated;
+exports.onKanbanTaskCreated = onKanbanTaskCreated;

@@ -9,7 +9,7 @@
  */
 
 import { useState } from 'react';
-import { Plus, Users, CalendarCheck, BadgeCheck } from 'lucide-react';
+import { Plus, Users, CalendarCheck } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import {
@@ -25,7 +25,6 @@ import { canManageVolunteers } from '@/modules/organizations/domain/permissions'
 import { VolunteersRoster } from '@/modules/shelter/components/VolunteersRoster';
 import { ParticipationsList } from '@/modules/shelter/components/ParticipationsList';
 import { ParticipationForm } from '@/modules/shelter/components/ParticipationForm';
-import { AssignmentMatrix } from '@/modules/shelter/components/AssignmentMatrix';
 
 export function VolunteersAdminTab({ shelterClubId, club, membership, currentUserUid }) {
   const isV1Enabled = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_VOLUNTEER_PROFILE_V1);
@@ -47,21 +46,10 @@ export function VolunteersAdminTab({ shelterClubId, club, membership, currentUse
           <TabsTrigger value="participations" className="arena-tab-pill gap-1.5">
             <CalendarCheck className="h-4 w-4" /> Participações
           </TabsTrigger>
-          <TabsTrigger value="assignments" className="arena-tab-pill gap-1.5">
-            <BadgeCheck className="h-4 w-4" /> Atribuições
-          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="roster" className="mt-6 px-1">
           <VolunteersRoster shelterClubId={shelterClubId} canAbriho={canManage} />
-        </TabsContent>
-
-        <TabsContent value="assignments" className="mt-6 px-1 space-y-4">
-          <AssignmentMatrix
-            shelterClubId={shelterClubId}
-            canManage={canManage}
-            actor={{ uid: currentUserUid }}
-          />
         </TabsContent>
 
         <TabsContent value="participations" className="mt-6 px-1 space-y-4">

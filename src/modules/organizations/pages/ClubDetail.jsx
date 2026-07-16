@@ -1,202 +1,150 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { toast } from 'sonner';
-import {
-  ArrowLeft,
-  Building2,
-  CalendarDays,
-  HandCoins,
-  Hash,
-  Instagram,
-  LogOut,
-  Mail,
-  MapPin,
-  MessageSquare,
-  MessagesSquare,
-  PawPrint,
-  Phone,
-  Settings,
-  Users,
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { ConfirmDialog } from '@/components/ui/confirm-dialog';
-import { EmptyState } from '@/components/ui/empty-state';
+import React, { useState } from 'react';
+import VolunteerCtaCard from '@/modules/shelter/components/VolunteerCtaCard';
+import FosterCtaCard from '@/modules/shelter/components/FosterCtaCard';
+import PublicGallerySection from '@/modules/shelter/components/PublicGallerySection';
+import { useParams, Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { ArrowLeft, Building2, PawPrint, MessageSquare, HandCoins, Wallet, Users, Info, HeartHandshake } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
-import { CLUB_DIRECTORY_STATUS, isClubPubliclyVisible } from '@/modules/communities/domain/directory';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { TabsContentStack, BalancedTabsContent } from '@/components/ui/BalancedTabs';
+import { Skeleton } from '@/components/ui/skeleton';
+import { EmptyState } from '@/components/ui/empty-state';
+import { toast } from 'sonner';
+import { getClub } from '../services/clubService';
+import { isClubPubliclyVisible } from '@/modules/communities/domain/directory';
+import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import {
-  useClub,
   useMyMembership,
-  useJoinClub,
-  useLeaveClub,
-  useMyJoinRequest,
   useRequestToJoinClub,
-  useMyClubInvite,
-  useAcceptClubInvite,
-  useDeclineClubInvite,
-  useClubCampaigns,
-} from '@/modules/organizations/hooks/useClubs';
-import { CLUB_ROLE, JOIN_REQUEST_STATUS, CAMPAIGN_STATUS, CLUB_PERMISSION } from '@/modules/organizations/domain/constants';
-import { hasClubPermission } from '@/modules/organizations/domain/permissions';
-import ClubMembersTab from '@/modules/organizations/components/ClubMembersTab';
-import ClubEventsTab from '@/modules/organizations/components/ClubEventsTab';
-import ClubFeedTab from '@/modules/organizations/components/ClubFeedTab';
-import ClubForumsTab from '@/modules/organizations/components/ClubForumsTab';
-import ClubPetsDataGrid from '@/modules/organizations/components/ClubPetsDataGrid';
-import RatingBadge from '@/modules/pets/components/RatingBadge';
-import { QrCode } from '@/components/ui/qr-code';
-import PageContainer from '@/components/PageContainer';
+  useMyJoinRequests,
+  useMyClubInvites,
+} from '../hooks/useClubs';
+import { useMyPets } from '@/modules/pets/hooks/usePets';
+import { JOIN_REQUEST_STATUS } from '../domain/constants';
+import { isClubOwner, hasClubPermission } from '../domain/permissions';
+import { CLUB_PERMISSION } from '../domain/constants';
+import ClubPetsPublicTab from '../components/ClubPetsPublicTab';
+import ClubGeneralTab from '../components/ClubGeneralTab';
+import ClubFeedTab from '../components/ClubFeedTab';
+import ClubDonationsTab from '../components/ClubDonationsTab';
+import ClubFinanceTab from '../components/ClubFinanceTab';
+import ClubTeamPublicTab from '../components/ClubTeamPublicTab';
+import ClubVolunteersPublicTab from '../components/ClubVolunteersPublicTab';
+import ClubCover from '../components/ClubCover';
+import ClubThemedScope from '../components/ClubThemedScope';
+import { cn } from '@/core/lib/utils';
+import { parseTimestamp } from '@/core/utils/timestamp';
 
-// "pets" é público (regras liberam leitura da coleção `pets` a todos); as
-// demais abas exigem associação — as regras do Firestore só permitem ler
-// mural/eventos/fóruns/membros de quem é membro da organização.
-const PUBLIC_TABS = ['pets'];
-const MEMBER_TABS = ['members', 'events', 'feed', 'forums'];
+/** Abas públicas da ONG — com badges nas que têm contagem. */
+const TABS = [
+  { key: 'general', label: 'Visão Geral', icon: Info, badgeKey: null },
+  { key: 'pets', label: 'Animais', icon: PawPrint, badgeKey: 'pets' },
+  { key: 'feed', label: 'Mural da ONG', icon: MessageSquare, badgeKey: null },
+  { key: 'donations', label: 'Chamados de Doação', icon: HandCoins, badgeKey: 'donations' },
+  { key: 'finance', label: 'Prestação de Contas', icon: Wallet, badgeKey: null },
+  { key: 'volunteers', label: 'Voluntários', icon: HeartHandshake, badgeKey: 'volunteers' },
+  { key: 'team', label: 'Equipe', icon: Users, badgeKey: null },
+];
 
-/**
- * Perfil público da organização (rota `/organizacoes/:orgId`): pets para
- * adoção, chamados de doação ativos e — para membros — abas de Membros,
- * Eventos, Mural e Fóruns. Gestão administrativa (animais em massa, doações,
- * financeiro, equipe, configurações) vive em `/organizacoes/:orgId/admin`
- * (`OrganizationAdminPanel`); o antigo parâmetro `?tab=admin` redireciona
- * para lá, preservando links de notificações antigas.
- */
 export default function ClubDetail() {
-  const { orgId: clubId } = useParams();
-  const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
-  const { data: club, isLoading, isError } = useClub(clubId);
-  const { data: membership, isLoading: loadingMembership } = useMyMembership(clubId);
-  const { data: myRequest } = useMyJoinRequest(clubId);
-  const { data: myInvite } = useMyClubInvite(clubId);
-  const joinClub = useJoinClub();
-  const leaveClub = useLeaveClub(clubId);
-  const requestToJoin = useRequestToJoinClub();
-  const acceptInvite = useAcceptClubInvite(clubId);
-  const declineInvite = useDeclineClubInvite(clubId);
-  const [code, setCode] = useState('');
-  const [confirmLeave, setConfirmLeave] = useState(false);
+  const { orgId } = useParams();
+  const { user, isAuthenticated } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
-
-  const isMember = !!membership;
-  const isAdmin = membership?.role === CLUB_ROLE.ADMIN;
-  // Qualquer visitante vê a lista de animais da organização; só quem tem a
-  // atribuição de animais pode baixar modelo, importar ou criar linha.
-  const canManageAnimals = hasClubPermission(club, membership, CLUB_PERMISSION.ANIMALS);
-
-  const availableTabs = isMember ? [...PUBLIC_TABS, ...MEMBER_TABS] : PUBLIC_TABS;
-  const rawTab = searchParams.get('tab');
-  // `animals` era o nome da antiga aba de grade; hoje a grade pública é `pets`.
-  const requestedTab = rawTab === 'animals' ? 'pets' : rawTab;
-  const activeTab = availableTabs.includes(requestedTab) ? requestedTab : 'pets';
-  const threadParam = searchParams.get('thread') || null;
-
-  useEffect(() => {
-    if (rawTab === 'admin') navigate(`/organizacoes/${clubId}/admin`, { replace: true });
-  }, [rawTab, clubId, navigate]);
-
-  const setActiveTab = (tab) => {
+  const urlTab = searchParams.get('tab');
+  const activeTab = urlTab || 'general';
+  function setActiveTab(tab) {
     const next = new URLSearchParams(searchParams);
     next.set('tab', tab);
-    if (tab !== 'forums') next.delete('thread');
     setSearchParams(next, { replace: true });
-  };
+  }
 
-  const setThreadParam = (threadId) => {
-    const next = new URLSearchParams(searchParams);
-    next.set('tab', 'forums');
-    if (threadId) next.set('thread', threadId);
-    else next.delete('thread');
-    setSearchParams(next, { replace: true });
-  };
+  const { data: club, isLoading, isError } = useQuery({
+    queryKey: ['club', orgId],
+    queryFn: () => getClub(orgId),
+    enabled: Boolean(orgId),
+  });
 
-  const handleJoin = async (e) => {
-    e.preventDefault();
-    if (!code.trim()) return;
-    try {
-      await joinClub.mutateAsync(code.trim());
-      toast.success('Você entrou na organização!');
-      setCode('');
-    } catch (err) {
-      toast.error(err.message || 'Código inválido para esta organização.');
+  const { membership, isLoading: loadingMembership } = useMyMembership(orgId, user?.uid);
+  const isMember = Boolean(
+    membership || (club?.created_by && user?.uid && club.created_by === user?.uid),
+  );
+  const isAdmin = Boolean(
+    club && (isClubOwner(club, membership, user?.uid)
+      || hasClubPermission(club, membership, CLUB_PERMISSION.TEAM, user?.uid)),
+  );
+
+  const { data: myRequests = [] } = useMyJoinRequests();
+  const { data: myInvites = [] } = useMyClubInvites();
+  const requestToJoin = useRequestToJoinClub();
+  const { data: pets = [] } = useMyPets(orgId);
+
+  // Stats para a capa e a aba Geral — derivado aqui para ficar consistente
+  // entre header e conteúdo.
+  const stats = React.useMemo(() => {
+    if (!club) return null;
+    return {
+      followers: club.member_count || 0,
+      animals: pets.filter((p) => !p.status || p.status === 'available').length,
+      founded: parseTimestamp(club.created_at)?.getFullYear() ?? null,
+    };
+  }, [club, pets]);
+
+  const isPending = myRequests.some((r) => r.club_id === orgId && r.status === JOIN_REQUEST_STATUS.PENDING);
+  const isInvited = myInvites.some((i) => i.club_id === orgId);
+
+  // Hooks de classe dos wrappers. Devem ficar ANTES dos early-returns.
+  const loadingClass = useArenaPageClasses('arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8 space-y-6');
+  const errorClass = useArenaPageClasses('arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8');
+
+  const handleRequest = async () => {
+    if (!isAuthenticated) {
+      toast.error('Você precisa estar logado para ingressar.');
+      return;
     }
-  };
-
-  const handleLeave = async () => {
-    try {
-      await leaveClub.mutateAsync();
-      toast.success('Você saiu da organização.');
-      setConfirmLeave(false);
-      navigate('/organizacoes');
-    } catch (err) {
-      toast.error(err.message || 'Não foi possível sair da organização.');
-    }
-  };
-
-  const handleRequestJoin = async () => {
     try {
       const res = await requestToJoin.mutateAsync(club);
       if (res?.alreadyMember) toast.success('Você já é membro desta organização.');
-      else toast.success('Pedido enviado! Os administradores foram avisados.');
+      else toast.success(`Pedido enviado para ${club.name}.`);
     } catch (err) {
       toast.error(err.message || 'Não foi possível enviar o pedido.');
     }
   };
 
-  const handleAcceptInvite = async () => {
-    try {
-      await acceptInvite.mutateAsync(myInvite);
-      toast.success('Convite aceito! Bem-vindo à organização.');
-    } catch (err) {
-      toast.error(err.message || 'Não foi possível aceitar o convite.');
-    }
-  };
-
-  const handleDeclineInvite = async () => {
-    try {
-      await declineInvite.mutateAsync(myInvite);
-      toast.success('Convite recusado.');
-    } catch (err) {
-      toast.error(err.message || 'Não foi possível recusar o convite.');
-    }
-  };
-
   if (isLoading || (isAuthenticated && loadingMembership)) {
     return (
-      <PageContainer className="space-y-6">
-        <Skeleton className="h-40 rounded-[2rem]" />
-        <Skeleton className="h-64 rounded-[2rem]" />
-      </PageContainer>
+      <div className={loadingClass}>
+        <Skeleton className="h-52 w-full rounded-2xl" />
+        <Skeleton className="h-16 w-full rounded-2xl" />
+        <Skeleton className="h-64 w-full rounded-2xl" />
+      </div>
     );
   }
 
   if (isError || !club) {
     return (
-      <PageContainer>
+      <div className={errorClass}>
         <EmptyState
           icon={Building2}
           title="ONG não encontrada"
           description="A organização que você procura não existe ou foi removida."
           action={<Button asChild><Link to="/organizacoes">Voltar</Link></Button>}
         />
-      </PageContainer>
+      </div>
     );
   }
 
   if (!isClubPubliclyVisible(club) && !membership) {
     return (
-      <PageContainer>
+      <div className={errorClass}>
         <EmptyState
           icon={Building2}
           title="Organização indisponível"
           description="Esta organização foi removida temporariamente do diretório público."
           action={<Button asChild><Link to="/organizacoes">Voltar</Link></Button>}
         />
-      </PageContainer>
+      </div>
     );
   }
 
@@ -212,270 +160,114 @@ export default function ClubDetail() {
   // painel admin cuida do resto para membros com a permissão adequada.
 
   return (
-    <PageContainer className="space-y-6">
-      <Button asChild variant="ghost" size="sm">
-        <Link to="/organizacoes"><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para organizações</Link>
-      </Button>
+    <ClubThemedScope club={club} className="min-h-screen">
+      {/* CAPA — full-width edge-to-edge logo abaixo da barra superior.
+          O card usa `var(--cover-gradient)` e respeita `max-h-` mesmo em
+          telas grandes. As cores vêm de `club.theme` via o `ClubThemedScope`. */}
+      <ClubCover club={club} stats={stats} isAdmin={isAdmin} />
 
-      <section className="arena-panel-strong overflow-hidden rounded-[1.25rem] p-5 sm:rounded-[2rem] sm:p-8">
-        <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
-          <div className="flex items-start gap-4">
-            {club.logo_url ? (
-              <img src={club.logo_url} alt="" className="h-16 w-16 shrink-0 rounded-2xl border border-white/15 object-cover" />
-            ) : (
-              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white/10 text-orange-50">
-                <Building2 className="h-7 w-7" />
+      {/* CONTEÚDO ABAIXO DO CARD — max-w + padding para texto/tabs.
+          Esse wrapper cuida do breathing visual depois do banner largo. */}
+      <div className="arena-page mx-auto w-full max-w-5xl px-4 pb-12 sm:px-6 lg:px-8">
+        {/* Botão "Voltar" — agora entre o card e as tabs (uma única
+            área de navegação da página pública). */}
+        <div className="flex items-center justify-between gap-2 pt-3 pb-1">
+          <Button asChild variant="ghost" size="sm" className="-ml-2 text-muted-foreground">
+            <Link to="/organizacoes">
+              <ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar
+            </Link>
+          </Button>
+        </div>
+
+        {/* TABS + ações de "Pedir para ingressar" à direita (visitante) */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <div className="mt-2 flex flex-wrap items-end justify-between gap-3 border-b border-border/60 pb-1 sm:mt-3">
+            <div className="w-full sm:w-auto">
+              <TabsList className="arena-tab-bar">
+                {TABS.map((tab) => {
+                  const badge = tab.badgeKey === 'pets' ? stats.animals
+                    : tab.badgeKey === 'donations' ? null // doações: badge dinâmico poderia ser adicionado depois
+                    : null;
+                  return (
+                    <TabsTrigger
+                      key={tab.key}
+                      value={tab.key}
+                      className={cn(
+                        // Pill ativo usa o gradiente PERSONALIZADO do
+                        // card da ONG (definido em `clubs.theme` e
+                        // aplicado por `ClubThemedScope`). Quando o admin
+                        // não personalizou, cai no default laranja→rosa
+                        // declarado em :root. Garante coerência visual
+                        // entre o card da ONG e a navegação interna.
+                        'arena-tab-pill gap-1.5 data-[state=active]:text-white data-[state=active]:[background:var(--cover-gradient)]',
+                      )}
+                    >
+                      <tab.icon className="h-4 w-4" /> {tab.label}
+                      {badge != null && badge > 0 && (
+                        <span className="ml-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-white/20 px-1 text-[10px] font-bold data-[state=active]:bg-white/30">
+                          {badge}
+                        </span>
+                      )}
+                    </TabsTrigger>
+                  );
+                })}
+              </TabsList>
+            </div>
+
+            {!isMember && !isAdmin && (
+              <div className="pb-2">
+                {isInvited ? (
+                  <Button size="sm" variant="outline" className="border-warning text-warning" disabled>
+                    Você foi convidado
+                  </Button>
+                ) : isPending ? (
+                  <Button size="sm" variant="outline" disabled>
+                    Pedido enviado
+                  </Button>
+                ) : (
+                  <Button size="sm" onClick={handleRequest} disabled={requestToJoin.isPending}>
+                    {requestToJoin.isPending ? 'Enviando...' : 'Pedir para ingressar'}
+                  </Button>
+                )}
               </div>
             )}
-            <div className="min-w-0">
-              <h1 className="text-2xl font-bold text-white sm:text-3xl">{club.name}</h1>
-              <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-orange-50/80">
-                {location && <span className="inline-flex items-center gap-1"><MapPin className="h-4 w-4" /> {location}</span>}
-                <span className="inline-flex items-center gap-1"><Users className="h-4 w-4" /> {club.member_count || 0} membro(s)</span>
-                <RatingBadge uid={club.id} className="text-amber-200" />
-              </div>
-              <div className="mt-3 flex flex-wrap gap-2">
-                {club.community_name && (
-                  <Badge variant="secondary" className="rounded-full">Comunidade · {club.community_name}</Badge>
-                )}
-                {(club.directory_status || CLUB_DIRECTORY_STATUS.ACTIVE) !== CLUB_DIRECTORY_STATUS.ACTIVE && membership && (
-                  <Badge variant="warning" className="rounded-full">
-                    {(club.directory_status || CLUB_DIRECTORY_STATUS.ACTIVE) === CLUB_DIRECTORY_STATUS.REVIEW ? 'Em revisão' : 'Suspensa no diretório'}
-                  </Badge>
-                )}
-              </div>
-              {isMember && (
-                <Badge variant={isAdmin ? 'warning' : 'success'} className="mt-3 rounded-full uppercase tracking-[0.12em]">
-                  {isAdmin ? 'Você é admin' : 'Você é membro'}
-                </Badge>
-              )}
-            </div>
-
-          {isMember && (
-            <div className="flex shrink-0 flex-wrap gap-2.5">
-              {isAdmin && (
-                <Button
-                  asChild
-                  size="sm"
-                  className="border-0 bg-white text-foreground hover:bg-secondary"
-                >
-                  <Link to={`/organizacoes/${clubId}/admin`}><Settings className="mr-1.5 h-4 w-4" /> Administrar</Link>
-                </Button>
-              )}
-              <Button
-                variant="outline"
-                size="sm"
-                className="border-white/20 bg-white/10 text-white hover:bg-white/15 hover:text-white"
-                onClick={() => setConfirmLeave(true)}
-              >
-                <LogOut className="mr-1.5 h-4 w-4" /> Sair da organização
-              </Button>
-            </div>
-          )}
-        </div>
-
-        {club.description && (
-          <p className="mt-5 max-w-2xl whitespace-pre-wrap text-sm leading-7 text-orange-50/85">{club.description}</p>
-        )}
-
-        <div className="mt-5 flex flex-wrap gap-2 text-xs text-orange-50/80">
-          {club.home_venue && <InfoChip icon={Building2}>{club.home_venue}</InfoChip>}
-          {club.contact_email && <InfoChip icon={Mail}>{club.contact_email}</InfoChip>}
-          {club.contact_phone && <InfoChip icon={Phone}>{club.contact_phone}</InfoChip>}
-          {club.instagram && <InfoChip icon={Instagram}>{club.instagram}</InfoChip>}
-          {club.cnpj && <InfoChip icon={Hash}>CNPJ {club.cnpj}</InfoChip>}
-        </div>
-
-        {club.donation_link && (
-          <div className="mt-5 flex flex-col items-start gap-3 rounded-2xl bg-white/10 p-4 sm:flex-row sm:items-center">
-            <QrCode value={club.donation_link} size={104} className="rounded-lg bg-white p-1.5" />
-            <div>
-              <p className="text-sm font-semibold text-white">Apoie esta organização com uma doação</p>
-              <p className="mt-1 text-xs text-orange-50/80">Aponte a câmera para o QR Code ou toque no link.</p>
-              <a
-                href={club.donation_link}
-                target="_blank"
-                rel="noreferrer"
-                className="mt-1 inline-block text-xs font-medium text-amber-200 underline"
-              >
-                {club.donation_link}
-              </a>
-            </div>
           </div>
-        )}
-      </section>
 
-      <ActiveCampaigns clubId={clubId} />
+          <TabsContentStack>
+          <BalancedTabsContent value="general" className="mt-6 space-y-6 outline-none sm:mt-8">
+            {/* TASK-205: CTA "Seja voluntário" (flag-gated, some se OFF) */}
+            <VolunteerCtaCard clubId={orgId} clubName={club?.name} />
+            <FosterCtaCard clubId={orgId} clubName={club?.name} />
+            <ClubGeneralTab club={club} stats={stats} />
+            {/* TASK-142: galeria pública (some sem fotos) */}
+            <PublicGallerySection clubId={orgId} />
+          </BalancedTabsContent>
 
-      {!isMember && myInvite && (
-        <Card className="rounded-[1.5rem] border-highlight/40 bg-highlight/[0.14]">
-          <CardContent className="p-5">
-            <h3 className="text-base font-semibold text-foreground">Você foi convidado para esta organização</h3>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {myInvite.inviter_name || 'Um administrador'} convidou você a participar. Aceite para entrar e acessar eventos, mural e fórum.
-            </p>
-            <div className="mt-4 flex flex-wrap gap-2.5">
-              <Button onClick={handleAcceptInvite} disabled={acceptInvite.isPending}>
-                {acceptInvite.isPending ? 'Entrando…' : 'Aceitar convite'}
-              </Button>
-              <Button variant="outline" onClick={handleDeclineInvite} disabled={declineInvite.isPending}>
-                Recusar
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+          <BalancedTabsContent value="pets" className="mt-6 outline-none sm:mt-8">
+            <ClubPetsPublicTab clubId={orgId} clubName={club?.name} />
+          </BalancedTabsContent>
 
-      {!isMember && !myInvite && (
-        <Card className="rounded-[1.5rem] border-primary/20 bg-primary/5">
-          <CardContent className="p-5">
-            <h3 className="text-base font-semibold text-foreground">Participe desta organização</h3>
-            {myRequest?.status === JOIN_REQUEST_STATUS.PENDING ? (
-              <p className="mt-2 inline-flex items-center gap-2 rounded-full bg-highlight/20 px-3 py-1.5 text-sm font-medium text-highlight-foreground">
-                Pedido enviado — aguardando aprovação de um administrador.
-              </p>
-            ) : (
-              <>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {myRequest?.status === JOIN_REQUEST_STATUS.REJECTED
-                    ? 'Seu pedido anterior não foi aprovado. Você pode pedir novamente.'
-                    : 'Peça para ingressar e um administrador irá aprovar, ou entre direto com o código de convite.'}
-                </p>
-                <Button className="mt-4" onClick={handleRequestJoin} disabled={requestToJoin.isPending || !isAuthenticated}>
-                  {requestToJoin.isPending ? 'Enviando…' : 'Pedir para ingressar'}
-                </Button>
-              </>
-            )}
-            <form onSubmit={handleJoin} className="mt-4 flex flex-col gap-3 border-t border-primary/10 pt-4 sm:flex-row">
-              <div className="relative flex-1">
-                <Hash className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/70" />
-                <Input
-                  value={code}
-                  onChange={(e) => setCode(e.target.value.toUpperCase())}
-                  placeholder="TENHO UM CÓDIGO"
-                  maxLength={12}
-                  className="pl-9 uppercase tracking-[0.2em]"
-                  disabled={!isAuthenticated}
-                />
-              </div>
-              <Button type="submit" variant="outline" disabled={joinClub.isPending || !code.trim() || !isAuthenticated}>
-                {joinClub.isPending ? 'Entrando…' : 'Entrar com código'}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
-      )}
+          <BalancedTabsContent value="feed" className="mt-6 outline-none sm:mt-8">
+            <ClubFeedTab clubId={orgId} club={club} membership={membership} canManageFeed={false} />
+          </BalancedTabsContent>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="arena-tab-bar">
-          <TabsTrigger value="pets" className="arena-tab-pill"><PawPrint className="mr-1.5 h-4 w-4" /> Pets para adoção</TabsTrigger>
-          {isMember && (
-            <>
-              <TabsTrigger value="members" className="arena-tab-pill"><Users className="mr-1.5 h-4 w-4" /> Membros</TabsTrigger>
-              <TabsTrigger value="events" className="arena-tab-pill"><CalendarDays className="mr-1.5 h-4 w-4" /> Eventos</TabsTrigger>
-              <TabsTrigger value="feed" className="arena-tab-pill"><MessageSquare className="mr-1.5 h-4 w-4" /> Mural</TabsTrigger>
-              <TabsTrigger value="forums" className="arena-tab-pill"><MessagesSquare className="mr-1.5 h-4 w-4" /> Fóruns</TabsTrigger>
-            </>
-          )}
-        </TabsList>
+          <BalancedTabsContent value="donations" className="mt-6 outline-none sm:mt-8">
+            <ClubDonationsTab clubId={orgId} club={club} membership={membership} canManage={false} />
+          </BalancedTabsContent>
 
-        <TabsContent value="pets" className="mt-6 px-1">
-          <ClubPetsDataGrid clubId={clubId} canManage={canManageAnimals} />
-        </TabsContent>
+          <BalancedTabsContent value="finance" className="mt-6 outline-none sm:mt-8">
+            <ClubFinanceTab clubId={orgId} canManage={false} />
+          </BalancedTabsContent>
 
-        {isMember && (
-          <>
-            <TabsContent value="members" className="mt-6 px-1">
-              <ClubMembersTab clubId={clubId} isAdmin={isAdmin} club={club} />
-            </TabsContent>
-
-            <TabsContent value="events" className="mt-6 px-1">
-              <ClubEventsTab clubId={clubId} isAdmin={isAdmin} />
-            </TabsContent>
-
-            <TabsContent value="feed" className="mt-6 px-1">
-              <ClubFeedTab clubId={clubId} isAdmin={isAdmin} />
-            </TabsContent>
-
-            <TabsContent value="forums" className="mt-6 px-1">
-              <ClubForumsTab
-                clubId={clubId}
-                isAdmin={isAdmin}
-                initialThreadId={threadParam}
-                onThreadChange={setThreadParam}
-              />
-            </TabsContent>
-          </>
-        )}
-      </Tabs>
-
-      <ConfirmDialog
-        open={confirmLeave}
-        onOpenChange={setConfirmLeave}
-        title="Sair da organização"
-        description={`Tem certeza que deseja sair de "${club.name}"?`}
-        confirmLabel="Sair"
-        destructive
-        loading={leaveClub.isPending}
-        onConfirm={handleLeave}
-      />
-    </PageContainer>
-  );
-}
-
-function InfoChip({ icon: Icon, children }) {
-  return (
-    <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1">
-      <Icon className="h-3.5 w-3.5" /> {children}
-    </span>
-  );
-}
-
-const brl = (value) => Number(value || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-
-/** Chamados de doação ativos — visíveis a todos, não só a quem administra a organização. */
-function ActiveCampaigns({ clubId }) {
-  const { data: campaigns = [] } = useClubCampaigns(clubId);
-  const active = campaigns.filter((c) => c.status !== CAMPAIGN_STATUS.CONCLUDED);
-  if (active.length === 0) return null;
-
-  return (
-    <Card className="rounded-[1.5rem]">
-      <CardContent className="space-y-4 p-5">
-        <h3 className="flex items-center gap-2 text-base font-semibold text-foreground">
-          <HandCoins className="h-4 w-4 text-primary" /> Chamados de doação ativos
-        </h3>
-        <div className="space-y-3">
-          {active.map((campaign) => {
-            const pct = campaign.goal > 0 ? Math.min(100, (Number(campaign.raised || 0) / campaign.goal) * 100) : 0;
-            return (
-              <div key={campaign.id} className="rounded-xl border border-border p-3.5">
-                <div className="mb-1.5 flex flex-wrap items-center justify-between gap-2">
-                  <span className="text-sm font-medium text-foreground">{campaign.title}</span>
-                  {campaign.deadline && <span className="text-xs text-muted-foreground">Até {campaign.deadline}</span>}
-                </div>
-                <div className="mb-1.5 h-1.5 overflow-hidden rounded-full bg-secondary">
-                  <div
-                    className="h-full rounded-full bg-[linear-gradient(90deg,hsl(var(--primary)),hsl(var(--highlight)))]"
-                    style={{ width: `${pct}%` }}
-                  />
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  <strong>{brl(campaign.raised)}</strong> arrecadados de {brl(campaign.goal)}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-function InfoChip({ icon: Icon, children }) {
-  return (
-    <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1">
-      <Icon className="h-3.5 w-3.5" /> {children}
-    </span>
+          <BalancedTabsContent value="volunteers" className="mt-6 outline-none sm:mt-8">
+            <ClubVolunteersPublicTab clubId={orgId} club={club} viewerMembership={membership} />
+          </BalancedTabsContent>
+          <BalancedTabsContent value="team" className="mt-6 outline-none sm:mt-8">
+            <ClubTeamPublicTab clubId={orgId} club={club} viewerMembership={membership} />
+          </BalancedTabsContent>
+        
+        </TabsContentStack></Tabs>
+      </div>
+    </ClubThemedScope>
   );
 }

@@ -54,10 +54,9 @@ export default function Login() {
   if (isLoadingAuth) return null;
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[linear-gradient(145deg,hsl(16_60%_30%),hsl(20_35%_18%)_55%,hsl(20_25%_11%))]">
+    <div className="relative min-h-screen overflow-hidden bg-[linear-gradient(155deg,hsl(14,55%,30%),hsl(20,30%,15%)_65%)]">
       {/* Gradiente decorativo */}
-      <div className="absolute inset-x-0 top-0 h-[28rem] bg-[radial-gradient(circle_at_top,hsla(42,88%,55%,0.25),transparent_60%)]" />
-      <div className="absolute inset-0 bg-[url('/noise.svg')] opacity-[0.03]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_85%_10%,hsl(40,88%,54%,0.22),transparent_40%)]" />
 
       <div className="relative mx-auto grid min-h-screen max-w-6xl gap-8 px-4 sm:px-6 py-8 lg:grid-cols-[1.05fr,0.95fr] lg:items-center">
 
@@ -69,15 +68,15 @@ export default function Login() {
                 <PawPrint className="h-5 w-5 text-white" />
               </span>
               <div>
-                <span className="block text-sm font-semibold uppercase tracking-[0.24em] text-highlight/80">Viralata</span>
+                <span className="block text-sm font-semibold uppercase tracking-[0.24em] text-orange-200/80">Viralata</span>
                 <span className="block text-xl font-semibold text-white">Adoção responsável de pets</span>
               </div>
             </Link>
           </div>
 
           <div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-highlight/80">
-              <PawPrint className="h-3.5 w-3.5" /> Plataforma gratuita de adoção
+            <span className="inline-flex h-[30px] items-center gap-1.5 rounded-full border border-white/20 bg-white/[0.12] px-3.5 text-xs font-bold text-orange-200/85">
+              <PawPrint className="h-[15px] w-[15px]" /> Plataforma gratuita de adoção
             </span>
             <h1 className="mt-[22px] max-w-[440px] text-[36px] font-extrabold leading-[1.15] tracking-[-0.02em] text-white">
               Conecte-se com pets que precisam de um lar e famílias que têm amor para dar.
@@ -100,25 +99,25 @@ export default function Login() {
 
         {/* Card de login */}
         <div className="flex items-center justify-center">
-          <Card className="w-full max-w-lg rounded-[2.25rem] border-border bg-card/95 p-1.5 shadow-[0_35px_80px_-40px_rgba(15,23,42,0.55)] sm:p-2">
-            <CardHeader className="px-5 pb-4 pt-6 text-center sm:px-8">
+          <section className="arena-section-card w-full max-w-[420px] rounded-[28px] border-white bg-card p-0 text-center shadow-[0_30px_70px_-30px_hsl(20_40%_20%/0.4)]">
+            <div className="arena-section-card-header">
               {/* Logo mobile */}
               <Link to="/" className="mx-auto mb-4 inline-flex items-center gap-3 text-foreground lg:hidden">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-primary/20 bg-primary/10">
-                  <span className="text-xl">🐾</span>
-                </div>
+                <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--highlight))_100%)] shadow-[0_10px_24px_-12px_rgba(64,34,18,0.6)]">
+                  <PawPrint className="h-5 w-5 text-white" />
+                </span>
                 <span className="text-lg font-semibold">Viralata</span>
               </Link>
 
               {/* Ícone central */}
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary shadow-[0_18px_35px_-26px_rgba(193,82,42,0.5)]">
-                <PawPrint className="h-6 w-6" />
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-[18px] bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--highlight))_100%)] text-white shadow-[0_18px_32px_-16px_hsl(17_72%_30%/0.6)]">
+                <PawPrint className="h-[26px] w-[26px]" />
               </div>
 
-              <CardTitle className="mt-5 text-[2rem] font-semibold leading-[1.05] text-foreground sm:text-3xl">
+              <h3 className="arena-section-card-title">
                 Bem-vindo ao Viralata
-              </CardTitle>
-              <CardDescription className="mx-auto mt-3 max-w-md text-sm leading-7 text-muted-foreground">
+              </h3>
+              <p className="arena-section-card-description">
                 Use sua conta Google para acessar a plataforma e encontrar ou cadastrar pets para adoção responsável.
               </p>
             </div>
@@ -127,8 +126,8 @@ export default function Login() {
               <Button
                 onClick={onClick}
                 disabled={busy || !isAuthAvailable}
-                className="h-12 w-full gap-3 text-[15px]"
-                size="lg"
+                variant="outline"
+                className="h-[50px] w-full gap-2.5 border-border bg-card text-[14.5px] font-bold text-foreground shadow-[0_10px_24px_-16px_hsl(20_40%_20%/0.3)]"
               >
                 <GoogleIcon className="h-[18px] w-[18px] flex-shrink-0" />
                 {busy ? 'Conectando…' : isAuthAvailable ? 'Continuar com Google' : 'Login indisponível'}
@@ -140,9 +139,9 @@ export default function Login() {
                 </p>
               )}
 
-              <p className="text-center text-xs leading-6 text-muted-foreground">
+              <p className="mt-[18px] text-[11.5px] leading-[1.6] text-muted-foreground">
                 Ao continuar você aceita nossa{' '}
-                <Link to="/politica-privacidade" className="font-medium text-foreground underline underline-offset-4">
+                <Link to="/politica-privacidade" className="font-medium text-foreground/80 underline underline-offset-4">
                   Política de Privacidade
                 </Link>
                 . O Viralata é 100% gratuito e não realiza venda de animais.

@@ -4,10 +4,8 @@ import {
   collection,
   deleteDoc,
   doc,
-  getCountFromServer,
   getDoc,
   getDocs,
-  limit,
   query,
   serverTimestamp,
   setDoc,
@@ -37,19 +35,6 @@ function trimmed(value) {
 function toPriority(value) {
   const parsed = Number.parseInt(value, 10);
   return Number.isNaN(parsed) ? 0 : parsed;
-}
-
-// Mesmo formato do código de convite das organizações (clubService).
-function inviteCode() {
-  return Math.random().toString(36).slice(2, 8).toUpperCase();
-}
-
-function authorFields(user, profile) {
-  return {
-    author_id: user.uid,
-    author_name: profile?.platform_name || user.displayName || user.email || 'Usuário',
-    author_photo: profile?.photo_url || user.photoURL || '',
-  };
 }
 
 function sanitizeCommunity(data = {}) {
@@ -111,7 +96,6 @@ export async function createCommunity(data, actor) {
   await setDoc(doc(db, COMMUNITY_COLLECTION, id), {
     id,
     ...payload,
-    invite_code: inviteCode(),
     owner_id: actor?.uid || null,
     member_count: 1,
     created_at: serverTimestamp(),
@@ -161,43 +145,78 @@ export async function joinCommunity(communityId, userId) {
   });
 }
 
-export async function leaveCommunity(communityId, userId) {
-  if (!db || !communityId || !userId) return;
-  await deleteDoc(doc(db, 'community_members', `${communityId}_${userId}`));
+/**
+ * Claim de ownership para uma comunidade LEGADA cujo doc foi criado em uma
+ * versão antiga do `createCommunity` que não setava o campo `owner_id`.
+ *
+ * Comportamento esperado:
+ *  - Só funciona se `community.owner_id` for `null` ou inexistente.
+ *  - Seta `community.owner_id = currentUserUid`. Outras campos do doc não
+ *    são tocados (a Firestore rule do PR que introduziu essa função
+ *    restringe o update a `owner_id` apenas — sem mudar nada mais).
+ *  - Lança erro se a comunidade não existe ou se já tem owner.
+ *
+ * Defense-in-depth: o client checa (community.owner_id == null) antes de
+ * chamar; o Firestore rule reforça que o destino tem que ser == auth.uid
+ * e a origem tem que ser null.
+ *
+ * @param {string} communityId
+ * @param {string} currentUserUid  o usuário que está fazendo o claim
+ * @returns {Promise<void>}
+ */
+export async function claimCommunityOwnership(communityId, currentUserUid) {
+  if (!db) throw new Error('Banco indisponível.');
+  if (!communityId || !currentUserUid) throw new Error('Argumentos inválidos.');
+  const ref = doc(db, COMMUNITY_COLLECTION, communityId);
+  const snap = await getDoc(ref);
+  if (!snap.exists()) throw new Error('Comunidade não encontrada.');
+  const data = snap.data();
+  if (data.owner_id) {
+    throw new Error('Esta comunidade já tem um dono definido. Operação cancelada.');
+  }
+  await updateDoc(ref, {
+    owner_id: currentUserUid,
+    updated_at: serverTimestamp(),
+  });
 }
 
-/** Associação do usuário à comunidade (id determinista `communityId_userId`), ou null. */
-export async function getMyCommunityMembership(communityId, userId) {
+
+export async function getCommunityMembership(communityId, userId) {
   if (!db || !communityId || !userId) return null;
   const snap = await getDoc(doc(db, 'community_members', `${communityId}_${userId}`));
   return snap.exists() ? { id: snap.id, ...snap.data() } : null;
 }
 
-/**
- * Contagem real de membros via agregação — o `member_count` gravado no doc é
- * cosmético (as regras só deixam o dono editar o doc da comunidade, então
- * ingressos de terceiros não conseguem incrementá-lo).
- */
-export async function getCommunityMemberCount(communityId) {
-  if (!db || !communityId) return 0;
-  const snap = await getCountFromServer(
-    query(collection(db, 'community_members'), where('community_id', '==', communityId)),
-  );
-  return snap.data().count;
+export async function isCommunityAdmin(communityId, userId) {
+  const membership = await getCommunityMembership(communityId, userId);
+  return membership?.role === 'admin';
 }
 
-/** Busca comunidade pelo código de convite (para o card "Tem um convite?" do diretório). */
-export async function findCommunityByInviteCode(code) {
-  if (!db) return null;
-  const normalized = trimmed(code).toUpperCase();
-  if (!normalized) return null;
-  const snap = await getDocs(query(
-    collection(db, COMMUNITY_COLLECTION),
-    where('invite_code', '==', normalized),
-    limit(1),
-  ));
-  const first = snap.docs[0];
-  return first ? { id: first.id, ...first.data() } : null;
+export async function listCommunityEvents(communityId) {
+  const q = query(collection(db, 'community_events'), where('community_id', '==', communityId), orderBy('starts_at', 'asc'));
+  const snap = await getDocs(q);
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+
+export async function createCommunityEvent(communityId, data, user) {
+  if (!user?.uid) throw new Error('Usuário não autenticado.');
+  const input = parseOrThrow(communityEventInputSchema, data);
+
+  const ref = doc(collection(db, 'community_events'));
+  await setDoc(ref, {
+    community_id: communityId,
+    title: input.title,
+    description: input.description,
+    location: input.location,
+    starts_at: input.starts_at,
+    created_by: user.uid,
+    created_at: serverTimestamp()
+  });
+  return ref.id;
+}
+
+export async function deleteCommunityEvent(eventId) {
+  await deleteDoc(doc(db, 'community_events', eventId));
 }
 
 export async function getCommunityPosts(communityId) {
@@ -206,14 +225,18 @@ export async function getCommunityPosts(communityId) {
   return snap.docs.map(d => ({ id: d.id, ...d.data() }));
 }
 
-export async function createPost(communityId, text, user, profile, attachments = []) {
-  // Autor desnormalizado no doc (nome/foto), padrão do repo — evita leitura
-  // cruzada de `users` na renderização do mural.
+/**
+ * Cria um post no mural da comunidade. Aceita um quinto argumento opcional
+ * `authorMeta` com `author_name` e `author_photo` para denormalizar no doc
+ * (evita 1 GET por post só pra mostrar o nome do autor).
+ */
+export async function createPost(communityId, authorId, text, attachments = [], authorMeta = {}) {
+  const input = parseOrThrow(postInputSchema, { text, attachments });
   const postRef = await addDoc(collection(db, 'community_posts'), {
     community_id: communityId,
-    ...authorFields(user, profile),
-    text,
-    attachments,
+    author_id: authorId,
+    text: input.text,
+    attachments: input.attachments,
     likes_count: 0,
     comments_count: 0,
     author_name: authorMeta?.author_name || null,
@@ -223,7 +246,7 @@ export async function createPost(communityId, text, user, profile, attachments =
 
   await createAuditLog({
     action: 'community_post_created',
-    actor: user,
+    actor: { uid: authorId },
     details: { community_id: communityId, post_id: postRef.id }
   });
 
@@ -335,11 +358,17 @@ export async function getPostLikes(postId) {
   return snap.docs.map(d => d.data().user_id);
 }
 
-/** Ids dos posts curtidos pelo usuário (uma query só; filtra por comunidade no client). */
+/**
+ * Retorna os IDs de todos os posts curtidos por um usuário. Usado pelo mural
+ * para pré-marcar quais curtidas já estão ativas sem precisar buscar
+ * like-a-like em cada post.
+ * @param {string} userId
+ * @returns {Promise<string[]>}
+ */
 export async function getMyLikedPostIds(userId) {
   if (!db || !userId) return [];
   const snap = await getDocs(query(collection(db, 'community_post_likes'), where('user_id', '==', userId)));
-  return snap.docs.map(d => d.data().post_id);
+  return snap.docs.map((d) => d.data().post_id);
 }
 
 export async function getPostComments(postId) {
@@ -428,51 +457,77 @@ export async function addThreadMessage(threadId, text, user, profile, attachment
 export async function deleteThreadMessage(messageId, threadId) {
   await deleteDoc(doc(db, 'community_forum_messages', messageId));
   if (threadId) {
-    await updateDoc(doc(db, 'community_forum_threads', threadId), {
+    await updateDoc(doc(db, 'community_forum_threads', threadId), { 
       messages_count: increment(-1)
     });
   }
 }
 
-// ─── Eventos da comunidade (coleção `community_events`) ─────────────────────
+// Admin Panel specific functions
 
-export async function listCommunityEvents(communityId) {
-  if (!db || !communityId) return [];
-  // `where` único usa índice automático; a ordenação é client-side para não
-  // exigir um índice composto novo (listas pequenas por comunidade).
-  const snap = await getDocs(query(
-    collection(db, 'community_events'),
-    where('community_id', '==', communityId),
-  ));
-  return snap.docs
-    .map((d) => ({ id: d.id, ...d.data() }))
-    .sort((a, b) => String(a.starts_at || '').localeCompare(String(b.starts_at || '')));
+export async function listCommunityMembers(communityId) {
+  const q = query(collection(db, 'community_members'), where('community_id', '==', communityId));
+  const snap = await getDocs(q);
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
 }
 
-export async function createCommunityEvent(communityId, data, user, profile) {
-  if (!db) throw new Error('Banco indisponível.');
-  const payload = {
-    community_id: communityId,
-    title: trimmed(data.title),
-    description: trimmed(data.description),
-    location: trimmed(data.location),
-    starts_at: trimmed(data.starts_at),
-    created_by: user.uid,
-    creator_name: profile?.platform_name || user.displayName || user.email || 'Usuário',
+export async function setCommunityMemberRole(communityId, targetUserId, newRole, actor) {
+  const memberRef = doc(db, 'community_members', `${communityId}_${targetUserId}`);
+  await updateDoc(memberRef, { role: newRole });
+  // TASK-351: targetUserId para distinguir actor ≠ target
+  await createAuditLog({ action: 'community_member_role_updated', actor, targetUserId, details: { community_id: communityId, role: newRole } });
+}
+
+export async function setCommunityMemberPermissions(communityId, targetUserId, permissions, actor) {
+  const memberRef = doc(db, 'community_members', `${communityId}_${targetUserId}`);
+  await updateDoc(memberRef, { permissions });
+  // TASK-351: targetUserId para distinguir actor ≠ target
+  await createAuditLog({ action: 'community_member_permissions_updated', actor, targetUserId, details: { community_id: communityId, permissions } });
+}
+
+export async function removeCommunityMember(communityId, targetUserId, actor) {
+  const memberRef = doc(db, 'community_members', `${communityId}_${targetUserId}`);
+  await deleteDoc(memberRef);
+  // TASK-351: targetUserId para distinguir actor ≠ target
+  await createAuditLog({ action: 'community_member_removed', actor, targetUserId, details: { community_id: communityId } });
+}
+
+// ─── Community Event RSVP ─────────────────────────────────────────────────────
+
+const COMMUNITY_EVENT_RSVP_COLLECTION = 'community_event_rsvps';
+
+export async function getCommunityEvent(communityId, eventId) {
+  if (!db || !eventId) return null;
+  const snap = await getDoc(doc(db, 'community_events', eventId));
+  if (!snap.exists() || snap.data().community_id !== communityId) return null;
+  return { id: snap.id, ...snap.data() };
+}
+
+export async function getCommunityEventRsvps(eventId) {
+  if (!db || !eventId) return [];
+  const q = query(
+    collection(db, COMMUNITY_EVENT_RSVP_COLLECTION),
+    where('event_id', '==', eventId),
+    orderBy('created_at', 'desc'),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+
+export async function setCommunityEventRsvp(eventId, userId, userName, userPhoto, status) {
+  if (!db || !eventId || !userId) throw new Error('Parâmetros obrigatórios não informados.');
+  const rsvpId = `${eventId}_${userId}`;
+  await setDoc(doc(db, COMMUNITY_EVENT_RSVP_COLLECTION, rsvpId), {
+    event_id: eventId,
+    user_id: userId,
+    user_name: userName || 'Membro',
+    user_photo: userPhoto || '',
+    status,
     created_at: serverTimestamp(),
-  };
-  if (!payload.title) throw new Error('Informe o título do evento.');
-  const ref = await addDoc(collection(db, 'community_events'), payload);
-  await createAuditLog({
-    action: 'community_event_created',
-    actor: user,
-    details: { community_id: communityId, event_id: ref.id, title: payload.title },
   });
-  return ref.id;
 }
 
-export async function deleteCommunityEvent(eventId, actor) {
-  if (!db || !eventId) return;
-  await deleteDoc(doc(db, 'community_events', eventId));
-  await createAuditLog({ action: 'community_event_deleted', actor, details: { event_id: eventId } });
+export async function removeCommunityEventRsvp(eventId, userId) {
+  if (!db || !eventId || !userId) return;
+  await deleteDoc(doc(db, COMMUNITY_EVENT_RSVP_COLLECTION, `${eventId}_${userId}`));
 }

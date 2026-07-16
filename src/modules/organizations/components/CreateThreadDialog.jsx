@@ -116,7 +116,7 @@ export default function CreateThreadDialog({ clubId, open, onOpenChange, onCreat
           <div className="flex items-center justify-between gap-3 rounded-lg border border-primary/10 bg-secondary/20 px-3 py-2">
             <div>
               <div className="text-sm font-medium text-foreground">Adicionar enquete</div>
-              <div className="text-xs text-muted-foreground">Colete a opinião do clube com uma votação.</div>
+              <div className="text-xs text-muted-foreground">Colete a opinião da organização com uma votação.</div>
             </div>
             <Switch checked={pollEnabled} onCheckedChange={setPollEnabled} />
           </div>

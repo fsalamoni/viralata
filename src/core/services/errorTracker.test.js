@@ -8,7 +8,6 @@ vi.mock('@/core/config/firebase', () => ({ db: {} }));
 import {
   captureError, captureMessage, setUser, clearUser,
   getFallbackQueue, clearFallbackQueue, ERROR_TRACKER_CONFIG,
-  captureVolunteerError,
 } from './errorTracker.js';
 
 describe('errorTracker — captureError (TASK-176)', () => {
@@ -44,44 +43,6 @@ describe('errorTracker — captureError (TASK-176)', () => {
     captureError(new Error('ts'));
     const q = getFallbackQueue();
     expect(q[0].timestamp).toMatch(/^\d{4}-\d{2}-\d{2}T/);
-  });
-});
-
-describe('errorTracker — captureVolunteerError (TASK-283)', () => {
-  beforeEach(() => {
-    clearFallbackQueue();
-    vi.clearAllMocks();
-  });
-
-  it('captura erro com domain:volunteer na queue', () => {
-    captureVolunteerError(new Error('service unavailable'));
-    const q = getFallbackQueue();
-    expect(q.length).toBe(1);
-    expect(q[0].domain).toBe('volunteer');
-    expect(q[0].message).toBe('service unavailable');
-    expect(q[0].type).toBe('error');
-  });
-
-  it('inclui extraContext na fallback queue', () => {
-    captureVolunteerError(new Error('boom'), { mutation: 'createParticipation', uid: 'u1' });
-    const q = getFallbackQueue();
-    expect(q[0].context).toEqual({ mutation: 'createParticipation', uid: 'u1' });
-    expect(q[0].domain).toBe('volunteer');
-  });
-
-  it('captura string error', () => {
-    captureVolunteerError('plain string');
-    const q = getFallbackQueue();
-    expect(q[0].message).toBe('plain string');
-    expect(q[0].domain).toBe('volunteer');
-  });
-
-  it('não quebra sem localStorage', () => {
-    // Chama sem localStorage — deve ser safe
-    const orig = global.localStorage;
-    delete global.localStorage;
-    expect(() => captureVolunteerError(new Error('no storage'))).not.toThrow();
-    global.localStorage = orig;
   });
 });
 

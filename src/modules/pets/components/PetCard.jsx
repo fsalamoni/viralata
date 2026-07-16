@@ -24,7 +24,7 @@ export default function PetCard({ pet }) {
     >
       <Link
         to={`/pets/${pet.id}`}
-        className="group block overflow-hidden rounded-[1.25rem] border border-border bg-card/90 shadow-[0_18px_40px_-28px_rgba(64,34,18,0.35)] backdrop-blur-xl transition-shadow duration-300 hover:shadow-[0_24px_46px_-24px_rgba(64,34,18,0.5)]"
+        className="group block overflow-hidden rounded-[1.25rem] border border-white/70 bg-white/90 shadow-[0_18px_40px_-28px_rgba(64,34,18,0.35)] backdrop-blur-xl transition-shadow duration-300 hover:shadow-[0_24px_46px_-24px_rgba(64,34,18,0.5)]"
       >
         <div className="relative aspect-square overflow-hidden bg-secondary">
           <img
@@ -40,7 +40,7 @@ export default function PetCard({ pet }) {
               </Badge>
             </div>
           )}
-          <div className="absolute top-2.5 right-2.5 flex h-8 w-8 items-center justify-center rounded-full border border-border bg-card/80 text-primary backdrop-blur-md">
+          <div className="absolute top-2.5 right-2.5 flex h-8 w-8 items-center justify-center rounded-full border border-white/70 bg-white/80 text-primary backdrop-blur-md">
             <SpeciesIcon className="w-4 h-4" />
           </div>
         </div>

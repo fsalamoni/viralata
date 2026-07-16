@@ -17,15 +17,14 @@ import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import {
   useClubMembers, useSetMemberRole, useSetMemberPermissions, useRemoveMember,
 } from '@/modules/organizations/hooks/useClubs';
-import { CLUB_ROLE, CLUB_ROLE_LABELS, CLUB_PERMISSION, CLUB_PERMISSION_LABELS } from '@/modules/organizations/domain/constants';
-
-const TOGGLABLE_PERMISSIONS = [CLUB_PERMISSION.EDIT_PETS, CLUB_PERMISSION.MANAGE_TEAM, CLUB_PERMISSION.VIEW_REPORTS, CLUB_PERMISSION.REPLY_CHAT];
+import { CLUB_ROLE, CLUB_ROLE_LABELS, CLUB_PERMISSION } from '@/modules/organizations/domain/constants';
+import { isClubOwner } from '@/modules/organizations/domain/permissions';
 
 function initials(name) {
   return String(name || 'A').split(' ').filter(Boolean).slice(0, 2).map((p) => p[0]?.toUpperCase()).join('') || 'A';
 }
 
-export default function ClubMembersTab({ clubId, isAdmin, canManageTeam }) {
+export default function ClubMembersTab({ clubId, isAdmin, club }) {
   const { user } = useAuth();
   const { data: members = [], isLoading } = useClubMembers(clubId);
   const setRole = useSetMemberRole(clubId);
@@ -47,9 +46,9 @@ export default function ClubMembersTab({ clubId, isAdmin, canManageTeam }) {
     }
   };
 
-  const handleTogglePermission = async (member, key, checked) => {
+  const handleToggleEditPets = async (member, checked) => {
     try {
-      await setPermissions.mutateAsync({ member, permissions: { [key]: checked } });
+      await setPermissions.mutateAsync({ member, permissions: { ...member.permissions, [CLUB_PERMISSION.ANIMALS]: checked } });
     } catch (err) {
       toast.error(err.message || 'Não foi possível alterar a permissão.');
     }
@@ -82,11 +81,10 @@ export default function ClubMembersTab({ clubId, isAdmin, canManageTeam }) {
     <div className="space-y-3">
       {sorted.map((member) => {
         const isSelf = member.user_id === user?.uid;
-        const canRemoveThis = isAdmin || (canManageTeam && member.role !== CLUB_ROLE.ADMIN);
+        const isOwner = isClubOwner(club, member);
         return (
-          <Card key={member.id} className="rounded-xl">
-            <CardContent className="flex flex-col gap-3 p-3 sm:p-4">
-            <div className="flex items-center gap-3">
+          <section key={member.id} className="rounded-xl">
+            <div className="arena-section-card-body flex items-center gap-3 p-3 sm:p-4">
               {member.photo_url ? (
                 <img src={member.photo_url} alt="" className="h-11 w-11 shrink-0 rounded-full border border-primary/10 object-cover" />
               ) : (
@@ -97,7 +95,7 @@ export default function ClubMembersTab({ clubId, isAdmin, canManageTeam }) {
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
                   <span className="truncate font-medium text-foreground">{member.user_name}</span>
-                  {isSelf && <span className="text-xs text-muted-foreground">(você)</span>}
+                  {isSelf && <span className="text-xs text-muted-foreground/80">(você)</span>}
                 </div>
                 <div className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
                   {member.user_email && (
@@ -109,7 +107,18 @@ export default function ClubMembersTab({ clubId, isAdmin, canManageTeam }) {
                 {isOwner ? 'Proprietário' : (CLUB_ROLE_LABELS[member.role] || member.role)}
               </Badge>
 
-              {canRemoveThis && !isSelf && (
+              {isAdmin && member.role !== CLUB_ROLE.ADMIN && (
+                <label className="flex shrink-0 items-center gap-1.5 text-xs text-muted-foreground">
+                  Editar pets
+                  <Switch
+                    checked={member.permissions?.animals === true || member.permissions?.edit_pets === true}
+                    onCheckedChange={(v) => handleToggleEditPets(member, v)}
+                    disabled={setPermissions.isPending}
+                  />
+                </label>
+              )}
+
+              {isAdmin && !isSelf && !isOwner && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0">
@@ -117,7 +126,7 @@ export default function ClubMembersTab({ clubId, isAdmin, canManageTeam }) {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    {isAdmin && (member.role === CLUB_ROLE.ADMIN ? (
+                    {member.role === CLUB_ROLE.ADMIN ? (
                       <DropdownMenuItem onClick={() => handleRole(member, CLUB_ROLE.MEMBER)}>
                         <Shield className="mr-2 h-4 w-4" /> Rebaixar a membro
                       </DropdownMenuItem>
@@ -125,31 +134,15 @@ export default function ClubMembersTab({ clubId, isAdmin, canManageTeam }) {
                       <DropdownMenuItem onClick={() => handleRole(member, CLUB_ROLE.ADMIN)}>
                         <ShieldCheck className="mr-2 h-4 w-4" /> Tornar administrador
                       </DropdownMenuItem>
-                    ))}
+                    )}
                     <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => setConfirmRemove(member)}>
-                      <UserMinus className="mr-2 h-4 w-4" /> Remover do clube
+                      <UserMinus className="mr-2 h-4 w-4" /> Remover da organização
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               )}
             </div>
-
-            {isAdmin && member.role !== CLUB_ROLE.ADMIN && (
-              <div className="flex flex-wrap gap-x-4 gap-y-1.5 border-t border-border pt-2.5">
-                {TOGGLABLE_PERMISSIONS.map((key) => (
-                  <label key={key} className="flex shrink-0 items-center gap-1.5 text-xs text-muted-foreground">
-                    {CLUB_PERMISSION_LABELS[key]}
-                    <Switch
-                      checked={member.permissions?.[key] === true}
-                      onCheckedChange={(v) => handleTogglePermission(member, key, v)}
-                      disabled={setPermissions.isPending}
-                    />
-                  </label>
-                ))}
-              </div>
-            )}
-            </CardContent>
-          </Card>
+          </section>
         );
       })}
 

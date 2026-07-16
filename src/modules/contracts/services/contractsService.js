@@ -18,9 +18,8 @@ import {
   doc, collection, setDoc, getDoc, getDocs, query, where, orderBy, serverTimestamp,
 } from 'firebase/firestore';
 import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { httpsCallable } from 'firebase/functions';
 
-import { db, storage, functions } from '@/core/config/firebase';
+import { db, storage } from '@/core/config/firebase';
 import { createAuditLog } from '@/core/services/auditService';
 import {
   createContractSchema, parseContractOrThrow, CONTRACT_STATUS,
@@ -31,11 +30,6 @@ import {
 
 /**
  * Cria um novo contrato (assinatura do adotante).
- *
- * Preferir `createContractWithIp()` — usa Cloud Function callable que
- * extrai o IP real do cliente (Lei 14.063/2020 Art. 6º + LGPD).
- * Esta função é mantida para backward-compat e para contextos onde
- * o IP já é conhecido server-side.
  *
  * @param {object} input
  * @param {string} input.clubId
@@ -117,89 +111,6 @@ export async function createContract(input, actor) {
   return { id: contractId, pdfUrl };
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// TASK-298: Callable wrapper — extrai IP + user-agent server-side
-// ══════════════════════════════════════════════════════════════════════════════
-
-let _createContractCallable = null;
-
-function getCreateContractCallable() {
-  if (!functions) throw new Error('Firebase Functions não inicializado.');
-  if (!_createContractCallable) {
-    _createContractCallable = httpsCallable(functions, 'createContract');
-  }
-  return _createContractCallable;
-}
-
-/**
- * Cria um contrato via Cloud Function (TASK-298).
- *
- * IP e user-agent são capturados server-side via __CF_CONNECTING_IP
- * e header user-agent (Lei 14.063/2020 art. 6º — registro de assinatura).
- *
- * Esta é a versão PREFERENCIAL sobre `createContract()` (SDK direto),
- * pois garante captura correta de IP em todos os cenários.
- *
- * @param {object} input - mesmo shape do `createContract`
- * @param {object} actor - {uid, displayName}
- * @returns {Promise<{ id: string, pdfUrl: string }>}
- */
-export async function createContractCallable(input, actor) {
-  if (!actor?.uid) throw new Error('createContractCallable: actor required');
-  const { clubId, applicationId, petId, adopterUid, adopterSignatureText, documentVersion, pdfBlob } = input;
-
-  if (!pdfBlob) throw new Error('createContractCallable: pdfBlob required');
-  if (!clubId) throw new Error('createContractCallable: clubId required');
-  if (!adopterUid) throw new Error('createContractCallable: adopterUid required');
-
-  const callable = getCreateContractCallable();
-
-  // pdfBlob é um Blob (browser) — convertemos para base64 para JSON-serializable
-  const base64 = await blobToBase64(pdfBlob);
-
-  const res = await callable({
-    clubId,
-    applicationId,
-    petId,
-    adopterUid,
-    adopterSignatureText,
-    documentVersion,
-    pdfBlob: base64,
-  });
-
-  // Audit log redundante (CF já grava via Admin SDK, mas logamos no client também)
-  createAuditLog({
-    action: 'contract_created',
-    actor,
-    details: {
-      contract_id: res.data?.id,
-      club_id: clubId,
-      application_id: applicationId,
-      adopter_uid: adopterUid,
-      via: 'createContractCallable (TASK-298)',
-    },
-  }).catch(() => {});
-
-  return res.data;
-}
-
-/** Converte Blob/File do browser para base64 string. */
-async function blobToBase64(blob) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const base64 = reader.result;
-      const idx = base64.indexOf(',');
-      resolve(idx >= 0 ? base64.slice(idx + 1) : base64);
-    };
-    reader.onerror = reject;
-    reader.readAsDataURL(blob);
-  });
-}
-
-/** Alias — exports principal para o callable. */
-export { blobToBase64 };
-
 /**
  * Assinatura do abrigo — fecha o contrato (FULLY_SIGNED).
  *
@@ -268,76 +179,3 @@ export async function listContractsByAdopter(adopterUid) {
 }
 
 export { CONTRACT_STATUS };
-
-// ─── TASK-298: callable com IP real ───────────────────────────────────────
-
-/** Converte Blob/File para base64 string.
- * @param {Blob} blob
- * @returns {Promise<string>}
- */
-async function blobToBase64(blob) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      // reader.result é "data:application/pdf;base64,..." — mandamos só o base64 puro
-      const base64 = reader.result.split(',')[1];
-      resolve(base64 || '');
-    };
-    reader.onerror = () => reject(new Error('blobToBase64: FileReader failed'));
-    reader.readAsDataURL(blob);
-  });
-}
-
-/**
- * Cria contrato via Cloud Function callable — EXTRAI IP REAL DO CLIENTE.
- *
- * Fluxo:
- *  1. Converte PDF Blob → base64
- *  2. Chama `createContractCallable` (Cloud Function v2)
- *  3. O callable extrai IP de X-Forwarded-For / CF-Connecting-IP
- *  4. Persiste contrato com `adopter_ip` + `adopter_user_agent`
- *
- * Preferir esta função em vez de `createContract` direto — garante
- * conformidade com Lei 14.063/2020 Art. 6º.
- *
- * @param {object} input
- * @param {string} input.clubId
- * @param {string} input.applicationId
- * @param {string} input.petId
- * @param {string} input.adopterUid
- * @param {string} input.adopterSignatureText
- * @param {string} input.documentVersion
- * @param {Blob} input.pdfBlob
- * @param {string} [input.adopterUserAgent] — navigator.userAgent (opcional; callable tenta extrair)
- * @param {object} actor — {uid}
- * @returns {Promise<{id: string, pdfUrl: string}>}
- */
-export async function createContractWithIp(input, actor) {
-  if (!actor?.uid) throw new Error('createContractWithIp: actor required');
-  const {
-    clubId, applicationId, petId, adopterUid, adopterSignatureText,
-    documentVersion, pdfBlob, adopterUserAgent,
-  } = input;
-
-  if (!pdfBlob) throw new Error('createContractWithIp: pdfBlob required');
-
-  // Lazy import do Firebase Functions para não carregar no SSR
-  const { httpsCallable } = await import('firebase/functions');
-  const { functions } = await import('@/core/config/firebase');
-
-  const pdfBase64 = await blobToBase64(pdfBlob);
-
-  const fn = httpsCallable(functions, 'createContractCallable');
-  const result = await fn({
-    clubId,
-    applicationId,
-    petId,
-    adopterUid,
-    adopterSignatureText,
-    documentVersion,
-    pdfBase64,
-    adopterUserAgent: adopterUserAgent || (typeof navigator !== 'undefined' ? navigator.userAgent : null),
-  });
-
-  return result.data;
-}

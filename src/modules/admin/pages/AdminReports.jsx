@@ -4,7 +4,8 @@ import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import PageContainer from '@/components/PageContainer';
+import PageHero from '@/components/PageHero';
+import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 
 export default function AdminReports() {
   const { isPlatformAdmin } = useAuth();
@@ -20,8 +21,12 @@ export default function AdminReports() {
   if (!isPlatformAdmin) return null;
 
   return (
-    <PageContainer className="space-y-4">
-      <h1 className="text-2xl font-bold text-foreground">Denúncias de Maus-Tratos</h1>
+    <div className={wrapperClass}>
+      <PageHero
+        eyebrow="Admin · Denúncias"
+        title="Denúncias de Maus-Tratos"
+        description="Denúncias enviadas pelo público. Apenas o admin master tem acesso. Cada denúncia pode gerar um PDF formatado para entrega à Delegacia."
+      />
       {loading ? <p className="text-muted-foreground">Carregando...</p> : (
         <div className="space-y-3">
           {reports.map((r) => (
@@ -32,7 +37,7 @@ export default function AdminReports() {
                 </span>
                 <Badge variant={r.status === 'pending' ? 'destructive' : 'secondary'}>{r.status}</Badge>
               </div>
-              <p className="text-sm text-foreground line-clamp-3">{r.description}</p>
+              <p className="text-sm text-foreground/80 line-clamp-3">{r.description}</p>
               {r.address && <p className="text-xs text-muted-foreground">📍 {r.address}</p>}
               {r.photo_urls?.length > 0 && (
                 <div className="flex gap-2">
@@ -47,6 +52,6 @@ export default function AdminReports() {
           ))}
         </div>
       )}
-    </PageContainer>
+    </div>
   );
 }

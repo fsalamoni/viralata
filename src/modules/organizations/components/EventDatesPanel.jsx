@@ -183,10 +183,10 @@ function DateCard({ event, date, rsvps }) {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-between gap-3 p-4 text-left transition-colors hover:bg-secondary"
+        className="flex w-full items-center justify-between gap-3 p-4 text-left transition-colors hover:bg-secondary/40"
       >
         <div className="flex min-w-0 items-center gap-2">
-          {open ? <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" /> : <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />}
+          {open ? <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground/80" /> : <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground/80" />}
           <CalendarDays className="h-4 w-4 shrink-0 text-primary" />
           <div className="min-w-0">
             <div className="truncate font-semibold text-foreground">{formatDateTime(date.date_time)}</div>
@@ -202,7 +202,7 @@ function DateCard({ event, date, rsvps }) {
       </button>
 
       {open && (
-        <CardContent className="border-t border-border p-4">
+        <div className="arena-section-card-body border-t border-border p-4">
           <PresenceSection
             date={date}
             editing={editing}
@@ -259,13 +259,13 @@ function PresenceSection({ date, editing, setEditing, form, setForm, onSave, sav
       ) : (
         <div className="flex items-start justify-between gap-3">
           <div className="text-sm text-muted-foreground">
-            {date.note ? <p>{date.note}</p> : <p className="text-muted-foreground">Sem observações.</p>}
+            {date.note ? <p>{date.note}</p> : <p className="text-muted-foreground/80">Sem observações.</p>}
           </div>
           <div className="flex shrink-0 gap-1">
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setEditing(true)} aria-label="Editar">
               <Pencil className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={onDeleteRequest} title="Excluir">
+            <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive/85" onClick={onDeleteRequest} aria-label="Excluir">
               <Trash2 className="h-4 w-4" />
             </Button>
           </div>

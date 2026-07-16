@@ -5,7 +5,8 @@ import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { useMyRadar, useSetRadarActive } from '../hooks/usePets';
 import { Switch } from '@/components/ui/switch';
 import { Skeleton } from '@/components/ui/skeleton';
-import PageContainer from '@/components/PageContainer';
+import PageHero from '@/components/PageHero';
+import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 
 export default function RadarSettings() {
   const { user, isProfileComplete } = useAuth();
@@ -15,11 +16,17 @@ export default function RadarSettings() {
   const active = radar?.active === true;
 
   return (
-    <PageContainer>
-      <div className="mx-auto w-full max-w-2xl space-y-6">
-      <Link to="/perfil" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
-        <ArrowLeft className="w-4 h-4" /> Voltar ao perfil
-      </Link>
+    <div className={useArenaPageClasses('arena-page mx-auto max-w-2xl space-y-6 px-4 py-6')}>
+      <PageHero
+        eyebrow="Pets"
+        title="Radar de Pets"
+        description="Seja avisado assim que um pet compatível com você for cadastrado."
+        actions={
+          <Link to="/perfil" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
+            <ArrowLeft className="w-4 h-4" /> Voltar ao perfil
+          </Link>
+        }
+      />
 
       <section className="arena-section-card">
         <div className="arena-section-card-header">
@@ -59,6 +66,5 @@ export default function RadarSettings() {
         </div>
       </section>
     </div>
-    </PageContainer>
   );
 }

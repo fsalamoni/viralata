@@ -16,8 +16,7 @@
  *
  * **API**:
  * - initErrorTracker(config) — chamada 1x no main.jsx
- * - captureError(error, context, extraTags) — captura erro com tags opcionais
- * - captureVolunteerError(error, extraContext) — captura erro com domain:volunteer tag (TASK-283)
+ * - captureError(error, context) — captura erro
  * - captureMessage(msg, level) — captura mensagem
  * - setUser(user) — associa user
  * - clearUser() — limpa
@@ -94,15 +93,14 @@ export async function initErrorTracker(config = {}) {
  *
  * @param {Error|string} error
  * @param {object} [context]
- * @param {object} [extraTags] — tags extras para Sentry (ex: { domain: 'volunteer' })
  */
-export function captureError(error, context = {}, extraTags = {}) {
+export function captureError(error, context = {}) {
   // Sempre loga
   // eslint-disable-next-line no-console
-  console.error('[errorTracker]', error, context, extraTags);
+  console.error('[errorTracker]', error, context);
 
   if (sentryAvailable && Sentry) {
-    Sentry.captureException(error, { extra: context, tags: extraTags });
+    Sentry.captureException(error, { extra: context });
     return;
   }
   // Fallback: queue localStorage
@@ -111,40 +109,9 @@ export function captureError(error, context = {}, extraTags = {}) {
     message: error?.message || String(error),
     stack: error?.stack || null,
     context,
-    tags: extraTags,
     timestamp: new Date().toISOString(),
     url: typeof window !== 'undefined' ? window.location.href : null,
   });
-}
-
-/**
- * Captura erro com domain=volunteer tag (TASK-283).
- * Usa Sentry.withScope para isolar o tag ao escopo deste erro.
- *
- * @param {Error|string} error
- * @param {object} [extraContext]
- */
-export function captureVolunteerError(error, extraContext = {}) {
-  if (sentryAvailable && Sentry) {
-    Sentry.withScope((scope) => {
-      scope.setTag('domain', 'volunteer');
-      scope.setExtras(extraContext);
-      Sentry.captureException(error);
-    });
-  } else {
-    // Fallback: console + queue
-    // eslint-disable-next-line no-console
-    console.error('[errorTracker][volunteer]', error, extraContext);
-    enqueueFallback({
-      type: 'error',
-      domain: 'volunteer',
-      message: error?.message || String(error),
-      stack: error?.stack || null,
-      context: extraContext,
-      timestamp: new Date().toISOString(),
-      url: typeof window !== 'undefined' ? window.location.href : null,
-    });
-  }
 }
 
 /**

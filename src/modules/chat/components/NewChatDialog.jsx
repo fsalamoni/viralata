@@ -107,7 +107,7 @@ export default function NewChatDialog({ open, onOpenChange, onConfirm, excludeId
 
         <div className="space-y-3">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/80" />
             <Input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -127,7 +127,7 @@ export default function NewChatDialog({ open, onOpenChange, onConfirm, excludeId
                     delete next[m.uid];
                     return next;
                   })}
-                  className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 py-1 pl-1 pr-2 text-xs font-medium text-foreground hover:bg-primary/20"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 py-1 pl-1 pr-2 text-xs font-medium text-primary hover:bg-primary/20"
                 >
                   <UserAvatar name={m.name} photoUrl={m.photo_url} size="xs" />
                   {m.name}

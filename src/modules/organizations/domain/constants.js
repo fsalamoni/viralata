@@ -90,28 +90,47 @@ export const CLUB_ROLE_LABELS = Object.freeze({
 });
 
 /**
- * Permissões granulares que um admin pode conceder a um membro comum, sem
- * torná-lo administrador pleno. Um admin já tem todas implicitamente.
+ * Permissões granulares do painel de administração da organização.
+ * O proprietário (`clubs.created_by`) sempre tem as 5, de forma implícita e
+ * não editável pela UI. Um administrador comum sem `permissions` explícito
+ * também é tratado como tendo todas (compatibilidade com admins criados
+ * antes desta granularidade existir) — ver `domain/permissions.js`.
  */
 export const CLUB_PERMISSION = Object.freeze({
-  EDIT_PETS: 'edit_pets',
-  MANAGE_TEAM: 'manage_team',
-  VIEW_REPORTS: 'view_reports',
-  REPLY_CHAT: 'reply_chat',
+  ANIMALS: 'animals',
+  FINANCE: 'finance',
+  DONATIONS: 'donations',
+  FEED: 'feed',
+  TEAM: 'team',
+  // TASK-231: granular volunteer permissions. O escopo raiz é
+  // `volunteers` (chave usada em firestore.rules via hasClubPermission).
+  // As sub-permissões (`:read`, `:manage_status`, `:bg_check`, `:bulk`,
+  // `:delete`) são consultadas apenas client-side via hasClubPermission(
+  // membership, 'volunteers:manage_status') e similares — Firestore
+  // rules tratam a chave raiz `volunteers` como booleana única
+  // (granularidade extra fica para o painel de equipe, não para rules).
+  VOLUNTEERS: 'volunteers',
+  VOLUNTEERS_READ: 'volunteers:read',
+  VOLUNTEERS_MANAGE_STATUS: 'volunteers:manage_status',
+  VOLUNTEERS_BG_CHECK: 'volunteers:bg_check',
+  VOLUNTEERS_BULK: 'volunteers:bulk',
+  VOLUNTEERS_DELETE: 'volunteers:delete',
 });
+
+export const CLUB_PERMISSION_KEYS = Object.freeze(Object.values(CLUB_PERMISSION));
 
 export const CLUB_PERMISSION_LABELS = Object.freeze({
-  [CLUB_PERMISSION.EDIT_PETS]: 'Editar pets',
-  [CLUB_PERMISSION.MANAGE_TEAM]: 'Gerenciar equipe',
-  [CLUB_PERMISSION.VIEW_REPORTS]: 'Ver relatórios',
-  [CLUB_PERMISSION.REPLY_CHAT]: 'Responder chat de adoção',
-});
-
-export const CLUB_PERMISSION_DESCRIPTIONS = Object.freeze({
-  [CLUB_PERMISSION.EDIT_PETS]: 'Cadastrar, editar e concluir adoções dos pets da organização.',
-  [CLUB_PERMISSION.MANAGE_TEAM]: 'Aprovar pedidos de ingresso, convidar e remover membros comuns.',
-  [CLUB_PERMISSION.VIEW_REPORTS]: 'Ver o relatório de pets e adoções da organização.',
-  [CLUB_PERMISSION.REPLY_CHAT]: 'Conversar com interessados e responder pelo chat de adoção dos pets da organização.',
+  [CLUB_PERMISSION.ANIMALS]: 'Gerenciar animais',
+  [CLUB_PERMISSION.FINANCE]: 'Prestação de contas',
+  [CLUB_PERMISSION.DONATIONS]: 'Chamados de doação',
+  [CLUB_PERMISSION.FEED]: 'Publicar no mural',
+  [CLUB_PERMISSION.TEAM]: 'Gerenciar equipe',
+  [CLUB_PERMISSION.VOLUNTEERS]: 'Voluntários (geral)',
+  [CLUB_PERMISSION.VOLUNTEERS_READ]: 'Voluntários — apenas ler',
+  [CLUB_PERMISSION.VOLUNTEERS_MANAGE_STATUS]: 'Voluntários — pausar/retomar/bloquear',
+  [CLUB_PERMISSION.VOLUNTEERS_BG_CHECK]: 'Voluntários — aprovar/rejeitar background check',
+  [CLUB_PERMISSION.VOLUNTEERS_BULK]: 'Voluntários — importação/exportação em massa',
+  [CLUB_PERMISSION.VOLUNTEERS_DELETE]: 'Voluntários — remover definitivamente',
 });
 
 /** Estado de um pedido de ingresso (não-membro pede para entrar na organização). */
@@ -134,10 +153,6 @@ export const CLUB_EVENT_TYPE = Object.freeze({
   SOCIAL: 'social',
   MEETING: 'meeting',
   OTHER: 'other',
-  VACCINATION: 'vaccination',
-  LECTURE: 'lecture',
-  FUNDRAISING: 'fundraising',
-  PET_DAY: 'pet_day',
 });
 
 export const CLUB_EVENT_TYPE_LABELS = Object.freeze({
@@ -145,10 +160,6 @@ export const CLUB_EVENT_TYPE_LABELS = Object.freeze({
   [CLUB_EVENT_TYPE.SOCIAL]: 'Confraternização',
   [CLUB_EVENT_TYPE.MEETING]: 'Reunião',
   [CLUB_EVENT_TYPE.OTHER]: 'Outro',
-  [CLUB_EVENT_TYPE.VACCINATION]: 'Vacinação',
-  [CLUB_EVENT_TYPE.LECTURE]: 'Palestra',
-  [CLUB_EVENT_TYPE.FUNDRAISING]: 'Arrecadação',
-  [CLUB_EVENT_TYPE.PET_DAY]: 'Pet Day',
 });
 
 /**

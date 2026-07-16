@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-route
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider, useAuth } from '@/core/lib/FirebaseAuthContext';
 import { FeatureFlagsProvider } from '@/core/lib/FeatureFlagsContext';
-import { ThemeProvider } from '@/core/lib/ThemeContext';
+import { ConfirmProvider } from '@/components/ui/confirm-provider';
 import Layout from '@/components/Layout';
 import { CookieBanner } from '@/components/CookieBanner';
 import CommandPalette from '@/components/CommandPalette';
@@ -35,7 +35,6 @@ const PublicExhibitionDetail = lazy(() => import('@/pages/PublicExhibitionDetail
 const PublicFosterPrograms = lazy(() => import('@/pages/PublicFosterPrograms'));
 const PublicFosterHistory = lazy(() => import('@/pages/PublicFosterHistory'));
 const PublicMuralFeed = lazy(() => import('@/pages/PublicMuralFeed'));
-const AdopterDashboard = lazy(() => import('@/modules/adopter/pages/AdopterDashboard'));
 const PageNotFound = lazy(() => import('@/pages/PageNotFound'));
 const ShelterPublic = lazy(() => import('@/pages/ShelterPublic'));
 const BannedNotice = lazy(() => import('@/pages/BannedNotice'));
@@ -58,8 +57,6 @@ const PublicPet = lazy(() => import('@/modules/pets/pages/PublicPet'));
 const CreatePet = lazy(() => import('@/modules/pets/pages/CreatePet'));
 const MyPets = lazy(() => import('@/modules/pets/pages/MyPets'));
 const MyInterests = lazy(() => import('@/modules/pets/pages/MyInterests'));
-// TASK-304: página "Minha Application" pro adotante
-const MyApplications = lazy(() => import('@/modules/adoption/pages/MyApplications'));
 const RadarSettings = lazy(() => import('@/modules/pets/pages/RadarSettings'));
 
 // ─── Organizações ─────────────────────────────────────────────────────────────
@@ -104,7 +101,18 @@ const AdminUsers = lazy(() => import('@/modules/admin/pages/AdminUsers'));
 const AdminOrganizations = lazy(() => import('@/modules/admin/pages/AdminOrganizations'));
 const AdminCommunities = lazy(() => import('@/modules/admin/pages/AdminCommunities'));
 const AdminMetrics = lazy(() => import('@/modules/admin/pages/AdminMetrics'));
-const AdminContentEditor = lazy(() => import('@/modules/admin/pages/AdminContentEditor'));
+const AdminAuditLog = lazy(() => import('@/modules/admin/pages/AdminAuditLog'));
+const AdminNotifications = lazy(() => import('@/modules/admin/pages/AdminNotifications'));
+const AdminPlatformSettings = lazy(() => import('@/modules/admin/pages/AdminPlatformSettings'));
+const AdminFlags = lazy(() => import('@/modules/admin/pages/AdminFlags'));
+// Fase 21: páginas de saúde, alertas de segurança, configuração de alertas e
+// gerenciamento de platform_admins. Cada uma é linkada no AdminDashboard.
+const PlatformHealth = lazy(() => import('@/modules/admin/pages/PlatformHealth'));
+const SecurityAlerts = lazy(() => import('@/modules/admin/pages/SecurityAlerts'));
+const AlertConfigs = lazy(() => import('@/modules/admin/pages/AlertConfigs'));
+const AdminUserManagement = lazy(() => import('@/modules/admin/pages/AdminUserManagement'));
+// Mock data — painel admin para carregar/limpar dados demo (TASK-400).
+const AdminMockData = lazy(() => import('@/modules/admin/pages/AdminMockData'));
 
 // ─── QueryClient ─────────────────────────────────────────────────────────────
 const queryClient = new QueryClient({
@@ -157,10 +165,10 @@ function BannedGate({ children }) {
 
 function FullScreenSpinner() {
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-background">
+    <div className="fixed inset-0 flex items-center justify-center bg-white">
       <div className="flex flex-col items-center gap-3">
         <div className="text-3xl">🐾</div>
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-orange-500 border-t-transparent" />
       </div>
     </div>
   );
@@ -172,19 +180,6 @@ function withLayout(pageName, Component) {
       <Component />
     </Layout>
   );
-}
-
-// ─── Redirects legados (Organizações) ────────────────────────────────────────
-// O perfil público e os eventos das organizações já moraram em
-// `/comunidade/:orgId[...]` — hoje essa rota pertence ao módulo de
-// comunidades e as organizações vivem em `/organizacoes/:orgId[...]`.
-// Notificações antigas já gravadas no Firestore ainda apontam para o caminho
-// anterior — este redirect preserva os links de evento; links antigos de
-// perfil (`/comunidade/:orgId`) são resolvidos pelo fallback do próprio
-// `CommunityDetail`, que detecta ids de organização e redireciona.
-function LegacyOrgEventRedirect() {
-  const { orgId, eventId } = useParams();
-  return <Navigate to={`/organizacoes/${orgId}/eventos/${eventId}`} replace />;
 }
 
 function RouteTelemetry() {
@@ -259,7 +254,6 @@ function FCMSetup() {
 // ─── App ──────────────────────────────────────────────────────────────────────
 export default function App() {
   return (
-    <ThemeProvider>
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <FeatureFlagsProvider>
@@ -351,10 +345,6 @@ export default function App() {
                   element={<ProtectedRoute>{withLayout('MyInterests', MyInterests)}</ProtectedRoute>}
                 />
                 <Route
-                  path="/meus-pedidos"
-                  element={<ProtectedRoute>{withLayout('MyApplications', MyApplications)}</ProtectedRoute>}
-                />
-                <Route
                   path="/radar"
                   element={<ProtectedRoute>{withLayout('RadarSettings', RadarSettings)}</ProtectedRoute>}
                 />
@@ -396,12 +386,24 @@ export default function App() {
                   path="/organizacoes/:orgId/admin"
                   element={<ProtectedRoute>{withLayout('OrganizationAdminPanel', OrganizationAdminPanel)}</ProtectedRoute>}
                 />
+                <Route path="/organizacoes/:orgId" element={<ProtectedRoute>{withLayout('OrganizationDetail', OrganizationDetail)}</ProtectedRoute>} />
+                <Route path="/abrigos/:shelterId" element={withLayout('ShelterPublic', ShelterPublic)} />
+                {/* TASK-288: contratos do abrigo (Lei 14.063/2020) — visível para
+                    admins do abrigo (gate via contractsService). */}
+                <Route
+                  path="/abrigos/:shelterId/contracts"
+                  element={<ProtectedRoute>{withLayout('ShelterContracts', ShelterContractsList)}</ProtectedRoute>}
+                />
+                {/* TASK-290: entrevistas do abrigo — visível para admins do
+                    abrigo (gate via interviewService). */}
+                <Route
+                  path="/abrigos/:shelterId/interviews"
+                  element={<ProtectedRoute>{withLayout('ShelterInterviews', ShelterInterviewsList)}</ProtectedRoute>}
+                />
                 <Route
                   path="/organizacoes/:orgId/eventos/:eventId"
                   element={<ProtectedRoute>{withLayout('EventDetail', EventDetail)}</ProtectedRoute>}
                 />
-                {/* Perfil público da ONG — aberto a visitantes, como o diretório. */}
-                <Route path="/organizacoes/:orgId" element={withLayout('OrganizationDetail', OrganizationDetail)} />
 
                 {/* ── Chat ─────────────────────────────────────────────── */}
                 <Route
@@ -446,11 +448,6 @@ export default function App() {
                   path="/adoptions"
                   element={<ProtectedRoute>{withLayout('PostAdoptionDashboard', PostAdoptionDashboard)}</ProtectedRoute>}
                 />
-                {/* TASK-339: dashboard unificado do adotante */}
-                <Route
-                  path="/meu-painel"
-                  element={<ProtectedRoute>{withLayout('AdopterDashboard', AdopterDashboard)}</ProtectedRoute>}
-                />
 
                 {/* ── Admin ─────────────────────────────────────────────── */}
                 <Route
@@ -482,16 +479,46 @@ export default function App() {
                   element={<AdminRoute>{withLayout('AdminMetrics', AdminMetrics)}</AdminRoute>}
                 />
                 <Route
-                  path="/admin/conteudo"
-                  element={<AdminRoute>{withLayout('AdminContentEditor', AdminContentEditor)}</AdminRoute>}
+                  path="/admin/auditoria"
+                  element={<AdminRoute>{withLayout('AdminAuditLog', AdminAuditLog)}</AdminRoute>}
+                />
+                <Route
+                  path="/admin/notificacoes"
+                  element={<AdminRoute>{withLayout('AdminNotifications', AdminNotifications)}</AdminRoute>}
+                />
+                <Route
+                  path="/admin/configuracoes"
+                  element={<AdminRoute>{withLayout('AdminPlatformSettings', AdminPlatformSettings)}</AdminRoute>}
+                />
+                <Route
+                  path="/admin/flags"
+                  element={<AdminRoute>{withLayout('AdminFlags', AdminFlags)}</AdminRoute>}
+                />
+                <Route
+                  path="/admin/saude"
+                  element={<AdminRoute>{withLayout('PlatformHealth', PlatformHealth)}</AdminRoute>}
+                />
+                <Route
+                  path="/admin/security-alerts"
+                  element={<AdminRoute>{withLayout('SecurityAlerts', SecurityAlerts)}</AdminRoute>}
+                />
+                <Route
+                  path="/admin/alertas"
+                  element={<AdminRoute>{withLayout('AlertConfigs', AlertConfigs)}</AdminRoute>}
+                />
+                <Route
+                  path="/admin/admins"
+                  element={<AdminRoute>{withLayout('AdminUserManagement', AdminUserManagement)}</AdminRoute>}
+                />
+                <Route
+                  path="/admin/mock-data"
+                  element={<AdminRoute>{withLayout('AdminMockData', AdminMockData)}</AdminRoute>}
                 />
 
                 {/* ── Redirects legados ─────────────────────────────────── */}
                 <Route path="/inicio" element={<Navigate to="/feed" replace />} />
                 <Route path="/clubes" element={<Navigate to="/comunidade" replace />} />
                 <Route path="/atletas" element={<Navigate to="/feed" replace />} />
-                <Route path="/comunidade/:orgId/eventos/:eventId" element={<LegacyOrgEventRedirect />} />
-
                 {/* ── 404 ──────────────────────────────────────────────── */}
                 <Route path="*" element={<PageNotFound />} />
               </Routes>
@@ -504,6 +531,5 @@ export default function App() {
         </FeatureFlagsProvider>
       </AuthProvider>
     </QueryClientProvider>
-    </ThemeProvider>
   );
 }

@@ -6,11 +6,11 @@
  * não endereço exato) e a fórmula de haversine.
  *
  * Limitação conhecida (documentada em `docs/ROADMAP.md`): cidades fora
- * desta tabela não entram no cálculo de distância. Com um raio ativo, pets
- * dessas cidades só aparecem quando estão na própria cidade de origem da
- * busca (comparação de texto normalizada — ver `filterPetsByRadius`);
- * cobertura completa exigiria geocoding real (API ou base completa de
- * municípios) + geohash no Firestore.
+ * desta tabela não entram no cálculo de distância — o filtro de raio some
+ * silenciosamente para pets nessas cidades quando um raio está ativo (sem
+ * raio ativo, o filtro de texto exato continua funcionando para qualquer
+ * cidade). Produção de verdade precisa de geocoding real (API ou base
+ * completa de municípios) + geohash no Firestore.
  */
 
 // [latitude, longitude] aproximados do centro da cidade.
@@ -87,20 +87,13 @@ const BR_CITY_COORDS = {
   'palmas|to': [-10.18, -48.33],
 };
 
-/**
- * Normaliza texto de cidade para comparação: trim, minúsculas e sem acentos.
- * Exportado para o filtro do Feed comparar cidades digitadas livremente com
- * as gravadas nos pets ("São Paulo" ≡ "sao paulo " ≡ "SAO PAULO").
- */
-export function normalizePlaceText(value) {
+function norm(value) {
   return String(value ?? '')
     .trim()
     .toLowerCase()
     .normalize('NFD')
     .replace(/[̀-ͯ]/g, '');
 }
-
-const norm = normalizePlaceText;
 
 function normalizeKey(city, state) {
   return `${norm(city)}|${norm(state)}`;
@@ -127,15 +120,6 @@ export function normalizePlaceText(value) {
 /** Retorna `[lat, lng]` da cidade conhecida (cidade + UF exatos), ou `null` se fora da tabela. */
 export function lookupCityCoords(city, state) {
   return BR_CITY_COORDS[normalizeKey(city, state)] || null;
-}
-
-/**
- * Coordenadas de um pet, com tolerância a dados incompletos: tenta
- * cidade+UF e, se a UF estiver vazia/errada, cai para a busca só por nome
- * (segura porque nenhum nome se repete na tabela).
- */
-export function resolvePetCoords(pet) {
-  return lookupCityCoords(pet?.city, pet?.state) || lookupCityCoordsByName(pet?.city);
 }
 
 /**
@@ -168,18 +152,35 @@ export function haversineKm([lat1, lng1], [lat2, lng2]) {
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-/** true se a cidade informada (só nome, texto livre) tem coordenadas conhecidas. */
-export function hasKnownCoords(cityText) {
-  return lookupCityCoordsByName(cityText) !== null;
+/**
+ * Filtra `pets` para os que estão a até `radiusKm` de `originCoords`
+ * (`[lat, lng]`, resolvido por `lookupCityCoords`/`lookupCityCoordsByName`).
+ * Pets cuja cidade não está na tabela são excluídos (best effort — ver
+ * limitação no topo do arquivo).
+ */
+export function filterPetsByRadius(pets, originCoords, radiusKm) {
+  if (!originCoords) return null;
+  return pets.filter((pet) => {
+    const petCoords = lookupCityCoords(pet.city, pet.state);
+    if (!petCoords) return false;
+    return haversineKm(originCoords, petCoords) <= radiusKm;
+  });
 }
 
 /**
- * Filtra itens com `city`/`state` (pets, organizações) para os que estão a
- * até `radiusKm` de `originCoords`. Itens registrados na própria cidade de
- * origem (`originCityText`, comparação normalizada) são mantidos mesmo sem
- * coordenadas na tabela — nunca se descarta às cegas quem está na cidade em
- * que se busca. Itens de outras cidades fora da tabela ficam de fora do
- * cálculo (limitação documentada no topo do arquivo).
+ * Variante "amigável" de `filterPetsByRadius`: além do cálculo de distância,
+ * mantém sempre os pets cuja cidade normalizada bate com `originCityText`
+ * (a cidade em que o usuário está buscando). Itens da própria cidade de
+ * origem nunca são descartados, mesmo que sua UF esteja ausente da tabela.
+ *
+ * Retorna `null` se `originCoords` for nulo (semântica idêntica à versão
+ * clássica).
+ *
+ * @param {Array<object>} items
+ * @param {[number, number]|null} originCoords
+ * @param {number} radiusKm
+ * @param {string} [originCityText]
+ * @returns {Array<object>|null}
  */
 export function filterByRadius(items, originCoords, radiusKm, originCityText = '') {
   if (!originCoords) return null;
@@ -190,4 +191,9 @@ export function filterByRadius(items, originCoords, radiusKm, originCityText = '
     if (!coords) return false;
     return haversineKm(originCoords, coords) <= radiusKm;
   });
+}
+
+/** true se a cidade informada (só nome, texto livre) tem coordenadas conhecidas. */
+export function hasKnownCoords(cityText) {
+  return lookupCityCoordsByName(cityText) !== null;
 }

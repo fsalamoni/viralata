@@ -1,13 +1,7 @@
-import { httpsCallable } from 'firebase/functions';
-import { functions } from '@/core/config/firebase';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { db } from '@/core/config/firebase';
 import { logger } from '@/core/lib/logger';
-
-/** Lazy-callable ref do httpsCallable para createAuditLog. */
-let _createAuditLogFn = null;
-function getCreateAuditLogFn() {
-  if (!_createAuditLogFn) _createAuditLogFn = httpsCallable(functions, 'createAuditLog');
-  return _createAuditLogFn;
-}
+import { parseTimestamp } from '@/core/utils/timestamp';
 
 export const AUDIT_ACTION_LABELS = {
   user_profile_updated: 'Perfil atualizado',
@@ -59,8 +53,60 @@ export const AUDIT_ACTION_LABELS = {
   community_deleted: 'Comunidade excluída',
   community_post_created: 'Post publicado na comunidade',
   community_post_deleted: 'Post removido da comunidade',
-  community_event_created: 'Evento criado na comunidade',
-  community_event_deleted: 'Evento removido da comunidade',
+  // ─── Fase 19: Termos legais (Guia de Implementação Legal v2) ─────
+  // Cada aceite é gravado com `document_version` + `signature_text`
+  // + `ip_address` (best-effort via header CF) + `user_agent`. Esses
+  // campos atendem ao requisito jurídico do art. 6º da Lei 14.063/2020
+  // (assinatura eletrônica) + art. 37 da LGPD (registro de operações).
+  terms_accepted: 'Termos de Uso aceitos (cadastro)',
+  privacy_policy_accepted: 'Política de Privacidade aceita (cadastro)',
+  code_of_conduct_accepted: 'Código de Conduta aceito (cadastro)',
+  adoption_terms_accepted: 'Termo de Adoção assinado',
+  donation_terms_accepted: 'Política de Doações aceita',
+  volunteer_terms_accepted: 'Termo de Voluntariado aceito',
+  foster_terms_accepted: 'Termo de Lar Temporário aceito',
+  shelter_terms_accepted: 'Termo de Adesão de Abrigo aceito (com DPA)',
+  // ─── Fase 21: Platform health (admin master) ─────────────────────
+  platform_admin_promoted: 'Platform admin promovido',
+  platform_admin_demoted: 'Platform admin rebaixado',
+  platform_alert_config_created: 'Configuração de alerta criada',
+  platform_alert_config_updated: 'Configuração de alerta atualizada',
+  platform_alert_config_deleted: 'Configuração de alerta removida',
+  platform_alert_triggered: 'Alerta da plataforma disparado',
+  platform_billing_summary_updated: 'Resumo de billing da plataforma atualizado',
+  // ─── LGPD Art. 18 VI: cascade-anonymize de dados de voluntário ────
+  // Disparado por deleteAccountService ao excluir conta. Mantém
+  // terms_accepted_at/terms_version (Lei 14.063/2020) e remove demais PII.
+  volunteer_data_anonymized: 'Dados de voluntário anonimizados (LGPD)',
+  // ─── TASK-233: ações de voluntariado disparadas por volunteerProfileService
+  // e volunteerParticipationService. Sem label, o admin audit exibe o slug
+  // cru (fallback `action`), o que dificulta a leitura da trilha.
+  volunteer_joined_shelter: 'Voluntário ingressou no abrigo',
+  volunteer_profile_created: 'Perfil de voluntário criado',
+  volunteer_profile_updated: 'Perfil de voluntário atualizado',
+  volunteer_roster_updated: 'Vínculo de voluntário atualizado',
+  volunteer_roster_deleted: 'Vínculo de voluntário removido',
+  volunteer_participation_created: 'Participação de voluntário criada',
+  volunteer_participation_updated: 'Participação de voluntário atualizada',
+  volunteer_participation_deleted: 'Participação de voluntário removida',
+  volunteer_check_in: 'Check-in de voluntário em turno',
+  volunteer_check_out: 'Check-out de voluntário de turno',
+  volunteer_consent_withdrawn: 'Consentimento de voluntariado revogado (LGPD)',
+  cookie_consent_recorded: 'Consentimento de cookies registrado',
+  admin_broadcast_sent: 'Notificação segmentada enviada (admin)',
+  // ─── TASK-350: Community engagement (curtidas, comentários, RSVP, eventos) ───
+  community_post_liked: 'Post da comunidade curtido',
+  community_post_unliked: 'Curtida em post da comunidade removida',
+  community_post_commented: 'Comentário em post da comunidade criado',
+  community_comment_deleted: 'Comentário em post da comunidade removido',
+  community_event_rsvp_created: 'RSVP em evento de comunidade registrado',
+  community_event_rsvp_cancelled: 'RSVP em evento de comunidade cancelado',
+  community_event_created: 'Evento de comunidade criado',
+  community_event_updated: 'Evento de comunidade atualizado',
+  community_event_deleted: 'Evento de comunidade removido',
+  community_forum_thread_created: 'Tópico de fórum de comunidade criado',
+  community_forum_thread_updated: 'Tópico de fórum de comunidade atualizado',
+  community_forum_thread_deleted: 'Tópico de fórum de comunidade removido',
 };
 
 // ─── TASK-217: Categorias de retenção (auditLogPurgeCron) ──────────────
@@ -129,25 +175,53 @@ export async function createAuditLog({
 }) {
   if (!actor?.uid || !action) return;
 
-  // ─── TASK-330 (SEC-HIGH): grava via Cloud Function (Admin SDK).
-  // Não escreve diretamente no Firestore — o callable usa Admin SDK
-  // e bypassa as security rules. Client writing diretamente foi
-  // removido para evitar poluição / injeção de audit logs falsos.
+  const actorName = actor.displayName || actor.email || actor.uid;
+  const createdAtMs = Date.now();
+
+  // IP best-effort. Em produção (Firebase Hosting), a plataforma
+  // recebe o IP real via cabeçalho CF-Connecting-IP, mas a função
+  // de auditoria roda no client e não tem acesso direto. Aqui
+  // ficamos com "client-unknown" e o IP real fica registrado no
+  // Cloud Function (Fase 19, fluxo de assinatura eletrônica). Para
+  // os aceites do cadastro (onboarding), o registro é suficiente
+  // para conformidade com a Lei 14.063/2020 nível básico, pois o
+  // UID do usuário + timestamp + user_agent + hash do nome são
+  // registrados.
+  const ip_address = (typeof window !== 'undefined' && window.__CF_CONNECTING_IP)
+    || (typeof globalThis !== 'undefined' && globalThis.__CF_CONNECTING_IP)
+    || 'client-unknown';
+  const user_agent = (typeof navigator !== 'undefined' && navigator.userAgent) || 'unknown';
+
+  const doc = {
+    log_number: Number(`${createdAtMs}${randomNumericSuffix()}`),
+    action,
+    action_label: AUDIT_ACTION_LABELS[action] || action,
+    category: classifyAuditCategory(action),
+    actor_id: actor.uid,
+    actor_name: actorName,
+    actor_email: actor.email || '',
+    user_id: userId || actor.uid,
+    user_name: userName || actorName,
+    user_email: userEmail || actor.email || '',
+    ip_address,
+    user_agent,
+    details,
+    created_at_ms: createdAtMs,
+    created_at: serverTimestamp(),
+  };
+
+  // TASK-351: target_user_id — presente quando actor ≠ target
+  if (targetUserId) {
+    doc.target_user_id = targetUserId;
+  }
+
+  // TASK-351: correlation_id — encadeamento de operações lógicas
+  if (correlationId) {
+    doc.correlation_id = correlationId;
+  }
+
   try {
-    // O callable extrai IP real via CF-Connecting-IP e auth.uid.
-    // Passamos actor por compatibilidade (certifica actor_name/email).
-    await getCreateAuditLogFn()({
-      action,
-      actor: {
-        uid: actor.uid,
-        email: actor.email || '',
-        displayName: actor.displayName || '',
-      },
-      userId: userId || null,
-      userName: userName || null,
-      userEmail: userEmail || null,
-      details,
-    });
+    await addDoc(collection(db, 'audit_logs'), doc);
     return { ok: true };
   } catch (err) {
     // Inner try/catch: createAuditLog is the low-level writer and NEVER
@@ -245,6 +319,19 @@ export function safeCreateAuditLog(payload) {
     }
     return result;
   });
+}
+
+/**
+ * Adds entropy to the millisecond timestamp so visible log numbers remain
+ * unique when several records are created nearly simultaneously.
+ */
+function randomNumericSuffix() {
+  if (globalThis.crypto?.getRandomValues) {
+    const values = new Uint16Array(1);
+    globalThis.crypto.getRandomValues(values);
+    return String(values[0]).padStart(5, '0');
+  }
+  return String(performance.now()).replace(/\D/g, '').slice(-5).padStart(5, '0');
 }
 
 export function formatAuditDate(value, fallbackMs) {

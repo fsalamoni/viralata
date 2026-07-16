@@ -25,9 +25,6 @@ import {
 } from '@/modules/shelter/hooks/useVolunteerParticipations';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
-import { useClub, useMyMembership } from '@/modules/organizations/hooks/useClubs';
-import { useAuth } from '@/core/lib/FirebaseAuthContext';
-import { canManageVolunteers } from '@/modules/organizations/domain/permissions';
 import { confirmDialog } from '@/components/ui/confirm-provider';
 
 function formatDate(iso) {
@@ -46,15 +43,6 @@ export function ParticipationsList({
   const checkMutation = useCheckInOut(shelterClubId, null);
   const deleteMutation = useDeleteParticipation(shelterClubId);
   const { toast } = useToast();
-
-  // TASK-280: permission gate — replaces boolean canAbriho prop.
-  const { data: club } = useClub(shelterClubId);
-  const { data: membership } = useMyMembership(shelterClubId);
-  const { user } = useAuth();
-  const uid = user?.uid;
-  const canManageVol = canAbriho === undefined
-    ? canManageVolunteers(club, membership, uid)
-    : Boolean(canAbriho);
 
   if (!isV1Enabled) return null;
   if (!shelterClubId) return <p className="text-sm text-muted-foreground">Selecione um abrigo.</p>;
@@ -123,7 +111,7 @@ export function ParticipationsList({
               const inProg = isParticipationInProgress(p);
               const done = isParticipationCompleted(p);
               const canSelfCheck = isVolunteer && selfVolunteerUid === p.volunteer_uid;
-              const canManage = canManageVol || canSelfCheck;
+              const canManage = canAbriho || canSelfCheck;
               return (
                 <li key={p.id} className="border rounded p-3 flex flex-col gap-2">
                   <div className="flex items-center gap-2 flex-wrap">
@@ -163,7 +151,7 @@ export function ParticipationsList({
                           Check-out
                         </Button>
                       )}
-                      {canManageVol && (
+                      {canAbriho && (
                         <Button size="sm" variant="ghost" className="text-red-700" onClick={() => handleDelete(p.id)}>
                           Excluir
                         </Button>

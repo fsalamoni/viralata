@@ -6,7 +6,7 @@ export default function BannedNotice() {
   const { userProfile, signOut } = useAuth();
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-destructive to-secondary p-6">
+    <div className="arena-page min-h-screen flex items-center justify-center p-6">
       <div className="text-center max-w-md space-y-4">
         <ShieldAlert className="w-14 h-14 text-destructive mx-auto" />
         <h1 className="text-2xl font-bold text-foreground">Conta suspensa</h1>
@@ -24,7 +24,7 @@ export default function BannedNotice() {
             <strong>Motivo:</strong> {userProfile.banned_reason}
           </p>
         )}
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-muted-foreground/80">
           Se você acredita que isso é um engano, entre em contato com o suporte.
         </p>
         <Button variant="outline" onClick={signOut}>Sair</Button>

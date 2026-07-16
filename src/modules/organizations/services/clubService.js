@@ -331,32 +331,30 @@ export async function setMemberRole(clubId, member, role, actor) {
 }
 
 /**
- * Permissões granulares de um membro comum (admins já têm tudo
- * implicitamente). Capacidades de gestão da própria organização (excluir
- * clube, regenerar código, editar dados do clube) continuam exclusivas do
- * admin, sem equivalente granular.
- *
- * `permissions` pode conter só as chaves que estão mudando (ex.:
- * `{ manage_team: true }`) — o restante é preservado a partir de
- * `member.permissions` (o objeto já carregado na lista de membros).
+ * Permissões granulares do painel de administração de um membro:
+ * `animals`, `finance`, `donations`, `feed`, `team`. O proprietário tem
+ * todas implicitamente e não pode ser editado (ver `domain/permissions.js`).
  */
 export async function setMemberPermissions(clubId, member, permissions, actor) {
   if (!member?.user_id) throw new Error('Membro inválido.');
-  const merged = {
-    edit_pets: !!(permissions.edit_pets ?? member.permissions?.edit_pets),
-    manage_team: !!(permissions.manage_team ?? member.permissions?.manage_team),
-    view_reports: !!(permissions.view_reports ?? member.permissions?.view_reports),
-    reply_chat: !!(permissions.reply_chat ?? member.permissions?.reply_chat),
-  };
+  const club = await getClub(clubId);
+  if (club?.created_by === member.user_id) {
+    throw new Error('O proprietário da organização já tem todas as permissões.');
+  }
+  const sanitized = {};
+  CLUB_PERMISSION_KEYS.forEach((key) => {
+    sanitized[key] = !!permissions[key];
+  });
   await updateDoc(doc(db, COL.members, memberDocId(clubId, member.user_id)), {
-    permissions: merged,
+    permissions: sanitized,
     updated_at: serverTimestamp(),
   });
   // TASK-351: targetUserId = admin agindo sobre outro membro
   await createAuditLog({
     action: 'club_member_permissions_updated',
     actor,
-    details: { club_id: clubId, user_id: member.user_id, permissions: merged },
+    targetUserId: member.user_id,
+    details: { club_id: clubId, permissions: sanitized },
   });
 }
 
@@ -497,7 +495,7 @@ export async function approveJoinRequest(request, actor) {
     title: `Pedido aprovado: você agora é membro de "${trimmed(request.club_name).slice(0, 50)}"`,
     message: 'Toque para abrir a organização e ver eventos, mural e fórum.',
     type: NOTIFICATION_TYPE.CLUB_JOIN_APPROVED,
-    link: `/organizacoes/${request.club_id}`,
+    link: `/comunidade/${request.club_id}`,
     actor,
   });
   // TASK-351: targetUserId = admin aprovando ingresso de request.user_id
@@ -515,7 +513,7 @@ export async function rejectJoinRequest(request, actor) {
     title: `Seu pedido para "${trimmed(request.club_name).slice(0, 50)}" não foi aprovado`,
     message: 'Você pode falar com um administrador da organização para mais informações.',
     type: NOTIFICATION_TYPE.CLUB_JOIN_REJECTED,
-    link: `/organizacoes/${request.club_id}`,
+    link: `/comunidade/${request.club_id}`,
     actor,
   });
   // TASK-351: targetUserId = admin rejeitando ingresso de request.user_id
@@ -553,7 +551,7 @@ export async function inviteMemberToClub(club, target, inviter, profile) {
     title: `${inviterName} convidou você para a organização "${trimmed(club.name).slice(0, 50)}"`,
     message: 'Toque para aceitar ou recusar o convite.',
     type: NOTIFICATION_TYPE.CLUB_INVITE,
-    link: `/organizacoes/${club.id}`,
+    link: `/comunidade/${club.id}`,
     actor: { uid: inviter.uid, displayName: inviterName },
   });
   // TASK-351: targetUserId = admin convidando target.user_id
@@ -706,7 +704,6 @@ export async function createClubEvent(clubId, data, user) {
     starts_at: data.starts_at || null,
     recurring: !!data.recurring,
     visibility,
-    pet_ids: Array.isArray(data.pet_ids) ? data.pet_ids.filter(Boolean) : [],
     created_by: user.uid,
     created_by_name: data.created_by_name || user.displayName || user.email || '',
     created_at: serverTimestamp(),
@@ -749,7 +746,7 @@ export async function createClubEvent(clubId, data, user) {
         title: `Novo evento na organização: "${trimmed(data.title).slice(0, 60)}"`,
         message: `${creatorName} criou um evento. Toque para ver e responder.`,
         type: NOTIFICATION_TYPE.CLUB_EVENT_PUBLISHED,
-        link: `/organizacoes/${clubId}/eventos/${id}`,
+        link: `/comunidade/${clubId}/eventos/${id}`,
         actor: { uid: user.uid, displayName: creatorName },
       });
     } catch (err) {
@@ -761,7 +758,7 @@ export async function createClubEvent(clubId, data, user) {
 }
 
 export async function updateClubEvent(eventId, updates, actor) {
-  const allowed = ['title', 'description', 'type', 'location', 'starts_at', 'recurring', 'visibility', 'pet_ids'];
+  const allowed = ['title', 'description', 'type', 'location', 'starts_at', 'recurring', 'visibility'];
   const sanitized = {};
   allowed.forEach((key) => {
     if (updates[key] === undefined) return;
@@ -769,7 +766,6 @@ export async function updateClubEvent(eventId, updates, actor) {
     else if (key === 'type') sanitized[key] = updates[key];
     else if (key === 'recurring') sanitized[key] = !!updates[key];
     else if (key === 'visibility') sanitized[key] = updates[key] === EVENT_VISIBILITY.PRIVATE ? EVENT_VISIBILITY.PRIVATE : EVENT_VISIBILITY.PUBLIC;
-    else if (key === 'pet_ids') sanitized[key] = Array.isArray(updates[key]) ? updates[key].filter(Boolean) : [];
     else sanitized[key] = trimmed(updates[key]);
   });
   await updateDoc(doc(db, COL.events, eventId), { ...sanitized, updated_at: serverTimestamp() });
@@ -870,7 +866,7 @@ export async function inviteToEvent(event, target, inviter, profile) {
     title: `${inviterName} convidou você para "${trimmed(event.title).slice(0, 60)}"`,
     message: 'Toque para ver o evento e responder: Vou, Talvez ou Não vou.',
     type: NOTIFICATION_TYPE.EVENT_INVITE,
-    link: `/organizacoes/${event.club_id}/eventos/${event.id}`,
+    link: `/comunidade/${event.club_id}/eventos/${event.id}`,
     actor: { uid: inviter.uid, displayName: inviterName },
   });
   return payload;

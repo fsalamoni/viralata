@@ -4,9 +4,10 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip,
 } from 'recharts';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { fetchMetricsData, groupByMonth, groupByField } from '../services/metricsService';
-import PageContainer from '@/components/PageContainer';
+import { Button } from '@/components/ui/button';
+import { fetchMetricsData, groupByMonth, groupByDay, groupByField } from '../services/metricsService';
+import PageHero from '@/components/PageHero';
+import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 
 export default function AdminMetrics() {
   const { isPlatformAdmin } = useAuth();
@@ -20,8 +21,9 @@ export default function AdminMetrics() {
     fetchMetricsData().then(setData).finally(() => setLoading(false));
   }, [isPlatformAdmin]);
 
-  if (!isPlatformAdmin) return null;
-  if (loading) return <PageContainer className="py-16 text-center text-muted-foreground">Carregando métricas...</PageContainer>;
+  // Hooks de classe dos wrappers. Devem ficar ANTES dos early-returns.
+  const loadingClass = useArenaPageClasses('max-w-5xl mx-auto px-4 py-16 text-center text-muted-foreground');
+  const successClass = useArenaPageClasses('arena-page mx-auto max-w-5xl space-y-6 px-4 py-6');
 
   if (!isPlatformAdmin) return null;
   if (loading) return <div className={loadingClass}>Carregando métricas...</div>;
@@ -36,8 +38,26 @@ export default function AdminMetrics() {
   const petsByState = groupByField(data.pets, 'state');
 
   return (
-    <PageContainer className="space-y-6">
-      <h1 className="text-2xl font-bold text-foreground">Métricas da Plataforma</h1>
+    <div className={successClass}>
+      <PageHero
+        eyebrow="Admin · Métricas"
+        title="Métricas da Plataforma"
+        description="Visão geral do crescimento: pets cadastrados, adoções concluídas, usuários e denúncias. Cada card abre o detalhe."
+      />
+
+      {/* TASK-172: seletor de janela temporal */}
+      <div className="flex justify-end gap-2">
+        {[[30, '30 dias'], [90, '90 dias'], [365, '12 meses']].map(([days, label]) => (
+          <Button
+            key={days}
+            size="sm"
+            variant={rangeDays === days ? 'default' : 'outline'}
+            onClick={() => setRangeDays(days)}
+          >
+            {label}
+          </Button>
+        ))}
+      </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <SummaryCard label="Pets cadastrados" value={data.pets.length} />
@@ -103,19 +123,19 @@ export default function AdminMetrics() {
               <Bar dataKey="count" name="Denúncias" fill="#dd382c" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
-        </CardContent>
-      </Card>
-    </PageContainer>
+        </div>
+      </section>
+    </div>
   );
 }
 
 function SummaryCard({ label, value }) {
   return (
-    <Card>
-      <CardContent className="pt-6 text-center">
+    <section className="arena-section-card">
+      <div className="arena-section-card-body pt-6 text-center">
         <p className="text-2xl font-bold text-foreground">{value}</p>
         <p className="text-xs text-muted-foreground mt-1">{label}</p>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }

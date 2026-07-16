@@ -8,7 +8,17 @@ import { Label } from '@/components/ui/label';
 import { ImageUpload } from '@/components/ui/image-upload';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { useCreateClub } from '@/modules/organizations/hooks/useClubs';
-import PageContainer from '@/components/PageContainer';
+import { createAuditLog } from '@/core/services/auditService';
+import PageHero from '@/components/PageHero';
+import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
+import SingleAcceptanceDialog from '@/modules/shelter/components/legal/SingleAcceptanceDialog';
+import {
+  SHELTER_ONBOARDING_TERMS_TEXT,
+  SHELTER_ONBOARDING_TERMS_VERSION,
+  buildShelterOnboardingAcceptance,
+} from '@/modules/shelter/domain/legal/shelterOnboardingTerms';
+import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
+import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 
 const INITIAL = {
   name: '',
@@ -101,33 +111,24 @@ export default function CreateClub() {
   };
 
   return (
-    <PageContainer className="pb-12">
-      <div className="mx-auto w-full max-w-3xl space-y-6">
-      <Button asChild variant="ghost" size="sm">
-        <Link to="/organizacoes"><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para organizações</Link>
-      </Button>
+    <div className={useArenaPageClasses('arena-page mx-auto max-w-3xl space-y-6 px-5 py-6 pb-12')}>
+      <PageHero
+        eyebrow="Nova organização"
+        title="Cadastrar organização"
+        description="Você será o administrador da organização e poderá convidar sua equipe por meio de um código exclusivo."
+        actions={
+          <Button asChild variant="ghost" size="sm">
+            <Link to="/organizacoes"><ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para organizações</Link>
+          </Button>
+        }
+      />
 
-      <section className="arena-panel-strong rounded-lg p-5 sm:p-6">
-        <div className="flex items-start gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-amber-300 text-foreground">
-            <Building2 className="h-5 w-5" />
-          </div>
-          <div className="max-w-2xl space-y-2">
-            <p className="text-xs font-semibold uppercase tracking-wider text-highlight">Nova organização</p>
-            <h1 className="text-2xl font-bold text-white sm:text-3xl">Cadastrar organização</h1>
-            <p className="text-sm leading-6 text-orange-50/85">
-              Você será o administrador da organização e poderá convidar sua equipe por meio de um código exclusivo.
-            </p>
-          </div>
+      <section className="arena-section-card overflow-hidden">
+        <div className="arena-section-card-header">
+          <h3 className="arena-section-card-title">Dados da organização</h3>
+          <p className="arena-section-card-description">Apenas o nome é obrigatório. Quanto mais completo, melhor para a comunidade encontrar você.</p>
         </div>
-      </section>
-
-      <Card className="overflow-hidden">
-        <CardHeader className="border-b border-primary/10 bg-card/45 p-4 sm:p-5">
-          <CardTitle className="text-base text-foreground">Dados do clube</CardTitle>
-          <CardDescription>Apenas o nome é obrigatório. Quanto mais completo, melhor para a comunidade encontrar você.</CardDescription>
-        </CardHeader>
-        <CardContent className="p-4 sm:p-5">
+        <div className="arena-section-card-body p-4 sm:p-5">
           {!isAuthenticated && (
             <p className="mb-4 rounded-md border border-highlight/40 bg-highlight/[0.14] p-3 text-sm text-[hsl(30,60%,24%)]">
               Você precisa estar autenticado para criar uma organização.
@@ -245,6 +246,5 @@ export default function CreateClub() {
         onAccept={handleDpaAccept}
       />
     </div>
-    </PageContainer>
   );
 }

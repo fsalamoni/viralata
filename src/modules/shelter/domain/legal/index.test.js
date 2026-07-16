@@ -73,11 +73,10 @@ describe('legal/index — exports', () => {
 });
 
 describe('legal/index — LEGAL_PAGES', () => {
-  it('tem 12 páginas (pacote documental v2: 6 públicas + 5 por papel + dpa-abrigos)', () => {
+  it('tem 11 páginas (pacote documental v2: 6 públicas + 5 por papel)', () => {
     // 6 públicas (termos, privacidade, avisos, conduta, cookies, legislacao)
     // + 5 por papel (adoção, doações, voluntariado, lar temporário, abrigo)
-    // + 1 DPA autônomo (dpa-abrigos)
-    expect(LEGAL_PAGES).toHaveLength(12);
+    expect(LEGAL_PAGES).toHaveLength(11);
   });
 
   it('todas as páginas têm slug, title, description e version', () => {

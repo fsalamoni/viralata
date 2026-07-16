@@ -56,8 +56,6 @@ if (!global.__viralataInitialized) {
 }
 const db = getFirestore();
 
-let _emailSender = null; // injected for testing
-
 let _logger = {
   info: () => {},
   warn: () => {},
@@ -67,24 +65,6 @@ let _logger = {
 function setLogger(logger) {
   if (logger && typeof logger.info === 'function') {
     _logger = logger;
-  }
-}
-
-/**
- * Injeta função de envio de email (para testes e para evitar require
- * em tempo de carga do módulo). Se não injetado, usa lazy require.
- */
-function setEmailSender(fn) {
-  _emailSender = fn;
-}
-
-async function _getEmailSender() {
-  if (_emailSender) return _emailSender;
-  try {
-    const { sendVolunteerShiftConfirmedEmail } = require('./volunteerEmails');
-    return sendVolunteerShiftConfirmedEmail;
-  } catch (_) {
-    return null;
   }
 }
 
@@ -414,7 +394,7 @@ async function runNotifyAdminOnNewParticipation(event) {
 }
 
 // ════════════════════════════════════════════════════════════════════
-// TRIGGER 5 (existing): onUpdate check_in / check_out
+// TRIGGER 5: onUpdate check_in / check_out
 // ════════════════════════════════════════════════════════════════════
 
 async function runNotifyOnCheckInOut(event) {
@@ -472,236 +452,6 @@ async function runNotifyOnCheckInOut(event) {
     check_event: checkEvent,
     recipients: recipients.size,
   });
-}
-
-// ════════════════════════════════════════════════════════════════════
-// TRIGGER 6: onCreate clubs/{clubId}/volunteer_participations/{id}
-// Notifica o VOLUNTÁRIO (não admins) — FCM + calendar + email + audit.
-// ════════════════════════════════════════════════════════════════════
-
-/**
- * Envia FCM push notification para o voluntário com payload de confirmação
- * de turno. Usa `firebase-admin/messaging` no server-side.
- */
-async function sendFCMToVolunteer(volunteerUid, payload) {
-  try {
-    const { getMessaging } = require('firebase-admin/messaging');
-    const admin = require('firebase-admin');
-    const userDoc = await db.collection('users').doc(volunteerUid).get();
-    if (!userDoc.exists) return { sent: 0 };
-    const userData = userDoc.data();
-    const fcmTokens = Array.isArray(userData.fcm_tokens)
-      ? userData.fcm_tokens.map((t) => t.token).filter(Boolean)
-      : [];
-    if (fcmTokens.length === 0) return { sent: 0, reason: 'no_tokens' };
-
-    const messaging = getMessaging(admin.app());
-    const message = {
-      notification: {
-        title: payload.title,
-        body: payload.body || '',
-      },
-      data: {
-        type: 'volunteer_participation_created',
-        event_label: payload.event_label || '',
-        event_date: payload.event_date || '',
-        role: payload.role || '',
-        url: payload.url || '',
-        participation_id: payload.participation_id || '',
-        club_id: payload.club_id || '',
-      },
-      tokens: fcmTokens,
-    };
-    const result = await messaging.sendEachForMulticast(message);
-    _logger.info('volunteerTriggers: FCM sent', {
-      volunteer_uid: volunteerUid,
-      success_count: result.successCount,
-      failure_count: result.failureCount,
-    });
-    return {
-      sent: result.successCount,
-      failed: result.failureCount,
-    };
-  } catch (err) {
-    _logger.warn('volunteerTriggers: FCM send failed', {
-      volunteer_uid: volunteerUid,
-      error: err?.message,
-    });
-    return { sent: 0, error: err?.message };
-  }
-}
-
-/**
- * Escreve entrada no calendar do voluntário:
- * `users/{volunteerUid}/calendar/{participationId}`
- */
-async function writeCalendarEntry(volunteerUid, participationId, data) {
-  try {
-    await db.collection('users').doc(volunteerUid).collection('calendar').doc(participationId).set({
-      participation_id: participationId,
-      club_id: data.club_id || null,
-      club_name: data.club_name || null,
-      event_type: data.event_type || null,
-      event_label: data.event_label || null,
-      event_date: data.event_date || null,
-      role: data.role || null,
-      notes: data.notes || null,
-      created_at: new Date().toISOString(),
-    }, { merge: true });
-    _logger.info('volunteerTriggers: calendar entry written', {
-      volunteer_uid: volunteerUid,
-      participation_id: participationId,
-    });
-    return { ok: true };
-  } catch (err) {
-    _logger.warn('volunteerTriggers: calendar write failed', {
-      volunteer_uid: volunteerUid,
-      error: err?.message,
-    });
-    return { ok: false, error: err?.message };
-  }
-}
-
-/**
- * Escreve entrada no audit log.
- */
-async function writeAuditEntry(volunteerUid, data) {
-  try {
-    await db.collection('audit_logs').add({
-      action: 'volunteer_participation_created',
-      action_label: 'Confirmação de turno enviada',
-      category: 'volunteer',
-      actor_id: data.created_by || null,
-      actor_name: data.volunteer_name || null,
-      user_id: volunteerUid,
-      user_name: data.volunteer_name || null,
-      details: {
-        club_id: data.club_id,
-        club_name: data.club_name,
-        participation_id: data.participation_id,
-        event_label: data.event_label,
-        event_date: data.event_date,
-        role: data.role,
-        event_type: data.event_type,
-      },
-      created_at_ms: Date.now(),
-    });
-    _logger.info('volunteerTriggers: audit entry written', {
-      volunteer_uid: volunteerUid,
-    });
-    return { ok: true };
-  } catch (err) {
-    _logger.warn('volunteerTriggers: audit write failed', {
-      volunteer_uid: volunteerUid,
-      error: err?.message,
-    });
-    return { ok: false, error: err?.message };
-  }
-}
-
-async function runNotifyVolunteerOnParticipationCreated(event) {
-  const data = event.data?.data();
-  if (!data) return;
-  const { clubId, participationId } = event.params;
-  const volunteerUid = data.volunteer_uid;
-  if (!volunteerUid) return;
-
-  // Fetch club/shelter name for messages
-  let clubName = null;
-  try {
-    const clubDoc = await db.collection('clubs').doc(clubId).get();
-    clubName = clubDoc.data()?.name || clubDoc.data()?.display_name || null;
-  } catch (_) { /* non-fatal */ }
-
-  const eventLabel = data.event_label || data.event_type || 'evento';
-  const eventDate = data.event_date
-    ? new Date(data.event_date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })
-    : 'data a definir';
-
-  // Dedup key
-  const key = dedupId(
-    'volunteer-participation-created',
-    clubId,
-    participationId,
-    data.created_at?.toMillis?.()?.toString() || '',
-  );
-
-  // Check dedup
-  const dedupRef = db.collection(DEDUP_COLLECTION).doc(key);
-  const dedupDoc = await dedupRef.get();
-  if (dedupDoc.exists) {
-    _logger.info('volunteerTriggers: dedup hit for participation-created', { key });
-    return { suppressed: true };
-  }
-
-  // FCM push notification
-  const fcmPayload = {
-    title: `Turno confirmado: ${eventLabel}`,
-    body: `${clubName ? clubName + ' — ' : ''}${eventDate}${data.role ? ' · ' + data.role : ''}`,
-    event_label: eventLabel,
-    event_date: eventDate,
-    role: data.role || '',
-    url: `/abrigo/${clubId}/voluntarios/participacoes/${participationId}`,
-    participation_id: participationId,
-    club_id: clubId,
-  };
-  const fcmResult = await sendFCMToVolunteer(volunteerUid, fcmPayload);
-
-  // Calendar entry
-  const calResult = await writeCalendarEntry(volunteerUid, participationId, {
-    club_id: clubId,
-    club_name: clubName,
-    event_type: data.event_type,
-    event_label: data.event_label,
-    event_date: data.event_date,
-    role: data.role,
-    notes: data.notes,
-    participation_id: participationId,
-  });
-
-  // Email template
-  let emailResult = { ok: false, reason: 'skipped' };
-  try {
-    const sender = await _getEmailSender();
-    if (sender) {
-      emailResult = await sender(volunteerUid, eventDate, eventLabel, data.role, clubName);
-    }
-  } catch (emailErr) {
-    _logger.warn('volunteerTriggers: email send failed', {
-      volunteer_uid: volunteerUid,
-      error: emailErr?.message,
-    });
-  }
-
-  // Audit log
-  const auditResult = await writeAuditEntry(volunteerUid, {
-    club_id: clubId,
-    club_name: clubName,
-    participation_id: participationId,
-    event_label: data.event_label,
-    event_date: data.event_date,
-    role: data.role,
-    event_type: data.event_type,
-    volunteer_name: data.volunteer_name,
-    created_by: data.created_by,
-  });
-
-  // Mark dedup (best-effort)
-  try {
-    await dedupRef.set({ sent_at: new Date().toISOString(), sent_at_ms: Date.now() }, { merge: true });
-  } catch (_) {}
-
-  _logger.info('volunteerTriggers: volunteer notified of participation', {
-    club_id: clubId,
-    participation_id: participationId,
-    volunteer_uid: volunteerUid,
-    fcm_sent: fcmResult.sent,
-    calendar_ok: calResult.ok,
-    email_ok: emailResult.ok,
-    audit_ok: auditResult.ok,
-  });
-
-  return { fcmResult, calResult, emailResult, auditResult };
 }
 
 // ════════════════════════════════════════════════════════════════════
@@ -783,16 +533,6 @@ async function runNotifyOnCheckInOutSafe(event) {
   );
 }
 
-async function runNotifyVolunteerOnParticipationCreatedSafe(event) {
-  const { clubId, participationId } = event.params || {};
-  const data = event.data?.data();
-  return safeRun(
-    'notifyVolunteerOnParticipationCreated',
-    { clubId, participationId, volunteer_uid: data?.volunteer_uid },
-    () => runNotifyVolunteerOnParticipationCreated(event),
-  );
-}
-
 module.exports = {
   // Core (testável)
   dedupId,
@@ -802,19 +542,16 @@ module.exports = {
   runNotifyVolunteerOnStatusChange,
   runNotifyAdminOnNewParticipation,
   runNotifyOnCheckInOut,
-  runNotifyVolunteerOnParticipationCreated,
   getShelterAdminUids,
   createNotificationForRecipients,
   sendToDLQ,
   setLogger,
-  setEmailSender,
   // Wrappers com DLQ (chamados pelos triggers em index.js)
   runPropagateVolunteerProfileSnapshotSafe,
   runNotifyAdminOnNewVolunteerSafe,
   runNotifyVolunteerOnStatusChangeSafe,
   runNotifyAdminOnNewParticipationSafe,
   runNotifyOnCheckInOutSafe,
-  runNotifyVolunteerOnParticipationCreatedSafe,
   // Constants
   DEDUP_COLLECTION,
   DLQ_COLLECTION,

@@ -55,9 +55,6 @@ import { cn } from '@/core/lib/utils';
  * @param {string} [props.acceptButtonLabel] - label do botao de submit
  * @param {boolean} [props.requireCpf] - exige CPF para assinatura (uso em DPA abrigo)
  * @param {string} [props.prefillCpf] - CPF pre-preenchido
- * @param {string[]} [props.disclaimerRisks] - riscos a declarar (vicios redibitorios).
- *   Quando presente, renderiza aside destacado + checkbox separado.
- * @param {string} [props.disclaimerTitle] - titulo do aside (default: "Aviso sobre riscos")
  */
 export default function SingleAcceptanceDialog({
   open,
@@ -75,17 +72,14 @@ export default function SingleAcceptanceDialog({
   requireRole = false,
   prefillRole = '',
   roleLabel = 'Cargo / funcao do responsavel:',
-  disclaimerRisks = null,
-  disclaimerTitle = 'Aviso sobre riscos do animal',
 }) {
   const [signature, setSignature] = useState(prefillSignature);
   const [cpf, setCpf] = useState(prefillCpf);
   const [role, setRole] = useState(prefillRole);
-  const [checks, setChecks] = useState({ read: false, understood: false, agree: false, disclaimer: false });
+  const [checks, setChecks] = useState({ read: false, understood: false, agree: false });
   const [documentHash, setDocumentHash] = useState(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
-  const hasDisclaimer = Array.isArray(disclaimerRisks) && disclaimerRisks.length > 0;
 
   // Reseta estado quando o modal abre/fecha
   useEffect(() => {
@@ -93,7 +87,7 @@ export default function SingleAcceptanceDialog({
       setSignature(prefillSignature);
       setCpf(prefillCpf);
       setRole(prefillRole);
-      setChecks({ read: false, understood: false, agree: false, disclaimer: false });
+      setChecks({ read: false, understood: false, agree: false });
       setDocumentHash(null);
       setError(null);
     }
@@ -121,11 +115,10 @@ export default function SingleAcceptanceDialog({
   }, [open, documentText]);
 
   const allChecked = checks.read && checks.understood && checks.agree;
-  const disclaimerChecked = !hasDisclaimer || checks.disclaimer;
   const signatureOk = signature.trim().length >= 3;
   const cpfOk = !requireCpf || cpf.replace(/\D/g, '').length === 11;
   const roleOk = !requireRole || role.trim().length >= 2;
-  const canSubmit = allChecked && disclaimerChecked && signatureOk && cpfOk && roleOk && !busy;
+  const canSubmit = allChecked && signatureOk && cpfOk && roleOk && !busy;
 
   async function handleSubmit() {
     if (!canSubmit || typeof onAccept !== 'function') return;
@@ -195,29 +188,6 @@ export default function SingleAcceptanceDialog({
               label="Aceito de forma livre e espontanea."
             />
           </div>
-
-          {/* Disclaimer destacado — vícios redibitórios / riscos do animal */}
-          {hasDisclaimer && (
-            <aside className="rounded-md border border-amber-300 bg-amber-50 p-4">
-              <p className="mb-2 text-xs font-semibold text-amber-900">
-                {disclaimerTitle}
-              </p>
-              <p className="mb-3 text-xs text-amber-800">
-                Este animal pode apresentar os seguintes riscos ou condições:
-              </p>
-              <ul className="mb-3 list-inside list-disc space-y-0.5 text-xs text-amber-800">
-                {disclaimerRisks.map((risk, i) => (
-                  <li key={i}>{risk}</li>
-                ))}
-              </ul>
-              <CheckRow
-                id={`acc-${documentVersion}-disc`}
-                checked={checks.disclaimer}
-                onChange={(v) => setChecks((p) => ({ ...p, disclaimer: v }))}
-                label="Estou ciente dos riscos acima e asumo a responsabilidade integral pela saúde e bem-estar do animal."
-              />
-            </aside>
-          )}
 
           {/* Assinatura eletronica */}
           <div className="space-y-2">

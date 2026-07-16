@@ -26,7 +26,6 @@ import {
   useDeleteClubEvent,
   useEventInvites,
 } from '@/modules/organizations/hooks/useClubs';
-import { useMyPets } from '@/modules/pets/hooks/usePets';
 import {
   CLUB_EVENT_TYPE,
   CLUB_EVENT_TYPE_LABELS,
@@ -49,10 +48,6 @@ const TYPE_TONE = {
   [CLUB_EVENT_TYPE.SOCIAL]: 'success',
   [CLUB_EVENT_TYPE.MEETING]: 'outline',
   [CLUB_EVENT_TYPE.OTHER]: 'outline',
-  [CLUB_EVENT_TYPE.VACCINATION]: 'success',
-  [CLUB_EVENT_TYPE.LECTURE]: 'outline',
-  [CLUB_EVENT_TYPE.FUNDRAISING]: 'warning',
-  [CLUB_EVENT_TYPE.PET_DAY]: 'success',
 };
 
 export default function ClubEventsTab({ clubId, isAdmin }) {
@@ -139,7 +134,7 @@ function EventCard({ event, clubId, isAdmin }) {
             </div>
           </div>
           {canManage && (
-            <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0 text-destructive hover:text-destructive" onClick={() => setConfirmDelete(true)}>
+            <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0 text-destructive hover:text-destructive/85" onClick={() => setConfirmDelete(true)} aria-label="Excluir evento">
               <Trash2 className="h-4 w-4" />
             </Button>
           )}
@@ -199,19 +194,8 @@ export function EventFormDialog({ clubId, event, open, onClose }) {
     starts_at: toLocalInput(event?.starts_at),
     recurring: !!event?.recurring,
     visibility: event?.visibility || EVENT_VISIBILITY.PUBLIC,
-    pet_ids: event?.pet_ids || [],
   });
   const [form, setForm] = useState(buildInitial);
-  const { data: shelterPets = [] } = useMyPets(clubId);
-
-  const togglePet = (petId) => {
-    setForm((prev) => ({
-      ...prev,
-      pet_ids: prev.pet_ids.includes(petId)
-        ? prev.pet_ids.filter((id) => id !== petId)
-        : [...prev.pet_ids, petId],
-    }));
-  };
 
   // Reinicializa o formulário ao abrir (importante no modo edição).
   React.useEffect(() => {
@@ -311,32 +295,6 @@ export function EventFormDialog({ clubId, event, open, onClose }) {
                 : 'Todos os membros da organização poderão ver e participar.'}
             </p>
           </div>
-          {shelterPets.length > 0 && (
-            <div className="space-y-2">
-              <Label>Pets vinculados</Label>
-              <div className="flex flex-wrap gap-2">
-                {shelterPets.map((pet) => {
-                  const selected = form.pet_ids.includes(pet.id);
-                  return (
-                    <button
-                      key={pet.id}
-                      type="button"
-                      onClick={() => togglePet(pet.id)}
-                      className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm transition-colors ${
-                        selected
-                          ? 'border-primary bg-primary/10 text-primary'
-                          : 'border-border bg-background text-muted-foreground hover:border-primary/50'
-                      }`}
-                    >
-                      <span>{pet.title || pet.name || 'Pet'}</span>
-                      {selected && <span aria-hidden>✓</span>}
-                    </button>
-                  );
-                })}
-              </div>
-              <p className="text-xs text-muted-foreground">Toque nos pets que participarão deste evento.</p>
-            </div>
-          )}
           <div className="space-y-2">
             <Label htmlFor="event_description">Descrição</Label>
             <textarea

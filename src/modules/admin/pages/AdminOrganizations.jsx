@@ -13,13 +13,6 @@ import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import { listAdminClubs, updateAdminClub } from '@/modules/admin/services/adminService';
 import { useAdminCommunities } from '@/modules/communities/hooks/useCommunities';
 import { CLUB_DIRECTORY_STATUS, CLUB_DIRECTORY_STATUS_LABELS, sortCommunities } from '@/modules/communities/domain/directory';
-import {
-  useAdminCommunities,
-  useCreateCommunity,
-  useDeleteCommunity,
-  useUpdateCommunity,
-} from '@/modules/communities/hooks/useCommunities';
-import PageContainer from '@/components/PageContainer';
 
 const STATUS_OPTIONS = Object.values(CLUB_DIRECTORY_STATUS);
 
@@ -86,10 +79,16 @@ export default function AdminOrganizations() {
   const featuredClubs = clubs.filter((club) => club.featured).length;
 
   return (
-    <PageContainer className="flex flex-col gap-6">
+    <div className={wrapperClass}>
+      <div className="mb-1.5 flex items-center gap-3">
+        <Button variant="ghost" size="sm" asChild>
+          <Link to="/admin"><ArrowLeft className="mr-2 w-4 h-4" /> Voltar ao Painel</Link>
+        </Button>
+      </div>
+
       <PageHero
         eyebrow="Admin"
-        title="Comunidades e organizações"
+        title="Abrigos"
         description="Controle editorial do diretório, vínculos entre comunidades e organizações, publicação e destaques globais."
         actions={(
           <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold text-orange-50/85">
@@ -98,65 +97,16 @@ export default function AdminOrganizations() {
         )}
       />
 
-      <div className="grid gap-4 md:grid-cols-4">
-        <SummaryCard icon={Building2} label="Organizações" value={clubs.length} />
-        <SummaryCard icon={FolderTree} label="Comunidades" value={communities.length} />
+      <div className="grid gap-4 md:grid-cols-3">
+        <SummaryCard icon={Building2} label="Abrigos" value={clubs.length} />
         <SummaryCard icon={Sparkles} label="Destaques" value={featuredClubs} />
-        <SummaryCard icon={Users} label="Pendências" value={clubsInReview + clubsSuspended} />
+        <SummaryCard icon={ShieldCheck} label="Pendências" value={clubsInReview + clubsSuspended} />
       </div>
 
-      <Tabs defaultValue="organizations" className="w-full">
-        <TabsList className="arena-tab-bar">
-          <TabsTrigger value="organizations" className="arena-tab-pill">Organizações</TabsTrigger>
-          <TabsTrigger value="communities" className="arena-tab-pill">Comunidades</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="organizations" className="mt-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Moderação do diretório</CardTitle>
-              <CardDescription>Defina publicação, destaque e vínculo comunitário de cada organização.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid gap-3 md:grid-cols-[minmax(0,1.6fr)_220px_220px]">
-                <Input
-                  placeholder="Buscar organização, cidade ou comunidade"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                />
-                <select
-                  className="h-10 rounded-md border border-input bg-background px-3 text-sm"
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                >
-                  <option value="all">Todos os status</option>
-                  {STATUS_OPTIONS.map((status) => (
-                    <option key={status} value={status}>{CLUB_DIRECTORY_STATUS_LABELS[status]}</option>
-                  ))}
-                </select>
-                <select
-                  className="h-10 rounded-md border border-input bg-background px-3 text-sm"
-                  value={communityFilter}
-                  onChange={(e) => setCommunityFilter(e.target.value)}
-                >
-                  <option value="all">Todas as comunidades</option>
-                  <option value="none">Sem comunidade</option>
-                  {sortedCommunities.map((community) => (
-                    <option key={community.id} value={community.id}>{community.name}</option>
-                  ))}
-                </select>
-              </div>
-              <div className="flex gap-1.5">
-                <Button asChild size="sm" variant="outline">
-                  <Link to={`/organizacoes/${club.id}`}><Eye className="w-3.5 h-3.5" /></Link>
-                </Button>
-                <Button size="sm" variant="ghost" className="text-destructive" onClick={() => handleDelete(club)}>
-                  <Trash2 className="w-3.5 h-3.5" />
-                </Button>
-              </div>
-            </div>
-          ))}
-          {clubs.length === 0 && <p className="text-center text-muted-foreground py-8">Nenhuma organização cadastrada.</p>}
+      <section className="arena-section-card">
+        <div className="arena-section-card-header">
+          <h3 className="arena-section-card-title">Moderação do diretório</h3>
+          <p className="arena-section-card-description">Defina publicação, destaque e vínculo comunitário de cada organização.</p>
         </div>
         <div className="arena-section-card-body space-y-4">
           <div className="grid gap-3 md:grid-cols-[minmax(0,1.6fr)_220px_220px]">
@@ -202,67 +152,11 @@ export default function AdminOrganizations() {
                         <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
                           <Building2 className="h-6 w-6" />
                         </div>
-
-                        <div className="grid flex-1 gap-3 md:grid-cols-3">
-                          <label className="space-y-1 text-xs font-medium text-muted-foreground">
-                            <span>Status</span>
-                            <select
-                              className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
-                              value={club.directory_status || CLUB_DIRECTORY_STATUS.ACTIVE}
-                              onChange={(e) => handleClubUpdate(club, { directory_status: e.target.value }, 'Status da organização atualizado.')}
-                              disabled={updateClubMutation.isPending}
-                            >
-                              {STATUS_OPTIONS.map((status) => (
-                                <option key={status} value={status}>{CLUB_DIRECTORY_STATUS_LABELS[status]}</option>
-                              ))}
-                            </select>
-                          </label>
-
-                          <label className="space-y-1 text-xs font-medium text-muted-foreground">
-                            <span>Comunidade</span>
-                            <select
-                              className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
-                              value={club.community_id || ''}
-                              onChange={(e) => {
-                                const nextCommunityId = e.target.value;
-                                const selected = nextCommunityId
-                                  ? sortedCommunities.find((item) => item.id === nextCommunityId)
-                                  : null;
-                                handleClubUpdate(
-                                  club,
-                                  { community_id: nextCommunityId, community_name: selected?.name || '' },
-                                  'Comunidade da organização atualizada.',
-                                );
-                              }}
-                              disabled={updateClubMutation.isPending}
-                            >
-                              <option value="">Sem comunidade</option>
-                              {sortedCommunities.map((community) => (
-                                <option key={community.id} value={community.id}>{community.name}</option>
-                              ))}
-                            </select>
-                          </label>
-
-                          <div className="space-y-1 text-xs font-medium text-muted-foreground">
-                            <span>Ações</span>
-                            <div className="flex gap-2">
-                              <Button
-                                type="button"
-                                variant={club.featured ? 'secondary' : 'outline'}
-                                className="flex-1"
-                                onClick={() => handleClubUpdate(club, { featured: !club.featured }, club.featured ? 'Organização removida dos destaques.' : 'Organização marcada como destaque.')}
-                                disabled={updateClubMutation.isPending}
-                              >
-                                <Sparkles className="mr-1.5 h-4 w-4" />
-                                {club.featured ? 'Em destaque' : 'Destacar'}
-                              </Button>
-                              <Button asChild variant="outline" size="icon">
-                                <Link to={`/organizacoes/${club.id}`} aria-label={`Abrir ${club.name}`}>
-                                  <Eye className="h-4 w-4" />
-                                </Link>
-                              </Button>
-                            </div>
-                          </div>
+                      )}
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-bold text-foreground">{club.name}</h4>
+                          {club.featured && <Badge variant="warning" className="h-5 px-1.5 text-[10px] uppercase tracking-wider">Destaque</Badge>}
                         </div>
                         <p className="mt-0.5 text-xs text-muted-foreground">
                           {[club.city, club.state].filter(Boolean).join(' / ') || 'Local não informado'}
@@ -330,10 +224,10 @@ export default function AdminOrganizations() {
                 />
               )}
             </div>
-          </div>
-        </TabsContent>
-      </Tabs>
-    </PageContainer>
+          )}
+        </div>
+      </section>
+    </div>
   );
 }
 

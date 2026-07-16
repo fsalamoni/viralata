@@ -21,7 +21,6 @@ import {
   withdrawVolunteerConsent,
   deleteShelterVolunteer,
 } from '@/modules/shelter/services/volunteerProfileService';
-import { captureVolunteerError } from '@/core/services/errorTracker';
 
 const STALE_TIME_MS = 30_000;
 
@@ -46,7 +45,6 @@ export function useUpsertVolunteerProfile(uid) {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['volunteer-profile', uid] });
     },
-    onError: (err) => captureVolunteerError(err, { mutation: 'upsertVolunteerProfile', uid }),
   });
 }
 
@@ -57,7 +55,6 @@ export function useAcceptVolunteerTerms(uid) {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['volunteer-profile', uid] });
     },
-    onError: (err) => captureVolunteerError(err, { mutation: 'acceptVolunteerTerms', uid }),
   });
 }
 
@@ -91,7 +88,6 @@ export function useJoinShelterAsVolunteer() {
       qc.invalidateQueries({ queryKey: ['shelter-volunteers', data.shelter_club_id] });
       qc.invalidateQueries({ queryKey: ['shelter-volunteer', data.shelter_club_id, data.volunteer_uid] });
     },
-    onError: (err) => captureVolunteerError(err, { mutation: 'joinShelterAsVolunteer' }),
   });
 }
 
@@ -104,7 +100,6 @@ export function useUpdateShelterVolunteer(shelterClubId, volunteerUid) {
       qc.invalidateQueries({ queryKey: ['shelter-volunteers', shelterClubId] });
       qc.invalidateQueries({ queryKey: ['shelter-volunteer', shelterClubId, volunteerUid] });
     },
-    onError: (err) => captureVolunteerError(err, { mutation: 'updateShelterVolunteer', shelterClubId }),
   });
 }
 
@@ -117,7 +112,6 @@ export function useLeaveShelter(shelterClubId) {
       qc.invalidateQueries({ queryKey: ['shelter-volunteers', shelterClubId] });
       qc.invalidateQueries({ queryKey: ['user-volunteer-rosters'] });
     },
-    onError: (err) => captureVolunteerError(err, { mutation: 'leaveShelter', shelterClubId }),
   });
 }
 
@@ -147,7 +141,6 @@ export function useWithdrawVolunteerConsent(uid) {
       qc.invalidateQueries({ queryKey: ['user-volunteer-rosters', uid] });
       qc.invalidateQueries({ queryKey: ['shelter-volunteers'] });
     },
-    onError: (err) => captureVolunteerError(err, { mutation: 'withdrawVolunteerConsent', uid }),
   });
 }
 
@@ -158,6 +151,5 @@ export function useDeleteShelterVolunteer(shelterClubId) {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['shelter-volunteers', shelterClubId] });
     },
-    onError: (err) => captureVolunteerError(err, { mutation: 'deleteShelterVolunteer', shelterClubId }),
   });
 }

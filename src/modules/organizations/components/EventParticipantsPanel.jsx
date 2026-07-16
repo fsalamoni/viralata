@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { toast } from 'sonner';
-import { Trash2, UserPlus, Users, Globe, Lock, Send, Award, Loader2 } from 'lucide-react';
+import { Trash2, UserPlus, Users, Globe, Lock, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -23,8 +23,6 @@ import {
   useRemoveEventInvite,
   useUpdateEvent,
   useClubMembers,
-  useGenerateEventCertificate,
-  useMyEventCertificate,
 } from '@/modules/organizations/hooks/useClubs';
 import {
   INVITE_STATUS,
@@ -149,11 +147,6 @@ export default function EventParticipantsPanel({ event, clubId }) {
         </div>
       </section>
 
-      {/* TASK-343: Admin — gerar certificados em lote */}
-      {isManager && (
-        <AdminCertsSection event={event} invites={invites} />
-      )}
-
       {/* Participantes / convidados */}
       <section className="arena-section-card rounded-xl">
         <div className="arena-section-card-body space-y-4 p-4">
@@ -190,7 +183,7 @@ export default function EventParticipantsPanel({ event, clubId }) {
                           {inv.user_id === event.created_by && <span className="ml-1 text-xs text-primary">(organizador)</span>}
                         </div>
                         {inv.source === INVITE_SOURCE.PLATFORM && (
-                          <div className="text-[11px] text-muted-foreground">Convidado da plataforma</div>
+                          <div className="text-[11px] text-muted-foreground/80">Convidado da plataforma</div>
                         )}
                       </div>
                     </div>
@@ -199,7 +192,7 @@ export default function EventParticipantsPanel({ event, clubId }) {
                         {inv.status === INVITE_STATUS.INVITED ? 'Convidado' : 'Participante'}
                       </Badge>
                       {canRemove && inv.user_id !== event.created_by && (
-                        <button onClick={() => handleRemove(inv.user_id)} className="text-muted-foreground transition-colors hover:text-destructive" title="Remover">
+                        <button onClick={() => handleRemove(inv.user_id)} className="text-muted-foreground/80 transition-colors hover:text-destructive" title="Remover">
                           <Trash2 className="h-3.5 w-3.5" />
                         </button>
                       )}
@@ -277,7 +270,7 @@ function Pool({ title, people, onInvite, emptyText }) {
     <div>
       <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{title} ({people.length})</h4>
       {people.length === 0 ? (
-        <p className="text-sm text-muted-foreground">{emptyText}</p>
+        <p className="text-sm text-muted-foreground/80">{emptyText}</p>
       ) : (
         <div className="space-y-1.5">
           {people.map((p) => (
@@ -295,121 +288,4 @@ function Pool({ title, people, onInvite, emptyText }) {
       )}
     </div>
   );
-}
-
-/**
- * TASK-343 — Admin section: bulk-generate certificates for going participants.
- * Shown only to the event organizer (isManager).
- */
-function AdminCertsSection({ event, invites }) {
-  const going = invites.filter((i) => i.status !== INVITE_STATUS.INVITED);
-  const { data: certs = {} } = _useCertificates(event.id, going.map((i) => i.user_id));
-  const genMutation = useGenerateEventCertificate(event.id);
-  const [generatingFor, setGeneratingFor] = useState(null);
-
-  async function handleGenerateFor(inv) {
-    setGeneratingFor(inv.user_id);
-    try {
-      await genMutation.mutateAsync(inv.user_id);
-      toast.success(`Certificado gerado para ${inv.user_name}.`);
-    } catch (err) {
-      toast.error(`Falha para ${inv.user_name}: ${err.message}`);
-    } finally {
-      setGeneratingFor(null);
-    }
-  }
-
-  return (
-    <Card className="rounded-xl border-orange-200/50">
-      <CardContent className="space-y-3 p-4">
-        <div className="flex items-center gap-2">
-          <Award className="h-5 w-5 text-orange-600" />
-          <h3 className="text-sm font-semibold text-foreground">Certificados de Participação</h3>
-        </div>
-        <p className="text-xs text-muted-foreground">
-          Gere o certificado em PDF para cada participante. O arquivo fica disponível
-          publicamente para download via link seguro.
-        </p>
-        {going.length === 0 ? (
-          <p className="text-xs text-muted-foreground">Nenhum participante confirmado ainda.</p>
-        ) : (
-          <div className="divide-y divide-border max-h-48 overflow-y-auto">
-            {going.map((inv) => {
-              const cert = certs[inv.user_id];
-              const isLoading = generatingFor === inv.user_id;
-              return (
-                <div key={inv.id} className="flex items-center justify-between gap-2 py-2">
-                  <div className="flex min-w-0 items-center gap-2">
-                    <UserAvatar name={inv.user_name} photoUrl={inv.user_photo} size="sm" />
-                    <span className="truncate text-sm text-foreground">{inv.user_name}</span>
-                  </div>
-                  <div className="shrink-0">
-                    {cert?.downloadUrl ? (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="gap-1"
-                        onClick={() => window.open(cert.downloadUrl, '_blank', 'noopener,noreferrer')}
-                      >
-                        <Award className="h-3.5 w-3.5 text-orange-600" />
-                        Ver PDF
-                      </Button>
-                    ) : (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="gap-1"
-                        disabled={isLoading}
-                        onClick={() => handleGenerateFor(inv)}
-                      >
-                        {isLoading ? (
-                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                        ) : (
-                          <Award className="h-3.5 w-3.5" />
-                        )}
-                        Gerar
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
-
-/**
- * Lightweight local hook to fetch certificate records for a list of userIds.
- * Returns a map: { [userId]: certificateData }
- */
-function _useCertificates(eventId, userIds) {
-  const { useState, useEffect } = require('react');
-  const { getFirestore } = require('firebase/firestore');
-  const { doc, getDoc } = require('firebase/firestore');
-  const [certs, setCerts] = useState({});
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!eventId || userIds.length === 0) { setLoading(false); return; }
-    let cancelled = false;
-    (async () => {
-      const db = getFirestore();
-      const results = {};
-      await Promise.all(
-        userIds.map(async (uid) => {
-          try {
-            const snap = await getDoc(doc(db, 'club_events', eventId, 'certificates', uid));
-            if (snap.exists) results[uid] = { id: snap.id, ...snap.data() };
-          } catch (_) {}
-        })
-      );
-      if (!cancelled) { setCerts(results); setLoading(false); }
-    })();
-    return () => { cancelled = true; };
-  }, [eventId, JSON.stringify(userIds)]);
-
-  return { data: certs, isLoading: loading };
 }

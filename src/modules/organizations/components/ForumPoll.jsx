@@ -101,7 +101,7 @@ export default function ForumPoll({ thread }) {
               disabled={closed}
               className={cn(
                 'relative w-full overflow-hidden rounded-lg border px-3 py-2 text-left transition-colors',
-                isSelected ? 'border-primary bg-card' : 'border-primary/10 bg-card/70 hover:border-primary/40',
+                isSelected ? 'border-primary bg-white' : 'border-primary/10 bg-white/70 hover:border-primary/40',
                 closed && 'cursor-default',
               )}
             >
