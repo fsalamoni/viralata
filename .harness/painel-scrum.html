@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-13T18:17:21.389Z",
+  "generatedAt": "2026-07-16T14:41:16.970Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W29",
@@ -396,20 +396,7 @@
     "endsAt": "2026-07-22",
     "goal": "Implementar 50+ features de UI/UX/infra. Limpar inconsistências. Decisões registradas. Zero tasks in_progress stale."
   },
-  "activeWorktrees": [
-    {
-      "id": "viralata",
-      "branch": "fix/scrum-topbar",
-      "head": "8f98a9283e032328cdbe53349bf5c106cc8b46a8",
-      "headTitle": "chore(scrum): auto-sync 2026-07-13T18:14:36Z",
-      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata",
-      "status": "in-sync",
-      "commitsAhead": 0,
-      "primarySession": null,
-      "sessionTitle": null,
-      "focus": []
-    }
-  ],
+  "activeWorktrees": [],
   "activeSessions": [
     {
       "id": "mvs_f1e04f28717d42cdba05e221b7b4b6f3",
@@ -548,7 +535,7 @@
         "TASK-042"
       ],
       "description": "MERGED via cherry-pick. Commit 838451e (wt/e79e15ca) → c0d2ffd (main). Pushed to origin/main. CI run #220 success. Deploy OK em viralata.web.app. Conteúdo: 4 admin routes registradas no App.jsx (PlatformHealth, SecurityAlerts, AlertConfigs, AdminUserManagement), página /public-debug sem auth, ErrorBoundary verboso, fix import Kanban, props shelter tabs, 7 bugs críticos corrigidos (writeBatch). Smoke test 25/25 rotas passou. Ver SCRUM_TASKS.json sibling scratchpad.",
-      "evidence": "origin/main @ ac3bba9; CI run https://github.com/fsalamoni/viralata/actions/runs/29161010578; smoke-routes.mjs",
+      "evidence": "origin/main @ c0d2ffd; CI run https://github.com/fsalamoni/viralata/actions/runs/29161010578; smoke-routes.mjs",
       "createdAt": "2026-07-11",
       "updatedAt": "2026-07-11",
       "resolvedAt": "2026-07-11"
@@ -1451,7 +1438,7 @@
       "branch": null,
       "flag": "SHELTER_SECURITY_HARDENING",
       "worktree": null,
-      "pr": "0",
+      "pr": null,
       "tags": [
         "backup",
         "worm",
@@ -1462,8 +1449,7 @@
       "evidence": "docs/SHELTER_MGMT_ROADMAP.md §11.7",
       "description": "Configurar bucket GCS com Object Locking (WORM — Write Once Read Many) para backups. Lifecycle: 90d coldline, depois delete. Criptografia at-rest (default GCS) + em trânsito (HTTPS).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-15T17:26:40",
-      "resolvedAt": "2026-07-15"
+      "updatedAt": "2026-07-15"
     },
     {
       "id": "TASK-039",
@@ -2238,7 +2224,7 @@
       "branch": "feat/legal-docs-v2",
       "flag": "SHELTER_LEGAL_TERMS_V1",
       "worktree": ".worktrees/wt-legal-v2",
-      "pr": "0",
+      "pr": null,
       "tags": [
         "legal",
         "lgpd",
@@ -2256,8 +2242,7 @@
       "evidence": ".tmp-legal-docs/07_DPA_Abrigos.md",
       "description": "BLOCO INDEPENDENTE. Criar src/pages/legal/DPAAbrigos.jsx com 07_DPA_Abrigos.md (3.4 KB). DPA para abrigos. Rota /legal/dpa-abrigos. Operadora=Viralata, Controlador=Abrigo.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-15T11:52:41",
-      "resolvedAt": "2026-07-15"
+      "updatedAt": "2026-07-15"
     },
     {
       "id": "TASK-066",
@@ -7448,7 +7433,7 @@
       "branch": null,
       "flag": null,
       "worktree": null,
-      "pr": "0",
+      "pr": null,
       "tags": [
         "regra-a",
         "voluntarios",
@@ -7462,8 +7447,7 @@
       "evidence": "D:\\viralata\\src\\modules\\shelter\\domain\\legal\\volunteerTerms.v2.js §6.1(e) (emissão declarações); Lei 9.608/1998 Art. 1º §2º; D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §LGPD",
       "description": "BLOCO INDEPENDENTE. (1) Cloud Function generateVolunteerCertificate(uid, period) → PDF, (2) Endpoint /perfil/voluntario/certificado?from=X&to=Y, (3) Botão \"Baixar certificado de horas\" no /perfil#voluntariadas, (4) Storage path volunteer_certificates/{uid}/{date}.pdf, (5) Template com: nome, CPF mascarado, abrigo(s), período, total horas, badge, signature do abrigo, (6) Lei 9.608/1998 atestado oficial + termo v2 §6.1(e) compliance.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-16T00:17:34",
-      "resolvedAt": "2026-07-16"
+      "updatedAt": "2026-07-15"
     },
     {
       "id": "TASK-249",
@@ -8487,8 +8471,7 @@
       "subFrente": "abrigos-foster-adocao",
       "description": "Service worker registra FCM token em users/{uid}.fcm_tokens[]. Cloud Function sendPush (onCall) com notification type + link. Triggers: onCreate adoption_workflow (notifica abrigo), onUpdate adoption_workflow.status (notifica adotante), onCreate kanban_tasks (notifica adotante). Permission request na UX: pedir permissão após 1ª ação relevante (não no signup). Feature flag: SHELTER_FCM_V1 default OFF. Respeitar opt-out.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-15",
-      "pr": null
+      "updatedAt": "2026-07-15"
     },
     {
       "id": "TASK-293",
@@ -9479,9 +9462,8 @@
       "subFrente": "comunidade-adotante-eventos",
       "description": "Mover createAuditLog em core/services/auditService.js para Cloud Function (Admin SDK). Client chama onCall(\"createAuditLog\", {...}) ao invés de escrever direto. Fechar poluição de audit log. Severity: HIGH.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-15T17:49:47",
-      "pr": "0",
-      "resolvedAt": "2026-07-15"
+      "updatedAt": "2026-07-15",
+      "pr": null
     },
     {
       "id": "TASK-331",
@@ -9822,9 +9804,7 @@
       "subFrente": "comunidade-adotante-eventos",
       "description": "Criar event_certificates/{userId_eventId} em Storage. Job pós-evento gera PDF (via Cloud Function com pdf-lib ou similar) e atualiza club_events.certificates. UI no MyEvents com botão \"Baixar certificado\".",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-16",
-      "pr": "0",
-      "resolvedAt": "2026-07-16"
+      "updatedAt": "2026-07-15"
     },
     {
       "id": "TASK-344",
@@ -11652,7 +11632,7 @@
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": null,
+    "mainCommit": "6631cc2171213a5f380dc74b392b82327bb9546b",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -11662,12 +11642,12 @@
     ],
     "openTODOs": 5,
     "openLegalReviews": 3,
-    "totalTasks": 376,
-    "done": 349,
+    "totalTasks": 406,
+    "done": 401,
     "inProgress": 0,
     "inReview": 0,
     "blocked": 0,
-    "ready": 22,
+    "ready": 0,
     "backlog": 4,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -11697,7 +11677,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-16T00:28:30.780Z — via sync.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-16T14:41:17.055Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
@@ -11991,7 +11971,11 @@
   "decisionsUpdatedAt": "2026-07-15T23:57:00Z"
 }
   </script>
-  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-13T18:17:21.451Z">
+<<<<<<< HEAD
+  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-16T14:41:17.064Z">
+=======
+  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-16T03:26:48.025Z">
+>>>>>>> 2fdaf3d (design(ux): TASK-603 - hero home com hierarquia clara - H1 menor mobile, badge compacto, remove chips decorativos)
   </head>
 <body>
 
@@ -12006,8 +11990,8 @@
       </div>
     </div>
     <div class="sprint-info">
-      <span class="pill mono">main @ c0d2ffd</span>
-      <span class="pill">+1 worktree ativo</span>
+      <span class="pill mono">main @ fc028bb</span>
+      <span class="pill">0 worktrees ativos</span>
       <span class="pill goal">Goal: estabilizar pós-22 fases + fechar worktrees</span>
     </div>
     <div class="topbar-actions">
