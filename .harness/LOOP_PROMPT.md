@@ -1,115 +1,140 @@
-# LOOP_PROMPT — viralata (atualizado 2026-07-15 22:30 UTC)
+# LOOP_PROMPT — Loop de UX/Design Contínuo (até o user desligar)
 
-**Contexto**: /workspace/viralata, branch main, React+Vite+Firebase.
-**Repo**: https://github.com/fsalamoni/viralata.git
-**Sessão**: Mavis root (loop autônomo, 20min, **24/7 sem limite de horário**).
-
----
-
-## 🚀 MODO DE EXECUÇÃO: FEATURE (BATCH) — SEM PR/MERGE POR TASK
-
-**A cada turno**:
-- Implementa UMA task
-- Faz commit + push da branch feat/*
-- **NÃO** cria PR
-- **NÃO** faz merge
-- **NÃO** faz deploy
-- **OBRIGATÓRIO**: REGRA #0 (scrum update) + REGRA #1 (metrics sync)
-
-**A cada 10 tasks OU 4 horas (o que veio primeiro)**: batch PR + merge + deploy.
+> **Modo**: autônomo, 24/7, focado em **UX, layout, design, espaçamento, hierarquia visual**.
+> **Objetivo**: ajustar TUDO o que existe na plataforma para que seja **fácil de usar**, **bonito**, **sem sobreposições**, **com hierarquia clara**.
+> **Não prejudicar nada**: calma, cautela, atenção. Commitar e fazer push de cada entrega.
 
 ---
 
-## 🔄 CICLO DO LOOP — DECISÃO AUTOMÁTICA A CADA TURNO
+## REGRAS INEGOCIÁVEIS (regras do user)
 
-```bash
-cd /workspace/viralata
-if [ ! -d /workspace/viralata ]; then
-  git clone https://TOKEN_PLACEHOLDER@github.com/fsalamoni/viralata.git /workspace/viralata
-fi
-cd /workspace/viralata
-git pull origin main
-python3 -c "
-import json
-with open('.harness/SCRUM_TASKS.json') as f: d = json.load(f)
-ready = [t for t in d['tasks'] if t['status'] == 'ready' and t.get('owner') not in ['human', 'human-juridico']]
-print(f'{len(ready)} tasks ready')
-"
-```
-
-- **Se `ready > 0`** → MODO FEATURE (implementar próxima task)
-- **Se `ready == 0`** → MODO REVISÃO (UX/UI + bug-hunting)
+1. **Não estrague nada.** Antes de mudar, leia o componente. Se tiver teste, rode o teste ANTES e DEPOIS.
+2. **Não crie funcionalidade nova** — só ajuste visual/UX/layout em coisas que já existem.
+3. **Não toque em regras de negócio** (LGPD, validações, permissões, etc).
+4. **Se um arquivo está muito arriscado**, pule e pegue outro.
+5. **Foco em UX**: cards, espaçamentos, hierarquia, contraste, responsividade, loading, empty states.
 
 ---
 
-## 🚨 REGRA #0 — ATUALIZAÇÃO DO SCRUM É OBRIGATÓRIA E INEGOCIÁVEL 🚨
+## REGRAS TÉCNICAS (manter)
 
-**SEMPRE, ANTES de encerrar o turno (mesmo se a task falhou):**
-
-1. Marcar task no SCRUM:
-   - `node .harness/scrum.cjs start TASK-XXX`
-   - `node .harness/scrum.cjs review TASK-XXX --pr 0 --reason "feat/xxx pushed (batch)"`
-   - `node .harness/scrum.cjs done TASK-XXX --pr 0 --reason "feat/xxx pushed (batch)"`
-
-   Se o scrum.cjs falhar (module not found), atualizar o SCRUM_TASKS.json diretamente via Python.
-
-2. **REGRA #1 — SINCRONIZAR `metrics` DO JSON**:
-   ```python
-   import json
-   with open('.harness/SCRUM_TASKS.json', 'r') as f: d = json.load(f)
-   m = d.setdefault('metrics', {})
-   m['totalTasks'] = len(d['tasks'])
-   m['done'] = len([t for t in d['tasks'] if t['status']=='done'])
-   m['ready'] = len([t for t in d['tasks'] if t['status']=='ready'])
-   m['inProgress'] = len([t for t in d['tasks'] if t['status']=='in_progress'])
-   m['inReview'] = len([t for t in d['tasks'] if t['status']=='in_review'])
-   m['blocked'] = len([t for t in d['tasks'] if t['status']=='blocked'])
-   m['backlog'] = len([t for t in d['tasks'] if t['status']=='backlog'])
-   with open('.harness/SCRUM_TASKS.json', 'w') as f: json.dump(d, f, indent=2)
-   ```
-
-3. `node .harness/sync.cjs --fix`
-4. Commit + push (main para updates de scrum)
-5. Atualizar LOOP_PROMPT.md no branch feature
+1. `scrum.cjs start TASK-XXX` → `scrum.cjs review TASK-XXX` → `scrum.cjs done TASK-XXX --reason "..."`
+2. `node .harness/sync.cjs --fix` (re-embed métricas)
+3. `git add -A && git commit -m "..." && git push --force-with-lease origin main`
+4. Recalcular `metrics` no JSON (REGRA #1)
+5. **Se o build quebrar** → reverter imediatamente com `git reset --hard HEAD`
+6. **Se os testes quebrarem** → consertar antes de continuar (ou reverter se for muito invasivo)
+7. **NUNCA mais de 1 task por turno** (estabilidade)
+8. **Se a task atual parecer grande demais (> 30min)**, dividir em 2 ou pegar a próxima da fila
 
 ---
 
-## 🆕 CANDIDATAS (2026-07-15 22:30 UTC)
+## SISTEMA DE DESIGN ARENA (já implementado)
 
-| ID | Pri | Descrição |
-|---|---|---|
-| TASK-292 | critical | [FCM-001] Integrar FCM push notifications — bloqueada por TASK-291 (✅ done) |
-| TASK-368 | critical | [D-07] DPO sign-off — human-jurídico |
-| TASK-006 | high | Revisão jurídica: adoptionTerms.v1.js |
-| TASK-007 | high | Revisão jurídica: avisosLegais.js |
+Use estas classes CSS já criadas:
 
-> **Notas**:
-> - TASK-188 ✅ done — feat/task-188-gcs-worm-backup-2026-07-15: WORM backup GCS — Object Locking (90d retenção) + lifecycle Standard→Coldline(90d)→Delete(120d) + IAM hardening + Uniform bucket-level access. Infra: infra/gcs-backup-bucket.sh + functions/setupGcsBackupBucket.js (callable CF) + setupGcsBackupBucketCore.cjs (23 testes). docs/DR_PLAN.md §6 atualizado.
-> - TASK-352 ✅ done — feat/task-352-pinned-posts-2026-07-15: posts fixados/desselvados — pinned+pinned_at em community_posts, togglePostPin() c/ audit log, banner carrossel em MuralTabAdmin, botão Pin/PinOff (admin), firestore.rules pinned-only-by-admin
-> - TASK-291 ✅ done — feat/task-291-email-oncall-2026-07-15: sendEmail onCall callable c/ 7 templates de adoção + sendEmailOnCallCore.cjs + 222 testes ✅ + firestore.rules email_delivery_log
-> - TASK-342 ✅ done — feat/task-342-event-volunteers-2026-07-15: volunteer_ids + volunteer_shifts em club_events, multi-select no EventFormDialog, shifts editor, EventDetail aba Escalas
-> - TASK-340 ✅ done — feat/task-340-event-types-2026-07-15: novos tipos VACCINATION, LECTURE, FUNDRAISING, PET_DAY em CLUB_EVENT_TYPE + UI
-> - TASK-087 ✅ done — feat/task-087-audit-clickwrap-2026-07-15: auditoria clickwrap 4 fluxos críticos
-> - TASK-298 ✅ done — feat/task-298-contract-ip-ua-2026-07-15 (contract CF: IP+UA, Lei 14.063/2020)
-> - Todas as branches feat/* = `fsalamoni/viralata`
+### Header admin
+- `.arena-admin-header` — gradient + backdrop blur
+- `.arena-admin-header-avatar`, `.arena-admin-header-title-row`, `.arena-admin-header-title`, `.arena-admin-header-badge`
 
-## 📊 MÉTRICAS ATUAIS
+### Tabs admin
+- `.arena-admin-tabs` (sticky) + `.arena-admin-tab-trigger`
 
-- **done=329** (was 328 — TASK-188 done: WORM backup GCS)
-- **ready=42**, in_progress=0
-- **Main**: `3ddfa6a`
-- **Branch**: `feat/task-188-gcs-worm-backup-2026-07-15`
+### Stats
+- `.arena-stats-grid` (2/3/4 colunas responsivo)
+- `.arena-stat-card` + `.arena-stat-card-label` + `.arena-stat-card-value` + `.arena-stat-card-delta`
 
-## 🏁 FIM DO TURNO
+### Sub-áreas (sections dentro de tabs)
+- `.arena-admin-section`
+- `.arena-section-card` + `.arena-section-card-header` + `.arena-section-card-title` + `.arena-section-card-description` + `.arena-section-card-body`
 
-1. REGRA #0 (scrum update)
-2. REGRA #1 (metrics sync)
-3. sync.cjs --fix
-4. Commit + push (main para scrum)
-5. Atualizar LOOP_PROMPT.md
+### Empty state
+- `.arena-empty-state` + `.arena-empty-state-icon` + `.arena-empty-state-title` + `.arena-empty-state-description`
 
-## ⏰ HORÁRIO
-- **24/7**, loop a cada 20min.
+---
 
-## 🚀 BATCH (a cada 10 tasks)
-- User disser "Mavis, batch" → batch PR + merge + deploy.
+## HIERARQUIA DE PRIORIDADES
+
+### P0 — Crítico (UX quebrado)
+- Cards sobrepostos
+- Texto cortado
+- CTAs sem contraste (WCAG AA < 4.5:1)
+- Tabs com gap excessivo
+- Layout quebrado em mobile
+
+### P1 — Alto
+- Hierarquia visual inconsistente
+- Espaçamentos ad-hoc (space-y-4, gap-3 soltos)
+- Sem empty states
+- Sem loading states
+- Sem focus states
+
+### P2 — Médio
+- Tipografia inconsistente
+- Cores hard-coded em vez de tokens
+- Ícones tamanhos misturados
+- Sem breadcrumbs
+
+### P3 — Baixo
+- Animações suaves
+- Dark mode
+- Polish visual
+
+---
+
+## CHECKLIST POR TASK
+
+Para cada ajuste:
+
+- [ ] Li o componente inteiro antes
+- [ ] Identifiquei o problema específico (não "mexer em tudo")
+- [ ] Apliquei mudança **cirúrgica** (1-2 lugares)
+- [ ] Build passa (`npm run build`)
+- [ ] Não quebrei testes existentes (rodei `npm test -- <path>` antes/depois)
+- [ ] Commit descritivo
+- [ ] Push
+- [ ] sync.cjs --fix + commit
+- [ ] Próxima task
+
+---
+
+## ORDEM DE ATAQUE (do mais crítico para o polish)
+
+1. **TASK-602** — Auditoria visual completa (relatório)
+2. **TASK-605** — Eliminar sobreposições de cards
+3. **TASK-608** — Tabs sticky + URL sync
+4. **TASK-603** — Hero da Home com hierarquia
+5. **TASK-620** — Cards de pet com hierarquia
+6. **TASK-611** — Mobile: touch targets 44px
+7. **TASK-612** — Focus states visíveis
+8. **TASK-606** — Field component em forms
+9. **TASK-607** — Modais centralizados
+10. **TASK-609** — Empty states consistentes
+11. **TASK-610** — Loading skeletons
+12. **TASK-613** — Tipografia (5 tamanhos)
+13. **TASK-621** — Dashboard cards consistentes
+14. **TASK-604** — Espaçamentos semânticos
+15. **TASK-616** — Breadcrumbs
+16. **TASK-614** — Cores semânticas
+17. **TASK-615** — Ícones padronizados
+18. **TASK-617** — Toasts consistentes
+19. **TASK-619** — Animações suaves
+20. **TASK-618** — Dark mode
+
+---
+
+## REGRA DE OURO
+
+**Se o user reclamou que o visual está ruim, é porque está ruim.**
+
+Não hesite. Não peça confirmação. Não tente "preservar compatibilidade" com designs ruins. **MELHOR É MELHOR**, mesmo que mude o que existia.
+
+---
+
+## NÃO ESQUECER
+
+- **Lock visual**: marcar `scrum.cjs start TASK-XXX` para sinalizar para o outro agente
+- **Métricas**: SEMPRE recalcular `metrics` no JSON (REGRA #1)
+- **Sync**: SEMPRE `sync.cjs --fix` no fim do turno
+- **Build**: SEMPRE validar `npm run build` antes de push
+- **Tests**: SEMPRE rodar testes do componente modificado

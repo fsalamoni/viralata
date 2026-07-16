@@ -1,57 +1,36 @@
 #!/bin/bash
-# next-loop.sh — decide FEATURE vs REVISÃO e age
-# Uso: .harness/next-loop.sh
-# Retorna: 'feature' (com TASK-ID) ou 'review'
+# next-loop.sh — Decide o que o loop de UX/Design vai fazer
+# Uso: bash .harness/next-loop.sh
 
 set -e
 cd /workspace/viralata
 
-# Decide modo
-MODE_INFO=$(python3 - <<'PY'
+# 1) Pegar próxima task ready (não human, não human-juridico, não backlog)
+#    Priorizar: high > medium > low, e categoria design > ui > admin
+NEXT=$(python3 <<'PY'
 import json
-with open('.harness/SCRUM_TASKS.json', 'r') as f:
+with open('.harness/SCRUM_TASKS.json') as f:
     d = json.load(f)
-ready = [t for t in d['tasks'] if t['status'] == 'ready' and t.get('owner') not in ['human', 'human-juridico']]
 
-if not ready:
-    print('MODE=review')
-else:
-    # Score
-    def score(t):
-        cat = (t.get('category') or '').lower()
-        title = (t.get('title') or '').lower()
-        pri = t.get('priority') or 'medium'
-        s = 0
-        if 'ux' in cat: s += 50
-        if 'public' in cat: s += 30
-        if 'shelter' in cat: s += 15
-        if 'pet' in title: s += 5
-        if 'match' in title: s += 20
-        if 'devolu' in title: s += 18
-        if 'a11y' in title: s += 18
-        if 'vitrine' in title: s += 25
-        if 'milestone' in title: s += 15
-        if 'similar' in title: s += 12
-        if 'wizard' in title: s += 15
-        if 'dashboard' in title: s += 12
-        if pri == 'critical': s += 10
-        if pri == 'high': s += 5
-        return -s
-    ready.sort(key=score)
-    next_task = ready[0]
-    print(f'MODE=feature')
-    print(f'TASK={next_task["id"]}')
-    print(f'TITLE={next_task.get("title", "")}')
+priority_order = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
+ready = [t for t in d['tasks']
+         if t['status'] == 'ready'
+         and t.get('owner') not in ('human', 'human-juridico')]
+
+# Ordenar por prioridade + categoria
+def score(t):
+    p = priority_order.get(t.get('priority', 'medium'), 2)
+    cat = t.get('category', '')
+    # design e ui têm prioridade
+    cat_bonus = -1 if cat in ('design', 'ui') else 0
+    return (p, cat_bonus, t['id'])
+
+ready.sort(key=score)
+if ready:
+    print(ready[0]['id'])
 PY
 )
 
-echo "$MODE_INFO"
-
-# Marcar como in_progress se for feature
-if echo "$MODE_INFO" | grep -q "MODE=feature"; then
-    NEXT_ID=$(echo "$MODE_INFO" | grep "^TASK=" | cut -d= -f2)
-    if [ -n "$NEXT_ID" ]; then
-        node .harness/scrum.cjs start "$NEXT_ID" 2>&1 | tail -1
-        echo "$NEXT_ID" > /tmp/next_task_id
-    fi
+if [ -n "$NEXT" ]; then
+    echo "$NEXT"
 fi
