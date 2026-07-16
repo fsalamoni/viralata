@@ -13,6 +13,7 @@ import {
 import { usePetPermissions } from '../hooks/usePetPermissions';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import { getOrCreateDirectConversation } from '@/modules/chat/services/chatService';
 import InterestPanel from '../components/InterestPanel';
@@ -296,9 +297,10 @@ export default function PetDetail() {
 
           {!canManage && pet.owner_id && (
             <div className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3.5">
-              <span className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--highlight))_100%)] font-['Sora'] text-[13px] font-bold text-white">
-                {ownerInitials(owner?.platform_name || owner?.name)}
-              </span>
+              {/* DS_V2: Avatar com iniciais (spec §3.9) */}
+              <Avatar size="sm">
+                <AvatarFallback>{ownerInitials(owner?.platform_name || owner?.name)}</AvatarFallback>
+              </Avatar>
               <div className="min-w-0 flex-1">
                 <div className="truncate text-[13px] font-bold text-foreground">{owner?.platform_name || owner?.name || 'Responsável'}</div>
                 <div className="text-[11.5px] text-muted-foreground">Responsável pelo pet</div>
