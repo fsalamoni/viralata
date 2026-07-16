@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.1.0",
-  "generatedAt": "2026-07-16T18:43:01.301Z",
+  "generatedAt": "2026-07-16T18:44:50.001Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W29",
@@ -31,11 +31,9 @@
       "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-ds-v2-pages-adoption",
       "status": "in-sync",
       "commitsAhead": 0,
-      "primarySession": "mvs_311d078987d0414a90f57ef28b789b18",
-      "sessionTitle": "DS_V2_PAGES-ADOPTION — AdoptionDetail, AdoptionWizard, MyApplications",
-      "focus": [
-        "DS_V2_PAGES-ADOPTION"
-      ]
+      "primarySession": null,
+      "sessionTitle": null,
+      "focus": []
     },
     {
       "id": "wt-ds-v2-pages-home",
@@ -48,6 +46,20 @@
       "primarySession": null,
       "sessionTitle": null,
       "focus": []
+    },
+    {
+      "id": "wt-ds-v2-pages-org",
+      "branch": "feat/ds-v2-pages-org-2026-07-16",
+      "head": "08c2fa4a374f8718b4b91a380eef76f1a9c4ca16",
+      "headTitle": "merge: Bloco D.3 (audit only) + resolve scrum HTML auto",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-ds-v2-pages-org",
+      "status": "in-sync",
+      "commitsAhead": 0,
+      "primarySession": "mvs_311d078987d0414a90f57ef28b789b18",
+      "sessionTitle": "DS_V2_PAGES-ORG — ClubsDirectory, ClubDetail, OrganizationAdminPanel",
+      "focus": [
+        "DS_V2_PAGES-ORG"
+      ]
     },
     {
       "id": "wt-ds-v2-pages-pets",
@@ -11289,12 +11301,12 @@
       "title": "Bloco D.4 · DS_V2_PAGES-ORG — Propagar spec para Organizações (ONGs/lojas)",
       "type": "feature",
       "category": "design",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "mvs_311d078987d0414a90f57ef28b789b18",
-      "branch": null,
+      "branch": "feat/ds-v2-pages-org-2026-07-16",
       "flag": "DS_V2_PAGES-ORG",
-      "worktree": null,
+      "worktree": ".worktrees/wt-ds-v2-pages-org",
       "pr": null,
       "tags": [
         "ds-v2",
@@ -11307,7 +11319,8 @@
       ],
       "description": "Ajustar `ClubsDirectory`, `ClubDetail`, `CreateClub`, `EventDetail`, `OrganizationsHub`, `OrganizationAdminPanel` + sub-abas (Visão Geral, Animais, Mural, Doações, Prestação de Contas, Equipe, Configurações). A maioria já usa `arena-panel` — só repaletar/reposicionar. ~30+ arquivos. Flag default OFF.",
       "createdAt": "2026-07-16",
-      "updatedAt": "2026-07-16"
+      "updatedAt": "2026-07-16T18:44:43",
+      "resolvedAt": "2026-07-16"
     },
     {
       "id": "TASK-707",
@@ -12335,6 +12348,182 @@
       "createdAt": "2026-07-16",
       "updatedAt": "2026-07-16T18:42:56",
       "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-750",
+      "title": "Auditar páginas de Organizações contra spec v1.0",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-pages-org-2026-07-16",
+      "flag": "DS_V2_PAGES-ORG",
+      "worktree": ".worktrees/wt-ds-v2-pages-org",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "orgs",
+        "audit"
+      ],
+      "blockedBy": [],
+      "description": "Gap analysis dos 30+ arquivos do módulo organizations. Verificar uso de arena-panel, tokens, Button/Card/Input do Bloco C. Foco em: ClubsDirectory, ClubDetail, EventDetail, OrganizationsHub, OrganizationAdminPanel.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:44:42",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-751",
+      "title": "Refinar sub-abas do painel admin (Visão Geral, Animais, Mural, Doações, etc)",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-pages-org-2026-07-16",
+      "flag": "DS_V2_PAGES-ORG",
+      "worktree": ".worktrees/wt-ds-v2-pages-org",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "orgs",
+        "admin",
+        "tabs"
+      ],
+      "blockedBy": [
+        "TASK-750"
+      ],
+      "description": "Padronizar sub-abas: arena-admin-tabs + arena-admin-tab-trigger. Cada sub-aba: arena-section-card + arena-stats-grid quando relevante.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:44:48",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-752",
+      "title": "Refinar perfil público da ONG (ClubDetail)",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-pages-org-2026-07-16",
+      "flag": "DS_V2_PAGES-ORG",
+      "worktree": ".worktrees/wt-ds-v2-pages-org",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "orgs",
+        "public",
+        "detail"
+      ],
+      "blockedBy": [
+        "TASK-750"
+      ],
+      "description": "Cover + arena-panel. Tabs (Membros, Eventos, Mural, Fóruns) com arena-tab-pill. Pets para adoção em grid 1/2/3/4.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:44:48",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-753",
+      "title": "Refinar ClubsDirectory (diretório público)",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-pages-org-2026-07-16",
+      "flag": "DS_V2_PAGES-ORG",
+      "worktree": ".worktrees/wt-ds-v2-pages-org",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "orgs",
+        "directory"
+      ],
+      "blockedBy": [
+        "TASK-750"
+      ],
+      "description": "Grid 1/2/3 colunas com Card size=\"default\" + cover. Search bar com Input 46px.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:44:49",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-754",
+      "title": "Refinar EventDetail + CreateClub + OrganizationsHub",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "medium",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-pages-org-2026-07-16",
+      "flag": "DS_V2_PAGES-ORG",
+      "worktree": ".worktrees/wt-ds-v2-pages-org",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "orgs",
+        "event",
+        "create"
+      ],
+      "blockedBy": [
+        "TASK-750"
+      ],
+      "description": "EventDetail: arena-section-card + tabs. CreateClub: form wizard. OrganizationsHub: hub com stats + atalhos.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:44:49",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-755",
+      "title": "Validar Org (build + lint + smoke test)",
+      "type": "chore",
+      "category": "ci",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-pages-org-2026-07-16",
+      "flag": "DS_V2_PAGES-ORG",
+      "worktree": ".worktrees/wt-ds-v2-pages-org",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "build",
+        "test"
+      ],
+      "blockedBy": [
+        "TASK-754"
+      ],
+      "description": "Build verde, lint sem regressões, smoke test dos principais fluxos (diretório, perfil, painel admin).",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:44:49",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-756",
+      "title": "Commit + push do Bloco D.4",
+      "type": "chore",
+      "category": "ci",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-pages-org-2026-07-16",
+      "flag": "DS_V2_PAGES-ORG",
+      "worktree": ".worktrees/wt-ds-v2-pages-org",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "git",
+        "commit"
+      ],
+      "blockedBy": [
+        "TASK-755"
+      ],
+      "description": "Commit único, push só do branch.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:44:43",
+      "resolvedAt": "2026-07-16"
     }
   ],
   "definitionOfDone": [
@@ -12578,7 +12767,7 @@
     "mergedWorktreesThisSprint": [
       "feat/ds-v2-docs-2026-07-16"
     ],
-    "mainCommit": "17e4ad0ede9ebbbf7a5af71c2c00aea6b2cf481d",
+    "mainCommit": "08c2fa4a374f8718b4b91a380eef76f1a9c4ca16",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -12588,12 +12777,12 @@
     ],
     "openTODOs": 5,
     "openLegalReviews": 3,
-    "totalTasks": 454,
-    "done": 444,
+    "totalTasks": 461,
+    "done": 452,
     "inProgress": 0,
     "inReview": 0,
     "blocked": 0,
-    "ready": 5,
+    "ready": 4,
     "backlog": 4,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -12623,7 +12812,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-16T18:43:01.318Z — via sync.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-16T18:44:50.018Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
@@ -12658,7 +12847,7 @@
     "risksAccepted": 2,
     "risksMonitoring": 2,
     "lastTaskId": "TASK-717",
-    "lastUpdated": "2026-07-16T18:41:32.780Z",
+    "lastUpdated": "2026-07-16T18:43:44.613Z",
     "dsV2Phase": "Fase 4 — em andamento",
     "dsV2Blocos": {
       "done": [
@@ -12666,13 +12855,13 @@
         "DS_V2_TOKENS",
         "DS_V2_COMPONENTS",
         "DS_V2_PAGES-HOME",
-        "DS_V2_PAGES-PETS"
-      ],
-      "inProgress": [
+        "DS_V2_PAGES-PETS",
         "DS_V2_PAGES-ADOPTION"
       ],
+      "inProgress": [
+        "DS_V2_PAGES-ORG"
+      ],
       "ready": [
-        "DS_V2_PAGES-ORG",
         "DS_V2_PAGES-ADMIN",
         "DS_V2_PAGES-CHAT",
         "DS_V2_MOTION",
@@ -12680,10 +12869,10 @@
       ]
     },
     "dsV2Tasks": {
-      "total": 48,
+      "total": 55,
       "done": 8,
       "ready": 10,
-      "inProgress": 9
+      "inProgress": 11
     },
     "dsV2Merge": "Bloco A merged to main @ 8e187f6 (2026-07-16 18:08 UTC)",
     "lastTaskDone": "TASK-700 (Bloco A macro)",
