@@ -589,7 +589,7 @@ service cloud.firestore {
         request.resource.data.adopter_uid == auth.uid &&
         request.resource.data.status == 'pending_shelter_signature' &&
         request.resource.data.document_hash.matches('^[a-f0-9]{64}$') &&
-        request.resource.data.pdf_storage_path.matches('^clubs/[^/]+/contracts/[^/]+\.pdf$')
+        request.resource.data.pdf_storage_path.matches('^clubs.*.pdf$')
       )
     );
 
