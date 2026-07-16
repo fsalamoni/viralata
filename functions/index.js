@@ -255,9 +255,9 @@ exports.hardDeleteVolunteerDocument = onCall(
   },
 );
 
-// ─── TASK-291: Email onCall (adoption workflow) ────────────────────────────
-const { sendEmailOnCall } = require('./sendEmailOnCall');
-exports.sendEmailOnCall = sendEmailOnCall;
+// ─── TASK-298: createContract callable (IP + user-agent, Lei 14.063/2020) ─
+const { createContract } = require('./createContract.cjs');
+exports.createContract = createContract;
 
 // ─── TASK-336: Community notifications ──────────────────────────────────
 

@@ -2011,3 +2011,35 @@ service cloud.firestore {
 function isContractAdopter(contractData) {
   return contractData.adopter_uid == request.auth.uid;
 }
+
+// TASK-298: contracts sub-coleção.
+// createContract: SEMPRE via Cloud Function (Admin SDK) — client não cria.
+// shelterSignContract / cancelContract: shelter admin/owner via SDK direto.
+// Adotante: apenas leitura (acompanhar status).
+match /clubs/{clubId}/contracts/{contractId} {
+  // Leitura: abrigo (owner/admin), adotante do contrato, platform_admin
+  allow read: if isAuth() && (
+    isClubOwnerOrAdmin(clubId) ||
+    isPlatformAdmin() ||
+    (resource.data.adopter_uid == request.auth.uid)
+  );
+
+  // Criação: PROIBIDA para clientes — vai 100% via createContract CF (Admin SDK).
+  // A CF valida que caller é o próprio adotante (defesa em profundidade).
+  allow create: if false;
+
+  // Atualização: shelter owner/admin pode assinar (shelterSignContract)
+  // ou cancelar. Adotante pode cancelar se o status for PENDING_SHELTER_SIGNATURE.
+  allow update: if isAuth() && (
+    isClubOwnerOrAdmin(clubId) ||
+    (
+      isContractAdopter(resource.data) &&
+      resource.data.status == 'pending_shelter_signature' &&
+      // Só pode setar status = cancelled
+      request.resource.data.status == 'cancelled'
+    )
+  );
+
+  // Exclusão: apenas shelter owner/admin (contratos só são apagados em caso de erro).
+  allow delete: if isAuth() && isClubOwnerOrAdmin(clubId);
+}

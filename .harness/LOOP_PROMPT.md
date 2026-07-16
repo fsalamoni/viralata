@@ -1,4 +1,4 @@
-# LOOP_PROMPT — viralata (atualizado 2026-07-16 00:18 UTC)
+# LOOP_PROMPT — viralata (atualizado 2026-07-15 16:32 UTC)
 
 **Contexto**: /workspace/viralata, branch feat/task-248-volunteer-certificate-2026-07-16, React+Vite+Firebase.
 **Repo**: https://github.com/fsalamoni/viralata.git
@@ -98,11 +98,13 @@ print(f'{len(ready)} tasks ready')
 ## 🆕 CANDIDATAS (2026-07-15 11:53 UTC)
 
 > **Notas**:
-> - TASK-188 ✅ done — feat/task-188-gcs-worm-backup-2026-07-15: WORM backup GCS — Object Locking (90d retenção) + lifecycle Standard→Coldline(90d)→Delete(120d) + IAM hardening + Uniform bucket-level access. Infra: infra/gcs-backup-bucket.sh + functions/setupGcsBackupBucket.js (callable CF) + setupGcsBackupBucketCore.cjs (23 testes). docs/DR_PLAN.md §6 atualizado.
-> - TASK-352 ✅ done — feat/task-352-pinned-posts-2026-07-15: posts fixados/desselvados — pinned+pinned_at em community_posts, togglePostPin() c/ audit log, banner carrossel em MuralTabAdmin, botão Pin/PinOff (admin), firestore.rules pinned-only-by-admin
-> - TASK-291 ✅ done — feat/task-291-email-oncall-2026-07-15: sendEmail onCall callable c/ 7 templates de adoção + sendEmailOnCallCore.cjs + 222 testes ✅ + firestore.rules email_delivery_log
-> - TASK-248 ✅ done — feat/task-248-volunteer-certificate-2026-07-16: certificate PDF (Lei 9.608/1998), generateVolunteerCertificate CF, VolunteerMetricsCard button, useVolunteerCertificate hook
-> - TASK-342 ✅ done — feat/task-342-event-volunteers-2026-07-15: volunteer_ids + volunteer_shifts em club_events, multi-select no EventFormDialog, shifts editor, EventDetail aba Escalas
+> - TASK-298 ✅ done — feat/task-298-contract-ip-ua-2026-07-15 (contract CF: IP+UA, Lei 14.063/2020)
+> - TASK-220 ✅ done — feat/task-220-clean (PR #192) merged 2026-07-15
+> - TASK-269 ✅ done — feat/task-268-volunteer-fcm-notify (PR #190)
+> - TASK-312 ✅ done — [INT-SEARCH-001] Sync ativo do search index
+> - TASK-273 ✅ done — Smart Search: adicionar entidade volunteer
+> - TASK-176 ✅ done — Sentry enriched
+> - TASK-239 ✅ done — Sentry SDK + Crashlytics
 > - Todas as branches feat/* = `fsalamoni/viralata`
 
 ---
@@ -111,8 +113,8 @@ print(f'{len(ready)} tasks ready')
 - **ready=22**, in_progress=0
 - **Branch**: `feat/task-248-volunteer-certificate-2026-07-16`
 
-- **done=276**, ready=83, in_progress=3, in_review=1
-- **Feature branch**: `feat/task-065-dpa-abrigos-2026-07-15` (pushed, batch pending)
+- **done=287**, ready=71, in_progress=4
+- **Main**: `691de55`
 
 ---
 

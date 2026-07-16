@@ -41,11 +41,17 @@ export const CONTRACT_STATUS = Object.freeze({
 const iso8601 = z.string().datetime({ offset: true });
 
 const baseContract = z.object({
+  // IP do adotante no momento da assinatura (Lei 14.063/2020 art. 6º)
+  // Coletado server-side via __CF_CONNECTING_IP (Cloudflare) ou x-forwarded-for.
+  // Null se o header não estiver disponível.
+  adopter_ip: z.string().max(45).nullable().optional(),
+  adopter_user_agent: z.string().max(500).nullable().optional(),
   application_id: z.string().min(1).max(200),
   pet_id: z.string().min(1).max(200),
   adopter_uid: z.string().min(1).max(200),
   adopter_signature_text: z.string().min(3).max(200),
   adopter_signed_at: iso8601,
+  // Shelter (abrigo) que emite o contrato
   shelter_club_id: z.string().min(1).max(200),
   document_hash: z.string().regex(/^[a-f0-9]{64}$/i, 'SHA-256 hex (64 chars)'),
   document_version: z.string().min(1).max(100),
