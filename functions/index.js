@@ -302,19 +302,6 @@ exports.onCommunityEventCreated = onDocumentCreated(
   },
 );
 
-// ─── TASK-292: FCM push notifications ──────────────────────────────────────────
-const { sendPushNotification } = require('./sendPushNotification');
-const {
-  onAdoptionWorkflowCreated,
-  onAdoptionWorkflowStatusUpdated,
-  onKanbanTaskCreated,
-} = require('./pushNotificationTriggers');
-
-exports.sendPushNotification = sendPushNotification;
-exports.onAdoptionWorkflowCreated = onAdoptionWorkflowCreated;
-exports.onAdoptionWorkflowStatusUpdated = onAdoptionWorkflowStatusUpdated;
-exports.onKanbanTaskCreated = onKanbanTaskCreated;
-
-// ─── TASK-343: Event certificates ───────────────────────────────────────────
-const { generateEventCertificate } = require('./generateEventCertificate');
-exports.generateEventCertificate = generateEventCertificate;
+// ─── TASK-298: IP + user-agent no aceite do contrato ──────────────────────────
+const { createContractCallable } = require('./createContractCallable');
+exports.createContractCallable = createContractCallable;
