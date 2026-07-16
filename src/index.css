@@ -416,4 +416,11 @@
 .icon-lg  { height: 20px; width: 20px; }
 .icon-xl  { height: 24px; width: 24px; }
 
+
+/* Global interactive transitions — TASK-619 */
+/* Botões e elementos interativos base */
+button, a, [role="button"] {
+  transition: all 150ms ease-out;
+}
+
 }
