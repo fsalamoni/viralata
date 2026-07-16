@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
@@ -13,28 +13,48 @@ import { hasCommunityPermission } from '../domain/permissions';
 import { COMMUNITY_PERMISSION } from '../domain/constants';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
-
+import { Skeleton } from '@/components/ui/skeleton';
+import { EmptyState } from '@/components/ui/empty-state';
 import { ptBR } from 'date-fns/locale';
 import { confirmDialog } from '@/components/ui/confirm-provider';
+
+const FILTER_OPTIONS = [
+  { key: 'upcoming', label: 'Próximos' },
+  { key: 'past', label: 'Passados' },
+  { key: 'all', label: 'Todos' },
+];
 
 export default function EventsTab({ communityId, isAdmin, membership, community }) {
   const { user } = useAuth();
   const [events, setEvents] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [filter, setFilter] = useState('upcoming');
   const eventDetailEnabled = useFeatureFlag(FEATURE_FLAG.COMMUNITY_EVENT_DETAIL_V1);
 
   const fetchEvents = () => {
-    listCommunityEvents(communityId).then(setEvents).catch(console.error);
+    setIsLoading(true);
+    listCommunityEvents(communityId)
+      .then(data => setEvents(data || []))
+      .catch(console.error)
+      .finally(() => setIsLoading(false));
   };
 
   useEffect(() => {
     fetchEvents();
   }, [communityId]);
 
-  // Dono da comunidade SEMPRE pode gerenciar eventos (não depende da
-  // membership carregar). Membros com permissão granular `manage_events`
-  // também. Evita o bug de "criei a comunidade e o botão de criar evento
-  // não aparece" em dados legados / membership ainda carregando.
+  const now = useMemo(() => new Date(), []);
+
+  const filteredEvents = useMemo(() => {
+    if (filter === 'all') return events;
+    return events.filter(ev => {
+      if (!ev.starts_at) return false;
+      const d = new Date(ev.starts_at);
+      return filter === 'upcoming' ? d >= now : d < now;
+    });
+  }, [events, filter, now]);
+
   const isCommunityCreator = community?.owner_id === user?.uid;
   const canManageEvents = isCommunityCreator
     || hasCommunityPermission(community, membership, COMMUNITY_PERMISSION.EVENTS, user?.uid);
@@ -53,23 +73,61 @@ export default function EventsTab({ communityId, isAdmin, membership, community 
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold">Próximos Eventos</h2>
-        {canManageEvents && (
-          <Button variant="outline" size="sm" onClick={() => setIsDialogOpen(true)}>
-            <Plus className="w-4 h-4 mr-2" /> Novo Evento
-          </Button>
-        )}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+        <h2 className="text-xl font-bold">Eventos</h2>
+        <div className="flex justify-between items-center w-full sm:w-auto gap-3">
+          {!isLoading && (
+            <div className="flex gap-1.5" role="group" aria-label="Filtrar eventos">
+              {FILTER_OPTIONS.map(f => (
+                <button
+                  key={f.key}
+                  onClick={() => setFilter(f.key)}
+                  className={`px-3 py-1.5 text-xs font-medium rounded-full transition-colors ${
+                    filter === f.key
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-secondary text-muted-foreground hover:bg-secondary/80'
+                  }`}
+                  aria-pressed={filter === f.key}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
+          )}
+          {canManageEvents && (
+            <Button variant="outline" size="sm" onClick={() => setIsDialogOpen(true)}>
+              <Plus className="w-4 h-4 mr-2" /> Novo Evento
+            </Button>
+          )}
+        </div>
       </div>
 
-      {events.length === 0 ? (
-        <div className="text-center text-muted-foreground py-10">
-          <Calendar className="w-10 h-10 mx-auto mb-3 opacity-20" />
-          Nenhum evento agendado nesta comunidade.
+      {isLoading ? (
+        <div className="grid gap-4 sm:grid-cols-2" aria-busy="true" aria-label="Carregando eventos">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="p-4 flex flex-col gap-3 border border-border/40 rounded-xl">
+              <div className="flex justify-between items-start">
+                <Skeleton className="h-5 w-2/3" />
+                <Skeleton className="h-6 w-6 rounded" />
+              </div>
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-4/5" />
+              <div className="mt-auto pt-2 border-t border-border/50 space-y-1.5">
+                <Skeleton className="h-3 w-3/4" />
+                <Skeleton className="h-3 w-1/2" />
+              </div>
+            </div>
+          ))}
         </div>
+      ) : filteredEvents.length === 0 ? (
+        <EmptyState
+          icon={Calendar}
+          title={filter === 'upcoming' ? 'Nenhum evento próximo' : filter === 'past' ? 'Nenhum evento passado' : 'Nenhum evento cadastrado'}
+          description="Quando houverem eventos, eles aparecerão aqui."
+        />
       ) : (
         <div className="grid gap-4 sm:grid-cols-2">
-          {events.map(ev => {
+          {filteredEvents.map(ev => {
             const card = (
               <section key={ev.id} className="p-4 flex flex-col gap-3 hover:bg-secondary/10 transition-colors cursor-pointer">
                 <div className="flex justify-between items-start">
