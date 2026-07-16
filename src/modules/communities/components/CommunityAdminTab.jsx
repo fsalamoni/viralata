@@ -5,6 +5,10 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from '@/components/ui/select';
 import { ImageUpload } from '@/components/ui/image-upload';
 import { useUpdateCommunity } from '@/modules/communities/hooks/useCommunities';
 
@@ -62,25 +66,27 @@ export default function CommunityAdminTab({ community }) {
             </div>
             <div className="space-y-2">
               <Label htmlFor="admin_description">Descrição</Label>
-              <textarea
+              <Textarea
                 id="admin_description"
                 value={form.description}
                 onChange={setField('description')}
                 rows={3}
                 maxLength={1000}
-                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                placeholder="Descreva a comunidade…"
+                className="text-sm"
               />
             </div>
             <div className="space-y-2">
-              <Label>Privacidade</Label>
-              <select
-                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                value={form.privacy}
-                onChange={setField('privacy')}
-              >
-                <option value="public">Pública (Qualquer um pode ver e entrar)</option>
-                <option value="private">Privada (Apenas com convite)</option>
-              </select>
+              <Label htmlFor="admin_privacy">Privacidade</Label>
+              <Select value={form.privacy} onValueChange={(v) => setForm((prev) => ({ ...prev, privacy: v }))}>
+                <SelectTrigger id="admin_privacy" className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="public">Pública (Qualquer um pode ver e entrar)</SelectItem>
+                  <SelectItem value="private">Privada (Apenas com convite)</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <Button type="submit" disabled={updateCommunity.isPending}>
               <Save className="mr-1.5 h-4 w-4" /> {updateCommunity.isPending ? 'Salvando…' : 'Salvar alterações'}
