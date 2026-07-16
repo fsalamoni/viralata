@@ -459,6 +459,8 @@ export const DEFAULT_FEATURE_FLAGS = Object.freeze({
 
   // SHELTER_* (Sistema de Gestão do Abrigo): todas OFF por default.
   // As chaves vêm de SHELTER_FEATURE_FLAG no módulo shelter/.
+  // TASK-792: SHELTER_DASHBOARD ativado.
+  [SHELTER_FEATURE_FLAG.SHELTER_DASHBOARD]: true,
   ...(SHELTER_FEATURE_FLAG
     ? Object.fromEntries(Object.values(SHELTER_FEATURE_FLAG).map((k) => [k, false]))
     : {}),
