@@ -43,6 +43,7 @@ import { MedicalRecordsList } from '@/modules/shelter/components/MedicalRecordsL
 import { MedicationsList } from '@/modules/shelter/components/MedicationsList';
 import { TimelineList } from '@/modules/shelter/components/TimelineList';
 import { FostersList } from '@/modules/shelter/components/FostersList';
+import { ShelterDonationsTab } from '@/modules/shelter/components/ShelterDonationsTab';
 import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
 import { parseTimestamp } from '@/core/utils/timestamp';
 
@@ -142,6 +143,7 @@ export default function OrganizationAdminPanel() {
   const shelterMedication = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_MEDICATION);
   const shelterPetTimeline = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_PET_TIMELINE);
   const shelterFoster = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_FOSTER);
+  const shelterDonations = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_DONATIONS);
 
   const isLoading = loadingClub || loadingMembership;
   // Fallback por uid (ONG legada sem doc de membership) — sem isso o
@@ -206,8 +208,11 @@ export default function OrganizationAdminPanel() {
     if (shelterFoundation && shelterFoster) {
       tabs.push({ key: 'foster', label: 'Lares Temporários', icon: TAB_ICONS.foster, permission: 'animals' });
     }
+    if (shelterFoundation && shelterDonations) {
+      tabs.push({ key: 'shelter_donations', label: 'Campanhas', icon: TAB_ICONS.donations, permission: 'donations' });
+    }
     return tabs;
-  }, [shelterFoundation, shelterDashboard, shelterKanban, shelterExhibitions, shelterVolunteers, shelterVolunteerProfileV1, shelterHealthRecords, shelterMedication, shelterPetTimeline, shelterFoster, canViewVolunteers]);
+  }, [shelterFoundation, shelterDashboard, shelterKanban, shelterExhibitions, shelterVolunteers, shelterVolunteerProfileV1, shelterHealthRecords, shelterMedication, shelterPetTimeline, shelterFoster, canViewVolunteers, shelterDonations]);
 
   // === REORGANIZAÇÃO DS_V2: 19 abas → 6 grupos semânticos ===
   // Cada grupo = 1 aba no header. Sub-abas viram pills horizontais
@@ -230,6 +235,7 @@ export default function OrganizationAdminPanel() {
     exhibitions: { group: 'engagement', label: 'Vitrines', icon: Eye },
     dashboard: { group: 'overview', label: 'Dashboard', icon: LayoutDashboard },
     donations: { group: 'finance', label: 'Doações', icon: HandCoins },
+    shelter_donations: { group: 'finance', label: 'Campanhas', icon: HandCoins },
     finance: { group: 'finance', label: 'Prestação', icon: Wallet },
     reports: { group: 'finance', label: 'Relatórios', icon: BarChart2 },
     indicators: { group: 'finance', label: 'Indicadores', icon: TrendingUp },
@@ -496,6 +502,9 @@ export default function OrganizationAdminPanel() {
             ))}
           </div>
           {activeSubKey === 'donations' && <ClubDonationsTab clubId={orgId} club={club} membership={membership} canManage={canManageDonations} />}
+          {activeSubKey === 'shelter_donations' && (
+            <ShelterDonationsTab clubId={orgId} canManage={canManageDonations} />
+          )}
           {activeSubKey === 'finance' && <ClubFinanceTab clubId={orgId} canManage={canManageFinance} />}
           {activeSubKey === 'reports' && showReportsTab && (
             <SafeTab label="reports"><ReportsTab clubId={orgId} /></SafeTab>

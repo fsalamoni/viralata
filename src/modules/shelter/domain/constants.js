@@ -97,6 +97,8 @@ export const SHELTER_FEATURE_FLAG = Object.freeze({
   SHELTER_CUTOVER: 'shelter_cutover',
   // TASK-292 — Firebase Cloud Messaging: push notifications
   SHELTER_FCM_V1: 'shelter_fcm_v1',
+  // TASK-790 — CRUD completo de Chamados de Doação (abrigo)
+  SHELTER_DONATIONS: 'shelter_donations',
 });
 
 /**
@@ -328,6 +330,16 @@ export const SHELTER_FEATURE_FLAG_META = Object.freeze({
       + 'onCreate kanban_tasks (→ assignee). Permissão pedida após 1ª '
       + 'ação relevante (não no signup). Respeita opt-out via token '
       + 'removal. LGPD Art.7 VI — consentimento legítimo.',
+  },
+  [SHELTER_FEATURE_FLAG.SHELTER_DONATIONS]: {
+    label: 'Abrigos · chamados de doação (campanhas)',
+    description:
+      'CRUD completo de campanhas de doação no painel do abrigo: '
+      + 'criar/editar/listar/deletar campanha com itens '
+      + '(ração/veterinário/medicamento), meta de valor, prazo, '
+      + 'status, e comprovantes. Coleção '
+      + '`clubs/{clubId}/shelter_donations` + '
+      + '`clubs/{clubId}/shelter_donation_receipts`.',
   },
 });
 
