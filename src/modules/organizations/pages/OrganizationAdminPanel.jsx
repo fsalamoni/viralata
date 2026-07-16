@@ -533,28 +533,125 @@ export default function OrganizationAdminPanel() {
 
 function OverviewTab({ club }) {
   const founded = parseTimestamp(club.created_at)?.getFullYear() ?? null;
-  const { data: pets = [] } = useMyPets(club.id);
+  const { data: pets = [], isLoading: loadingPets } = useMyPets(club.id);
   return (
     <div className="space-y-6">
       <div className="arena-stats-grid">
-        <StatCard value={pets.length} label="Animais cadastrados" />
-        <StatCard value={club.member_count || 0} label="Seguidores" />
-        <StatCard value={founded || '—'} label="Fundação" />
+        <StatCard
+          value={loadingPets ? null : pets.length}
+          label="Animais cadastrados"
+          icon={PawPrint}
+        />
+        <StatCard
+          value={club.member_count || 0}
+          label="Seguidores"
+          icon={Users2}
+        />
+        <StatCard
+          value={founded || '—'}
+          label="Fundação"
+          icon={Clock}
+        />
+        <StatCard
+          value={club.adoption_count ?? '—'}
+          label="Adoções concretizadas"
+          icon={Heart}
+        />
       </div>
+
       <div className="arena-section-card">
         <div className="arena-section-card-header">
           <div>
             <h3 className="arena-section-card-title">Sobre a organização</h3>
             <p className="arena-section-card-description">Descrição pública visível no diretório.</p>
           </div>
+          <Button asChild variant="ghost" size="sm">
+            <Link to={`/organizacoes/${club.id}`}>
+              Ver página pública <ChevronRight className="ml-1 h-3.5 w-3.5" />
+            </Link>
+          </Button>
         </div>
         <div className="arena-section-card-body">
-          <p className="whitespace-pre-wrap text-[13.5px] leading-relaxed text-foreground/85">
-            {club.description || 'Nenhuma descrição cadastrada ainda.'}
-          </p>
+          {club.description ? (
+            <p className="whitespace-pre-wrap text-[13.5px] leading-relaxed text-foreground/85">
+              {club.description}
+            </p>
+          ) : (
+            <EmptyState
+              icon={Info}
+              title="Nenhuma descrição cadastrada"
+              description="Adicione uma descrição pública para que visitantes conheçam o abrigo."
+              className="py-6"
+            />
+          )}
+        </div>
+      </div>
+
+      <div className="arena-section-card">
+        <div className="arena-section-card-header">
+          <div>
+            <h3 className="arena-section-card-title">Atalhos rápidos</h3>
+            <p className="arena-section-card-description">Ações mais usadas do painel.</p>
+          </div>
+        </div>
+        <div className="arena-section-card-body grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          <ShortcutCard
+            href={`/organizacoes/${club.id}/admin?tab=operational:animals`}
+            icon={PawPrint}
+            title="Cadastrar pet"
+            description="Adicione um novo animal para adoção."
+          />
+          <ShortcutCard
+            href={`/organizacoes/${club.id}/admin?tab=engagement:feed`}
+            icon={MessageSquare}
+            title="Nova publicação"
+            description="Publique um aviso no mural da ONG."
+          />
+          <ShortcutCard
+            href={`/organizacoes/${club.id}/admin?tab=engagement:kanban`}
+            icon={Kanban}
+            title="Abrir Kanban"
+            description="Organize pendências do abrigo."
+          />
+          <ShortcutCard
+            href={`/organizacoes/${club.id}/admin?tab=people:volunteers`}
+            icon={Heart}
+            title="Voluntários"
+            description="Gerencie escalas e atribuições."
+          />
+          <ShortcutCard
+            href={`/organizacoes/${club.id}/admin?tab=finance:donations`}
+            icon={HandCoins}
+            title="Chamados de doação"
+            description="Crie campanhas de arrecadação."
+          />
+          <ShortcutCard
+            href={`/organizacoes/${club.id}/admin?tab=settings:general`}
+            icon={ShieldCheck}
+            title="Configurações"
+            description="Edite dados do abrigo."
+          />
         </div>
       </div>
     </div>
+  );
+}
+
+function ShortcutCard({ href, icon: Icon, title, description }) {
+  return (
+    <Link
+      to={href}
+      className="group flex items-start gap-3 rounded-2xl border border-border/60 bg-white/60 p-4 transition-all hover:border-orange-300/60 hover:bg-white/80 hover:shadow-[0_18px_40px_-24px_rgba(64,34,18,0.22)]"
+    >
+      <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-orange-100/80 text-orange-700 transition-colors group-hover:bg-orange-500 group-hover:text-white">
+        <Icon className="h-4 w-4" />
+      </span>
+      <div className="min-w-0 flex-1">
+        <p className="text-[13.5px] font-semibold text-foreground">{title}</p>
+        <p className="mt-0.5 text-[12px] text-muted-foreground">{description}</p>
+      </div>
+      <ChevronRight className="h-4 w-4 shrink-0 self-center text-muted-foreground/50 transition-transform group-hover:translate-x-0.5" />
+    </Link>
   );
 }
 
@@ -565,7 +662,11 @@ function StatCard({ value, label, icon: Icon }) {
         <p className="arena-stat-card-label">{label}</p>
         {Icon && <Icon className="h-4 w-4 text-muted-foreground/70" />}
       </div>
-      <div className="arena-stat-card-value">{value}</div>
+      {value === null || value === undefined ? (
+        <Skeleton className="mt-2 h-7 w-16 rounded-md" />
+      ) : (
+        <div className="arena-stat-card-value">{value}</div>
+      )}
     </div>
   );
 }
