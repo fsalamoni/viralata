@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import {
   ArrowLeft, Building2, LayoutGrid, PawPrint, MessageSquare, HandCoins, Wallet, Users, ShieldCheck, Info, MessageCircle, BarChart2, TrendingUp,
   LayoutDashboard, Kanban, Eye, Heart, Stethoscope, Pill, Clock, Home,
+  Compass, Users2, Megaphone, Receipt, Settings as SettingsIcon,
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -208,14 +209,85 @@ export default function OrganizationAdminPanel() {
     return tabs;
   }, [shelterFoundation, shelterDashboard, shelterKanban, shelterExhibitions, shelterVolunteers, shelterVolunteerProfileV1, shelterHealthRecords, shelterMedication, shelterPetTimeline, shelterFoster, canViewVolunteers]);
 
+  // === REORGANIZAÇÃO DS_V2: 19 abas → 6 grupos semânticos ===
+  // Cada grupo = 1 aba no header. Sub-abas viram pills horizontais
+  // dentro do TabsContent do grupo. Isso resolve o transbordar de 2 fileiras
+  // (causa da sobreposição "Medicação" / "Lares Temporários" da imagem).
+  // Mapa: tab_key → { grupo, label_curto, icon }
+  const TAB_TO_GROUP = {
+    overview: { group: 'overview', label: 'Visão Geral', icon: LayoutGrid },
+    general: { group: 'settings', label: 'Dados gerais', icon: Info },
+    animals: { group: 'operational', label: 'Pets', icon: PawPrint },
+    medical_records: { group: 'operational', label: 'Prontuário', icon: Stethoscope },
+    medications: { group: 'operational', label: 'Medicação', icon: Pill },
+    timeline: { group: 'operational', label: 'Timeline', icon: Clock },
+    team: { group: 'people', label: 'Equipe', icon: Users },
+    volunteers: { group: 'people', label: 'Voluntários', icon: Heart },
+    foster: { group: 'people', label: 'Lares Temp.', icon: Home },
+    feed: { group: 'engagement', label: 'Mural', icon: MessageSquare },
+    chat: { group: 'engagement', label: 'Conversas', icon: MessageCircle },
+    kanban: { group: 'engagement', label: 'Pendências', icon: Kanban },
+    exhibitions: { group: 'engagement', label: 'Vitrines', icon: Eye },
+    dashboard: { group: 'overview', label: 'Dashboard', icon: LayoutDashboard },
+    donations: { group: 'finance', label: 'Doações', icon: HandCoins },
+    finance: { group: 'finance', label: 'Prestação', icon: Wallet },
+    reports: { group: 'finance', label: 'Relatórios', icon: BarChart2 },
+    indicators: { group: 'finance', label: 'Indicadores', icon: TrendingUp },
+    settings: { group: 'settings', label: 'Configurações', icon: ShieldCheck },
+  };
+
+  // 6 grupos semânticos com ícone + label + ordem fixa
+  const TAB_GROUPS = [
+    { key: 'overview', label: 'Visão Geral', icon: LayoutGrid, shortLabel: 'Início' },
+    { key: 'operational', label: 'Operacional', icon: Compass, shortLabel: 'Operacional' },
+    { key: 'people', label: 'Pessoas', icon: Users2, shortLabel: 'Pessoas' },
+    { key: 'engagement', label: 'Engajamento', icon: Megaphone, shortLabel: 'Engajamento' },
+    { key: 'finance', label: 'Financeiro', icon: Receipt, shortLabel: 'Financeiro' },
+    { key: 'settings', label: 'Configurações', icon: SettingsIcon, shortLabel: 'Ajustes' },
+  ];
+
+  // Mapear cada tab_key (ex: 'animals', 'kanban') para seu grupo
+  // Combina visibleTabs (community) + shelterTabs (com flag gate)
   const allVisibleTabs = useMemo(() => safeTabs(visibleTabs, shelterTabs), [visibleTabs, shelterTabs]);
 
-  const requestedTab = searchParams.get('tab') || 'overview';
-  const activeTab = allVisibleTabs.some((t) => t.key === requestedTab) ? requestedTab : (allVisibleTabs[0]?.key || 'overview');
+  // Sub-abas agrupadas por grupo (para renderizar pills dentro de cada grupo)
+  const subsByGroup = useMemo(() => {
+    const map = { overview: [], operational: [], people: [], engagement: [], finance: [], settings: [] };
+    for (const t of allVisibleTabs) {
+      const groupInfo = TAB_TO_GROUP[t.key];
+      if (groupInfo && map[groupInfo.group]) {
+        map[groupInfo.group].push({
+          key: t.key,
+          label: groupInfo.label,
+          icon: groupInfo.icon,
+        });
+      }
+    }
+    return map;
+  }, [allVisibleTabs]);
 
-  const setActiveTab = (tab) => {
+  // Grupos visíveis: incluir grupo apenas se tem pelo menos 1 sub-aba
+  // (exceto 'overview' que sempre existe via OverviewTab)
+  const visibleGroups = useMemo(() => {
+    return TAB_GROUPS.filter((g) => g.key === 'overview' || (subsByGroup[g.key] && subsByGroup[g.key].length > 0));
+  }, [subsByGroup]);
+
+  // Tab ativa = primeiro sub-aba do grupo ativo (formato "group:sub" ex: "operational:animals")
+  const requestedTab = searchParams.get('tab') || 'overview:overview';
+  const [reqGroup, reqSub] = requestedTab.split(':');
+  const validGroup = visibleGroups.find((g) => g.key === reqGroup);
+  const activeGroupKey = validGroup ? reqGroup : (visibleGroups[0]?.key || 'overview');
+  const activeGroup = visibleGroups.find((g) => g.key === activeGroupKey);
+  // Sub-aba ativa: primeiro sub-aba do grupo (ou 'overview' se for o grupo overview sem sub-abas)
+  const activeSubKey = activeGroupKey === 'overview'
+    ? 'overview'
+    : (subsByGroup[activeGroupKey]?.find((s) => s.key === reqSub)?.key
+        || subsByGroup[activeGroupKey]?.[0]?.key
+        || '');
+
+  const setActiveTab = (groupKey, subKey) => {
     const next = new URLSearchParams(searchParams);
-    next.set('tab', tab);
+    next.set('tab', subKey ? `${groupKey}:${subKey}` : groupKey);
     setSearchParams(next, { replace: true });
   };
 
@@ -309,71 +381,66 @@ export default function OrganizationAdminPanel() {
         </div>
       </section>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+      <Tabs value={activeGroupKey} onValueChange={(g) => setActiveTab(g, '')} className="w-full">
         <TabsList className="arena-admin-tabs">
-          {allVisibleTabs.map((tab) => (
-            <TabsTrigger key={tab.key} value={tab.key} className={cn('arena-admin-tab-trigger')}>
-              <tab.icon className="h-4 w-4" /> {tab.label}
+          {visibleGroups.map((group) => (
+            <TabsTrigger key={group.key} value={group.key} className={cn('arena-admin-tab-trigger')}>
+              <group.icon className="h-4 w-4" />{' '}
+              <span className="hidden sm:inline">{group.label}</span>
+              <span className="sm:hidden">{group.shortLabel}</span>
             </TabsTrigger>
           ))}
         </TabsList>
 
+        {/* === GRUPO: Visão Geral === */}
         <TabsContent value="overview" className="mt-6 sm:mt-8 focus-visible:outline-none">
           <OverviewTab club={club} />
         </TabsContent>
-        <TabsContent value="general" className="mt-6 sm:mt-8 focus-visible:outline-none">
-          <ClubGeneralAdminTab club={club} />
+
+        {/* === GRUPO: Operacional === */}
+        <TabsContent value="operational" className="mt-6 sm:mt-8 focus-visible:outline-none">
+          <div className="arena-subtab-bar mb-6 flex flex-nowrap items-center gap-1.5 overflow-x-auto rounded-[1rem] border border-border/60 bg-white/60 p-1 backdrop-blur">
+            {subsByGroup.operational.map((sub) => (
+              <button
+                key={sub.key}
+                type="button"
+                onClick={() => setActiveTab('operational', sub.key)}
+                data-active={sub.key === activeSubKey}
+                className="inline-flex min-h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-[12.5px] font-semibold text-muted-foreground transition-all hover:text-foreground data-[active=true]:bg-foreground data-[active=true]:text-background"
+              >
+                <sub.icon className="h-3.5 w-3.5" /> {sub.label}
+              </button>
+            ))}
+          </div>
+          {activeSubKey === 'animals' && <ClubPetsDataGrid clubId={orgId} canManage={canManageAnimals} />}
+          {activeSubKey === 'medical_records' && shelterFoundation && shelterHealthRecords && (
+            <SafeTab label="medical_records"><ShelterPetScopedTab clubId={orgId} kind="medical" /></SafeTab>
+          )}
+          {activeSubKey === 'medications' && shelterFoundation && shelterMedication && (
+            <SafeTab label="medications"><ShelterPetScopedTab clubId={orgId} kind="medications" /></SafeTab>
+          )}
+          {activeSubKey === 'timeline' && shelterFoundation && shelterPetTimeline && (
+            <SafeTab label="timeline"><ShelterPetScopedTab clubId={orgId} kind="timeline" /></SafeTab>
+          )}
         </TabsContent>
-        <TabsContent value="animals" className="mt-6 sm:mt-8 focus-visible:outline-none">
-          <ClubPetsDataGrid clubId={orgId} canManage={canManageAnimals} />
-        </TabsContent>
-        <TabsContent value="feed" className="mt-6 sm:mt-8 focus-visible:outline-none">
-          <ClubFeedTab clubId={orgId} club={club} membership={membership} canManageFeed={canManageFeed} />
-        </TabsContent>
-        <TabsContent value="donations" className="mt-6 sm:mt-8 focus-visible:outline-none">
-          <ClubDonationsTab clubId={orgId} club={club} membership={membership} canManage={canManageDonations} />
-        </TabsContent>
-        <TabsContent value="finance" className="mt-6 sm:mt-8 focus-visible:outline-none">
-          <ClubFinanceTab clubId={orgId} canManage={canManageFinance} />
-        </TabsContent>
-        {showReportsTab && (
-          <TabsContent value="reports" className="mt-6 sm:mt-8 focus-visible:outline-none">
-            <SafeTab label="reports"><ReportsTab clubId={orgId} /></SafeTab>
-          </TabsContent>
-        )}
-        {showIndicatorsTab && (
-          <TabsContent value="indicators" className="mt-6 sm:mt-8 focus-visible:outline-none">
-            <SafeTab label="indicators"><IndicatorsTab clubId={orgId} /></SafeTab>
-          </TabsContent>
-        )}
-        <TabsContent value="chat" className="mt-6 sm:mt-8 focus-visible:outline-none">
-          <ClubChatAdminTab club={club} />
-        </TabsContent>
-        <TabsContent value="team" className="mt-6 sm:mt-8 focus-visible:outline-none">
-          <ClubTeamTab club={club} viewerMembership={membership} viewerUid={user?.uid} />
-        </TabsContent>
-        <TabsContent value="settings" className="mt-6 sm:mt-8 focus-visible:outline-none">
-          <ClubAdminTab club={club} />
-        </TabsContent>
-        {/* Shelter Tabs com Feature Flag Gating. Envolvidos em SafeTab (ErrorBoundary
-            local) para isolar falhas de query/componente sem derrubar o painel. */}
-        {shelterFoundation && shelterDashboard && (
-          <TabsContent value="dashboard" className="mt-6 sm:mt-8 focus-visible:outline-none">
-            <SafeTab label="dashboard"><DashboardPage clubId={orgId} /></SafeTab>
-          </TabsContent>
-        )}
-        {shelterFoundation && shelterKanban && (
-          <TabsContent value="kanban" className="mt-6 sm:mt-8 focus-visible:outline-none">
-            <SafeTab label="kanban"><KanbanPage clubId={orgId} /></SafeTab>
-          </TabsContent>
-        )}
-        {shelterFoundation && shelterExhibitions && (
-          <TabsContent value="exhibitions" className="mt-6 sm:mt-8 focus-visible:outline-none">
-            <SafeTab label="exhibitions"><ExhibitionsList shelterClubId={orgId} /></SafeTab>
-          </TabsContent>
-        )}
-        {shelterFoundation && shelterVolunteers && shelterVolunteerProfileV1 && canViewVolunteers && (
-          <TabsContent value="volunteers" className="mt-6 sm:mt-8 focus-visible:outline-none">
+
+        {/* === GRUPO: Pessoas === */}
+        <TabsContent value="people" className="mt-6 sm:mt-8 focus-visible:outline-none">
+          <div className="arena-subtab-bar mb-6 flex flex-nowrap items-center gap-1.5 overflow-x-auto rounded-[1rem] border border-border/60 bg-white/60 p-1 backdrop-blur">
+            {subsByGroup.people.map((sub) => (
+              <button
+                key={sub.key}
+                type="button"
+                onClick={() => setActiveTab('people', sub.key)}
+                data-active={sub.key === activeSubKey}
+                className="inline-flex min-h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-[12.5px] font-semibold text-muted-foreground transition-all hover:text-foreground data-[active=true]:bg-foreground data-[active=true]:text-background"
+              >
+                <sub.icon className="h-3.5 w-3.5" /> {sub.label}
+              </button>
+            ))}
+          </div>
+          {activeSubKey === 'team' && <ClubTeamTab club={club} viewerMembership={membership} viewerUid={user?.uid} />}
+          {activeSubKey === 'volunteers' && shelterFoundation && shelterVolunteers && shelterVolunteerProfileV1 && canViewVolunteers && (
             <SafeTab label="volunteers">
               <VolunteersAdminTab
                 shelterClubId={orgId}
@@ -382,28 +449,83 @@ export default function OrganizationAdminPanel() {
                 currentUserUid={user?.uid}
               />
             </SafeTab>
-          </TabsContent>
-        )}
-        {shelterFoundation && shelterHealthRecords && (
-          <TabsContent value="medical_records" className="mt-6 sm:mt-8 focus-visible:outline-none">
-            <SafeTab label="medical_records"><ShelterPetScopedTab clubId={orgId} kind="medical" /></SafeTab>
-          </TabsContent>
-        )}
-        {shelterFoundation && shelterMedication && (
-          <TabsContent value="medications" className="mt-6 sm:mt-8 focus-visible:outline-none">
-            <SafeTab label="medications"><ShelterPetScopedTab clubId={orgId} kind="medications" /></SafeTab>
-          </TabsContent>
-        )}
-        {shelterFoundation && shelterPetTimeline && (
-          <TabsContent value="timeline" className="mt-6 sm:mt-8 focus-visible:outline-none">
-            <SafeTab label="timeline"><ShelterPetScopedTab clubId={orgId} kind="timeline" /></SafeTab>
-          </TabsContent>
-        )}
-        {shelterFoundation && shelterFoster && (
-          <TabsContent value="foster" className="mt-6 sm:mt-8 focus-visible:outline-none">
+          )}
+          {activeSubKey === 'foster' && shelterFoundation && shelterFoster && (
             <SafeTab label="foster"><FostersList shelterClubId={orgId} canAbriho={canManageTeam} actor={{ uid: user?.uid, displayName: user?.displayName }} /></SafeTab>
-          </TabsContent>
-        )}
+          )}
+        </TabsContent>
+
+        {/* === GRUPO: Engajamento === */}
+        <TabsContent value="engagement" className="mt-6 sm:mt-8 focus-visible:outline-none">
+          <div className="arena-subtab-bar mb-6 flex flex-nowrap items-center gap-1.5 overflow-x-auto rounded-[1rem] border border-border/60 bg-white/60 p-1 backdrop-blur">
+            {subsByGroup.engagement.map((sub) => (
+              <button
+                key={sub.key}
+                type="button"
+                onClick={() => setActiveTab('engagement', sub.key)}
+                data-active={sub.key === activeSubKey}
+                className="inline-flex min-h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-[12.5px] font-semibold text-muted-foreground transition-all hover:text-foreground data-[active=true]:bg-foreground data-[active=true]:text-background"
+              >
+                <sub.icon className="h-3.5 w-3.5" /> {sub.label}
+              </button>
+            ))}
+          </div>
+          {activeSubKey === 'feed' && <ClubFeedTab clubId={orgId} club={club} membership={membership} canManageFeed={canManageFeed} />}
+          {activeSubKey === 'chat' && <ClubChatAdminTab club={club} />}
+          {activeSubKey === 'kanban' && shelterFoundation && shelterKanban && (
+            <SafeTab label="kanban"><KanbanPage clubId={orgId} /></SafeTab>
+          )}
+          {activeSubKey === 'exhibitions' && shelterFoundation && shelterExhibitions && (
+            <SafeTab label="exhibitions"><ExhibitionsList shelterClubId={orgId} /></SafeTab>
+          )}
+        </TabsContent>
+
+        {/* === GRUPO: Financeiro === */}
+        <TabsContent value="finance" className="mt-6 sm:mt-8 focus-visible:outline-none">
+          <div className="arena-subtab-bar mb-6 flex flex-nowrap items-center gap-1.5 overflow-x-auto rounded-[1rem] border border-border/60 bg-white/60 p-1 backdrop-blur">
+            {subsByGroup.finance.map((sub) => (
+              <button
+                key={sub.key}
+                type="button"
+                onClick={() => setActiveTab('finance', sub.key)}
+                data-active={sub.key === activeSubKey}
+                className="inline-flex min-h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-[12.5px] font-semibold text-muted-foreground transition-all hover:text-foreground data-[active=true]:bg-foreground data-[active=true]:text-background"
+              >
+                <sub.icon className="h-3.5 w-3.5" /> {sub.label}
+              </button>
+            ))}
+          </div>
+          {activeSubKey === 'donations' && <ClubDonationsTab clubId={orgId} club={club} membership={membership} canManage={canManageDonations} />}
+          {activeSubKey === 'finance' && <ClubFinanceTab clubId={orgId} canManage={canManageFinance} />}
+          {activeSubKey === 'reports' && showReportsTab && (
+            <SafeTab label="reports"><ReportsTab clubId={orgId} /></SafeTab>
+          )}
+          {activeSubKey === 'indicators' && showIndicatorsTab && (
+            <SafeTab label="indicators"><IndicatorsTab clubId={orgId} /></SafeTab>
+          )}
+        </TabsContent>
+
+        {/* === GRUPO: Configurações === */}
+        <TabsContent value="settings" className="mt-6 sm:mt-8 focus-visible:outline-none">
+          <div className="arena-subtab-bar mb-6 flex flex-nowrap items-center gap-1.5 overflow-x-auto rounded-[1rem] border border-border/60 bg-white/60 p-1 backdrop-blur">
+            {subsByGroup.settings.map((sub) => (
+              <button
+                key={sub.key}
+                type="button"
+                onClick={() => setActiveTab('settings', sub.key)}
+                data-active={sub.key === activeSubKey}
+                className="inline-flex min-h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-[12.5px] font-semibold text-muted-foreground transition-all hover:text-foreground data-[active=true]:bg-foreground data-[active=true]:text-background"
+              >
+                <sub.icon className="h-3.5 w-3.5" /> {sub.label}
+              </button>
+            ))}
+          </div>
+          {activeSubKey === 'general' && <ClubGeneralAdminTab club={club} />}
+          {activeSubKey === 'settings' && <ClubAdminTab club={club} />}
+          {activeSubKey === 'dashboard' && shelterFoundation && shelterDashboard && (
+            <SafeTab label="dashboard"><DashboardPage clubId={orgId} /></SafeTab>
+          )}
+        </TabsContent>
       </Tabs>
     </ClubThemedScope>
   );
