@@ -1,252 +1,294 @@
-# Design System — Viralata
+# Design System · Viralata — v1.0 (oficial)
 
-> Fundamento visual da plataforma. Para o plano de execução por fases, ver
-> `docs/ROADMAP.md`. Este documento é a especificação; a aplicação em código
-> acontece na Fase 0/1 do roadmap — nada aqui foi implementado ainda.
+> **Esta é a especificação oficial e definitiva do design system da plataforma.**
+> A fonte canônica é este arquivo. A versão visual navegável está em
+> `docs/design-system-v2/design-system-preview.html` (HTML estático com
+> todos os componentes renderizados). Os tokens machine-readable estão em
+> `docs/design-system-v2/design-tokens.json`. O Figma está em
+> `docs/design-system-v2/design-system.fig` (placeholder representativo
+> do canvas, já que o Figma usa formato binário proprietário).
+>
+> O plano de aplicação do design system em código está em
+> `docs/ROADMAP.md` → **Fase 4 (DS_V2 — Reaplicação)**. Nada do que está
+> aqui foi propagado em massa ainda — está sendo aplicado por área
+> (Home → Pets → Adoção → Organizações → Admin → Chat), cada área com
+> feature flag própria default OFF.
 
-## 1. Diagnóstico (por que este documento existe)
+---
 
-O app já tem uma base de design tokens relativamente sofisticada
-(`src/index.css` + `tailwind.config.js` + `src/components/ui/button.jsx`):
-fontes Manrope (corpo) + Sora (títulos), variáveis HSL para cor, glassmorphism
-(`backdrop-blur-xl` + bordas translúcidas), gradientes, raio de borda generoso
-(`--radius: 1.25rem`), sombras difusas coloridas e até um grid de fundo sutil
-(`.arena-page::before`). O botão padrão (`buttonVariants` em `button.jsx`) já
-é um gradiente com hover-lift — não é um `<button>` genérico.
+## 1. Princípios de Design
 
-O problema é que essa base foi construída para o produto anterior deste fork
-(PickleTour, torneios de pickleball) e **não é usada de forma consistente**:
+As quatro premissas que orientam toda decisão de design na plataforma:
 
-- `src/pages/Home.jsx`, `src/components/Layout.jsx`, `PetFeed.jsx`,
-  `PetDetail.jsx`, `PetCard.jsx` e outras páginas centrais de pets ignoram os
-  tokens e usam `bg-orange-500 hover:bg-orange-600` cru, cabeçalho branco
-  chapado (`bg-white border-b`), fundo `bg-gray-50` genérico, emoji como
-  substituto de imagem (`🐾` gigante no hero) e zero animação — o resultado é
-  o visual "template de IA" que motivou este pedido.
-- Já outras páginas, como `src/modules/organizations/pages/ClubsDirectory.jsx`
-  e `ClubDetail.jsx`, **já usam** o sistema de tokens (`arena-panel`,
-  `arena-chip`, gradientes) — só que na paleta verde-esmeralda/lima herdada
-  do produto de torneios, que não tem relação com adoção de pets.
-- `src/pages/Landing.jsx` é uma landing completa, bem-feita visualmente
-  (blobs em gradiente, painéis de vidro, chips), mas **não está mais roteada**
-  em `App.jsx` — é código órfão do produto antigo, com boa referência técnica.
-- Não há nenhuma biblioteca de animação instalada (`framer-motion`, `gsap`,
-  `aos` etc. — nenhuma). Scroll suave existe só via `scroll-behavior: smooth`
-  no CSS; não há scroll-reveal nem microinterações.
+- **Clareza**: Hierarquia visual óbvia. Uma ação primária por tela, textos diretos, nunca fazer o usuário adivinhar o próximo passo.
+- **Navegação intuitiva**: Estrutura estável (Feed, Abrigos, Voluntários, Comunidade, Chat) — muitas funcionalidades, sempre no mesmo lugar.
+- **Empatia & apego**: Fotos grandes, tom caloroso, histórias reais. O pet é sempre protagonista visual.
+- **Organicidade**: Formas orgânicas, cantos generosos, superfícies de vidro — nunca aspecto corporativo ou "feito por IA".
 
-Conclusão prática: **não vamos começar do zero**. Vamos re-harmonizar a
-paleta e a linguagem visual para o tema de adoção de pets, propagar os tokens
-para as páginas que hoje os ignoram, e adicionar uma camada de movimento leve
-que hoje não existe.
+---
 
-## 2. Princípios de design
+## 2. Tokens de Design (Fundamentos)
 
-1. **Moderno sem ser frio** — gradientes suaves, vidro, sombras orgânicas
-   coloridas. Nunca cinza-sobre-branco genérico.
-2. **Minimalista com propósito** — hierarquia clara, bastante respiro, poucos
-   elementos por tela; a personalidade vem da camada (glass/gradiente/forma
-   orgânica), não de excesso de elementos.
-3. **Humano e acolhedor** — paleta terrosa, fotografia real de pets em
-   primeiro plano (nunca emoji no lugar de imagem), cantos bem arredondados,
-   linguagem visual "caseira", não corporativa.
-4. **Criativo, não genérico** — formas orgânicas (blobs), composições
-   assimétricas, tipografia com peso e personalidade. Nunca hero centralizado
-   raso (ícone + título + botão, tudo centralizado, sem profundidade).
-5. **Acessível e performático** — contraste AA, `prefers-reduced-motion` já
-   respeitado hoje e deve continuar sendo, motion sempre sutil.
+### 2.1. Cores
 
-## 3. Paleta de cores — tema "quente e terroso"
+Paleta "quente e terrosa" — terracota como cor de ação, tons de areia e creme como base, oliva e mostarda como apoio. **Regra:** Máximo 1–2 cores de fundo por tela.
 
-Direção escolhida: terracota, creme, verde-oliva, toque de mostarda —
-transmite acolhimento, natureza e confiança ("lar" e cuidado), coerente com
-adoção responsável de pets.
+| Nome | Variável CSS | HSL | HEX | Uso |
+|------|--------------|-----|-----|-----|
+| **Primary · Terracota** | `--primary` | `17 72% 43%` | `#C85A28` | Ações principais, CTAs, wordmark |
+| **Primary Foreground** | `--primary-foreground` | `40 45% 98%` | `#FFFBF5` | Texto sobre fundo primary |
+| **Secondary · Areia** | `--secondary` | `38 42% 91%` | `#EDE4D6` | Chips neutros, fundos suaves |
+| **Accent · Oliva** | `--accent` | `86 30% 32%` | `#5A7A2E` | Avatares, badges de comunidade |
+| **Highlight · Mostarda** | `--highlight` | `40 88% 54%` | `#FFC107` | Gradiente CTA, badge "em processo" |
+| **Success** | `--success` | `150 38% 36%` | `#26A65B` | Status "disponível", confirmações |
+| **Destructive** | `--destructive` | `9 62% 46%` | `#E74C3C` | Denúncias, exclusões, alertas |
+| **Background** | `--background` | `38 45% 97%` | `#F8F5F0` | Fundo base de todas as páginas |
+| **Background Alt** | `--background-alt` | `34 40% 94%` | `#F0EBE3` | Seções alternadas |
+| **Foreground** | `--foreground` | `20 25% 13%` | `#2D1F14` | Texto principal |
+| **Muted Foreground** | `--muted-foreground` | `20 12% 37%` | `#6B5D52` | Texto secundário, legendas |
+| **Border** | `--border` | `30 20% 88%` | `#E0D5C7` | Bordas de inputs, cards, divisores |
 
-Importante: os nomes das variáveis CSS **não mudam** (`--primary`,
-`--secondary`, `--accent`, etc.) — só os valores. Isso significa que todo
-componente shadcn existente (`Button`, `Card`, `Badge`, `Input`...) herda a
-nova paleta automaticamente, sem precisar reescrever nenhum componente de UI
-de base.
+**Implementação atual (julho/2026):** os tokens já estão aplicados em
+`src/index.css` com os valores oficiais — TASK-249 ajustou contraste WCAG AA
+em `--primary` e `--muted-foreground`. Sem mudanças necessárias nos valores
+brutos dos tokens. Use sempre as variáveis semânticas (`bg-primary`,
+`text-foreground`, `text-muted-foreground`); nunca cores literais do
+Tailwind (`bg-orange-500`, `text-gray-900`).
 
-Proposta de valores para `src/index.css` (`:root`), mantendo a estrutura
-atual (HSL, mesmo bloco `@layer base`):
+### 2.2. Gradientes
 
-| Token | Valor HSL proposto | Uso |
-|---|---|---|
-| `--background` | `40 38% 97%` | Creme quente (fundo geral) |
-| `--foreground` | `20 18% 15%` | Grafite quente (texto) |
-| `--card` | `0 0% 100%` | Branco (mantém) |
-| `--card-foreground` | `20 18% 15%` | — |
-| `--primary` | `16 68% 46%` | Terracota (CTA principal, links ativos) |
-| `--primary-foreground` | `40 45% 98%` | Texto sobre terracota |
-| `--secondary` | `38 42% 91%` | Areia (fundos secundários, chips) |
-| `--secondary-foreground` | `20 30% 20%` | — |
-| `--muted` | `32 20% 92%` | Cinza-areia (fundos neutros) |
-| `--muted-foreground` | `20 12% 42%` | Texto secundário |
-| `--accent` | `84 24% 36%` | Verde-oliva (sucesso, "adotado", badges positivos) |
-| `--accent-foreground` | `40 40% 97%` | — |
-| `--destructive` | `4 72% 52%` | Vermelho quente (erros, denúncias, banimento) |
-| `--destructive-foreground` | `0 0% 100%` | — |
-| `--border` / `--input` | `30 20% 85%` | — |
-| `--ring` | `16 68% 46%` | Foco (mesma cor do primary) |
-| `--radius` | `1.25rem` (mantém; `1rem` no mobile) | — |
-| *novo* `--highlight` | `42 88% 55%` | Mostarda — destaque de prioridade, "Compatibilidade alta" |
+Usados com moderação — CTAs, marca e superfícies de destaque. Nunca em blocos de texto longos.
 
-`--sidebar-*` (usado só pelo componente de sidebar do shadcn, hoje sem uso
-real no app): pode virar uma variação escura terrosa (marrom-carvão) em vez
-do azul-marinho atual, só por consistência, sem prioridade.
+- **Gradiente de marca**: `linear-gradient(135deg, hsl(17,72%,43%), hsl(40,88%,54%))`
+  - *Uso:* Botões primários, CTA final, ícone do logo
+- **Wordmark**: `linear-gradient(90deg, hsl(16,68%,26%), hsl(16,60%,42%), hsl(42,88%,52%))`
+  - *Uso:* Texto "Viralata" e títulos com destaque
+- **Banner escuro**: `linear-gradient(145deg, hsl(16,60%,30%), hsl(20,35%,18%) 55%, hsl(20,25%,11%))`
+  - *Uso:* Cabeçalhos internos, CTA final, admin
+- **Avatar**: `linear-gradient(135deg, hsl(86,30%,32%), hsl(17,72%,43%))`
+  - *Uso:* Avatares com iniciais, ícones de equipe
 
-Fundo de página (`body` em `index.css`) hoje usa dois radiais verde/amarelo
-— trocar para radiais terracota/creme muito sutis, mantendo a mesma técnica
-(`radial-gradient` + `linear-gradient`), só recolorindo.
+### 2.3. Tipografia
 
-## 4. Tipografia
+**Sora** (700/800) para títulos, com leve tracking negativo. **Manrope** (400–800) para todo o resto — corpo, botões, legendas.
 
-Manter o par já carregado — **Manrope** (corpo) + **Sora** (títulos,
-`letter-spacing: -0.04em`) — já importado em `index.css` e já correto para o
-tom "moderno e humano" pedido. Escala recomendada (Tailwind):
+| Nível | Fonte & Peso | Tamanho / Line Height | Tracking | Uso |
+|-------|--------------|-----------------------|----------|-----|
+| **Display** | Sora 800 | 56px / 1.1 | -0.03em | Títulos heróis, landing pages |
+| **H1** | Sora 800 | 30–34px / 1.2 | -0.02em | Títulos de página |
+| **H2** | Sora 800 | 26–30px / 1.2 | -0.02em | Títulos de seção |
+| **H3** | Sora 700 | 16–19px / 1.3 | 0 | Subtítulos, card titles |
+| **Corpo grande** | Manrope 400 | 17.5px / 1.6 | 0 | Texto longo, descrições |
+| **Corpo** | Manrope 500 | 14px / 1.6 | 0 | Texto principal, parágrafos |
+| **Pequeno** | Manrope 600 | 12.5–13.5px / 1.4 | 0 | Labels, legendas, metadados |
+| **Eyebrow** | Manrope 700 | 11px / 1.2 | +0.24em | Rótulos de categoria (maiúsculo) |
 
-| Papel | Classe | Peso |
-|---|---|---|
-| Display (hero) | `text-5xl sm:text-6xl` | Sora 800 |
-| H1 de página | `text-3xl sm:text-4xl` | Sora 700 |
-| H2 de seção | `text-xl sm:text-2xl` | Sora 700 |
-| Corpo | `text-base` | Manrope 400/500 |
-| Legenda/eyebrow | `text-xs sm:text-sm uppercase tracking-wide` | Manrope 600 |
+**Implementação atual:** `Sora` + `Manrope` já importados em `src/index.css`
+via Google Fonts. As classes Tailwind aplicadas são:
 
-## 5. Espaçamento, raio e elevação
+- `font-sora` para títulos (Display, H1, H2, H3)
+- `font-sans` (Manrope por padrão) para corpo
 
-- Grid de espaçamento em múltiplos de 4px (padrão Tailwind). Seções públicas
-  (Home, diretórios) com respiro generoso: `py-16 sm:py-24`.
-- Raio: manter `--radius: 1.25rem` para cards/painéis grandes,
-  `rounded-full` para botões/badges/avatares (já é o padrão de `button.jsx`).
-- Elevação: sombras difusas **coloridas**, não cinza genérico — seguir o
-  padrão já existente em `.arena-panel`/`.match-surface` de
-  `src/index.css` (`box-shadow: 0 24px 60px -28px rgba(...)`), só trocando o
-  matiz da sombra para tons terracota/marrom quente.
-- Vidro (glass): `bg-white/75 backdrop-blur-xl` + borda branca translúcida —
-  reaproveitar exatamente as classes `.arena-panel`/`.arena-panel-strong` já
-  definidas, só recolorindo os gradientes internos.
+### 2.4. Espaçamento & Raios
 
-## 6. Iconografia e imagens
+Escala de espaçamento em incrementos de 4px. Raios generosos e cantos arredondados reforçam a sensação orgânica e acolhedora.
 
-- Ícones: `lucide-react` (já em uso em todo o app) — manter, é leve e
-  consistente. Não introduzir uma segunda biblioteca de ícones.
-- Fotografia: fotos reais de pets em destaque (proporção quadrada ou 4:5),
-  tratamento leve de contraste. **Eliminar emoji como substituto de imagem**
-  em pontos de destaque — o hero de `Home.jsx` hoje usa um `🐾` gigante
-  sozinho; deve virar uma composição com foto real + forma orgânica atrás.
-- Formas orgânicas: blobs em gradiente com `blur-3xl` atrás de imagens/heróis
-  — a técnica já existe em `src/pages/Landing.jsx`
-  (`bg-gradient-to-br ... blur-3xl`), só recolorir para terracota/mostarda.
-- Estados vazios: já existe `src/components/ui/empty-state.jsx` — só
-  reestilizar cores, manter a estrutura (não introduzir nova lib de
-  ilustração).
+**Escala de Espaçamento:** 4, 8, 12, 16, 20, 24, 32, 40, 48, 64, 96 px.
 
-## 7. Padrões estruturais de layout
+**Raios (Border Radius):**
+- **Pill (999px)**: Botões, chips, inputs de busca
+- **Card (22–24px)**: Cards de pet, abrigo, painéis
+- **Banner (28–32px)**: Cabeçalhos, CTA final
+- **Pequeno (12–14px)**: Miniaturas, badges quadrados
+- **Orgânico/Blob (`40% 60% 55% 45%` / `48% 44% 56% 52%`)**: Moldura de foto hero (Home, 1× por página)
 
-- **Container canônico de página** (`src/components/PageContainer.jsx`):
-  toda página interna (não-standalone) usa exatamente
-  `arena-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8` — a
-  mesma largura do trilho do header, para o conteúdo e a navegação
-  alinharem na mesma coluna e os cards não mudarem de posição entre
-  páginas. Extras da página (`space-y-*`, `pb-*`, `flex`) entram via
-  `className` (mesclado com `cn`/tailwind-merge). Conteúdo que pede
-  leitura estreita (formulários, wizards) restringe um miolo interno
-  (`mx-auto w-full max-w-2xl/3xl`), nunca o container. Exceções
-  full-bleed por desenho: `Home`, `Login`, `OnboardingQuestionnaire`
-  (as `STANDALONE_PAGES` de `Layout.jsx`).
-- **Grids de diretório**: cards de Organizações, Comunidades e do hub
-  usam o MESMO grid (`grid gap-4 sm:grid-cols-2 xl:grid-cols-3`); o Feed
-  de pets usa `sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4` (cards mais
-  densos) dentro do mesmo container — as bordas laterais coincidem em
-  todas as páginas.
-- **Header** (`src/components/Layout.jsx`): trocar o header branco chapado
-  por um header "glass" sticky (`bg-white/70 backdrop-blur-xl`, borda
-  translúcida), logo com wordmark em gradiente (`bg-clip-text`, no molde de
-  `.arena-heading` já existente), item de navegação ativo como "pill"
-  preenchido em vez do `bg-orange-50` atual.
-- **Hero (Home)**: duas colunas assimétricas — texto + CTA à esquerda,
-  composição de foto de pet + blob orgânico + card flutuante (ex.: "+120
-  adoções este mês") à direita. Sem emoji gigante centralizado.
-- **Cards** (`PetCard.jsx` e equivalente de clube): manter foto em proporção
-  quadrada, raio maior, sombra colorida, hover-lift
-  (`hover:-translate-y-1` + sombra crescendo). Badge de espécie vira um chip
-  de vidro sobre a foto, não emoji solto no canto.
-- **Formulários**: manter `react-hook-form` + `zod` (sem mudança de
-  arquitetura); `Input`/`Select` ganham anel de foco na cor `--ring`
-  (terracota).
-- **Rodapé**: manter a estrutura simples de `Home.jsx`, só herdar a nova
-  paleta/tipografia.
+### 2.5. Sombras & Superfícies (Glass)
 
-## 8. Movimento e efeitos de scroll
+Sombras difusas e quentes (nunca cinza puro) dão profundidade sem parecer pesadas. Superfícies de vidro (glass) aparecem sobre fundos com glow.
 
-Nível escolhido: **sutil e elegante** (não imersivo/parallax) — prioriza
-performance, acessibilidade e não competir com o conteúdo (pets, adoção).
+- **Painel flutuante**: `0 24px 60px -28px rgba(64,34,18,0.28)`
+- **Botão / CTA**: `0 18px 38px -22px rgba(64,34,18,0.7)`
+- **Banner escuro**: `0 30px 80px -28px rgba(43,20,8,0.62)`
+- **Hover leve**: `0 20px 50px -30px rgba(64,34,18,0.3)`
 
-- **Biblioteca**: `framer-motion` — leve, tree-shakeable, ótima DX para
-  `whileInView` e `stagger`, padrão de mercado no ecossistema
-  shadcn/Tailwind. Ainda não está instalada; entra na Fase 0 do roadmap.
-- **Scroll-reveal**: fade + slide-up de 16px (~400ms, `easeOut`), disparado
-  **uma única vez** (`viewport={{ once: true, margin: '-80px' }}`) — nunca
-  repetir ao rolar para cima e para baixo.
-- **Stagger**: atraso de ~60–80ms entre itens em grids (feed de pets,
-  diretório de clubes), aplicado só aos primeiros 6–8 itens visíveis por
-  performance.
-- **Hover**: `scale(1.01–1.02)` + sombra crescendo. Nunca tilt 3D ou rotação
-  exagerada.
-- **Transição de página**: opcional, fade de ~150ms no `Layout` — não é
-  prioridade.
-- Sempre checar `prefers-reduced-motion` (a media query global já existe em
-  `index.css`; componentes com `framer-motion` devem usar
-  `useReducedMotion()` e desligar as variantes de entrada quando ativo).
-- Onde aplicar primeiro (maior retorno visual): Home (hero + seções),
-  `PetFeed` (grid), `ClubDetail` (cabeçalho do clube), `PetDetail` (galeria).
+**Efeito Glassmorphism:**
+`background: rgba(255,255,255,0.8); border: 1px solid rgba(255,255,255,0.9); backdrop-filter: blur(14px); box-shadow: 0 24px 60px -28px rgba(64,34,18,0.28);`
+*Sempre sobre fundo com glow radial.*
 
-## 9. Arquivos-chave para a migração (não exaustivo)
+**Implementação atual:** as classes `arena-panel`, `arena-panel-strong`,
+`arena-chip`, `match-surface` em `src/index.css` já encapsulam o efeito
+glass com a paleta terracota oficial. Usar essas classes em vez de
+reimplementar inline.
 
-| Área | Arquivo(s) | Situação hoje |
-|---|---|---|
-| Tokens de cor | `src/index.css` | Existe, paleta errada (verde/lima) |
-| Config Tailwind | `tailwind.config.js` | Sem mudança estrutural — só herda os novos valores das variáveis |
-| Shell/header | `src/components/Layout.jsx` | Zero uso do sistema de tokens |
-| Home | `src/pages/Home.jsx` | Zero uso do sistema de tokens |
-| Padrão de card | `src/modules/pets/components/PetCard.jsx` | Zero uso do sistema de tokens |
-| Referência técnica (antes de remover) | `src/pages/Landing.jsx` | Usa o sistema, paleta errada, não roteado |
-| Já usam o sistema (só repaletar) | `ClubsDirectory.jsx`, `ClubDetail.jsx` | Usa `arena-panel`/`arena-chip`, paleta errada |
-| Demais ~28 páginas | `PetDetail`, `CreatePet`, `MyPets`, `RadarSettings`, `CreateClub`, `Profile`, `ChatPage`, onboarding, institucionais, `/admin/*` | Mistura de padrões — aplicar o mesmo receituário de tokens/cards/motion, sem novas decisões de design por página |
+---
 
-## 10. Limpeza de código órfão — ✅ concluída (ver Fase 2 do `ROADMAP.md`)
+## 3. Componentes
 
-> Nota histórica: os arquivos listados abaixo quando este documento foi
-> escrito já não existiam mais no código na hora de executar a Fase 2 —
-> foram removidos em sessão anterior. O órfão real encontrado foi outro
-> (`organizationService.js` + coleções `organizations`/
-> `organization_members`/`organization_reports`, um segundo modelo de
-> organização nunca conectado a rota nenhuma) — detalhes no `ROADMAP.md`.
+### 3.1. Botões
 
-Lista original (referência, não mais aplicável):
-- `src/pages/Landing.jsx`
-- `src/modules/admin/pages/AdminTournaments.jsx`
-- `src/modules/adopters/pages/AthleteProfile.jsx`
-- `src/modules/adopters/pages/AthletesDirectory.jsx`
-- Funções de torneio em `src/modules/admin/services/adminService.js`
-  (`listAllTournaments`, `setTournamentArchived`, `deleteTournamentCascading`)
+Sempre em formato pílula (999px). Uma única ação primária por tela.
 
-`docs/MODULES.md`, `docs/ARCHITECTURE.md` e `docs/AI_CONTEXT.md` já foram
-reescritos para descrever a Viralata real.
+| Variante | Estilo Visual | Uso |
+|----------|---------------|-----|
+| **Primário** | Bg: Gradiente de marca, Cor: #fff, Borda: none | Uma por tela — ação principal |
+| **Secundário** | Bg: Branco 90%, Cor: Escura, Borda: 2px solid primary 30% | Ação alternativa |
+| **Terciário/Neutro** | Bg: Secondary (Areia), Cor: Escura, Borda: none | Dentro de cards, ações secundárias |
+| **Administrativo** | Bg: Escuro (`hsl 20,15%,20%`), Cor: #fff, Borda: none | Contexto restrito, painel admin |
+| **Crítico** | Bg: Destructive (Vermelho), Cor: #fff, Borda: none | Denúncias, exclusões (usar com moderação) |
+| **Desabilitado** | Bg: Transparente, Cor: Cinza, Borda: 2px solid cinza, Opacity: 55% | Estado inativo |
+| **Ícone Circular** | Bg: Gradiente de marca, Formato: Círculo perfeito (46–52px) | Swipe de descoberta, ações rápidas flutuantes |
 
-## 11. Dark mode
+**Implementação atual:** `src/components/ui/button.jsx` já implementa
+o gradiente de marca no `Button` primário e o pill (radius 999px) por
+padrão. Ajustes pendentes por componente — cobertos pela Fase 4
+DS_V2_COMPONENTS do ROADMAP.
 
-Fora do escopo desta fase (decisão explícita). Os tokens `.dark` continuam
-definidos em `index.css` para o futuro, sem switch nem uso agora.
+### 3.2. Chips & Badges
 
-## 12. Acessibilidade e performance — guardrails
+- **Status de Pet:**
+  - *Disponível*: Bg verde translúcido, Texto verde escuro
+  - *Em processo*: Bg mostarda translúcido, Texto marrom/laranja escuro
+  - *Adotado*: Bg cinza translúcido, Texto cinza escuro
+- **Filtros (Ativo/Inativo):**
+  - *Ativo*: Bg Primary (Terracota), Texto branco, `fontWeight: 700`
+  - *Inativo*: Bg branco, Borda cinza clara, Texto escuro, `fontWeight: 600`
+- **Tags de Característica:** Bg Secondary (Areia), Texto escuro (Ex: Castrado, Vacinado)
 
-- Contraste mínimo AA (4.5:1 para texto normal) — validar terracota sobre
-  creme e branco sobre terracota antes de aplicar.
-- Motion sempre `once: true`, sempre checando `prefers-reduced-motion`.
-- Imagens com `loading="lazy"` (já usado em `PetCard`) e proporção reservada
-  (evitar layout shift).
-- Bundle: `framer-motion` é tree-shakeable via `import { motion } from
-  'framer-motion'` — monitorar o aviso de chunk >500kB que o build já
-  emite hoje.
+### 3.3. Cards
+
+Cantos 20–24px, fundo quase-branco translúcido, sombra difusa. Hover: leve elevação, sem tilt 3D.
+
+- **Card de Pet**: Imagem no topo (aspect-ratio 1.3), conteúdo com padding 16px, título Sora 16px, metadados Manrope 12px, botão terciário full-width.
+- **Feature Card**: Ícone grande (44px) com bg translúcido, título Sora 15.5px, descrição Manrope 13px. Padding 22px.
+- **Card de Depoimento**: Avatar com gradiente (40px), nome em bold, ação em cinza, citação em itálico. Padding 22px.
+
+### 3.4. Formulários
+
+- **Campo de Texto / Input**: Altura 46px, raio 12px, borda cinza clara. Focus: borda primary + ring outline sutil.
+- **Área de Texto / Textarea**: Min-height 80px, raio 12px, padding 12px 14px.
+- **Controle Segmentado**: Altura 38px, formato pílula. Item ativo com bg primary e texto branco.
+- **Toggle (Interruptor)**: 46×26px. Ativo: bg success (verde). Inativo: bg cinza. Knob branco 20×20px.
+
+### 3.5. Navegação
+
+Estrutura fixa: **Feed · Abrigos · Voluntários · Comunidade · Chat** — sempre no mesmo lugar.
+
+- **Desktop (Menu em Abas)**: Formato pílula horizontal, bg branco, borda fina. Item ativo recebe bg primary e texto branco.
+- **Mobile (Barra Inferior)**: Fundo escuro (`hsl 20,25%,13%`), raio 20px, padding 14px 28px. Ícones Material preenchidos para ativos, vazados para inativos.
+  - *Botão Central*: Elevado (-10px Y), bg gradiente de marca, sombra forte.
+
+### 3.6. Overlays & Menus
+
+- **Menu Dropdown**: Raio 18px, bg branco, sombra "Painel flutuante". Itens com padding 9px 12px, gap 10px para ícone. Hover cinza muito claro.
+- **Modal**: Raio 24px, padding 32px, max-width 480px. Sombra "Painel flutuante". Header em Sora 20px.
+
+### 3.7. Tabelas
+
+- Raio externo 18px, borda fina.
+- **Header**: Bg Secondary (Areia), texto 12px uppercase (Eyebrow).
+- **Linhas**: Padding 14px 16px, borda inferior fina. Linhas pares com bg Background Alt para zebragem. Hover com bg Areia claro.
+
+### 3.8. Progresso & Métricas
+
+- **Barra de Progresso**: Altura 8px, raio pílula, bg cinza claro. Preenchimento com gradiente de marca.
+- **Card de Métrica**: Raio 18px, padding 20px. Label 12px cinza, Valor 28px Sora bold, Variação verde/vermelha.
+
+### 3.9. Avatares
+
+- **Iniciais**: Bg gradiente Avatar (oliva para terracota), texto branco bold.
+- **Imagem**: Borda 2px branca ou cinza clara, `object-fit: cover`.
+- **Status**: Bolinha 12px no canto inferior direito com borda branca (Verde = online, Cinza = offline).
+
+### 3.10. Banners & Heróis
+
+- **Banner Herói**: Raio 28–32px, bg "Banner escuro" (gradiente dark), padding 40–60px. Título 44px Sora branco.
+- **Banner de Alerta**: Raio 16px, padding 16px. Bg com 10–15% de opacidade da cor semântica, borda esquerda 4px sólida da cor semântica.
+
+---
+
+## 4. Ícones & Marca
+
+### 4.1. Ícones — decisão de coexistência
+
+**Decisão (julho/2026):** **Coexistência pragmática**.
+
+- **lucide-react** continua sendo a biblioteca padrão para a UI existente
+  (204 arquivos). É leve (~3KB gzip), segue o padrão shadcn/Tailwind,
+  integra naturalmente com `cn()`, `size`, e herda cor de texto.
+- **Material Symbols Outlined** é introduzido como **fonte variável**
+  (subset) **apenas para**:
+  - Logo / ícone de marca (pata com `FILL 1`)
+  - Ícones afetivos (curtir, favorito) com `FILL 1`
+  - Componentes novos nascidos sob a v1.0 (substitui `lucide` quando o
+    componente é reescrito)
+- Migração maciça de `lucide` → Material Symbols **NÃO** está no escopo.
+  Esforço de 3-5 dias com zero ganho funcional. Reabrir como TASK se o
+  design system oficial for revisado.
+
+**Implementação:** adicionar subset da fonte Material Symbols em
+`src/index.css` (`@import url('...Material+Symbols+Outlined...')`),
+expor como utility `.material-symbols-outlined` e usar com a prop
+`font-variation-settings: 'FILL' 0/1, 'wght' 500`.
+
+### 4.2. Logo & Marca
+
+- **Logo Completo**: Ícone de pata + Wordmark "Viralata".
+- **Ícone (Pata)**: Fundo quadrado arredondado (11px) com gradiente de marca, ícone `pets` branco com sombra `0 10px 20px -10px rgba(64,34,18,0.6)`.
+- **Wordmark**: Fonte Sora 800, 24px, com texto transparente e `background-clip: text` usando o gradiente "Wordmark".
+
+---
+
+## 5. Diretrizes
+
+### 5.1. Motion & Animação
+
+- **Entrada (fade + slide)**: `opacity 0→1`, `translateY 14–16px→0`, 400–600ms ease. Aciona apenas uma vez (`whileInView`).
+- **Pop (imagem / hero)**: `scale .92–.94→1` + `opacity 0→1`, 600ms ease.
+- **Hover em card**: Sombra cresce + `scale 1.01–1.02`. *Nunca usar tilt 3D*.
+- **Stagger em grid**: 70–90ms de delay entre itens, máximo 6–8 itens.
+- **Redução de movimento**: Sempre respeitar `prefers-reduced-motion: reduce`.
+
+**Implementação:** `framer-motion` será instalado no **Bloco E (DS_V2_MOTION)**,
+com uso restrito a: hero, grids de cards, modais, dropdowns, transições de
+rota. Hover, focus e scroll-suave continuam em CSS puro. Padrão obrigatório
+em todo componente com motion: `useReducedMotion()` e desligar variantes
+quando ativo.
+
+### 5.2. Voz & Tom
+
+Tom de voz: caloroso, empático, direto e acessível.
+
+**FAÇA:**
+- "O Viralata conecta pets que precisam de um lar com famílias que têm amor para dar."
+- "Encontre o pet ideal com base no seu espaço, rotina e estilo de vida."
+- "Denuncie casos de maus-tratos ou abandono. Sua identidade fica confidencial."
+
+**EVITE:**
+- "Nossa plataforma disponibiliza uma solução integrada de matching entre ativos caninos e usuários finais." *(jargão corporativo)*
+- "Bora adotar um mano peludo?? 🐶🔥" *(gírias e emoji em excesso na UI)*
+
+### 5.3. Acessibilidade (guardrails)
+
+- **Contraste**: Mínimo 4.5:1 para texto normal, 3:1 para texto grande (WCAG AA).
+- **Foco Visível**: `outline: 2px solid hsl(17,72%,43%); outline-offset: 2px;` em todos os elementos interativos.
+- **Semântica**: Hierarquia correta de headings (H1, H2, H3).
+- **Labels**: Todo input com `<label>` associado.
+- **Alt text**: Descrever conteúdo relevante em todas as imagens.
+- **prefers-reduced-motion**: Honrado globalmente.
+
+---
+
+## 6. Arquivos de referência
+
+| Arquivo | O que é |
+|---|---|
+| `docs/design-system-v2/DESIGN_SYSTEM.md` | Cópia da spec v1.0 (esta mesma, em formato portátil) |
+| `docs/design-system-v2/design-tokens.json` | Tokens estruturados em JSON (machine-readable) |
+| `docs/design-system-v2/design-system-preview.html` | Preview visual estático de todos os componentes |
+| `docs/design-system-v2/design-system.fig` | Placeholder representativo do canvas Figma |
+| `docs/design-system-v2/DESIGN_SYSTEM.pdf` | Mesma spec em PDF |
+
+> **Nota:** o arquivo `docs/design-system-v2/` é material de referência.
+> Não editar — é um snapshot da v1.0. Mudanças no design system devem
+> ser feitas aqui em `docs/DESIGN_SYSTEM.md` (esta página canônica) e
+> o snapshot regenerado.
