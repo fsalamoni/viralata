@@ -1,89 +1,16 @@
-name: "Diag: Get Cloud Functions logs"
-
+name: Get Cloud Functions logs
 on: workflow_dispatch
-
-permissions:
-  contents: read
-  id-token: write
-
 jobs:
   logs:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 5
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Setup gcloud
-        uses: google-github-actions/setup-gcloud@v2
-        with:
-          project_id: viralata-4cf0b
-          service_account_key: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          export_default_credentials: true
-
-      - name: Auth
+      - name: Get logs
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
           echo "$FIREBASE_SERVICE_ACCOUNT" > /tmp/firebase-sa.json
           gcloud auth activate-service-account --key-file=/tmp/firebase-sa.json --project=viralata-4cf0b
           gcloud config set project viralata-4cf0b
-
-      - name: List functions
-        run: |
-          echo "=== Functions deployed ==="
-          gcloud functions list --v2 --project=viralata-4cf0b 2>&1 || true
-
-      - name: IAM getMockStatus
-        run: |
-          echo "=== getMockStatus IAM ==="
-          gcloud functions get-iam-policy getMockStatus --region=southamerica-east1 --project=viralata-4cf0b 2>&1 || true
-
-      - name: IAM loadMockData
-        run: |
-          echo "=== loadMockData IAM ==="
-          gcloud functions get-iam-policy loadMockData --region=southamerica-east1 --project=viralata-4cf0b 2>&1 || true
-
-      - name: IAM clearMockData
-        run: |
-          echo "=== clearMockData IAM ==="
-          gcloud functions get-iam-policy clearMockData --region=southamerica-east1 --project=viralata-4cf0b 2>&1 || true
-
-      - name: Logs getMockStatus
-        run: |
-          echo "=== getMockStatus logs (latest 40) ==="
-          gcloud functions logs read getMockStatus --region=southamerica-east1 --limit=40 2>&1 | tail -200 || true
-
-      - name: Logs loadMockData
-        run: |
-          echo "=== loadMockData logs (latest 40) ==="
-          gcloud functions logs read loadMockData --region=southamerica-east1 --limit=40 2>&1 | tail -200 || true
-
-      - name: Logs clearMockData
-        run: |
-          echo "=== clearMockData logs (latest 40) ==="
-          gcloud functions logs read clearMockData --region=southamerica-east1 --limit=40 2>&1 | tail -200 || true
-
-      - name: Test function calls (no auth)
-        run: |
-          echo "=== Direct curl test (no auth) ==="
-          for FN in getMockStatus loadMockData clearMockData; do
-            echo "--- $FN ---"
-            curl -s -X POST "https://southamerica-east1-viralata-4cf0b.cloudfunctions.net/$FN" \
-              -H "Content-Type: application/json" \
-              -d '{"data":{}}' | head -3
-            echo ""
-          done
-
-      - name: Test function calls (CORS preflight)
-        run: |
-          echo "=== CORS preflight test ==="
-          curl -sI -X OPTIONS "https://southamerica-east1-viralata-4cf0b.cloudfunctions.net/getMockStatus" \
-            -H "Origin: https://viralata.web.app" \
-            -H "Access-Control-Request-Method: POST" \
-            -H "Access-Control-Request-Headers: authorization,content-type" | head -15
+          echo "=== LAST 50 LOG ENTRIES (getMockStatus) ==="
+          gcloud functions logs read getMockStatus --region=southamerica-east1 --gen2 --limit=30 2>&1 | tail -60
