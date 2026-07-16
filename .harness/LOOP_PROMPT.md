@@ -1,4 +1,4 @@
-# LOOP_PROMPT — viralata (atualizado 2026-07-15 22:30 UTC)
+# LOOP_PROMPT — viralata (atualizado 2026-07-16 00:52 UTC)
 
 **Contexto**: /workspace/viralata, branch main, React+Vite+Firebase.
 **Repo**: https://github.com/fsalamoni/viralata.git
@@ -74,16 +74,17 @@ print(f'{len(ready)} tasks ready')
 
 ---
 
-## 🆕 CANDIDATAS (2026-07-15 22:30 UTC)
+## 🆕 CANDIDATAS (2026-07-16 00:52 UTC)
 
 | ID | Pri | Descrição |
 |---|---|---|
 | TASK-292 | critical | [FCM-001] Integrar FCM push notifications — bloqueada por TASK-291 (✅ done) |
 | TASK-368 | critical | [D-07] DPO sign-off — human-jurídico |
-| TASK-006 | high | Revisão jurídica: adoptionTerms.v1.js |
+|  |
 | TASK-007 | high | Revisão jurídica: avisosLegais.js |
 
 > **Notas**:
+> - TASK-343 ✅ done — feat/task-343-event-certificates-2026-07-16: event certificates — generateEventCertificateCore.cjs (pdf-lib, 13 testes ✅), generateEventCertificate.js (callable CF v2, GCS + Firestore), storage.rules event_certificates path, firestore.rules certificates subcollection, useMyEventCertificate + useGenerateEventCertificate hooks, EventDetail EventCertificatesPanel, EventParticipantsPanel AdminCertsSection
 > - TASK-188 ✅ done — feat/task-188-gcs-worm-backup-2026-07-15: WORM backup GCS — Object Locking (90d retenção) + lifecycle Standard→Coldline(90d)→Delete(120d) + IAM hardening + Uniform bucket-level access. Infra: infra/gcs-backup-bucket.sh + functions/setupGcsBackupBucket.js (callable CF) + setupGcsBackupBucketCore.cjs (23 testes). docs/DR_PLAN.md §6 atualizado.
 > - TASK-352 ✅ done — feat/task-352-pinned-posts-2026-07-15: posts fixados/desselvados — pinned+pinned_at em community_posts, togglePostPin() c/ audit log, banner carrossel em MuralTabAdmin, botão Pin/PinOff (admin), firestore.rules pinned-only-by-admin
 > - TASK-291 ✅ done — feat/task-291-email-oncall-2026-07-15: sendEmail onCall callable c/ 7 templates de adoção + sendEmailOnCallCore.cjs + 222 testes ✅ + firestore.rules email_delivery_log
@@ -95,10 +96,10 @@ print(f'{len(ready)} tasks ready')
 
 ## 📊 MÉTRICAS ATUAIS
 
-- **done=329** (was 328 — TASK-188 done: WORM backup GCS)
-- **ready=42**, in_progress=0
-- **Main**: `3ddfa6a`
-- **Branch**: `feat/task-188-gcs-worm-backup-2026-07-15`
+- **done=349** (was 348 — TASK-343 done: event certificates)
+- **ready=22**, in_progress=0
+- **Main**: `1e2655f`
+- **Branch**: `feat/task-343-event-certificates-2026-07-16`
 
 ## 🏁 FIM DO TURNO
 
