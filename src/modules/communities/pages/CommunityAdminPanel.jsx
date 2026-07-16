@@ -213,7 +213,7 @@ export default function CommunityAdminPanel() {
       </section>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className={cn('arena-tab-bar', parityEnabled ? '' : 'h-auto w-full flex-wrap justify-start gap-1 rounded-xl bg-transparent p-0 sm:gap-2')}>
+        <TabsList className={cn('arena-admin-tabs', parityEnabled ? '' : 'h-auto w-full flex-nowrap justify-start gap-1 overflow-x-auto rounded-xl bg-transparent p-0 sm:gap-2')}>
           {visibleTabs.map((tab) => (
             <TabsTrigger
               key={tab.key}
