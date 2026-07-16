@@ -314,9 +314,9 @@ function OverviewTab({ community }) {
 
 function StatCard({ value, label }) {
   return (
-    <div className="rounded-2xl border border-border bg-card p-6 sm:p-7">
-      <div className="text-[21px] font-extrabold">{value}</div>
-      <div className="mt-1 text-xs font-medium text-muted-foreground">{label}</div>
+    <div className="arena-stat-card">
+      <p className="arena-stat-card-label">{label}</p>
+      <div className="arena-stat-card-value">{value}</div>
     </div>
   );
 }
