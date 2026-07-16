@@ -141,31 +141,33 @@ function PieChartComponent({ data, nameKey = 'name', valueKey = 'value', colors,
 
 function StatCard({ label, value, icon: Icon, tone = 'default' }) {
   const toneClass = {
-    default: 'border-border bg-card',
-    success: 'border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950',
-    danger: 'border-red-200 bg-red-50 dark:border-red-900 dark:bg-red-950',
-    info: 'border-blue-200 bg-blue-50 dark:border-blue-900 dark:bg-blue-950',
-  }[tone] || 'border-border bg-card';
+    default: 'border-white/80 bg-white/80',
+    success: 'border-emerald-200/80 bg-emerald-50/80 dark:border-emerald-900/60 dark:bg-emerald-950/60',
+    danger: 'border-red-200/80 bg-red-50/80 dark:border-red-900/60 dark:bg-red-950/60',
+    info: 'border-blue-200/80 bg-blue-50/80 dark:border-blue-900/60 dark:bg-blue-950/60',
+  }[tone] || 'border-white/80 bg-white/80';
 
   return (
-    <div className={`rounded-xl border p-4 ${toneClass}`}>
-      <div className="flex items-center gap-2 mb-1">
-        {Icon && <Icon className="h-4 w-4 text-muted-foreground" />}
-        <span className="text-xs font-medium text-muted-foreground">{label}</span>
+    <div className={`arena-stat-card ${toneClass}`}>
+      <div className="flex items-center gap-2 mb-1.5">
+        {Icon && <Icon className="h-3.5 w-3.5 text-muted-foreground" />}
+        <span className="arena-stat-card-label">{label}</span>
       </div>
-      <div className="text-2xl font-extrabold">{value ?? '—'}</div>
+      <div className="arena-stat-card-value">{value ?? '—'}</div>
     </div>
   );
 }
 
 function SectionTitle({ children }) {
-  return <h3 className="text-base font-semibold mb-3">{children}</h3>;
+  return <h3 className="arena-section-card-title mb-4">{children}</h3>;
 }
 
 function Card({ children, className = '' }) {
   return (
-    <div className={`rounded-xl border border-border bg-card p-5 ${className}`}>
-      {children}
+    <div className={`arena-section-card ${className}`}>
+      <div className="arena-section-card-body">
+        {children}
+      </div>
     </div>
   );
 }
@@ -275,30 +277,32 @@ function ComparativeReport({ data }) {
         />
       </section>
       <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-border">
-              <th className="py-2 pr-4 text-left font-medium">Ano</th>
-              <th className="py-2 pr-4 text-right font-medium">Resgates</th>
-              <th className="py-2 pr-4 text-right font-medium">Adoções</th>
-              <th className="py-2 pr-4 text-right font-medium">Devoluções</th>
-              <th className="py-2 pr-4 text-right font-medium">Saldo</th>
-            </tr>
-          </thead>
-          <tbody>
-            {years.map((y) => (
-              <tr key={y.year} className="border-b border-border/50">
-                <td className="py-2 pr-4 font-semibold">{y.year}</td>
-                <td className="py-2 pr-4 text-right">{y.rescues}</td>
-                <td className="py-2 pr-4 text-right text-green-600 dark:text-green-400">{y.adoptions}</td>
-                <td className="py-2 pr-4 text-right text-red-500">{y.returns}</td>
-                <td className={`py-2 pr-4 text-right font-bold ${y.balance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-500'}`}>
-                  {y.balance >= 0 ? `+${y.balance}` : y.balance}
-                </td>
+        <div className="arena-table-wrap rounded-2xl border border-white/80 bg-white/80 shadow-[0_14px_34px_-28px_hsl(20_40%_20%/0.4)] backdrop-blur-xl">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-border/60 bg-secondary/40">
+                <th className="py-2.5 pr-4 text-left text-xs font-semibold text-muted-foreground">Ano</th>
+                <th className="py-2.5 pr-4 text-right text-xs font-semibold text-muted-foreground">Resgates</th>
+                <th className="py-2.5 pr-4 text-right text-xs font-semibold text-muted-foreground">Adoções</th>
+                <th className="py-2.5 pr-4 text-right text-xs font-semibold text-muted-foreground">Devoluções</th>
+                <th className="py-2.5 pr-4 text-right text-xs font-semibold text-muted-foreground">Saldo</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {years.map((y) => (
+                <tr key={y.year} className="border-b border-border/40 hover:bg-secondary/20 transition-colors">
+                  <td className="py-2.5 pr-4 font-semibold">{y.year}</td>
+                  <td className="py-2.5 pr-4 text-right">{y.rescues ?? 0}</td>
+                  <td className="py-2.5 pr-4 text-right text-emerald-600 dark:text-emerald-400">{y.adoptions ?? 0}</td>
+                  <td className="py-2.5 pr-4 text-right text-red-500">{y.returns ?? 0}</td>
+                  <td className={`py-2.5 pr-4 text-right font-bold ${y.balance >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500'}`}>
+                    {y.balance >= 0 ? `+${y.balance}` : y.balance}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
