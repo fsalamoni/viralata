@@ -49,6 +49,7 @@ import PageHero from '@/components/PageHero';
 import ClubCover from '@/modules/organizations/components/ClubCover';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
+import { cn } from '@/core/lib/utils';
 import { parseTimestamp } from '@/core/utils/timestamp';
 import { toast } from 'sonner';
 
@@ -166,52 +167,74 @@ function PetMiniCard({ pet, linkPrefix = '/pets' }) {
   );
 }
 
-/** Card de vitrine */
+/** Card de vitrine — visual mais rico com imagem de capa e tipografia clara */
 function ExhibitionCard({ exhibition }) {
+  const cover = exhibition.cover_url || exhibition.photo_url;
+  const startDate = exhibition.event_date ? formatDate(exhibition.event_date) : null;
+  const isPast = exhibition.event_date && new Date(exhibition.event_date) < new Date();
+
   return (
-    <section className="arena-section-card">
-      <div className="arena-section-card-body p-4">
-        <div className="flex items-start gap-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
-            <Calendar className="h-5 w-5 text-primary" />
-          </span>
-          <div className="min-w-0 flex-1">
-            <p className="font-semibold text-foreground">{exhibition.title || 'Vitrine'}</p>
-            <p className="text-xs text-muted-foreground">
-              {formatDate(exhibition.event_date)}
-            </p>
-            {exhibition.location && (
-              <p className="mt-1 text-xs text-muted-foreground">
-                <MapPin className="mr-1 inline-block h-3 w-3" />
-                {exhibition.location}
-              </p>
-            )}
-          </div>
+    <section className={cn('arena-section-card overflow-hidden group', isPast && 'opacity-75')}>
+      {/* Imagem de capa */}
+      {cover ? (
+        <div className="relative h-36 overflow-hidden">
+          <img src={cover} alt="" className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+          {isPast && (
+            <span className="absolute right-2 top-2 rounded-full bg-black/60 px-2 py-0.5 text-[10px] font-semibold text-white">Encerrado</span>
+          )}
         </div>
+      ) : (
+        <div className="flex h-24 items-center justify-center bg-gradient-to-br from-primary/10 to-highlight/10">
+          <Calendar className="h-10 w-10 text-primary/40" />
+        </div>
+      )}
+
+      {/* Conteúdo */}
+      <div className="arena-section-card-body p-4">
+        <p className="font-semibold text-foreground leading-snug">{exhibition.title || 'Vitrine de adoção'}</p>
+        <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+          {startDate && (
+            <span className="flex items-center gap-1">
+              <Calendar className="h-3 w-3" />
+              {startDate}
+            </span>
+          )}
+          {exhibition.location && (
+            <span className="flex items-center gap-1">
+              <MapPin className="h-3 w-3" />
+              {exhibition.location}
+            </span>
+          )}
+        </div>
+        {exhibition.description && (
+          <p className="mt-2 text-xs text-muted-foreground line-clamp-2">{exhibition.description}</p>
+        )}
       </div>
     </section>
   );
 }
 
-/** Card de membro da equipe */
+/** Card de membro da equipe — usa foto real se disponível, badge de cargo */
 function TeamMemberCard({ member }) {
   const name = member.display_name || member.name || 'Membro';
+  const photo = member.photo_url || member.avatar_url;
   const role = member.role || 'volunteer';
-  const roleLabel = {
-    owner: 'Fundador(a)',
-    admin: 'Coordenador(a)',
-    volunteer: 'Voluntário(a)',
-  }[role] || 'Equipe';
+  const roleColor = { owner: 'bg-amber-100 text-amber-800', admin: 'bg-blue-100 text-blue-800', volunteer: 'bg-secondary text-muted-foreground' }[role] || 'bg-secondary text-muted-foreground';
 
   return (
     <section className="arena-section-card">
       <div className="arena-section-card-body flex items-center gap-3 p-4">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 font-semibold text-primary">
-          {name.slice(0, 1).toUpperCase()}
-        </div>
+        {photo ? (
+          <img src={photo} alt="" className="h-10 w-10 shrink-0 rounded-full object-cover ring-2 ring-border" loading="lazy" />
+        ) : (
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 font-semibold text-primary">
+            {name.slice(0, 1).toUpperCase()}
+          </div>
+        )}
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-semibold text-foreground">{name}</p>
-          <p className="truncate text-xs text-muted-foreground">{roleLabel}</p>
+          <p className="truncate text-xs text-muted-foreground capitalize">{role}</p>
         </div>
       </div>
     </section>
@@ -568,6 +591,22 @@ export default function ShelterPublic() {
             <span className="text-xs font-normal opacity-90">Ração, medicamentos, itens</span>
           </Button>
         </section>
+
+        {/* Sobre o abrigo — visible sem tab */}
+        {(club.description || club.mission || club.history) && (
+          <section className="arena-section-card">
+            <div className="arena-section-card-header border-b border-border/50">
+              <h3 className="arena-section-card-title flex items-center gap-2 text-base">
+                <Info className="h-4 w-4 text-primary" /> Sobre este abrigo
+              </h3>
+            </div>
+            <div className="arena-section-card-body py-4">
+              <p className="text-sm leading-relaxed text-foreground/80">
+                {club.description || club.mission || club.history}
+              </p>
+            </div>
+          </section>
+        )}
 
         {/* Tabs (TASK-303 — página rica) */}
         <Tabs defaultValue="about" className="w-full">

@@ -391,34 +391,32 @@ export default function Profile() {
         </div>
       </PageHero>
 
-      {/* Navegação por seções — sticky */}
-      <nav
-        aria-label="Seções do perfil"
-        className="sticky top-16 z-30 -mx-4 mb-4 flex items-center gap-1 overflow-x-auto border-b border-border bg-background/90 px-4 py-2 backdrop-blur-xl scrollbar-hide"
-      >
-        {[
-          { id: 'dados', icon: User, label: 'Dados' },
-          { id: 'adotante', icon: PawPrint, label: 'Adotante' },
-          { id: 'preferencias', icon: Star, label: 'Preferências' },
-          { id: 'voluntario', icon: Heart, label: 'Voluntário' },
-          { id: 'abrigos', icon: Building2, label: 'Abrigos' },
-          { id: 'atividades', icon: Star, label: 'Atividades' },
-          { id: 'tarefas', icon: Star, label: 'Tarefas' },
-          { id: 'conta', icon: Building2, label: 'Conta' },
-        ].map(({ id, icon: Icon, label }) => (
-          <a
-            key={id}
-            href={`#${id}`}
-            className="flex shrink-0 items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-[11.5px] font-semibold text-muted-foreground transition-colors hover:border-primary/40 hover:bg-primary/5 hover:text-foreground"
-          >
-            <Icon className="h-3.5 w-3.5" />
-            {label}
-          </a>
-        ))}
+      {/* Âncoras de navegação */}
+      <nav className="sticky top-14 z-20 -mx-5 mb-4 border-b border-border/70 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+        <div className="flex items-center gap-1 overflow-x-auto px-5 py-2 scrollbar-hide">
+          {[
+            { href: '#dados-pessoais', icon: User, label: 'Dados pessoais' },
+            { href: '#perfil-adotante', icon: PawPrint, label: 'Adotante' },
+            { href: '#visual', icon: Star, label: 'Visual' },
+            { href: '#voluntario', icon: Heart, label: 'Voluntário' },
+            { href: '#lares-temporarios', icon: HomeIcon, label: 'Lares Temp.' },
+            { href: '#adocoes', icon: PawPrint, label: 'Adoções' },
+            { href: '#privacidade', icon: ShieldAlert, label: 'Privacidade' },
+          ].map(({ href, icon: Icon, label }) => (
+            <a
+              key={href}
+              href={href}
+              className="flex flex-shrink-0 items-center gap-1.5 rounded-full border border-border/60 bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
+            >
+              <Icon className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">{label}</span>
+            </a>
+          ))}
+        </div>
       </nav>
 
       {/* Dados pessoais */}
-      <section id="dados" className="arena-section-card rounded-[24px] p-6 lg:p-7">
+      <section id="dados-pessoais" className="arena-section-card rounded-[24px] p-6 lg:p-7">
         <div className="arena-section-card-header">
           <h3 className="arena-section-card-title flex items-center gap-2 text-base font-bold">
             <User className="w-[19px] h-[19px] text-primary" /> Dados pessoais
@@ -488,7 +486,7 @@ export default function Profile() {
       </section>
 
       {/* Perfil de adotante */}
-      <section id="adotante" className="arena-section-card rounded-[24px] p-6 lg:p-7">
+      <section id="perfil-adotante" className="arena-section-card rounded-[24px] p-6 lg:p-7">
         <div className="arena-section-card-header">
           <h3 className="arena-section-card-title flex items-center gap-2 text-base font-bold">
             <PawPrint className="w-[19px] h-[19px] text-accent" /> Perfil de adotante
@@ -557,9 +555,7 @@ export default function Profile() {
       </section>
 
       {/* TASK-401: Preferências visuais */}
-      <section id="preferencias">
-        {user?.uid && <AppearanceSettings />}
-      </section>
+      {user?.uid && <div id="visual"><AppearanceSettings /></div>}
 
       {/* TASK-265: Seção consolidada "Voluntário" com métricas, habilidades,
           abrigos, escalas abertas, auditoria e form de edição. Substitui
@@ -569,26 +565,26 @@ export default function Profile() {
       )}
 
       {/* TASK-247: Multi-roster agregado (Voluntário + LT) */}
-      <section id="abrigos">
-        {user?.uid && (
+      {user?.uid && (
+        <section id="voluntario">
           <CrossRosterSection
-            volunteerData={volunteerProfileV1 ? { shelterId: user?.uid } : null}
-            fosterData={{ activeFosters: [] }}
-            shelterOptions={[]}
-            onJoinVolunteer={() => window.location.assign('/voluntarios')}
+          volunteerData={volunteerProfileV1 ? { shelterId: user?.uid } : null}
+          fosterData={{ activeFosters: [] }}
+          shelterOptions={[]}
+          onJoinVolunteer={() => window.location.assign('/voluntarios')}
           />
-        )}
+        </section>
+      )}
 
-        {/* TASK-133: Meus Lares Temporários */}
-        <MyFostersSection userUid={user?.uid} />
-      </section>
+      {/* TASK-133: Meus Lares Temporários */}
+      <section id="lares-temporarios"><MyFostersSection userUid={user?.uid} /></section>
 
       {/* TASK-236: Perfil de voluntário (Fase 13).
           Renderiza apenas se a feature flag `shelter_volunteer_profile_v1`
           estiver ON. Quando o user já tem profile, mostra o form em modo
           edit; quando não tem, mostra empty state com CTA para /voluntarios. */}
       {volunteerProfileV1 && (
-        <section id="voluntario-form" className="arena-section-card rounded-[24px] p-6 lg:p-7">
+        <section className="arena-section-card rounded-[24px] p-6 lg:p-7">
           <div className="arena-section-card-header">
             <h3 className="arena-section-card-title flex items-center gap-2 text-base font-bold">
               <Heart className="w-[19px] h-[19px] text-primary" /> Voluntariado
@@ -629,18 +625,15 @@ export default function Profile() {
 
       {/* TASK-129: Minhas adoções — histórico cross-abrigo de applications */}
       {/* TASK-164: Próximos eventos do usuário (cross-comunidade) */}
-      <section id="atividades">
+      <section id="adocoes">
         <UpcomingEventsSection userUid={user?.uid} />
-
-        <MyAdoptionsSection userUid={user?.uid} />
+        <div className="mt-4"><MyAdoptionsSection userUid={user?.uid} /></div>
       </section>
 
       {/* TASK-150: Minhas tarefas — cards Kanban onde o user é assignee,
           cross-shelter (todos os abrigos onde ele participa). Gated pela
           flag `shelter_kanban`. Click abre o detalhe do card. */}
-      <section id="tarefas">
-        {shelterKanban && <MyTasksSection userUid={user?.uid} />}
-      </section>
+      {shelterKanban && <MyTasksSection userUid={user?.uid} />}
 
       {/* TASK-242: Minhas voluntariadas (offboarding · LGPD Art. 18 IX).
           Renderiza apenas se a flag `shelter_volunteer_profile_v1` estiver ON.
@@ -836,7 +829,7 @@ export default function Profile() {
       </Dialog>
 
       {/* Privacidade e dados (LGPD) */}
-      <section id="conta" className="arena-section-card rounded-[24px] p-6">
+      <section id="privacidade" className="arena-section-card rounded-[24px] p-6">
         <div className="arena-section-card-header">
           <h3 className="arena-section-card-title">Privacidade e dados</h3>
           <p className="arena-section-card-description">
