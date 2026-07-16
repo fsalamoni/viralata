@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
-import { FileText } from 'lucide-react';
+import { FileText, AlertCircle, CheckCircle2, Info, RotateCcw, Save } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { MarkdownEditor } from '@/components/ui/markdown-editor';
+import { cn } from '@/core/lib/utils';
 import {
   getPlatformContent,
   setPlatformContent,
@@ -19,6 +21,13 @@ export default function AdminContentEditor() {
   const [body, setBody] = useState(DEFAULT_PLATFORM_CONTENT[PLATFORM_CONTENT_PAGES.TERMOS]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [lastSavedAt, setLastSavedAt] = useState(null);
+
+  // Baseline per page: tracks what was loaded from DB / default
+  const baselineRef = useRef({});
+
+  const baseline = baselineRef.current[page];
+  const dirty = baseline !== undefined && body !== baseline;
 
   useEffect(() => {
     if (!isPlatformAdmin) return;
@@ -26,23 +35,45 @@ export default function AdminContentEditor() {
     setLoading(true);
     getPlatformContent(page).then((content) => {
       if (!active) return;
-      setBody(content?.body || DEFAULT_PLATFORM_CONTENT[page]);
+      const initial = content?.body || DEFAULT_PLATFORM_CONTENT[page];
+      setBody(initial);
+      baselineRef.current[page] = initial;
+      setLastSavedAt(null);
       setLoading(false);
     });
     return () => { active = false; };
   }, [page, isPlatformAdmin]);
 
+  // Keep baseline in sync when body changes (user typing)
+  useEffect(() => {
+    if (!loading) {
+      baselineRef.current[page] = body;
+    }
+  }, [body, loading, page]);
+
   if (!isPlatformAdmin) return null;
 
   async function handleSave() {
-    setSaving(true);
-    try {
-      await setPlatformContent(page, body, user);
-      toast.success('Conteúdo salvo.');
-    } catch (e) {
-      toast.error('Erro ao salvar conteúdo.');
-    } finally {
-      setSaving(false);
+    if (dirty) {
+      setSaving(true);
+      try {
+        await setPlatformContent(page, body, user);
+        baselineRef.current[page] = body;
+        const now = new Date();
+        setLastSavedAt(now);
+        toast.success('Conteúdo salvo.');
+      } catch (e) {
+        toast.error('Erro ao salvar conteúdo.');
+      } finally {
+        setSaving(false);
+      }
+    }
+  }
+
+  function handleReset() {
+    const saved = baselineRef.current[page];
+    if (saved !== undefined) {
+      setBody(saved);
     }
   }
 
@@ -50,7 +81,12 @@ export default function AdminContentEditor() {
     <div className="max-w-4xl mx-auto px-4 py-6 space-y-4">
       <div className="flex items-center gap-3">
         <FileText className="w-6 h-6 text-primary" />
-        <h1 className="text-xl font-bold text-foreground">Conteúdo institucional</h1>
+        <div>
+          <h1 className="text-xl font-bold text-foreground">Conteúdo institucional</h1>
+          <p className="text-[12px] text-muted-foreground mt-0.5">
+            {PLATFORM_CONTENT_LABELS[page]}
+          </p>
+        </div>
       </div>
       <p className="text-sm text-muted-foreground">
         Edite o texto exibido nas páginas de Termos de Uso, Política de Privacidade e Legislação. Enquanto uma
@@ -67,13 +103,87 @@ export default function AdminContentEditor() {
         {Object.values(PLATFORM_CONTENT_PAGES).map((key) => (
           <TabsContent key={key} value={key} className="mt-4 space-y-3">
             {loading ? (
-              <p className="text-sm text-muted-foreground">Carregando...</p>
+              <div className="space-y-3">
+                <Skeleton className="h-[320px] w-full rounded-xl" />
+                <div className="flex gap-2">
+                  <Skeleton className="h-9 w-32 rounded-lg" />
+                  <Skeleton className="h-9 w-40 rounded-lg" />
+                </div>
+              </div>
             ) : (
               <>
-                <MarkdownEditor value={body} onChange={setBody} rows={16} maxLength={40000} disabled={saving} />
-                <Button onClick={handleSave} disabled={saving}>
-                  {saving ? 'Salvando...' : 'Salvar alterações'}
-                </Button>
+                <MarkdownEditor
+                  value={body}
+                  onChange={setBody}
+                  rows={16}
+                  maxLength={40000}
+                  disabled={saving}
+                />
+
+                {/* Sticky save bar com dirty indicator + Cancelar + Salvar */}
+                <div className="sticky bottom-4 z-20">
+                  <div
+                    className={cn(
+                      'flex flex-col items-stretch gap-2 rounded-2xl border bg-white/95 p-3 shadow-[0_18px_42px_-12px_rgba(64,34,18,0.28)] backdrop-blur-xl transition-colors sm:flex-row sm:items-center sm:justify-between',
+                      saving
+                        ? 'border-border/70'
+                        : dirty
+                          ? 'border-amber-300/70 ring-2 ring-amber-100'
+                          : lastSavedAt
+                            ? 'border-emerald-300/60'
+                            : 'border-border/70'
+                    )}
+                  >
+                    <div className="flex items-center gap-2 text-[12.5px]">
+                      {saving ? (
+                        <>
+                          <Skeleton className="h-3.5 w-3.5 rounded-full" />
+                          <span className="text-muted-foreground">Salvando…</span>
+                        </>
+                      ) : dirty ? (
+                        <>
+                          <AlertCircle className="h-4 w-4 text-amber-600" />
+                          <span className="font-semibold text-amber-800">Alterações não salvas</span>
+                        </>
+                      ) : lastSavedAt ? (
+                        <>
+                          <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                          <span className="text-emerald-800">
+                            Salvo às {lastSavedAt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <Info className="h-4 w-4 text-muted-foreground" />
+                          <span className="text-muted-foreground">Texto padrão — sem edição</span>
+                        </>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={handleReset}
+                        disabled={!dirty || saving}
+                        className="gap-1.5"
+                      >
+                        <RotateCcw className="h-3.5 w-3.5" />
+                        Cancelar
+                      </Button>
+                      <Button
+                        type="button"
+                        size="sm"
+                        onClick={handleSave}
+                        disabled={!dirty || saving}
+                        className="min-w-[140px] gap-2"
+                      >
+                        <Save className="h-4 w-4" />
+                        {saving ? 'Salvando…' : 'Salvar alterações'}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
               </>
             )}
           </TabsContent>
