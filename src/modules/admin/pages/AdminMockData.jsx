@@ -245,10 +245,10 @@ export default function AdminMockData() {
 
       {/* Action cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <section className="arena-section-card border-emerald-500/20">
+        <section className="arena-section-card border-success/30">
           <div className="arena-section-card-header">
             <h3 className="arena-section-card-title flex items-center gap-2 text-base">
-              <Database className="h-4 w-4 text-emerald-600" />
+              <Database className="h-4 w-4 text-success" />
               Carregar dados demo
             </h3>
             <p className="arena-section-card-description">
@@ -268,7 +268,7 @@ export default function AdminMockData() {
                 type="button"
                 onClick={() => setConfirmOpen('load')}
                 disabled={busy !== null}
-                className="bg-emerald-600 hover:bg-emerald-700"
+                className="bg-success hover:bg-success/90"
               >
                 {busy === 'load' ? (
                   <><RefreshCw className="mr-2 h-4 w-4 animate-spin" /> Carregando…</>
@@ -366,7 +366,7 @@ export default function AdminMockData() {
                         <span className="text-rose-600">erro</span>
                       ) : (
                         <>
-                          <span className={ratio === 1 ? 'text-emerald-600' : ratio === 0 ? 'text-muted-foreground' : 'text-amber-600'}>
+                          <span className={ratio === 1 ? 'text-success' : ratio === 0 ? 'text-muted-foreground' : 'text-amber-600'}>
                             {loaded}
                           </span>
                           <span className="text-muted-foreground">/{expected}</span>
