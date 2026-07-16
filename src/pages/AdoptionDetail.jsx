@@ -14,7 +14,10 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { ArrowLeft, CheckCircle2, Circle, XCircle, FileText, Undo2, PauseCircle } from 'lucide-react';
+import {
+  ArrowLeft, CheckCircle2, Circle, XCircle, FileText, Undo2, PauseCircle,
+  Send, BookCheck, ClipboardCheck, Award, Loader2,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -32,6 +35,7 @@ import {
   APPLICATION_STATUS_TONES,
   isTerminal,
 } from '@/modules/shelter/domain/operational/adoption';
+import { cn } from '@/core/lib/utils';
 
 function formatDateTime(value) {
   const d = value?.toDate ? parseTimestamp(value) : (value ? new Date(value) : null);
@@ -39,43 +43,110 @@ function formatDateTime(value) {
   return d.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
 }
 
+// Cor por status
+const STATUS_COLOR = {
+  applied: { icon: Send, dot: 'bg-primary', text: 'text-primary', label: 'bg-primary/10 text-primary' },
+  terms_accepted: { icon: BookCheck, dot: 'bg-accent', text: 'text-accent', label: 'bg-accent/10 text-accent' },
+  under_review: { icon: ClipboardCheck, dot: 'bg-amber-500', text: 'text-amber-600', label: 'bg-amber-50 text-amber-700' },
+  approved: { icon: CheckCircle2, dot: 'bg-emerald-500', text: 'text-emerald-600', label: 'bg-emerald-50 text-emerald-700' },
+  rejected: { icon: XCircle, dot: 'bg-destructive', text: 'text-destructive', label: 'bg-destructive/10 text-destructive' },
+  cancelled: { icon: XCircle, dot: 'bg-muted-foreground', text: 'text-muted-foreground', label: 'bg-secondary text-muted-foreground' },
+  withdrawn: { icon: XCircle, dot: 'bg-muted-foreground', text: 'text-muted-foreground', label: 'bg-secondary text-muted-foreground' },
+  adoption_completed: { icon: Award, dot: 'bg-highlight', text: 'text-highlight', label: 'bg-highlight/10 text-highlight-foreground' },
+};
+
+function getStepColor(key, failed, done) {
+  if (failed) return STATUS_COLOR.rejected;
+  if (!done) return { icon: Circle, dot: 'bg-muted-foreground/30', text: 'text-muted-foreground', label: 'bg-secondary text-muted-foreground' };
+  switch (key) {
+    case 'created': return STATUS_COLOR.applied;
+    case 'terms': return STATUS_COLOR.terms_accepted;
+    case 'review': return STATUS_COLOR.under_review;
+    case 'final': return isTerminal(null) ? STATUS_COLOR.approved : STATUS_COLOR.approved;
+    default: return STATUS_COLOR.approved;
+  }
+}
+
 /**
- * Constrói a timeline a partir dos campos do doc. O workflow não
- * guarda um array de history — os marcos derivam de created_at,
- * decided_at e status atual.
+ * Constrói a timeline a partir dos campos do doc. Agrupa por fase:
+ * 1. Submissão — criação + aceite do termo
+ * 2. Decisão — análise + resultado final
  */
 function buildTimeline(app) {
-  const steps = [
+  const phases = [
     {
-      key: 'created',
-      label: 'Pedido enviado',
-      at: formatDateTime(app.created_at),
-      done: true,
+      label: 'Submissão',
+      steps: [
+        {
+          key: 'created',
+          label: 'Pedido enviado',
+          at: formatDateTime(app.created_at),
+          done: true,
+        },
+      ],
     },
   ];
+
   if (app.terms_accepted_at) {
-    steps.push({
+    phases[0].steps.push({
       key: 'terms',
-      label: `Termo de Adoção aceito (versão ${app.terms_version})`,
+      label: `Termo de Adoção aceito (v${app.terms_version})`,
       at: formatDateTime(app.terms_accepted_at),
       done: true,
     });
   }
+
   const decided = Boolean(app.decided_at);
-  steps.push({
-    key: 'review',
-    label: 'Análise do abrigo',
-    at: decided ? formatDateTime(app.decided_at) : null,
-    done: decided || app.status !== 'applied',
+  phases.push({
+    label: 'Decisão do abrigo',
+    steps: [
+      {
+        key: 'review',
+        label: 'Análise do abrigo',
+        at: decided ? formatDateTime(app.decided_at) : null,
+        done: decided || app.status !== 'applied',
+      },
+      {
+        key: 'final',
+        label: APPLICATION_STATUS_LABELS[app.status] || app.status,
+        at: decided ? formatDateTime(app.decided_at) : null,
+        done: isTerminal(app.status) || app.status === 'approved',
+        failed: ['rejected', 'cancelled', 'withdrawn'].includes(app.status),
+      },
+    ],
   });
-  steps.push({
-    key: 'final',
-    label: APPLICATION_STATUS_LABELS[app.status] || app.status,
-    at: decided ? formatDateTime(app.decided_at) : null,
-    done: isTerminal(app.status) || app.status === 'approved',
-    failed: ['rejected', 'cancelled', 'withdrawn'].includes(app.status),
-  });
-  return steps;
+
+  return phases;
+}
+
+function TimelineStep({ step }) {
+  const color = getStepColor(step.key, step.failed, step.done);
+  const Icon = color.icon;
+
+  return (
+    <li key={step.key} className="relative flex items-start gap-3">
+      <div className="relative flex flex-col items-center">
+        <div className={cn('flex h-7 w-7 items-center justify-center rounded-full border-2', step.failed ? 'border-destructive bg-destructive/10' : step.done ? 'border-[currentColor] bg-background' : 'border-muted-foreground/30 bg-background')}>
+          <Icon className={cn('h-3.5 w-3.5', color.text)} />
+        </div>
+      </div>
+      <div className="flex-1 min-w-0 pt-1">
+        <p className={cn('text-sm', step.done && !step.failed ? 'font-medium text-foreground' : 'text-muted-foreground')}>
+          {step.label}
+        </p>
+        {step.at ? (
+          <p className="text-[11.5px] text-muted-foreground">{step.at}</p>
+        ) : (
+          !step.failed && (
+            <div className="flex items-center gap-1 text-[11.5px] text-muted-foreground">
+              <Loader2 className="h-3 w-3 animate-spin" />
+              <span>Aguardando</span>
+            </div>
+          )
+        )}
+      </div>
+    </li>
+  );
 }
 
 export default function AdoptionDetail() {
@@ -95,7 +166,7 @@ export default function AdoptionDetail() {
     return (
       <div className={wrapperClass}>
         <Skeleton className="h-8 w-40 rounded-lg" />
-        <Skeleton className="mt-4 h-64 w-full rounded-2xl" />
+        <Skeleton className="mt-4 h-72 w-full rounded-2xl" />
       </div>
     );
   }
@@ -117,7 +188,7 @@ export default function AdoptionDetail() {
     );
   }
 
-  const timeline = buildTimeline(app);
+  const phases = buildTimeline(app);
 
   // Post-adoption record (only fetched when feature flag is on and app is completed)
   const { data: postAdoption } = useQuery({
@@ -155,26 +226,32 @@ export default function AdoptionDetail() {
             )}
           </p>
         </div>
-        <div className="arena-section-card-body p-0">
-          <ol className="relative ml-2 space-y-5 border-l border-border pl-5">
-            {timeline.map((step) => (
-              <li key={step.key} className="relative">
-                <span className="absolute -left-[27px] top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-background">
-                  {step.failed ? (
-                    <XCircle className="h-4 w-4 text-destructive" />
-                  ) : step.done ? (
-                    <CheckCircle2 className="h-4 w-4 text-primary" />
-                  ) : (
-                    <Circle className="h-4 w-4 text-muted-foreground/50" />
-                  )}
+
+        {/* Timeline grouped by phase */}
+        <div className="arena-section-card-body p-0 pt-4 space-y-6">
+          {phases.map((phase, pi) => (
+            <div key={phase.label}>
+              {/* Fase header */}
+              <div className="flex items-center gap-2 mb-3 px-1">
+                <span className={cn(
+                  'flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-bold',
+                  pi === 0 ? 'bg-primary/10 text-primary' : 'bg-accent/10 text-accent',
+                )}>
+                  {pi + 1}
                 </span>
-                <p className={`text-sm ${step.done ? 'font-medium text-foreground' : 'text-muted-foreground'}`}>
-                  {step.label}
-                </p>
-                {step.at && <p className="text-xs text-muted-foreground">{step.at}</p>}
-              </li>
-            ))}
-          </ol>
+                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                  {phase.label}
+                </span>
+              </div>
+
+              {/* Timeline steps */}
+              <ol className="relative ml-2 space-y-5 border-l border-border pl-5">
+                {phase.steps.map((step) => (
+                  <TimelineStep key={step.key} step={step} />
+                ))}
+              </ol>
+            </div>
+          ))}
 
           {app.decision_notes && (
             <div className="mt-5 rounded-lg border border-border bg-secondary/20 p-3">
