@@ -1,4 +1,4 @@
-# LOOP_PROMPT — viralata (atualizado 2026-07-15 11:23 UTC)
+# LOOP_PROMPT — viralata (atualizado 2026-07-16 00:52 UTC)
 
 **Contexto**: /workspace/viralata, branch feat/task-337-event-reminder-cron-2026-07-15, React+Vite+Firebase.
 **Repo**: https://github.com/fsalamoni/viralata.git
@@ -143,58 +143,32 @@ print(f'{len(ready)} tasks ready')
 
 ---
 
-## ✅ TASKS CONCLUÍDAS NESTE LOOP (NÃO pegar)
+## 🆕 CANDIDATAS (2026-07-16 00:52 UTC)
 
-- TASK-315 A11Y WCAG AA — kanban roles, dialog aria-label, icon button aria-labels (feat/a11y-improvements-2026-07-14)
-- TASK-308 PostAdoptionReturnDialog + PostAdoptionPauseDialog (PR #189)
-- TASK-148 PostEventLog (PR #176)
-- TASK-136 PublicHealthRecord (PR #175)
-- TASK-149 UpcomingExhibitionsFeed (PR #177)
-- TASK-181 EventsUnified (PR #178)
-- TASK-323 Lightbox acessível (PR #179)
-- TASK-306 FosterDashboard (PR #180)
-- TASK-311 ShelterAdminDashboard (PR #181)
-- TASK-324 Pets similares (PR #184)
-- TASK-334 CommunityEventDetail + RSVP (PR #183)
-- TASK-207, 264, 265, 266, 267, 132, 133, 134, 401, 402 (Fases anteriores)
-- **Varredura 1 (36 tasks)**: 150, 152, 154, 157, 159, 160, 180, 191, 200, 241, 244, 245, 288, 289, 290, 293, 294, 295, 296, 299, 300, 329, 331, 332, 055, 218, 219, 221, 246, 275, 305, 307, 316, 335, 356, 267
-- **Varredura 2 (29 tasks)**: 008, 063, 115, 116, 118, 119, 120, 121, 125, 147, 151, 158, 161, 162, 163, 166, 168, 173, 177, 193, 223, 264, 265, 266, 270, 313, 314, 344, 354
-- **Loop turn 2026-07-14 23:51 UTC**: TASK-277 Rate limit volunteer join + accept terms (feat/task-277-rate-limit-2026-07-14)
-- **Loop turn 2026-07-15 00:12 UTC**: TASK-309 Onboarding wizard pet creation (feat/task-309-wizard-pet-create-2026-07-15)
-- **Loop turn 2026-07-15 07:54 UTC**: TASK-338 7 SHELTER_* feature flags (feat/task-338-feature-flags)
-
----
-
-## 🆕 CANDIDATAS ATUALIZADAS (próximas 12, priorizadas por impacto visual)
-
-| ID | Pri | Categoria | Descrição |
-|---|---|---|---|
-| TASK-312 | high | shelter | [INT-SEARCH-001] Sync ativo do search index (Cloud Function) |
-| TASK-268 | critical | shelter | Cloud Function onVolunteerJoinedShelter (FCM admin) |
-| TASK-269 | critical | shelter | Cloud Function onVolunteerParticipationCreated (FCM voluntário) |
-| TASK-291 | high | shelter | Email provider (SendGrid/Resend) — AGUARDA decisão humana |
-| TASK-176 | high | shelter | Sentry enriquecido |
-| TASK-239 | ~~medium~~ **done** | shelter | Sentry + /healthz + bundle-hash |
+| ID | Pri | Descrição |
+|---|---|---|
+| TASK-292 | critical | [FCM-001] Integrar FCM push notifications — bloqueada por TASK-291 (✅ done) |
+| TASK-368 | critical | [D-07] DPO sign-off — human-jurídico |
+|  |
+| TASK-007 | high | Revisão jurídica: avisosLegais.js |
 
 > **Notas**:
-> - TASK-338 (7 SHELTER_* flags) entregue — feat/task-338-feature-flags, push OK
-> - TASK-239 entregue — feat/task-239-sentry-healthz, push OK, batch pendente (healthCheckCore+test + healthCheck.js + bundle-hash.mjs)
-> - TASK-239 (Sentry /healthz + bundle-hash) entregue — feat/task-239-sentry-healthz, push OK, batch pendente
-> - TASK-269 (onVolunteerParticipationCreated FCM+calendar+email+audit) entregue — feat/task-269-volunteer-fcm-participation, push OK, batch pendente
-> - TASK-309 (Onboarding wizard pet creation) entregue — feat/task-309-wizard-pet-create-2026-07-15, push OK, batch pendente
-> - TASK-277 (rate limit volunteer) entregue — feat/task-277-rate-limit-2026-07-14, push OK, batch pendente
-> - TASK-325 (milestone photo/video upload) entregue — feat/milestone-complete-2026-07-14, merge pendente
-> - TASK-273 (Smart Search volunteer entity) entregue — feat/volunteer-search-2026-07-14, merge pendente
-> - TASK-315, TASK-308, TASK-302, TASK-176 entregues em batch (verificar com git log antes de pegar)
-> - TASK-310, TASK-326 feitas pelo cron (verificar com git log antes de pegar)
-> - TASK-053 CookieBanner audit: component OK — gated por SHELTER_LEGAL_TERMS_V1, botoes corretos, localStorage + audit log, 16 tests
-
----
+> - TASK-343 ✅ done — feat/task-343-event-certificates-2026-07-16: event certificates — generateEventCertificateCore.cjs (pdf-lib, 13 testes ✅), generateEventCertificate.js (callable CF v2, GCS + Firestore), storage.rules event_certificates path, firestore.rules certificates subcollection, useMyEventCertificate + useGenerateEventCertificate hooks, EventDetail EventCertificatesPanel, EventParticipantsPanel AdminCertsSection
+> - TASK-188 ✅ done — feat/task-188-gcs-worm-backup-2026-07-15: WORM backup GCS — Object Locking (90d retenção) + lifecycle Standard→Coldline(90d)→Delete(120d) + IAM hardening + Uniform bucket-level access. Infra: infra/gcs-backup-bucket.sh + functions/setupGcsBackupBucket.js (callable CF) + setupGcsBackupBucketCore.cjs (23 testes). docs/DR_PLAN.md §6 atualizado.
+> - TASK-352 ✅ done — feat/task-352-pinned-posts-2026-07-15: posts fixados/desselvados — pinned+pinned_at em community_posts, togglePostPin() c/ audit log, banner carrossel em MuralTabAdmin, botão Pin/PinOff (admin), firestore.rules pinned-only-by-admin
+> - TASK-291 ✅ done — feat/task-291-email-oncall-2026-07-15: sendEmail onCall callable c/ 7 templates de adoção + sendEmailOnCallCore.cjs + 222 testes ✅ + firestore.rules email_delivery_log
+> - TASK-342 ✅ done — feat/task-342-event-volunteers-2026-07-15: volunteer_ids + volunteer_shifts em club_events, multi-select no EventFormDialog, shifts editor, EventDetail aba Escalas
+> - TASK-340 ✅ done — feat/task-340-event-types-2026-07-15: novos tipos VACCINATION, LECTURE, FUNDRAISING, PET_DAY em CLUB_EVENT_TYPE + UI
+> - TASK-087 ✅ done — feat/task-087-audit-clickwrap-2026-07-15: auditoria clickwrap 4 fluxos críticos
+> - TASK-298 ✅ done — feat/task-298-contract-ip-ua-2026-07-15 (contract CF: IP+UA, Lei 14.063/2020)
+> - Todas as branches feat/* = `fsalamoni/viralata`
 
 ## 📊 MÉTRICAS ATUAIS
 
-- **done=315**, ready=59, in_progress=1
-- **Main**: `102de261904f`
+- **done=349** (was 348 — TASK-343 done: event certificates)
+- **ready=22**, in_progress=0
+- **Main**: `1e2655f`
+- **Branch**: `feat/task-343-event-certificates-2026-07-16`
 
 ## 🏁 FIM DO TURNO
 

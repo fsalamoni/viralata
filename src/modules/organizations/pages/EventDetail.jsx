@@ -25,6 +25,7 @@ import { EventFormDialog } from '@/modules/organizations/components/ClubEventsTa
 import EventDatesPanel from '@/modules/organizations/components/EventDatesPanel';
 import EventParticipantsPanel from '@/modules/organizations/components/EventParticipantsPanel';
 import EventChat from '@/modules/organizations/components/EventChat';
+import EventCertificatesPanel from '@/modules/organizations/components/EventCertificatesPanel';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 
 function formatDateTime(value) {
@@ -150,10 +151,10 @@ export default function EventDetail() {
           <TabsTrigger value="conversa" className="arena-tab-pill"><MessageSquare className="mr-1.5 h-4 w-4" /> Conversa</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="detalhes" className="mt-12 px-1 sm:mt-14">
+        <TabsContent value="detalhes" className="mt-12 space-y-6 px-1 sm:mt-14">
           {event.description && (
-            <section className="arena-section-card mb-4 rounded-xl">
-              <div className="arena-section-card-body p-6 sm:p-7">
+            <Card className="rounded-xl">
+              <CardContent className="p-6 sm:p-7">
                 <h3 className="mb-1 text-sm font-semibold text-foreground">Sobre o evento</h3>
                 <p className="whitespace-pre-wrap text-sm leading-6 text-muted-foreground">{event.description}</p>
               </div>
@@ -192,6 +193,8 @@ export default function EventDetail() {
             </Card>
           )}
           <EventDatesPanel event={event} clubId={clubId} />
+          {/* TASK-343: Certificado de participação */}
+          <EventCertificatesPanel event={event} clubId={clubId} />
         </TabsContent>
 
         <TabsContent value="participantes" className="mt-12 px-1 sm:mt-14">
