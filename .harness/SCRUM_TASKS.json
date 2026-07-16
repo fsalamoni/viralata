@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-16T13:14:24.659Z",
+  "generatedAt": "2026-07-16T13:11:47.442Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W29",
@@ -10915,7 +10915,7 @@
       "title": "ShelterPublic - hero e vitrines",
       "type": "ux",
       "category": "design",
-      "status": "done",
+      "status": "ready",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -10929,8 +10929,7 @@
       "blockedBy": [],
       "description": "Refatorar ShelterPublic: hero com banner + stats vitais, vitrines com cards padronizados, separação clara entre Sobre/Pets/Equipe.",
       "createdAt": "2026-07-16",
-      "updatedAt": "2026-07-16T13:14:24",
-      "resolvedAt": "2026-07-16"
+      "updatedAt": "2026-07-16"
     },
     {
       "id": "TASK-627",
@@ -11218,7 +11217,7 @@
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": "3de6993a1327b62057173144312bde08e4cb3455",
+    "mainCommit": "088cbe3b4c1934d1aeb790b2ecad8fbf6c02a081",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -11229,11 +11228,11 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 406,
-    "done": 383,
+    "done": 382,
     "inProgress": 0,
     "inReview": 0,
     "blocked": 0,
-    "ready": 18,
+    "ready": 19,
     "backlog": 4,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -11263,7 +11262,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-16T13:14:24 — via scrum.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-16T13:11:47.446Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
