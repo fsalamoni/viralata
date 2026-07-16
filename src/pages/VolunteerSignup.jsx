@@ -88,11 +88,11 @@ function SoonMessage() {
   return (
     <section className="arena-section-card border-amber-300 bg-amber-50">
       <div className="arena-section-card-header">
-        <h3 className="arena-section-card-title" className="flex items-center gap-2 text-amber-900">
+        <h3 className="arena-section-card-title flex items-center gap-2 text-amber-900">
           <AlertCircle className="h-5 w-5" aria-hidden="true" />
           Inscrição de voluntários em breve
         </h3>
-        <p className="arena-section-card-description" className="text-amber-800">
+        <p className="arena-section-card-description text-amber-800">
           A plataforma de inscrição pública de voluntários está em rollout gradual. Se você
           faz parte de um abrigo parceiro, peça ao seu administrador que habilite a
           feature flag <code>shelter_volunteer_profile_v1</code>.
@@ -114,7 +114,7 @@ function NotAuthed() {
   return (
     <section className="arena-section-card">
       <div className="arena-section-card-header">
-        <h3 className="arena-section-card-title" className="flex items-center gap-2">
+        <h3 className="arena-section-card-title flex items-center gap-2">
           <ShieldCheck className="h-5 w-5 text-primary" aria-hidden="true" />
           Você precisa estar logado(a)
         </h3>

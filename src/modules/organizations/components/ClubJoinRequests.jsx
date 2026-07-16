@@ -24,7 +24,7 @@ export function ClubJoinRequests({ club }) {
   return (
     <section className="arena-section-card rounded-xl">
       <div className="arena-section-card-header">
-        <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base">
+        <h3 className="arena-section-card-title flex items-center gap-2 text-base">
           Pedidos de ingresso
           {requests.length > 0 && <Badge variant="warning" className="rounded-full">{requests.length}</Badge>}
         </h3>

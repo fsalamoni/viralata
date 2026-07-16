@@ -39,7 +39,7 @@ export function CrossRosterSection({ volunteerData, fosterData, shelterOptions =
   return (
     <section className="rounded-[24px] p-6 lg:p-7" data-testid="cross-roster-section">
       <div className="arena-section-card-header">
-        <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base font-bold">
+        <h3 className="arena-section-card-title flex items-center gap-2 text-base font-bold">
           <Building2 className="w-[19px] h-[19px] text-primary" />
           Sua atuação na rede
         </h3>

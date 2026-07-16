@@ -76,7 +76,7 @@ function QuickInfoCard({ title, icon: Icon, children }) {
   return (
     <section className="arena-section-card">
       <div className="arena-section-card-header">
-        <h3 className="arena-section-card-title" className="flex items-center gap-1.5 text-sm font-semibold">
+        <h3 className="arena-section-card-title flex items-center gap-1.5 text-sm font-semibold">
           <Icon className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
           {title}
         </h3>

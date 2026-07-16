@@ -103,7 +103,7 @@ export function PostAdoptionDashboard() {
       {Object.entries(byClub).map(([clubId, { name, items }]) => (
         <section key={clubId}>
           <div className="arena-section-card-header">
-            <h3 className="arena-section-card-title" className="text-base">
+            <h3 className="arena-section-card-title text-base">
               <Link to={`/abrigos/${clubId}`} className="hover:underline">
                 {name}
               </Link>

@@ -81,7 +81,7 @@ export function ExhibitionVolunteers({ shelterClubId, exhibitionId, max = 20 }) 
     return (
       <section className="arena-section-card">
         <div className="arena-section-card-header">
-          <h3 className="arena-section-card-title" className="flex items-center gap-2">
+          <h3 className="arena-section-card-title flex items-center gap-2">
             <Users className="h-5 w-5 text-primary" />
             Voluntários escalados
           </h3>
@@ -99,7 +99,7 @@ export function ExhibitionVolunteers({ shelterClubId, exhibitionId, max = 20 }) 
     return (
       <section className="arena-section-card">
         <div className="arena-section-card-header">
-          <h3 className="arena-section-card-title" className="flex items-center gap-2">
+          <h3 className="arena-section-card-title flex items-center gap-2">
             <Users className="h-5 w-5 text-primary" />
             Voluntários escalados
           </h3>
@@ -119,7 +119,7 @@ export function ExhibitionVolunteers({ shelterClubId, exhibitionId, max = 20 }) 
     return (
       <section className="arena-section-card">
         <div className="arena-section-card-header">
-          <h3 className="arena-section-card-title" className="flex items-center gap-2">
+          <h3 className="arena-section-card-title flex items-center gap-2">
             <Users className="h-5 w-5 text-primary" />
             Voluntários escalados
           </h3>
@@ -141,7 +141,7 @@ export function ExhibitionVolunteers({ shelterClubId, exhibitionId, max = 20 }) 
   return (
     <section className="arena-section-card">
       <div className="arena-section-card-header">
-        <h3 className="arena-section-card-title" className="flex items-center gap-2">
+        <h3 className="arena-section-card-title flex items-center gap-2">
           <Users className="h-5 w-5 text-primary" />
           Voluntários escalados ({participations.length})
         </h3>

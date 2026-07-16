@@ -60,7 +60,7 @@ export function RescueStep({ form, setValue }) {
       {/* Identificação do resgate */}
       <section className="arena-section-card">
         <div className="arena-section-card-header">
-          <h3 className="arena-section-card-title" className="text-base flex items-center gap-2">
+          <h3 className="arena-section-card-title text-base flex items-center gap-2">
             <User className="h-4 w-4" /> Identificação do resgate
           </h3>
         </div>
@@ -104,7 +104,7 @@ export function RescueStep({ form, setValue }) {
       {/* Localização */}
       <section className="arena-section-card">
         <div className="arena-section-card-header">
-          <h3 className="arena-section-card-title" className="text-base flex items-center gap-2">
+          <h3 className="arena-section-card-title text-base flex items-center gap-2">
             <MapPin className="h-4 w-4" /> Local do resgate
           </h3>
           <p className="arena-section-card-description">
@@ -181,7 +181,7 @@ export function RescueStep({ form, setValue }) {
       {/* Classificação */}
       <section className="arena-section-card">
         <div className="arena-section-card-header">
-          <h3 className="arena-section-card-title" className="text-base flex items-center gap-2">
+          <h3 className="arena-section-card-title text-base flex items-center gap-2">
             <Heart className="h-4 w-4" /> Classificação
           </h3>
         </div>

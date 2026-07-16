@@ -242,7 +242,7 @@ export default function PublicExhibitionDetail() {
       {pets.length > 0 && (
         <section className="arena-section-card">
           <div className="arena-section-card-header">
-            <h3 className="arena-section-card-title" className="flex items-center gap-2">
+            <h3 className="arena-section-card-title flex items-center gap-2">
               <PawPrint className="h-5 w-5 text-primary" />
               Pets participantes ({pets.length})
             </h3>

@@ -105,7 +105,7 @@ export function AppearanceSettings() {
   return (
     <section data-testid="appearance-settings">
       <div className="arena-section-card-header">
-        <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base font-bold">
+        <h3 className="arena-section-card-title flex items-center gap-2 text-base font-bold">
           <Sparkles className="h-5 w-5 text-primary" aria-hidden="true" />
           Aparência
         </h3>

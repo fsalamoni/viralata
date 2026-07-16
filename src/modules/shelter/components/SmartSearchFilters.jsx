@@ -73,7 +73,7 @@ export function SmartSearchFilters({
   return (
     <section className={cn('w-full', className)}>
       <div className="arena-section-card-header">
-        <h3 className="arena-section-card-title" className="flex items-center gap-2 text-sm">
+        <h3 className="arena-section-card-title flex items-center gap-2 text-sm">
           <Filter className="h-4 w-4" />
           Filtros
           {hasFilters && (
@@ -90,7 +90,7 @@ export function SmartSearchFilters({
           )}
         </h3>
       </div>
-      <div className="arena-section-card-body" className={cn('space-y-3', compact && 'p-3 pt-0')}>
+      <div className="{cn('arena-section-card-body space-y-3', compact && 'p-3 pt-0')}}>
         {allowEntitySelector && (
           <div className="space-y-1.5">
             <Label htmlFor="filter-entity" className="text-xs">Entidade</Label>

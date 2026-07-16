@@ -247,7 +247,7 @@ export default function AdminMockData() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <section className="arena-section-card border-emerald-500/20">
           <div className="arena-section-card-header">
-            <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base">
+            <h3 className="arena-section-card-title flex items-center gap-2 text-base">
               <Database className="h-4 w-4 text-emerald-600" />
               Carregar dados demo
             </h3>
@@ -285,7 +285,7 @@ export default function AdminMockData() {
 
         <section className="arena-section-card border-rose-500/20">
           <div className="arena-section-card-header">
-            <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base">
+            <h3 className="arena-section-card-title flex items-center gap-2 text-base">
               <Trash2 className="h-4 w-4 text-rose-600" />
               Limpar dados demo
             </h3>
@@ -330,7 +330,7 @@ export default function AdminMockData() {
       {/* Status por coleção */}
       <section className="arena-section-card">
         <div className="arena-section-card-header">
-          <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base">
+          <h3 className="arena-section-card-title flex items-center gap-2 text-base">
             <BarChart3 className="h-4 w-4 text-primary" />
             Status por coleção
           </h3>
@@ -388,7 +388,7 @@ export default function AdminMockData() {
       {lastResult && (
         <section className={lastResult.ok ? 'border-emerald-500/30' : 'border-amber-500/30'}>
           <div className="arena-section-card-header">
-            <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base">
+            <h3 className="arena-section-card-title flex items-center gap-2 text-base">
               {lastResult.ok ? (
                 <CheckCircle2 className="h-4 w-4 text-emerald-600" />
               ) : (

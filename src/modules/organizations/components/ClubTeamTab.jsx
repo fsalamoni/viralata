@@ -145,8 +145,10 @@ function ClubPermissionsCard({ club, viewerMembership, viewerUid }) {
 
   return (
     <section className="arena-section-card">
-      <div className="arena-section-card-header"> className="p-6 sm:p-7">
+      <div className="arena-section-card-header">
         <h3 className="arena-section-card-title">Permissões da equipe</h3>
+      </div>
+      <div className="arena-section-card-body p-5 sm:p-6">
         <div className="arena-section-card-description flex items-start gap-2">
           <Info className="mt-[2px] h-3.5 w-3.5 shrink-0" />
           <span>

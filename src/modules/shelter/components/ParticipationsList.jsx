@@ -89,7 +89,7 @@ export function ParticipationsList({
   return (
     <section className="arena-section-card">
       <div className="arena-section-card-header">
-        <h3 className="arena-section-card-title" className="flex items-center gap-3 flex-wrap">
+        <h3 className="arena-section-card-title flex items-center gap-3 flex-wrap">
           Participations ({participations.length})
           <Badge className="bg-blue-100 text-blue-900">
             {totalHours.toFixed(1)}h total

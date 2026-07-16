@@ -150,7 +150,7 @@ export function MyFostersSection({ userUid }) {
   return (
     <section className="rounded-[24px] border-emerald-200" data-testid="my-fosters-section">
       <div className="arena-section-card-header">
-        <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base font-bold">
+        <h3 className="arena-section-card-title flex items-center gap-2 text-base font-bold">
           <Home className="h-5 w-5 text-emerald-700" />
           Meus Lares Temporários
         </h3>

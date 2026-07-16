@@ -145,7 +145,7 @@ export default function AdoptionDetail() {
               {APPLICATION_STATUS_LABELS[app.status] || app.status}
             </Badge>
           </div>
-          <p className="arena-section-card-description" className="text-[12.5px]">
+          <p className="arena-section-card-description text-[12.5px]">
             Enviado em {formatDateTime(app.created_at) || '—'}
             {app.pet_id && (
               <>

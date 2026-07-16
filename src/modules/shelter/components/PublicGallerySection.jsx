@@ -37,7 +37,7 @@ export function PublicGallerySection({ clubId }) {
   return (
     <section className="arena-section-card rounded-[24px]">
       <div className="arena-section-card-header">
-        <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base font-bold">
+        <h3 className="arena-section-card-title flex items-center gap-2 text-base font-bold">
           <Images className="h-[19px] w-[19px] text-primary" /> Galeria
         </h3>
         <p className="arena-section-card-description">

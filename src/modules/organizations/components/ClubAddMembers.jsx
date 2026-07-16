@@ -84,7 +84,7 @@ export function ClubAddMembers({ club }) {
   return (
     <section className="arena-section-card rounded-xl">
       <div className="arena-section-card-header">
-        <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base"><UserPlus className="h-4 w-4" /> Adicionar membros</h3>
+        <h3 className="arena-section-card-title flex items-center gap-2 text-base"><UserPlus className="h-4 w-4" /> Adicionar membros</h3>
         <p className="arena-section-card-description">Selecione usuários da plataforma e envie convites. Eles recebem um aviso e decidem aceitar.</p>
       </div>
       <div className="arena-section-card-body space-y-3 p-6 pt-0 sm:p-7 sm:pt-0">

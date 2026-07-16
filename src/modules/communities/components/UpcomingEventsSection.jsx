@@ -78,7 +78,7 @@ export function UpcomingEventsSection({ userUid }) {
   return (
     <section id="proximos-eventos" className="rounded-[24px] p-6 lg:p-7">
       <div className="arena-section-card-header">
-        <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base font-bold">
+        <h3 className="arena-section-card-title flex items-center gap-2 text-base font-bold">
           <Calendar className="w-[19px] h-[19px] text-accent" /> Próximos eventos
         </h3>
         <p className="arena-section-card-description">

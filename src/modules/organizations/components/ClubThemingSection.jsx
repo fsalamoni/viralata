@@ -120,7 +120,7 @@ export default function ClubThemingSection({ club }) {
   return (
     <section className="arena-section-card rounded-xl overflow-hidden">
       <div className="arena-section-card-header">
-        <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base">
+        <h3 className="arena-section-card-title flex items-center gap-2 text-base">
           <Palette className="h-4 w-4 text-primary" /> Personalização visual
         </h3>
         <p className="arena-section-card-description">

@@ -25,7 +25,7 @@ export function ContractCard({ contract, onDownload, onSign, canSign = false }) 
       <div className="arena-section-card-header">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base">
+            <h3 className="arena-section-card-title flex items-center gap-2 text-base">
               <FileText className="h-4 w-4" /> Contrato {id.slice(0, 12)}…
             </h3>
             <p className="arena-section-card-description">

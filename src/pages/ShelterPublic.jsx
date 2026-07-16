@@ -642,7 +642,7 @@ export default function ShelterPublic() {
             {(club.city || club.state) && (
               <section className="arena-section-card">
                 <div className="arena-section-card-header">
-                  <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base">
+                  <h3 className="arena-section-card-title flex items-center gap-2 text-base">
                     <MapPin className="h-4 w-4" /> Localização
                   </h3>
                 </div>
@@ -657,7 +657,7 @@ export default function ShelterPublic() {
             {/* Últimas adoções */}
             <section className="arena-section-card">
               <div className="arena-section-card-header">
-                <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base">
+                <h3 className="arena-section-card-title flex items-center gap-2 text-base">
                   <Sparkles className="h-4 w-4" /> Últimas adoções
                 </h3>
                 <p className="arena-section-card-description">
@@ -691,7 +691,7 @@ export default function ShelterPublic() {
           <TabsContent value="pets" className="mt-6">
             <section className="arena-section-card">
               <div className="arena-section-card-header">
-                <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base">
+                <h3 className="arena-section-card-title flex items-center gap-2 text-base">
                   <PawPrint className="h-4 w-4" /> Pets disponíveis
                 </h3>
                 <p className="arena-section-card-description">
@@ -738,7 +738,7 @@ export default function ShelterPublic() {
           <TabsContent value="exhibitions" className="mt-6">
             <section className="arena-section-card">
               <div className="arena-section-card-header">
-                <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base">
+                <h3 className="arena-section-card-title flex items-center gap-2 text-base">
                   <Calendar className="h-4 w-4" /> Próximas vitrines
                 </h3>
                 <p className="arena-section-card-description">
@@ -774,7 +774,7 @@ export default function ShelterPublic() {
           <TabsContent value="team" className="mt-6">
             <section className="arena-section-card">
               <div className="arena-section-card-header">
-                <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base">
+                <h3 className="arena-section-card-title flex items-center gap-2 text-base">
                   <Users className="h-4 w-4" /> Nossa equipe
                 </h3>
                 <p className="arena-section-card-description">
@@ -811,7 +811,7 @@ export default function ShelterPublic() {
           <TabsContent value="contact" className="mt-6">
             <section className="arena-section-card">
               <div className="arena-section-card-header">
-                <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base">
+                <h3 className="arena-section-card-title flex items-center gap-2 text-base">
                   <MessageCircle className="h-4 w-4" /> Contato
                 </h3>
                 <p className="arena-section-card-description">

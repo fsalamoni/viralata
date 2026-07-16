@@ -128,7 +128,7 @@ export function PostAdoptionReturnedList({ shelterClubId }) {
   return (
     <section className="arena-section-card">
       <div className="arena-section-card-header">
-        <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base font-bold">
+        <h3 className="arena-section-card-title flex items-center gap-2 text-base font-bold">
           <Undo2 className="h-4 w-4 text-destructive" />
           Devoluções pós-adoção
         </h3>

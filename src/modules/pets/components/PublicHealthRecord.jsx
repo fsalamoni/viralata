@@ -238,7 +238,7 @@ export function PublicHealthRecord({ petId, shelterClubId, maxResults = 50 }) {
     return (
       <section data-testid="public-health-record-skeleton">
         <div className="arena-section-card-header">
-          <h3 className="arena-section-card-title" className="flex items-center gap-2">
+          <h3 className="arena-section-card-title flex items-center gap-2">
             <Stethoscope className="h-5 w-5 text-primary" />
             Saúde
           </h3>
@@ -258,7 +258,7 @@ export function PublicHealthRecord({ petId, shelterClubId, maxResults = 50 }) {
     return (
       <section className="arena-section-card">
         <div className="arena-section-card-header">
-          <h3 className="arena-section-card-title" className="flex items-center gap-2">
+          <h3 className="arena-section-card-title flex items-center gap-2">
             <Stethoscope className="h-5 w-5 text-primary" />
             Saúde
           </h3>
@@ -279,7 +279,7 @@ export function PublicHealthRecord({ petId, shelterClubId, maxResults = 50 }) {
     return (
       <section data-testid="public-health-record-empty">
         <div className="arena-section-card-header">
-          <h3 className="arena-section-card-title" className="flex items-center gap-2">
+          <h3 className="arena-section-card-title flex items-center gap-2">
             <Stethoscope className="h-5 w-5 text-primary" />
             Saúde
           </h3>
@@ -299,7 +299,7 @@ export function PublicHealthRecord({ petId, shelterClubId, maxResults = 50 }) {
   return (
     <section data-testid="public-health-record">
       <div className="arena-section-card-header">
-        <h3 className="arena-section-card-title" className="flex items-center gap-2">
+        <h3 className="arena-section-card-title flex items-center gap-2">
           <Stethoscope className="h-5 w-5 text-primary" />
           Saúde
         </h3>

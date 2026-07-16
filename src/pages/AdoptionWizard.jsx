@@ -285,7 +285,7 @@ export default function AdoptionWizard() {
         {step === 3 && (
           <>
             <div className="arena-section-card-header">
-              <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base font-bold">
+              <h3 className="arena-section-card-title flex items-center gap-2 text-base font-bold">
                 <FileText className="h-[19px] w-[19px] text-primary" /> Termo de Adoção Responsável
               </h3>
               <p className="arena-section-card-description">

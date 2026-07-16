@@ -62,26 +62,26 @@ export default function Home() {
             initial="hidden"
             animate="show"
             variants={stagger}
-            className="space-y-5 text-center lg:text-left"
+            className="space-y-4 text-center lg:text-left lg:space-y-5"
           >
-            <motion.span variants={fadeUp} className="arena-chip mx-auto h-[34px] px-4 text-[12.5px] font-bold lg:mx-0">
-              <PawPrint className="h-4 w-4 text-primary" /> {settings.ui_text.home_hero_badge}
+            <motion.span variants={fadeUp} className="arena-chip mx-auto h-[30px] px-3.5 text-[11.5px] font-bold lg:mx-0">
+              <PawPrint className="h-3.5 w-3.5 text-primary" /> {settings.ui_text.home_hero_badge}
             </motion.span>
-            <motion.h1 variants={fadeUp} className="text-[38px] font-extrabold leading-[1.04] tracking-[-0.03em] text-foreground sm:text-[46px] lg:text-[58px]">
+            <motion.h1 variants={fadeUp} className="text-[28px] font-extrabold leading-[1.1] tracking-[-0.025em] text-foreground sm:text-[38px] lg:text-[50px]">
               {settings.ui_text.home_hero_title_prefix}
               {' '}
               <span className="arena-heading">{settings.ui_text.home_hero_title_highlight}</span>
               {' '}
               {settings.ui_text.home_hero_title_suffix}
             </motion.h1>
-            <motion.p variants={fadeUp} className="mx-auto max-w-[480px] text-[17.5px] leading-[1.6] text-muted-foreground lg:mx-0">
+            <motion.p variants={fadeUp} className="mx-auto max-w-[480px] text-sm leading-[1.65] text-muted-foreground sm:text-[15px] lg:mx-0">
               {settings.ui_text.home_hero_description}
             </motion.p>
             <motion.div variants={fadeUp} className="flex flex-col justify-center gap-3 pt-1 sm:flex-row lg:justify-start">
-              <Button asChild className="h-[50px] px-[26px] text-[15px]">
+              <Button asChild className="h-[46px] px-6 text-[14px]">
                 <Link to="/feed">{settings.ui_labels.home_primary_cta}</Link>
               </Button>
-              <Button asChild variant="outline" className="h-[50px] px-[26px] text-[15px]">
+              <Button asChild variant="outline" className="h-[46px] px-6 text-[14px]">
                 <Link to="/login">{settings.ui_labels.home_secondary_cta}</Link>
               </Button>
             </motion.div>
@@ -96,24 +96,8 @@ export default function Home() {
           >
             <div className="absolute inset-3.5 rounded-[44%_56%_58%_42%/46%_42%_58%_54%] bg-[linear-gradient(135deg,hsl(var(--primary)/0.35),hsl(var(--highlight)/0.3))] blur-2xl" />
             <div className="arena-panel relative flex h-full items-center justify-center rounded-[40%_60%_55%_45%/48%_44%_56%_52%] overflow-hidden">
-              <PawPrint className="h-[150px] w-[150px] text-primary/55" strokeWidth={1.25} />
+              <PawPrint className="h-[130px] w-[130px] text-primary/50" strokeWidth={1.25} />
             </div>
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-              className="arena-chip absolute -left-1.5 top-[22px] h-9 px-3.5 text-[12.5px] font-bold"
-            >
-              <Sparkles className="h-4 w-4 text-highlight" /> +500 adoções realizadas
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.5 }}
-              className="arena-chip absolute -right-1 bottom-[18px] h-9 px-3.5 text-[12.5px] font-bold"
-            >
-              <CheckCircle2 className="h-4 w-4 text-primary" /> 100% sem custo
-            </motion.div>
           </motion.div>
         </div>
       </section>

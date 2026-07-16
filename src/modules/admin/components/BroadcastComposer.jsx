@@ -61,7 +61,7 @@ export function BroadcastComposer() {
   return (
     <section className="arena-section-card">
       <div className="arena-section-card-header">
-        <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base">
+        <h3 className="arena-section-card-title flex items-center gap-2 text-base">
           <Send className="h-4.5 w-4.5 text-primary" /> Enviar notificação segmentada
         </h3>
         <p className="arena-section-card-description">

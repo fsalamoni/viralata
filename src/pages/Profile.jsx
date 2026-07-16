@@ -394,7 +394,7 @@ export default function Profile() {
       {/* Dados pessoais */}
       <section className="arena-section-card rounded-[24px] p-6 lg:p-7">
         <div className="arena-section-card-header">
-          <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base font-bold">
+          <h3 className="arena-section-card-title flex items-center gap-2 text-base font-bold">
             <User className="w-[19px] h-[19px] text-primary" /> Dados pessoais
           </h3>
         </div>
@@ -464,7 +464,7 @@ export default function Profile() {
       {/* Perfil de adotante */}
       <section className="arena-section-card rounded-[24px] p-6 lg:p-7">
         <div className="arena-section-card-header">
-          <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base font-bold">
+          <h3 className="arena-section-card-title flex items-center gap-2 text-base font-bold">
             <PawPrint className="w-[19px] h-[19px] text-accent" /> Perfil de adotante
           </h3>
           <p className="arena-section-card-description">
@@ -560,7 +560,7 @@ export default function Profile() {
       {volunteerProfileV1 && (
         <section className="arena-section-card rounded-[24px] p-6 lg:p-7">
           <div className="arena-section-card-header">
-            <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base font-bold">
+            <h3 className="arena-section-card-title flex items-center gap-2 text-base font-bold">
               <Heart className="w-[19px] h-[19px] text-primary" /> Voluntariado
             </h3>
             <p className="arena-section-card-description">
@@ -615,7 +615,7 @@ export default function Profile() {
       {volunteerProfileV1 && (
         <section className="arena-section-card rounded-[24px] p-6 lg:p-7">
           <div className="arena-section-card-header">
-            <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base font-bold">
+            <h3 className="arena-section-card-title flex items-center gap-2 text-base font-bold">
               <Building2 className="w-[19px] h-[19px] text-primary" /> Minhas voluntariadas
             </h3>
             <p className="arena-section-card-description">

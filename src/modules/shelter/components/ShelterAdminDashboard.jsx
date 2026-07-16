@@ -260,7 +260,7 @@ export function ShelterAdminDashboard({ clubId }) {
         <div className="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-3">
           <section className="arena-section-card">
             <div className="arena-section-card-header">
-              <h3 className="arena-section-card-title" className="flex items-center justify-between text-base">
+              <h3 className="arena-section-card-title flex items-center justify-between text-base">
                 <span className="flex items-center gap-2">
                   <CheckSquare className="h-4 w-4 text-primary" /> Minhas tasks
                 </span>
@@ -283,7 +283,7 @@ export function ShelterAdminDashboard({ clubId }) {
 
           <section className="arena-section-card">
             <div className="arena-section-card-header">
-              <h3 className="arena-section-card-title" className="flex items-center justify-between text-base">
+              <h3 className="arena-section-card-title flex items-center justify-between text-base">
                 <span className="flex items-center gap-2">
                   <FileText className="h-4 w-4 text-primary" /> Applications
                 </span>
@@ -306,7 +306,7 @@ export function ShelterAdminDashboard({ clubId }) {
 
           <section className="arena-section-card">
             <div className="arena-section-card-header">
-              <h3 className="arena-section-card-title" className="flex items-center justify-between text-base">
+              <h3 className="arena-section-card-title flex items-center justify-between text-base">
                 <span className="flex items-center gap-2">
                   <PawPrint className="h-4 w-4 text-primary" /> Pets cadastrados
                 </span>

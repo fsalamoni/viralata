@@ -174,7 +174,7 @@ export default function SecurityAlerts() {
 
       <section className="arena-section-card">
         <div className="arena-section-card-header">
-          <h3 className="arena-section-card-title" className="flex items-center gap-2 text-lg">
+          <h3 className="arena-section-card-title flex items-center gap-2 text-lg">
             <Filter className="h-4 w-4" /> Filtros
           </h3>
           <p className="arena-section-card-description">

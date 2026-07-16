@@ -45,7 +45,7 @@ export function InterviewCard({ interview, onComplete, onEvaluate, onCancel, can
       <div className="arena-section-card-header">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="arena-section-card-title" className="text-base flex items-center gap-2">
+            <h3 className="arena-section-card-title text-base flex items-center gap-2">
               <ClipboardList className="h-4 w-4" /> Entrevista
             </h3>
             <p className="arena-section-card-description">

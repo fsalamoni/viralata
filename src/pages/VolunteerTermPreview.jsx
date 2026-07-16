@@ -107,7 +107,7 @@ export default function VolunteerTermPreview() {
         <aside aria-label="Sumário do termo" className="lg:sticky lg:top-20 lg:self-start">
           <section className="arena-section-card">
             <div className="arena-section-card-header">
-              <h3 className="arena-section-card-title" className="flex items-center gap-2 text-sm">
+              <h3 className="arena-section-card-title flex items-center gap-2 text-sm">
                 <List className="h-4 w-4 text-primary" aria-hidden="true" />
                 Sumário
               </h3>

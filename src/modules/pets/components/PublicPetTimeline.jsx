@@ -110,7 +110,7 @@ export function PublicPetTimeline({ petId, shelterClubId }) {
     return (
       <section className="arena-section-card">
         <div className="arena-section-card-header">
-          <h3 className="arena-section-card-title" className="flex items-center gap-2">
+          <h3 className="arena-section-card-title flex items-center gap-2">
             <Clock className="h-5 w-5 text-primary" />
             História do pet
           </h3>
@@ -128,7 +128,7 @@ export function PublicPetTimeline({ petId, shelterClubId }) {
     return (
       <section className="arena-section-card">
         <div className="arena-section-card-header">
-          <h3 className="arena-section-card-title" className="flex items-center gap-2">
+          <h3 className="arena-section-card-title flex items-center gap-2">
             <Clock className="h-5 w-5 text-primary" />
             História do pet
           </h3>
@@ -148,7 +148,7 @@ export function PublicPetTimeline({ petId, shelterClubId }) {
     return (
       <section className="arena-section-card">
         <div className="arena-section-card-header">
-          <h3 className="arena-section-card-title" className="flex items-center gap-2">
+          <h3 className="arena-section-card-title flex items-center gap-2">
             <Clock className="h-5 w-5 text-primary" />
             História do pet
           </h3>
@@ -167,7 +167,7 @@ export function PublicPetTimeline({ petId, shelterClubId }) {
   return (
     <section className="arena-section-card">
       <div className="arena-section-card-header">
-        <h3 className="arena-section-card-title" className="flex items-center gap-2">
+        <h3 className="arena-section-card-title flex items-center gap-2">
           <Clock className="h-5 w-5 text-primary" />
           História do pet
         </h3>

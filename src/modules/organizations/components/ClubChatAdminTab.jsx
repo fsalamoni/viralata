@@ -43,7 +43,7 @@ export default function ClubChatAdminTab({ club }) {
     <div className="grid grid-cols-1 gap-3 lg:grid-cols-[320px,1fr]">
       <section className="arena-section-card rounded-2xl">
         <div className="arena-section-card-header">
-          <h3 className="arena-section-card-title" className="flex items-center gap-2 text-base">
+          <h3 className="arena-section-card-title flex items-center gap-2 text-base">
             <Users className="h-4 w-4 text-primary" /> Conversas
           </h3>
           <p className="arena-section-card-description">Threads abertas pelo público com esta ONG.</p>
