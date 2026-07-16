@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.1.0",
-  "generatedAt": "2026-07-16T18:44:50.001Z",
+  "generatedAt": "2026-07-16T18:46:33.888Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W29",
@@ -22,6 +22,20 @@
       "primarySession": null,
       "sessionTitle": null,
       "focus": []
+    },
+    {
+      "id": "wt-ds-v2-pages-admin",
+      "branch": "feat/ds-v2-pages-admin-2026-07-16",
+      "head": "e4c1e6a6d0c2ec2ab1102d2bf759a91edd33d006",
+      "headTitle": "Merge branch 'main' of https://github.com/fsalamoni/viralata",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-ds-v2-pages-admin",
+      "status": "in-sync",
+      "commitsAhead": 0,
+      "primarySession": "mvs_311d078987d0414a90f57ef28b789b18",
+      "sessionTitle": "DS_V2_PAGES-ADMIN — AdminDashboard, AdminMetrics, AdminPets, AdminUsers, etc",
+      "focus": [
+        "DS_V2_PAGES-ADMIN"
+      ]
     },
     {
       "id": "wt-ds-v2-pages-adoption",
@@ -55,11 +69,9 @@
       "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-ds-v2-pages-org",
       "status": "in-sync",
       "commitsAhead": 0,
-      "primarySession": "mvs_311d078987d0414a90f57ef28b789b18",
-      "sessionTitle": "DS_V2_PAGES-ORG — ClubsDirectory, ClubDetail, OrganizationAdminPanel",
-      "focus": [
-        "DS_V2_PAGES-ORG"
-      ]
+      "primarySession": null,
+      "sessionTitle": null,
+      "focus": []
     },
     {
       "id": "wt-ds-v2-pages-pets",
@@ -11327,12 +11339,12 @@
       "title": "Bloco D.5 · DS_V2_PAGES-ADMIN — Propagar spec para painel admin",
       "type": "feature",
       "category": "design",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "mvs_311d078987d0414a90f57ef28b789b18",
-      "branch": null,
+      "branch": "feat/ds-v2-pages-admin-2026-07-16",
       "flag": "DS_V2_PAGES-ADMIN",
-      "worktree": null,
+      "worktree": ".worktrees/wt-ds-v2-pages-admin",
       "pr": null,
       "tags": [
         "ds-v2",
@@ -11345,7 +11357,8 @@
       ],
       "description": "Ajustar `AdminDashboard`, `AdminPets`, `AdminReports`, `AdminUsers`, `AdminOrganizations`, `AdminCommunities`, `AdminMetrics`, `AdminContentEditor`. Tabelas com header Areia, zebragem Background Alt, hover Areia claro. Métricas com label pequeno cinza, valor Sora 28px. Flag default OFF.",
       "createdAt": "2026-07-16",
-      "updatedAt": "2026-07-16"
+      "updatedAt": "2026-07-16T18:46:27",
+      "resolvedAt": "2026-07-16"
     },
     {
       "id": "TASK-708",
@@ -12524,6 +12537,179 @@
       "createdAt": "2026-07-16",
       "updatedAt": "2026-07-16T18:44:43",
       "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-757",
+      "title": "Auditar AdminDashboard + AdminMetrics + AdminPets + AdminUsers + AdminReports",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-pages-admin-2026-07-16",
+      "flag": "DS_V2_PAGES-ADMIN",
+      "worktree": ".worktrees/wt-ds-v2-pages-admin",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "admin",
+        "audit"
+      ],
+      "blockedBy": [],
+      "description": "Gap analysis dos 8+ arquivos /admin/*. Verificar arena-admin-header, arena-stats-grid, arena-admin-tabs, Table do Bloco C.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:46:26",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-758",
+      "title": "Refinar AdminDashboard (header + stats + atalhos)",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-pages-admin-2026-07-16",
+      "flag": "DS_V2_PAGES-ADMIN",
+      "worktree": ".worktrees/wt-ds-v2-pages-admin",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "admin",
+        "dashboard"
+      ],
+      "blockedBy": [
+        "TASK-757"
+      ],
+      "description": "arena-admin-header com avatar, título, badge. arena-stats-grid 2/3/4 colunas. arena-section-card para atalhos.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:46:32",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-759",
+      "title": "Refinar tabelas admin (AdminPets, AdminUsers, AdminReports)",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-pages-admin-2026-07-16",
+      "flag": "DS_V2_PAGES-ADMIN",
+      "worktree": ".worktrees/wt-ds-v2-pages-admin",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "admin",
+        "table"
+      ],
+      "blockedBy": [
+        "TASK-757"
+      ],
+      "description": "Trocar tabelas pelo Table component do Bloco C (zebragem, hover, uppercase header). Usar Avatar nas linhas de users. Badge de status.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:46:32",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-760",
+      "title": "Refinar AdminMetrics (gráficos com arena-panel)",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "medium",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-pages-admin-2026-07-16",
+      "flag": "DS_V2_PAGES-ADMIN",
+      "worktree": ".worktrees/wt-ds-v2-pages-admin",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "admin",
+        "metrics"
+      ],
+      "blockedBy": [
+        "TASK-757"
+      ],
+      "description": "Gráficos recharts dentro de arena-section-card. Filtros com arena-tab-pill. Métricas com arena-stat-card.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:46:33",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-761",
+      "title": "Refinar AdminContentEditor (CMS Markdown)",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "medium",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-pages-admin-2026-07-16",
+      "flag": "DS_V2_PAGES-ADMIN",
+      "worktree": ".worktrees/wt-ds-v2-pages-admin",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "admin",
+        "cms"
+      ],
+      "blockedBy": [
+        "TASK-757"
+      ],
+      "description": "Editor de páginas institucionais. Textarea 80px+ com markdown preview. arena-section-card para layout.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:46:33",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-762",
+      "title": "Validar Admin (build + lint + smoke test)",
+      "type": "chore",
+      "category": "ci",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-pages-admin-2026-07-16",
+      "flag": "DS_V2_PAGES-ADMIN",
+      "worktree": ".worktrees/wt-ds-v2-pages-admin",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "build",
+        "test"
+      ],
+      "blockedBy": [
+        "TASK-761"
+      ],
+      "description": "Build verde, lint sem regressões, smoke test do painel admin.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:46:33",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-763",
+      "title": "Commit + push do Bloco D.5",
+      "type": "chore",
+      "category": "ci",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-pages-admin-2026-07-16",
+      "flag": "DS_V2_PAGES-ADMIN",
+      "worktree": ".worktrees/wt-ds-v2-pages-admin",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "git",
+        "commit"
+      ],
+      "blockedBy": [
+        "TASK-762"
+      ],
+      "description": "Commit único, push só do branch.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:46:27",
+      "resolvedAt": "2026-07-16"
     }
   ],
   "definitionOfDone": [
@@ -12767,7 +12953,7 @@
     "mergedWorktreesThisSprint": [
       "feat/ds-v2-docs-2026-07-16"
     ],
-    "mainCommit": "08c2fa4a374f8718b4b91a380eef76f1a9c4ca16",
+    "mainCommit": "e4c1e6a6d0c2ec2ab1102d2bf759a91edd33d006",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -12777,12 +12963,12 @@
     ],
     "openTODOs": 5,
     "openLegalReviews": 3,
-    "totalTasks": 461,
-    "done": 452,
+    "totalTasks": 468,
+    "done": 460,
     "inProgress": 0,
     "inReview": 0,
     "blocked": 0,
-    "ready": 4,
+    "ready": 3,
     "backlog": 4,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -12812,7 +12998,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-16T18:44:50.018Z — via sync.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-16T18:46:33.906Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
@@ -12847,7 +13033,7 @@
     "risksAccepted": 2,
     "risksMonitoring": 2,
     "lastTaskId": "TASK-717",
-    "lastUpdated": "2026-07-16T18:43:44.613Z",
+    "lastUpdated": "2026-07-16T18:46:25.593Z",
     "dsV2Phase": "Fase 4 — em andamento",
     "dsV2Blocos": {
       "done": [
@@ -12856,23 +13042,23 @@
         "DS_V2_COMPONENTS",
         "DS_V2_PAGES-HOME",
         "DS_V2_PAGES-PETS",
-        "DS_V2_PAGES-ADOPTION"
-      ],
-      "inProgress": [
+        "DS_V2_PAGES-ADOPTION",
         "DS_V2_PAGES-ORG"
       ],
+      "inProgress": [
+        "DS_V2_PAGES-ADMIN"
+      ],
       "ready": [
-        "DS_V2_PAGES-ADMIN",
         "DS_V2_PAGES-CHAT",
         "DS_V2_MOTION",
         "DS_V2_AUDIT"
       ]
     },
     "dsV2Tasks": {
-      "total": 55,
+      "total": 62,
       "done": 8,
       "ready": 10,
-      "inProgress": 11
+      "inProgress": 13
     },
     "dsV2Merge": "Bloco A merged to main @ 8e187f6 (2026-07-16 18:08 UTC)",
     "lastTaskDone": "TASK-700 (Bloco A macro)",
