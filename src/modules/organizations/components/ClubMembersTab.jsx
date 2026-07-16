@@ -68,7 +68,18 @@ export default function ClubMembersTab({ clubId, isAdmin, club }) {
   if (isLoading) {
     return (
       <div className="space-y-3">
-        {[1, 2, 3].map((i) => <Skeleton key={i} className="h-16 rounded-xl" />)}
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="arena-section-card">
+            <div className="arena-section-card-body flex items-center gap-3 p-3 sm:p-4">
+              <Skeleton className="h-11 w-11 shrink-0 rounded-full" />
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-4 w-40 rounded" />
+                <Skeleton className="h-3 w-32 rounded" />
+              </div>
+              <Skeleton className="h-5 w-20 rounded-full" />
+            </div>
+          </div>
+        ))}
       </div>
     );
   }
@@ -83,19 +94,19 @@ export default function ClubMembersTab({ clubId, isAdmin, club }) {
         const isSelf = member.user_id === user?.uid;
         const isOwner = isClubOwner(club, member);
         return (
-          <section key={member.id} className="rounded-xl">
+          <div key={member.id} className="arena-section-card">
             <div className="arena-section-card-body flex items-center gap-3 p-3 sm:p-4">
               {member.photo_url ? (
-                <img src={member.photo_url} alt="" className="h-11 w-11 shrink-0 rounded-full border border-primary/10 object-cover" />
+                <img src={member.photo_url} alt="" className="h-11 w-11 shrink-0 rounded-full border-2 border-white/60 object-cover shadow-sm" />
               ) : (
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary font-semibold text-primary-foreground">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground shadow-sm">
                   {initials(member.user_name)}
                 </div>
               )}
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <span className="truncate font-medium text-foreground">{member.user_name}</span>
-                  {isSelf && <span className="text-xs text-muted-foreground/80">(você)</span>}
+                  <span className="truncate font-semibold text-foreground">{member.user_name}</span>
+                  {isSelf && <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">você</span>}
                 </div>
                 <div className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
                   {member.user_email && (
@@ -103,7 +114,7 @@ export default function ClubMembersTab({ clubId, isAdmin, club }) {
                   )}
                 </div>
               </div>
-              <Badge variant={member.role === CLUB_ROLE.ADMIN ? 'warning' : 'secondary'} className="shrink-0 rounded-full">
+              <Badge variant={member.role === CLUB_ROLE.ADMIN ? 'warning' : 'secondary'} className="shrink-0 rounded-full px-2.5">
                 {isOwner ? 'Proprietário' : (CLUB_ROLE_LABELS[member.role] || member.role)}
               </Badge>
 
@@ -142,7 +153,7 @@ export default function ClubMembersTab({ clubId, isAdmin, club }) {
                 </DropdownMenu>
               )}
             </div>
-          </section>
+          </div>
         );
       })}
 
