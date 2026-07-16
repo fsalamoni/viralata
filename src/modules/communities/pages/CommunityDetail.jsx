@@ -25,16 +25,19 @@ import CommunityCover from '../components/CommunityCover';
 import { cn } from '@/core/lib/utils';
 import { parseTimestamp } from '@/core/utils/timestamp';
 
-/** Abas públicas da comunidade (modo padrão, sem `arena-tab-bar`). */
-const TABS_LEGACY = [
+/** Abas da comunidade — organizadas em 2 grupos semânticos (padrão DS_V2 2-layer). */
+const TABS_PUBLIC = [
   { key: 'mural', label: 'Mural', icon: MessageSquare },
   { key: 'forum', label: 'Fórum', icon: MessageCircle },
   { key: 'eventos', label: 'Eventos', icon: Calendar },
   { key: 'sobre', label: 'Sobre', icon: Info },
 ];
+const TABS_ADMIN = [
+  { key: 'equipe', label: 'Equipe', icon: Users },
+];
 
-/** Abas públicas no modo paridade ONG (com `arena-tab-bar` da plataforma). */
-const TABS_PARITY = [
+/** Abas legacy (paridade OFF — mantidas para transição). */
+const TABS_LEGACY = [
   { key: 'mural', label: 'Mural', icon: MessageSquare },
   { key: 'forum', label: 'Fórum', icon: MessageCircle },
   { key: 'eventos', label: 'Eventos', icon: Calendar },
@@ -47,13 +50,25 @@ export default function CommunityDetail() {
   const [community, setCommunity] = useState(null);
   const [loading, setLoading] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
+  // ─── Tab state — 2-layer: ?tab=group:sub ───
+  // Supports legacy single-key (?tab=mural) for backwards compat.
   const urlTab = searchParams.get('tab');
-  const activeTab = TABS_LEGACY.some(t => t.key === urlTab) ? urlTab
-    : TABS_PARITY.some(t => t.key === urlTab) ? urlTab
-    : 'mural';
-  function setActiveTab(tab) {
+  const isLegacyFormat = TABS_LEGACY.some(t => t.key === urlTab) ||
+    TABS_ADMIN.some(t => t.key === urlTab);
+  const tabParts = urlTab ? urlTab.split(':') : [];
+  const activeGroup = isLegacyFormat ? 'content' : (tabParts[0] || 'content');
+  const activeSubKey = isLegacyFormat ? urlTab : (tabParts[1] || 'mural');
+  const activeTab = activeSubKey;
+
+  function setActiveTab(subKey) {
     const next = new URLSearchParams(searchParams);
-    next.set('tab', tab);
+    next.set('tab', `${activeGroup}:${subKey}`);
+    setSearchParams(next, { replace: true });
+  }
+  function setActiveGroup(group) {
+    const next = new URLSearchParams(searchParams);
+    const defaultSub = group === 'content' ? 'mural' : 'equipe';
+    next.set('tab', `${group}:${defaultSub}`);
     setSearchParams(next, { replace: true });
   }
 
@@ -180,49 +195,82 @@ export default function CommunityDetail() {
           `arena-tab-bar` e o botão ficam em um flex row com
           `border-b` para o delineador. */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-    <TabsContentStack>        {parityEnabled ? (
-          <div className="flex flex-wrap items-end justify-between gap-3 border-b border-border/60 pb-1">
-            <div className="w-full sm:w-auto">
-              <TabsList className="arena-tab-bar">
-                {TABS_PARITY.map((tab) => (
-                  <TabsTrigger
-                    key={tab.key}
-                    value={tab.key}
-                    className={cn('arena-tab-pill gap-1.5')}
-                  >
-                    <tab.icon className="h-4 w-4" /> {tab.label}
-                  </TabsTrigger>
-                ))}
-                {canAdmin && (
-                  <TabsTrigger value="equipe" className={cn('arena-tab-pill gap-1.5')}>
-                    <Users className="h-4 w-4" /> Equipe
-                  </TabsTrigger>
-                )}
-              </TabsList>
+    <TabsContentStack>
+        {/* ─── Barra de navegação 2-layer (padrão DS_V2) ─── */}
+        <div className="flex flex-wrap items-end justify-between gap-3 border-b border-border/60 pb-1">
+          {/* Grupo 1: Conteúdo (sempre visível) */}
+          <div className="flex flex-wrap items-center gap-1">
+            <TabsList className="arena-admin-tabs">
+              <TabsTrigger
+                value="content"
+                className="arena-admin-tab-trigger font-semibold"
+                onClick={() => setActiveGroup('content')}
+              >
+                Conteúdo
+              </TabsTrigger>
+            </TabsList>
+            {/* Sub-pills do grupo Conteúdo */}
+            <div className="arena-subtab-bar">
+              {TABS_PUBLIC.map((tab) => (
+                <button
+                  key={tab.key}
+                  type="button"
+                  onClick={() => setActiveTab(tab.key)}
+                  className={cn(
+                    'arena-subtab-trigger gap-1.5',
+                    activeTab === tab.key && 'active',
+                  )}
+                >
+                  <tab.icon className="h-3.5 w-3.5" />
+                  {tab.label}
+                </button>
+              ))}
             </div>
-            {!isMember && !canAdmin && (
-              <div className="pb-2">
-                <Button size="sm" onClick={handleJoin}>
-                  Participar
-                </Button>
-              </div>
-            )}
           </div>
-        ) : (
-          <TabsList className="arena-admin-tabs">
-            {TABS_LEGACY.map((tab) => (
-              <TabsTrigger key={tab.key} value={tab.key} className="arena-admin-tab-trigger">
-                <tab.icon className="mr-2 h-4 w-4" /> {tab.label}
-              </TabsTrigger>
-            ))}
-            {canAdmin && (
-              <TabsTrigger value="equipe" className="arena-admin-tab-trigger">
-                <Users className="mr-2 h-4 w-4" /> Equipe
-              </TabsTrigger>
-            )}
-          </TabsList>
-        )}
 
+          {/* Grupo 2: Gestão (só se admin) */}
+          {canAdmin && (
+            <div className="flex flex-wrap items-center gap-1">
+              <TabsList className="arena-admin-tabs">
+                <TabsTrigger
+                  value="management"
+                  className="arena-admin-tab-trigger font-semibold"
+                  onClick={() => setActiveGroup('management')}
+                >
+                  Gestão
+                </TabsTrigger>
+              </TabsList>
+              {/* Sub-pills do grupo Gestão */}
+              <div className="arena-subtab-bar">
+                {TABS_ADMIN.map((tab) => (
+                  <button
+                    key={tab.key}
+                    type="button"
+                    onClick={() => setActiveTab(tab.key)}
+                    className={cn(
+                      'arena-subtab-trigger gap-1.5',
+                      activeTab === tab.key && 'active',
+                    )}
+                  >
+                    <tab.icon className="h-3.5 w-3.5" />
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Botão Participar (não-membro, não-admin) */}
+          {!isMember && !canAdmin && (
+            <div className="pb-2">
+              <Button size="sm" onClick={handleJoin}>
+                Participar
+              </Button>
+            </div>
+          )}
+        </div>
+
+        {/* ─── Tab contents (renderizados via tab key direto) ─── */}
         <BalancedTabsContent value="mural"><MuralTab communityId={communityId} isMember={isMember} isAdmin={canAdmin} membership={membership} community={community} /></BalancedTabsContent>
         <BalancedTabsContent value="forum"><ForumTab communityId={communityId} /></BalancedTabsContent>
         <BalancedTabsContent value="eventos"><EventsTab communityId={communityId} isAdmin={canAdmin} membership={membership} community={community} /></BalancedTabsContent>
@@ -232,8 +280,8 @@ export default function CommunityDetail() {
             <CommunityTeamTab community={community} membership={membership} />
           </BalancedTabsContent>
         )}
-      
-    </TabsContentStack></Tabs>
+      </TabsContentStack>
+    </Tabs>
     </div>
   );
 }
