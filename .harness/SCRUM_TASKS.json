@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.1.0",
-  "generatedAt": "2026-07-16T18:25:03.575Z",
+  "generatedAt": "2026-07-16T18:32:22.542Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W29",
@@ -12,13 +12,27 @@
   },
   "activeWorktrees": [
     {
+      "id": "wt-ds-v2-components",
+      "branch": "feat/ds-v2-components-2026-07-16",
+      "head": "29fec2a2099781a193a8a7b3d593de687c24d6b3",
+      "headTitle": "chore(scrum): Bloco B · DS_V2_TOKENS done — 5 tasks (TASK-720..723) + macro TASK-701",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-ds-v2-components",
+      "status": "in-sync",
+      "commitsAhead": 0,
+      "primarySession": "mvs_311d078987d0414a90f57ef28b789b18",
+      "sessionTitle": "DS_V2_COMPONENTS — refatorar Button, Card, Input, Modal, Table, Avatar",
+      "focus": [
+        "DS_V2_COMPONENTS"
+      ]
+    },
+    {
       "id": "wt-ds-v2-tokens",
       "branch": "feat/ds-v2-tokens-2026-07-16",
       "head": "30d0c5a82ac616fb4e0098c046eb68889dd3aff4",
       "headTitle": "feat(ds-v2): Bloco B · DS_V2_TOKENS — Material Symbols Outlined + Icon wrapper",
       "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-ds-v2-tokens",
-      "status": "ahead-of-main",
-      "commitsAhead": 1,
+      "status": "in-sync",
+      "commitsAhead": 0,
       "primarySession": null,
       "sessionTitle": null,
       "focus": []
@@ -11134,12 +11148,12 @@
       "title": "Bloco C · DS_V2_COMPONENTS — Refatorar biblioteca de componentes",
       "type": "feature",
       "category": "design",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "mvs_311d078987d0414a90f57ef28b789b18",
-      "branch": null,
+      "branch": "feat/ds-v2-components-2026-07-16",
       "flag": "DS_V2_COMPONENTS",
-      "worktree": null,
+      "worktree": ".worktrees/wt-ds-v2-components",
       "pr": null,
       "tags": [
         "ds-v2",
@@ -11152,7 +11166,8 @@
       ],
       "description": "Refatorar `src/components/ui/button.jsx` (já tem base, garantir 7 variantes da spec: primary, secondary, tertiary, admin, destructive, disabled, icon-circle). Refatorar `card.jsx`, `input.jsx`, `textarea.jsx`, `dialog.jsx`, `dropdown-menu.jsx`, `badge.jsx`, `avatar.jsx`, `tabs.jsx`, `table.jsx`, `progress.jsx` contra spec v1.0. Cada componente vira a fonte canônica para os Blocos D. Cobertura: não quebrar story atual, mas ajustar padding/raio/peso/contraste.",
       "createdAt": "2026-07-16",
-      "updatedAt": "2026-07-16"
+      "updatedAt": "2026-07-16T18:32:12",
+      "resolvedAt": "2026-07-16"
     },
     {
       "id": "TASK-703",
@@ -11631,6 +11646,207 @@
       "createdAt": "2026-07-16",
       "updatedAt": "2026-07-16T18:25:03",
       "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-724",
+      "title": "Refatorar Button (button.jsx) com 7 variantes da spec v1.0",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-components-2026-07-16",
+      "flag": "DS_V2_COMPONENTS",
+      "worktree": ".worktrees/wt-ds-v2-components",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "components",
+        "button"
+      ],
+      "blockedBy": [],
+      "description": "Spec §3.1: primary (gradiente marca, #fff), secondary (white 90%, border 2px primary 30%), tertiary (areia, 36px), admin (escuro, 46px), destructive (vermelho), disabled (cinza, opacity 55%), icon-circle (46-52px, círculo perfeito, gradiente marca). Atualizar buttonVariants em cva. Manter compat com variant/size atuais.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:32:11",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-725",
+      "title": "Refatorar Card (card.jsx) com cantos 22px + sombra colorida",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-components-2026-07-16",
+      "flag": "DS_V2_COMPONENTS",
+      "worktree": ".worktrees/wt-ds-v2-components",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "components",
+        "card"
+      ],
+      "blockedBy": [
+        "TASK-724"
+      ],
+      "description": "Spec §3.3: cantos 20-24px (default 22), fundo quase-branco translúcido, sombra difusa (não cinza puro). Hover: leve elevação (scale 1.01-1.02 + sombra crescente), nunca tilt 3D. Variantes: pet (aspect-ratio 1.3 imagem, padding 16), feature (ícone 44px, padding 22), testimonial (avatar 40px, padding 22).",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:32:17",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-726",
+      "title": "Refatorar Input/Textarea (input.jsx, textarea.jsx) com spec §3.4",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-components-2026-07-16",
+      "flag": "DS_V2_COMPONENTS",
+      "worktree": ".worktrees/wt-ds-v2-components",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "components",
+        "input",
+        "textarea",
+        "forms"
+      ],
+      "blockedBy": [
+        "TASK-724"
+      ],
+      "description": "Spec §3.4: Input altura 46px, raio 12px, borda hsl(var(--input)). Focus: borda primary + ring outline 3px hsla primary 10%. Textarea: min-height 80px, raio 12px, padding 12px 14px, resize vertical. Toggle: 46x26px, bg success on / bg cinza off, knob 20x20 branco. NÃO mexer em FormField (form-field.jsx) por enquanto.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:32:18",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-727",
+      "title": "Refatorar Modal/Dialog (dialog.jsx) com spec §3.6",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-components-2026-07-16",
+      "flag": "DS_V2_COMPONENTS",
+      "worktree": ".worktrees/wt-ds-v2-components",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "components",
+        "modal",
+        "dialog"
+      ],
+      "blockedBy": [
+        "TASK-725"
+      ],
+      "description": "Spec §3.6: Modal raio 24px, padding 32px, max-width 480px, sombra \"Painel flutuante\". Header em Sora 20px. Overlay com rgba(0,0,0,0.4-0.5) + backdrop-blur 4px. Dropdown: raio 18px, bg branco, sombra \"Painel flutuante\", itens padding 9px 12px, gap 10px para ícone.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:32:18",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-728",
+      "title": "Refatorar Table (table.jsx) com spec §3.7",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "medium",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-components-2026-07-16",
+      "flag": "DS_V2_COMPONENTS",
+      "worktree": ".worktrees/wt-ds-v2-components",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "components",
+        "table"
+      ],
+      "blockedBy": [
+        "TASK-725"
+      ],
+      "description": "Spec §3.7: Raio externo 18px, borda fina. Header: bg Secondary (Areia), texto 12px uppercase (Eyebrow). Linhas: padding 14px 16px, borda inferior fina. Linhas pares com bg Background Alt para zebragem. Hover com bg Areia claro. Aplicar nas tabelas já existentes (AuditLogTable, ClubPetsDataGrid, etc).",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:32:18",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-729",
+      "title": "Refatorar Avatar (avatar.jsx) com spec §3.9",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "medium",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-components-2026-07-16",
+      "flag": "DS_V2_COMPONENTS",
+      "worktree": ".worktrees/wt-ds-v2-components",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "components",
+        "avatar"
+      ],
+      "blockedBy": [
+        "TASK-725"
+      ],
+      "description": "Spec §3.9: Iniciais com gradiente Avatar (oliva→terracota), texto branco bold. Imagem com borda 2px branca/cinza, object-fit cover. Status: bolinha 12px canto inferior direito com borda branca (Verde=online, Cinza=offline, Mostarda=away). Tamanhos 28/36/44/56px (a maior com anel branco no header).",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:32:18",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-730",
+      "title": "Validar componentes refatorados (build, lint, snapshot test)",
+      "type": "chore",
+      "category": "ci",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-components-2026-07-16",
+      "flag": "DS_V2_COMPONENTS",
+      "worktree": ".worktrees/wt-ds-v2-components",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "build",
+        "test"
+      ],
+      "blockedBy": [
+        "TASK-729"
+      ],
+      "description": "Rodar npm run build (verde obrigatório), npm run lint (sem regressões), npm test (componentes afetados). Smoke test visual: abrir Home, Profile, Admin, e validar que as variantes (primary, secondary, tertiary, admin, destructive, disabled) renderizam corretamente.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:32:22",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-731",
+      "title": "Commit + push do Bloco C",
+      "type": "chore",
+      "category": "ci",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-components-2026-07-16",
+      "flag": "DS_V2_COMPONENTS",
+      "worktree": ".worktrees/wt-ds-v2-components",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "git",
+        "commit"
+      ],
+      "blockedBy": [
+        "TASK-730"
+      ],
+      "description": "Commit único, mensagem descritiva. Push só do branch. PR com screenshots antes/depois de cada componente. Merge em main após user validar.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:32:12",
+      "resolvedAt": "2026-07-16"
     }
   ],
   "definitionOfDone": [
@@ -11870,11 +12086,11 @@
     "firestoreIndexes": 35,
     "bundleSizeKB": 4125,
     "shelterPhases": "22/22 completas em produção",
-    "activeWorktreesAheadOfMain": 1,
+    "activeWorktreesAheadOfMain": 0,
     "mergedWorktreesThisSprint": [
       "feat/ds-v2-docs-2026-07-16"
     ],
-    "mainCommit": "8e187f6df23650995fadb915651712f8ff94b4d7",
+    "mainCommit": "29fec2a2099781a193a8a7b3d593de687c24d6b3",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -11884,12 +12100,12 @@
     ],
     "openTODOs": 5,
     "openLegalReviews": 3,
-    "totalTasks": 428,
-    "done": 414,
+    "totalTasks": 436,
+    "done": 423,
     "inProgress": 0,
     "inReview": 0,
     "blocked": 0,
-    "ready": 9,
+    "ready": 8,
     "backlog": 4,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -11919,7 +12135,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-16T18:25:03.591Z — via sync.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-16T18:32:22.560Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
@@ -11954,17 +12170,17 @@
     "risksAccepted": 2,
     "risksMonitoring": 2,
     "lastTaskId": "TASK-717",
-    "lastUpdated": "2026-07-16T18:20:07.235Z",
+    "lastUpdated": "2026-07-16T18:25:45.219Z",
     "dsV2Phase": "Fase 4 — em andamento",
     "dsV2Blocos": {
       "done": [
-        "DS_V2_DOCS"
-      ],
-      "inProgress": [
+        "DS_V2_DOCS",
         "DS_V2_TOKENS"
       ],
+      "inProgress": [
+        "DS_V2_COMPONENTS"
+      ],
       "ready": [
-        "DS_V2_COMPONENTS",
         "DS_V2_PAGES-HOME",
         "DS_V2_PAGES-PETS",
         "DS_V2_PAGES-ADOPTION",
@@ -11976,10 +12192,10 @@
       ]
     },
     "dsV2Tasks": {
-      "total": 22,
+      "total": 30,
       "done": 8,
       "ready": 10,
-      "inProgress": 1
+      "inProgress": 3
     },
     "dsV2Merge": "Bloco A merged to main @ 8e187f6 (2026-07-16 18:08 UTC)",
     "lastTaskDone": "TASK-700 (Bloco A macro)",
