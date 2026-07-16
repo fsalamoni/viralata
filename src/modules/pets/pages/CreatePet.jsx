@@ -11,6 +11,7 @@ import { uploadImage } from '@/core/services/storageService';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { FormField } from '@/components/ui/form-field';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -269,8 +270,7 @@ export default function CreatePet() {
       />
 
       {!isEditing && adminClubs.length > 0 && (
-        <div className="mb-5 space-y-1">
-          <Label>Cadastrar em nome de</Label>
+        <FormField label="Cadastrar em nome de" helper="Selecione o abrigo responsável por este pet." className="mb-5">
           <Select value={ownerId} onValueChange={setOwnerId}>
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>
@@ -280,7 +280,7 @@ export default function CreatePet() {
               ))}
             </SelectContent>
           </Select>
-        </div>
+        </FormField>
       )}
 
       {/* Barra de progresso segmentada */}
@@ -321,15 +321,21 @@ export default function CreatePet() {
             <>
               <h2 className="mb-4 font-['Sora'] text-base font-bold text-foreground">Sobre o pet</h2>
               <div className="space-y-3.5">
-                <div className="space-y-1.5">
-                  <Label htmlFor="title">Título do anúncio</Label>
+                <FormField
+                  label="Título do anúncio"
+                  htmlFor="title"
+                  error={errors.title?.message}
+                  required
+                >
                   <Input id="title" {...register('title')} placeholder="Ex: Labrador dócil para adoção" />
-                  {errors.title && <p className="text-xs text-destructive">{errors.title.message}</p>}
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="name">Nome do animal (opcional)</Label>
+                </FormField>
+                <FormField
+                  label="Nome do animal (opcional)"
+                  htmlFor="name"
+                  helper="Caso ainda não tenha um nome definido, deixe em branco."
+                >
                   <Input id="name" {...register('name')} placeholder="Nome" />
-                </div>
+                </FormField>
                 <div className="space-y-2">
                   <Label>Espécie</Label>
                   <div className="flex flex-wrap gap-2">
@@ -382,16 +388,22 @@ export default function CreatePet() {
                   <Input id="breed" {...register('breed')} placeholder="Ex: SRD, Labrador ou outra raça..." />
                 </div>
                 <div className="grid grid-cols-[2fr,1fr] gap-2.5">
-                  <div className="space-y-1.5">
-                    <Label htmlFor="city">Cidade</Label>
+                  <FormField
+                    label="Cidade"
+                    htmlFor="city"
+                    error={errors.city?.message}
+                    required
+                  >
                     <Input id="city" {...register('city')} />
-                    {errors.city && <p className="text-xs text-destructive">{errors.city.message}</p>}
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label htmlFor="state">Estado</Label>
+                  </FormField>
+                  <FormField
+                    label="Estado"
+                    htmlFor="state"
+                    error={errors.state?.message}
+                    required
+                  >
                     <Input id="state" {...register('state')} maxLength={2} placeholder="SP" />
-                    {errors.state && <p className="text-xs text-destructive">{errors.state.message}</p>}
-                  </div>
+                  </FormField>
                 </div>
               </div>
             </>
