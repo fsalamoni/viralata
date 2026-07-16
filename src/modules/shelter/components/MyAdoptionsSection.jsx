@@ -44,12 +44,15 @@ export function MyAdoptionsSection({ userUid }) {
       <div className="arena-section-card-header">
         <h3 className="arena-section-card-title flex items-center gap-2 text-base font-bold">
           <Heart className="w-[19px] h-[19px] text-accent" /> Minhas adoções
-        </h3>
-        <p className="arena-section-card-description">
-          Histórico dos seus pedidos de adoção em todos os abrigos.
-        </p>
-      </div>
-      <div className="arena-section-card-body p-0 pt-4">
+        </CardTitle>
+        <CardDescription className="text-[12.5px]">
+          Histórico dos seus pedidos de adoção em todos os abrigos.{' '}
+          <Link to="/meus-pedidos" className="underline text-primary">
+            Ver página completa
+          </Link>
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="p-0 pt-4">
         {isLoading && (
           <div className="space-y-2">
             <Skeleton className="h-14 w-full rounded-lg" />

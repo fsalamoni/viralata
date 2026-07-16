@@ -1,0 +1,54 @@
+name: Security — xlsx (SheetJS) monitor
+
+# Monitora vulnerabilidades do SheetJS/xlsx (TASK-016).
+# Roda semanalmente + em todo push. Fala quando xlsx 0.18.5 ainda é
+# a versão instalada (CVEs GHSA-4r6h-8v6p-xvw6 + GHSA-5pgg-2g8v-p4x9).
+# 
+# Quando o SheetJS publicar versão corrigida no npm (>0.20), o
+# script vai retornar exit code 0 e o workflow não vai falhar.
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'  # segunda 06:00 UTC (03:00 BRT)
+  push:
+    paths:
+      - 'package.json'
+      - 'package-lock.json'
+      - 'scripts/check-xlsx-security.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check-xlsx:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run xlsx security check
+        id: xlsx-check
+        # Exit 0 = OK, Exit 1 = vulnerável, Exit 2 = erro
+        run: |
+          node scripts/check-xlsx-security.mjs
+          echo "STATUS=$?" >> $GITHUB_OUTPUT
+        continue-on-error: true
+
+      - name: Annotate if vulnerable
+        if: steps.xlsx-check.outputs.STATUS == '1'
+        run: |
+          echo "::warning file=package.json::xlsx 0.18.5 está vulnerável (CVE GHSA-4r6h-8v6p-xvw6 + GHSA-5pgg-2g8v-p4x9). Considerar upgrade para 0.20+ quando disponível no npm. Ver docs/security/XLSX_SECURITY.md"
+
+      - name: Annotate if error
+        if: steps.xlsx-check.outputs.STATUS == '2'
+        run: |
+          echo "::error::Erro ao executar xlsx security check"
