@@ -1,7 +1,13 @@
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
-import { db } from '@/core/config/firebase';
+import { httpsCallable } from 'firebase/functions';
+import { functions } from '@/core/config/firebase';
 import { logger } from '@/core/lib/logger';
-import { parseTimestamp } from '@/core/utils/timestamp';
+
+/** Lazy-callable ref do httpsCallable para createAuditLog. */
+let _createAuditLogFn = null;
+function getCreateAuditLogFn() {
+  if (!_createAuditLogFn) _createAuditLogFn = httpsCallable(functions, 'createAuditLog');
+  return _createAuditLogFn;
+}
 
 export const AUDIT_ACTION_LABELS = {
   user_profile_updated: 'Perfil atualizado',
@@ -175,53 +181,25 @@ export async function createAuditLog({
 }) {
   if (!actor?.uid || !action) return;
 
-  const actorName = actor.displayName || actor.email || actor.uid;
-  const createdAtMs = Date.now();
-
-  // IP best-effort. Em produção (Firebase Hosting), a plataforma
-  // recebe o IP real via cabeçalho CF-Connecting-IP, mas a função
-  // de auditoria roda no client e não tem acesso direto. Aqui
-  // ficamos com "client-unknown" e o IP real fica registrado no
-  // Cloud Function (Fase 19, fluxo de assinatura eletrônica). Para
-  // os aceites do cadastro (onboarding), o registro é suficiente
-  // para conformidade com a Lei 14.063/2020 nível básico, pois o
-  // UID do usuário + timestamp + user_agent + hash do nome são
-  // registrados.
-  const ip_address = (typeof window !== 'undefined' && window.__CF_CONNECTING_IP)
-    || (typeof globalThis !== 'undefined' && globalThis.__CF_CONNECTING_IP)
-    || 'client-unknown';
-  const user_agent = (typeof navigator !== 'undefined' && navigator.userAgent) || 'unknown';
-
-  const doc = {
-    log_number: Number(`${createdAtMs}${randomNumericSuffix()}`),
-    action,
-    action_label: AUDIT_ACTION_LABELS[action] || action,
-    category: classifyAuditCategory(action),
-    actor_id: actor.uid,
-    actor_name: actorName,
-    actor_email: actor.email || '',
-    user_id: userId || actor.uid,
-    user_name: userName || actorName,
-    user_email: userEmail || actor.email || '',
-    ip_address,
-    user_agent,
-    details,
-    created_at_ms: createdAtMs,
-    created_at: serverTimestamp(),
-  };
-
-  // TASK-351: target_user_id — presente quando actor ≠ target
-  if (targetUserId) {
-    doc.target_user_id = targetUserId;
-  }
-
-  // TASK-351: correlation_id — encadeamento de operações lógicas
-  if (correlationId) {
-    doc.correlation_id = correlationId;
-  }
-
+  // ─── TASK-330 (SEC-HIGH): grava via Cloud Function (Admin SDK).
+  // Não escreve diretamente no Firestore — o callable usa Admin SDK
+  // e bypassa as security rules. Client writing diretamente foi
+  // removido para evitar poluição / injeção de audit logs falsos.
   try {
-    await addDoc(collection(db, 'audit_logs'), doc);
+    // O callable extrai IP real via CF-Connecting-IP e auth.uid.
+    // Passamos actor por compatibilidade (certifica actor_name/email).
+    await getCreateAuditLogFn()({
+      action,
+      actor: {
+        uid: actor.uid,
+        email: actor.email || '',
+        displayName: actor.displayName || '',
+      },
+      userId: userId || null,
+      userName: userName || null,
+      userEmail: userEmail || null,
+      details,
+    });
     return { ok: true };
   } catch (err) {
     // Inner try/catch: createAuditLog is the low-level writer and NEVER
@@ -319,19 +297,6 @@ export function safeCreateAuditLog(payload) {
     }
     return result;
   });
-}
-
-/**
- * Adds entropy to the millisecond timestamp so visible log numbers remain
- * unique when several records are created nearly simultaneously.
- */
-function randomNumericSuffix() {
-  if (globalThis.crypto?.getRandomValues) {
-    const values = new Uint16Array(1);
-    globalThis.crypto.getRandomValues(values);
-    return String(values[0]).padStart(5, '0');
-  }
-  return String(performance.now()).replace(/\D/g, '').slice(-5).padStart(5, '0');
 }
 
 export function formatAuditDate(value, fallbackMs) {

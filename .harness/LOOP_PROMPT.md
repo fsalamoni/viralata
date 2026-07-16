@@ -1,4 +1,4 @@
-# LOOP_PROMPT — viralata (atualizado 2026-07-15 16:32 UTC)
+# LOOP_PROMPT — viralata (atualizado 2026-07-15 17:50 UTC)
 
 **Contexto**: /workspace/viralata, branch feat/task-248-volunteer-certificate-2026-07-16, React+Vite+Firebase.
 **Repo**: https://github.com/fsalamoni/viralata.git
@@ -98,7 +98,7 @@ print(f'{len(ready)} tasks ready')
 ## 🆕 CANDIDATAS (2026-07-15 11:53 UTC)
 
 > **Notas**:
-> - TASK-298 ✅ done — feat/task-298-contract-ip-ua-2026-07-15 (contract CF: IP+UA, Lei 14.063/2020)
+> - TASK-330 ✅ done — feat/task-330-audit-log-cf (SEC-HIGH): audit log via Cloud Function, client writes blocked in firestore.rules
 > - TASK-220 ✅ done — feat/task-220-clean (PR #192) merged 2026-07-15
 > - TASK-269 ✅ done — feat/task-268-volunteer-fcm-notify (PR #190)
 > - TASK-312 ✅ done — [INT-SEARCH-001] Sync ativo do search index
@@ -109,9 +109,24 @@ print(f'{len(ready)} tasks ready')
 
 ---
 
-- **done=349** (was 348 — TASK-248 done: volunteer certificate PDF)
-- **ready=22**, in_progress=0
-- **Branch**: `feat/task-248-volunteer-certificate-2026-07-16`
+## 📊 MÉTRICAS ATUAIS
+
+- **done=315**, ready=59, in_progress=1
+- **Main**: `102de261904f`
+
+## 🏁 FIM DO TURNO
+
+1. REGRA #0 (scrum update)
+2. REGRA #1 (metrics sync)
+3. sync.cjs --fix
+4. Commit + push
+5. Atualizar LOOP_PROMPT.md
+
+## ⏰ HORÁRIO
+- **24/7**, loop a cada 20min.
+
+## 🚀 BATCH (a cada 10 tasks)
+- User disser "Mavis, batch" → batch PR + merge + deploy.
 
 - **done=287**, ready=71, in_progress=4
 - **Main**: `691de55`
