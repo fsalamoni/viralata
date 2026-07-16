@@ -23,10 +23,6 @@ export {
   // Builders
   buildSearchQuery,
   buildSearchIndexQuery,
-  // Search index (TASK-312)
-  SEARCH_INDEX_COLLECTIONS,
-  SEARCH_INDEX_NAME_FIELD,
-  // Mappers
   mapDocToResult,
   rankResult,
   rankResults,

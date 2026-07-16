@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
+import { createAuditLog } from '@/core/services/auditService';
 import {
   Home as HomeIcon, Trees, Building2, Tractor, Sofa, Footprints, Wind,
   UsersRound, PawPrint, Bird, Rabbit, Ban, Wallet, MapPin, Shield,
@@ -92,7 +93,7 @@ const OTHER_PET_OPTIONS = [
 ];
 
 export default function OnboardingQuestionnaire() {
-  const { updateUserProfile, userProfile } = useAuth();
+  const { updateUserProfile, userProfile, user } = useAuth();
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState({
@@ -149,9 +150,8 @@ export default function OnboardingQuestionnaire() {
     try {
       const acceptedAt = new Date().toISOString();
       // Persistimos cada aceite no doc do perfil para servir de prova
-      // de aceite (audit trail local). O audit_log canônico fica
-      // gravado no `createAuditLog` chamado pelos helpers do módulo
-      // legal quando o aceite for em outro fluxo (adoção, LT, etc.).
+      // de aceite (audit trail local). O audit_log canônico também
+      // é gravado para atender Lei 14.063/2020 (TASK-085).
       await updateUserProfile({
         ...answers,
         // Mantido por compatibilidade (campo legado).
@@ -168,6 +168,26 @@ export default function OnboardingQuestionnaire() {
         onboarding_version: ONBOARDING_QUESTIONNAIRE_VERSION,
         onboarding_completed_at: acceptedAt,
       });
+
+      // Audit log imutável — Lei 14.063/2020 + LGPD Art. 37 (TASK-085)
+      await createAuditLog({
+        action: 'onboarding_consent_accepted',
+        actor: { uid: user?.uid, email: user?.email },
+        target_type: 'user',
+        target_id: user?.uid,
+        details: {
+          terms_version: '2026-07-10',
+          privacy_policy_version: '2026-07-10',
+          code_of_conduct_version: '2026-07-10',
+          onboarding_version: ONBOARDING_QUESTIONNAIRE_VERSION,
+          accepted_at: acceptedAt,
+          legal_basis: 'consent (LGPD Art. 7º I) + Lei 14.063/2020',
+        },
+      }).catch((err) => {
+        // Audit é best-effort — não bloqueia a conclusão do onboarding
+        console.warn('[audit] onboarding_consent_accepted falhou (não bloqueante):', err);
+      });
+
       toast.success('Perfil concluído! Bem-vindo ao Viralata 🐾');
       navigate('/feed');
     } catch {
