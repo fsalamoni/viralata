@@ -10,7 +10,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
@@ -100,13 +99,30 @@ export default function ClubFeedTab({ clubId, club, membership, canManageFeed })
         <Button
           type="button"
           onClick={() => { setEditing(null); setEditorOpen(true); }}
+          disabled={createPost.isPending}
         >
           <PlusCircle className="mr-1.5 h-4 w-4" /> Nova publicação
         </Button>
       )}
 
       {isLoading ? (
-        <div className="space-y-3">{[1, 2].map((i) => <Skeleton key={i} className="h-32 rounded-2xl" />)}</div>
+        <div className="space-y-3">
+          {[1, 2].map((i) => (
+            <div key={i} className="arena-section-card">
+              <div className="arena-section-card-body space-y-3">
+                <div className="flex items-start gap-3">
+                  <Skeleton className="h-10 w-10 shrink-0 rounded-full" />
+                  <div className="flex-1 space-y-2 pt-1">
+                    <Skeleton className="h-3.5 w-32 rounded" />
+                    <Skeleton className="h-3 w-24 rounded" />
+                  </div>
+                </div>
+                <Skeleton className="h-4 w-3/4 rounded" />
+                <Skeleton className="h-20 w-full rounded" />
+              </div>
+            </div>
+          ))}
+        </div>
       ) : posts.length === 0 ? (
         <EmptyState
           icon={MessageSquare}
@@ -183,8 +199,7 @@ export default function ClubFeedTab({ clubId, club, membership, canManageFeed })
   );
 }
 
-/* ============================== Editor (criar/editar) ============================== */
-/* ============================== Editor (criar/editar) ============================== */
+/* ============================== PostEditorDialog (criar/editar) ============================== */
 
 function PostEditorDialog({ open, onOpenChange, post, user, onSubmit, isPending }) {
   const fileInputRef = useRef(null);
@@ -266,21 +281,29 @@ function PostEditorDialog({ open, onOpenChange, post, user, onSubmit, isPending 
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="post_title">Título</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="post_title">Título</Label>
+              <span className="text-[10px] text-muted-foreground tabular-nums">
+                {title.length}/{ORG_MURAL_LIMITS.TITLE_MAX}
+              </span>
+            </div>
             <Input
               id="post_title"
               value={title}
               onChange={(e) => setTitle(e.target.value.slice(0, ORG_MURAL_LIMITS.TITLE_MAX))}
               maxLength={ORG_MURAL_LIMITS.TITLE_MAX}
               placeholder="Ex.: Mutirão de adoção neste sábado"
+              className="text-sm font-semibold"
             />
-            <p className="text-right text-[10px] text-muted-foreground">
-              {title.length}/{ORG_MURAL_LIMITS.TITLE_MAX}
-            </p>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="post_content">Mensagem</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="post_content">Mensagem</Label>
+              <span className="text-[10px] text-muted-foreground tabular-nums">
+                {content.length}/{ORG_MURAL_LIMITS.CONTENT_MAX}
+              </span>
+            </div>
             <Textarea
               id="post_content"
               value={content}
@@ -289,9 +312,6 @@ function PostEditorDialog({ open, onOpenChange, post, user, onSubmit, isPending 
               maxLength={ORG_MURAL_LIMITS.CONTENT_MAX}
               placeholder="Escreva sua mensagem…"
             />
-            <p className="text-right text-[10px] text-muted-foreground">
-              {content.length}/{ORG_MURAL_LIMITS.CONTENT_MAX}
-            </p>
           </div>
 
           <div className="space-y-2">
@@ -309,13 +329,13 @@ function PostEditorDialog({ open, onOpenChange, post, user, onSubmit, isPending 
                 {pending.map((att, idx) => (
                   <div
                     key={`${att.path || att.url}-${idx}`}
-                    className="group relative aspect-square overflow-hidden rounded-lg border border-border bg-secondary/30"
+                    className="group relative aspect-square overflow-hidden rounded-xl border border-border bg-secondary/30 shadow-sm transition-shadow hover:shadow-md"
                   >
                     <img src={att.url} alt={att.name} className="h-full w-full object-cover" />
                     <button
                       type="button"
                       onClick={() => removePending(idx)}
-                      className="absolute right-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-black/65 text-white opacity-0 transition-opacity group-hover:opacity-100"
+                      className="absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-full bg-black/70 text-white opacity-0 shadow-sm backdrop-blur-sm transition-all group-hover:opacity-100 hover:bg-black/90"
                       aria-label={`Remover ${att.name}`}
                     >
                       <X className="h-3.5 w-3.5" />
@@ -348,17 +368,27 @@ function PostEditorDialog({ open, onOpenChange, post, user, onSubmit, isPending 
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="post_interaction">Interação permitida</Label>
-            <Select value={interaction} onValueChange={setInteraction}>
-              <SelectTrigger id="post_interaction"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {Object.values(POST_INTERACTION).map((v) => (
-                  <SelectItem key={v} value={v}>{POST_INTERACTION_LABELS[v]}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Label>Interação permitida</Label>
+            {/* DS_V2 segmented control — mais claro e direto que um Select */}
+            <div className="flex flex-wrap gap-1.5">
+              {Object.values(POST_INTERACTION).map((v) => (
+                <button
+                  key={v}
+                  type="button"
+                  onClick={() => setInteraction(v)}
+                  className={cn(
+                    'inline-flex h-9 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 text-xs font-bold transition-colors',
+                    interaction === v
+                      ? 'bg-primary text-primary-foreground'
+                      : 'border border-border bg-card text-muted-foreground hover:border-primary/40 hover:text-foreground',
+                  )}
+                >
+                  {POST_INTERACTION_LABELS[v]}
+                </button>
+              ))}
+            </div>
             <p className="text-[11px] text-muted-foreground">
-              Define se o público pode curtir e/ou comentar esta publicação. Após receber interações, a configuração fica travada (edição exige remover as interações).
+              Define se o público pode curtir e/ou comentar. Após receber interações, a configuração fica travada.
             </p>
           </div>
 
