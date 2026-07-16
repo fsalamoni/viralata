@@ -287,3 +287,7 @@ exports.sendPushNotification = sendPushNotification;
 exports.onAdoptionWorkflowCreated = onAdoptionWorkflowCreated;
 exports.onAdoptionWorkflowStatusUpdated = onAdoptionWorkflowStatusUpdated;
 exports.onKanbanTaskCreated = onKanbanTaskCreated;
+
+// ─── TASK-343: Event certificates ───────────────────────────────────────────
+const { generateEventCertificate } = require('./generateEventCertificate');
+exports.generateEventCertificate = generateEventCertificate;

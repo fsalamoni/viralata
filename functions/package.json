@@ -11,9 +11,11 @@
   },
   "dependencies": {
     "@google-cloud/firestore": "^7.10.0",
+    "@google-cloud/storage": "^7.14.0",
     "@sendgrid/mail": "^8.1.0",
     "firebase-admin": "^13.8.0",
-    "firebase-functions": "^7.2.5"
+    "firebase-functions": "^7.2.5",
+    "pdf-lib": "^1.17.1"
   },
   "//": [
     "Dependências opcionais documentadas em Fase 20 — Segurança Avançada:",

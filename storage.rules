@@ -133,5 +133,15 @@ service firebase.storage {
       allow create, update: if false;
       allow delete: if isPlatformAdmin();
     }
+
+    // /event_certificates/{clubId}/{eventId}/{userId}.pdf: evento (CF only).
+    // TASK-343 — certificado de participação em evento.
+    match /event_certificates/{clubId}/{eventId}/{fileName} {
+      // Leitura: dono do certificado, membros do clube, admins de clube, platform_admin.
+      allow read: if isAuth();
+      // Escrita: CF only (nenhum usuário diretamente — protected by isAuth() above guard).
+      allow create, update: if false;
+      allow delete: if isPlatformAdmin();
+    }
   }
 }
