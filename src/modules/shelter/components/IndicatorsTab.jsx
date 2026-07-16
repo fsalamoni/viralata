@@ -42,33 +42,37 @@ const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent
   );
 };
 
-function StatCard({ label, value, icon: Icon, tone = 'default' }) {
+function StatCard({ label, value, icon: Icon, tone = 'default', delta }) {
   const toneClass = {
-    default: 'border-border bg-card',
-    success: 'border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950',
-    info: 'border-blue-200 bg-blue-50 dark:border-blue-900 dark:bg-blue-950',
-  }[tone] || 'border-border bg-card';
+    default: 'border-white/80 bg-white/80',
+    success: 'border-emerald-200/80 bg-emerald-50/80 dark:border-emerald-900/60 dark:bg-emerald-950/60',
+    info: 'border-blue-200/80 bg-blue-50/80 dark:border-blue-900/60 dark:bg-blue-950/60',
+    warning: 'border-amber-200/80 bg-amber-50/80 dark:border-amber-900/60 dark:bg-amber-950/60',
+  }[tone] || 'border-white/80 bg-white/80';
   return (
-    <div className={`rounded-xl border p-4 ${toneClass}`}>
-      <div className="flex items-center gap-2 mb-1">
-        {Icon && <Icon className="h-4 w-4 text-muted-foreground" />}
-        <span className="text-xs font-medium text-muted-foreground">{label}</span>
+    <div className={`arena-stat-card ${toneClass}`}>
+      <div className="flex items-center gap-2 mb-1.5">
+        {Icon && <Icon className="h-3.5 w-3.5 text-muted-foreground" />}
+        <span className="arena-stat-card-label">{label}</span>
       </div>
-      <div className="text-2xl font-extrabold">{value ?? '—'}</div>
+      <div className="arena-stat-card-value">{value ?? '—'}</div>
+      {delta && <div className="arena-stat-card-delta">{delta}</div>}
     </div>
   );
 }
 
 function Card({ children, className = '' }) {
   return (
-    <div className={`rounded-xl border border-border bg-card p-5 ${className}`}>
-      {children}
+    <div className={`arena-section-card ${className}`}>
+      <div className="arena-section-card-body">
+        {children}
+      </div>
     </div>
   );
 }
 
 function SectionTitle({ children }) {
-  return <h3 className="text-base font-semibold mb-3">{children}</h3>;
+  return <h3 className="arena-section-card-title mb-4">{children}</h3>;
 }
 
 function BarChartComp({ data, bars, xKey = 'label', height = 280 }) {
@@ -209,48 +213,48 @@ function ExhibitionDetail({ data }) {
 
   if (exhibitions.length === 0) {
     return (
-      <section className="arena-section-card">
-        <p className="text-sm text-muted-foreground text-center py-8">
-          Nenhuma vitrine registrada ainda.
-        </p>
-      </section>
+      <div className="arena-section-card">
+        <div className="arena-section-card-body flex flex-col items-center justify-center py-12 text-center">
+          <p className="text-sm text-muted-foreground">Nenhuma vitrine registrada ainda.</p>
+        </div>
+      </div>
     );
   }
 
   return (
     <div className="space-y-4">
-      <div className="overflow-x-auto">
+      <div className="arena-table-wrap rounded-2xl border border-white/80 bg-white/80 shadow-[0_14px_34px_-28px_hsl(20_40%_20%/0.4)] backdrop-blur-xl">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-border">
-              <th className="py-2 pr-4 text-left font-medium">Vitrine</th>
-              <th className="py-2 pr-4 text-left font-medium">Data</th>
-              <th className="py-2 pr-4 text-left font-medium">Status</th>
-              <th className="py-2 pr-4 text-right font-medium">Participantes</th>
-              <th className="py-2 pr-4 text-right font-medium">Animais</th>
-              <th className="py-2 pr-4 text-right font-medium">Taxa adoção</th>
+            <tr className="border-b border-border/60 bg-secondary/40">
+              <th className="py-2.5 pr-4 text-left text-xs font-semibold text-muted-foreground">Vitrine</th>
+              <th className="py-2.5 pr-4 text-left text-xs font-semibold text-muted-foreground">Data</th>
+              <th className="py-2.5 pr-4 text-left text-xs font-semibold text-muted-foreground">Status</th>
+              <th className="py-2.5 pr-4 text-right text-xs font-semibold text-muted-foreground">Participantes</th>
+              <th className="py-2.5 pr-4 text-right text-xs font-semibold text-muted-foreground">Animais</th>
+              <th className="py-2.5 pr-4 text-right text-xs font-semibold text-muted-foreground">Taxa adoção</th>
             </tr>
           </thead>
           <tbody>
             {exhibitions.map((ex) => (
-              <tr key={ex.id} className="border-b border-border/50">
-                <td className="py-2 pr-4 font-medium">{ex.title}</td>
-                <td className="py-2 pr-4 text-muted-foreground">
+              <tr key={ex.id} className="border-b border-border/40 hover:bg-secondary/20 transition-colors">
+                <td className="py-2.5 pr-4 font-medium">{ex.title}</td>
+                <td className="py-2.5 pr-4 text-muted-foreground">
                   {ex.date ? new Date(ex.date).toLocaleDateString('pt-BR') : '—'}
                 </td>
-                <td className="py-2 pr-4">
-                  <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-                    ex.status === 'completed' ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300' :
-                    ex.status === 'scheduled' ? 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300' :
-                    'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300'
+                <td className="py-2.5 pr-4">
+                  <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                    ex.status === 'completed' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-400' :
+                    ex.status === 'scheduled' ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/50 dark:text-orange-400' :
+                    'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-400'
                   }`}>
-                    {ex.status}
+                    {ex.status === 'completed' ? 'Realizada' : ex.status === 'scheduled' ? 'Agendada' : 'Cancelada'}
                   </span>
                 </td>
-                <td className="py-2 pr-4 text-right">{ex.participants}</td>
-                <td className="py-2 pr-4 text-right">{ex.animals}</td>
-                <td className={`py-2 pr-4 text-right font-medium ${
-                  ex.adoptionRate > 0.3 ? 'text-green-600' : ex.adoptionRate > 0 ? 'text-orange-600' : ''
+                <td className="py-2.5 pr-4 text-right">{ex.participants ?? 0}</td>
+                <td className="py-2.5 pr-4 text-right">{ex.animals ?? 0}</td>
+                <td className={`py-2.5 pr-4 text-right font-semibold ${
+                  ex.adoptionRate > 0.3 ? 'text-emerald-600' : ex.adoptionRate > 0 ? 'text-orange-600' : 'text-muted-foreground'
                 }`}>
                   {ex.adoptionRate > 0 ? `${Math.round(ex.adoptionRate * 100)}%` : '—'}
                 </td>
@@ -320,42 +324,41 @@ function VolunteerDetail({ data }) {
 
   if (volunteers.length === 0) {
     return (
-      <section className="arena-section-card">
-        <p className="text-sm text-muted-foreground text-center py-8">
-          Nenhuma participação registrada ainda.
-        </p>
-      </section>
+      <div className="arena-section-card">
+        <div className="arena-section-card-body flex flex-col items-center justify-center py-12 text-center">
+          <p className="text-sm text-muted-foreground">Nenhuma participação registrada ainda.</p>
+        </div>
+      </div>
     );
   }
 
   return (
     <div className="space-y-4">
-      <div className="overflow-x-auto">
+      <div className="arena-table-wrap rounded-2xl border border-white/80 bg-white/80 shadow-[0_14px_34px_-28px_hsl(20_40%_20%/0.4)] backdrop-blur-xl">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-border">
-              <th className="py-2 pr-4 text-left font-medium">Voluntário</th>
-              <th className="py-2 pr-4 text-right font-medium">Participações</th>
-              <th className="py-2 pr-4 text-right font-medium">Horas</th>
-              <th className="py-2 pr-4 text-right font-medium">Transportes</th>
-              <th className="py-2 pr-4 text-left font-medium">Última participação</th>
+            <tr className="border-b border-border/60 bg-secondary/40">
+              <th className="py-2.5 pr-4 text-left text-xs font-semibold text-muted-foreground">#</th>
+              <th className="py-2.5 pr-4 text-left text-xs font-semibold text-muted-foreground">Voluntário</th>
+              <th className="py-2.5 pr-4 text-right text-xs font-semibold text-muted-foreground">Participações</th>
+              <th className="py-2.5 pr-4 text-right text-xs font-semibold text-muted-foreground">Horas</th>
+              <th className="py-2.5 pr-4 text-right text-xs font-semibold text-muted-foreground">Transportes</th>
+              <th className="py-2.5 pr-4 text-left text-xs font-semibold text-muted-foreground">Última participação</th>
             </tr>
           </thead>
           <tbody>
             {volunteers.slice(0, 20).map((v, i) => (
-              <tr key={v.uid} className="border-b border-border/50">
-                <td className="py-2 pr-4">
-                  <div className="flex items-center gap-2">
-                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-orange-100 text-xs font-bold text-orange-700 dark:bg-orange-900 dark:text-orange-300">
-                      {i + 1}
-                    </span>
-                    <span className="font-medium">{v.name}</span>
-                  </div>
+              <tr key={v.uid} className="border-b border-border/40 hover:bg-secondary/20 transition-colors">
+                <td className="py-2.5 pr-4">
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
+                    {i + 1}
+                  </span>
                 </td>
-                <td className="py-2 pr-4 text-right">{v.totalParticipations}</td>
-                <td className="py-2 pr-4 text-right">{v.totalHours}h</td>
-                <td className="py-2 pr-4 text-right">{v.transports}</td>
-                <td className="py-2 pr-4 text-muted-foreground">
+                <td className="py-2.5 pr-4 font-medium">{v.name}</td>
+                <td className="py-2.5 pr-4 text-right font-semibold">{v.totalParticipations ?? 0}</td>
+                <td className="py-2.5 pr-4 text-right font-semibold">{v.totalHours ?? 0}h</td>
+                <td className="py-2.5 pr-4 text-right font-semibold">{v.transports ?? 0}</td>
+                <td className="py-2.5 pr-4 text-muted-foreground">
                   {v.lastParticipation
                     ? new Date(v.lastParticipation).toLocaleDateString('pt-BR')
                     : '—'}
