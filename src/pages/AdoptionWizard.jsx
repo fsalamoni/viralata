@@ -39,7 +39,7 @@ import {
 } from '@/modules/shelter/domain/legal/adoptionTerms';
 import Seo from '@/components/Seo';
 
-const STEPS = ['Pet', 'Sobre você', 'Questionário', 'Termo', 'Confirmação'];
+const STEPS = ['Pet', 'Sobre você', 'Questionário', 'Termo', 'Revisão', 'Confirmação'];
 
 export default function AdoptionWizard() {
   const { petId } = useParams();
@@ -346,6 +346,36 @@ export default function AdoptionWizard() {
           </div>
         )}
 
+
+        {step === 4 && (
+          <>
+            <div className="arena-section-card-header">
+              <h3 className="arena-section-card-title">Revise seu pedido</h3>
+              <p className="arena-section-card-description">Verifique os dados antes de assinar e enviar.</p>
+            </div>
+            <div className="arena-section-card-body space-y-4 p-0">
+              <div className="space-y-3 rounded-xl border border-border p-4">
+                <h4 className="text-sm font-semibold">Dados do adotante</h4>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div><span className="text-muted-foreground">Nome:</span> <span className="font-medium">{form.full_name}</span></div>
+                  {form.email && <div><span className="text-muted-foreground">Email:</span> <span className="font-medium">{form.email}</span></div>}
+                  {form.phone && <div><span className="text-muted-foreground">Telefone:</span> <span className="font-medium">{form.phone}</span></div>}
+                  <div><span className="text-muted-foreground">Moradia:</span> <span className="font-medium">{form.living_arrangement || '—'}</span></div>
+                  <div><span className="text-muted-foreground">Pets:</span> <span className="font-medium">{form.has_other_pets ? 'Sim' : 'Não'}</span></div>
+                  <div><span className="text-muted-foreground">Crianças:</span> <span className="font-medium">{form.has_children ? 'Sim' : 'Não'}</span></div>
+                </div>
+                <div className="border-t border-border pt-2">
+                  <p className="text-xs text-muted-foreground">Motivação:</p>
+                  <p className="text-sm">{form.reason_to_adopt || '—'}</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-2 rounded-xl border border-border/50 bg-muted/20 p-3">
+                <FileText className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                <p className="text-xs text-muted-foreground">Ao assinar e enviar, você declara que leu e concorda com o Termo de Adoção e cede seus dados ao abrigo responsável para fins de análise do pedido.</p>
+              </div>
+            </div>
+          </>
+        )}
         {step < 4 && (
           <div className="mt-6 flex justify-between">
             <Button type="button" variant="ghost" onClick={() => (step === 0 ? navigate(`/pet/${petId}`) : setStep(step - 1))}>
@@ -355,11 +385,15 @@ export default function AdoptionWizard() {
               <Button type="button" disabled={!stepValid} onClick={() => setStep(step + 1)}>
                 Próximo <ArrowRight className="ml-1.5 h-4 w-4" />
               </Button>
-            ) : (
-              <Button type="button" disabled={!stepValid || submitMutation.isPending} onClick={handleSubmit}>
+            ) : step === 3 ? (
+              <Button type="button" disabled={!stepValid || !accepted} onClick={() => setStep(4)}>
+                Revisar <ArrowRight className="ml-1.5 h-4 w-4" />
+              </Button>
+            ) : step === 4 ? (
+              <Button type="button" disabled={submitMutation.isPending} onClick={handleSubmit}>
                 {submitMutation.isPending ? 'Enviando…' : 'Assinar e enviar pedido'}
               </Button>
-            )}
+            ) : null}
           </div>
         )}
       </section>
