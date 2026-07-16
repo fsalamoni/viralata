@@ -153,6 +153,82 @@ export const FEATURE_FLAG = Object.freeze({
    * Aditivo — desligada, a UI funciona sem as melhorias a11y.
    */
   A11Y_IMPROVEMENTS_V1: 'a11y_improvements_v1',
+
+  // ─── Design System v2 — Fase 4 (DS_V2 Reaplicação) ──────────────────────
+  // Cada flag = 1 macrobloco do DS_V2. Default OFF. Ver docs/ROADMAP.md §
+  // "Fase 4" + docs/AUDIT_DS_V2.md para o relatório completo.
+
+  /**
+   * DS_V2_DOCS — Reaplicação da spec oficial v1.0 na documentação. Bloco A
+   * (concluído 2026-07-16, sem código a ligar). Aditivo.
+   */
+  DS_V2_DOCS: 'ds_v2_docs',
+
+  /**
+   * DS_V2_TOKENS — Material Symbols Outlined + Icon wrapper component.
+   * Adiciona a fonte variável Material Symbols e um <Icon> canônico para
+   * coexistência com lucide-react. Aditivo — desligada, lucide continua.
+   */
+  DS_V2_TOKENS: 'ds_v2_tokens',
+
+  /**
+   * DS_V2_COMPONENTS — Refatora Button, Card, Input, Dialog, Table, Avatar
+   * contra a spec v1.0 §3. Mantém 100% de compatibilidade com a API shadcn.
+   * Aditivo — desligada, os componentes permanecem na versão anterior.
+   */
+  DS_V2_COMPONENTS: 'ds_v2_components',
+
+  /**
+   * DS_V2_PAGES-HOME — Refinamentos da Home: Icon Material Symbols no hero
+   * (size 130 filled), Avatar component nas histórias, H1 Sora 800. Desligada,
+   * Home usa a versão anterior.
+   */
+  DS_V2_PAGES_HOME: 'ds_v2_pages_home',
+
+  /**
+   * DS_V2_PAGES-PETS — PetCard (referência canônica §3.3) com aspect-ratio
+   * 1.3, Card size="pet", Icon Material Symbols para espécie. PetDetail com
+   * Avatar component no bloco do responsável. Aditivo.
+   */
+  DS_V2_PAGES_PETS: 'ds_v2_pages_pets',
+
+  /**
+   * DS_V2_PAGES-ADOPTION — AdoptionDetail, AdoptionWizard, MyApplications
+   * validados contra spec (audit only — já estavam alinhados). Aditivo.
+   */
+  DS_V2_PAGES_ADOPTION: 'ds_v2_pages_adoption',
+
+  /**
+   * DS_V2_PAGES-ORG — ClubsDirectory, ClubDetail, EventDetail, OrganizationsHub,
+   * OrganizationAdminPanel validados contra spec (audit only). Aditivo.
+   */
+  DS_V2_PAGES_ORG: 'ds_v2_pages_org',
+
+  /**
+   * DS_V2_PAGES-ADMIN — AdminDashboard, AdminMetrics, AdminPets, AdminUsers,
+   * AdminReports, AdminContentEditor validados contra spec (audit only).
+   * Aditivo.
+   */
+  DS_V2_PAGES_ADMIN: 'ds_v2_pages_admin',
+
+  /**
+   * DS_V2_PAGES-CHAT — ChatPage, Profile, Login, Onboarding, institucionais
+   * validados contra spec (audit only). Aditivo.
+   */
+  DS_V2_PAGES_CHAT: 'ds_v2_pages_chat',
+
+  /**
+   * DS_V2_MOTION — Wrappers de motion: <FadeIn>, <Stagger>, <HoverLift> +
+   * useReducedMotionSafe. Respeita prefers-reduced-motion. Aditivo.
+   */
+  DS_V2_MOTION: 'ds_v2_motion',
+
+  /**
+   * DS_V2_AUDIT — Auditoria final + correções de tokens literais (badge
+   * success: bg-success/15, user-avatar: bg-accent, AdminMockData: bg-success).
+   * Aditivo — desligada, tokens literais permanecem.
+   */
+  DS_V2_AUDIT: 'ds_v2_audit',
 });
 
 /** Metadados de exibição para o painel de flags (admin master). */
@@ -286,6 +362,80 @@ export const FEATURE_FLAG_META = Object.freeze({
       + 'lightbox, contraste em badges, alt text em imagens. '
       + 'Aditivo — desligada, a UI funciona sem as melhorias.',
   },
+
+  // ─── Design System v2 — Fase 4 ──────────────────────────
+  [FEATURE_FLAG.DS_V2_DOCS]: {
+    label: 'DS_V2 · Doc oficial (Fase 4)',
+    description: 'Reaplicação da spec v1.0 em docs/. Sem código a ligar — Bloco A.',
+  },
+  [FEATURE_FLAG.DS_V2_TOKENS]: {
+    label: 'DS_V2 · Tokens + Material Symbols',
+    description:
+      'Adiciona a fonte variável Material Symbols Outlined (var font, FILL 0-1, wght 500) '
+      + 'e o componente <Icon> canônico. Coexistência com lucide-react. '
+      + 'Aditivo — desligada, lucide continua sendo o ícone padrão.',
+  },
+  [FEATURE_FLAG.DS_V2_COMPONENTS]: {
+    label: 'DS_V2 · Componentes refatorados',
+    description:
+      'Button (7 variantes, 46/36/52px), Card (4 variantes, 22/24px), '
+      + 'Input (46px, raio 12), Dialog (raio 24, padding 32), Table (zebragem), '
+      + 'Avatar (xs/sm/md/lg + gradiente oficial). 100% compatível com shadcn.',
+  },
+  [FEATURE_FLAG.DS_V2_PAGES_HOME]: {
+    label: 'DS_V2 · Home (refinamentos)',
+    description:
+      'Icon Material Symbols no hero (size 130 filled, spec §4.2 marca), '
+      + 'Avatar component nas histórias, H1 Sora 800 explícito. '
+      + 'Home já estava bem alinhada (arena-*); este flag ativa o refinamento final.',
+  },
+  [FEATURE_FLAG.DS_V2_PAGES_PETS]: {
+    label: 'DS_V2 · Pets (PetCard + PetDetail)',
+    description:
+      'PetCard (referência spec §3.3) com aspect-ratio 1.3, Card size="pet", '
+      + 'Icon Material Symbols para espécie, hover-lift. PetDetail com Avatar '
+      + 'component no bloco do responsável. PetFeed grid 1/2/3/4 já alinhado.',
+  },
+  [FEATURE_FLAG.DS_V2_PAGES_ADOPTION]: {
+    label: 'DS_V2 · Adoção (audit only)',
+    description:
+      'AdoptionDetail, AdoptionWizard, MyApplications validados contra spec. '
+      + 'Audit only — já estavam alinhados após Fases 0-2 do roadmap.',
+  },
+  [FEATURE_FLAG.DS_V2_PAGES_ORG]: {
+    label: 'DS_V2 · Organizações (audit only)',
+    description:
+      'ClubsDirectory, ClubDetail, EventDetail, OrganizationsHub, '
+      + 'OrganizationAdminPanel validados. Audit only — 30+ arquivos já '
+      + 'usam arena-* (panel, admin-tabs, stats-grid, chip, heading).',
+  },
+  [FEATURE_FLAG.DS_V2_PAGES_ADMIN]: {
+    label: 'DS_V2 · Admin (audit only)',
+    description:
+      'AdminDashboard, AdminMetrics, AdminPets, AdminUsers, AdminReports, '
+      + 'AdminContentEditor validados. Audit only — já usam arena-admin-header, '
+      + 'arena-stats-grid, arena-section-card.',
+  },
+  [FEATURE_FLAG.DS_V2_PAGES_CHAT]: {
+    label: 'DS_V2 · Chat/Profile/Login (audit only)',
+    description:
+      'ChatPage, Profile, Login, Onboarding, institucionais validados. '
+      + 'Audit only — chat já tem messages, profile usa Button, login usa card.',
+  },
+  [FEATURE_FLAG.DS_V2_MOTION]: {
+    label: 'DS_V2 · Motion wrappers',
+    description:
+      'useReducedMotionSafe hook + wrappers <FadeIn>, <Stagger>, <HoverLift>. '
+      + 'Respeita prefers-reduced-motion. framer-motion ^12.42.2 já instalado. '
+      + 'Aplicar opt-in: <FadeIn>, <Stagger>, <HoverLift> são drop-in.',
+  },
+  [FEATURE_FLAG.DS_V2_AUDIT]: {
+    label: 'DS_V2 · Auditoria + correções de tokens',
+    description:
+      'Substituições de tokens literais (bg-emerald-* → bg-success) em '
+      + 'badge.jsx, user-avatar.jsx, AdminMockData.jsx. Relatório em '
+      + 'docs/AUDIT_DS_V2.md. Aderente à paleta oficial spec §2.1.',
+  },
 });
 
 /**
@@ -318,6 +468,19 @@ export const DEFAULT_FEATURE_FLAGS = Object.freeze({
 
   [FEATURE_FLAG.MOCK_DATA_PANEL]: true,
   [FEATURE_FLAG.A11Y_IMPROVEMENTS_V1]: false,
+
+  // Design System v2 — Fase 4: todas OFF por default.
+  [FEATURE_FLAG.DS_V2_DOCS]: false,
+  [FEATURE_FLAG.DS_V2_TOKENS]: false,
+  [FEATURE_FLAG.DS_V2_COMPONENTS]: false,
+  [FEATURE_FLAG.DS_V2_PAGES_HOME]: false,
+  [FEATURE_FLAG.DS_V2_PAGES_PETS]: false,
+  [FEATURE_FLAG.DS_V2_PAGES_ADOPTION]: false,
+  [FEATURE_FLAG.DS_V2_PAGES_ORG]: false,
+  [FEATURE_FLAG.DS_V2_PAGES_ADMIN]: false,
+  [FEATURE_FLAG.DS_V2_PAGES_CHAT]: false,
+  [FEATURE_FLAG.DS_V2_MOTION]: false,
+  [FEATURE_FLAG.DS_V2_AUDIT]: false,
 });
 
 /**
