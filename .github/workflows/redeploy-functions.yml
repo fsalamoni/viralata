@@ -53,43 +53,9 @@ jobs:
         working-directory: functions
         continue-on-error: true
 
-      # CRÍTICO 1: mockData.js faz dynamic import de ./_payloads/index.js,
-      # mas o Firebase Functions só deploya a pasta functions/. Sem este
-      # passo, o runtime quebra com ERR_MODULE_NOT_FOUND e retorna 500.
-      #
-      # CRÍTICO 2: NÃO pode ser ./mocks/ — o firebase-tools@15 FILTRA
-      # *.js em dirs chamados 'mocks' (convenção Jest test mocks) e
-      # deleta tudo no upload. Já passei por isso. _payloads é seguro.
-      #
-      # CRÍTICO 3: src/mocks/ é ESM (import/export). functions/package.json
-      # tem "type":"commonjs". Sem o package.json com "type":"module" no
-      # diretório alvo, Node trata os arquivos como CJS e quebra com
-      # "SyntaxError: Cannot use import statement outside a module".
-      - name: Copy src/mocks into functions/_payloads as .mjs (predeploy)
-        run: |
-          mkdir -p functions/_payloads
-          find functions/_payloads -type f -delete 2>/dev/null || true
-          # IMPORTANTE: copiar como .mjs (NÃO .js)
-          # O firebase-tools FILTRA arquivos .js em qualquer diretório que
-          # tenha um package.json (mesmo com type:module). A extensão .mjs
-          # força Node a tratar como ESM sem precisar de package.json,
-          # e o firebase-tools não filtra .mjs.
-          for f in src/mocks/*.js; do
-            base=$(basename "$f" .js)
-            cp "$f" "functions/_payloads/$base.mjs"
-          done
-          # Reescrever imports internos de './xxx.js' para './xxx.mjs'
-          for f in functions/_payloads/*.mjs; do
-            sed -i "s|from '\./\([a-zA-Z0-9_]*\)\.js'|from './\1.mjs'|g" "$f"
-            sed -i 's|from "\./\([a-zA-Z0-9_]*\)\.js"|from "./\1.mjs"|g' "$f"
-          done
-          echo "=== Payloads copiados ==="
-          ls -la functions/_payloads/
-
       - name: Redeploy Cloud Functions
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/firebase-sa.json
         run: |
           echo "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/firebase-sa.json"
           npx firebase-tools@latest deploy \
