@@ -43,10 +43,10 @@ export default function AdminDashboard() {
       />
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {sections.map(({ icon: Icon, title, desc, link, tone }) => (
-          <section key={link} className="transition-shadow hover:shadow-[0_18px_40px_-28px_rgba(64,34,18,0.35)]">
+          <div key={link} className="arena-section-card transition-shadow hover:shadow-[0_18px_40px_-28px_rgba(64,34,18,0.35)]">
             <div className="arena-section-card-header">
-              <h3 className="arena-section-card-title" className="flex items-center gap-2.5 text-base">
-                <span className={`flex h-9 w-9 items-center justify-center rounded-xl ${tone}`}>
+              <h3 className="arena-section-card-title flex items-center gap-2.5 text-base">
+                <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${tone}`}>
                   <Icon className="w-4 h-4" />
                 </span>
                 {title}
@@ -58,7 +58,7 @@ export default function AdminDashboard() {
                 <Link to={link}>Acessar</Link>
               </Button>
             </div>
-          </section>
+          </div>
         ))}
       </div>
     </div>

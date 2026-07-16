@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { collection, getDocs, query, orderBy, updateDoc, doc, deleteDoc } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy, doc, deleteDoc } from 'firebase/firestore';
 import { db } from '@/core/config/firebase';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
-import { Trash2, Eye, CheckCircle } from 'lucide-react';
+import { Trash2, Eye } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import PageHero from '@/components/PageHero';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
@@ -40,7 +41,21 @@ export default function AdminPets() {
         title="Gerenciar Pets"
         description="Visualize, edite e remova pets cadastrados na plataforma. Apenas o admin master tem acesso."
       />
-      {loading ? <p className="text-muted-foreground">Carregando...</p> : (
+      {loading ? (
+        <div className="space-y-2">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="flex items-center gap-3 p-3 rounded-xl border border-border bg-card">
+              <Skeleton className="w-12 h-12 rounded-lg flex-shrink-0" />
+              <div className="flex-1 min-w-0 space-y-2">
+                <Skeleton className="h-4 w-2/3" />
+                <Skeleton className="h-3 w-1/3" />
+              </div>
+              <Skeleton className="h-8 w-8 rounded-md" />
+              <Skeleton className="h-8 w-8 rounded-md" />
+            </div>
+          ))}
+        </div>
+      ) : (
         <div className="space-y-2">
           {pets.map((pet) => (
             <div key={pet.id} className="flex items-center gap-3 p-3 rounded-xl border border-border bg-card">
