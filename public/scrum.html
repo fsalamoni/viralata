@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.1.0",
-  "generatedAt": "2026-07-16T18:36:12.801Z",
+  "generatedAt": "2026-07-16T18:40:33.212Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W29",
@@ -412,15 +412,27 @@
     {
       "id": "wt-ds-v2-pages-home",
       "branch": "feat/ds-v2-pages-home-2026-07-16",
-      "head": "aa5778431b19c372597b9bc4b5ea8001ea7e1e0f",
-      "headTitle": "merge: integrar scrum-topbar (auto) do origin/main, mantém HTML pós Bloco C",
+      "head": "9a1ab00972c35197d5fb32b920df6dacb157f25c",
+      "headTitle": "feat(ds-v2): Bloco D.1 · DS_V2_PAGES-HOME — refinamentos do Home contra spec v1.0",
       "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-ds-v2-pages-home",
       "status": "in-sync",
       "commitsAhead": 0,
+      "primarySession": null,
+      "sessionTitle": null,
+      "focus": []
+    },
+    {
+      "id": "wt-ds-v2-pages-pets",
+      "branch": "feat/ds-v2-pages-pets-2026-07-16",
+      "head": "0d77e30b5828a2ed13745de09a51ca69126017cb",
+      "headTitle": "merge: resolve conflitos scrum HTML auto-gerado (pós Bloco D.1)",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-ds-v2-pages-pets",
+      "status": "in-sync",
+      "commitsAhead": 0,
       "primarySession": "mvs_311d078987d0414a90f57ef28b789b18",
-      "sessionTitle": "DS_V2_PAGES-HOME — refinar Home.jsx contra spec v1.0",
+      "sessionTitle": "DS_V2_PAGES-PETS — refinar PetCard/PetFeed/PetDetail/CreatePet/MyPets/RadarSettings",
       "focus": [
-        "DS_V2_PAGES-HOME"
+        "DS_V2_PAGES-PETS"
       ]
     },
     {
@@ -11599,12 +11611,12 @@
       "title": "Bloco D.2 · DS_V2_PAGES-PETS — Propagar spec para PetFeed/PetCard/PetDetail/CreatePet/MyPets/RadarSettings",
       "type": "feature",
       "category": "design",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "mvs_311d078987d0414a90f57ef28b789b18",
-      "branch": null,
+      "branch": "feat/ds-v2-pages-pets-2026-07-16",
       "flag": "DS_V2_PAGES-PETS",
-      "worktree": null,
+      "worktree": ".worktrees/wt-ds-v2-pages-pets",
       "pr": null,
       "tags": [
         "ds-v2",
@@ -11617,7 +11629,8 @@
       ],
       "description": "Reescrever/ajustar `PetCard.jsx` (referência citada no DESIGN_SYSTEM.md v1.0: aspect-ratio 1.3, raio 22, padding 16, título Sora 16, metadados Manrope 12, botão terciário full-width, hover-lift 1.01+). Ajustar `PetFeed` (grid 3-4 colunas), `PetDetail` (galeria + abas), `CreatePet` (form 720px max), `MyPets` (lista), `RadarSettings` (toggle 46x26). Flag default OFF.",
       "createdAt": "2026-07-16",
-      "updatedAt": "2026-07-16"
+      "updatedAt": "2026-07-16T18:40:32",
+      "resolvedAt": "2026-07-16"
     },
     {
       "id": "TASK-705",
@@ -12371,6 +12384,181 @@
       "createdAt": "2026-07-16",
       "updatedAt": "2026-07-16T18:36:08",
       "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-737",
+      "title": "Auditar PetCard, PetFeed, PetDetail contra spec v1.0",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-pages-pets-2026-07-16",
+      "flag": "DS_V2_PAGES-PETS",
+      "worktree": ".worktrees/wt-ds-v2-pages-pets",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "pets",
+        "audit"
+      ],
+      "blockedBy": [],
+      "description": "Gap analysis dos 3 arquivos centrais de pets. Listar divergências vs spec §3.3 (Card de Pet: aspect-ratio 1.3, raio 22, padding 16, título Sora 16, metadados Manrope 12, botão terciário full-width, hover-lift).",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:38:40",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-738",
+      "title": "Refinar PetCard.jsx (referência da spec §3.3 Card de Pet)",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-pages-pets-2026-07-16",
+      "flag": "DS_V2_PAGES-PETS",
+      "worktree": ".worktrees/wt-ds-v2-pages-pets",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "pets",
+        "card"
+      ],
+      "blockedBy": [
+        "TASK-737"
+      ],
+      "description": "Aplicar spec §3.3 exatamente: aspect-ratio 1.3, raio 22, padding 16, título Sora 16, metadados Manrope 12, botão terciário full-width, hover-lift (scale 1.01-1.02 + sombra crescente). Adicionar Card size=\"pet\" do Bloco C.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:38:40",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-739",
+      "title": "Refinar PetFeed.jsx (grid responsivo + alinhamento com header)",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-pages-pets-2026-07-16",
+      "flag": "DS_V2_PAGES-PETS",
+      "worktree": ".worktrees/wt-ds-v2-pages-pets",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "pets",
+        "feed",
+        "grid"
+      ],
+      "blockedBy": [
+        "TASK-738"
+      ],
+      "description": "Ajustar grid: sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4. Garantir que as bordas laterais coincidam com o trilho do header (PageContainer). Aplicar empty state consistente (EmptyState component).",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:40:31",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-740",
+      "title": "Refinar PetDetail.jsx (galeria + tabs + abas consistentes)",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-pages-pets-2026-07-16",
+      "flag": "DS_V2_PAGES-PETS",
+      "worktree": ".worktrees/wt-ds-v2-pages-pets",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "pets",
+        "detail"
+      ],
+      "blockedBy": [
+        "TASK-738"
+      ],
+      "description": "Galeria em grid responsivo, abas (Sobre, Saúde, Localização) usando arena-tabs. Aplicar avatar com Image+Fallback. Refinar InterestPanel (botões consistentes com a spec).",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:40:31",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-741",
+      "title": "Refinar CreatePet + MyPets + RadarSettings (forms e listas)",
+      "type": "feature",
+      "category": "design",
+      "status": "done",
+      "priority": "medium",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-pages-pets-2026-07-16",
+      "flag": "DS_V2_PAGES-PETS",
+      "worktree": ".worktrees/wt-ds-v2-pages-pets",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "pets",
+        "forms",
+        "list"
+      ],
+      "blockedBy": [
+        "TASK-738"
+      ],
+      "description": "CreatePet: form wizard com Input 46px (já do Bloco C), Textarea 80px+, segmented control. MyPets: lista de cards (Card size=\"pet\"). RadarSettings: toggle 46x26 (spec §3.4).",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:40:32",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-742",
+      "title": "Validar Pets (build + lint + smoke test)",
+      "type": "chore",
+      "category": "ci",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-pages-pets-2026-07-16",
+      "flag": "DS_V2_PAGES-PETS",
+      "worktree": ".worktrees/wt-ds-v2-pages-pets",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "build",
+        "test"
+      ],
+      "blockedBy": [
+        "TASK-741"
+      ],
+      "description": "npm run build verde, lint sem regressões. Smoke test: Feed carrega, PetCard renderiza com aspect-ratio 1.3, PetDetail mostra galeria + tabs.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:40:32",
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-743",
+      "title": "Commit + push do Bloco D.2",
+      "type": "chore",
+      "category": "ci",
+      "status": "done",
+      "priority": "high",
+      "owner": "mvs_311d078987d0414a90f57ef28b789b18",
+      "branch": "feat/ds-v2-pages-pets-2026-07-16",
+      "flag": "DS_V2_PAGES-PETS",
+      "worktree": ".worktrees/wt-ds-v2-pages-pets",
+      "pr": null,
+      "tags": [
+        "ds-v2",
+        "git",
+        "commit"
+      ],
+      "blockedBy": [
+        "TASK-742"
+      ],
+      "description": "Commit único, mensagem descritiva. Push só do branch. PR com screenshots antes/depois de cada página.",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T18:40:32",
+      "resolvedAt": "2026-07-16"
     }
   ],
   "definitionOfDone": [
@@ -12614,7 +12802,7 @@
     "mergedWorktreesThisSprint": [
       "feat/ds-v2-docs-2026-07-16"
     ],
-    "mainCommit": "aa5778431b19c372597b9bc4b5ea8001ea7e1e0f",
+    "mainCommit": "0d77e30b5828a2ed13745de09a51ca69126017cb",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -12624,12 +12812,12 @@
     ],
     "openTODOs": 5,
     "openLegalReviews": 3,
-    "totalTasks": 441,
-    "done": 429,
+    "totalTasks": 448,
+    "done": 437,
     "inProgress": 0,
     "inReview": 0,
     "blocked": 0,
-    "ready": 7,
+    "ready": 6,
     "backlog": 4,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -12659,7 +12847,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-16T18:36:12.820Z — via sync.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-16T18:40:33.230Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
@@ -12694,19 +12882,19 @@
     "risksAccepted": 2,
     "risksMonitoring": 2,
     "lastTaskId": "TASK-717",
-    "lastUpdated": "2026-07-16T18:33:35.123Z",
+    "lastUpdated": "2026-07-16T18:37:01.549Z",
     "dsV2Phase": "Fase 4 — em andamento",
     "dsV2Blocos": {
       "done": [
         "DS_V2_DOCS",
         "DS_V2_TOKENS",
-        "DS_V2_COMPONENTS"
-      ],
-      "inProgress": [
+        "DS_V2_COMPONENTS",
         "DS_V2_PAGES-HOME"
       ],
+      "inProgress": [
+        "DS_V2_PAGES-PETS"
+      ],
       "ready": [
-        "DS_V2_PAGES-PETS",
         "DS_V2_PAGES-ADOPTION",
         "DS_V2_PAGES-ORG",
         "DS_V2_PAGES-ADMIN",
@@ -12716,10 +12904,10 @@
       ]
     },
     "dsV2Tasks": {
-      "total": 35,
+      "total": 42,
       "done": 8,
       "ready": 10,
-      "inProgress": 5
+      "inProgress": 7
     },
     "dsV2Merge": "Bloco A merged to main @ 8e187f6 (2026-07-16 18:08 UTC)",
     "lastTaskDone": "TASK-700 (Bloco A macro)",
@@ -13000,7 +13188,7 @@
 }
   </script>
 <<<<<<< HEAD
-  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-16T18:36:08.714Z">
+  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-16T18:38:41.342Z">
 =======
   <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-16T03:26:48.025Z">
 >>>>>>> 2fdaf3d (design(ux): TASK-603 - hero home com hierarquia clara - H1 menor mobile, badge compacto, remove chips decorativos)
@@ -13018,8 +13206,8 @@
       </div>
     </div>
     <div class="sprint-info">
-      <span class="pill mono">main @ aa57784</span>
-      <span class="pill">+3 worktrees ativos</span>
+      <span class="pill mono">main @ 0d77e30</span>
+      <span class="pill">+4 worktrees ativos</span>
       <span class="pill goal">Goal: estabilizar pós-22 fases + fechar worktrees</span>
     </div>
     <div class="topbar-actions">
