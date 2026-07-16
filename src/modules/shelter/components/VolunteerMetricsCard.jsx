@@ -16,15 +16,17 @@
  * - Ícones + texto para clareza
  */
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
-  Activity, Clock, Car, TrendingUp, Building2, Heart, Calendar,
+  Activity, Clock, Car, TrendingUp, Building2, Heart, Calendar, Download, Award,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 import { useVolunteerMetrics } from '../hooks/useVolunteerMetrics';
+import { useDownloadCertificate } from '../hooks/useVolunteerCertificate';
 import { formatRelativeTime } from '@/core/utils/time';
 
 const METRIC_COLORS = {
@@ -39,6 +41,62 @@ const METRIC_COLORS = {
  * @param {string} props.uid — uid do voluntário
  * @param {object} [props.shelterNames] — mapa de abrigo id → nome
  */
+// ─── Certificate download (TASK-248) ──────────────────────────────────────
+
+/**
+ * CertDownload — botão "Baixar certificado de horas" integrado ao card
+ * de métricas. Exibe loading state + toast de erro/ok.
+ */
+function CertificateDownload({ uid, totalHours }) {
+  const [isLoading, setIsLoading] = useState(false);
+  const downloadCert = useDownloadCertificate({
+    uid,
+    onLoading: setIsLoading,
+    onError: (err) => {
+      console.error('[CertificateDownload] erro ao gerar certificado', err);
+    },
+    onSuccess: () => {
+      // Sucesso silencioso — o browser já disparou o download
+    },
+  });
+
+  return (
+    <div className="mt-4 pt-4 border-t border-border/60">
+      <div className="flex items-center justify-between gap-3 rounded-lg bg-amber-50 border border-amber-200 p-3">
+        <div className="flex items-center gap-2 min-w-0">
+          <Award className="h-4 w-4 text-amber-600 shrink-0" />
+          <div className="min-w-0">
+            <p className="text-xs font-semibold text-amber-900">Certificado de voluntariado</p>
+            <p className="text-[11px] text-amber-700">
+              {totalHours.toFixed(2).replace('.', ',')}h registradas · Lei 9.608/1998
+            </p>
+          </div>
+        </div>
+        <Button
+          size="sm"
+          variant="outline"
+          className="shrink-0 border-amber-300 text-amber-800 hover:bg-amber-100"
+          onClick={() => downloadCert()}
+          disabled={isLoading}
+          aria-label="Baixar certificado de horas de voluntariado"
+        >
+          {isLoading ? (
+            <>
+              <span className="h-3.5 w-3.5 animate-spin rounded-full border border-amber-600 border-t-transparent" />
+              Gerando…
+            </>
+          ) : (
+            <>
+              <Download className="h-3.5 w-3.5 mr-1" />
+              Baixar PDF
+            </>
+          )}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 export function VolunteerMetricsCard({ uid, shelterNames: _shelterNames }) {
   const { data, isLoading, isError } = useVolunteerMetrics(uid);
 
@@ -189,6 +247,11 @@ export function VolunteerMetricsCard({ uid, shelterNames: _shelterNames }) {
               Ativo de {formatRelativeTime(metrics.periodoInicio)} até {formatRelativeTime(metrics.periodoFim)}
             </span>
           </div>
+        )}
+
+        {/* TASK-248: Certificado de horas */}
+        {metrics.totalHours > 0 && (
+          <CertificateDownload uid={uid} totalHours={metrics.totalHours} />
         )}
       </CardContent>
     </Card>

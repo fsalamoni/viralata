@@ -275,6 +275,10 @@ exports.onCommunityEventCreated = onDocumentCreated(
   },
 );
 
+// ─── TASK-248: Volunteer certificate PDF ─────────────────────────────────────────
+const { generateVolunteerCertificate } = require('./generateVolunteerCertificate');
+exports.generateVolunteerCertificate = generateVolunteerCertificate;
+
 // ─── TASK-292: FCM push notifications ──────────────────────────────────────────
 const { sendPushNotification } = require('./sendPushNotification');
 const {
