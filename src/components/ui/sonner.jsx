@@ -7,6 +7,11 @@ export function Toaster(props) {
       richColors
       closeButton
       toastOptions={{
+        durations: {
+          success: 4000,
+          error: 6000,
+          info: 3000,
+        },
         classNames: {
           toast: 'group bg-background text-foreground border border-border shadow-lg',
           description: 'text-muted-foreground',
