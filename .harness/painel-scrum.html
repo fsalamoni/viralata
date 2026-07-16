@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-16T01:19:59.733Z",
+  "generatedAt": "2026-07-16T01:29:43.137Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W29",
@@ -7427,7 +7427,7 @@
       "title": "PDF de horas/certificado (Lei 9.608/1998 + termo v2 §6.1e) + botão Baixar no /perfil",
       "type": "feature",
       "category": "infra",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
@@ -7447,7 +7447,7 @@
       "evidence": "D:\\viralata\\src\\modules\\shelter\\domain\\legal\\volunteerTerms.v2.js §6.1(e) (emissão declarações); Lei 9.608/1998 Art. 1º §2º; D:\\viralata\\.harness\\audits\\volunteer\\VOLUNTEER_4_EYES_AUDIT.md §LGPD",
       "description": "BLOCO INDEPENDENTE. (1) Cloud Function generateVolunteerCertificate(uid, period) → PDF, (2) Endpoint /perfil/voluntario/certificado?from=X&to=Y, (3) Botão \"Baixar certificado de horas\" no /perfil#voluntariadas, (4) Storage path volunteer_certificates/{uid}/{date}.pdf, (5) Template com: nome, CPF mascarado, abrigo(s), período, total horas, badge, signature do abrigo, (6) Lei 9.608/1998 atestado oficial + termo v2 §6.1(e) compliance.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11 21:00"
+      "updatedAt": "2026-07-15"
     },
     {
       "id": "TASK-249",
@@ -8271,7 +8271,7 @@
       "title": "Geração de PDF do termo assinado (Lei 14.063/2020)",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
@@ -8291,7 +8291,7 @@
       "subFrente": "voluntarios",
       "description": "Cloud Function generateVolunteerTermsPDF: ao aceitar o termo, gera PDF (pdf-lib) com signature_text_hash, terms_version, accepted_at, user_uid. Upload em users/{uid}/volunteer_terms_pdfs/{acceptanceId}.pdf (Storage). Email com link de download.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15"
     },
     {
       "id": "TASK-286",
@@ -9099,7 +9099,7 @@
       "title": "[INT-CALENDAR-001] Integração com Google Calendar pra agendar entrevista + home check",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "high",
       "owner": "unassigned",
       "branch": null,
@@ -9118,7 +9118,7 @@
       "subFrente": "abrigos-foster-adocao",
       "description": "OAuth2 Google Calendar. Botão \"Agendar\" no InterviewTab gera evento com attendees (abrigo + adotante). Sync bidirecional. Fallback se recusar. Cuidar LGPD: consentimento explícito pra compartilhar email.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15"
     },
     {
       "id": "TASK-318",
@@ -9153,7 +9153,7 @@
       "title": "[UX-CONTRACT-003] \"Aceito por procuração\" (representante legal)",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
@@ -9172,14 +9172,14 @@
       "subFrente": "abrigos-foster-adocao",
       "description": "Checkbox \"Represento outra pessoa\" → form extra (nome completo, CPF do representado, parentesco, upload da procuração). Validação server-side.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15"
     },
     {
       "id": "TASK-320",
       "title": "[INT-VIDEO-001] Integração Jitsi Meet pra vídeo-entrevista",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
@@ -9198,7 +9198,7 @@
       "subFrente": "abrigos-foster-adocao",
       "description": "Botão \"Iniciar vídeo\" gera sala Jitsi efêmera (nome random + expira em 1h). LGPD: não gravar sem consent. Link compartilhado com entrevistado.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15"
     },
     {
       "id": "TASK-321",
@@ -9229,7 +9229,7 @@
       "title": "[INT-WHATSAPP-001] Integração WhatsApp Business pra validação de telefone",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
@@ -9246,7 +9246,7 @@
       "subFrente": "abrigos-foster-adocao",
       "description": "Deep link https://wa.me/55... no perfil. Validação por OTP via API oficial (Twilio + WhatsApp Business). LGPD: consent explícito.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15"
     },
     {
       "id": "TASK-323",
@@ -9363,7 +9363,7 @@
       "title": "[DEP-CUTOVER-001] Cutover plan detalhado por fase + dry-run script",
       "type": "feature",
       "category": "shelter",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
@@ -9383,7 +9383,7 @@
       "subFrente": "abrigos-foster-adocao",
       "description": "Documento docs/CUTOVER_PLAN.md com: ordem de ligar flags, smoke por flag, rollback procedure por flag, métricas de sucesso. Script scripts/dry-run-cutover.mjs que valida sem aplicar.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15"
     },
     {
       "id": "TASK-328",
@@ -9785,7 +9785,7 @@
       "title": "Certificados de evento (storage + download PDF)",
       "type": "feature",
       "category": "organizations",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
@@ -9804,7 +9804,7 @@
       "subFrente": "comunidade-adotante-eventos",
       "description": "Criar event_certificates/{userId_eventId} em Storage. Job pós-evento gera PDF (via Cloud Function com pdf-lib ou similar) e atualiza club_events.certificates. UI no MyEvents com botão \"Baixar certificado\".",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15"
     },
     {
       "id": "TASK-344",
@@ -9898,7 +9898,7 @@
       "title": "Busca global de comunidades (text + city + state)",
       "type": "feature",
       "category": "communities",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
@@ -9917,14 +9917,14 @@
       "subFrente": "comunidade-adotante-eventos",
       "description": "Estender CommunitiesDirectory.jsx com campo de busca. Wire-up com searchService.search({entity: \"community\", query, filters}).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15"
     },
     {
       "id": "TASK-348",
       "title": "Convite de membros para comunidade (search user + invite + status pending/accepted/declined)",
       "type": "feature",
       "category": "communities",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
@@ -9941,14 +9941,14 @@
       "subFrente": "comunidade-adotante-eventos",
       "description": "Espelhar MEMBER_INVITE_STATUS da ONG. Adicionar community_invites/ collection. UI em CommunityTeamTab.jsx com \"Convidar membro\" + lista de pendentes. Rules em firestore.rules.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15"
     },
     {
       "id": "TASK-349",
       "title": "Chat admin de comunidade (canal onde admin fala com membros)",
       "type": "feature",
       "category": "communities",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
@@ -9967,7 +9967,7 @@
       "subFrente": "comunidade-adotante-eventos",
       "description": "Espelhar club_chat_threads para community_chat_threads. UI em CommunityAdminPanel.jsx (aba nova) + sino de mensagens.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15"
     },
     {
       "id": "TASK-350",
@@ -10154,7 +10154,7 @@
       "title": "Audit log retention policy (purga > 5 anos via Cloud Function scheduled)",
       "type": "feature",
       "category": "core",
-      "status": "ready",
+      "status": "done",
       "priority": "low",
       "owner": "unassigned",
       "branch": null,
@@ -10174,14 +10174,14 @@
       "subFrente": "comunidade-adotante-eventos",
       "description": "Job diário que deleta audit_logs com created_at_ms < now - 5*365*86400*1000.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15"
     },
     {
       "id": "TASK-358",
       "title": "Smoke tests Playwright: Comunidade + Eventos + Adotante (cross-role)",
       "type": "test",
       "category": "core",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
@@ -10200,14 +10200,14 @@
       "subFrente": "comunidade-adotante-eventos",
       "description": "Criar tests/e2e/community.spec.mjs, tests/e2e/events.spec.mjs, tests/e2e/adopter.spec.mjs. Validar anonymous → adopter → admin em cada fluxo.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15"
     },
     {
       "id": "TASK-359",
       "title": "Smoke test em produção pra Comunidade + Eventos + Adotante",
       "type": "chore",
       "category": "core",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
@@ -10226,7 +10226,7 @@
       "subFrente": "comunidade-adotante-eventos",
       "description": "scripts/smoke-comunidade.mjs, scripts/smoke-eventos.mjs, scripts/smoke-adotante.mjs. Rodar com flag OFF primeiro, depois ON.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-15"
     },
     {
       "id": "TASK-360",
@@ -11156,7 +11156,7 @@
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": "3d788ee1ace07f6a3697507f1020c106bc4c569c",
+    "mainCommit": "e224acfe8c3b49c871ed503941e0c52f33e5b8e6",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -11167,11 +11167,11 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 376,
-    "done": 357,
+    "done": 371,
     "inProgress": 0,
     "inReview": 0,
     "blocked": 0,
-    "ready": 14,
+    "ready": 0,
     "backlog": 4,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -11201,7 +11201,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-16T01:19:59.738Z — via sync.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-16T01:29:43.155Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
@@ -11495,7 +11495,7 @@
   "decisionsUpdatedAt": "2026-07-15T23:57:00Z"
 }
   </script>
-  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-16T01:19:59.747Z">
+  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-16T01:29:43.196Z">
   </head>
 <body>
 
