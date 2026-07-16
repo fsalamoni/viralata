@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import VolunteerCtaCard from '@/modules/shelter/components/VolunteerCtaCard';
 import FosterCtaCard from '@/modules/shelter/components/FosterCtaCard';
 import PublicGallerySection from '@/modules/shelter/components/PublicGallerySection';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, useSearchParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { ArrowLeft, Building2, PawPrint, MessageSquare, HandCoins, Wallet, Users, Info, HeartHandshake } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
