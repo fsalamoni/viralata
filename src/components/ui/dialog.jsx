@@ -8,11 +8,24 @@ export const DialogTrigger = DialogPrimitive.Trigger;
 export const DialogPortal = DialogPrimitive.Portal;
 export const DialogClose = DialogPrimitive.Close;
 
+/**
+ * DS_V2_COMPONENTS — Dialog (spec v1.0 §3.6)
+ *
+ *  - Raio 24px (`rounded-[24px]`)
+ *  - Padding 32px (`p-8`)
+ *  - Max-width 480px (spec; era 600px, mais largo)
+ *  - Sombra "Painel flutuante" (já presente em `arena-panel`)
+ *  - Header em Sora 20px
+ *  - Overlay com bg-black/50 + backdrop-blur-sm
+ *  - Compat: API shadcn/Radix mantida
+ */
+
 export const DialogOverlay = React.forwardRef(({ className, ...props }, ref) => (
   <DialogPrimitive.Overlay
     ref={ref}
     className={cn(
-      'fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
+      // DS_V2: overlay com leve blur
+      'fixed inset-0 z-50 bg-black/50 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
       className,
     )}
     {...props}
@@ -26,7 +39,11 @@ export const DialogContent = React.forwardRef(({ className, children, ariaLabel,
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        'fixed left-[50%] top-[50%] z-50 grid w-full max-w-[600px] translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background px-5 py-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out sm:rounded-lg sm:px-6',
+        // DS_V2 spec §3.6 — Modal
+        'fixed left-[50%] top-[50%] z-50 grid w-full max-w-[480px] translate-x-[-50%] translate-y-[-50%] gap-4',
+        'rounded-[24px] border bg-background p-8',
+        'shadow-[0_24px_60px_-28px_rgba(64,34,18,0.28)]',
+        'duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out',
         className,
       )}
       {...props}
