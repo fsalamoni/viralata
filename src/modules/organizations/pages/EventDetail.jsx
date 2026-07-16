@@ -234,33 +234,9 @@ export default function EventDetail() {
           )}
           {linkedPets.length > 0 && (
             <Card className="mb-4 rounded-xl">
-              <CardContent className="p-6 sm:p-7">
-                <h3 className="mb-3 text-sm font-semibold text-foreground">Pets deste evento</h3>
-                <div className="flex flex-wrap gap-3">
-                  {linkedPets.map((pet) => (
-                    <Link
-                      key={pet.id}
-                      to={`/pets/${pet.id}`}
-                      className="flex items-center gap-3 rounded-xl border border-border p-3 transition-colors hover:border-primary/50 hover:bg-primary/5"
-                    >
-                      {pet.photos?.length > 0 ? (
-                        <img
-                          src={pet.photos[0]}
-                          alt={pet.title || pet.name || 'Pet'}
-                          className="h-12 w-12 rounded-full object-cover"
-                        />
-                      ) : (
-                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted text-muted-foreground text-sm">
-                          {pet.title?.[0] || pet.name?.[0] || '?'}
-                        </div>
-                      )}
-                      <div>
-                        <p className="font-medium text-sm">{pet.title || pet.name}</p>
-                        {pet.species && <p className="text-xs text-muted-foreground capitalize">{pet.species}</p>}
-                      </div>
-                    </Link>
-                  ))}
-                </div>
+              <CardContent className="p-4">
+                <h3 className="mb-1 text-sm font-semibold text-foreground">Sobre o evento</h3>
+                <p className="whitespace-pre-wrap text-sm leading-6 text-muted-foreground">{event.description}</p>
               </CardContent>
             </Card>
           )}

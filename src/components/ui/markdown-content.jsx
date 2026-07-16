@@ -24,19 +24,19 @@ const COMPONENTS = {
   p: ({ node, ...props }) => <p className="my-2 leading-7 first:mt-0 last:mb-0" {...props} />,
   a: ({ node, ...props }) => (
     <a
-      className="font-medium text-accent underline underline-offset-2 hover:text-accent/80"
+      className="font-medium text-primary underline underline-offset-2 hover:text-primary/80"
       target="_blank"
       rel="noopener noreferrer nofollow"
       {...props}
     />
   ),
-  ul: ({ node, ...props }) => <ul className="my-2 ml-5 list-disc space-y-1 marker:text-accent" {...props} />,
-  ol: ({ node, ...props }) => <ol className="my-2 ml-5 list-decimal space-y-1 marker:text-accent" {...props} />,
+  ul: ({ node, ...props }) => <ul className="my-2 ml-5 list-disc space-y-1 marker:text-primary" {...props} />,
+  ol: ({ node, ...props }) => <ol className="my-2 ml-5 list-decimal space-y-1 marker:text-primary" {...props} />,
   li: ({ node, ...props }) => <li className="leading-7" {...props} />,
   blockquote: ({ node, ...props }) => (
-    <blockquote className="my-3 border-l-4 border-accent/30 bg-accent/[0.06] py-1 pl-4 pr-2 italic text-foreground/80" {...props} />
+    <blockquote className="my-3 border-l-4 border-primary/30 bg-primary/10 py-1 pl-4 pr-2 italic text-foreground" {...props} />
   ),
-  hr: () => <hr className="my-4 border-accent/15" />,
+  hr: () => <hr className="my-4 border-primary/10" />,
   strong: ({ node, ...props }) => <strong className="font-semibold text-foreground" {...props} />,
   em: ({ node, ...props }) => <em className="italic" {...props} />,
   // react-markdown v9 não fornece mais a prop `inline`; detectamos código de
@@ -52,30 +52,30 @@ const COMPONENTS = {
       );
     }
     return (
-      <code className="rounded bg-accent/10 px-1.5 py-0.5 font-mono text-[0.85em] text-accent" {...props}>
+      <code className="rounded bg-primary/10 px-1.5 py-0.5 font-mono text-[0.85em] text-primary" {...props}>
         {children}
       </code>
     );
   },
   pre: ({ node, ...props }) => (
-    <pre className="my-3 overflow-x-auto rounded-lg bg-foreground p-3 text-background" {...props} />
+    <pre className="my-3 overflow-x-auto rounded-lg bg-foreground p-3 text-muted-foreground" {...props} />
   ),
   table: ({ node, ...props }) => (
-    <div className="my-3 w-full overflow-x-auto rounded-lg border border-accent/15">
+    <div className="my-3 w-full overflow-x-auto rounded-lg border border-primary/10">
       <table className="w-full border-collapse text-sm" {...props} />
     </div>
   ),
   thead: ({ node, ...props }) => <thead className="bg-secondary/50" {...props} />,
-  th: ({ node, ...props }) => <th className="border border-accent/15 px-3 py-2 text-left font-semibold text-foreground" {...props} />,
-  td: ({ node, ...props }) => <td className="border border-accent/15 px-3 py-2 align-top text-foreground/80" {...props} />,
-  img: ({ node, ...props }) => <img className="my-2 max-h-80 rounded-lg border border-accent/15" loading="lazy" alt="" {...props} />,
+  th: ({ node, ...props }) => <th className="border border-primary/10 px-3 py-2 text-left font-semibold text-foreground" {...props} />,
+  td: ({ node, ...props }) => <td className="border border-primary/10 px-3 py-2 align-top text-foreground" {...props} />,
+  img: ({ node, ...props }) => <img className="my-2 max-h-80 rounded-lg border border-primary/10" loading="lazy" alt="" {...props} />,
 };
 
 export function MarkdownContent({ children, className }) {
   const content = String(children ?? '');
   if (!content.trim()) return null;
   return (
-    <div className={cn('text-sm text-foreground/80 break-words', className)}>
+    <div className={cn('text-sm text-foreground break-words', className)}>
       <ReactMarkdown remarkPlugins={[remarkGfm]} components={COMPONENTS} skipHtml>
         {content}
       </ReactMarkdown>

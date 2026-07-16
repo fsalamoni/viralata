@@ -350,89 +350,21 @@ export default function Profile() {
   }
 
   return (
-    <div className={wrapperClass}>
-      <PageHero
-        eyebrow="Meu perfil"
-        title={fullName || user?.email || 'Seu perfil'}
-        description="Atualize seus dados, preferências de adoção e privacidade no mesmo padrão visual das demais áreas autenticadas."
-        actions={(
-          <Button type="button" variant="outline" size="sm" className="border-white/20 bg-white/10 text-white hover:bg-white/15 hover:text-white" onClick={() => navigate('/feed')}>
-            <ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar ao feed
-          </Button>
-        )}
-      >
-        <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
-          <div className="flex items-center gap-4">
-            <UserAvatar
-              name={fullName || user?.email}
-              photoUrl={photoUrl}
-              size="lg"
-            />
-            <div className="min-w-[180px] flex-1">
-              <div className="text-[11px] font-bold uppercase tracking-[0.24em] text-orange-100/70">Dados da conta</div>
-              <div className="mt-1 font-['Sora'] text-2xl font-extrabold text-white">{fullName || user?.email}</div>
-              <div className="mt-1 text-[13px] text-orange-50/80">{user?.email}</div>
-              <div className="mt-3 flex flex-wrap items-center gap-2.5">
-                {ratingCount > 0 && (
-                  <div className="flex items-center gap-0.5">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star
-                        key={i}
-                        className="h-[15px] w-[15px]"
-                        style={{ color: i < Math.round(ratingAvg) ? 'hsl(40 88% 54%)' : 'rgba(255,255,255,0.35)' }}
-                        fill={i < Math.round(ratingAvg) ? 'hsl(40 88% 54%)' : 'none'}
-                      />
-                    ))}
-                    <span className="ml-1 text-xs font-bold text-white">{ratingAvg.toFixed(1)}</span>
-                  </div>
-                )}
-                {memberSinceYear && (
-                  <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-medium text-orange-50/85">
-                    Membro desde {memberSinceYear}
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-          <div className="max-w-sm text-sm leading-6 text-orange-50/82">
-            Revise seus dados, mantenha o perfil de adotante atualizado e controle a privacidade das suas informações.
-          </div>
-        </div>
-      </PageHero>
-
-      {/* Âncoras de navegação */}
-      <nav className="sticky top-14 z-20 -mx-5 mb-4 border-b border-border/70 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-        <div className="flex items-center gap-1 overflow-x-auto px-5 py-2 scrollbar-hide">
-          {[
-            { href: '#dados-pessoais', icon: User, label: 'Dados pessoais' },
-            { href: '#perfil-adotante', icon: PawPrint, label: 'Adotante' },
-            { href: '#visual', icon: Star, label: 'Visual' },
-            { href: '#voluntario', icon: Heart, label: 'Voluntário' },
-            { href: '#lares-temporarios', icon: HomeIcon, label: 'Lares Temp.' },
-            { href: '#adocoes', icon: PawPrint, label: 'Adoções' },
-            { href: '#privacidade', icon: ShieldAlert, label: 'Privacidade' },
-          ].map(({ href, icon: Icon, label }) => (
-            <a
-              key={href}
-              href={href}
-              className="flex flex-shrink-0 items-center gap-1.5 rounded-full border border-border/60 bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
-            >
-              <Icon className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">{label}</span>
-            </a>
-          ))}
-        </div>
-      </nav>
+    <div className="arena-page max-w-2xl mx-auto px-4 py-6 space-y-6">
+      <div className="flex items-center gap-3">
+        <h1 className="text-xl font-bold text-foreground">Meu Perfil</h1>
+        <RatingBadge uid={user?.uid} />
+      </div>
 
       {/* Dados pessoais */}
-      <section id="dados-pessoais" className="arena-section-card rounded-[24px] p-6 lg:p-7">
-        <div className="arena-section-card-header">
-          <h3 className="arena-section-card-title flex items-center gap-2 text-base font-bold">
-            <User className="w-[19px] h-[19px] text-primary" /> Dados pessoais
-          </h3>
-        </div>
-        <div className="arena-section-card-body p-0">
-          <form onSubmit={handleSave} className="gap-y-section-md">
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-base">
+            <User className="w-4 h-4 text-primary" /> Dados pessoais
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSave} className="space-y-4">
             {/* Foto */}
             <div className="flex items-center gap-4">
               <ImageUpload
@@ -441,7 +373,7 @@ export default function Profile() {
                 folder="avatar"
                 shape="circle"
               />
-              <div className="text-[12.5px] text-muted-foreground">
+              <div className="text-sm text-muted-foreground">
                 <p className="font-medium text-foreground">{user?.email}</p>
                 <p>Clique na foto para alterar</p>
               </div>
@@ -551,8 +483,19 @@ export default function Profile() {
           <div className="gap-y-section-sm">
             <Label>Já tem outros animais?</Label>
             <div className="grid grid-cols-2 gap-2">
-              {OTHER_PET_OPTIONS.map(({ value, label, icon }) => (
-                <ChoiceRow key={value} active={otherPets.includes(value)} icon={icon} onClick={() => toggleOtherPet(value)}>{label}</ChoiceRow>
+              {OTHER_PET_OPTIONS.map(({ value, label }) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => toggleOtherPet(value)}
+                  className={`text-left px-3 py-2 rounded-lg border-2 text-sm transition-colors ${
+                    otherPets.includes(value)
+                      ? 'border-primary bg-primary/10 text-foreground font-medium'
+                      : 'border-border hover:border-primary/40 text-muted-foreground'
+                  }`}
+                >
+                  {label}
+                </button>
               ))}
             </div>
           </div>
@@ -856,7 +799,7 @@ export default function Profile() {
           <Button
             variant="outline"
             onClick={() => setConfirmDelete(true)}
-            className="h-[46px] w-full gap-2 border-destructive/30 bg-destructive/[0.06] text-[13.5px] font-bold text-destructive hover:bg-destructive/10 hover:text-destructive"
+            className="w-full text-destructive border-destructive/30 hover:bg-destructive/10 hover:text-destructive"
           >
             <ShieldAlert className="w-[18px] h-[18px]" />
             Excluir minha conta

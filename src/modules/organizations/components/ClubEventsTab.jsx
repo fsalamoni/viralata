@@ -139,7 +139,7 @@ function EventCard({ event, clubId, isAdmin }) {
             </div>
           </div>
           {canManage && (
-            <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0 text-destructive hover:text-destructive/85" onClick={() => setConfirmDelete(true)} aria-label="Excluir evento">
+            <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0 text-destructive hover:text-destructive" onClick={() => setConfirmDelete(true)}>
               <Trash2 className="h-4 w-4" />
             </Button>
           )}

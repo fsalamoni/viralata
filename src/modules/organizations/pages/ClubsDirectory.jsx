@@ -181,19 +181,9 @@ export default function ClubsDirectory() {
               <p className="mt-2 text-sm leading-6 text-muted-foreground">
                 Digite o código compartilhado por um administrador para entrar na organização.
               </p>
-              <form onSubmit={handleJoin} className="mt-5 flex flex-col gap-3 sm:flex-row">
-                <div className="relative flex-1">
-                  <Hash className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/70" />
-                  <Input
-                    value={code}
-                    onChange={(e) => setCode(e.target.value.toUpperCase())}
-                    placeholder="CÓDIGO"
-                    maxLength={12}
-                    className="pl-9 uppercase tracking-[0.2em]"
-                  />
-                </div>
-                <Button type="submit" disabled={joinClub.isPending || !code.trim()}>
-                  {joinClub.isPending ? 'Entrando…' : 'Ingressar'}
+              <div className="mt-6 flex flex-wrap gap-3">
+                <Button asChild className="bg-white text-foreground hover:bg-orange-50">
+                  <Link to="/organizacoes/criar"><Plus className="mr-1.5 h-4 w-4" /> Cadastrar organização</Link>
                 </Button>
               </form>
             </div>
@@ -223,38 +213,37 @@ export default function ClubsDirectory() {
             </div>
           </section>
 
-          <section className="arena-section-card rounded-[2rem] border-white/80 bg-white/82">
-            <div className="arena-section-card-body p-6 sm:p-7">
-              <span className="arena-chip">Ingressar com código</span>
-              <h3 className="mt-4 text-2xl font-semibold text-foreground">Tem um convite?</h3>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                Digite o código compartilhado por um administrador para entrar na organização.
-              </p>
-              <form onSubmit={handleJoin} className="mt-5 flex flex-col gap-3 sm:flex-row">
-                <div className="relative flex-1">
-                  <Hash className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/70" />
-                  <Input
-                    value={code}
-                    onChange={(e) => setCode(e.target.value.toUpperCase())}
-                    placeholder="CÓDIGO"
-                    maxLength={12}
-                    className="pl-9 uppercase tracking-[0.2em]"
-                  />
-                </div>
-                <Button type="submit" disabled={joinClub.isPending || !code.trim()}>
-                  {joinClub.isPending ? 'Entrando…' : 'Ingressar'}
-                </Button>
-              </form>
-            </div>
-          </section>
-        </section>
-      )}
+        <Card className="rounded-[2rem] border-border bg-card/85">
+          <CardContent className="p-6 sm:p-7">
+            <span className="arena-chip">Ingressar com código</span>
+            <h3 className="mt-4 text-2xl font-semibold text-foreground">Tem um convite?</h3>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">
+              Digite o código compartilhado por um administrador para entrar no clube.
+            </p>
+            <form onSubmit={handleJoin} className="mt-5 flex flex-col gap-3 sm:flex-row">
+              <div className="relative flex-1">
+                <Hash className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  value={code}
+                  onChange={(e) => setCode(e.target.value.toUpperCase())}
+                  placeholder="CÓDIGO"
+                  maxLength={12}
+                  className="pl-9 uppercase tracking-[0.2em]"
+                />
+              </div>
+              <Button type="submit" disabled={joinClub.isPending || !code.trim()}>
+                {joinClub.isPending ? 'Entrando…' : 'Ingressar'}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </section>
 
       {myClubs.length > 0 && (
         <section className="space-y-4">
           <div>
-            <div className="text-xs font-semibold uppercase tracking-[0.2em] text-primary/75">Minhas organizações</div>
-            <h3 className="mt-2 text-2xl font-semibold text-foreground">Organizações em que você participa</h3>
+            <div className="text-xs font-semibold uppercase tracking-[0.2em] text-primary/75">Meus clubes</div>
+            <h3 className="mt-2 text-2xl font-semibold text-foreground">Clubes em que você participa</h3>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {myClubs.map((club) => (
@@ -264,102 +253,29 @@ export default function ClubsDirectory() {
         </section>
       )}
 
-      {visibleCommunities.length > 0 && (
-        <section className="space-y-4">
-          <div>
-            <div className="text-xs font-semibold uppercase tracking-[0.2em] text-primary/75">Comunidades</div>
-            <h3 className="mt-2 text-2xl font-semibold text-foreground">Frentes e redes em destaque</h3>
-          </div>
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {visibleCommunities.slice(0, 6).map((community) => (
-              <section key={community.id} className="overflow-hidden rounded-[1.75rem] border-white/80 bg-white/88">
-                {community.cover_url && (
-                  <img src={community.cover_url} alt="" className="h-32 w-full object-cover" />
-                )}
-                <div className="arena-section-card-body space-y-3 p-5">
-                  <div className="flex items-center gap-2">
-                    <Badge variant={community.featured ? 'warning' : 'secondary'}>
-                      {community.featured ? 'Destaque' : 'Comunidade'}
-                    </Badge>
-                    {[community.city, community.state].filter(Boolean).join(' / ') && (
-                      <Badge variant="outline">{[community.city, community.state].filter(Boolean).join(' / ')}</Badge>
-                    )}
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-semibold text-foreground">{community.name}</h4>
-                    {community.description && (
-                      <p className="mt-2 line-clamp-3 text-sm leading-6 text-muted-foreground">{community.description}</p>
-                    )}
-                  </div>
-                  <Button type="button" variant="outline" size="sm" onClick={() => setCommunityId(community.id)}>
-                    Ver organizações desta comunidade
-                  </Button>
-                </div>
-              </section>
-            ))}
-          </div>
-        </section>
-      )}
-
-      <section className="arena-section-card rounded-[2rem] border-white/80 bg-white/82">
-        <div className="arena-section-card-body p-4 sm:p-5">
+      <Card className="rounded-[2rem] border-border bg-card/85">
+        <CardContent className="p-4 sm:p-5">
           <div className="relative">
-            <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/70" />
+            <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar organização por nome, cidade ou descrição"
-              className="h-12 rounded-full border-white/80 bg-white/80 pl-11 pr-11"
+              placeholder="Buscar clube por nome, cidade ou descrição"
+              className="h-12 rounded-full border-border bg-card/80 pl-11 pr-11"
             />
             {search && (
               <button
                 type="button"
                 onClick={() => setSearch('')}
                 aria-label="Limpar busca"
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground/70 transition-colors hover:text-foreground/80"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
               >
                 <X className="h-4 w-4" />
               </button>
             )}
           </div>
-
-          {/* Filtro por cidade + distância (Item 6) */}
-          <div className="mt-4 flex flex-wrap items-center gap-2.5">
-            <div className="flex gap-1.5 overflow-x-auto">
-              <RadiusChip active={communityId === 'all'} onClick={() => setCommunityId('all')}>Todas</RadiusChip>
-              {visibleCommunities.map((community) => (
-                <RadiusChip key={community.id} active={communityId === community.id} onClick={() => setCommunityId(community.id)}>
-                  {community.name}
-                </RadiusChip>
-              ))}
-              <RadiusChip active={communityId === 'none'} onClick={() => setCommunityId('none')}>Sem comunidade</RadiusChip>
-            </div>
-            <div className="relative min-w-[200px] max-w-[280px] flex-1">
-              <MapPin className="absolute left-3.5 top-1/2 h-[17px] w-[17px] -translate-y-1/2 text-muted-foreground/70" />
-              <Input
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                placeholder="Filtrar por cidade"
-                className="h-[38px] rounded-full border-white/80 bg-white/80 pl-[38px] pr-9 text-[12.5px]"
-              />
-              {city && (
-                <button
-                  type="button"
-                  onClick={() => setCity('')}
-                  aria-label="Limpar cidade"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground/70 transition-colors hover:text-foreground/80"
-                >
-                  <X className="h-3.5 w-3.5" />
-                </button>
-              )}
-            </div>
-            <div className="flex gap-1.5 overflow-x-auto">
-              {RADIUS_OPTIONS.map((km) => (
-                <RadiusChip key={km} active={radius === km} onClick={() => setRadius((prev) => (prev === km ? null : km))}>
-                  {km} km
-                </RadiusChip>
-              ))}
-            </div>
+          <div className="mt-4 border-t border-foreground/10 pt-4 text-sm text-muted-foreground">
+            <span className="font-semibold text-foreground">{filtered.length}</span> clube(s) na plataforma.
           </div>
           <p className="mt-2 text-[11.5px] text-muted-foreground/90">
             {!trimmedCity
@@ -401,12 +317,12 @@ export default function ClubsDirectory() {
           ))}
         </div>
       ) : filtered.length === 0 ? (
-        <section className="arena-section-card rounded-[2rem] border-white/80 bg-white/82">
-          <div className="arena-section-card-body flex flex-col items-center px-4 py-10 text-center sm:px-10 sm:py-12">
+        <Card className="rounded-[2rem] border-border bg-card/85">
+          <CardContent className="flex flex-col items-center px-4 py-10 text-center sm:px-10 sm:py-12">
             <div className="flex h-16 w-16 items-center justify-center rounded-[1.5rem] bg-primary/10 text-primary">
               <Building2 className="h-8 w-8" />
             </div>
-            <h3 className="mt-5 text-2xl font-semibold text-foreground">Nenhuma organização encontrada</h3>
+            <h3 className="mt-5 text-2xl font-semibold text-foreground">Nenhum clube encontrado</h3>
             <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
               {clubs.length === 0
                 ? 'Ainda não há organizações na plataforma. Crie a primeira e convide sua turma!'
@@ -423,7 +339,7 @@ export default function ClubsDirectory() {
         <section className="space-y-4">
           <div>
             <div className="text-xs font-semibold uppercase tracking-[0.2em] text-primary/75">Catálogo</div>
-            <h3 className="mt-2 text-2xl font-semibold text-foreground">Todas as organizações</h3>
+            <h3 className="mt-2 text-2xl font-semibold text-foreground">Todos os clubes</h3>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {filtered.map((club) => (
@@ -453,8 +369,8 @@ function ClubCard({ club, community, myRole, joinState = null, onRequest, reques
   };
   return (
     <Link to={`/organizacoes/${club.id}`} className="block h-full">
-      <section className="arena-section-card match-surface h-full rounded-[1.75rem] border-white/80 bg-white/85">
-        <div className="arena-section-card-body flex h-full flex-col p-5 sm:p-6">
+      <Card className="match-surface h-full rounded-[1.75rem] border-border bg-card/85">
+        <CardContent className="flex h-full flex-col p-5 sm:p-6">
           <div className="flex items-start justify-between gap-3">
             <h4 className="flex min-w-0 items-center gap-3 text-lg font-semibold text-foreground">
               {club.logo_url ? (
@@ -474,11 +390,6 @@ function ClubCard({ club, community, myRole, joinState = null, onRequest, reques
           </div>
 
           <div className="mt-4 space-y-2 text-sm text-muted-foreground">
-            {community && (
-              <div className="flex items-center gap-2">
-                <Badge variant="outline">{community.name}</Badge>
-              </div>
-            )}
             <div className="flex items-center gap-2">
               <MapPin className="h-4 w-4 shrink-0 text-primary" />
               <span className="truncate">{location || 'Cidade não informada'}</span>

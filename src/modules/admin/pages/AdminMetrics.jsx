@@ -21,9 +21,8 @@ export default function AdminMetrics() {
     fetchMetricsData().then(setData).finally(() => setLoading(false));
   }, [isPlatformAdmin]);
 
-  // Hooks de classe dos wrappers. Devem ficar ANTES dos early-returns.
-  const loadingClass = useArenaPageClasses('max-w-5xl mx-auto px-4 py-16 text-center text-muted-foreground');
-  const successClass = useArenaPageClasses('arena-page mx-auto max-w-5xl space-y-6 px-4 py-6');
+  if (!isPlatformAdmin) return null;
+  if (loading) return <div className="max-w-5xl mx-auto px-4 py-16 text-center text-muted-foreground">Carregando métricas...</div>;
 
   if (!isPlatformAdmin) return null;
   if (loading) return <div className={loadingClass}>Carregando métricas...</div>;
@@ -38,26 +37,8 @@ export default function AdminMetrics() {
   const petsByState = groupByField(data.pets, 'state');
 
   return (
-    <div className={successClass}>
-      <PageHero
-        eyebrow="Admin · Métricas"
-        title="Métricas da Plataforma"
-        description="Visão geral do crescimento: pets cadastrados, adoções concluídas, usuários e denúncias. Cada card abre o detalhe."
-      />
-
-      {/* TASK-172: seletor de janela temporal */}
-      <div className="flex justify-end gap-2">
-        {[[30, '30 dias'], [90, '90 dias'], [365, '12 meses']].map(([days, label]) => (
-          <Button
-            key={days}
-            size="sm"
-            variant={rangeDays === days ? 'default' : 'outline'}
-            onClick={() => setRangeDays(days)}
-          >
-            {label}
-          </Button>
-        ))}
-      </div>
+    <div className="max-w-5xl mx-auto px-4 py-6 space-y-6">
+      <h1 className="text-xl font-bold text-foreground">Métricas da Plataforma</h1>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <SummaryCard label="Pets cadastrados" value={data.pets.length} />
@@ -131,11 +112,11 @@ export default function AdminMetrics() {
 
 function SummaryCard({ label, value }) {
   return (
-    <section className="arena-section-card">
-      <div className="arena-section-card-body pt-6 text-center">
+    <Card>
+      <CardContent className="pt-6 text-center">
         <p className="text-2xl font-bold text-foreground">{value}</p>
         <p className="text-xs text-muted-foreground mt-1">{label}</p>
-      </div>
-    </section>
+      </CardContent>
+    </Card>
   );
 }

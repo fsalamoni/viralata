@@ -53,7 +53,7 @@ export default function EventChat({ eventId }) {
   const handleDelete = (message) => remove.mutateAsync(message.id);
 
   return (
-    <div className="flex h-[60vh] flex-col rounded-xl border border-border bg-secondary/30">
+    <div className="flex h-[60vh] flex-col rounded-xl border border-border bg-secondary/60">
       <div className="flex-1 space-y-2 overflow-y-auto p-4">
         {isLoading ? (
           <div className="space-y-3">{[1, 2, 3].map((i) => <Skeleton key={i} className="h-12 w-2/3 rounded-2xl" />)}</div>

@@ -123,12 +123,27 @@ export default function CreateClub() {
         }
       />
 
-      <section className="arena-section-card overflow-hidden">
-        <div className="arena-section-card-header">
-          <h3 className="arena-section-card-title">Dados da organização</h3>
-          <p className="arena-section-card-description">Apenas o nome é obrigatório. Quanto mais completo, melhor para a comunidade encontrar você.</p>
+      <section className="arena-panel-strong rounded-lg p-5 sm:p-6">
+        <div className="flex items-start gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-amber-300 text-foreground">
+            <Building2 className="h-5 w-5" />
+          </div>
+          <div className="max-w-2xl space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-wider text-highlight">Nova organização</p>
+            <h1 className="text-2xl font-bold text-white sm:text-3xl">Cadastrar organização</h1>
+            <p className="text-sm leading-6 text-orange-50/85">
+              Você será o administrador da organização e poderá convidar sua equipe por meio de um código exclusivo.
+            </p>
+          </div>
         </div>
-        <div className="arena-section-card-body p-4 sm:p-5">
+      </section>
+
+      <Card className="overflow-hidden">
+        <CardHeader className="border-b border-primary/10 bg-card/45 p-4 sm:p-5">
+          <CardTitle className="text-base text-foreground">Dados do clube</CardTitle>
+          <CardDescription>Apenas o nome é obrigatório. Quanto mais completo, melhor para a comunidade encontrar você.</CardDescription>
+        </CardHeader>
+        <CardContent className="p-4 sm:p-5">
           {!isAuthenticated && (
             <p className="mb-4 rounded-md border border-highlight/40 bg-highlight/[0.14] p-3 text-sm text-[hsl(30,60%,24%)]">
               Você precisa estar autenticado para criar uma organização.

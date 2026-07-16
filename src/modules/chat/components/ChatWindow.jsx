@@ -140,7 +140,7 @@ export default function ChatWindow({ conversation, currentUserId, onBack, onClos
   return (
     <div className="flex h-full min-h-0 flex-col">
       {/* Header */}
-      <div className="flex items-center gap-3 border-b border-primary/10 bg-card/90 px-3 py-2.5">
+      <div className="flex items-center gap-3 border-b border-primary/10 bg-card/85 px-3 py-2.5">
         {onBack && (
           <Button variant="ghost" size="icon" className="h-9 w-9 shrink-0 lg:hidden" onClick={onBack} aria-label="Voltar">
             <ArrowLeft className="h-5 w-5" />
@@ -188,7 +188,7 @@ export default function ChatWindow({ conversation, currentUserId, onBack, onClos
       </div>
 
       {/* Messages */}
-      <div ref={scrollRef} className="min-h-0 flex-1 space-y-1.5 overflow-y-auto bg-[radial-gradient(circle_at_top,_hsl(var(--primary)/0.05),transparent_45%)] px-3 py-4">
+      <div ref={scrollRef} className="min-h-0 flex-1 space-y-1.5 overflow-y-auto bg-[radial-gradient(circle_at_top,_rgba(193,82,42,0.06),transparent_45%)] px-3 py-4">
         {isLoading ? (
           <div className="space-y-3">
             {[1, 2, 3].map((i) => <Skeleton key={i} className={`h-12 max-w-[60%] rounded-2xl ${i % 2 ? '' : 'ml-auto'}`} />)}
@@ -202,7 +202,7 @@ export default function ChatWindow({ conversation, currentUserId, onBack, onClos
           rendered.map((item) =>
             item.type === 'day' ? (
               <div key={item.id} className="my-3 flex justify-center">
-                <span className="rounded-full bg-card/85 px-3 py-1 text-[11px] font-medium text-muted-foreground shadow-sm">{item.label}</span>
+                <span className="rounded-full bg-card/80 px-3 py-1 text-[11px] font-medium text-muted-foreground shadow-sm">{item.label}</span>
               </div>
             ) : (
               <MessageBubble

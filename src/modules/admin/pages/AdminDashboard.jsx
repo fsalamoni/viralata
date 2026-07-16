@@ -2,45 +2,28 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
-import { Shield, PawPrint, Building2, AlertTriangle, Users, BarChart3, ScrollText, Bell, SlidersHorizontal, Flag, Activity, DollarSign, Database, Siren } from 'lucide-react';
-import PageHero from '@/components/PageHero';
-import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Shield, PawPrint, Building2, AlertTriangle, Users, BarChart3, FileText } from 'lucide-react';
 
 export default function AdminDashboard() {
   const { isPlatformAdmin } = useAuth();
-  const wrapperClass = useArenaPageClasses('arena-page max-w-4xl mx-auto px-4 py-6 space-y-6');
   if (!isPlatformAdmin) return <div className="text-center py-16 text-muted-foreground">Acesso restrito.</div>;
 
   const sections = [
-    { icon: PawPrint, title: 'Gerenciar Pets', desc: 'Moderar anúncios, aprovar ou remover pets', link: '/admin/pets', tone: 'bg-primary/10 text-primary' },
-    { icon: Building2, title: 'Abrigos', desc: 'Moderar diretório de abrigos e organizações parceiras', link: '/admin/organizacoes', tone: 'bg-accent/10 text-accent' },
-    { icon: Users, title: 'Comunidades', desc: 'Gerenciar grupos, fóruns e espaços sociais de usuários', link: '/admin/comunidades', tone: 'bg-primary/10 text-primary' },
-    { icon: AlertTriangle, title: 'Denúncias', desc: 'Revisar denúncias de maus-tratos', link: '/admin/denuncias', tone: 'bg-destructive/10 text-destructive' },
-    { icon: Users, title: 'Usuários', desc: 'Gerenciar contas, papéis e banimentos', link: '/admin/usuarios', tone: 'bg-highlight/20 text-[hsl(30,60%,32%)]' },
-    { icon: Shield, title: 'Platform Admins', desc: 'Delegar e revogar acesso admin master (só o owner pode)', link: '/admin/admins', tone: 'bg-highlight/20 text-[hsl(30,60%,32%)]' },
-    { icon: BarChart3, title: 'Métricas', desc: 'Adoções, crescimento e denúncias em gráficos', link: '/admin/metricas', tone: 'bg-secondary text-secondary-foreground' },
-    { icon: ScrollText, title: 'Auditoria', desc: 'Trilha completa de ações registradas na plataforma', link: '/admin/auditoria', tone: 'bg-primary/10 text-primary' },
-    { icon: Bell, title: 'Notificações', desc: 'Inspecionar entregas, links e leituras das notificações geradas', link: '/admin/notificacoes', tone: 'bg-accent/10 text-accent' },
-    { icon: SlidersHorizontal, title: 'Configurações', desc: 'Ajustar textos, rótulos e parâmetros operacionais auditáveis da plataforma', link: '/admin/configuracoes', tone: 'bg-highlight/20 text-[hsl(30,60%,32%)]' },
-    { icon: Flag, title: 'Flags de atualizações', desc: 'Ligar e desligar as feature flags que liberam novidades na plataforma', link: '/admin/flags', tone: 'bg-primary/10 text-primary' },
-    { icon: Activity, title: 'Saúde da plataforma', desc: 'Latência, error rate, deploys, uptime, custos, capacidade, alertas', link: '/admin/saude', tone: 'bg-destructive/10 text-destructive' },
-    { icon: Bell, title: 'Alertas', desc: 'Configurar thresholds de Slack/Email para billing, error rate, latência', link: '/admin/alertas', tone: 'bg-destructive/10 text-destructive' },
-    { icon: Siren, title: 'Alertas de segurança', desc: 'Logins suspeitos, alterações de regras, rate limit, billing — logados pela Cloud Function (Fase 20)', link: '/admin/security-alerts', tone: 'bg-destructive/10 text-destructive' },
-    { icon: Database, title: 'Dados demo (mock data)', desc: 'Carregar ou limpar o pacote de dados de demonstração (gated por flag)', link: '/admin/mock-data', tone: 'bg-accent/10 text-accent' },
+    { icon: PawPrint, title: 'Gerenciar Pets', desc: 'Moderar anúncios, aprovar ou remover pets', link: '/admin/pets', color: 'text-primary' },
+    { icon: Building2, title: 'Organizações', desc: 'Verificar, gerenciar e excluir ONGs e lojas', link: '/admin/organizacoes', color: 'text-accent' },
+    { icon: AlertTriangle, title: 'Denúncias', desc: 'Revisar denúncias de maus-tratos', link: '/admin/denuncias', color: 'text-destructive' },
+    { icon: Users, title: 'Usuários', desc: 'Gerenciar contas, papéis e banimentos', link: '/admin/usuarios', color: 'text-highlight' },
+    { icon: BarChart3, title: 'Métricas', desc: 'Adoções, crescimento e denúncias em gráficos', link: '/admin/metricas', color: 'text-primary/70' },
+    { icon: FileText, title: 'Conteúdo institucional', desc: 'Editar Termos, Privacidade e Legislação', link: '/admin/conteudo', color: 'text-accent/70' },
   ];
 
   return (
-    <div className={wrapperClass}>
-      <PageHero
-        eyebrow="Admin"
-        title="Painel Administrativo"
-        description="Centralize moderação, auditoria, notificações e indicadores da plataforma em um fluxo visual consistente com as demais áreas."
-        actions={(
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold text-orange-50/85">
-            <Shield className="h-3.5 w-3.5" /> Acesso restrito
-          </span>
-        )}
-      />
+    <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
+      <div className="flex items-center gap-3">
+        <Shield className="w-6 h-6 text-primary" />
+        <h1 className="text-2xl font-bold text-foreground">Painel Administrativo</h1>
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {sections.map(({ icon: Icon, title, desc, link, tone }) => (
           <div key={link} className="arena-section-card transition-shadow hover:shadow-[0_18px_40px_-28px_rgba(64,34,18,0.35)]">
@@ -50,9 +33,9 @@ export default function AdminDashboard() {
                   <Icon className="w-4 h-4" />
                 </span>
                 {title}
-              </h3>
-            </div>
-            <div className="arena-section-card-body space-y-3">
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
               <p className="text-sm text-muted-foreground">{desc}</p>
               <Button asChild variant="outline" size="sm">
                 <Link to={link}>Acessar</Link>

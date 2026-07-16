@@ -331,30 +331,32 @@ export async function setMemberRole(clubId, member, role, actor) {
 }
 
 /**
- * Permissões granulares do painel de administração de um membro:
- * `animals`, `finance`, `donations`, `feed`, `team`. O proprietário tem
- * todas implicitamente e não pode ser editado (ver `domain/permissions.js`).
+ * Permissões granulares de um membro comum (admins já têm tudo
+ * implicitamente). Capacidades de gestão da própria organização (excluir
+ * clube, regenerar código, editar dados do clube) continuam exclusivas do
+ * admin, sem equivalente granular.
+ *
+ * `permissions` pode conter só as chaves que estão mudando (ex.:
+ * `{ manage_team: true }`) — o restante é preservado a partir de
+ * `member.permissions` (o objeto já carregado na lista de membros).
  */
 export async function setMemberPermissions(clubId, member, permissions, actor) {
   if (!member?.user_id) throw new Error('Membro inválido.');
-  const club = await getClub(clubId);
-  if (club?.created_by === member.user_id) {
-    throw new Error('O proprietário da organização já tem todas as permissões.');
-  }
-  const sanitized = {};
-  CLUB_PERMISSION_KEYS.forEach((key) => {
-    sanitized[key] = !!permissions[key];
-  });
+  const merged = {
+    edit_pets: !!(permissions.edit_pets ?? member.permissions?.edit_pets),
+    manage_team: !!(permissions.manage_team ?? member.permissions?.manage_team),
+    view_reports: !!(permissions.view_reports ?? member.permissions?.view_reports),
+    reply_chat: !!(permissions.reply_chat ?? member.permissions?.reply_chat),
+  };
   await updateDoc(doc(db, COL.members, memberDocId(clubId, member.user_id)), {
-    permissions: sanitized,
+    permissions: merged,
     updated_at: serverTimestamp(),
   });
   // TASK-351: targetUserId = admin agindo sobre outro membro
   await createAuditLog({
     action: 'club_member_permissions_updated',
     actor,
-    targetUserId: member.user_id,
-    details: { club_id: clubId, permissions: sanitized },
+    details: { club_id: clubId, user_id: member.user_id, permissions: merged },
   });
 }
 

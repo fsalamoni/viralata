@@ -6,6 +6,8 @@ import { useQuery } from '@tanstack/react-query';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/core/config/firebase';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
+import { useMyMembership } from '@/modules/organizations/hooks/useClubs';
+import { CLUB_ROLE } from '@/modules/organizations/domain/constants';
 import {
   usePet, useCreateInterest, useHasInterest, useCompleteAdoption, useDeletePet,
   useMyRatingForPet, useCreateRating,
@@ -68,10 +70,18 @@ export default function PetDetail() {
   const [formOpen, setFormOpen] = useState(false);
   const { data: owner } = useOwnerProfile(pet?.owner_id, Boolean(user));
 
-  const isOwner = user?.uid === pet?.owner_id;
+  const isOrgOwned = pet?.owner_type === 'organization';
+  const { data: orgMembership } = useMyMembership(isOrgOwned ? pet.owner_id : null);
+  const isDirectOwner = user?.uid === pet?.owner_id;
+  const isOrgAdmin = isOrgOwned && orgMembership?.role === CLUB_ROLE.ADMIN;
+  // Quem pode editar/excluir o anúncio e avaliar em nome da organização.
+  const canEditPet = isDirectOwner || isPlatformAdmin || isOrgAdmin || (isOrgOwned && orgMembership?.permissions?.edit_pets === true);
+  // Quem pode ver/gerenciar interessados e conversar (inclui quem só tem a
+  // permissão de responder o chat, sem poder editar o anúncio).
+  const canManageInterests = canEditPet || (isOrgOwned && orgMembership?.permissions?.reply_chat === true);
   const isAdopter = user?.uid === pet?.adopted_by;
   const ratedUid = isAdopter ? pet?.owner_id : pet?.adopted_by;
-  const canRate = pet?.status === 'adopted' && (isOwner || isAdopter) && Boolean(ratedUid);
+  const canRate = pet?.status === 'adopted' && (canEditPet || isAdopter) && Boolean(ratedUid);
   const { data: myRating } = useMyRatingForPet(canRate ? petId : null, user?.uid);
   const createRating = useCreateRating();
   const shareCardRef = useRef(null);
@@ -80,44 +90,6 @@ export default function PetDetail() {
   const petPermissions = usePetPermissions(pet);
   const showAdoptionGating = useFeatureFlag(FEATURE_FLAG.PET_ADOPTION_GATING);
   const wrapperClass = useArenaPageClasses('arena-page max-w-4xl mx-auto px-4 py-6 space-y-6');
-
-  if (isLoading) return <PetDetailSkeleton />;
-  if (!pet) return <PetNotFound petId={petId} />;
-
-  // `canManage` segue indicando se o usuário pode editar/deletar — alimenta
-  // as tabs e os botões de gestão. A flag PET_ADOPTION_GATING decide se
-  // mostramos a explicação abaixo quando nem tudo está liberado.
-  const canManage = petPermissions.canEdit;
-  const managementTab = searchParams.get('tab') === 'info' ? 'info' : 'interests';
-
-  // Motivos pelos quais o usuário não consegue adotar/abrir chat AGORA.
-  // Cada motivo vira um bullet no card explicativo (atrás da flag).
-  const blockedReasons = [];
-  if (isOwner) {
-    blockedReasons.push('Você é o responsável por este pet — adoção e conversa se aplicam a outros usuários.');
-  }
-  if (pet.status === 'adopted') {
-    blockedReasons.push('Este pet já foi adotado. Continue procurando no feed!');
-  } else if (pet.status === 'in_process') {
-    blockedReasons.push('Este pet está em processo de adoção com outro interessado.');
-  }
-  if (!user) {
-    blockedReasons.push('Você não está logado(a). Faça login para demonstrar interesse.');
-  } else if (userProfile && userProfile.profile_completed === false) {
-    blockedReasons.push(
-      'Seu perfil de adotante ainda não está completo (residence, household, pets atuais). '
-      + 'Conclua o onboarding para liberar adoções.',
-    );
-  }
-  if (alreadyInterested) {
-    blockedReasons.push('Você já demonstrou interesse neste pet.');
-  }
-
-  function setManagementTab(value) {
-    const next = new URLSearchParams(searchParams);
-    next.set('tab', value);
-    setSearchParams(next, { replace: true });
-  }
 
   async function handleRate({ ratedUid: target, stars, comment }) {
     try {
@@ -283,26 +255,9 @@ export default function PetDetail() {
             </div>
           )}
 
-          {pet.adoption_form_url && (
-            <a
-              href={pet.adoption_form_url}
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center justify-center gap-2 rounded-2xl border border-primary/30 bg-primary/[0.06] px-3.5 py-3 text-[13px] font-bold text-primary transition-colors hover:bg-primary/10"
-            >
-              <FileText className="h-4 w-4" /> Preencher formulário de doação/adoção
-            </a>
-          )}
-
-          {!canManage && pet.owner_id && (
-            <div className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3.5">
-              <span className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--highlight))_100%)] font-['Sora'] text-[13px] font-bold text-white">
-                {ownerInitials(owner?.platform_name || owner?.name)}
-              </span>
-              <div className="min-w-0 flex-1">
-                <div className="truncate text-[13px] font-bold text-foreground">{owner?.platform_name || owner?.name || 'Responsável'}</div>
-                <div className="text-[11.5px] text-muted-foreground">Responsável pelo pet</div>
-              </div>
+          {/* Ações */}
+          <div className="flex flex-col gap-2 pt-2">
+            {!canManageInterests && pet.status === 'available' && (
               <Button
                 variant="outline"
                 size="sm"
@@ -314,12 +269,8 @@ export default function PetDetail() {
               >
                 <MessageCircle className="h-4 w-4" /> Conversar
               </Button>
-            </div>
-          )}
-
-          {/* Ações */}
-          {canManage ? (
-            <div className="flex flex-col gap-2 pt-2">
+            )}
+            {canEditPet && (
               <div className="flex gap-2">
                 <Button asChild variant="outline" className="flex-1">
                   <Link to={`/pets/${petId}/edit`}>Editar</Link>
@@ -385,47 +336,12 @@ export default function PetDetail() {
         </div>
       </motion.div>
 
-      {/* Card explicativo: por que você não pode adotar/chat?
-          Atrás da flag PET_ADOPTION_GATING. Mesmo com a flag OFF, as
-          validações de permissão continuam ativas — a flag só controla
-          este texto explicativo. */}
-      {showAdoptionGating && !canManage && blockedReasons.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.25 }}
-          className="mt-6"
-        >
-          <section className="arena-section-card border-highlight/50 bg-highlight/5">
-            <div className="arena-section-card-body space-y-3 py-4">
-              <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                <ShieldAlert className="h-4 w-4 text-highlight" />
-                Por que não posso adotar ou conversar?
-              </div>
-              <ul className="space-y-1.5 text-[13px] text-muted-foreground">
-                {blockedReasons.map((reason, idx) => (
-                  <li key={idx} className="flex gap-2">
-                    <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-highlight/80" />
-                    <span>{reason}</span>
-                  </li>
-                ))}
-              </ul>
-              {pet.status === 'available' && !userProfile?.profile_completed && user && (
-                <Button asChild variant="outline" size="sm" className="mt-1">
-                  <Link to="/onboarding">Completar perfil de adotante</Link>
-                </Button>
-              )}
-            </div>
-          </section>
-        </motion.div>
-      )}
-
-      {/* Painel de interessados (apenas para donos) */}
-      {canManage && (
-        <Tabs value={managementTab} onValueChange={setManagementTab} className="mt-6">
-          <TabsList className="arena-tab-bar">
-            <TabsTrigger value="interests" className="arena-tab-pill">Interessados</TabsTrigger>
-            <TabsTrigger value="info" className="arena-tab-pill">Informações</TabsTrigger>
+      {/* Painel de interessados (donos, admins da organização ou permissão de responder o chat) */}
+      {canManageInterests && (
+        <Tabs defaultValue="interests" className="mt-6">
+          <TabsList>
+            <TabsTrigger value="interests">Interessados</TabsTrigger>
+            <TabsTrigger value="info">Informações</TabsTrigger>
           </TabsList>
           <TabsContent value="interests">
             <InterestPanel petId={petId} pet={pet} />

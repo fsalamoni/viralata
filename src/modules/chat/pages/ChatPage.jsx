@@ -76,7 +76,7 @@ export default function ChatPage() {
         </section>
       )}
 
-      <section className="arena-section-card grid h-[calc(100dvh-11rem)] min-h-[30rem] grid-cols-1 overflow-hidden rounded-2xl border-border bg-card/90 lg:grid-cols-[20rem,1fr] xl:grid-cols-[22rem,1fr]">
+      <Card className="grid h-[calc(100dvh-11rem)] min-h-[30rem] grid-cols-1 overflow-hidden rounded-2xl border-border bg-card/85 lg:grid-cols-[20rem,1fr] xl:grid-cols-[22rem,1fr]">
         {/* Lista de conversas */}
         <aside className={cn('flex min-h-0 flex-col border-r border-primary/10', selectedConversation && 'hidden lg:flex')}>
           <div className="space-y-3 border-b border-primary/10 p-3">
@@ -87,7 +87,7 @@ export default function ChatPage() {
               </Button>
             </div>
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/80" />
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}

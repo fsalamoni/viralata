@@ -68,10 +68,10 @@ export default function ConversationList({ conversations, isLoading, selectedId,
             <span className="min-w-0 flex-1">
               <span className="flex items-center justify-between gap-2">
                 <span className="truncate text-sm font-semibold text-foreground">{title}</span>
-                <span className="shrink-0 text-[11px] text-muted-foreground/80">{timeLabel(conversation.last_message_at_ms)}</span>
+                <span className="shrink-0 text-[11px] text-muted-foreground">{timeLabel(conversation.last_message_at_ms)}</span>
               </span>
               <span className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
-                {last?.sender_id === currentUserId && <span className="text-muted-foreground/80">Você:</span>}
+                {last?.sender_id === currentUserId && <span className="text-muted-foreground">Você:</span>}
                 <span className="truncate">{lastMessagePreview(conversation)}</span>
               </span>
             </span>

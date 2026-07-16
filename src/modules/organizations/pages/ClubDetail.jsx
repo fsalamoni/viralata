@@ -1,10 +1,31 @@
 import React, { useState } from 'react';
-import VolunteerCtaCard from '@/modules/shelter/components/VolunteerCtaCard';
-import FosterCtaCard from '@/modules/shelter/components/FosterCtaCard';
-import PublicGallerySection from '@/modules/shelter/components/PublicGallerySection';
-import { useParams, Link } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { ArrowLeft, Building2, PawPrint, MessageSquare, HandCoins, Wallet, Users, Info, HeartHandshake } from 'lucide-react';
+import { Link, useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { toast } from 'sonner';
+import {
+  ArrowLeft,
+  BarChart3,
+  Building2,
+  CalendarDays,
+  Hash,
+  Instagram,
+  LogOut,
+  Mail,
+  MapPin,
+  MessageSquare,
+  MessagesSquare,
+  PawPrint,
+  Phone,
+  Settings,
+  Users,
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { EmptyState } from '@/components/ui/empty-state';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -18,35 +39,21 @@ import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import {
   useMyMembership,
   useRequestToJoinClub,
-  useMyJoinRequests,
-  useMyClubInvites,
-} from '../hooks/useClubs';
-import { useMyPets } from '@/modules/pets/hooks/usePets';
-import { JOIN_REQUEST_STATUS } from '../domain/constants';
-import { isClubOwner, hasClubPermission } from '../domain/permissions';
-import { CLUB_PERMISSION } from '../domain/constants';
-import ClubPetsPublicTab from '../components/ClubPetsPublicTab';
-import ClubGeneralTab from '../components/ClubGeneralTab';
-import ClubFeedTab from '../components/ClubFeedTab';
-import ClubDonationsTab from '../components/ClubDonationsTab';
-import ClubFinanceTab from '../components/ClubFinanceTab';
-import ClubTeamPublicTab from '../components/ClubTeamPublicTab';
-import ClubVolunteersPublicTab from '../components/ClubVolunteersPublicTab';
-import ClubCover from '../components/ClubCover';
-import ClubThemedScope from '../components/ClubThemedScope';
-import { cn } from '@/core/lib/utils';
-import { parseTimestamp } from '@/core/utils/timestamp';
-
-/** Abas públicas da ONG — com badges nas que têm contagem. */
-const TABS = [
-  { key: 'general', label: 'Visão Geral', icon: Info, badgeKey: null },
-  { key: 'pets', label: 'Animais', icon: PawPrint, badgeKey: 'pets' },
-  { key: 'feed', label: 'Mural da ONG', icon: MessageSquare, badgeKey: null },
-  { key: 'donations', label: 'Chamados de Doação', icon: HandCoins, badgeKey: 'donations' },
-  { key: 'finance', label: 'Prestação de Contas', icon: Wallet, badgeKey: null },
-  { key: 'volunteers', label: 'Voluntários', icon: HeartHandshake, badgeKey: 'volunteers' },
-  { key: 'team', label: 'Equipe', icon: Users, badgeKey: null },
-];
+  useMyClubInvite,
+  useAcceptClubInvite,
+  useDeclineClubInvite,
+} from '@/modules/organizations/hooks/useClubs';
+import { CLUB_ROLE, JOIN_REQUEST_STATUS } from '@/modules/organizations/domain/constants';
+import ClubMembersTab from '@/modules/organizations/components/ClubMembersTab';
+import ClubEventsTab from '@/modules/organizations/components/ClubEventsTab';
+import ClubFeedTab from '@/modules/organizations/components/ClubFeedTab';
+import ClubForumsTab from '@/modules/organizations/components/ClubForumsTab';
+import ClubAdminTab from '@/modules/organizations/components/ClubAdminTab';
+import ClubReportsPanel from '@/modules/organizations/components/ClubReportsPanel';
+import ClubPetsDataGrid from '@/modules/organizations/components/ClubPetsDataGrid';
+import RatingBadge from '@/modules/pets/components/RatingBadge';
+import { QrCode } from '@/components/ui/qr-code';
+import AdSlot from '@/components/AdSlot';
 
 export default function ClubDetail() {
   const { orgId } = useParams();
@@ -66,14 +73,12 @@ export default function ClubDetail() {
     enabled: Boolean(orgId),
   });
 
-  const { membership, isLoading: loadingMembership } = useMyMembership(orgId, user?.uid);
-  const isMember = Boolean(
-    membership || (club?.created_by && user?.uid && club.created_by === user?.uid),
-  );
-  const isAdmin = Boolean(
-    club && (isClubOwner(club, membership, user?.uid)
-      || hasClubPermission(club, membership, CLUB_PERMISSION.TEAM, user?.uid)),
-  );
+  const isMember = !!membership;
+  const isAdmin = membership?.role === CLUB_ROLE.ADMIN;
+  const canEditPets = isAdmin || membership?.permissions?.edit_pets === true;
+  const canManageTeam = isAdmin || membership?.permissions?.manage_team === true;
+  const canViewReports = isAdmin || membership?.permissions?.view_reports === true;
+  const canSeeAdminTab = isAdmin || canManageTeam;
 
   const { data: myRequests = [] } = useMyJoinRequests();
   const { data: myInvites = [] } = useMyClubInvites();
@@ -214,38 +219,84 @@ export default function ClubDetail() {
               </TabsList>
             </div>
 
-            {!isMember && !isAdmin && (
-              <div className="pb-2">
-                {isInvited ? (
-                  <Button size="sm" variant="outline" className="border-warning text-warning" disabled>
-                    Você foi convidado
-                  </Button>
-                ) : isPending ? (
-                  <Button size="sm" variant="outline" disabled>
-                    Pedido enviado
-                  </Button>
-                ) : (
-                  <Button size="sm" onClick={handleRequest} disabled={requestToJoin.isPending}>
-                    {requestToJoin.isPending ? 'Enviando...' : 'Pedir para ingressar'}
-                  </Button>
-                )}
+      {!isMember && myInvite && (
+        <Card className="rounded-[1.5rem] border-amber-300 bg-amber-50/80">
+          <CardContent className="p-5">
+            <h3 className="text-base font-semibold text-foreground">Você foi convidado para este clube</h3>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {myInvite.inviter_name || 'Um administrador'} convidou você a participar. Aceite para entrar e acessar eventos, mural e fórum.
+            </p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <Button onClick={handleAcceptInvite} disabled={acceptInvite.isPending}>
+                {acceptInvite.isPending ? 'Entrando…' : 'Aceitar convite'}
+              </Button>
+              <Button variant="outline" onClick={handleDeclineInvite} disabled={declineInvite.isPending}>
+                Recusar
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {!isMember && !myInvite && (
+        <Card className="rounded-[1.5rem] border-primary/20 bg-primary/5">
+          <CardContent className="p-5">
+            <h3 className="text-base font-semibold text-foreground">Participe deste clube</h3>
+            {myRequest?.status === JOIN_REQUEST_STATUS.PENDING ? (
+              <p className="mt-2 inline-flex items-center gap-2 rounded-full bg-amber-100 px-3 py-1.5 text-sm font-medium text-amber-800">
+                Pedido enviado — aguardando aprovação de um administrador.
+              </p>
+            ) : (
+              <>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {myRequest?.status === JOIN_REQUEST_STATUS.REJECTED
+                    ? 'Seu pedido anterior não foi aprovado. Você pode pedir novamente.'
+                    : 'Peça para ingressar e um administrador irá aprovar, ou entre direto com o código de convite.'}
+                </p>
+                <Button className="mt-4" onClick={handleRequestJoin} disabled={requestToJoin.isPending || !isAuthenticated}>
+                  {requestToJoin.isPending ? 'Enviando…' : 'Pedir para ingressar'}
+                </Button>
+              </>
+            )}
+            <form onSubmit={handleJoin} className="mt-4 flex flex-col gap-3 border-t border-primary/10 pt-4 sm:flex-row">
+              <div className="relative flex-1">
+                <Hash className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  value={code}
+                  onChange={(e) => setCode(e.target.value.toUpperCase())}
+                  placeholder="TENHO UM CÓDIGO"
+                  maxLength={12}
+                  className="pl-9 uppercase tracking-[0.2em]"
+                  disabled={!isAuthenticated}
+                />
               </div>
             )}
           </div>
 
-          <TabsContentStack>
-          <BalancedTabsContent value="general" className="mt-6 space-y-6 outline-none sm:mt-8">
-            {/* TASK-205: CTA "Seja voluntário" (flag-gated, some se OFF) */}
-            <VolunteerCtaCard clubId={orgId} clubName={club?.name} />
-            <FosterCtaCard clubId={orgId} clubName={club?.name} />
-            <ClubGeneralTab club={club} stats={stats} />
-            {/* TASK-142: galeria pública (some sem fotos) */}
-            <PublicGallerySection clubId={orgId} />
-          </BalancedTabsContent>
+      {isMember && (
+        <Tabs
+          value={
+            (activeTab === 'admin' && !canSeeAdminTab)
+            || (activeTab === 'pets' && !canEditPets)
+            || (activeTab === 'reports' && !canViewReports)
+              ? 'members' : activeTab
+          }
+          onValueChange={setActiveTab}
+          className="w-full"
+        >
+          <TabsList className="flex h-auto w-full flex-wrap justify-start gap-1 bg-muted/60 p-1">
+            <TabsTrigger value="members"><Users className="mr-1.5 h-4 w-4" /> Membros</TabsTrigger>
+            <TabsTrigger value="events"><CalendarDays className="mr-1.5 h-4 w-4" /> Eventos</TabsTrigger>
+            <TabsTrigger value="feed"><MessageSquare className="mr-1.5 h-4 w-4" /> Mural</TabsTrigger>
+            <TabsTrigger value="forums"><MessagesSquare className="mr-1.5 h-4 w-4" /> Fóruns</TabsTrigger>
+            {canEditPets && <TabsTrigger value="pets"><PawPrint className="mr-1.5 h-4 w-4" /> Pets</TabsTrigger>}
+            {canViewReports && <TabsTrigger value="reports"><BarChart3 className="mr-1.5 h-4 w-4" /> Relatórios</TabsTrigger>}
+            {canSeeAdminTab && <TabsTrigger value="admin"><Settings className="mr-1.5 h-4 w-4" /> Administração</TabsTrigger>}
+          </TabsList>
 
-          <BalancedTabsContent value="pets" className="mt-6 outline-none sm:mt-8">
-            <ClubPetsPublicTab clubId={orgId} clubName={club?.name} />
-          </BalancedTabsContent>
+          <TabsContent value="members" className="mt-4">
+            <ClubMembersTab clubId={clubId} isAdmin={isAdmin} canManageTeam={canManageTeam} />
+          </TabsContent>
 
           <BalancedTabsContent value="feed" className="mt-6 outline-none sm:mt-8">
             <ClubFeedTab clubId={orgId} club={club} membership={membership} canManageFeed={false} />
@@ -259,15 +310,45 @@ export default function ClubDetail() {
             <ClubFinanceTab clubId={orgId} canManage={false} />
           </BalancedTabsContent>
 
-          <BalancedTabsContent value="volunteers" className="mt-6 outline-none sm:mt-8">
-            <ClubVolunteersPublicTab clubId={orgId} club={club} viewerMembership={membership} />
-          </BalancedTabsContent>
-          <BalancedTabsContent value="team" className="mt-6 outline-none sm:mt-8">
-            <ClubTeamPublicTab clubId={orgId} club={club} viewerMembership={membership} />
-          </BalancedTabsContent>
-        
-        </TabsContentStack></Tabs>
-      </div>
-    </ClubThemedScope>
+          {canEditPets && (
+            <TabsContent value="pets" className="mt-4 space-y-4">
+              <AdSlot />
+              <ClubPetsDataGrid clubId={clubId} />
+            </TabsContent>
+          )}
+
+          {canViewReports && (
+            <TabsContent value="reports" className="mt-4">
+              <ClubReportsPanel clubId={clubId} />
+            </TabsContent>
+          )}
+
+          {canSeeAdminTab && (
+            <TabsContent value="admin" className="mt-4">
+              <ClubAdminTab club={club} isAdmin={isAdmin} canManageTeam={canManageTeam} />
+            </TabsContent>
+          )}
+        </Tabs>
+      )}
+
+      <ConfirmDialog
+        open={confirmLeave}
+        onOpenChange={setConfirmLeave}
+        title="Sair do clube"
+        description={`Tem certeza que deseja sair de "${club.name}"?`}
+        confirmLabel="Sair"
+        destructive
+        loading={leaveClub.isPending}
+        onConfirm={handleLeave}
+      />
+    </div>
+  );
+}
+
+function InfoChip({ icon: Icon, children }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1">
+      <Icon className="h-3.5 w-3.5" /> {children}
+    </span>
   );
 }

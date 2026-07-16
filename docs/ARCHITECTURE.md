@@ -14,112 +14,108 @@ components/  UI específica do módulo (tabs, dialogs, painéis)
 ```
 
 Regra: a dependência flui só para baixo (`pages → hooks → services → domain`).
-Componentes nunca chamam Firestore direto; passam por hooks/services. Lógica de
-negócio (matching de adoção, prioridade de espera, permissões de organização,
-mapeamento de planilha de animais) vive em `domain/` e é coberta por testes —
-é o que dá confiança sem ambiente de execução.
+Componentes nunca chamam Firestore direto; passam por hooks/services. Lógica
+de negócio (compatibilidade de match, prioridade do feed, enquetes) vive em
+`domain/` e é coberta por testes — é o que dá confiança sem ambiente de
+execução. Nem todo módulo tem todas as camadas (ex.: `onboarding/` e
+`reports/` são simples o bastante para não ter `domain/`).
 
 ## Estado e dados
 
 - **Servidor**: React Query é a fonte de verdade do dado remoto. `QueryClient`
-  em `App.jsx` (`staleTime: 30s`, `refetchOnWindowFocus: false`). Hooks
-  invalidam queries relacionadas após mutações (ex.: criar organização
-  invalida `['clubs']`/`['my-clubs']`).
+  em `App.jsx` (`staleTime: 30s`, `refetchOnWindowFocus: false`, `retry: 2`).
+  Hooks invalidam queries relacionadas após mutações.
 - **Sessão/identidade**: `FirebaseAuthContext` (Context API) — `useAuth()`.
+- **Feature flags**: `FeatureFlagsContext` lê `platform_settings/global` e
+  expõe as flags de `core/featureFlags.js` (hoje só `AD_SLOTS`).
 - **UI local**: `useState`/`react-hook-form`. Sem Redux/Zustand.
-- **Realtime**: `onSnapshot` onde faz sentido (notificações, chat, mural de
-  organização, contagem de não lidos); o resto é fetch + invalidação do
-  React Query.
-- **Exceção notável**: `modules/notifications/hooks/useNotifications.js` é um
-  hook próprio (não React Query) com `onSnapshot` interno — não devolve
-  `{ data }`, devolve `{ notifications, unreadCount, isLoading, markAsRead }`.
+- **Realtime**: leituras pontuais com `onSnapshot` onde faz sentido (ex.:
+  chat, mural do feed); o resto é fetch + invalidação via React Query.
 
 ## Design system
 
 - **Tailwind** + **shadcn/ui** (componentes Radix em `src/components/ui/`).
   Use os primitivos existentes (`Button`, `Dialog`, `DropdownMenu`, `Badge`,
   `Tabs`, `Select`, `Toast`/`sonner`…) — não reinvente.
+- **Tokens semânticos** (CSS custom properties em `src/index.css`, mapeados
+  no `tailwind.config.js`): `primary` (terracota), `secondary`/`muted`
+  (creme), `accent` (oliva), `highlight` (mustarda), `destructive`. Classes
+  como `bg-primary`, `text-foreground`, `text-muted-foreground`. **Nunca**
+  use cores literais do Tailwind (`orange-500`, `bg-gray-50`, `emerald-600`…)
+  — ver `docs/DESIGN_SYSTEM.md` para a paleta completa e o racional.
+- Classes utilitárias reaproveitáveis em `index.css`: `.arena-page`,
+  `.arena-panel`, `.arena-panel-strong`, `.arena-heading`, `.arena-chip` —
+  dão o efeito de vidro/gradiente padrão da plataforma.
+- `framer-motion` para entrada/hover e revelação em scroll (`whileInView`,
+  `viewport={{ once: true }}`) — usado com moderação (ver princípios de
+  motion em `docs/DESIGN_SYSTEM.md`), não em toda lista.
 - `cn()` (`core/lib/utils`) para compor classes (clsx + tailwind-merge).
-- **Layout** (`src/components/Layout.jsx`): shell autenticado — header glass
-  sticky, nav pill central (desktop), menu mobile em dropdown, sino de
-  notificações (`NotificationsMenu`), menu de usuário/avatar. Páginas
-  públicas "standalone" (Home, Login, Onboarding) renderizam fora do shell
-  (`STANDALONE_PAGES` em `Layout.jsx`).
-- Identidade visual "terracota/creme/oliva" (ver `docs/DESIGN_SYSTEM.md`)
-  via tokens CSS em `src/index.css` — os **nomes** das variáveis shadcn
-  padrão (`--primary`, `--secondary`, `--accent`…) não mudam, só os valores.
-- `framer-motion` para scroll-reveal e hover-lift sutis, sempre respeitando
-  `prefers-reduced-motion`.
-- Ícones: `lucide-react`. Datas: `date-fns` / `date-fns-tz` (fuso BRT).
+- **Layout** (`src/components/Layout.jsx`): shell — header com navegação,
+  sino de notificações, menu de usuário. Páginas públicas "standalone"
+  ainda passam pelo mesmo `Layout` (ver `withLayout()` em `App.jsx`).
+- Ícones: `lucide-react`. Datas: `date-fns`.
 
 ## Firebase
 
-- `core/config/firebase.js` inicializa app, Auth e Firestore. **Database
-  nomeada** `viralata` (não a `(default)`), via `getFirestore(app, dbId)` —
-  configurável por `VITE_FIRESTORE_DATABASE_ID`.
-- Sem backend próprio / Cloud Functions para a maior parte do app: **todas
-  as regras de acesso vivem em `firestore.rules`**. Qualquer nova coleção
-  precisa de regra correspondente, escrita de forma **aditiva** (não relaxar
-  nem quebrar coleções existentes). Exceção: `functions/` tem uma única
-  Cloud Function de apoio para o Radar de Pets (alerta assíncrono).
+- `core/config/firebase.js` inicializa app, Auth, Firestore, Storage e
+  Functions. **Database nomeada** `viralata` (não a `(default)`), via
+  `getFirestore(app, 'viralata')`.
+- Quase sem backend próprio: **a maioria das regras de acesso vive em
+  `firestore.rules`**. Qualquer nova coleção precisa de regra
+  correspondente, escrita de forma **aditiva** (não relaxar nem quebrar
+  coleções existentes). Validar mudanças com o emulador local antes de
+  commitar (`firebase emulators:start --only firestore`).
+- **Cloud Functions** (`functions/`, pacote Node separado): único gatilho
+  de servidor, usado só onde o client genuinamente não consegue resolver
+  (reagir à criação de pets de *qualquer* usuário para o Radar de Pets). Ver
+  `docs/AI_CONTEXT.md` seção 8. Não adicione lógica de negócio geral aqui —
+  é a exceção, não o padrão da casa.
 - `core/services/baseService.js` concentra helpers comuns de acesso.
-- `auditService` grava `audit_logs` com `{ action, actor, details,
-  created_at }` — chamado após mutações relevantes. Rótulos legíveis em
-  `AUDIT_ACTION_LABELS`, exibidos em `/admin/auditoria`
-  (`AuditLogTable.jsx`).
+- `auditService` grava `audit_logs` com `{ action, actor, details, created_at }`
+  — chamado após mutações relevantes. Coleção imutável (sem update/delete).
 - `observabilityService` registra page views (`recordPageView` em `App.jsx`).
-- `storageService` para upload de imagens (pets, denúncias, mural, avatar).
-- `platformSettingsService` para feature flags globais (doc único
-  `platform_settings/global`).
+- `storageService` para upload de imagens/anexos (`uploads/{uid}/{folder}/...`).
+- `dataExportService` / `deleteAccountService`: exportação e exclusão de
+  dados do próprio usuário (LGPD), acionados a partir de `pages/Profile.jsx`.
 
 ## Roteamento
 
 - `react-router-dom` (BrowserRouter), `basename = import.meta.env.BASE_URL`.
-- Páginas via `React.lazy` + `Suspense` (code splitting) — ver tabela
-  completa de rotas em `docs/AI_CONTEXT.md`.
-- Guards: `ProtectedRoute` (exige auth), `AdminRoute` (exige
-  `platform_admin`), `BannedGate` (bloqueia usuário banido).
-- `/organizacoes` (hub de gestão, autenticado) e `/comunidade` (diretório
-  público) são rotas irmãs sobre o mesmo domínio de organizações — ver
-  `docs/MODULES.md`. Rotas legadas (`/organizacoes/:orgId` e
-  `/organizacoes/:orgId/eventos/:eventId`, do tempo em que `/organizacoes`
-  era o diretório) redirecionam para `/comunidade/...` em vez de quebrar
-  links de notificações antigas.
+- Páginas via `React.lazy` + `Suspense` (code splitting).
+- Guards: `ProtectedRoute` (exige auth), `OnboardedRoute` (auth + perfil
+  completo), `AdminRoute` (exige `platform_admin`), `BannedGate` (bloqueia
+  usuário banido globalmente, envolvendo todas as rotas).
 
-## PWA (opcional, aditivo)
+## PWA
 
-- Atrás da flag `VITE_PWA_ENABLED` (desligada por padrão). Desligada:
-  `registerPwa()` desregistra qualquer service worker existente e o botão
-  de instalação some — **zero impacto**.
-- Ligada (apenas build de produção, nunca em DEV): registra
-  **`public/sw.js`** — um service worker próprio, escrito à mão (não é o
-  Workbox auto-gerado pelo `vite-plugin-pwa`, que também roda no build via
-  `generateSW` mas serve outro propósito de cache; o SW registrado de fato
-  pelo app é sempre `public/sw.js`, copiado verbatim para `dist/sw.js` pelo
-  Vite). Estratégia: navegação em network-first com fallback offline para o
-  shell; assets com hash em cache-first; nunca intercepta tráfego
-  cross-origin (Firebase/Google).
-- Ícones gerados por `scripts/generate-pwa-icons.mjs` (saída em `public/`).
-- Headers de cache em `firebase.json`: assets imutáveis (1 ano);
-  `index.html`/`sw.js`/manifest com `no-cache`.
+- Manifest e ícones em `public/` com a identidade visual da Viralata (paw
+  print terracota). Service worker via `vite-plugin-pwa` (`generateSW`).
+- Sem flag de ativação — a PWA é parte padrão do build de produção.
 
 ## Testes
 
-- **Vitest** (unit) — foco no `domain/` de cada módulo (matching de adoção,
-  prioridade de espera, permissões de organização, importação de planilha,
-  enquetes de fórum). 80 testes.
-- **Playwright** (E2E) — `npm run e2e` (instalar com `npm run e2e:install`);
-  hoje cobre só fumaça de páginas públicas
-  (`tests/e2e/public-routes.spec.js`), não roda em CI.
+- **Vitest** (unit) — foco no `domain/` de cada módulo (match de
+  compatibilidade, prioridade do feed, enquetes de fórum, conversas) e nos
+  serviços puros (`metricsService`). ~61 testes no app; `functions/` tem
+  suíte própria (`npm --prefix functions test`) cobrindo a cópia de
+  `isCompatible()` usada pela Cloud Function.
+- **Playwright** — usado ad-hoc para QA visual (screenshots de páginas
+  durante o desenvolvimento), sem suíte de E2E fixa no repositório hoje.
 - Convenção: cada arquivo puro de domínio tem `*.test.js` ao lado.
-- Antes de qualquer push: `npm run lint && npm run build && npm test`.
+- Antes de qualquer push: `npm run lint && npm run build && npm test`
+  (e `npm --prefix functions test` se `functions/` mudou).
 
 ## CI/CD
 
-- `.github/workflows/deploy.yml` — em push para `main`: build e deploy no
-  Firebase Hosting (site `viralata`) + publicação das regras do Firestore.
-- Variáveis de build: `VITE_FIREBASE_*`, `VITE_FIRESTORE_DATABASE_ID`,
-  flags de analytics/performance/PWA. Ver `.env.example`.
+- `.github/workflows/deploy.yml` ("Deploy Viralata → Firebase Hosting") — em
+  push para `main`: instala dependências do app e das Functions, roda os
+  testes de ambos, builda o app e faz deploy no Firebase Hosting (site
+  `viralata`) e nas Cloud Functions. Em PRs, gera um preview channel.
+- Regras do Firestore/Storage **não** são publicadas por este workflow —
+  publique manualmente (`firebase deploy --only firestore:rules,storage`)
+  após validar no emulador.
+- Variáveis de build: `VITE_FIREBASE_*`, `VITE_FIRESTORE_DATABASE_ID`. Ver
+  `.env.example`.
 
 ## Convenções de código
 

@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-route
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider, useAuth } from '@/core/lib/FirebaseAuthContext';
 import { FeatureFlagsProvider } from '@/core/lib/FeatureFlagsContext';
-import { ConfirmProvider } from '@/components/ui/confirm-provider';
+import { ThemeProvider } from '@/core/lib/ThemeContext';
 import Layout from '@/components/Layout';
 import { CookieBanner } from '@/components/CookieBanner';
 import CommandPalette from '@/components/CommandPalette';
@@ -104,18 +104,7 @@ const AdminUsers = lazy(() => import('@/modules/admin/pages/AdminUsers'));
 const AdminOrganizations = lazy(() => import('@/modules/admin/pages/AdminOrganizations'));
 const AdminCommunities = lazy(() => import('@/modules/admin/pages/AdminCommunities'));
 const AdminMetrics = lazy(() => import('@/modules/admin/pages/AdminMetrics'));
-const AdminAuditLog = lazy(() => import('@/modules/admin/pages/AdminAuditLog'));
-const AdminNotifications = lazy(() => import('@/modules/admin/pages/AdminNotifications'));
-const AdminPlatformSettings = lazy(() => import('@/modules/admin/pages/AdminPlatformSettings'));
-const AdminFlags = lazy(() => import('@/modules/admin/pages/AdminFlags'));
-// Fase 21: páginas de saúde, alertas de segurança, configuração de alertas e
-// gerenciamento de platform_admins. Cada uma é linkada no AdminDashboard.
-const PlatformHealth = lazy(() => import('@/modules/admin/pages/PlatformHealth'));
-const SecurityAlerts = lazy(() => import('@/modules/admin/pages/SecurityAlerts'));
-const AlertConfigs = lazy(() => import('@/modules/admin/pages/AlertConfigs'));
-const AdminUserManagement = lazy(() => import('@/modules/admin/pages/AdminUserManagement'));
-// Mock data — painel admin para carregar/limpar dados demo (TASK-400).
-const AdminMockData = lazy(() => import('@/modules/admin/pages/AdminMockData'));
+const AdminContentEditor = lazy(() => import('@/modules/admin/pages/AdminContentEditor'));
 
 // ─── QueryClient ─────────────────────────────────────────────────────────────
 const queryClient = new QueryClient({
@@ -168,10 +157,10 @@ function BannedGate({ children }) {
 
 function FullScreenSpinner() {
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-white">
+    <div className="fixed inset-0 flex items-center justify-center bg-background">
       <div className="flex flex-col items-center gap-3">
         <div className="text-3xl">🐾</div>
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-orange-500 border-t-transparent" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
       </div>
     </div>
   );
@@ -257,6 +246,7 @@ function FCMSetup() {
 // ─── App ──────────────────────────────────────────────────────────────────────
 export default function App() {
   return (
+    <ThemeProvider>
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <FeatureFlagsProvider>
@@ -491,40 +481,8 @@ export default function App() {
                   element={<AdminRoute>{withLayout('AdminMetrics', AdminMetrics)}</AdminRoute>}
                 />
                 <Route
-                  path="/admin/auditoria"
-                  element={<AdminRoute>{withLayout('AdminAuditLog', AdminAuditLog)}</AdminRoute>}
-                />
-                <Route
-                  path="/admin/notificacoes"
-                  element={<AdminRoute>{withLayout('AdminNotifications', AdminNotifications)}</AdminRoute>}
-                />
-                <Route
-                  path="/admin/configuracoes"
-                  element={<AdminRoute>{withLayout('AdminPlatformSettings', AdminPlatformSettings)}</AdminRoute>}
-                />
-                <Route
-                  path="/admin/flags"
-                  element={<AdminRoute>{withLayout('AdminFlags', AdminFlags)}</AdminRoute>}
-                />
-                <Route
-                  path="/admin/saude"
-                  element={<AdminRoute>{withLayout('PlatformHealth', PlatformHealth)}</AdminRoute>}
-                />
-                <Route
-                  path="/admin/security-alerts"
-                  element={<AdminRoute>{withLayout('SecurityAlerts', SecurityAlerts)}</AdminRoute>}
-                />
-                <Route
-                  path="/admin/alertas"
-                  element={<AdminRoute>{withLayout('AlertConfigs', AlertConfigs)}</AdminRoute>}
-                />
-                <Route
-                  path="/admin/admins"
-                  element={<AdminRoute>{withLayout('AdminUserManagement', AdminUserManagement)}</AdminRoute>}
-                />
-                <Route
-                  path="/admin/mock-data"
-                  element={<AdminRoute>{withLayout('AdminMockData', AdminMockData)}</AdminRoute>}
+                  path="/admin/conteudo"
+                  element={<AdminRoute>{withLayout('AdminContentEditor', AdminContentEditor)}</AdminRoute>}
                 />
 
                 {/* ── Redirects legados ─────────────────────────────────── */}
@@ -550,5 +508,6 @@ export default function App() {
         </FeatureFlagsProvider>
       </AuthProvider>
     </QueryClientProvider>
+    </ThemeProvider>
   );
 }

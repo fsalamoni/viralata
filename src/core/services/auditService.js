@@ -53,66 +53,7 @@ export const AUDIT_ACTION_LABELS = {
   adoption_rating_created: 'Avaliação pós-adoção registrada',
   abuse_report_created: 'Denúncia de maus-tratos registrada',
   platform_feature_flag_changed: 'Feature flag alterada (admin)',
-  platform_settings_updated: 'Configurações globais alteradas',
-  community_created: 'Comunidade criada',
-  community_updated: 'Comunidade atualizada',
-  community_deleted: 'Comunidade excluída',
-  community_post_created: 'Post publicado na comunidade',
-  community_post_deleted: 'Post removido da comunidade',
-  // ─── Fase 19: Termos legais (Guia de Implementação Legal v2) ─────
-  // Cada aceite é gravado com `document_version` + `signature_text`
-  // + `ip_address` (best-effort via header CF) + `user_agent`. Esses
-  // campos atendem ao requisito jurídico do art. 6º da Lei 14.063/2020
-  // (assinatura eletrônica) + art. 37 da LGPD (registro de operações).
-  terms_accepted: 'Termos de Uso aceitos (cadastro)',
-  privacy_policy_accepted: 'Política de Privacidade aceita (cadastro)',
-  code_of_conduct_accepted: 'Código de Conduta aceito (cadastro)',
-  adoption_terms_accepted: 'Termo de Adoção assinado',
-  donation_terms_accepted: 'Política de Doações aceita',
-  volunteer_terms_accepted: 'Termo de Voluntariado aceito',
-  foster_terms_accepted: 'Termo de Lar Temporário aceito',
-  shelter_terms_accepted: 'Termo de Adesão de Abrigo aceito (com DPA)',
-  // ─── Fase 21: Platform health (admin master) ─────────────────────
-  platform_admin_promoted: 'Platform admin promovido',
-  platform_admin_demoted: 'Platform admin rebaixado',
-  platform_alert_config_created: 'Configuração de alerta criada',
-  platform_alert_config_updated: 'Configuração de alerta atualizada',
-  platform_alert_config_deleted: 'Configuração de alerta removida',
-  platform_alert_triggered: 'Alerta da plataforma disparado',
-  platform_billing_summary_updated: 'Resumo de billing da plataforma atualizado',
-  // ─── LGPD Art. 18 VI: cascade-anonymize de dados de voluntário ────
-  // Disparado por deleteAccountService ao excluir conta. Mantém
-  // terms_accepted_at/terms_version (Lei 14.063/2020) e remove demais PII.
-  volunteer_data_anonymized: 'Dados de voluntário anonimizados (LGPD)',
-  // ─── TASK-233: ações de voluntariado disparadas por volunteerProfileService
-  // e volunteerParticipationService. Sem label, o admin audit exibe o slug
-  // cru (fallback `action`), o que dificulta a leitura da trilha.
-  volunteer_joined_shelter: 'Voluntário ingressou no abrigo',
-  volunteer_profile_created: 'Perfil de voluntário criado',
-  volunteer_profile_updated: 'Perfil de voluntário atualizado',
-  volunteer_roster_updated: 'Vínculo de voluntário atualizado',
-  volunteer_roster_deleted: 'Vínculo de voluntário removido',
-  volunteer_participation_created: 'Participação de voluntário criada',
-  volunteer_participation_updated: 'Participação de voluntário atualizada',
-  volunteer_participation_deleted: 'Participação de voluntário removida',
-  volunteer_check_in: 'Check-in de voluntário em turno',
-  volunteer_check_out: 'Check-out de voluntário de turno',
-  volunteer_consent_withdrawn: 'Consentimento de voluntariado revogado (LGPD)',
-  cookie_consent_recorded: 'Consentimento de cookies registrado',
-  admin_broadcast_sent: 'Notificação segmentada enviada (admin)',
-  // ─── TASK-350: Community engagement (curtidas, comentários, RSVP, eventos) ───
-  community_post_liked: 'Post da comunidade curtido',
-  community_post_unliked: 'Curtida em post da comunidade removida',
-  community_post_commented: 'Comentário em post da comunidade criado',
-  community_comment_deleted: 'Comentário em post da comunidade removido',
-  community_event_rsvp_created: 'RSVP em evento de comunidade registrado',
-  community_event_rsvp_cancelled: 'RSVP em evento de comunidade cancelado',
-  community_event_created: 'Evento de comunidade criado',
-  community_event_updated: 'Evento de comunidade atualizado',
-  community_event_deleted: 'Evento de comunidade removido',
-  community_forum_thread_created: 'Tópico de fórum de comunidade criado',
-  community_forum_thread_updated: 'Tópico de fórum de comunidade atualizado',
-  community_forum_thread_deleted: 'Tópico de fórum de comunidade removido',
+  platform_content_updated: 'Conteúdo institucional atualizado (admin)',
 };
 
 // ─── TASK-217: Categorias de retenção (auditLogPurgeCron) ──────────────

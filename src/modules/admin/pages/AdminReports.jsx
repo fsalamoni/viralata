@@ -21,12 +21,8 @@ export default function AdminReports() {
   if (!isPlatformAdmin) return null;
 
   return (
-    <div className={wrapperClass}>
-      <PageHero
-        eyebrow="Admin · Denúncias"
-        title="Denúncias de Maus-Tratos"
-        description="Denúncias enviadas pelo público. Apenas o admin master tem acesso. Cada denúncia pode gerar um PDF formatado para entrega à Delegacia."
-      />
+    <div className="max-w-4xl mx-auto px-4 py-6 space-y-4">
+      <h1 className="text-xl font-bold text-foreground">Denúncias de Maus-Tratos</h1>
       {loading ? <p className="text-muted-foreground">Carregando...</p> : (
         <div className="space-y-3">
           {reports.map((r) => (
@@ -37,7 +33,7 @@ export default function AdminReports() {
                 </span>
                 <Badge variant={r.status === 'pending' ? 'destructive' : 'secondary'}>{r.status}</Badge>
               </div>
-              <p className="text-sm text-foreground/80 line-clamp-3">{r.description}</p>
+              <p className="text-sm text-foreground line-clamp-3">{r.description}</p>
               {r.address && <p className="text-xs text-muted-foreground">📍 {r.address}</p>}
               {r.photo_urls?.length > 0 && (
                 <div className="flex gap-2">

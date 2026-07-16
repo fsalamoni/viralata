@@ -87,9 +87,7 @@ export default function MessageBubble({ message, isOwn, showAuthor, onEdit, onDe
         <div
           className={cn(
             'rounded-2xl px-3 py-2 text-sm shadow-sm',
-            isOwn
-              ? 'rounded-br-sm bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--highlight))_100%)] text-primary-foreground'
-              : 'rounded-bl-sm bg-secondary text-secondary-foreground border border-border',
+            isOwn ? 'rounded-br-sm bg-primary text-primary-foreground' : 'rounded-bl-sm bg-card text-foreground border border-primary/10',
           )}
         >
           {editing ? (
@@ -99,13 +97,13 @@ export default function MessageBubble({ message, isOwn, showAuthor, onEdit, onDe
                 onChange={(e) => setDraft(e.target.value)}
                 rows={2}
                 autoFocus
-                className="w-full resize-y rounded-md border border-border bg-card/95 px-2 py-1.5 text-sm text-foreground outline-none"
+                className="w-full resize-y rounded-md border border-white/40 bg-white/95 px-2 py-1.5 text-sm text-foreground outline-none"
               />
               <div className="flex justify-end gap-1.5">
                 <Button size="sm" variant="ghost" className={cn('h-7', isOwn && 'text-primary-foreground hover:bg-white/15 hover:text-primary-foreground')} onClick={() => setEditing(false)} disabled={busy}>
                   <X className="mr-1 h-3.5 w-3.5" /> Cancelar
                 </Button>
-                <Button size="sm" className="h-7 bg-card text-primary hover:bg-primary/10" onClick={saveEdit} disabled={busy}>
+                <Button size="sm" className="h-7 bg-white text-primary hover:bg-primary/10" onClick={saveEdit} disabled={busy}>
                   <Check className="mr-1 h-3.5 w-3.5" /> Salvar
                 </Button>
               </div>
@@ -119,7 +117,7 @@ export default function MessageBubble({ message, isOwn, showAuthor, onEdit, onDe
                   className={cn(hasText && 'mt-2', isOwn && '[&_a]:text-primary-foreground')}
                 />
               )}
-              <div className={cn('mt-1 flex items-center justify-end gap-1 text-[10px]', isOwn ? 'text-primary-foreground/80' : 'text-muted-foreground/80')}>
+              <div className={cn('mt-1 flex items-center justify-end gap-1 text-[10px]', isOwn ? 'text-primary-foreground/80' : 'text-muted-foreground')}>
                 {message.edited && <span>editada</span>}
                 <span>{formatTime(message.created_at_ms)}</span>
               </div>
@@ -132,7 +130,7 @@ export default function MessageBubble({ message, isOwn, showAuthor, onEdit, onDe
         <div className="self-center opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground/80">
+              <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground">
                 <MoreVertical className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>

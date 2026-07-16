@@ -32,8 +32,8 @@ export default class ErrorBoundary extends React.Component {
       );
 
       return (
-        <div className="min-h-screen flex items-center justify-center bg-secondary/40 p-6">
-          <div className="max-w-3xl w-full bg-white rounded-lg shadow p-6 border">
+        <div className="min-h-screen flex items-center justify-center bg-secondary p-6">
+          <div className="max-w-md w-full bg-card rounded-lg shadow p-6 border">
             <h1 className="text-xl font-semibold text-foreground mb-2">Algo deu errado</h1>
             <p className="text-sm text-muted-foreground mb-4">
               Ocorreu um erro inesperado. Recarregue a página para tentar novamente.
@@ -44,42 +44,10 @@ export default class ErrorBoundary extends React.Component {
             >
               Recarregar
             </button>
-            {(import.meta.env.DEV || isDebug) && (
-              <div className="mt-4 space-y-3">
-                <div className="p-3 bg-red-50 border border-red-300 rounded text-xs">
-                  <p className="font-bold text-red-700 mb-1">{errorText}</p>
-                </div>
-                {stackText && (
-                  <details open>
-                    <summary className="cursor-pointer text-xs font-medium mb-1">Stack trace</summary>
-                    <pre className="p-3 bg-secondary rounded text-xs overflow-auto max-h-64 whitespace-pre-wrap">
-                      {stackText}
-                    </pre>
-                  </details>
-                )}
-                {componentStack && (
-                  <details>
-                    <summary className="cursor-pointer text-xs font-medium mb-1">Component stack</summary>
-                    <pre className="p-3 bg-secondary rounded text-xs overflow-auto max-h-64 whitespace-pre-wrap">
-                      {componentStack}
-                    </pre>
-                  </details>
-                )}
-                <button
-                  type="button"
-                  onClick={() => {
-                    const text = `ERROR: ${errorText}\n\nSTACK:\n${stackText}\n\nCOMPONENT STACK:\n${componentStack}`;
-                    if (navigator.clipboard) {
-                      navigator.clipboard.writeText(text).then(() => alert('Erro copiado!'));
-                    } else {
-                      window.prompt('Copie o erro:', text);
-                    }
-                  }}
-                  className="text-xs px-3 py-1.5 border rounded"
-                >
-                  Copiar erro completo
-                </button>
-              </div>
+            {import.meta.env.DEV && this.state.error && (
+              <pre className="mt-4 p-3 bg-secondary rounded text-xs overflow-auto max-h-64">
+                {String(this.state.error?.stack || this.state.error)}
+              </pre>
             )}
           </div>
         </div>

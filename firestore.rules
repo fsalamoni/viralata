@@ -53,55 +53,29 @@ service cloud.firestore {
     function eventClubId(eventId) {
       return get(/databases/$(database)/documents/club_events/$(eventId)).data.club_id;
     }
-    // Permissão granular de um membro comum para editar os pets do clube
-    // (admins já podem via isClubAdmin, independente desta flag).
-    function canEditClubPets(clubId) {
-      return isAuth() && exists(/databases/$(database)/documents/club_members/$(clubId + '_' + request.auth.uid))
-        && get(/databases/$(database)/documents/club_members/$(clubId + '_' + request.auth.uid)).data.get('permissions', {}).get('edit_pets', false) == true;
+    // Só quem criou o clube pode se auto-nomear admin ao criar o primeiro
+    // club_members (bootstrap) — created_by é imutável desde a criação do
+    // documento `clubs` (a regra de create do clube já trava esse campo).
+    function isClubCreator(clubId) {
+      return isAuth() && get(/databases/$(database)/documents/clubs/$(clubId)).data.created_by == request.auth.uid;
     }
-    // Permissão granular do painel de administração da organização
-    // (`animals`, `finance`, `donations`, `feed`, `team` — ver
-    // src/modules/organizations/domain/permissions.js). Admins já têm tudo
-    // via isClubAdmin, independente desta flag.
+    // Permissões granulares de um membro comum do clube (admins já podem
+    // tudo via isClubAdmin, independente destas flags).
     function hasClubPermission(clubId, key) {
       return isAuth() && exists(/databases/$(database)/documents/club_members/$(clubId + '_' + request.auth.uid))
         && get(/databases/$(database)/documents/club_members/$(clubId + '_' + request.auth.uid)).data.get('permissions', {}).get(key, false) == true;
     }
-    // Proprietário do clube (dono de todas as permissões, protegido contra
-    // remoção/rebaixamento por outros admins — ver domain/permissions.js).
-    function isClubOwnerUid(clubId, uid) {
-      return exists(/databases/$(database)/documents/clubs/$(clubId))
-        && get(/databases/$(database)/documents/clubs/$(clubId)).data.created_by == uid;
-    }
-    // TASK-230: server-side roster gate para participações de voluntários.
-    // Só quem está com rostagem `active` E background check ok (ou não exigido)
-    // pode ser inserido como participante de evento. Bloqueia inserts
-    // forjados via client (que poderiam falsificar horas_logged).
-    function isVolunteerInRoster(clubId, volunteerUid) {
-      return exists(/databases/$(database)/documents/clubs/$(clubId)/volunteers/$(volunteerUid))
-        && get(/databases/$(database)/documents/clubs/$(clubId)/volunteers/$(volunteerUid)).data.status == 'active'
-        && (get(/databases/$(database)/documents/clubs/$(clubId)/volunteers/$(volunteerUid)).data.background_check_status == 'not_required'
-          || get(/databases/$(database)/documents/clubs/$(clubId)/volunteers/$(volunteerUid)).data.background_check_status == 'approved');
-    }
-    // TASK-226: gate App Check. Quando o Firebase App Check está enforcement-
-    // on (produção), o claim `app_check` é injetado em request.auth.token.
-    // Em dev/emulador, o claim não existe — daí o fallback que libera
-    // platform_admin (sempre protegido por outro caminho) e tokens
-    // custom-issued pelo emulador Auth. A regra é conservadora:
-    // libere APENAS onde existe um caminho alternativo de confiança
-    // (platform admin, emulador), nunca "permitir tudo se sem claim".
-    function isAppCheckVerified() {
-      return isAuth() && (
-        request.auth.token.app_check == true
-        || request.auth.token.firebase_sign_in_provider == 'custom'
-        || isPlatformAdmin()
-      );
-    }
-    // Quem pode gerenciar um pet (dono pessoa física, ou clube dono via admin/permissão).
+    function canEditClubPets(clubId) { return hasClubPermission(clubId, 'edit_pets'); }
+    function canManageClubTeam(clubId) { return hasClubPermission(clubId, 'manage_team'); }
+    function canReplyClubChat(clubId) { return hasClubPermission(clubId, 'reply_chat'); }
+    // Quem pode gerenciar um pet (dono pessoa física, ou clube dono via
+    // admin, permissão de editar pets, ou permissão de responder o chat —
+    // esta última precisa também mover o pet para "em processo" ao abrir
+    // uma conversa com um interessado).
     function canManagePet(petData) {
       return petData.owner_id == request.auth.uid ||
         (petData.get('owner_type', '') == 'organization' && (
-          isClubOwnerOrAdmin(petData.owner_id) || canEditClubPets(petData.owner_id) || hasClubPermission(petData.owner_id, 'animals')
+          isClubAdmin(petData.owner_id) || canEditClubPets(petData.owner_id) || canReplyClubChat(petData.owner_id)
         ));
     }
     // Dono fixo da plataforma (bootstrap do primeiro platform_admin) — espelha
@@ -266,20 +240,7 @@ service cloud.firestore {
           hasClubPermission(request.resource.data.owner_id, 'animals')
         ))
       );
-      allow update: if isAuth() && (
-        resource.data.owner_id == request.auth.uid ||
-        (resource.data.owner_type == 'organization' && (
-          isClubOwnerOrAdmin(resource.data.owner_id) || canEditClubPets(resource.data.owner_id) || hasClubPermission(resource.data.owner_id, 'animals')
-        )) ||
-        isPlatformAdmin()
-      ) && (
-        // Defeito de segurança: o owner_id NÃO pode ser trocado por update,
-        // mesmo pelo próprio dono. Apenas platform_admin pode reatribuir.
-        // Sem isso, qualquer usuário autenticado poderia 'roubar' pets
-        // de outros criando update com novo owner_id.
-        request.resource.data.owner_id == resource.data.owner_id ||
-        isPlatformAdmin()
-      );
+      allow update: if isAuth() && (canManagePet(resource.data) || isPlatformAdmin());
       allow delete: if isAuth() && (
         resource.data.owner_id == request.auth.uid ||
         (resource.data.owner_type == 'organization' && (
@@ -768,73 +729,8 @@ service cloud.firestore {
       allow write: if isPlatformAdmin();
     }
 
-    // ─── Fase 21: Painel de Saúde da Plataforma (admin master) ─────────────
-    // Coleções de observabilidade/admin. Apenas platform_admin lê; escrita
-    // é via Cloud Function (admin SDK) para os snapshots, e via admin
-    // client para billing/alert_config.
-    match /platform_health_snapshots/{snapshotId} {
-      allow read: if isAuth() && isPlatformAdmin();
-      allow write: if false; // só Cloud Function (platformHealthCron)
-    }
-
-    match /platform_alert_config/{configId} {
-      allow read: if isAuth() && isPlatformAdmin();
-      allow create, update, delete: if isAuth() && isPlatformAdmin();
-    }
-
-    match /platform_alert_events/{eventId} {
-      allow read: if isAuth() && isPlatformAdmin();
-      // Escrita só pela Cloud Function (adminAlerts) e pela trigger
-      // server-side via adminAlertsService.evaluateAlerts.
-      allow write: if false;
-    }
-
-    match /platform_billing/{periodId} {
-      allow read: if isAuth() && isPlatformAdmin();
-      allow create, update: if isAuth() && isPlatformAdmin();
-      allow delete: if false; // imutável
-    }
-
-    // function_invocations + slow_queries: instrumentação interna.
-    // Apenas Cloud Function escreve (admin SDK); platform_admin lê.
-    match /function_invocations/{invocationId} {
-      allow read: if isAuth() && isPlatformAdmin();
-      allow write: if false;
-    }
-
-    match /slow_queries/{queryId} {
-      allow read: if isAuth() && isPlatformAdmin();
-      allow write: if false;
-    }
-
-    match /deploys/{deployId} {
-      allow read: if isAuth() && isPlatformAdmin();
-      allow write: if false; // Cloud Function / CI only
-    }
-
-    // ─── Search Index (TASK-312) ────────────────────────────────────────────────
-    // Doc: Coleções denormalizadas mantidas por Cloud Functions (Admin SDK).
-    // Writes: Admin SDK (Cloud Functions) — bypassa todas as regras.
-    // Reads: seguem as mesmas regras da coleção fonte.
-    match /search_pets/{petId} {
-      allow read: if isAuth();              // mesmo acesso que /pets (feed auth'd)
-      allow write: if false;                 // Admin SDK only (CF onPetWrite)
-    }
-    match /search_clubs/{clubId} {
-      allow read: if true;                   // público (como /clubs directory)
-      allow write: if false;                 // Admin SDK only (CF onClubWrite)
-    }
-    match /search_fosters/{fosterId} {
-      allow read: if isAuth();              // mesmo acesso que /fosters
-      allow write: if false;                // Admin SDK only (CF onFosterWrite)
-    }
-    match /search_volunteers/{volunteerId} {
-      allow read: if isAuth();              // LGPD: só staff autenticado
-      allow write: if false;               // Admin SDK only (CF onVolunteerWrite)
-    }
-
-    // ─── Comunidades (entidade editorial/global) ───────────────────────────────
-    match /communities/{communityId} {
+    // ─── Conteúdo institucional editável (Termos, Privacidade, Legislação) ─────
+    match /platform_content/{pageKey} {
       allow read: if true;
       allow write: if isPlatformAdmin();
     }
@@ -1345,34 +1241,34 @@ service cloud.firestore {
 
     match /club_members/{memberId} {
       allow read: if isAuth();
-      // Autoingresso (código de convite / aceitar convite) só pode criar a
-      // própria associação como membro comum, sem `permissions` — impede que
-      // o usuário se autopromova a admin ou se autoconceda permissões
-      // granulares (animals/finance/donations/feed/team) direto pelo SDK.
-      // Exceção: o próprio criador do clube (clubs.created_by) pode
-      // autocriar sua associação de admin — é exatamente o passo 2 do fluxo
-      // de criação de clube (createClub), sequencial e sem outro admin ainda
-      // para fazer essa criação por ele. Segue sem `permissions`.
-      // Qualquer outro papel/permissão só um admin existente pode conceder.
+      // Um membro só pode se auto-cadastrar como 'member' e sem permissões —
+      // exceto o criador do clube, que pode se auto-nomear 'admin' no
+      // bootstrap (criação do clube). Sem essa trava, qualquer usuário
+      // autenticado poderia se auto-promover a admin de qualquer clube
+      // escrevendo o documento diretamente, sem passar pelas telas de
+      // ingresso/convite.
       allow create: if isAuth() && (
-        (request.resource.data.user_id == request.auth.uid &&
-          request.resource.data.get('role', 'member') == 'member' &&
-          !('permissions' in request.resource.data)) ||
-        (request.resource.data.user_id == request.auth.uid &&
-          request.resource.data.get('role', '') == 'admin' &&
-          !('permissions' in request.resource.data) &&
-          isClubOwnerUid(request.resource.data.club_id, request.auth.uid)) ||
-        isClubOwnerOrAdmin(request.resource.data.club_id) ||
-        isPlatformAdmin()
+        isPlatformAdmin() ||
+        isClubAdmin(request.resource.data.club_id) ||
+        (canManageClubTeam(request.resource.data.club_id)
+          && request.resource.data.get('role', 'member') == 'member'
+          && request.resource.data.get('permissions', {}) == {}) ||
+        (request.resource.data.user_id == request.auth.uid
+          && request.resource.data.get('permissions', {}) == {}
+          && (
+            request.resource.data.get('role', 'member') == 'member' ||
+            (request.resource.data.role == 'admin' && isClubCreator(request.resource.data.club_id))
+          ))
       );
-      // Proprietário é protegido: nem outro admin pode alterar seu papel/
-      // permissões, nem removê-lo — só ele mesmo (saindo do clube) ou um
-      // platform_admin.
-      allow update: if isPlatformAdmin() ||
-        (isClubOwnerOrAdmin(resource.data.club_id) && !isClubOwnerUid(resource.data.club_id, resource.data.user_id));
+      // Papel e permissões só mudam pela mão de um admin — escalação de
+      // privilégio não é delegável via canManageClubTeam.
+      allow update: if isClubAdmin(resource.data.club_id) || isPlatformAdmin();
+      // canManageClubTeam nunca remove um admin — só um admin remove outro
+      // admin (mesma trava que já existe para a role em si).
       allow delete: if isAuth() && (
         resource.data.user_id == request.auth.uid ||
-        (isClubOwnerOrAdmin(resource.data.club_id) && !isClubOwnerUid(resource.data.club_id, resource.data.user_id)) ||
+        isClubAdmin(resource.data.club_id) ||
+        (canManageClubTeam(resource.data.club_id) && resource.data.get('role', 'member') != 'admin') ||
         isPlatformAdmin()
       );
     }
@@ -1380,22 +1276,26 @@ service cloud.firestore {
     match /club_join_requests/{requestId} {
       allow read: if isAuth() && (
         resource.data.user_id == request.auth.uid ||
-        isClubOwnerOrAdmin(resource.data.club_id) ||
+        isClubAdmin(resource.data.club_id) ||
+        canManageClubTeam(resource.data.club_id) ||
         isPlatformAdmin()
       );
       allow create: if isAuth() && request.resource.data.user_id == request.auth.uid;
-      allow update, delete: if isClubOwnerOrAdmin(resource.data.club_id) || isPlatformAdmin();
+      allow update, delete: if isClubAdmin(resource.data.club_id) || canManageClubTeam(resource.data.club_id) || isPlatformAdmin();
     }
 
     match /club_member_invites/{inviteId} {
       allow read: if isAuth() && (
         resource.data.user_id == request.auth.uid ||
-        isClubOwnerOrAdmin(resource.data.club_id) ||
+        isClubAdmin(resource.data.club_id) ||
+        canManageClubTeam(resource.data.club_id) ||
         isPlatformAdmin()
       );
-      allow create: if isAuth() && isClubOwnerOrAdmin(request.resource.data.club_id) && request.resource.data.invited_by == request.auth.uid;
+      allow create: if isAuth()
+        && (isClubAdmin(request.resource.data.club_id) || canManageClubTeam(request.resource.data.club_id))
+        && request.resource.data.invited_by == request.auth.uid;
       allow update: if isAuth() && resource.data.user_id == request.auth.uid;
-      allow delete: if isClubOwnerOrAdmin(resource.data.club_id) || isPlatformAdmin();
+      allow delete: if isClubAdmin(resource.data.club_id) || canManageClubTeam(resource.data.club_id) || isPlatformAdmin();
     }
 
     match /club_events/{eventId} {

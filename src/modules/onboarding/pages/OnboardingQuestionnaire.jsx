@@ -191,30 +191,19 @@ export default function OnboardingQuestionnaire() {
   const StepIcon = current.icon || PawPrint;
 
   return (
-    <div className="arena-page arena-onboarding-glow flex min-h-screen items-center justify-center px-5 py-8">
-      <div className="w-full max-w-[480px]">
-        <div className="mb-[22px] text-center">
-          <div className="mx-auto flex h-[52px] w-[52px] items-center justify-center rounded-2xl bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--highlight))_100%)] text-white shadow-[0_16px_28px_-14px_hsl(17_72%_30%/0.6)]">
-            <StepIcon className="h-6 w-6" />
-          </div>
-          <h1 className="mt-3.5 mb-1 text-[22px] font-extrabold text-foreground">Vamos montar seu perfil</h1>
-          <p className="text-[13px] text-muted-foreground">Passo {step + 1} de {STEPS.length}</p>
-          <div className="mt-2.5 flex justify-center gap-[5px]">
-            {STEPS.map((st, i) => (
-              <PawPrint
-                key={st.id}
-                className="h-[15px] w-[15px]"
-                style={{ color: i <= step ? 'hsl(17 72% 45%)' : 'hsl(30 20% 85%)' }}
-                fill={i <= step ? 'hsl(17 72% 45%)' : 'none'}
-              />
-            ))}
-          </div>
+    <div className="arena-page min-h-screen flex items-center justify-center p-4">
+      <div className="w-full max-w-lg space-y-6">
+        <div className="text-center space-y-2">
+          <div className="text-4xl">🐾</div>
+          <h1 className="text-2xl font-bold text-foreground">Vamos montar seu perfil</h1>
+          <p className="text-muted-foreground text-sm">Passo {step + 1} de {STEPS.length}</p>
+          <Progress value={progress} className="h-2" />
         </div>
 
-        <div className="arena-panel rounded-[24px] px-6 py-[26px]">
-          <div className="mb-4.5">
-            <h2 className="mb-1 text-[17px] font-bold text-foreground">{current.title}</h2>
-            <p className="text-[13px] text-muted-foreground">{current.description}</p>
+        <div className="arena-panel rounded-2xl p-6 space-y-4">
+          <div>
+            <h2 className="text-lg font-semibold text-foreground">{current.title}</h2>
+            <p className="text-sm text-muted-foreground mt-1">{current.description}</p>
           </div>
 
           {current.type === 'radio' && (
@@ -226,8 +215,8 @@ export default function OnboardingQuestionnaire() {
                   onClick={() => setField(current.field, opt.value)}
                   className={`flex w-full items-center gap-3 text-left px-4 py-[14px] rounded-2xl border-2 transition-colors text-[14.5px] ${
                     answers[current.field] === opt.value
-                      ? 'border-primary bg-primary/[0.08] text-[hsl(14,55%,26%)] font-bold'
-                      : 'border-border bg-card text-foreground/80 font-semibold hover:border-primary/40'
+                      ? 'border-primary bg-primary/10 text-foreground font-medium'
+                      : 'border-border hover:border-primary/40 text-muted-foreground'
                   }`}
                 >
                   <opt.icon className="h-[19px] w-[19px] shrink-0" />
@@ -262,8 +251,8 @@ export default function OnboardingQuestionnaire() {
                   onClick={() => togglePet(opt.value)}
                   className={`flex w-full items-center gap-3 text-left px-4 py-[14px] rounded-2xl border-2 transition-colors text-[14.5px] ${
                     answers.other_pets.includes(opt.value)
-                      ? 'border-primary bg-primary/[0.08] text-[hsl(14,55%,26%)] font-bold'
-                      : 'border-border bg-card text-foreground/80 font-semibold hover:border-primary/40'
+                      ? 'border-primary bg-primary/10 text-foreground font-medium'
+                      : 'border-border hover:border-primary/40 text-muted-foreground'
                   }`}
                 >
                   <opt.icon className="h-[19px] w-[19px] shrink-0" />
@@ -275,8 +264,8 @@ export default function OnboardingQuestionnaire() {
                 onClick={() => setAnswers((prev) => ({ ...prev, other_pets: [] }))}
                 className={`flex w-full items-center gap-3 text-left px-4 py-[14px] rounded-2xl border-2 transition-colors text-[14.5px] ${
                   answers.other_pets.length === 0
-                    ? 'border-primary bg-primary/[0.08] text-[hsl(14,55%,26%)] font-bold'
-                    : 'border-border bg-card text-foreground/80 font-semibold hover:border-primary/40'
+                    ? 'border-primary bg-primary/10 text-foreground font-medium'
+                    : 'border-border hover:border-primary/40 text-muted-foreground'
                 }`}
               >
                 <Ban className="h-[19px] w-[19px] shrink-0" />
@@ -299,81 +288,57 @@ export default function OnboardingQuestionnaire() {
           )}
 
           {current.type === 'consent' && (
-            <div className="flex flex-col gap-3.5">
-              <p className="text-[13px] leading-[1.6] text-muted-foreground">
-                Para usar a Viralata, você precisa ler e aceitar os três documentos
-                abaixo. Todos eles ficam acessíveis no rodapé da plataforma a qualquer
-                momento, e você pode revogar ou exportar seus dados na página de perfil.
+            <div className="space-y-3">
+              <p className="text-sm text-muted-foreground">
+                Usamos os dados deste questionário para sugerir pets compatíveis com a sua
+                realidade. Você pode revisar nossa{' '}
+                <Link to="/politica-privacidade" target="_blank" className="text-primary underline">
+                  Política de Privacidade
+                </Link>{' '}
+                e nossos{' '}
+                <Link to="/termos" target="_blank" className="text-primary underline">
+                  Termos de Uso
+                </Link>. A qualquer momento você pode baixar ou excluir seus dados na página de
+                perfil.
               </p>
-              <LegalConsentRow
-                id="accepted_terms_of_use"
-                checked={answers.accepted_terms_of_use}
-                onChange={(v) => setField('accepted_terms_of_use', v)}
-                label={
-                  <>
-                    Li e aceito os{' '}
-                    <Link to="/legal/termos-de-uso" target="_blank" className="text-primary underline">
-                      Termos e Condições Gerais de Uso
-                    </Link>{' '}
-                    <span className="text-destructive">*</span>
-                  </>
-                }
-              />
-              <LegalConsentRow
-                id="accepted_privacy_policy"
-                checked={answers.accepted_privacy_policy}
-                onChange={(v) => setField('accepted_privacy_policy', v)}
-                label={
-                  <>
-                    Li e concordo com a{' '}
-                    <Link to="/legal/politica-de-privacidade" target="_blank" className="text-primary underline">
-                      Política de Privacidade e Proteção de Dados
-                    </Link>{' '}
-                    (LGPD) <span className="text-destructive">*</span>
-                  </>
-                }
-              />
-              <LegalConsentRow
-                id="accepted_code_of_conduct"
-                checked={answers.accepted_code_of_conduct}
-                onChange={(v) => setField('accepted_code_of_conduct', v)}
-                label={
-                  <>
-                    Li e aceito o{' '}
-                    <Link to="/legal/codigo-de-conduta" target="_blank" className="text-primary underline">
-                      Código de Conduta e Política de Tolerância Zero
-                    </Link>{' '}
-                    <span className="text-destructive">*</span>
-                  </>
-                }
-              />
+              <div className="flex items-start gap-3 rounded-xl border-2 border-border p-4">
+                <Checkbox
+                  id="lgpd_consent"
+                  checked={answers.lgpd_consent}
+                  onCheckedChange={(v) => setField('lgpd_consent', v)}
+                  className="mt-0.5"
+                />
+                <Label htmlFor="lgpd_consent" className="cursor-pointer text-sm font-normal">
+                  Li e concordo com o uso dos meus dados conforme descrito acima, em conformidade
+                  com a LGPD.
+                </Label>
+              </div>
             </div>
           )}
 
-          <div className="mt-6 flex gap-2.5">
-            {step > 0 && (
-              <Button variant="outline" onClick={() => setStep((s) => s - 1)} className="h-[52px] flex-1 text-[14.5px]">
-                Voltar
-              </Button>
-            )}
-            {step < STEPS.length - 1 ? (
-              <Button
-                onClick={() => setStep((s) => s + 1)}
-                disabled={!canAdvance()}
-                className="h-[52px] flex-1 text-[15px]"
-              >
-                Continuar
-              </Button>
-            ) : (
-              <Button
-                onClick={handleFinish}
-                disabled={!canAdvance() || saving}
-                className="h-[52px] flex-1 text-[15px]"
-              >
-                {saving ? 'Salvando...' : 'Concluir e ver pets'}
-              </Button>
-            )}
-          </div>
+        <div className="flex gap-3">
+          {step > 0 && (
+            <Button variant="outline" onClick={() => setStep((s) => s - 1)} className="flex-1">
+              Voltar
+            </Button>
+          )}
+          {step < STEPS.length - 1 ? (
+            <Button
+              onClick={() => setStep((s) => s + 1)}
+              disabled={!canAdvance()}
+              className="flex-1"
+            >
+              Continuar
+            </Button>
+          ) : (
+            <Button
+              onClick={handleFinish}
+              disabled={!canAdvance() || saving}
+              className="flex-1"
+            >
+              {saving ? 'Salvando...' : 'Concluir e ver pets 🐾'}
+            </Button>
+          )}
         </div>
       </div>
     </div>

@@ -190,7 +190,7 @@ export default function EventParticipantsPanel({ event, clubId }) {
                           {inv.user_id === event.created_by && <span className="ml-1 text-xs text-primary">(organizador)</span>}
                         </div>
                         {inv.source === INVITE_SOURCE.PLATFORM && (
-                          <div className="text-[11px] text-muted-foreground/80">Convidado da plataforma</div>
+                          <div className="text-[11px] text-muted-foreground">Convidado da plataforma</div>
                         )}
                       </div>
                     </div>
@@ -199,7 +199,7 @@ export default function EventParticipantsPanel({ event, clubId }) {
                         {inv.status === INVITE_STATUS.INVITED ? 'Convidado' : 'Participante'}
                       </Badge>
                       {canRemove && inv.user_id !== event.created_by && (
-                        <button onClick={() => handleRemove(inv.user_id)} className="text-muted-foreground/80 transition-colors hover:text-destructive" title="Remover">
+                        <button onClick={() => handleRemove(inv.user_id)} className="text-muted-foreground transition-colors hover:text-destructive" title="Remover">
                           <Trash2 className="h-3.5 w-3.5" />
                         </button>
                       )}
@@ -277,7 +277,7 @@ function Pool({ title, people, onInvite, emptyText }) {
     <div>
       <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{title} ({people.length})</h4>
       {people.length === 0 ? (
-        <p className="text-sm text-muted-foreground/80">{emptyText}</p>
+        <p className="text-sm text-muted-foreground">{emptyText}</p>
       ) : (
         <div className="space-y-1.5">
           {people.map((p) => (
