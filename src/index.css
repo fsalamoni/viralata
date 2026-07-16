@@ -409,6 +409,30 @@
     @apply inline-flex min-h-9 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-[12.5px] font-semibold text-muted-foreground transition-all duration-200 hover:text-foreground sm:px-3.5 sm:py-2 sm:text-[13px] data-[state=active]:bg-foreground data-[state=active]:text-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
   }
 
+  /* ==== Sub-tab-bar (2ª linha de navegação) ====
+     Versão MENOR e mais discreta do arena-admin-tabs. Mantém a MESMA
+     forma (rounded-[1.1rem], border, p-1.5, backdrop-blur-xl) e o MESMO
+     shadow da linha de cima. Apenas o font-size é 1px menor e o icon
+     um pouco menor. Usado dentro de TabsContent de cada grupo do painel
+     admin para listar sub-abas (ex: Pets/Prontuário/Medicação/Timeline
+     dentro do grupo Operacional). A ideia: 2ª linha com a mesma
+     identidade visual, só mais discreta. ==== */
+  .arena-subtab-bar {
+    @apply sticky top-[68px] z-[9] mb-6 flex h-auto w-full flex-nowrap items-center justify-start gap-1 overflow-x-auto rounded-[1.1rem] border border-border/70 bg-card/80 p-1.5 backdrop-blur-xl;
+    box-shadow: 0 12px 30px -24px rgba(64, 34, 18, 0.28);
+  }
+  .arena-subtab-bar::-webkit-scrollbar {
+    display: none;
+  }
+  .arena-subtab-bar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .arena-subtab-trigger {
+    @apply inline-flex min-h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 text-[12px] font-semibold text-muted-foreground transition-all duration-200 hover:text-foreground sm:px-3 sm:py-1.5 sm:text-[12.5px] data-[active=true]:bg-foreground data-[active=true]:text-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
+  }
+
   /* Section spacing dentro de TabsContent admin */
   .arena-admin-section {
     @apply space-y-6;

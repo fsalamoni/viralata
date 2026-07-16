@@ -218,7 +218,7 @@ export default function CommunityAdminPanel() {
             <TabsTrigger
               key={tab.key}
               value={tab.key}
-              className={cn(parityEnabled ? 'arena-tab-pill gap-1.5' : 'rounded-lg data-[state=active]:bg-primary')}
+              className={cn(parityEnabled ? 'arena-admin-tab-trigger gap-1.5' : 'arena-admin-tab-trigger rounded-lg data-[state=active]:bg-primary')}
             >
               {TAB_ICONS[tab.key] && React.createElement(TAB_ICONS[tab.key], { className: parityEnabled ? 'h-4 w-4' : 'mr-2 h-4 w-4' })}
               {tab.label}

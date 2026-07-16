@@ -13189,6 +13189,486 @@
       "createdAt": "2026-07-16",
       "updatedAt": "2026-07-16",
       "evidence": "commit 12304f3, main merged"
+    },
+    {
+      "id": "TASK-786",
+      "title": "Admin abrigo: DS_V2 polish OverviewTab (header, stats, atalhos)",
+      "description": "Aplicar DS_V2 v1.0 completo na OverviewTab. Cards com ícones, padding consistente, gradiente sutil, hierarquia. Já feito em TASK-621/758 — auditar e polir.",
+      "status": "ready",
+      "phase": "ux-ds-v2-admin",
+      "tags": [
+        "ux",
+        "ds-v2",
+        "admin",
+        "regra-a"
+      ],
+      "owner": "mvs_Mavis",
+      "pr": null,
+      "branch": "feat/admin-overview-polish-2026-07-16",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16",
+      "evidence": null
+    },
+    {
+      "id": "TASK-787",
+      "title": "Admin abrigo: DS_V2 polish ClubGeneralAdminTab (form harmonizado)",
+      "description": "Aplicar DS_V2 em ClubGeneralAdminTab. Inputs com arena-input, validação visual, loading state.",
+      "status": "ready",
+      "phase": "ux-ds-v2-admin",
+      "tags": [
+        "ux",
+        "ds-v2",
+        "admin",
+        "regra-a"
+      ],
+      "owner": "mvs_Mavis",
+      "pr": null,
+      "branch": "feat/admin-general-polish-2026-07-16",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16",
+      "evidence": null
+    },
+    {
+      "id": "TASK-788",
+      "title": "Admin abrigo: DS_V2 polish ClubPetsDataGrid (cards de pet consistentes)",
+      "description": "Aplicar DS_V2 em ClubPetsDataGrid. Pet cards com arena-pet-card, hover, estados (disponível/adotado/LT), fotos consistentes.",
+      "status": "ready",
+      "phase": "ux-ds-v2-admin",
+      "tags": [
+        "ux",
+        "ds-v2",
+        "admin",
+        "pets",
+        "regra-a"
+      ],
+      "owner": "mvs_Mavis",
+      "pr": null,
+      "branch": "feat/admin-pets-polish-2026-07-16",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16",
+      "evidence": null
+    },
+    {
+      "id": "TASK-789",
+      "title": "Admin abrigo: DS_V2 polish ClubFeedTab (timeline + composer)",
+      "description": "Aplicar DS_V2 em ClubFeedTab. Composer com arena-textarea, timeline cards consistentes, moderação visual.",
+      "status": "ready",
+      "phase": "ux-ds-v2-admin",
+      "tags": [
+        "ux",
+        "ds-v2",
+        "admin",
+        "mural",
+        "regra-a"
+      ],
+      "owner": "mvs_Mavis",
+      "pr": null,
+      "branch": "feat/admin-feed-polish-2026-07-16",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16",
+      "evidence": null
+    },
+    {
+      "id": "TASK-790",
+      "title": "Admin abrigo: CRUD completo de Chamados de Doação",
+      "description": "Implementar sistema completo de campanhas: criar/editar/listar/deletar campanha, com item (ração/vet/medic), meta, prazo, status, comprovantes.",
+      "status": "ready",
+      "phase": "feature-donations",
+      "tags": [
+        "feature",
+        "donations",
+        "admin",
+        "regra-a"
+      ],
+      "owner": "mvs_Mavis",
+      "pr": null,
+      "branch": "feat/donations-crud-2026-07-16",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16",
+      "evidence": null
+    },
+    {
+      "id": "TASK-791",
+      "title": "Admin abrigo: sistema de Prestação de Contas",
+      "description": "Lançamentos de entrada/saída, saldo agregado, exportação prestação pública (LGPD Art. 18 V).",
+      "status": "ready",
+      "phase": "feature-finance",
+      "tags": [
+        "feature",
+        "finance",
+        "admin",
+        "lgpd",
+        "regra-a"
+      ],
+      "owner": "mvs_Mavis",
+      "pr": null,
+      "branch": "feat/finance-accountability-2026-07-16",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16",
+      "evidence": null
+    },
+    {
+      "id": "TASK-792",
+      "title": "Admin abrigo: ativar flag SHELTER_DASHBOARD",
+      "description": "Mudar FF.SHELTER_DASHBOARD = true em featureFlags.js. Validar visualmente. Reverter se quebrou.",
+      "status": "ready",
+      "phase": "flag-activation",
+      "tags": [
+        "flag",
+        "admin",
+        "dashboard",
+        "regra-a"
+      ],
+      "owner": "mvs_Mavis",
+      "pr": null,
+      "branch": "feat/flag-shelter-dashboard-2026-07-16",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16",
+      "evidence": null
+    },
+    {
+      "id": "TASK-793",
+      "title": "Admin abrigo: ativar flag SHELTER_KANBAN",
+      "description": "Mudar FF.SHELTER_KANBAN = true. Validar Trello-style.",
+      "status": "ready",
+      "phase": "flag-activation",
+      "tags": [
+        "flag",
+        "admin",
+        "kanban",
+        "regra-a"
+      ],
+      "owner": "mvs_Mavis",
+      "pr": null,
+      "branch": "feat/flag-shelter-kanban-2026-07-16",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16",
+      "evidence": null
+    },
+    {
+      "id": "TASK-794",
+      "title": "Admin abrigo: ativar flag SHELTER_VOLUNTEERS + SHELTER_VOLUNTEER_PROFILE_V1",
+      "description": "Ativar ambas. Validar CRUD de voluntários + escalas + auditoria.",
+      "status": "ready",
+      "phase": "flag-activation",
+      "tags": [
+        "flag",
+        "admin",
+        "voluntarios",
+        "regra-a"
+      ],
+      "owner": "mvs_Mavis",
+      "pr": null,
+      "branch": "feat/flag-shelter-volunteers-2026-07-16",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16",
+      "evidence": null
+    },
+    {
+      "id": "TASK-795",
+      "title": "Admin abrigo: ativar flags SHELTER_HEALTH_RECORDS + SHELTER_MEDICATION + SHELTER_PET_TIMELINE",
+      "description": "Ativar 3 flags de saúde. Validar prontuário, medicação, timeline.",
+      "status": "ready",
+      "phase": "flag-activation",
+      "tags": [
+        "flag",
+        "admin",
+        "saude",
+        "regra-a"
+      ],
+      "owner": "mvs_Mavis",
+      "pr": null,
+      "branch": "feat/flag-shelter-health-2026-07-16",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16",
+      "evidence": null
+    },
+    {
+      "id": "TASK-796",
+      "title": "Admin abrigo: ativar flag SHELTER_FOSTER",
+      "description": "Ativar LT. Validar fluxo de Lares Temporários.",
+      "status": "ready",
+      "phase": "flag-activation",
+      "tags": [
+        "flag",
+        "admin",
+        "foster",
+        "regra-a"
+      ],
+      "owner": "mvs_Mavis",
+      "pr": null,
+      "branch": "feat/flag-shelter-foster-2026-07-16",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16",
+      "evidence": null
+    },
+    {
+      "id": "TASK-797",
+      "title": "Admin abrigo: ativar flags SHELTER_EXHIBITIONS + SHELTER_REPORTS + SHELTER_INDICATORS",
+      "description": "Ativar 3 flags. Validar Vitrines, Relatórios, Indicadores.",
+      "status": "ready",
+      "phase": "flag-activation",
+      "tags": [
+        "flag",
+        "admin",
+        "vitrines",
+        "relatorios",
+        "regra-a"
+      ],
+      "owner": "mvs_Mavis",
+      "pr": null,
+      "branch": "feat/flag-shelter-misc-2026-07-16",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16",
+      "evidence": null
+    },
+    {
+      "id": "TASK-798",
+      "title": "CommunityDetail: aplicar padrão 2-layer nas abas",
+      "description": "CommunityDetail usa arena-admin-tabs. Auditar se tem overflow e aplicar mesmo padrão (2-layer se >5 abas).",
+      "status": "ready",
+      "phase": "ux-ds-v2-pages",
+      "tags": [
+        "ux",
+        "ds-v2",
+        "community",
+        "regra-a"
+      ],
+      "owner": "mvs_Mavis",
+      "pr": null,
+      "branch": "feat/community-detail-2layer-2026-07-16",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16",
+      "evidence": null
+    },
+    {
+      "id": "TASK-799",
+      "title": "PetDetail: aplicar padrão 2-layer nas abas",
+      "description": "PetDetail tem abas (Sobre, Saúde, Adoção, etc). Auditar e aplicar 2-layer se >5.",
+      "status": "ready",
+      "phase": "ux-ds-v2-pages",
+      "tags": [
+        "ux",
+        "ds-v2",
+        "pets",
+        "regra-a"
+      ],
+      "owner": "mvs_Mavis",
+      "pr": null,
+      "branch": "feat/pet-detail-2layer-2026-07-16",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16",
+      "evidence": null
+    },
+    {
+      "id": "TASK-800",
+      "title": "EventDetail: aplicar padrão 2-layer nas abas",
+      "description": "EventDetail tem abas. Auditar e aplicar 2-layer.",
+      "status": "ready",
+      "phase": "ux-ds-v2-pages",
+      "tags": [
+        "ux",
+        "ds-v2",
+        "events",
+        "regra-a"
+      ],
+      "owner": "mvs_Mavis",
+      "pr": null,
+      "branch": "feat/event-detail-2layer-2026-07-16",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16",
+      "evidence": null
+    },
+    {
+      "id": "TASK-801",
+      "title": "IndicatorsTab: aplicar DS_V2 (cards de KPI consistentes)",
+      "description": "IndicatorsTab tem KPIs. Aplicar arena-stat-card consistente.",
+      "status": "ready",
+      "phase": "ux-ds-v2-admin",
+      "tags": [
+        "ux",
+        "ds-v2",
+        "indicators",
+        "regra-a"
+      ],
+      "owner": "mvs_Mavis",
+      "pr": null,
+      "branch": "feat/indicators-polish-2026-07-16",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16",
+      "evidence": null
+    },
+    {
+      "id": "TASK-802",
+      "title": "ReportsTab: aplicar DS_V2 (cards de export consistentes)",
+      "description": "ReportsTab tem botões de export. Aplicar DS_V2 nos cards de relatório.",
+      "status": "ready",
+      "phase": "ux-ds-v2-admin",
+      "tags": [
+        "ux",
+        "ds-v2",
+        "reports",
+        "regra-a"
+      ],
+      "owner": "mvs_Mavis",
+      "pr": null,
+      "branch": "feat/reports-polish-2026-07-16",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16",
+      "evidence": null
+    },
+    {
+      "id": "TASK-803",
+      "title": "VolunteersAdminTab: aplicar DS_V2 (tabela/lista harmonizada)",
+      "description": "VolunteersAdminTab tem lista de voluntários. Aplicar DS_V2 + arena-table.",
+      "status": "ready",
+      "phase": "ux-ds-v2-admin",
+      "tags": [
+        "ux",
+        "ds-v2",
+        "voluntarios",
+        "regra-a"
+      ],
+      "owner": "mvs_Mavis",
+      "pr": null,
+      "branch": "feat/volunteers-polish-2026-07-16",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16",
+      "evidence": null
+    },
+    {
+      "id": "TASK-804",
+      "title": "FostersList: aplicar DS_V2 (cards de LT consistentes)",
+      "description": "FostersList tem cards de LT. Aplicar DS_V2 + arena-foster-card.",
+      "status": "ready",
+      "phase": "ux-ds-v2-admin",
+      "tags": [
+        "ux",
+        "ds-v2",
+        "foster",
+        "regra-a"
+      ],
+      "owner": "mvs_Mavis",
+      "pr": null,
+      "branch": "feat/fosters-polish-2026-07-16",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16",
+      "evidence": null
+    },
+    {
+      "id": "TASK-805",
+      "title": "ExhibitionsList: aplicar DS_V2 (cards de evento consistentes)",
+      "description": "ExhibitionsList tem cards de vitrines. Aplicar DS_V2.",
+      "status": "ready",
+      "phase": "ux-ds-v2-admin",
+      "tags": [
+        "ux",
+        "ds-v2",
+        "vitrines",
+        "regra-a"
+      ],
+      "owner": "mvs_Mavis",
+      "pr": null,
+      "branch": "feat/exhibitions-polish-2026-07-16",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16",
+      "evidence": null
+    },
+    {
+      "id": "TASK-806",
+      "title": "KanbanPage: aplicar DS_V2 (board + colunas consistentes)",
+      "description": "KanbanPage tem board Trello-style. Aplicar DS_V2 (cards, colunas, modais).",
+      "status": "ready",
+      "phase": "ux-ds-v2-admin",
+      "tags": [
+        "ux",
+        "ds-v2",
+        "kanban",
+        "regra-a"
+      ],
+      "owner": "mvs_Mavis",
+      "pr": null,
+      "branch": "feat/kanban-polish-2026-07-16",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16",
+      "evidence": null
+    },
+    {
+      "id": "TASK-807",
+      "title": "CommunityAdminPanel: aplicar DS_V2 (config + team + feed)",
+      "description": "CommunityAdminPanel tem 4 abas. Aplicar DS_V2 nas 3 sub-abas (team, feed, settings).",
+      "status": "ready",
+      "phase": "ux-ds-v2-pages",
+      "tags": [
+        "ux",
+        "ds-v2",
+        "community",
+        "regra-a"
+      ],
+      "owner": "mvs_Mavis",
+      "pr": null,
+      "branch": "feat/community-admin-polish-2026-07-16",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16",
+      "evidence": null
+    },
+    {
+      "id": "TASK-808",
+      "title": "AdminContentEditor: aplicar DS_V2 (rich text harmonizado)",
+      "description": "AdminContentEditor tem editor de conteúdo. Aplicar DS_V2 + arena-editor.",
+      "status": "ready",
+      "phase": "ux-ds-v2-pages",
+      "tags": [
+        "ux",
+        "ds-v2",
+        "admin",
+        "regra-a"
+      ],
+      "owner": "mvs_Mavis",
+      "pr": null,
+      "branch": "feat/admin-content-editor-polish-2026-07-16",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16",
+      "evidence": null
+    },
+    {
+      "id": "TASK-809",
+      "title": "PlatformHealth: aplicar DS_V2 (métricas de plataforma)",
+      "description": "PlatformHealth tem métricas. Aplicar DS_V2.",
+      "status": "ready",
+      "phase": "ux-ds-v2-pages",
+      "tags": [
+        "ux",
+        "ds-v2",
+        "admin",
+        "platform",
+        "regra-a"
+      ],
+      "owner": "mvs_Mavis",
+      "pr": null,
+      "branch": "feat/platform-health-polish-2026-07-16",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16",
+      "evidence": null
+    },
+    {
+      "id": "TASK-810",
+      "title": "Documents: revisar consistência do padrão 2-layer em todo o app",
+      "description": "Auditoria final: cada página que tenha tabs com mais de 5 itens deve seguir o padrão 2-layer documentado em DESIGN_SYSTEM.md §3.5.1.",
+      "status": "ready",
+      "phase": "ux-ds-v2-audit",
+      "tags": [
+        "ux",
+        "ds-v2",
+        "audit",
+        "regra-a"
+      ],
+      "owner": "mvs_Mavis",
+      "pr": null,
+      "branch": "feat/final-2layer-audit-2026-07-16",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16",
+      "evidence": null
     }
   ],
   "definitionOfDone": [
@@ -13463,12 +13943,12 @@
     ],
     "openTODOs": 5,
     "openLegalReviews": 3,
-    "totalTasks": 490,
+    "totalTasks": 515,
     "done": 485,
     "inProgress": 0,
     "inReview": 0,
     "blocked": 0,
-    "ready": 0,
+    "ready": 25,
     "backlog": 4,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
