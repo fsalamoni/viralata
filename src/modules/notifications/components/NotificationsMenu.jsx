@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuItem,
 } from '@/components/ui/dropdown-menu';
+import { EmptyState } from '@/components/ui/empty-state';
 import { useNotifications } from '@/modules/notifications/hooks/useNotifications';
 import { NOTIFICATION_TYPE, resolveNotificationTarget } from '@/core/services/notificationService';
 import { cn } from '@/core/lib/utils';
@@ -91,7 +92,13 @@ export default function NotificationsMenu() {
         </div>
         <div className="max-h-96 overflow-y-auto">
           {notifications.length === 0 ? (
-            <p className="px-4 py-8 text-center text-sm text-muted-foreground">Nenhuma notificação ainda.</p>
+            <div className="py-6">
+              <EmptyState
+                icon={Bell}
+                title="Nenhuma notificação"
+                description="Suas notificações aparecerão aqui."
+              />
+            </div>
           ) : (
             notifications.slice(0, dropdownLimit).map((notification) => {
               const meta = TYPE_META[notification.type] || { icon: Bell, tone: 'bg-secondary text-secondary-foreground' };

@@ -1,9 +1,10 @@
 import React from 'react';
 import { toast } from 'sonner';
-import { Check, X } from 'lucide-react';
+import { Check, X, UserPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { UserAvatar } from '@/components/ui/user-avatar';
+import { EmptyState } from '@/components/ui/empty-state';
 import { useJoinRequests, useApproveJoinRequest, useRejectJoinRequest } from '@/modules/organizations/hooks/useClubs';
 
 /** Pedidos de ingresso pendentes — o admin aprova ou recusa. */
@@ -34,7 +35,12 @@ export function ClubJoinRequests({ club }) {
         {isLoading ? (
           <p className="text-sm text-muted-foreground">Carregando…</p>
         ) : requests.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Nenhum pedido pendente.</p>
+          <EmptyState
+            icon={UserPlus}
+            title="Nenhum pedido pendente"
+            description="Pessoas que solicitarem ingresso aparecerão aqui."
+            className="py-4"
+          />
         ) : (
           requests.map((r) => (
             <div key={r.id} className="flex items-center gap-3 rounded-xl border border-border bg-white p-3">

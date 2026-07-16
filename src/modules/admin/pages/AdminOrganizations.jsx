@@ -7,6 +7,7 @@ import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { EmptyState } from '@/components/ui/empty-state';
 import PageHero from '@/components/PageHero';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import { listAdminClubs, updateAdminClub } from '@/modules/admin/services/adminService';
@@ -216,7 +217,11 @@ export default function AdminOrganizations() {
               ))}
 
               {filteredClubs.length === 0 && (
-                <p className="py-8 text-center text-sm text-muted-foreground">Nenhuma organização encontrada com os filtros atuais.</p>
+                <EmptyState
+                  icon={Building2}
+                  title="Nenhuma organização encontrada"
+                  description="Tente ajustar os filtros de busca ou crie uma nova organização."
+                />
               )}
             </div>
           )}

@@ -1,12 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
-import { FolderTree, Users, Trash2, Eye, ShieldAlert, ArrowLeft } from 'lucide-react';
+import { FolderTree, Users, Trash2, Eye, ShieldAlert, ArrowLeft, Building2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { EmptyState } from '@/components/ui/empty-state';
 import { Textarea } from '@/components/ui/textarea';
 import { ImageUpload } from '@/components/ui/image-upload';
 import PageHero from '@/components/PageHero';
@@ -157,7 +158,11 @@ export default function AdminCommunities() {
           {isLoading ? (
             <section className="arena-section-card"><div className="arena-section-card-body p-6 text-sm text-muted-foreground">Carregando comunidades...</div></section>
           ) : sortedCommunities.length === 0 ? (
-            <section className="arena-section-card"><div className="arena-section-card-body p-6 text-sm text-muted-foreground">Nenhuma comunidade criada ainda.</div></section>
+            <EmptyState
+              icon={Building2}
+              title="Nenhuma comunidade criada"
+              description="Comece criando a primeira comunidade na plataforma."
+            />
           ) : (
             sortedCommunities.map((community) => (
               <CommunityCard

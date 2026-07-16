@@ -1,8 +1,9 @@
 import React, { useMemo, useState } from 'react';
 import { toast } from 'sonner';
-import { Check, Copy, RefreshCw, Edit2, Trash2, Mail, Phone, MessageCircle, Lock, Info } from 'lucide-react';
+import { Check, Copy, RefreshCw, Edit2, Trash2, Mail, Phone, MessageCircle, Lock, Info, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { EmptyState } from '@/components/ui/empty-state';
 import { useClipboard } from '@/core/lib/useClipboard';
 import { cn } from '@/core/lib/utils';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
@@ -173,7 +174,12 @@ function ClubPermissionsCard({ club, viewerMembership, viewerUid }) {
         {isLoading ? (
           <p className="text-sm text-muted-foreground">Carregando…</p>
         ) : sorted.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Nenhum membro na equipe ainda.</p>
+          <EmptyState
+            icon={Users}
+            title="Nenhum membro na equipe"
+            description="Adicione membros para começar a colaborar."
+            className="py-4"
+          />
         ) : (
           sorted.map((member) => (
             <MemberPermissionsRow
@@ -293,7 +299,12 @@ function ClubMembersCardsSection({ club, viewerMembership, viewerUid }) {
         {isLoading ? (
           <p className="text-sm text-muted-foreground">Carregando…</p>
         ) : members.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Nenhum membro ainda.</p>
+          <EmptyState
+            icon={Users}
+            title="Nenhum membro"
+            description="Convide membros para participar desta organização."
+            className="py-4"
+          />
         ) : (
           <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {members.map((m) => {
