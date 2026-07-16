@@ -1,5 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
+import { httpsCallable } from 'firebase/functions';
+import { functions, db } from '@/core/config/firebase';
+import { doc, getDoc, collection } from 'firebase/firestore';
 import {
   createClub,
   getClub,
@@ -718,5 +721,40 @@ export function useDeleteLedgerEntry(clubId) {
   return useMutation({
     mutationFn: (entryId) => deleteLedgerEntry(entryId, user),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['club-ledger', clubId] }),
+  });
+}
+
+/* ─────────────────── Event certificates (TASK-343) ─────────────────── */
+
+/** Hook para buscar o certificado do participante logado para um dado evento. */
+export function useMyEventCertificate(eventId) {
+  const { user } = useAuth();
+  return useQuery({
+    queryKey: ['event-certificate', eventId, user?.uid],
+    queryFn: async () => {
+      if (!user?.uid || !eventId || !db) return null;
+      const snap = await getDoc(
+        doc(db, 'club_events', eventId, 'certificates', user.uid),
+      );
+      if (!snap.exists()) return null;
+      return { id: snap.id, ...snap.data() };
+    },
+    enabled: !!user?.uid && !!eventId,
+  });
+}
+
+/** Mutation para o admin gerar certificados de participação para TODOS os participantes. */
+export function useGenerateEventCertificates() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (eventId) => {
+      if (!functions) throw new Error('Firebase Functions não disponível.');
+      const callable = httpsCallable(functions, 'generateEventCertificate');
+      const res = await callable({ eventId });
+      return res.data;
+    },
+    onSuccess: (_data, eventId) => {
+      qc.invalidateQueries({ queryKey: ['event-certificate', eventId] });
+    },
   });
 }

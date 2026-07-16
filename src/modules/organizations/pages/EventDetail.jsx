@@ -12,6 +12,8 @@ import {
   Users,
   Globe,
   Lock,
+  Award,
+  Download,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -19,7 +21,13 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { EmptyState } from '@/components/ui/empty-state';
-import { useMyMembership, useClubEvent } from '@/modules/organizations/hooks/useClubs';
+import { toast } from 'sonner';
+import {
+  useMyMembership,
+  useClubEvent,
+  useMyEventCertificate,
+  useGenerateEventCertificates,
+} from '@/modules/organizations/hooks/useClubs';
 import { eventTypeLabel, isPrivateEvent } from '@/modules/organizations/domain/constants';
 import { EventFormDialog } from '@/modules/organizations/components/ClubEventsTab';
 import EventDatesPanel from '@/modules/organizations/components/EventDatesPanel';
@@ -34,12 +42,62 @@ function formatDateTime(value) {
   return d.toLocaleString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 }
 
+/** Returns true if the membership has admin/owner role. */
+function isAdminMember(membership) {
+  if (!membership) return false;
+  const role = membership.role;
+  return role === 'admin' || role === 'owner';
+}
+
+/** CertificatePanel — shown in the detalhes tab for participants who have a certificate. */
+function CertificatePanel({ eventId, event }) {
+  const { data: cert, isLoading } = useMyEventCertificate(eventId);
+
+  if (isLoading) return null;
+  if (!cert) return null;
+
+  return (
+    <Card className="mb-4 rounded-xl border-orange-200 bg-orange-50/60 dark:bg-orange-950/20">
+      <CardContent className="flex flex-col gap-3 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-7">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-900/40">
+            <Award className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-foreground">Certificado de Participação</p>
+            <p className="text-xs text-muted-foreground">
+              Gerado em {cert.generated_at?.toDate?.()
+                ? cert.generated_at.toDate().toLocaleDateString('pt-BR')
+                : cert.generated_at
+                  ? new Date(cert.generated_at).toLocaleDateString('pt-BR')
+                  : 'recentemente'}
+            </p>
+          </div>
+        </div>
+        <Button
+          asChild
+          size="sm"
+          className="shrink-0 bg-orange-500 hover:bg-orange-600 text-white"
+        >
+          <a href={cert.certificate_url} target="_blank" rel="noopener noreferrer" download>
+            <Download className="mr-1.5 h-4 w-4" /> Baixar certificado
+          </a>
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function EventDetail() {
   const { orgId: clubId, eventId } = useParams();
   const { data: membership } = useMyMembership(clubId);
   const { data: event, isLoading, isError } = useClubEvent(eventId);
   const [editOpen, setEditOpen] = useState(false);
   const [tab, setTab] = useState('detalhes');
+
+  const generateCerts = useGenerateEventCertificates();
+
+  const isAdmin = isAdminMember(membership);
 
   // Hooks de classe dos wrappers. Devem ficar ANTES dos early-returns —
   // chamá-los depois violaria as rules-of-hooks do React.
@@ -85,6 +143,22 @@ export default function EventDetail() {
   const isPrivate = isPrivateEvent(event);
   const when = formatDateTime(event.starts_at);
 
+  function handleGenerateCertificates() {
+    generateCerts.mutate(eventId, {
+      onSuccess: (data) => {
+        const count = data?.generated ?? 0;
+        if (count > 0) {
+          toast.success(`${count} certificado(s) gerado(s) com sucesso!`);
+        } else {
+          toast.info(data?.message || 'Nenhum certificado gerado.');
+        }
+      },
+      onError: (err) => {
+        toast.error('Erro ao gerar certificados: ' + (err?.message || 'tente novamente.'));
+      },
+    });
+  }
+
   return (
     <div className={successClass}>
       <Button asChild variant="ghost" size="sm">
@@ -112,14 +186,28 @@ export default function EventDetail() {
               {event.location && <span className="inline-flex items-center gap-1"><MapPin className="h-4 w-4" /> {event.location}</span>}
             </div>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            className="shrink-0 border-white/20 bg-white/10 text-white hover:bg-white/15 hover:text-white"
-            onClick={() => setEditOpen(true)}
-          >
-            <Pencil className="mr-1.5 h-4 w-4" /> Editar evento
-          </Button>
+          <div className="flex shrink-0 flex-col gap-2 sm:items-end">
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-white/20 bg-white/10 text-white hover:bg-white/15 hover:text-white"
+              onClick={() => setEditOpen(true)}
+            >
+              <Pencil className="mr-1.5 h-4 w-4" /> Editar evento
+            </Button>
+            {isAdmin && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-orange-300/40 bg-orange-500/20 text-orange-200 hover:bg-orange-500/30 hover:text-orange-100"
+                onClick={handleGenerateCertificates}
+                disabled={generateCerts.isPending}
+              >
+                <Award className="mr-1.5 h-4 w-4" />
+                {generateCerts.isPending ? 'Gerando…' : 'Gerar certificados'}
+              </Button>
+            )}
+          </div>
         </div>
         {event.description && (
           <p className="mt-4 max-w-2xl whitespace-pre-wrap text-sm leading-7 text-orange-50/85">{event.description}</p>
@@ -136,6 +224,9 @@ export default function EventDetail() {
         </TabsList>
 
         <TabsContent value="detalhes" className="mt-12 px-1 sm:mt-14">
+          {/* Participant certificate (if exists) */}
+          <CertificatePanel eventId={eventId} event={event} />
+
           {event.description && (
             <Card className="mb-4 rounded-xl">
               <CardContent className="p-6 sm:p-7">

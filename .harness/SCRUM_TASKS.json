@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-16T00:19:43.851Z",
+  "generatedAt": "2026-07-16T00:28:30.762Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W29",
@@ -10,7 +10,20 @@
     "endsAt": "2026-07-22",
     "goal": "Implementar 50+ features de UI/UX/infra. Limpar inconsistências. Decisões registradas. Zero tasks in_progress stale."
   },
-  "activeWorktrees": [],
+  "activeWorktrees": [
+    {
+      "id": "viralata",
+      "branch": "feat/task-343-event-certificates-2026-07-16",
+      "head": "da4c676411361cdebc89611bbfa24fe2b0a93b3d",
+      "headTitle": "chore(scrum): sync.cjs --fix re-embed métricas (8980741)",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata",
+      "status": "in-sync",
+      "commitsAhead": 0,
+      "primarySession": null,
+      "sessionTitle": null,
+      "focus": []
+    }
+  ],
   "activeSessions": [
     {
       "id": "mvs_f1e04f28717d42cdba05e221b7b4b6f3",
@@ -9389,7 +9402,7 @@
       "title": "Certificados de evento (storage + download PDF)",
       "type": "feature",
       "category": "organizations",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "unassigned",
       "branch": null,
@@ -9408,7 +9421,9 @@
       "subFrente": "comunidade-adotante-eventos",
       "description": "Criar event_certificates/{userId_eventId} em Storage. Job pós-evento gera PDF (via Cloud Function com pdf-lib ou similar) e atualiza club_events.certificates. UI no MyEvents com botão \"Baixar certificado\".",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-16",
+      "pr": "0",
+      "resolvedAt": "2026-07-16"
     },
     {
       "id": "TASK-344",
@@ -10758,7 +10773,7 @@
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": "8980741c6e009e11d868258804a97204a7add10d",
+    "mainCommit": null,
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -10769,11 +10784,11 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 376,
-    "done": 348,
+    "done": 349,
     "inProgress": 0,
     "inReview": 0,
     "blocked": 0,
-    "ready": 23,
+    "ready": 22,
     "backlog": 4,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -10803,7 +10818,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-16T00:19:43.855Z — via sync.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-16T00:28:30.780Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [

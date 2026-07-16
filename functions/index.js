@@ -241,6 +241,10 @@ exports.hardDeleteVolunteerDocument = onCall(
 const { sendEmailOnCall } = require('./sendEmailOnCall');
 exports.sendEmailOnCall = sendEmailOnCall;
 
+// ─── TASK-343: Event certificate generation ─────────────────────────────
+const { generateEventCertificate } = require('./generateEventCertificate');
+exports.generateEventCertificate = generateEventCertificate;
+
 // ─── TASK-336: Community notifications ──────────────────────────────────
 
 // onCreate community_posts/{postId} → notify community admins

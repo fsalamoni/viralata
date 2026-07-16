@@ -1381,6 +1381,12 @@ service cloud.firestore {
         allow read: if isClubMember(eventClubId(eventId)) || hasEventInvite(eventId) || isPlatformAdmin();
         allow write: if isClubMember(eventClubId(eventId)) || hasEventInvite(eventId) || isPlatformAdmin();
       }
+
+      // TASK-343: Certificados de evento (Cloud Function writes, participant reads own).
+      match /certificates/{userId} {
+        allow read: if isAuth() && request.auth.uid == userId;
+        allow write: if isPlatformAdmin();
+      }
     }
 
     // Legado: RSVP de evento em coleção de nível superior (mantido por compatibilidade).
