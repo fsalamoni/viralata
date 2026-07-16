@@ -1,10 +1,15 @@
-# LOOP_PROMPT — viralata (atualizado 2026-07-16 00:52 UTC)
+# LOOP_PROMPT — viralata (atualizado 2026-07-16 17:05 UTC)
 
-**Contexto**: /workspace/viralata, branch feat/task-337-event-reminder-cron-2026-07-15, React+Vite+Firebase.
+**Contexto**: /workspace/viralata, branch main @ 8ada14c, React+Vite+Firebase.
 **Repo**: https://github.com/fsalamoni/viralata.git
 **Sessão**: Mavis root (loop autônomo, 20min, **24/7 sem limite de horário**).
 
-**Última task**: TASK-337 (eventReminderCron — done, 276 done, 83 ready)
+**Última task**: TASK-785 (admin tabs reorganizadas — 19 abas → 6 grupos semânticos) — done, 485 done, 25 ready.
+
+**MODO ATUAL**: MERGE+DEPLOY A CADA TASK (não batch). User pediu 2026-07-16 17:00:
+"para que as tarefas sejam criadas, sejam selecionadas, sejam trabalhadas e concluídas. uma a uma. Cuide para que o desenvolvimento seja criado de forma adequada e entre no main de forma correta, para não termos retrabalho."
+
+**MISSÃO**: Implementar 25 tasks DS_V2/admin (TASK-786..810) antes do user voltar (4-6h).
 
 ---
 
@@ -97,78 +102,111 @@ print(f'{len(ready)} tasks ready')
 
 ---
 
-## 🎯 MISSÃO DO TURNO (20 min) — MODO FEATURE (BATCH)
+## 🎯 MISSÃO DO TURNO (20 min) — MODO MERGE+DEPLOY (TASK A TASK)
 
 1. **Investigue ANTES de codar** (NÃO leia tudo):
    - 1-2 greps para ver arquivos relacionados
    - `head -50 arquivo.jsx` para entender o contexto
    - Verifique schemas/domínio antes de escrever código
-2. **Implemente com feature flag** (`SHELTER_*` ou conforme categoria, default OFF).
-3. **Test**: 2+ tests smoke no mínimo.
-4. **Worktree** + branch `feat/<slug>-2026-07-14`.
-5. **Commit + push da branch** (SEM PR, SEM merge, SEM deploy).
-6. **OBRIGATÓRIO ao final** — REGRA #0 + #1:
+2. **Implemente com feature flag** (`SHELTER_*` ou conforme categoria, default OFF — exceto para tarefas de flag-activation, onde vira ON).
+3. **Test**: 2+ tests smoke no mínimo. SEMPRE rodar `npm run build` antes do commit.
+4. **Worktree isolado** por task: `git worktree add .worktrees/wt-<slug> -b feat/<slug>-2026-07-16 main`
+5. **Commit da task** no worktree.
+6. **MERGE+DEPLOY a cada task** (NÃO batch). Sequência:
    ```bash
    cd /workspace/viralata
-   node .harness/scrum.cjs start TASK-XXX  # ao começar
+   git fetch origin main && git pull --no-rebase origin main
+   git worktree add .worktrees/wt-<slug> -b feat/<slug>-2026-07-16 main
    
-   # ... implementar, build, test ...
-   
-   # Push da branch (SEM PR)
+   # Implementar no worktree
    cd .worktrees/wt-<slug>
+   # ... código ...
+   npm run build  # verde
    git add -A
-   git commit -m "feat: ..."
-   git push -u origin feat/<slug>-2026-07-14
+   git commit -m "feat(<scope>): ..."
    
-   # Limpar worktree
+   # Merge em main
    cd /workspace/viralata
+   git checkout main
+   git pull --no-rebase origin main
+   git merge --no-ff feat/<slug>-2026-07-16 -m "merge: feat/<slug>-2026-07-16"
+   
+   # Limpar
    git worktree remove --force .worktrees/wt-<slug>
    git worktree prune
+   git branch -D feat/<slug>-2026-07-16
    
-   # REGRA #0: marcar done (pr=0 pois ainda não é PR)
-   node .harness/scrum.cjs done TASK-XXX --pr 0 --reason "feat/<slug> pushed (batch pendente)"
+   # REGRA #0: marcar done
+   node .harness/scrum.cjs done TASK-XXX --pr <merge_commit_sha> --reason "..."
    
    # REGRA #1: metrics sync
    python3 -c "import json; d=json.load(open('.harness/SCRUM_TASKS.json')); m=d.setdefault('metrics',{}); m['totalTasks']=len(d['tasks']); m['done']=len([t for t in d['tasks'] if t['status']=='done']); m['ready']=len([t for t in d['tasks'] if t['status']=='ready']); m['inProgress']=len([t for t in d['tasks'] if t['status']=='in_progress']); m['inReview']=len([t for t in d['tasks'] if t['status']=='in_review']); m['blocked']=len([t for t in d['tasks'] if t['status']=='blocked']); m['backlog']=len([t for t in d['tasks'] if t['status']=='backlog']); json.dump(d, open('.harness/SCRUM_TASKS.json','w'), indent=2)"
    
-   # Re-embed + commit + push do scrum update
+   # Re-embed + commit + push
    node .harness/sync.cjs --fix
    git add -A
-   git commit -m "chore(scrum): TASK-XXX done (batch pendente)"
-   git pull --rebase --autostash origin main
+   git commit -m "chore(scrum): TASK-XXX done"
+   git pull --no-rebase origin main
    git push origin main
+   # GitHub Actions vai disparar deploy automático
    ```
-7. **NÃO** criar PR. **NÃO** fazer merge. **NÃO** fazer deploy. (Aguardar batch.)
-8. **ATUALIZE O `LOOP_PROMPT.md`** ao final: remova task da lista, adicione nova candidata, faça commit + push.
+7. **ATUALIZE O `LOOP_PROMPT.md`** ao final: remova task da lista, adicione próxima candidata, faça commit + push.
 
 ---
 
-## 🆕 CANDIDATAS (2026-07-16 00:52 UTC)
+## 🆕 CANDIDATAS (2026-07-16 17:05 UTC)
 
-| ID | Pri | Descrição |
-|---|---|---|
-| TASK-292 | critical | [FCM-001] Integrar FCM push notifications — bloqueada por TASK-291 (✅ done) |
-| TASK-368 | critical | [D-07] DPO sign-off — human-jurídico |
-|  |
-| TASK-007 | high | Revisão jurídica: avisosLegais.js |
+**MISSÃO 4-6H**: implementar TASK-786..810 antes do user voltar.
 
-> **Notas**:
-> - TASK-343 ✅ done — feat/task-343-event-certificates-2026-07-16: event certificates — generateEventCertificateCore.cjs (pdf-lib, 13 testes ✅), generateEventCertificate.js (callable CF v2, GCS + Firestore), storage.rules event_certificates path, firestore.rules certificates subcollection, useMyEventCertificate + useGenerateEventCertificate hooks, EventDetail EventCertificatesPanel, EventParticipantsPanel AdminCertsSection
-> - TASK-188 ✅ done — feat/task-188-gcs-worm-backup-2026-07-15: WORM backup GCS — Object Locking (90d retenção) + lifecycle Standard→Coldline(90d)→Delete(120d) + IAM hardening + Uniform bucket-level access. Infra: infra/gcs-backup-bucket.sh + functions/setupGcsBackupBucket.js (callable CF) + setupGcsBackupBucketCore.cjs (23 testes). docs/DR_PLAN.md §6 atualizado.
-> - TASK-352 ✅ done — feat/task-352-pinned-posts-2026-07-15: posts fixados/desselvados — pinned+pinned_at em community_posts, togglePostPin() c/ audit log, banner carrossel em MuralTabAdmin, botão Pin/PinOff (admin), firestore.rules pinned-only-by-admin
-> - TASK-291 ✅ done — feat/task-291-email-oncall-2026-07-15: sendEmail onCall callable c/ 7 templates de adoção + sendEmailOnCallCore.cjs + 222 testes ✅ + firestore.rules email_delivery_log
-> - TASK-342 ✅ done — feat/task-342-event-volunteers-2026-07-15: volunteer_ids + volunteer_shifts em club_events, multi-select no EventFormDialog, shifts editor, EventDetail aba Escalas
-> - TASK-340 ✅ done — feat/task-340-event-types-2026-07-15: novos tipos VACCINATION, LECTURE, FUNDRAISING, PET_DAY em CLUB_EVENT_TYPE + UI
-> - TASK-087 ✅ done — feat/task-087-audit-clickwrap-2026-07-15: auditoria clickwrap 4 fluxos críticos
-> - TASK-298 ✅ done — feat/task-298-contract-ip-ua-2026-07-15 (contract CF: IP+UA, Lei 14.063/2020)
-> - Todas as branches feat/* = `fsalamoni/viralata`
+### PRIORIDADE P0 — Funcionalidades reais (gaps)
+| ID | Pri | Descrição | Branch |
+|---|---|---|---|
+| TASK-790 | P0 | Admin abrigo: CRUD completo de Chamados de Doação | feat/donations-crud-2026-07-16 |
+| TASK-791 | P0 | Admin abrigo: sistema de Prestação de Contas | feat/finance-accountability-2026-07-16 |
+
+### PRIORIDADE P1 — DS_V2 polish (abas admin)
+| ID | Pri | Descrição | Branch |
+|---|---|---|---|
+| TASK-786 | P1 | Admin: DS_V2 polish OverviewTab | feat/admin-overview-polish-2026-07-16 |
+| TASK-787 | P1 | Admin: DS_V2 polish ClubGeneralAdminTab | feat/admin-general-polish-2026-07-16 |
+| TASK-788 | P1 | Admin: DS_V2 polish ClubPetsDataGrid | feat/admin-pets-polish-2026-07-16 |
+| TASK-789 | P1 | Admin: DS_V2 polish ClubFeedTab | feat/admin-feed-polish-2026-07-16 |
+| TASK-801 | P1 | IndicatorsTab: DS_V2 (cards de KPI) | feat/indicators-polish-2026-07-16 |
+| TASK-802 | P1 | ReportsTab: DS_V2 (cards de export) | feat/reports-polish-2026-07-16 |
+| TASK-803 | P1 | VolunteersAdminTab: DS_V2 | feat/volunteers-polish-2026-07-16 |
+| TASK-804 | P1 | FostersList: DS_V2 | feat/fosters-polish-2026-07-16 |
+| TASK-805 | P1 | ExhibitionsList: DS_V2 | feat/exhibitions-polish-2026-07-16 |
+| TASK-806 | P1 | KanbanPage: DS_V2 | feat/kanban-polish-2026-07-16 |
+| TASK-807 | P1 | CommunityAdminPanel: DS_V2 | feat/community-admin-polish-2026-07-16 |
+
+### PRIORIDADE P2 — Padrão 2-layer em outras páginas
+| ID | Pri | Descrição | Branch |
+|---|---|---|---|
+| TASK-798 | P2 | CommunityDetail: 2-layer nas abas | feat/community-detail-2layer-2026-07-16 |
+| TASK-799 | P2 | PetDetail: 2-layer nas abas | feat/pet-detail-2layer-2026-07-16 |
+| TASK-800 | P2 | EventDetail: 2-layer nas abas | feat/event-detail-2layer-2026-07-16 |
+| TASK-808 | P2 | AdminContentEditor: DS_V2 | feat/admin-content-editor-polish-2026-07-16 |
+| TASK-809 | P2 | PlatformHealth: DS_V2 | feat/platform-health-polish-2026-07-16 |
+
+### PRIORIDADE P3 — Flag activation (1 linha de código cada)
+| ID | Pri | Descrição | Branch |
+|---|---|---|---|
+| TASK-792 | P3 | Flag SHELTER_DASHBOARD → ON | feat/flag-shelter-dashboard-2026-07-16 |
+| TASK-793 | P3 | Flag SHELTER_KANBAN → ON | feat/flag-shelter-kanban-2026-07-16 |
+| TASK-794 | P3 | Flags SHELTER_VOLUNTEERS + SHELTER_VOLUNTEER_PROFILE_V1 → ON | feat/flag-shelter-volunteers-2026-07-16 |
+| TASK-795 | P3 | Flags SHELTER_HEALTH_RECORDS + SHELTER_MEDICATION + SHELTER_PET_TIMELINE → ON | feat/flag-shelter-health-2026-07-16 |
+| TASK-796 | P3 | Flag SHELTER_FOSTER → ON | feat/flag-shelter-foster-2026-07-16 |
+| TASK-797 | P3 | Flags SHELTER_EXHIBITIONS + SHELTER_REPORTS + SHELTER_INDICATORS → ON | feat/flag-shelter-misc-2026-07-16 |
+
+### P4 — Auditoria final
+| ID | Pri | Descrição | Branch |
+|---|---|---|---|
+| TASK-810 | P4 | Auditoria final: consistência 2-layer no app | feat/final-2layer-audit-2026-07-16 |
 
 ## 📊 MÉTRICAS ATUAIS
 
-- **done=349** (was 348 — TASK-343 done: event certificates)
-- **ready=22**, in_progress=0
-- **Main**: `1e2655f`
-- **Branch**: `feat/task-343-event-certificates-2026-07-16`
+- **done=485**, **ready=25**, **in_progress=0**
+- **Main**: `8ada14c` (após merge de feat/admin-harmonize-2layer-2026-07-16)
 
 ## 🏁 FIM DO TURNO
 
@@ -176,16 +214,20 @@ print(f'{len(ready)} tasks ready')
 2. REGRA #1 (metrics sync)
 3. sync.cjs --fix
 4. Commit + push
-5. Atualizar LOOP_PROMPT.md
+5. Atualizar LOOP_PROMPT.md (mover task feita para "Notas", adicionar próxima candidata)
+6. **MERGE+DEPLOY já foi feito** durante o turno (modo MERGE+DEPLOY, não batch)
 
 ## ⏰ HORÁRIO
 - **24/7**, loop a cada 20min.
 
-## 🚀 BATCH (a cada 10 tasks)
-- User disser "Mavis, batch" → batch PR + merge + deploy.
+## ⛔ NÃO FAZER (NESTE MODO)
 
-- **done=287**, ready=71, in_progress=4
-- **Main**: `691de55`
+- NÃO acumular múltiplas branches em paralelo
+- NÃO usar `-X theirs` cego
+- NÃO fazer `git push --force`
+- NÃO pular sync.cjs --fix
+- NÃO criar PR (merge direto em main via `git merge --no-ff`)
+- NÃO esquecer REGRA #0 (scrum update) e REGRA #1 (metrics sync)
 
 ---
 
