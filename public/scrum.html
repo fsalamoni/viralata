@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-16T14:38:02.194Z",
+  "generatedAt": "2026-07-15T17:29:26.266Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W29",
@@ -396,7 +396,20 @@
     "endsAt": "2026-07-22",
     "goal": "Implementar 50+ features de UI/UX/infra. Limpar inconsistências. Decisões registradas. Zero tasks in_progress stale."
   },
-  "activeWorktrees": [],
+  "activeWorktrees": [
+    {
+      "id": "viralata",
+      "branch": "feat/task-038-worm-backup-2026-07-15",
+      "head": "bbc4160e12cbf96895d91c57868052534fb3df15",
+      "headTitle": "chore: LOOP_PROMPT updated — TASK-038 done + metrics 288/70",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata",
+      "status": "in-sync",
+      "commitsAhead": 0,
+      "primarySession": null,
+      "sessionTitle": null,
+      "focus": []
+    }
+  ],
   "activeSessions": [
     {
       "id": "mvs_f1e04f28717d42cdba05e221b7b4b6f3",
@@ -1438,7 +1451,7 @@
       "branch": null,
       "flag": "SHELTER_SECURITY_HARDENING",
       "worktree": null,
-      "pr": null,
+      "pr": "0",
       "tags": [
         "backup",
         "worm",
@@ -1449,7 +1462,8 @@
       "evidence": "docs/SHELTER_MGMT_ROADMAP.md §11.7",
       "description": "Configurar bucket GCS com Object Locking (WORM — Write Once Read Many) para backups. Lifecycle: 90d coldline, depois delete. Criptografia at-rest (default GCS) + em trânsito (HTTPS).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-15"
+      "updatedAt": "2026-07-15T17:26:40",
+      "resolvedAt": "2026-07-15"
     },
     {
       "id": "TASK-039",
@@ -11632,7 +11646,7 @@
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": "f8eefc2fea34caef13db06bab7999b390cde37d6",
+    "mainCommit": null,
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -11642,13 +11656,13 @@
     ],
     "openTODOs": 5,
     "openLegalReviews": 3,
-    "totalTasks": 406,
-    "done": 401,
-    "inProgress": 0,
-    "inReview": 0,
-    "blocked": 0,
-    "ready": 0,
-    "backlog": 4,
+    "totalTasks": 371,
+    "done": 287,
+    "inProgress": 4,
+    "inReview": 1,
+    "blocked": 1,
+    "ready": 71,
+    "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
     "contribuicaoCoder": {
@@ -11677,7 +11691,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-16T14:38:02.197Z — via sync.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-15T17:26:40 — via scrum.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
@@ -11971,11 +11985,7 @@
   "decisionsUpdatedAt": "2026-07-15T23:57:00Z"
 }
   </script>
-<<<<<<< HEAD
-  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-16T14:18:06.580Z">
-=======
-  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-16T03:26:48.025Z">
->>>>>>> 2fdaf3d (design(ux): TASK-603 - hero home com hierarquia clara - H1 menor mobile, badge compacto, remove chips decorativos)
+  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-15T17:26:59.029Z">
   </head>
 <body>
 

@@ -126,29 +126,59 @@ Após restore validado, enviar notificação no canal `#viralata-platform`:
   `adminAlerts.js`.
 - **Se último backup `status=failed`** → email imediato para admin_master.
 
-## 6. Bucket policy (referência)
+## 6. WORM Configuration (TASK-038)
 
-Comandos one-time para setup inicial (NÃO rodar novamente em produção
-sem aprovação do security lead):
+A configuração WORM no bucket `gs://viralata-backups` é mantida via scripts
+automatizados em `scripts/gcs-worm-setup.sh` e verificada com
+`scripts/gcs-worm-verify.sh`.
+
+### 6.1 Setup (one-time — runbook)
 
 ```bash
-# Lifecycle 90d
-cat > /tmp/lifecycle.json <<EOF
-{
-  "lifecycle": {
-    "rule": [{
-      "action": { "type": "Delete" },
-      "condition": { "age": 90 }
-    }]
-  }
-}
-EOF
-gsutil lifecycle set /tmp/lifecycle.json gs://viralata-backups
+# Requer: gcloud CLI autenticada + papel roles/storage.admin
+chmod +x scripts/gcs-worm-setup.sh
+./scripts/gcs-worm-setup.sh --project <gcp-project-id>   # dry-run padrão; tirar --dry-run para aplicar
+```
 
-# WORM: revoga objectDelete de todos exceto service account do Cloud Functions
-gsutil iam ch -d allUsers:objectViewer gs://viralata-backups
-gsutil iam ch -d allAuthenticatedUsers:objectAdmin gs://viralata-backups
-# Apenas a service account <project>@appspot.gserviceaccount.com pode criar objetos
+O que o script configura:
+
+| Configuração | Valor | Propósito |
+|---|---|---|
+| Object Versioning | Habilitado | Preserva versões históricas (WORM — nenhuma versão é sobrescrita) |
+| Retention Policy | 90 dias | Objetos não podem ser sobrescritos/deletados antes de 90 dias |
+| Lifecycle Rule | Delete noncurrent age=90 | Purga versões noncurrent após 90 dias (cleanup automático) |
+| Uniform Bucket Level Access | Habilitado | ACLs granulares desabilitadas — acesso restrito via IAM bucket-level |
+
+### 6.2 Verificação de conformidade (trimestral)
+
+```bash
+chmod +x scripts/gcs-worm-verify.sh
+./scripts/gcs-worm-verify.sh --project <gcp-project-id>
+# Exit 0 = WORM compliant | Exit 1 = não-conforme
+```
+
+Verificações realizadas:
+1. Object Versioning habilitado
+2. Retention Policy ≥ 90 dias
+3. Lifecycle Rule: Delete noncurrent age=90 dias
+4. Uniform Bucket Level Access habilitado
+5. Nenhum principal não-serviço com `roles/storage.objectDeleter`
+6. Logging de audit ativo (Lei 14.063/2020)
+
+### 6.3 Comandos manuais (referência)
+
+```bash
+# Verificar versioning
+gsutil versioning get gs://viralata-backups
+
+# Verificar retention policy
+gsutil retention get gs://viralata-backups
+
+# Verificar lifecycle
+gsutil lifecycle get gs://viralata-backups
+
+# Verificar IAM (nenhum principal non-serviço com objectDeleter)
+gsutil iam get gs://viralata-backups
 ```
 
 ## 7. Recovering from a corrupted or partial export
@@ -168,4 +198,5 @@ Se o export é parcialmente gravado (ex: backup de domingo anterior com
 - [GCS lifecycle policy](https://cloud.google.com/storage/docs/lifecycle)
 - [AGENTS.md §LGPD](../AGENTS.md)
 - [TASK-240 no SCRUM](../.harness/SCRUM_TASKS.json) (id: TASK-240)
+- [TASK-038 no SCRUM](../.harness/SCRUM_TASKS.json) (id: TASK-038) — WORM setup
 - [Lei 14.063/2020 art. 6º](http://www.planalto.gov.br/ccivil_03/_ato2019-2022/2020/lei/l14063.htm)

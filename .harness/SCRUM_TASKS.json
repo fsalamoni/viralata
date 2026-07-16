@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-13T00:37:31.671Z",
+  "generatedAt": "2026-07-15T17:29:26.266Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W29",
@@ -12,13 +12,13 @@
   },
   "activeWorktrees": [
     {
-      "id": "chore-state-cleanup",
-      "branch": "chore/state-and-cleanup-2026-07-12",
-      "head": "87a424d09db62e0b42e79851f7f6a2a533213fa2",
-      "headTitle": "chore(docs+scrum): STATE.md canônico + AGENTS.md B.1.6 (scrum.cjs) + AGENTS_CHANGELOG + ROADMAP 22/22 + cleanup stale tasks",
-      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/chore-state-cleanup",
-      "status": "ahead-of-main",
-      "commitsAhead": 1,
+      "id": "viralata",
+      "branch": "feat/task-038-worm-backup-2026-07-15",
+      "head": "bbc4160e12cbf96895d91c57868052534fb3df15",
+      "headTitle": "chore: LOOP_PROMPT updated — TASK-038 done + metrics 288/70",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata",
+      "status": "in-sync",
+      "commitsAhead": 0,
       "primarySession": null,
       "sessionTitle": null,
       "focus": []
@@ -1064,7 +1064,7 @@
       "branch": null,
       "flag": "SHELTER_SECURITY_HARDENING",
       "worktree": null,
-      "pr": null,
+      "pr": "0",
       "tags": [
         "backup",
         "worm",
@@ -1075,7 +1075,8 @@
       "evidence": "docs/SHELTER_MGMT_ROADMAP.md §11.7",
       "description": "Configurar bucket GCS com Object Locking (WORM — Write Once Read Many) para backups. Lifecycle: 90d coldline, depois delete. Criptografia at-rest (default GCS) + em trânsito (HTTPS).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-15"
+      "updatedAt": "2026-07-15T17:26:40",
+      "resolvedAt": "2026-07-15"
     },
     {
       "id": "TASK-039",
@@ -10608,13 +10609,13 @@
     "firestoreRulesParens": "1291/1291",
     "firestoreIndexes": 35,
     "bundleSizeKB": 4125,
-    "shelterPhases": "22/22 completas em produção ✅",
-    "activeWorktreesAheadOfMain": 1,
+    "shelterPhases": "21/22 completas em produção (Fase 18 pendente decisão)",
+    "activeWorktreesAheadOfMain": 0,
     "mergedWorktreesThisSprint": [
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": "e2fb0768f92875d3ddd9fe36cde4f3ae274197ea",
+    "mainCommit": null,
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "produção ativa — viralata.app / viralata.web.app respondendo (PR #73 deployed)",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -10624,12 +10625,12 @@
     ],
     "openTODOs": 5,
     "openLegalReviews": 3,
-    "totalTasks": 367,
-    "done": 132,
-    "inProgress": 1,
+    "totalTasks": 371,
+    "done": 287,
+    "inProgress": 4,
     "inReview": 1,
-    "blocked": 0,
-    "ready": 226,
+    "blocked": 1,
+    "ready": 71,
     "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -10659,7 +10660,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-13T00:37:31 — via scrum.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-15T17:26:40 — via scrum.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [

@@ -31,7 +31,20 @@
 
 ## SISTEMA DE DESIGN ARENA (já implementado)
 
-Use estas classes CSS já criadas:
+```bash
+cd /workspace/viralata
+if [ ! -d /workspace/viralata ]; then
+  git clone https://TOKEN_PLACEHOLDER@github.com/fsalamoni/viralata.git /workspace/viralata
+fi
+cd /workspace/viralata
+git pull origin main
+python3 -c "
+import json
+with open('.harness/SCRUM_TASKS.json') as f: d = json.load(f)
+ready = [t for t in d['tasks'] if t['status'] == 'ready' and t.get('owner') not in ['human', 'human-juridico']]
+print(f'{len(ready)} tasks ready')
+"
+```
 
 ### Header admin
 - `.arena-admin-header` — gradient + backdrop blur
@@ -86,40 +99,29 @@ Use estas classes CSS já criadas:
 
 Para cada ajuste:
 
-- [ ] Li o componente inteiro antes
-- [ ] Identifiquei o problema específico (não "mexer em tudo")
-- [ ] Apliquei mudança **cirúrgica** (1-2 lugares)
-- [ ] Build passa (`npm run build`)
-- [ ] Não quebrei testes existentes (rodei `npm test -- <path>` antes/depois)
-- [ ] Commit descritivo
-- [ ] Push
-- [ ] sync.cjs --fix + commit
-- [ ] Próxima task
+**Top 5 non-human ready:**
+| TASK-291 | critical | [EMAIL-001] Integrar SendGrid ou Resend pra email transacion...
+| TASK-292 | critical | [FCM-001] Integrar Firebase Cloud Messaging pra push notific...
+| TASK-368 | critical | [D-07] Decisão: DPO sign-off antes de qualquer canário em pr...
+| TASK-006 | high | Revisão jurídica: adoptionTerms.v1.js...
+| TASK-007 | high | Revisão jurídica: avisosLegais.js...
+
+> **Notas**:
+> - TASK-220 ✅ done — feat/task-220-clean (PR #192) merged 2026-07-15
+> - TASK-269 ✅ done — feat/task-268-volunteer-fcm-notify (PR #190)
+> - TASK-312 ✅ done — [INT-SEARCH-001] Sync ativo do search index
+> - TASK-273 ✅ done — Smart Search: adicionar entidade volunteer
+> - TASK-176 ✅ done — Sentry enriched
+> - TASK-239 ✅ done — Sentry SDK + Crashlytics
+> - TASK-038 ✅ done — feat/task-038-worm-backup-2026-07-15 (WORM: gcs-worm-setup + gcs-worm-verify, DR_PLAN §6)
+> - Todas as branches feat/* = `fsalamoni/viralata`
 
 ---
 
 ## ORDEM DE ATAQUE (do mais crítico para o polish)
 
-1. **TASK-602** — Auditoria visual completa (relatório)
-2. **TASK-605** — Eliminar sobreposições de cards
-3. **TASK-608** — Tabs sticky + URL sync
-4. **TASK-603** — Hero da Home com hierarquia
-5. **TASK-620** — Cards de pet com hierarquia
-6. **TASK-611** — Mobile: touch targets 44px
-7. **TASK-612** — Focus states visíveis
-8. **TASK-606** — Field component em forms
-9. **TASK-607** — Modais centralizados
-10. **TASK-609** — Empty states consistentes
-11. **TASK-610** — Loading skeletons
-12. **TASK-613** — Tipografia (5 tamanhos)
-13. **TASK-621** — Dashboard cards consistentes
-14. **TASK-604** — Espaçamentos semânticos
-15. **TASK-616** — Breadcrumbs
-16. **TASK-614** — Cores semânticas
-17. **TASK-615** — Ícones padronizados
-18. **TASK-617** — Toasts consistentes
-19. **TASK-619** — Animações suaves
-20. **TASK-618** — Dark mode
+- **done=288**, ready=70, in_progress=4
+- **Main**: `691de55`
 
 ---
 
