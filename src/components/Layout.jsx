@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   PawPrint, Heart, Building2, MessageCircle, User, Menu, X, BookHeart,
-  Plus, Shield, ShieldCheck, AlertTriangle, LogOut, Radar, Users, HeartHandshake
+  Plus, Shield, ShieldCheck, AlertTriangle, LogOut, Radar, Users, HeartHandshake,
+  Sun, Moon
 } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import NotificationsMenu from '@/modules/notifications/components/NotificationsMenu';
@@ -16,6 +17,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/core/lib/utils';
 import { usePlatformSettings } from '@/core/lib/FeatureFlagsContext';
+import { useColorMode } from '@/core/hooks/useColorMode';
 
 const STANDALONE_PAGES = ['Home', 'Login', 'OnboardingQuestionnaire'];
 
@@ -35,6 +37,24 @@ const NAV_ITEMS = [
 const MOBILE_MENU_EXTRA_ITEMS = [
   { label: 'Meus Pets', icon: Heart, to: '/meus-pets', auth: true },
 ];
+
+/** Botão de toggle dark/light mode no header — TASK-618 */
+function ColorModeToggle() {
+  const { isDark, setMode } = useColorMode();
+  return (
+    <button
+      onClick={() => setMode(isDark ? 'light' : 'dark')}
+      className="flex h-9 w-9 items-center justify-center rounded-full text-foreground/60 hover:bg-secondary hover:text-foreground transition-colors"
+      aria-label={isDark ? 'Mudar para modo claro' : 'Mudar para modo escuro'}
+      title={isDark ? 'Modo claro' : 'Modo escuro'}
+    >
+      {isDark
+        ? <Sun className="h-4 w-4" />
+        : <Moon className="h-4 w-4" />
+      }
+    </button>
+  );
+}
 
 export default function Layout({ children, currentPageName }) {
   const navigate = useNavigate();
@@ -98,6 +118,8 @@ export default function Layout({ children, currentPageName }) {
 
           {/* Ações direita */}
           <div className="flex items-center gap-2">
+            {/* Dark mode toggle — sempre visível */}
+            <ColorModeToggle />
             {isAuthenticated ? (
               <>
                 {/* Cadastrar Pet — presente no cabeçalho em todas as páginas (item 2) */}
