@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.0.0",
-  "generatedAt": "2026-07-16T14:38:02.194Z",
+  "generatedAt": "2026-07-13T00:37:31.671Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W29",
@@ -10,16 +10,30 @@
     "endsAt": "2026-07-22",
     "goal": "Implementar 50+ features de UI/UX/infra. Limpar inconsistências. Decisões registradas. Zero tasks in_progress stale."
   },
-  "activeWorktrees": [],
+  "activeWorktrees": [
+    {
+      "id": "chore-state-cleanup",
+      "branch": "chore/state-and-cleanup-2026-07-12",
+      "head": "87a424d09db62e0b42e79851f7f6a2a533213fa2",
+      "headTitle": "chore(docs+scrum): STATE.md canônico + AGENTS.md B.1.6 (scrum.cjs) + AGENTS_CHANGELOG + ROADMAP 22/22 + cleanup stale tasks",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/chore-state-cleanup",
+      "status": "ahead-of-main",
+      "commitsAhead": 1,
+      "primarySession": null,
+      "sessionTitle": null,
+      "focus": []
+    }
+  ],
   "activeSessions": [
     {
       "id": "mvs_f1e04f28717d42cdba05e221b7b4b6f3",
       "agentName": "agent-1cc44353fc6b",
-      "title": "Viralata Coder (este agente)",
+      "title": "Viralata Coder — STATE.md + cleanup scrum + fila técnica",
       "status": "started",
-      "workspace": "D:\\viralata",
+      "workspace": "/workspace/viralata",
       "branch": "main",
-      "lastActiveAt": "2026-07-11T14:21:50-03:00"
+      "lastActiveAt": "2026-07-12T21:30:00-03:00",
+      "deliverable": "docs/STATE.md + ROADMAP.md 22/22 + 9 stale tasks done + TASK-374 in_progress + cron de manutenção"
     }
   ],
   "columns": [
@@ -349,13 +363,11 @@
       "blockedBy": [],
       "description": "Design review da paridade. Conferir banner gradiente, avatar-iniciais, nome, cidade, chips — e o painel admin da comunidade (header arena-panel-strong, arena-tab-bar, stat cards p-6 sm:p-7, mt-12 sm:mt-14). Flag default OFF — não muda nada até admin ligar.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-15T19:30:00Z",
-      "history": [
-        {
-          "ts": "2026-07-15T19:30:00Z",
-          "to": "done",
-          "reason": "Paridade ONG já em main"
-        }
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12",
+      "evidence": "mergeado em worktree ou sessão finalizada (cleanup 2026-07-12)",
+      "notes": [
+        "auto-cleanup 2026-07-12 (mvs_f1e04) — sessão finalizou ou trabalho coberto em outro caminho"
       ]
     },
     {
@@ -5970,7 +5982,10 @@
           "status": "prompt done"
         }
       ],
-      "resolvedAt": "2026-07-12"
+      "resolvedAt": "2026-07-12",
+      "notes": [
+        "auto-cleanup 2026-07-12 (mvs_f1e04) — sessão finalizou ou trabalho coberto em outro caminho"
+      ]
     },
     {
       "id": "TASK-202",
@@ -6000,7 +6015,10 @@
       "description": "Implementa auto-import do SCRUM_TASKS.json no painel-scrum.html conforme pedido do usuário 2026-07-11. Componentes: (1) sync.cjs ganhou modo --watch com polling de mtime (750ms) e re-embed automático no painel HTML. (2) sync.cjs --watch --serve roda HTTP server em :8731 com CORS habilitado para o browser fazer polling e auto-reload. (3) painel-scrum.html ganhou pill #auto-sync-pill mostrando último sync + botão #btn-reload manual + script autoSync() que faz polling 5s e auto-reload em modo HTTP. (4) SCRUM_PROTOCOL.md §13 documenta os modos e atalhos npm. (5) package.json expõe scripts: sync, sync:fix, sync:check, sync:watch, sync:serve. (6) AGENTS.md já cita Regra B — este worktree materializa a parte de auto-import. Worktree: D:\\viralata\\.worktrees\\wt-auto-import (branch feat/harness-auto-import).\n\n**Status 2026-07-11 20:43 (mvs_311d)**: smoke verde, pushed to origin, nit ### B.2 resolvido. Aguarda gh auth path do user pra abrir MR (PAT/browser/manual).",
       "createdAt": "2026-07-11",
       "updatedAt": "2026-07-12",
-      "resolvedAt": "2026-07-12"
+      "resolvedAt": "2026-07-12",
+      "notes": [
+        "auto-cleanup 2026-07-12 (mvs_f1e04) — sessão finalizou ou trabalho coberto em outro caminho"
+      ]
     },
     {
       "id": "TASK-203",
@@ -6657,7 +6675,10 @@
       "description": "BLOCO INDEPENDENTE. CRÍTICO — LGPD Art. 37: falha de auditoria NÃO pode ser silenciosa. Substituir todos .catch(() => {}) por .catch(err => Sentry.captureException(err, { tags: { audit_failure: true, action, club_id } })) em todos os services que chamam createAuditLog. Alertar em PagerDuty se audit_failure > 5/hora. Combinar com TASK-243 (Sentry+Crashlytics).",
       "createdAt": "2026-07-11",
       "updatedAt": "2026-07-12",
-      "resolvedAt": "2026-07-12"
+      "resolvedAt": "2026-07-12",
+      "notes": [
+        "auto-cleanup 2026-07-12 (mvs_f1e04) — sessão finalizou ou trabalho coberto em outro caminho"
+      ]
     },
     {
       "id": "TASK-235",
@@ -6745,7 +6766,10 @@
       "description": "BLOCO INDEPENDENTE. CRÍTICO. (1) Adicionar sub-tab \"Participações\" na aba Voluntários do painel admin. (2) Admin pode criar participation (select dropdown puxando roster, NÃO input livre volunteer_uid=volunteer_name — bug latente). (3) Lista com check-in/out. (4) Filtros (pending/in_progress/completed/cancelled). (5) Corrigir bug latente em ParticipationForm.jsx:88-99 (volunteer_name muda volunteer_uid). Combinar com TASK-211.",
       "createdAt": "2026-07-11",
       "updatedAt": "2026-07-12",
-      "resolvedAt": "2026-07-12"
+      "resolvedAt": "2026-07-12",
+      "notes": [
+        "auto-cleanup 2026-07-12 (mvs_f1e04) — sessão finalizou ou trabalho coberto em outro caminho"
+      ]
     },
     {
       "id": "TASK-238",
@@ -6774,7 +6798,10 @@
       "description": "BLOCO INDEPENDENTE. CRÍTICO — sem gate real nos 4 components, UI vaza dados mesmo com flag off. Adicionar useFeatureFlag(SHELTER_VOLUNTEER_PROFILE_V1) em todos. Tambem corrigir OrganizationAdminPanel.jsx:97 que checa SHELTER_VOLUNTEERS (guarda-chuva) e não v1. Combinar com TASK-223.",
       "createdAt": "2026-07-11",
       "updatedAt": "2026-07-12",
-      "resolvedAt": "2026-07-12"
+      "resolvedAt": "2026-07-12",
+      "notes": [
+        "auto-cleanup 2026-07-12 (mvs_f1e04) — sessão finalizou ou trabalho coberto em outro caminho"
+      ]
     },
     {
       "id": "TASK-239",
@@ -7263,7 +7290,10 @@
           "reason": "wt/e79e15ca merged"
         }
       ],
-      "pr": "(merge em main via wt/e79e15ca)"
+      "resolvedAt": "2026-07-12",
+      "notes": [
+        "auto-cleanup 2026-07-12 (mvs_f1e04) — sessão finalizou ou trabalho coberto em outro caminho"
+      ]
     },
     {
       "id": "TASK-262",
@@ -8287,8 +8317,12 @@
       "subFrente": "abrigos-foster-adocao",
       "description": "Hoje adoptionService.js:267-273 assume \"se não é applicant, é abrigo\". Adicionar checagem explícita if (!isApplicant && !isClubOwnerOrAdmin(shelterClubId)) throw new Error(...). Importar helper de permissions.js. Firestore rules compensam mas defense-in-depth.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-14",
-      "pr": "108"
+      "updatedAt": "2026-07-12",
+      "resolvedAt": "2026-07-12",
+      "evidence": "mergeado em worktree ou sessão finalizada (cleanup 2026-07-12)",
+      "notes": [
+        "auto-cleanup 2026-07-12 (mvs_f1e04) — sessão finalizou ou trabalho coberto em outro caminho"
+      ]
     },
     {
       "id": "TASK-301",
@@ -9906,8 +9940,10 @@
         }
       ],
       "evidence": "commit 166bd11 em feat/seed-mock-data: feat(harness+scrum): 11 tasks de decisão humana pendente (TASK-361..371) + housekeeping",
-      "pr": "(decision)",
-      "decision": ".tmp-legal-docs/ = deletar (já foi limpo)."
+      "resolvedAt": "2026-07-12",
+      "notes": [
+        "auto-cleanup 2026-07-12 (mvs_f1e04) — sessão finalizou ou trabalho coberto em outro caminho"
+      ]
     },
     {
       "id": "TASK-362",
@@ -10268,7 +10304,10 @@
         }
       ],
       "startedAt": "2026-07-12",
-      "resolvedAt": "2026-07-12"
+      "resolvedAt": "2026-07-12",
+      "notes": [
+        "auto-cleanup 2026-07-12 (mvs_f1e04) — sessão finalizou ou trabalho coberto em outro caminho"
+      ]
     },
     {
       "id": "TASK-373",
@@ -10302,13 +10341,13 @@
       "title": "Atualizar AGENTS.md Regra B 2.2/2.3 - usar .harness/scrum.cjs (BREAKING, requer decisao humana 5)",
       "type": "docs",
       "category": "infra",
-      "status": "done",
+      "status": "in_review",
       "priority": "medium",
-      "owner": "human",
-      "branch": null,
+      "owner": "mvs_f1e04f28717d42cdba05e221b7b4b6f3",
+      "branch": "feat/regra-b-scrum-cli",
       "worktree": null,
       "flag": null,
-      "pr": "(decision)",
+      "pr": "#74",
       "tags": [
         "AGENTS.md",
         "regra-B",
@@ -10323,15 +10362,7 @@
       "evidence": "AGENTS.md 2.2/2.3 atual prescreve `node -e` inline script - incompativel com scrum.cjs canonical",
       "description": "**Origem:** Avaliacao de scrum.cjs (Regra B canonical CLI) em 2026-07-11 22:00.\n\n**Mudanca proposta:**\n- 2.2 (inicio de task): trocar `node -e \"<inline script>\"` por `node .harness/scrum.cjs start TASK-XXX --owner <session> --branch feat/...`\n- 2.3 (fim de task): trocar `node -e \"<inline script>\"` por `node .harness/scrum.cjs done TASK-XXX` ou `review TASK-XXX`\n- 2.5 (auto-import): nota de que sync.cjs --watch continua sendo o refresh do painel-scrum.html\n- 2.6 (autosync daemon): marcar DEPRECATED => sync.cjs (TASK-373) e o substituto\n- Adicionar referencia a scrum.cjs na 3 (Onde Tudo Vive)\n\n**BREAKING CHANGE (AGENTS.md 5):**\n- Requer decisao humana (PR com tag agents-md-change)\n- Entrada em docs/AGENTS_CHANGELOG.md\n- Broadcast pra todas as sessoes ativas\n- Re-leitura por todas as sessoes\n\n**Quem decide:** mvs_311d078987d0414a90f57ef28b789b18 (root) propoe => user libera.\n\n**Bloqueado por:** TASK-372 (lockfile devDep), TASK-373 (migracao autosync), TASK-375 (smoke test).",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-15T19:25:00Z",
-      "decision": "AGENTS.md = NÃO atualizar agora. Funciona como está.",
-      "history": [
-        {
-          "ts": "2026-07-15T19:25:00Z",
-          "to": "done",
-          "reason": "Decisão 2026-07-15: AGENTS.md = NÃO atualizar agora. Funciona como está."
-        }
-      ]
+      "updatedAt": "2026-07-13T00:37:31"
     },
     {
       "id": "TASK-375",
@@ -10382,7 +10413,7 @@
       "evidence": "docs/legal/ criado com 13 .md (~70KB) + README.md indice. .tmp-legal-docs/ removido. sync.cjs --check 0 issues.",
       "description": "**Contexto:** A pasta .tmp-legal-docs/ (13 arquivos .md, ~70KB) contem a documentacao legal da plataforma (termos de uso, politica de privacidade, codigo de conduta, etc.) que foi gerada em um worktree anterior (provavelmente wt-legal-v2). Ate 2026-07-11 22:00, os docs NAO foram migrados para o local canonico docs/legal/ (que ainda nao existe). **Decisao A** (2026-07-11): MANTER .tmp-legal-docs/ ate migracao proper, NAO deletar (decisao logica baseada em evidencia: docs/01_Termos_de_Uso.md NAO existe, mas .tmp-legal-docs/01_Termos_de_Uso.md existe).\n\n**Escopo da migracao:**\n1. Criar docs/legal/ no repo\n2. Mover 13 .md de .tmp-legal-docs/ para docs/legal/ (com renomeacao se necessario)\n3. Adicionar index/README.md listando todos os documentos\n4. Atualizar AGENTS.md (Regra A) referenciando docs/legal/\n5. Adicionar entrada no DELIVERABLE.md (Fase Legal)\n6. Smoke test: links de termo/privacidade no app (footer?) apontam para docs/legal/ correto\n7. Commitar com tag legal-docs para facil rollback\n\n**Origem coord:** Decisao do orquestrador root session (mvs_311d078987d0414a90f57ef28b789b18) em 2026-07-11 22:00.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-14T16:06:26",
+      "updatedAt": "2026-07-12",
       "history": [
         {
           "ts": "2026-07-11 22:07:58 -0300",
@@ -10397,673 +10428,10 @@
         }
       ],
       "startedAt": "2026-07-11",
-      "resolvedAt": "2026-07-14"
-    },
-    {
-      "id": "TASK-378",
-      "title": "Painel scrum: auto-pull do remoto no watcher (npm run sync:live)",
-      "type": "feature",
-      "category": "infra",
-      "status": "done",
-      "priority": "high",
-      "owner": "claude_yxo02k",
-      "branch": "claude/scrum-board-management-yxo02k",
-      "flag": null,
-      "worktree": null,
-      "pr": "#109",
-      "tags": [
-        "harness",
-        "regra-b",
-        "auto-sync"
-      ],
-      "blockedBy": [],
-      "relatedTasks": [
-        "TASK-202"
-      ],
-      "evidence": "sync.cjs --pull: git pull --ff-only a cada 60s no watcher (adiado com mudanças locais; nunca cria merge); npm run sync:live; causa raiz do painel local divergente era clone 99+ commits atrás do origin/main",
-      "description": "O painel local mostrava cenário antigo porque o clone não acompanhava o remoto. Com sync:live, o painel puxa o main automaticamente conforme o desenvolvimento se concretiza.",
-      "createdAt": "2026-07-13",
-      "updatedAt": "2026-07-13",
-      "resolvedAt": "2026-07-13"
-    },
-    {
-      "id": "TASK-376",
-      "title": "UI: deduplicar LegalFooter + modo fixo/auto-hide por preferência",
-      "type": "debt",
-      "category": "ui",
-      "status": "done",
-      "priority": "high",
-      "owner": "unassigned",
-      "branch": null,
-      "flag": null,
-      "worktree": null,
-      "pr": 0,
-      "tags": [
-        "ui",
-        "footer",
-        "duplicacao",
-        "user-preference"
-      ],
-      "blockedBy": [],
-      "eixo": "1-ux",
-      "subFrente": "ui",
-      "description": "Layout.jsx renderiza LegalFooter DUAS vezes (linhas 230 e 274). Além disso, footer deve ter 2 modos: (a) fixo na tela, (b) aparece quando mouse chega na posição, configurável por preferência do usuário. Adicionar preference footer_mode em platform_settings.",
-      "createdAt": "2026-07-14",
-      "updatedAt": "2026-07-15"
-    },
-    {
-      "id": "TASK-402",
-      "title": "UI: card de abas em Organizacao/Comunidade — altura equilibrada",
-      "type": "debt",
-      "category": "ui",
-      "status": "done",
-      "priority": "high",
-      "owner": "unassigned",
-      "branch": "fix/task-402-tabs-height-balance-2026-07-14",
-      "flag": null,
-      "worktree": null,
-      "pr": "171",
-      "tags": [
-        "ui",
-        "tabs",
-        "organizacao",
-        "comunidade",
-        "altura"
-      ],
-      "blockedBy": [],
-      "eixo": "1-ux",
-      "subFrente": "ui",
-      "description": "Em OrganizacaoDetail e CommunityPublic, o card de Tabs (Lista) não se ajusta à altura do conteúdo. Quando usuário clica em uma aba com muito conteúdo, o card mantém altura fixa ou fica desbalanceado. Deve crescer para acomodar a aba mais alta, com transição suave. Usar min-height dinâmico ou auto.",
-      "createdAt": "2026-07-14",
-      "updatedAt": "2026-07-14T16:16:43",
-      "resolvedAt": "2026-07-14"
-    },
-    {
-      "id": "TASK-HOTFIX-001",
-      "title": "[HOTFIX] Home.jsx import UpcomingExhibitionsFeed (landing page em branco)",
-      "description": "PR #177 (TASK-149) adicionou uso de <UpcomingExhibitionsFeed /> no Home.jsx mas o import do componente ficou faltando. Build CI não detectou. Em produção (após deploy de outro commit posterior), o Home crashava com ReferenceError: UpcomingExhibitionsFeed is not defined. ErrorBoundary triggered, usuário via 'Algo deu errado'.\n\n**Fix**: Adicionado `import UpcomingExhibitionsFeed from '@/modules/shelter/components/UpcomingExhibitionsFeed';` em src/pages/Home.jsx\n\n**PR #193 merged em 2026-07-15 15:04 UTC. Deploy concluído.**",
-      "status": "done",
-      "priority": "critical",
-      "category": "hotfix",
-      "owner": "unassigned",
-      "branch": "hotfix/fix-home-import-upcoming-exhibitions-2026-07-15",
-      "pr": "193",
-      "createdAt": "2026-07-15",
-      "updatedAt": "2026-07-15",
-      "tags": [
-        "hotfix",
-        "build",
-        "production-down"
+      "resolvedAt": "2026-07-12",
+      "notes": [
+        "auto-cleanup 2026-07-12 (mvs_f1e04) — sessão finalizou ou trabalho coberto em outro caminho"
       ]
-    },
-    {
-      "id": "TASK-380",
-      "title": "[P11] Página de cargos da plataforma (/admin/cargos) com descrição, acessos, funcionalidades",
-      "description": "Cargos: owner, admin, dpo, support, moderator, legal_reviewer, security, developer. Para cada: nome, descrição, acessos, funcionalidades. User = tudo hoje. Preparado pra crescer. Flag: SHELTER_PLATFORM_ROLES_V1. ~500 linhas.\n\nADICIONAL 2026-07-15: Email DPO atual: fsalamoni@gmail.com. Campo editável email em cada cargo. /admin/cargos/{id}: alterar email do responsável. Audit log de alterações.",
-      "status": "done",
-      "priority": "high",
-      "category": "admin",
-      "owner": "unassigned",
-      "branch": "",
-      "pr": "",
-      "createdAt": "2026-07-15T19:25:00Z",
-      "updatedAt": "2026-07-15",
-      "tags": [
-        "admin",
-        "cargos",
-        "p11-decisao"
-      ]
-    },
-    {
-      "id": "TASK-381",
-      "title": "[P13] Ativar SHELTER_LEGAL_TERMS_V1 com banner minimalista de cookies",
-      "description": "Banner fixo no rodapé. Background amber. Texto sobre cookies essenciais. Botão único \"Aceitar\". localStorage cookieConsent. ~200 linhas.",
-      "status": "done",
-      "priority": "high",
-      "category": "legal",
-      "owner": "unassigned",
-      "branch": "",
-      "pr": "",
-      "createdAt": "2026-07-15T19:25:00Z",
-      "updatedAt": "2026-07-15",
-      "tags": [
-        "cookies",
-        "lgpd",
-        "banner",
-        "p13-decisao"
-      ]
-    },
-    {
-      "id": "TASK-386",
-      "title": "[P5] PIX manual: pagamento por chave/QR code (sem CNPJ, sem Pagar.me)",
-      "description": "User não tem CNPJ. Substituir Pagar.me por fluxo manual de PIX. User cadastra chave PIX e QR Code estático. Eventos pagos mostram QR + chave + upload comprovante. ~500 linhas.",
-      "status": "done",
-      "priority": "high",
-      "category": "infra",
-      "owner": "unassigned",
-      "branch": "",
-      "pr": "",
-      "createdAt": "2026-07-15T19:25:00Z",
-      "updatedAt": "2026-07-15",
-      "tags": [
-        "pix",
-        "manual",
-        "qrcode",
-        "p5-decisao-v2"
-      ]
-    },
-    {
-      "id": "TASK-600",
-      "title": "[P6] Foster = Voluntário com capability \"foster\" + responsabilidades de adotante",
-      "description": "Animal aceito pelo LT fica vinculado a ele (como adotante). Histórico e controle permanecem com o abrigo. Capability \"foster\" no volunteer_profile. ~400 linhas.",
-      "status": "done",
-      "priority": "high",
-      "category": "shelter",
-      "owner": "unassigned",
-      "branch": "",
-      "pr": "",
-      "createdAt": "2026-07-15T19:25:00Z",
-      "updatedAt": "2026-07-15",
-      "tags": [
-        "foster",
-        "voluntario",
-        "p6-decisao"
-      ]
-    },
-    {
-      "id": "TASK-601",
-      "title": "[P8] Avaliação 360 de voluntários (autoavaliação + pares + equipe)",
-      "description": "Formulário aberto durante TODO período. Avaliadores podem incluir ocorrências. Equipe vê tudo. Gera certificado + relatório. ~1200 linhas.",
-      "status": "done",
-      "priority": "high",
-      "category": "shelter",
-      "owner": "unassigned",
-      "branch": "",
-      "pr": "",
-      "createdAt": "2026-07-15T19:25:00Z",
-      "updatedAt": "2026-07-15",
-      "tags": [
-        "voluntario",
-        "avaliacao",
-        "360",
-        "p8-decisao"
-      ]
-    },
-    {
-      "id": "TASK-602",
-      "title": "[UX-AUDIT] Auditoria visual completa + fix de sobreposições",
-      "description": "Auditar todas as páginas públicas e admin para identificar: (1) cards sobrepostos, (2) texto cortado, (3) CTAs sem contraste WCAG AA, (4) hierarquia visual quebrada. Criar relatório e corrigir top 10 issues.",
-      "category": "design",
-      "priority": "high",
-      "owner": "unassigned",
-      "status": "done",
-      "createdAt": "2026-07-15",
-      "acceptance": "Relatório de auditoria + 10 fixes aplicados",
-      "updatedAt": "2026-07-16T03:22:48",
-      "resolvedAt": "2026-07-16"
-    },
-    {
-      "id": "TASK-603",
-      "title": "[UX-HOME] Hero da Home com hierarquia visual clara",
-      "description": "Reformular hero da Home: título com tamanho balanceado (não gigante), subtítulo legível, CTAs primário/secundário com contraste, badge de credibilidade, sem poluição visual.",
-      "category": "design",
-      "priority": "high",
-      "owner": "unassigned",
-      "status": "done",
-      "createdAt": "2026-07-15",
-      "acceptance": "Hero com hierarquia clara: badge → title (3-4 linhas max) → subtitle (2-3 linhas) → 2 CTAs (primary + secondary)",
-      "updatedAt": "2026-07-16T03:26:44",
-      "resolvedAt": "2026-07-16"
-    },
-    {
-      "id": "TASK-604",
-      "title": "[UX-SPACING] Padronizar espaçamentos entre seções (space-y-6 → 7 níveis)",
-      "description": "Criar 7 níveis de espaçamento semântico: space-y-xs (8px), sm (12), md (16), lg (24), xl (32), 2xl (48), 3xl (64). Substituir space-y-* ad-hoc em 50+ arquivos.",
-      "category": "design",
-      "priority": "medium",
-      "owner": "unassigned",
-      "status": "done",
-      "createdAt": "2026-07-15",
-      "acceptance": "Nenhum space-y-* ad-hoc restante. Apenas classes semânticas: gap-section-sm, -md, -lg, etc.",
-      "updatedAt": "2026-07-16T13:27:38",
-      "resolvedAt": "2026-07-16"
-    },
-    {
-      "id": "TASK-605",
-      "title": "[UX-CARDS] Eliminar sobreposições de cards (z-index correto)",
-      "description": "Identificar todos os cards com absolute positioning ou z-index que ficam sobrepostos. Garantir que cada card é uma unidade visual isolada. Cards em grid devem ter gap mínimo de 16px.",
-      "category": "design",
-      "priority": "high",
-      "owner": "unassigned",
-      "status": "done",
-      "createdAt": "2026-07-15",
-      "acceptance": "Zero cards sobrepostos em /abrigos, /comunidades, /admin",
-      "updatedAt": "2026-07-16T03:33:35",
-      "resolvedAt": "2026-07-16"
-    },
-    {
-      "id": "TASK-606",
-      "title": "[UX-FORMS] Field component com label+helper+error consistente",
-      "description": "Aplicar Field component (label+helper+error+required indicator) em 30+ formulários. Helper text em 11.5px, label em 12.5px, error em 11.5px vermelho com ícone.",
-      "category": "design",
-      "priority": "medium",
-      "owner": "unassigned",
-      "status": "done",
-      "createdAt": "2026-07-15",
-      "acceptance": "Todos os formulários com Field component consistente",
-      "updatedAt": "2026-07-16T13:30:07",
-      "resolvedAt": "2026-07-16"
-    },
-    {
-      "id": "TASK-607",
-      "title": "[UX-MODALS] Modais centralizados, sem overflow, max-width 600px",
-      "description": "Auditar todos os Dialog/Sheet: devem ser centralizados, max-width 600px em desktop, padding 5/6, botão primário à direita, secundário à esquerda, ESC fecha, click-outside fecha (com confirmação se dirty).",
-      "category": "design",
-      "priority": "medium",
-      "owner": "unassigned",
-      "status": "done",
-      "createdAt": "2026-07-15",
-      "acceptance": "10 modais mais usados refatorados",
-      "updatedAt": "2026-07-16T13:31:57",
-      "resolvedAt": "2026-07-16"
-    },
-    {
-      "id": "TASK-608",
-      "title": "[UX-TABS] Tabs sticky + indicator animado + URL sync",
-      "description": "Tabs admin devem ser sticky (top-2), com indicator animado, URL sync (?tab=xxx), keyboard nav (←/→), aria-selected correto. Gap entre TabsList e conteúdo = 32px (não 84).",
-      "category": "design",
-      "priority": "high",
-      "owner": "unassigned",
-      "status": "done",
-      "createdAt": "2026-07-15",
-      "acceptance": "10 telas com tabs refatoradas",
-      "updatedAt": "2026-07-16T03:40:06",
-      "resolvedAt": "2026-07-16"
-    },
-    {
-      "id": "TASK-609",
-      "title": "[UX-EMPTY-STATES] Empty states com ícone + texto + CTA",
-      "description": "Todos os empty states devem ter: ícone grande, título curto, descrição 1-2 linhas, botão CTA primário. Aplicar arena-empty-state em 30+ listas.",
-      "category": "design",
-      "priority": "medium",
-      "owner": "unassigned",
-      "status": "done",
-      "createdAt": "2026-07-15",
-      "acceptance": "20 empty states refatorados com arena-empty-state",
-      "updatedAt": "2026-07-16T13:35:00",
-      "resolvedAt": "2026-07-16"
-    },
-    {
-      "id": "TASK-610",
-      "title": "[UX-LOADING] Skeletons consistentes (arena-skeleton)",
-      "description": "Criar padrão de skeleton: header (h-7 rounded), card (arena-section-card com shimmer), avatar (círculo), list (3 linhas). Aplicar em 20 telas.",
-      "category": "design",
-      "priority": "medium",
-      "owner": "unassigned",
-      "status": "done",
-      "createdAt": "2026-07-15",
-      "acceptance": "arena-skeleton classes + 20 telas com loading states",
-      "updatedAt": "2026-07-16T13:46:49.884Z"
-    },
-    {
-      "id": "TASK-611",
-      "title": "[UX-MOBILE] Touch targets 44px + responsive padding",
-      "description": "Garantir que todos os botões/links clicáveis tenham min-h-[44px] min-w-[44px] em mobile. Padding lateral em mobile = 16px (não 24). Esconder sidebars em < md.",
-      "category": "design",
-      "priority": "high",
-      "owner": "unassigned",
-      "status": "done",
-      "createdAt": "2026-07-15",
-      "acceptance": "Lighthouse mobile score > 90 nas 10 principais páginas",
-      "updatedAt": "2026-07-16"
-    },
-    {
-      "id": "TASK-612",
-      "title": "[UX-FOCUS] Focus states visíveis (WCAG 2.4.7)",
-      "description": "Todos os elementos focáveis devem ter focus-visible:ring-2 ring-primary ring-offset-2. Tab order lógico. Skip-link no topo de cada página.",
-      "category": "design",
-      "priority": "high",
-      "owner": "unassigned",
-      "status": "done",
-      "createdAt": "2026-07-15",
-      "acceptance": "axe-core 0 erros de focus + skip-link em 10 páginas",
-      "updatedAt": "2026-07-16T13:07:17",
-      "resolvedAt": "2026-07-16"
-    },
-    {
-      "id": "TASK-613",
-      "title": "[UX-TYPOGRAPHY] Escala tipográfica consistente (5 tamanhos)",
-      "description": "Aplicar escala: text-display (48px+), text-h1 (32), h2 (24), h3 (18), body (15), small (13), tiny (11.5). Line-height: 1.4 body, 1.2 headings.",
-      "category": "design",
-      "priority": "medium",
-      "owner": "unassigned",
-      "status": "done",
-      "createdAt": "2026-07-15",
-      "acceptance": "Nenhum text-[NNpx] ad-hoc. Apenas text-display/h1/h2/h3/body/small/tiny",
-      "updatedAt": "2026-07-16T13:46:49.890Z"
-    },
-    {
-      "id": "TASK-614",
-      "title": "[UX-COLORS] Hierarquia de cores semântica (5 níveis)",
-      "description": "Usar apenas: bg-canvas, bg-surface, bg-elevated, bg-primary, bg-accent. Texto: text-primary, text-secondary, text-tertiary, text-muted. Border: border-subtle, border-default, border-strong.",
-      "category": "design",
-      "priority": "medium",
-      "owner": "unassigned",
-      "status": "done",
-      "createdAt": "2026-07-15",
-      "acceptance": "Nenhum bg-white/50 hard-coded. Apenas tokens semânticos",
-      "updatedAt": "2026-07-16T13:46:49.891Z"
-    },
-    {
-      "id": "TASK-615",
-      "title": "[UX-ICONS] Ícones Lucide com tamanho padronizado",
-      "description": "Tamanhos: xs (12px), sm (14), md (16), lg (20), xl (24). Stroke 2 (default Lucide). Sempre pareados com texto (aria-label ou label adjacente).",
-      "category": "design",
-      "priority": "low",
-      "owner": "unassigned",
-      "status": "done",
-      "createdAt": "2026-07-15",
-      "acceptance": "Nenhum h-3.5 w-3.5 solto. Apenas icon-xs/sm/md/lg/xl",
-      "updatedAt": "2026-07-16T14:11:15",
-      "resolvedAt": "2026-07-16"
-    },
-    {
-      "id": "TASK-616",
-      "title": "[UX-NAV] Breadcrumbs em todas as rotas aninhadas",
-      "description": "Adicionar Breadcrumb component em /abrigos/:id/admin, /comunidades/:slug/admin, /perfil/*, /admin/*. Cada nível clicável, último é texto simples.",
-      "category": "design",
-      "priority": "medium",
-      "owner": "unassigned",
-      "status": "done",
-      "createdAt": "2026-07-15",
-      "acceptance": "Breadcrumb em 15 rotas aninhadas",
-      "updatedAt": "2026-07-16T13:48:44",
-      "resolvedAt": "2026-07-16"
-    },
-    {
-      "id": "TASK-617",
-      "title": "[UX-FEEDBACK] Toasts consistentes (sucesso/erro/info)",
-      "description": "Toasts: sucesso (verde, check, 4s), erro (vermelho, alert, 6s), info (azul, info, 3s). Posição top-right. Botão \"X\" para fechar. Stacking até 3.",
-      "category": "design",
-      "priority": "low",
-      "owner": "unassigned",
-      "status": "done",
-      "createdAt": "2026-07-15",
-      "acceptance": "Padrão único de toast em todo o app",
-      "updatedAt": "2026-07-16T14:16:35",
-      "resolvedAt": "2026-07-16"
-    },
-    {
-      "id": "TASK-618",
-      "title": "[UX-DARK-MODE] Toggle dark mode (TASK-020 do backlog)",
-      "description": "Ativar os tokens .dark que já existem. Switch no header. localStorage. prefers-color-scheme. Testar em todas as 22 fases.",
-      "category": "design",
-      "priority": "medium",
-      "owner": "unassigned",
-      "status": "done",
-      "createdAt": "2026-07-15",
-      "acceptance": "Dark mode funcional + testado nas 10 principais páginas",
-      "updatedAt": "2026-07-16T13:51:45",
-      "resolvedAt": "2026-07-16"
-    },
-    {
-      "id": "TASK-619",
-      "title": "[UX-ANIMATIONS] Transições suaves (200-300ms)",
-      "description": "Adicionar transition-all duration-200 ease-out em hover/focus de botões, links, cards. Fade-in em lazy load. Skeleton → content transition.",
-      "category": "design",
-      "priority": "low",
-      "owner": "unassigned",
-      "status": "done",
-      "createdAt": "2026-07-15",
-      "acceptance": "Nenhuma transição abrupta. Tudo tem 200-300ms",
-      "updatedAt": "2026-07-16T14:17:40",
-      "resolvedAt": "2026-07-16"
-    },
-    {
-      "id": "TASK-620",
-      "title": "[UX-PETS] Cards de pet com hierarquia (foto > nome > info > CTA)",
-      "description": "Card de pet (grid + detalhe): foto 4:3 com hover zoom sutil, nome em 16px font-bold, badges (espécie, porte), localização 11.5px, CTA \"Conhecer\" full-width no rodapé.",
-      "category": "design",
-      "priority": "high",
-      "owner": "unassigned",
-      "status": "done",
-      "createdAt": "2026-07-15",
-      "acceptance": "10 cards de pet refatorados",
-      "updatedAt": "2026-07-16T13:07:18",
-      "resolvedAt": "2026-07-16"
-    },
-    {
-      "id": "TASK-621",
-      "title": "[UX-DASHBOARD] Dashboard cards com visual consistente",
-      "description": "Cards do dashboard: ícone + label (uppercase 11.5) + valor (26px extrabold) + delta (12 verde/vermelho). Hover sutil. Click → /rota-específica.",
-      "category": "design",
-      "priority": "medium",
-      "owner": "unassigned",
-      "status": "done",
-      "createdAt": "2026-07-15",
-      "acceptance": "10 telas de dashboard com arena-stat-card",
-      "updatedAt": "2026-07-16T13:54:20",
-      "resolvedAt": "2026-07-16"
-    },
-    {
-      "id": "TASK-622",
-      "title": "AdminUsers page - hierarquia de filtros (busca + chips + tabs)",
-      "type": "ux",
-      "category": "design",
-      "status": "done",
-      "priority": "high",
-      "owner": "unassigned",
-      "branch": null,
-      "pr": null,
-      "tags": [
-        "ux",
-        "design",
-        "arena",
-        "platform-rest"
-      ],
-      "blockedBy": [],
-      "description": "Refatorar AdminUsers para ter hierarquia clara: header com busca, chips de filtro (papel/status), tabs internas. Aplicar arena-section-card em todas as seções.",
-      "createdAt": "2026-07-16",
-      "updatedAt": "2026-07-16T13:07:18",
-      "resolvedAt": "2026-07-16"
-    },
-    {
-      "id": "TASK-623",
-      "title": "AdminMockData - separar dados perigosos de demo",
-      "type": "ux",
-      "category": "design",
-      "status": "done",
-      "priority": "high",
-      "owner": "unassigned",
-      "branch": null,
-      "pr": null,
-      "tags": [
-        "ux",
-        "design",
-        "arena",
-        "platform-rest"
-      ],
-      "blockedBy": [],
-      "description": "AdminMockData deve ter CLAREZA: seção 'DESTRUCTIVE' (com cor de aviso), seção 'SAFE' (verde), e preview antes de aplicar.",
-      "createdAt": "2026-07-16",
-      "updatedAt": "2026-07-16T13:07:18",
-      "resolvedAt": "2026-07-16"
-    },
-    {
-      "id": "TASK-624",
-      "title": "AdoptionDetail - UX de timeline",
-      "type": "ux",
-      "category": "design",
-      "status": "done",
-      "priority": "high",
-      "owner": "unassigned",
-      "branch": null,
-      "pr": null,
-      "tags": [
-        "ux",
-        "design",
-        "arena",
-        "platform-rest"
-      ],
-      "blockedBy": [],
-      "description": "Refatorar AdoptionDetail timeline: cada evento com ícone+cor+data, agrupado por fase. Adicionar estado vazio e loading.",
-      "createdAt": "2026-07-16",
-      "updatedAt": "2026-07-16T13:06:22",
-      "resolvedAt": "2026-07-16"
-    },
-    {
-      "id": "TASK-625",
-      "title": "Profile - hierarquia de seções",
-      "type": "ux",
-      "category": "design",
-      "status": "done",
-      "priority": "high",
-      "owner": "unassigned",
-      "branch": null,
-      "pr": null,
-      "tags": [
-        "ux",
-        "design",
-        "arena",
-        "platform-rest"
-      ],
-      "blockedBy": [],
-      "description": "Profile tem 15+ cards empilhados. Quebrar em grupos lógicos com arena-section-card e âncoras no topo. Cada grupo com ícone.",
-      "createdAt": "2026-07-16",
-      "updatedAt": "2026-07-16T13:10:46",
-      "resolvedAt": "2026-07-16"
-    },
-    {
-      "id": "TASK-626",
-      "title": "ShelterPublic - hero e vitrines",
-      "type": "ux",
-      "category": "design",
-      "status": "done",
-      "priority": "high",
-      "owner": "unassigned",
-      "branch": null,
-      "pr": null,
-      "tags": [
-        "ux",
-        "design",
-        "arena",
-        "platform-rest"
-      ],
-      "blockedBy": [],
-      "description": "Refatorar ShelterPublic: hero com banner + stats vitais, vitrines com cards padronizados, separação clara entre Sobre/Pets/Equipe.",
-      "createdAt": "2026-07-16",
-      "updatedAt": "2026-07-16T13:17:32",
-      "resolvedAt": "2026-07-16"
-    },
-    {
-      "id": "TASK-627",
-      "title": "CommunityDetail - feed e mural",
-      "type": "ux",
-      "category": "design",
-      "status": "done",
-      "priority": "high",
-      "owner": "unassigned",
-      "branch": null,
-      "pr": null,
-      "tags": [
-        "ux",
-        "design",
-        "arena",
-        "platform-rest"
-      ],
-      "blockedBy": [],
-      "description": "CommunityDetail: hierarquia entre feed principal e eventos. Adicionar filtros visíveis, empty states e skeletons de loading.",
-      "createdAt": "2026-07-16",
-      "updatedAt": "2026-07-16T13:20:42",
-      "resolvedAt": "2026-07-16"
-    },
-    {
-      "id": "TASK-628",
-      "title": "AdoptionWizard - progress e revisão",
-      "type": "ux",
-      "category": "design",
-      "status": "done",
-      "priority": "medium",
-      "owner": "unassigned",
-      "branch": null,
-      "pr": null,
-      "tags": [
-        "ux",
-        "design",
-        "arena",
-        "platform-rest"
-      ],
-      "blockedBy": [],
-      "description": "AdoptionWizard stepper mais visível, com etapas nomeadas e revisão final antes de enviar. Aplicar arena-section-card no layout.",
-      "createdAt": "2026-07-16",
-      "updatedAt": "2026-07-16T13:56:37",
-      "resolvedAt": "2026-07-16"
-    },
-    {
-      "id": "TASK-629",
-      "title": "SearchPage - filtros e resultados",
-      "type": "ux",
-      "category": "design",
-      "status": "done",
-      "priority": "medium",
-      "owner": "unassigned",
-      "branch": null,
-      "pr": null,
-      "tags": [
-        "ux",
-        "design",
-        "arena",
-        "platform-rest"
-      ],
-      "blockedBy": [],
-      "description": "SearchPage: filtros laterais com arena-section-card, contador de resultados, empty state quando não encontra nada. Paginação visível.",
-      "createdAt": "2026-07-16",
-      "updatedAt": "2026-07-16T13:59:06",
-      "resolvedAt": "2026-07-16"
-    },
-    {
-      "id": "TASK-630",
-      "title": "KanbanPage - cards de pet",
-      "type": "ux",
-      "category": "design",
-      "status": "done",
-      "priority": "high",
-      "owner": "unassigned",
-      "branch": null,
-      "pr": null,
-      "tags": [
-        "ux",
-        "design",
-        "arena",
-        "platform-rest"
-      ],
-      "blockedBy": [],
-      "description": "KanbanPage: cards com hierarquia (pet photo + nome + status + idade), agrupados por coluna. Drag handle visível, sem sobreposição.",
-      "createdAt": "2026-07-16",
-      "updatedAt": "2026-07-16T13:24:28",
-      "resolvedAt": "2026-07-16"
-    },
-    {
-      "id": "TASK-631",
-      "title": "VolunteerProfile - dashboard de métricas",
-      "type": "ux",
-      "category": "design",
-      "status": "done",
-      "priority": "medium",
-      "owner": "unassigned",
-      "branch": null,
-      "pr": null,
-      "tags": [
-        "ux",
-        "design",
-        "arena",
-        "platform-rest"
-      ],
-      "blockedBy": [],
-      "description": "VolunteerProfile: dashboard com cards de atividade, gráfico de horas, lista de tarefas pendentes. Aplicar arena-stats-grid.",
-      "createdAt": "2026-07-16",
-      "updatedAt": "2026-07-16T14:05:38",
-      "resolvedAt": "2026-07-16"
     }
   ],
   "definitionOfDone": [
@@ -11240,15 +10608,15 @@
     "firestoreRulesParens": "1291/1291",
     "firestoreIndexes": 35,
     "bundleSizeKB": 4125,
-    "shelterPhases": "21/22 completas em produção (Fase 18 pendente decisão)",
-    "activeWorktreesAheadOfMain": 0,
+    "shelterPhases": "22/22 completas em produção ✅",
+    "activeWorktreesAheadOfMain": 1,
     "mergedWorktreesThisSprint": [
       "wt/e79e15ca",
       "wt/17ff480a"
     ],
-    "mainCommit": "f8eefc2fea34caef13db06bab7999b390cde37d6",
+    "mainCommit": "e2fb0768f92875d3ddd9fe36cde4f3ae274197ea",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
-    "deployStatus": "rodando — run #221 disparado",
+    "deployStatus": "produção ativa — viralata.app / viralata.web.app respondendo (PR #73 deployed)",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
     "newScripts": [
       "scripts/smoke-routes.mjs",
@@ -11256,13 +10624,13 @@
     ],
     "openTODOs": 5,
     "openLegalReviews": 3,
-    "totalTasks": 406,
-    "done": 401,
-    "inProgress": 0,
-    "inReview": 0,
+    "totalTasks": 367,
+    "done": 132,
+    "inProgress": 1,
+    "inReview": 1,
     "blocked": 0,
-    "ready": 0,
-    "backlog": 4,
+    "ready": 226,
+    "backlog": 6,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
     "contribuicaoCoder": {
@@ -11291,7 +10659,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-16T14:38:02.197Z — via sync.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-13T00:37:31 — via scrum.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [

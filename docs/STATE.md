@@ -5,19 +5,19 @@
 > projeto (humano, agente ou sessão paralela). Ele é atualizado em cada
 > movimento, merge ou task. Para detalhes, siga o índice da Seção 10.
 >
-> **Última atualização**: 2026-07-14 13:50 BRT
-> **Versão**: 1.3.0
+> **Última atualização**: 2026-07-13 00:55 BRT
+> **Versão**: 1.2.0
 > **Mantido por**: Mavis (viralata-coder, sessão `mvs_f1e04f28717d42cdba05e221b7b4b6f3`)
 
 ---
 
 ## 0. TL;DR (60 segundos)
 
-**Viralata** é uma plataforma SaaS brasileira (React + Firebase) de adoção responsável de pets + comunidade (ONGs, mural, fórum, eventos). Em **2026-07-11/12** entregamos as **22 fases** do **Sistema de Gestão do Abrigo** (shelter management) em produção. Deploy ativo em `https://viralata.web.app/` (Firebase).
+**Viralata** é uma plataforma SaaS brasileira (React + Firebase) de adoção responsável de pets + comunidade (ONGs, mural, fórum, eventos). Em **2026-07-11/12** entregamos as **22 fases** do **Sistema de Gestão do Abrigo** (shelter management) em produção. Deploy ativo em `viralata.app` / `viralata.web.app`.
 
 - **Status produção**: 22/22 fases shelter ✅ + core platform (ONGs, comunidades, pets) ✅
-- **Testes**: 1.959+ verde, lint 0, build OK, 1959 tests (3 novos) + 11 do TASK-401
-- **Scrum board**: 370 tasks (203 done / 138 ready / 3 in_progress / 1 in_review / 6 backlog / 1 dropped)
+- **Testes**: 1.355+ verde, lint 0, build OK (15.98s), Firestore rules 1.291/1.291 parens
+- **Scrum board**: 367 tasks (128 done / 229 ready / 3 in_progress / 6 backlog / 1 dropped)
 - **PRs abertos no GitHub**: 0
 - **Issues abertas no GitHub**: 0
 - **Em paralelo**: 3 worktrees ahead-of-main no PC local (voluntários + legal v2 + housekeeping) com trabalho substantivo pronto para virar PR
@@ -297,7 +297,7 @@ TASK-019 (DNS), 364, 023 (telemedicina), 034 (pen test) / TASK-020-024 (dark mod
 | 9 | `docs/AUDIT_2026-07-11.md` | Auditoria multi-dimensional pós-22 fases | Referência histórica |
 | 10 | `docs/AUDIT_DEEP_2026-07-11.md` | Auditoria profunda (7 bugs reais) | Referência histórica |
 | 11 | `docs/DR_PLAN.md` | Disaster recovery (WORM backups) | Quando mexer em backup |
-
+| 12 | `docs/DNS_VIRALATA_APP.md` | DNS para viralata.app | Quando mexer em DNS |
 | 13 | `docs/legal/` | 11 textos legais v2 (após merge) | Quando mexer em legal |
 | 14 | `AGENTS.md` | Mandato persistente, Regras A+B | SEMPRE — regras de trabalho |
 | 15 | `.harness/SCRUM_PROTOCOL.md` | Protocolo de coordenação entre sessões | Quando coordenar com outras sessões |
@@ -424,7 +424,6 @@ mavis communication send --to <root> --content "TASK-XXX in_review, PR #N"
 
 | Data | Versão | Mudança |
 |---|---|---|
-| 2026-07-14 13:50 | 1.3.0 | Atualização: 203 done (170 → 203), 1959 tests, footer dedup + 3 modos (PR #170), card de abas balanceado (PR #171) |
 | 2026-07-12 21:30 | 1.1.0 | Criação inicial pós-PR #73. Documento canônico de estado. |
 | 2026-07-11 14:21 | 1.0.0 | Versão antiga (Fase 22 finalizada) |
 | Antes | 0.x | Versões de fase por fase |
