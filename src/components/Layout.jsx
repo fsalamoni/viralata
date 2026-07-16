@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { SkipLink } from '@/components/ui/skip-link';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   PawPrint, Heart, Building2, MessageCircle, User, Menu, X, BookHeart,
@@ -214,8 +215,11 @@ export default function Layout({ children, currentPageName }) {
         )}
       </header>
 
+      {/* Skip link */}
+      <SkipLink targetId="main-content" />
+
       {/* Main */}
-      <main className={cn('flex-1 relative', isAuthenticated && 'pb-20 md:pb-0')}>
+      <main id="main-content" className={cn('flex-1 relative', isAuthenticated && 'pb-20 md:pb-0')}>
         {children}
       </main>
 
