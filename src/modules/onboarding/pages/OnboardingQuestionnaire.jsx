@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
+import { createAuditLog } from '@/core/services/auditService';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -93,7 +94,7 @@ const OTHER_PET_OPTIONS = [
 ];
 
 export default function OnboardingQuestionnaire() {
-  const { updateUserProfile, userProfile, user } = useAuth();
+  const { user, updateUserProfile, userProfile } = useAuth();
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState({
@@ -149,6 +150,8 @@ export default function OnboardingQuestionnaire() {
     setSaving(true);
     try {
       const acceptedAt = new Date().toISOString();
+      const actor = { uid: user?.uid, displayName: user?.displayName, email: user?.email };
+
       // Persistimos cada aceite no doc do perfil para servir de prova
       // de aceite (audit trail local). O audit_log canônico também
       // é gravado para atender Lei 14.063/2020 (TASK-085).
@@ -169,24 +172,12 @@ export default function OnboardingQuestionnaire() {
         onboarding_completed_at: acceptedAt,
       });
 
-      // Audit log imutável — Lei 14.063/2020 + LGPD Art. 37 (TASK-085)
-      await createAuditLog({
-        action: 'onboarding_consent_accepted',
-        actor: { uid: user?.uid, email: user?.email },
-        target_type: 'user',
-        target_id: user?.uid,
-        details: {
-          terms_version: '2026-07-10',
-          privacy_policy_version: '2026-07-10',
-          code_of_conduct_version: '2026-07-10',
-          onboarding_version: ONBOARDING_QUESTIONNAIRE_VERSION,
-          accepted_at: acceptedAt,
-          legal_basis: 'consent (LGPD Art. 7º I) + Lei 14.063/2020',
-        },
-      }).catch((err) => {
-        // Audit é best-effort — não bloqueia a conclusão do onboarding
-        console.warn('[audit] onboarding_consent_accepted falhou (não bloqueante):', err);
-      });
+      // TASK-194: disparar AUDIT_ACTION_LABELS para os 3 aceites do cadastro.
+      // Best-effort: falhas no audit não bloqueiam o onboarding.
+      const auditDetails = { terms_version: '2026-07-10', onboarding_version: ONBOARDING_QUESTIONNAIRE_VERSION };
+      await createAuditLog({ action: 'terms_accepted', actor, details: auditDetails }).catch(() => {});
+      await createAuditLog({ action: 'privacy_policy_accepted', actor, details: auditDetails }).catch(() => {});
+      await createAuditLog({ action: 'code_of_conduct_accepted', actor, details: auditDetails }).catch(() => {});
 
       toast.success('Perfil concluído! Bem-vindo ao Viralata 🐾');
       navigate('/feed');

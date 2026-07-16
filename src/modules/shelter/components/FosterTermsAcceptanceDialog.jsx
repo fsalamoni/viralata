@@ -15,7 +15,7 @@
  *  - foster_terms_document_hash (SHA-256 do texto)
  *  - foster_terms_ip + foster_terms_user_agent (audit)
  *
- * Audit log automático via createAuditLog com action='foster.terms.accepted'.
+ * Audit log automático via createAuditLog com action='foster_terms_accepted'.
  */
 
 import { useState, useMemo } from 'react';
@@ -103,16 +103,13 @@ export function FosterTermsAcceptanceDialog({
       // Audit log best-effort
       try {
         await createAuditLog({
-          action: 'foster.terms.accepted',
-          actor_uid: fosterId,
-          actor_email: null,
-          target_type: 'foster_placement',
-          target_id: fosterId,
-          shelter_club_id: shelterClubId,
-          metadata: {
+          action: 'foster_terms_accepted',
+          actor: { uid: fosterId },
+          details: {
             terms_version: FOSTER_TERMS_VERSION,
             document_hash: documentHash,
             signature_length: signature.trim().length,
+            shelter_club_id: shelterClubId,
           },
         });
       } catch (auditErr) {
