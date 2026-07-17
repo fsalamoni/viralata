@@ -197,7 +197,7 @@ export default function CommunityDetail() {
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
     <TabsContentStack>
         {/* ─── Barra de navegação 2-layer (padrão DS_V2) ─── */}
-        <div className="flex flex-wrap items-end justify-between gap-3 border-b border-border/60 pb-1">
+        <div className="flex flex-nowrap items-end justify-between gap-3 overflow-x-auto border-b border-border/60 pb-1">
           {/* Grupo 1: Conteúdo (sempre visível) */}
           <div className="flex flex-wrap items-center gap-1">
             <TabsList className="arena-admin-tabs">
