@@ -1,282 +1,279 @@
-# LOOP_PROMPT — viralata (atualizado 2026-07-17 00:15 UTC)
+# LOOP_PROMPT — viralata (atualizado 2026-07-17 02:20 UTC)
 
-**Contexto**: /workspace/viralata, branch main @ e872443, React+Vite+Firebase.
+**Contexto**: /workspace/viralata, branch main @ 2c91b28, React+Vite+Firebase.
 **Repo**: https://github.com/fsalamoni/viralata.git
 **Sessão**: Mavis root (loop autônomo, **30min**, 24/7 sem limite de horário).
-**Janela ativa**: 10h contínuas (2026-07-17 00:15 → 2026-07-17 10:15 UTC).
+**Janela ativa**: ~5h restantes da FULL_AUDIT_2026-07-17.
 
-**Missão 10h**: **VARREDURA COMPLETA FULL_AUDIT_2026-07-17** (107 tasks, TASK-813..TASK-919).
+**Missão**: **VARREDURA COMPLETA FULL_AUDIT_2026-07-17** (107 tasks, TASK-813..TASK-919).
 Ver `docs/FULL_AUDIT_2026-07-17.md` para o documento canônico.
 
-**MODO ATUAL**: MERGE+DEPLOY A CADA TASK. User pediu 2026-07-17 00:00:
-> "Quero pedir que durante a noite você faça uma varredura completa em loop automático em todos os aspectos da plataforma... sem minha intervenção. A partir de agora, nenhum erro é aceitável!"
+**MODO ATUAL**: MERGE+DEPLOY A CADA TASK. **ANTI-FACHADA ATIVA** (v3 — pós-análise).
 
-**Métricas iniciais**: 512 done, 0 ready, 0 in_progress, 4 backlog, 1 dropped.
-**Após seed**: 512 done, **107 backlog** (TASK-813..TASK-919), 0 ready, 0 in_progress, 0 in_review, 0 blocked.
+**Métricas atuais (após reversão)**:
+- 542 done, 30 FULL_AUDIT done (com commit)
+- 80 backlog
+- 19 tasks que tinham sido marcadas done SEM commit → revertidas para backlog
+- **REGRAS REFORÇADAS** abaixo
 
 ---
 
-## 🔴 REGRA DE OURO #0 — SEM FACADA. TRABALHO REAL, NÃO APARENTE. 🔴
+## 🔴 REGRA DE OURO #0 — SEM FACADA. TRABALHO REAL, NÃO APARENTE. 🔴 (v3)
 
 **O agente do loop NÃO PODE fingir que viu, NÃO PODE fingir que mudou, NÃO PODE fingir que terminou.**
 
-User alertou 2026-07-16 17:13:
+User alertou 2026-07-17 02:13 (esta sessão):
+> "Parte o loop, ajuste as regras para que faça trabalho real mesmo, dentro do que deve ser feito, conforme já falei várias vezes. Após, religue o loop."
+
+E 2026-07-16 17:13:
 > "Lembre-se, eu quero aprimoramento, melhoria e otimização real e verdadeira! O agente do loop não pode fingir que viu, precisa olhar de fato, precisa analisar a realidade e fazer as mudanças reais!"
 
-**PROIBIÇÕES ABSOLUTAS**:
-- ❌ PROIBIDO: ler só o nome do arquivo e marcar como "audit only" sem ler o conteúdo.
-- ❌ PROIBIDO: declarar "está alinhado" sem grep real.
-- ❌ PROIBIDO: fazer mudança cosmética (renomear classe, mover div 2px) e marcar como done.
-- ❌ PROIBIDO: commitar sem `npm run build` verde.
-- ❌ PROIBIDO: marcar como done sem ter visto o diff do próprio commit (`git show HEAD`).
-- ❌ PROIBIDO: pular o `review` (transição `in_progress → done` direto) — `done` SÓ aceita de `in_review`.
-- ❌ PROIBIDO: inventar trabalho. Se não houve mudança perceptível, a task NÃO está done.
-- ❌ PROIBIDO: diff < 5 linhas = provavelmente fachada. Refazer com mudança maior.
-- ❌ PROIBIDO: pular `sync.cjs --fix` antes de commit.
-- ❌ PROIBIDO: esquecer do `pull --no-rebase` antes de push.
+E 2026-07-17 00:00:
+> "Não quero que finja ou que tenha preguiça, preciso que entre em todos o código, leia e análise linha por linha. Quero tudo, literalmente tudo corrigido... A partir de agora, nenhum erro é aceitável!"
 
-**OBRIGAÇÕES POR TASK** (mínimo):
-- ✅ Ler **o arquivo inteiro** do componente alvo antes de mudar (não só `head -50`).
-- ✅ Rodar **2+ greps** para entender o contexto (uso, callers, dependências).
-- ✅ Verificar **estado visual** real: como o componente renderiza hoje, o que tem de errado.
-- ✅ Fazer **mudança perceptível** que o user vai notar (não fachada).
-- ✅ Rodar `npm run build` verde **antes** do commit.
-- ✅ Commitar com mensagem descritiva (o que mudou e por quê).
-- ✅ Conferir o diff com `git show HEAD --stat` antes de fazer merge.
-- ✅ Atualizar `docs/<arquivo>` correspondente com o que mudou.
+## 🛑 ANTI-FACHADA: VALIDAÇÃO OBJETIVA (NOVO v3)
 
-**Se a task é "audit only"**: ler TODOS os arquivos do módulo, listar achados específicos, **não** dizer "está OK" genericamente.
+**A task SÓ pode ser marcada como `done` SE passar em TODAS estas validações objetivas:**
 
----
+### 1. **TER COMMIT COM CÓDIGO REAL**
+```bash
+git log --oneline --grep="TASK-XXX" --since="2026-07-17"
+# DEVE retornar pelo menos 1 commit
+# O commit DEVE ter feat: ou fix: ou refactor: ou perf: ou audit: no subject
+# O commit NÃO pode ser só chore(scrum)
+```
+
+❌ **PROIBIDO**: marcar `done` com motivo `"no changes needed"`, `"audit only"`, `"already implemented"`, `"doesn't exist"`, `"no tabs"`, `"page not found"`.
+- "no tabs" é fachada — significa "não investiguei direito, só olhei grep".
+- "doesn't exist" é achado válido MAS não é "done" — é "blocked" ou "dropped" com explicação.
+- "page not found" → registrar como `dropped` com motivo, não `done`.
+
+### 2. **DIFF MÍNIMO**
+- **Mínimo 10 insertions** OU
+- **Mínimo 2 files changed** OU
+- **Mudança estrutural visível** (criação de arquivo, refatoração de hook, novo componente)
+
+### 3. **BUILD VERDE** (quando aplicável)
+- Se a task mexeu em código React, `npm run build` deve passar.
+- Se não tem `node_modules`, instalar antes (`npm ci`).
+
+### 4. **STATUS TRANSITION CORRETA**
+- `backlog` → `ready` → `in_progress` → `in_review` → **`done`**
+- **`done` SÓ de `in_review`**. Pular `in_review` é PROIBIDO.
+
+### 5. **EVIDÊNCIA NO JSON**
+- O campo `evidence` da task DEVE ter:
+  - SHA do commit (ou "no commit" se for audit-only legítimo)
+  - Número de insertions
+  - Lista de arquivos modificados
+  - Motivo do mudança (não genérico)
+
+## 🚨 USO DO SCRIPT ANTI-FACHADA (NOVO v3)
+
+**O loop DEVE rodar o script antes de marcar qualquer task como `done`:**
+
+```bash
+node .harness/anti-fachada.cjs TASK-XXX
+```
+
+Se o script retornar **exit code != 0**, a task **NÃO PODE** ser marcada como done.
+
+**Códigos de erro**:
+- 1: erro genérico
+- 2: sem commit
+- 3: diff muito pequeno
+- 4: build quebrado
+- 5: status inválido (não está in_review)
+- 6: commits são só chore(scrum), sem feat/fix
+
+**Opções de override** (USE COM CAUTELA, documentar motivo):
+- `--allow-no-commit`: aceita audit-only com justificativa
+- `--allow-small-diff`: aceita diff pequeno se for mudança cirúrgica (ex: 1 linha com import crítico)
+- `--allow-chore-only`: aceita só chore se for refatoração mecânica
+- `--allow-no-build`: pula check de build (emergência)
+- `--force`: força passar (REGISTRE O MOTIVO!)
+
+## 📋 OBRIGAÇÕES POR TASK (mínimo)
+
+1. ✅ Ler **o arquivo inteiro** do componente alvo (não só `head -50`)
+2. ✅ Rodar **2+ greps** para entender contexto (uso, callers, dependências)
+3. ✅ Verificar **estado visual** real
+4. ✅ Implementar **mudança perceptível** que o user vai notar
+5. ✅ Rodar `npm run build` verde **antes** do commit
+6. ✅ Commitar com mensagem descritiva (o que mudou e por quê)
+7. ✅ Conferir `git show HEAD --stat` antes de fazer merge
+8. ✅ **RODAR `node .harness/anti-fachada.cjs TASK-XXX` ANTES DE MARCAR DONE**
+
+## 🚫 O QUE SIGNIFICA FACHADA (banido)
+
+Sinais de fachada que o script detecta e que você NÃO PODE fazer:
+
+1. **Marcar `done` sem código modificado** — fachada clássica
+2. **Diff < 10 linhas sem justificativa** — provavelmente fachada
+3. **"no changes needed" como motivo** — fachada disfarçada
+4. **"page not found" / "doesn't exist"** → `dropped`, não `done`
+5. **"audit only OK" sem ler arquivo** — fachada de audit
+6. **Múltiplas tasks em 1 commit** (sem ser mudança cross-cutting) — esconde fachada
+7. **Só reorganização de imports sem mudança funcional** — fachada
+8. **Trocar className sem mudar comportamento** — fachada
+
+## ✅ O QUE É TRABALHO REAL
+
+Exemplos de mudanças que o user vai notar:
+
+1. **Bug fix que crashava UI** (ex: `ChevronRight is not defined`)
+2. **Loading state que estava faltando** (com Skeleton)
+3. **Error state que estava ausente** (com EmptyState amigável)
+4. **A11y issues** (role='alert', aria-describedby, aria-invalid)
+5. **TabList com 5+ items** (mudar arena-tab-bar → arena-admin-tabs)
+6. **Import circular** (refatoração de dependências)
+7. **DS_V2 aplicado** (cards, hero, tabs, hero harmonizados)
+8. **Lint errors** (unused imports, prop-types)
+9. **State mal gerenciado** (useEffect deps, useMemo deps)
+10. **PWA / cache / SW** (cleanupOutdatedCaches, navigateFallback)
 
 ## 🔴 REGRA ESPECIAL — ATIVAR/MEXER EM FEATURE FLAGS (2026-07-16 23:14) 🔴
 
-**Lição crítica** do HOTFIX-001 (commit `f6c9ed6`):
-
-Quando você ativar uma feature flag (TASK tipo "ativar flag X → ON") ou mudar `DEFAULT_FEATURE_FLAGS` em massa:
+Quando ativar uma feature flag ou mudar `DEFAULT_FEATURE_FLAGS` em massa:
 
 1. **Mudar `DEFAULT_FEATURE_FLAGS` em `src/core/featureFlags.js` não basta.**
-   O doc Firestore `platform_settings/global` tem valores salvos que sobrescrevem o default. A migração v2 só rodava se TODAS as flags estavam em false, então DEFAULT novo nunca aplicava.
-
-2. **SEMPRE atualizar `migrateLegacyFlags`** em
-   `src/core/lib/FeatureFlagsContext.migration.js` para cobrir a nova flag no critério de migração. A v3 (2026-07-16) tem 2 critérios:
-   - TODAS flags em false → migra tudo.
-   - Caso contrário → migra apenas SHELTER_* undefined/null.
-
-3. **Bump `FLAGS_MIGRATION_VERSION`** em `platformSettingsService.js`
-   para invalidar caches e forçar re-execução.
-
-4. **Adicionar teste** em `FeatureFlagsContext.migration.test.js`
-   cobrindo o cenário.
-
-5. **Após merge, pedir ao user para limpar cache** (`Ctrl+Shift+R`) e
-   confirmar que a flag aparece ON em `/admin/flags` E a funcionalidade
-   está visível. Se não aparecer → investigar doc Firestore stale.
-
-**Erro real que aconteceu** (2026-07-16 23:14):
-- TASK-792..797 mudou DEFAULT de 9 flags SHELTER_* para true.
-- User reportou "Não apareceu nenhuma flag nova".
-- Causa: doc Firestore persistido tinha false, migração v2 não rodou.
-- Correção: migração v3 + HOTFIX-001 merged em `f6c9ed6`.
-
-**REGRA**: mudar DEFAULT em massa SEMPRE vem acompanhado de migração.
-Documentado em `docs/CORE_DIRECTIVES.md` §9.2 (D-FLAG-05, D-FLAG-06, D-FLAG-07).
-
----
+2. **SEMPRE atualizar `migrateLegacyFlags`** em `src/core/lib/FeatureFlagsContext.migration.js`.
+3. **Bump `FLAGS_MIGRATION_VERSION`** em `platformSettingsService.js`.
+4. **Adicionar teste** em `FeatureFlagsContext.migration.test.js`.
+5. **Após merge, pedir ao user para limpar cache** e confirmar visualmente.
 
 ## 🔴 REGRA ESPECIAL — PWA CACHE (2026-07-16 23:33) 🔴
 
-**Lição crítica** do HOTFIX-002 (commit `7879b06`):
+PWA `vite-plugin-pwa` gera `sw.js` (mesmo nome) com `cache-control: public, max-age=31536000, immutable`. PWA instalado no celular do user mantém SW persistente que serve assets antigos.
 
-PWA `vite-plugin-pwa` gera `sw.js` (mesmo nome) com `cache-control: public, max-age=31536000, immutable`. PWA instalado no celular do user mantém SW persistente que serve assets antigos mesmo após deploy.
+**REGRA #C-1**: Ao alterar layout, navegação, ou feature flags, SEMPRE bump `filename: 'sw-vN.js'` em `vite.config.js`.
+**REGRA #C-3**: Toda página com TabList com 5+ items DEVE usar `arena-admin-tabs` (flex-nowrap + overflow-x-auto). Nunca `arena-tab-bar` (flex-wrap).
+**REGRA #C-4**: Mudanças UI críticas SEMPRE bump sw.js.
 
-**SEMPRE considerar PWA cache ao fazer deploy de UI crítica**:
-- Mudanças em `OrganizationAdminPanel`, `ClubDetail`, `CommunityDetail`, etc → bump `filename: 'sw-vN.js'` em `vite.config.js`.
-- Mudanças em `featureFlags.js` que afetam UX → considerar bump.
-- Mudanças em rotas, navegação, layout → considerar bump.
-- Builds que mudam HTML/JSX sem bump = user mobile pode estar preso em versão antiga.
-
-**REGRA #C-2**: Cache clear do browser NÃO remove service worker persistente. Para resetar PWA: uninstall + reinstall OR clear site data.
-
-**REGRA #C-3**: Toda página com TabList com 5+ items DEVE usar `arena-admin-tabs` (flex-nowrap + overflow-x-auto). Nunca `arena-tab-bar` (flex-wrap) com 5+ items.
-
-**REGRA #C-4** (NOVA): Ao alterar layout, navegação, ou feature flags, SEMPRE fazer bump do `filename: 'sw-vN.js'` em `vite.config.js`. vN deve ser incrementado.
-
----
-
-## 🎯 MISSÃO DO TURNO (30 min) — MODO MERGE+DEPLOY (TASK A TASK)
-
-### PASSO 0: Self-check antes de tudo
+## 🎯 CICLO DO LOOP (30 min, MERGE+DEPLOY a cada task) — ATUALIZADO v3
 
 ```bash
 cd /workspace/viralata
 git status  # garantir clean
 git pull --no-rebase origin main
 git log --oneline -1
-# Se main mudou: rebuild, garantir que build está verde
-```
 
-### PASSO 1: Pegar próxima task READY
-```bash
-NEXT_TASK=$(node -e "const j=require('./.harness/SCRUM_TASKS.json'); const t=j.tasks.find(t=>t.status==='ready'&&t.tags?.includes('full-audit')); console.log(t?.id || 'NONE');")
-# Se não tiver, promover uma do backlog:
-node -e "const j=require('./.harness/SCRUM_TASKS.json'); const t=j.tasks.find(t=>t.status==='backlog'&&t.tags?.includes('full-audit')); if(t){t.status='ready'; require('fs').writeFileSync('./.harness/SCRUM_TASKS.json', JSON.stringify(j,null,2)); console.log(t.id, '→ ready');}"
+# Pegar próxima task READY (ou promover do backlog)
+NEXT_TASK=$(node -e "const j=require('./.harness/SCRUM_TASKS.json'); const r=j.tasks.find(t=>t.status==='ready'&&t.tags?.includes('full-audit')); if(!r){const b=j.tasks.find(t=>t.status==='backlog'&&t.tags?.includes('full-audit')); if(b){b.status='ready'; require('fs').writeFileSync('./.harness/SCRUM_TASKS.json', JSON.stringify(j,null,2));}} console.log((r||b)?.id || 'NONE');")
+
+if [ "$NEXT_TASK" = "NONE" ]; then
+  echo "✅ Nada para fazer. Aguardar."
+  exit 0
+fi
 
 BRANCH="feat/audit-${NEXT_TASK,,}-2026-07-17"
+node .harness/scrum.cjs start $NEXT_TASK
 git worktree add .worktrees/wt-$NEXT_TASK -b $BRANCH main
 cd .worktrees/wt-$NEXT_TASK
-```
 
-### PASSO 2: Investigação REAL (NÃO pule)
-```bash
-# LER O CÓDIGO INTEIRO do componente alvo (não só head -50)
-wc -l src/path/to/Component.jsx  # saber tamanho
-cat src/path/to/Component.jsx    # LER INTEIRO
+# === INVESTIGAÇÃO REAL (ler INTEIRO) ===
+wc -l src/path/to/Component.jsx
+cat src/path/to/Component.jsx  # LER INTEIRO
+grep -rn "ComponentName" src/ | head -20  # 2+ greps
 
-# Grep para entender uso
-grep -rn "Component" src/ | head -20  # quem importa
-grep -rn "ComponentName" src/modules/admin/ | head -10  # quem usa
-
-# Se for admin tab, ver o estado visual atual
-grep -nE "TabsList|TabsContent" src/path/Component.jsx
-```
-
-### PASSO 3: Identificar problemas REAIS
-Liste **3-5 problemas específicos** que o componente tem hoje. Exemplo real:
-- "Linha 142: `<div className='flex flex-wrap'>` sem overflow-x → quebra em 2 fileiras"
-- "Linha 230: gap-1.5 entre stat cards mas p-0 no wrapper → sem respiro lateral"
-- "Linha 318: Card sem EmptyState quando lista vazia → tela em branco"
-
-**NÃO invente problemas que não existem. NÃO minimize os reais.**
-
-### PASSO 4: Mudança PERCEPTÍVEL (NÃO cosmética)
-- Mexer em **estrutura**, não só em classe
-- Adicionar features visuais úteis (loading, empty state, hover state, transition)
-- Se for Polish, alterar **layout/hierarquia**, não só cor
-- Se a task diz "aplicar DS_V2", usar `arena-*` classes do Design System
-
-### PASSO 5: Build verde OBRIGATÓRIO
-```bash
-npm run build  # EXIT 0 OBRIGATÓRIO
-# Se quebrar: git reset --hard HEAD, refazer
-```
-
-### PASSO 6: Conferir o diff
-```bash
+# === IMPLEMENTAR MUDANÇA REAL ===
+# (Não "audit only" sem mudança concreta)
+npm run build  # verde obrigatório
 git add -A
-git commit -m "feat(...): descrição REAL do que mudou (não genérica)"
-git show HEAD --stat  # ver o que mudou
-# Mudou < 5 linhas? Provavelmente fachada. Refazer com mudança maior.
-```
+git commit -m "feat: $NEXT_TASK — descrição REAL do que mudou"
 
-### PASSO 7: Merge em main + cleanup
-```bash
+# === CONFERIR DIFF ===
+git show HEAD --stat
+# Se < 10 linhas mudou: PARAR, refazer com mudança maior
+
+# === MERGE EM MAIN ===
 cd /workspace/viralata
 git checkout main
 git pull --no-rebase origin main
 git merge --no-ff $BRANCH -m "merge: $BRANCH"
+
+# Limpar
 git worktree remove --force .worktrees/wt-$NEXT_TASK
 git worktree prune
 git branch -D $BRANCH
-```
 
-### PASSO 8: REGRA #0 (SCRUM) + REGRA #1 (METRICS)
-```bash
+# === ANTI-FACHADA CHECK (NOVO v3) ===
+# ANTES de marcar done, rodar o script
 node .harness/scrum.cjs review $NEXT_TASK
-node .harness/scrum.cjs done $NEXT_TASK --reason "merge em main OK"
 
-python3 -c "import json; d=json.load(open('.harness/SCRUM_TASKS.json')); m=d.setdefault('metrics',{}); m['totalTasks']=len(d['tasks']); m['done']=len([t for t in d['tasks'] if t['status']=='done']); m['ready']=len([t for t in d['tasks'] if t['status']=='ready']); m['inProgress']=len([t for t in d['tasks'] if t['status']=='in_progress']); m['inReview']=len([t for t in d['tasks'] if t['status']=='in_review']); m['blocked']=len([t for t in d['tasks'] if t['status']=='blocked']); m['backlog']=len([t for t in d['tasks'] if t['status']=='backlog']); json.dump(d, open('.harness/SCRUM_TASKS.json','w'), indent=2)"
-```
+# ESTE É O GATE. Se falhar, REVERTER a task para in_progress
+node .harness/anti-fachada.cjs $NEXT_TASK
+ANTI_FACHADA_EXIT=$?
 
-### PASSO 9: Re-embed + push (DEPLOY automático)
-```bash
+if [ $ANTI_FACHADA_EXIT -ne 0 ]; then
+  echo "❌ ANTI-FACHADA REJECTED $NEXT_TASK. Reverter para in_progress."
+  node .harness/scrum.cjs block $NEXT_TASK --reason "anti-fachada rejected (exit $ANTI_FACHADA_EXIT). Verificar commit."
+  exit 1
+fi
+
+node .harness/scrum.cjs done $NEXT_TASK --reason "anti-fachada OK + commit $(git rev-parse --short HEAD)"
+
+# === MÉTRICAS + PUSH ===
+python3 -c "..."
 node .harness/sync.cjs --fix
-git add -A
-git commit -m "chore(scrum): $NEXT_TASK done"
+git add -A && git commit -m "chore(scrum): $NEXT_TASK done"
 git pull --no-rebase origin main
 git push origin main
 ```
 
----
+## 📊 FASES DO FULL_AUDIT_2026-07-17
 
-## 🆕 CANDIDATAS — FULL_AUDIT_2026-07-17 (107 tasks)
+107 tasks dividas em 11 fases. **Já restaurado após loop ter perdido a estrutura.**
 
-### Fase 0 — Diagnóstico (5 tasks, CRÍTICA, fazer PRIMEIRO)
-- TASK-813..817: investigar e corrigir os 3 problemas reportados pelo user (admin abrigo "Algo deu errado", flags não vêm, DS_V2 ainda não aplicado)
+- **Fase 0** — Diagnóstico (5 tasks, TASK-813..817) — 1 done
+- **Fase 1** — Erros runtime (8 tasks, TASK-818..825) — 2 done
+- **Fase 2** — Feature flags (8 tasks, TASK-826..833) — 5 done
+- **Fase 3** — PWA cache (7 tasks, TASK-834..840) — 0 done
+- **Fase 4** — Páginas públicas (15 tasks, TASK-841..855) — 5 done
+- **Fase 5** — Páginas admin (13 tasks, TASK-856..868) — 5 done
+- **Fase 6** — Painel admin abrigo (20 tasks, TASK-869..888) — 0 done
+- **Fase 7** — Painel admin comunidade (7 tasks, TASK-889..895) — 0 done
+- **Fase 8** — Banco de dados (8 tasks, TASK-896..903) — 0 done
+- **Fase 9** — Refatoração (8 tasks, TASK-904..911) — 0 done
+- **Fase 10** — Documentação (8 tasks, TASK-912..919) — 0 done
 
-### Fase 1 — Auditoria de erros runtime (8 tasks)
-- TASK-818..825: ErrorBoundary, TabErrorBoundary, rotas, hooks, lazy/Suspense, react-query
+**Total**: 30/107 done, 77 backlog.
 
-### Fase 2 — Auditoria de feature flags (8 tasks)
-- TASK-826..833: DEFAULT vs META, migrateLegacyFlags v3, FLAGS_MIGRATION_VERSION, AdminFlags UI
+## ⛔ NÃO FAZER (NESTE MODO)
 
-### Fase 3 — Auditoria de PWA e cache (7 tasks)
-- TASK-834..840: sw filename versioning, firebase.json headers, navigateFallback, cleanupOutdatedCaches
-
-### Fase 4 — Auditoria visual de páginas públicas (15 tasks)
-- TASK-841..855: /, /feed, /abrigos, /organizacoes/{id}, /comunidade/{id}, /pet/{id}, /evento/{id}, /vitrines, /voluntarios, /busca, /comunidades, /adocoes, /eventos, /chat, /login
-
-### Fase 5 — Auditoria de páginas admin (13 tasks)
-- TASK-856..868: /admin/flags, /admin/dashboard, /admin/metrics, /admin/audit, /admin/security, /admin/notifications, /admin/reports, /admin/users, /admin/content, /admin/organizations, /admin/communities, /admin/pets, /admin/platform-health
-
-### Fase 6 — Auditoria de painel admin abrigo (20 tasks)
-- TASK-869..888: OrganizationAdminPanel, OverviewTab, ClubGeneralAdminTab, ClubPetsDataGrid, ClubFeedTab, ClubDonationsTab, ClubFinanceTab, ClubChatAdminTab, ClubTeamTab, ClubAdminTab, DashboardPage, KanbanPage, ExhibitionsList, VolunteersAdminTab, MedicalRecordsList, MedicationsList, TimelineList, FostersList, ReportsTab, IndicatorsTab
-
-### Fase 7 — Auditoria de painel admin comunidade (7 tasks)
-- TASK-889..895: CommunityAdminPanel, MuralTabAdmin, CommunityEventParticipantsPanel, CommunityTeamTab, CreateForumThreadDialog, AboutTab, EventsTab
-
-### Fase 8 — Auditoria de banco de dados (8 tasks)
-- TASK-896..903: firestore.rules, indexes, storage.rules, Cloud Functions init, CORS, db exports, timestamps, realtime listeners
-
-### Fase 9 — Refatoração de código (8 tasks)
-- TASK-904..911: extrair hooks/subcomponentes em 6 páginas + criar src/components/arena/ + mover CSS
-
-### Fase 10 — Documentação completa (8 tasks)
-- TASK-912..919: docs de módulos, hooks, services, fluxos (flags, PWA, SCRUM, git, UI)
-
-**Total**: 107 tasks. A 30min/task = 53h. A 15min/task = 27h. **A 10min/task = 17h** (loop completo).
-
----
-
-## 📊 MÉTRICAS INICIAIS (2026-07-17 00:15 UTC)
-
-- **done=512**, **ready=0**, **in_progress=0**, **in_review=0**, **blocked=0**, **backlog=111** (4 antigos + 107 do FULL_AUDIT)
-- **Main**: `e872443`
+- ❌ **FINGIR** que viu, leu ou mudou algo sem ter feito
+- ❌ Marcar `done` SEM commit (`--allow-no-commit` só em audit justificado)
+- ❌ Marcar `done` com diff < 10 linhas (`--allow-small-diff` só com mudança cirúrgica)
+- ❌ Marcar `done` direto de `in_progress` (sempre `in_review` antes)
+- ❌ **Pular o `node .harness/anti-fachada.cjs TASK-XXX`** — ESTE É OBRIGATÓRIO
+- ❌ **Reescrever o SCRUM_TASKS.json** inteiro (perde fases, ids, estrutura)
+- ❌ **Acumular múltiplas tasks em 1 commit** (cross-cutting OK; senão separar)
+- ❌ Pular `sync.cjs --fix` antes de commit
+- ❌ Esquecer `pull --no-rebase` antes de push
+- ❌ Mudar `DEFAULT_FEATURE_FLAGS` sem migrateLegacyFlags
+- ❌ Mudar UI crítica sem bump sw.js
 
 ## 🏁 FIM DO TURNO
 
 1. REGRA #0 (scrum update)
 2. REGRA #1 (metrics sync)
-3. sync.cjs --fix
-4. Commit + push
-5. Atualizar LOOP_PROMPT.md se missão mudou
-6. **MERGE+DEPLOY já foi feito** durante o turno
+3. **ANTI-FACHADA CHECK** (`node .harness/anti-fachada.cjs TASK-XXX`)
+4. sync.cjs --fix
+5. Commit + push
+6. Atualizar LOOP_PROMPT.md se missão mudou
 
 ## ⏰ HORÁRIO
-- **24/7**, loop a cada **30min** (10h direto, 20 iterações).
+- **24/7**, loop a cada **30min** (5h restantes ≈ 10 iterações).
 
-## ⛔ NÃO FAZER (NESTE MODO)
+## REGRA DE OURO (v3)
 
-- ❌ **FINGIR** que viu, leu ou mudou algo sem ter feito
-- ❌ **AUDIT ONLY** sem ter lido TODOS os arquivos do módulo + grep real
-- ❌ **POLISH** que muda só cor ou 2px
-- ❌ Acumular múltiplas branches em paralelo
-- ❌ Usar `-X theirs` cego
-- ❌ `git push --force`
-- ❌ Pular `sync.cjs --fix` antes de commit
-- ❌ Esquecer `pull --no-rebase` antes de push
-- ❌ Mudar `DEFAULT_FEATURE_FLAGS` sem migrateLegacyFlags
-- ❌ Mudar UI crítica sem bump sw.js
-- ❌ Esquecer de bump `sw-v7.js` quando a UI crítica mudar
+**Cada task que entra `done` DEVE ter:**
+1. ✅ Commit com feat/fix/audit no subject
+2. ✅ Diff ≥ 10 linhas ou ≥ 2 files
+3. ✅ Build verde
+4. ✅ Evidence no JSON
+5. ✅ Passou no `anti-fachada.cjs`
 
----
+**Se algum desses FALHAR, a task é revertida para in_progress e marcada blocked com motivo claro.**
 
-## 🔁 SELF-REMINDER
-
-A cada 2h (= 4 iterações), verificar:
-- Tasks done desde último check
-- Build verde em 100% dos commits
-- Sync.cjs --fix em 100% dos commits
-- Métricas sincronizadas
-
-Se QUALQUER coisa quebrar, parar e logar.
+**Sem surpresas. SEM FACADA. SEM ATALHOS. NENHUM ERRO É ACEITÁVEL.**
