@@ -1,12 +1,13 @@
 # 🐾 Viralata — Plataforma de Adoção Responsável de Pets
 
 > Site: [viralata.web.app](https://viralata.web.app)
+> Documentação: [`docs/`](docs/) · Arquitetura: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) · Hooks: [`docs/HOOKS.md`](docs/HOOKS.md)
 
 ## Sobre
 
-O **Viralata** é uma plataforma PWA (Progressive Web App) de marketplace de adoção de pets. Conecta animais que precisam de um lar com famílias que têm amor para dar. **Não há venda de animais** — apenas doações responsáveis.
+O **Viralata** é uma plataforma PWA (Progressive Web App) de marketplace de adoção de pets. Conecta animais que precisam de um lar com famílias que têm amor para dar. **Não há venda de animais** — apenas adoções responsáveis.
 
-A plataforma é baseada na arquitetura do [PickleTour](https://pickletour.web.app), reutilizando o core de Firebase, chat em tempo real, notificações e sistema de organizações.
+Shelters (abrigos) e Clubs (ONGs) gerenciam pets, voluntários, eventos e finanças na plataforma.
 
 ---
 
@@ -162,7 +163,74 @@ Console do Firebase/Google Cloud do dono do projeto.
 > conectados a nenhuma rota/UI hoje — a feature de comunidade em produção usa
 > as coleções `clubs`/`club_*` acima (serviços `clubService.js`/`forumService.js`).
 
+### Coleções de Abrigo (Shelter/Club)
+
+| Coleção | Descrição |
+|---|---|
+| `clubs/{clubId}/pets` | Pets do abrigo |
+| `clubs/{clubId}/kanban_boards` | Boards do Kanban |
+| `clubs/{clubId}/kanban_cards` | Cards do Kanban |
+| `clubs/{clubId}/medical_records` | Prontuário médico |
+| `clubs/{clubId}/medications` | Medicações |
+| `clubs/{clubId}/timeline` | Linha do tempo |
+| `clubs/{clubId}/fosters` | Lares temporários |
+| `clubs/{clubId}/volunteers` | Voluntários |
+| `clubs/{clubId}/ledger_entries` | Livro razão |
+| `clubs/{clubId}/reports` | Relatórios |
+| `clubs/{clubId}/contracts` | Contratos de adoção |
+| `clubs/{clubId}/interviews` | Entrevistas |
+| `clubs/{clubId}/exhibitions` | Vitrines/pets em destaque |
+| `communities` | Comunidades |
+| `communities/{id}/posts` | Posts da comunidade |
+| `communities/{id}/chat_threads` | Threads de chat |
+| `communities/{id}/events` | Eventos |
+| `communities/{id}/forum_threads` | Threads de fórum |
+
+## Feature Flags
+
+O sistema de feature flags usa Firestore + contexto React. Ver [`docs/FLAG_LIFECYCLE.md`](docs/FLAG_LIFECTIME.md) para operação completa.
+
+```js
+// Verificar flag no componente
+const kanbanEnabled = useFeatureFlag('SHELTER_KANBAN'); // boolean
+
+// Ativar via UI (admin)
+// /admin/flags — requer platform_admin
+```
+
 ---
+
+## PWA
+
+O app é um PWA com Service Worker via `vite-plugin-pwa`. Ver [`docs/PWA_CACHE.md`](docs/PWA_CACHE.md) para detalhes de cache e como invalidar.
+
+```bash
+# Após mudar UI/layout/feature flags, bump o SW filename:
+# vite.config.js: filename: 'sw-v6.js' → 'sw-v7.js'
+# public/registerSW.js: '/sw-v6.js' → '/sw-v7.js'
+```
+
+## Cloud Functions
+
+Backend serverless em `functions/` (pacote Node separado). Ver [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) §Firebase.
+
+```bash
+# Deployar functions
+npm --prefix functions run build
+firebase deploy --only functions
+
+# Testar localmente
+firebase emulators:start --only functions,firestore
+```
+
+## Arquitetura
+
+Ver [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) para overview completo:
+- Camadas (domain → services → hooks → pages)
+- Estado (React Query + Firebase Auth + Feature Flags)
+- Design System DS_V2 (tokens semânticos, dark mode)
+- Roteamento + guards (ProtectedRoute, AdminRoute, BannedGate)
+- Testes (Vitest unit + Firebase emulators)
 
 ## Algoritmo de Matching
 
