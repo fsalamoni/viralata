@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.1.0",
-  "generatedAt": "2026-07-17T12:35:04.156Z",
+  "generatedAt": "2026-07-17T23:51:13.050Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W29",
@@ -16505,6 +16505,327 @@
       "createdAt": "2026-07-17",
       "updatedAt": "2026-07-17",
       "phase": "Fase 10"
+    },
+    {
+      "id": "TASK-921",
+      "title": "FIX: 3 bugs críticos V3 Feed (React.lazy + import SwipeDeck + FEATURE_FLAG_META)",
+      "status": "done",
+      "phase": "V3-Feed-Hotfix",
+      "priority": "critical",
+      "createdAt": "2026-07-17T18:48:00Z",
+      "doneAt": "2026-07-17T18:48:00Z",
+      "evidence": {
+        "commits": [
+          "5786fc52 — V3_PAGE_FEED no AdminFlags + espaçamento SwipeDeck",
+          "6899e91c — React.lazy para V3/Enhanced",
+          "bb82f182 — Importar SwipeDeck em PetFeedV3",
+          "853fb546 — Push final"
+        ],
+        "deployTimestamp": "2026-07-17T18:46:48Z",
+        "bundleV3": "PetFeedV3-BPw-UN_j.js (26KB)",
+        "tests": "153 passing",
+        "bugs": [
+          "BUG 1: Vite constant folding eliminava V3 do bundle",
+          "BUG 2: SwipeDeck usado mas não importado em PetFeedV3",
+          "BUG 3: FEATURE_FLAG_META sem V3_PAGE_* (flag invisível no admin)"
+        ],
+        "fixes": [
+          "FIX 1: React.lazy() com dynamic import para V3/Enhanced",
+          "FIX 2: import SwipeDeck from \"../components/SwipeDeck\"",
+          "FIX 3: 19 V3_PAGE_* adicionados ao FEATURE_FLAG_META com labels"
+        ],
+        "validation": {
+          "v3ChunkDeployed": "PetFeedV3-BPw-UN_j.js",
+          "swipeDeckRender": "onSwipeRight/onSwipeLeft presente",
+          "collapsibleCard": "arena-section-card presente",
+          "paginationControls": "onPageChange presente",
+          "inputCityAutocomplete": "userCity presente",
+          "filterChipsRow": "field: presente",
+          "skeletonGrid": "tt.Grid presente",
+          "emptyState": "Limpar filtros presente",
+          "errorState": "Não foi possível presente",
+          "undo": "Desfazer presente",
+          "newSpacing": "mt-10/gap-10 presente"
+        },
+        "partnerSpaces": "docs/V3_PARTNER_SPACES.md criado (10.7KB, 13 seções, Fase 14 do V3)"
+      }
+    },
+    {
+      "id": "TASK-922",
+      "title": "FIX: 5 bugs do Feed V3 (toggle, AdSlot, sort, cidades, rodapé)",
+      "status": "done",
+      "phase": "V3-Feed-Hotfix-2",
+      "priority": "high",
+      "createdAt": "2026-07-17T19:12:00Z",
+      "doneAt": "2026-07-17T19:12:00Z",
+      "evidence": {
+        "commits": [
+          "a4c401ae"
+        ],
+        "deployTimestamp": "2026-07-17T19:10:21Z",
+        "bundleV3": "PetFeedV3-CAT7xKnj.js (26.5KB)",
+        "tests": "159 passing",
+        "bugs": [
+          "BUG 1: useFeedPreferences retorno array vs destruturação objeto",
+          "BUG 2: AdSlot (espaço de parceiros) DENTRO do Collapsible",
+          "BUG 3: Select do Radix não suporta <option> children (sort)",
+          "BUG 4: Firestore match exato vs escrita inteligente (cidades)",
+          "BUG 5: LegalFooter if(!enabled) return null mesmo com flag"
+        ],
+        "fixes": [
+          "FIX 1: const [feedPrefs, setFeedPrefs] = useFeedPreferences(); + handleToggleShowOwnPets",
+          "FIX 2: AdSlot movido para FORA do Collapsible, entre SwipeDeck e Collapsible (my-8 sm:my-10)",
+          "FIX 3: Select Radix → <select> HTML nativo com classes do DS",
+          "FIX 4: Filtro de cidade client-side com normalizePlaceText (NFD + lowercase)",
+          "FIX 5: LegalFooter always render; flag SHELTER_LEGAL_TERMS_V1 só controla QUAL links mostrar"
+        ],
+        "validation": {
+          "v3ChunkDeployed": "PetFeedV3-CAT7xKnj.js",
+          "showOwnPets": "handler presente",
+          "adSlotForaCollapsible": "feed-between-sections presente",
+          "sortSelect": "sort-select presente",
+          "normalizacaoCidade": "I(F.city||\"\").includes(C) inline-ado",
+          "legalFooterAlways": "flag agora só controla links, não visibilidade"
+        }
+      }
+    },
+    {
+      "id": "TASK-923",
+      "title": "FEAT: BottomTabBar dedicado com 3 modos + padding dinâmico (TASK-V3-UI-4)",
+      "status": "done",
+      "phase": "V3-UI-4",
+      "priority": "high",
+      "createdAt": "2026-07-17T19:40:00Z",
+      "doneAt": "2026-07-17T19:40:00Z",
+      "evidence": {
+        "commits": [
+          "f4ddded4"
+        ],
+        "deployTimestamp": "2026-07-17T19:39:09Z",
+        "bundle": "index-BhNTJdpo.js",
+        "newFiles": [
+          "src/components/BottomTabBar.jsx",
+          "src/components/BottomTabBar.test.jsx"
+        ],
+        "tests": "8 testes do BottomTabBar passando",
+        "changes": [
+          "NOVO: BottomTabBar.jsx com 3 modos (FIXED/AUTOHIDE/HIDDEN)",
+          "NOVO: useBottomTabBarHeight hook (CSS var --bottom-tab-bar-height)",
+          "NOVO: ResizeObserver mede altura real da barra (varia com safe-area inset)",
+          "NOVO: AUTOHIDE com transition-transform (scroll-up/down)",
+          "Layout.jsx: main com style={{ paddingBottom: max(N px, 5rem) }}",
+          "Layout.jsx: removido bloco da BottomTabBar inline (75 → 32 insertions/deletions)",
+          "AppearanceSettings.test.jsx: mock com TOPBAR_MODES etc"
+        ],
+        "validation": {
+          "ariaLabel": "Navegação inferior (mobile) presente",
+          "dataMode": "data-bottom-tab-mode presente",
+          "cssVar": "bottom-tab-bar-height presente",
+          "modes": "BOTTOM_TAB_MODES presente (2x)",
+          "autohideTransition": "translate-y-full presente"
+        }
+      }
+    },
+    {
+      "id": "TASK-924",
+      "title": "FIX: Chips de raio (10/25/50/100 km) não mudavam de cor ao clicar",
+      "status": "done",
+      "phase": "V3-Feed-Hotfix-3",
+      "priority": "high",
+      "createdAt": "2026-07-17T19:46:00Z",
+      "doneAt": "2026-07-17T19:46:00Z",
+      "evidence": {
+        "commits": [
+          "9a94ad6f"
+        ],
+        "deployTimestamp": "2026-07-17T19:44:39Z",
+        "bundleV3": "PetFeedV3-DrN1nYyG.js (26.6KB)",
+        "tests": "161 passing",
+        "bug": "isActive() comparava value (number) === opt.value (string) → false sempre",
+        "fix": "String(value) === String(opt.value) — normalização de tipo",
+        "validation": {
+          "stringComparison": "String(s)===String(i.value) no V3 bundle",
+          "ariaPressed": "aria-pressed no V3 bundle",
+          "radiusOptions": "100 km presente"
+        }
+      }
+    },
+    {
+      "id": "TASK-925",
+      "title": "DOC: REGENCY_FEED_V3.md atualizado com implementação completa + 6 lições",
+      "status": "done",
+      "phase": "V3-Doc",
+      "priority": "high",
+      "createdAt": "2026-07-17T19:50:00Z",
+      "doneAt": "2026-07-17T19:50:00Z",
+      "evidence": {
+        "file": "docs/REGENCY_FEED_V3.md",
+        "size": "25.7KB (468 linhas)",
+        "sections": 13,
+        "covers": [
+          "Identidade + prioridade de seleção (lazy)",
+          "Estrutura visual completa (AdSlot movido, Collapsible fechado)",
+          "32 funcionalidades (F1-F32) com hooks/services",
+          "Componentes lazy (V3/Enhanced/V1 chunks separados)",
+          "17 hooks + services com paths",
+          "~30 textos visíveis (todos)",
+          "15 estados da página",
+          "Acessibilidade completa",
+          "Performance",
+          "Testes (161 passando, E2E planejado)",
+          "Histórico com 6 iterações",
+          "6 lições permanentes (D-VITE-LAZY-01, D-FEATURE-META-01, D-V3-FEED-FIX-01, D-BOTTOM-TAB-01, D-CHIPS-TYPE-01, D-APP-01, D-CACHE-01)",
+          "Links relacionados"
+        ]
+      }
+    },
+    {
+      "id": "TASK-926",
+      "title": "ANÁLISE: V3 PetDetail - 20 features existentes, 12 lacunas, 10 bugs, 15 Q&A",
+      "status": "done",
+      "phase": "V3-PetDetail-Analysis",
+      "priority": "high",
+      "createdAt": "2026-07-17T19:55:00Z",
+      "doneAt": "2026-07-17T19:55:00Z",
+      "evidence": {
+        "file": "docs/V3_PET_DETAIL_QUESTIONS.md",
+        "size": "11.5KB",
+        "analysis": {
+          "existingFeatures": 20,
+          "gaps": 30,
+          "bugs": 10,
+          "questions": 15,
+          "designDecisions": 12
+        }
+      }
+    },
+    {
+      "id": "TASK-927",
+      "title": "V3 PetDetail completo: 10 componentes novos + PetDetailV3 (24.5KB)",
+      "status": "done",
+      "phase": "V3-PetDetail-Impl",
+      "priority": "high",
+      "createdAt": "2026-07-17T20:06:00Z",
+      "doneAt": "2026-07-17T20:06:00Z",
+      "evidence": {
+        "commits": [
+          "a924ab6b"
+        ],
+        "deployTimestamp": "2026-07-17T20:05:34Z",
+        "bundle": "PetDetailV3-cwJtsfgX.js (48KB)",
+        "tests": "180 passing",
+        "newFiles": 10,
+        "newComponents": [
+          "PetBreadcrumb (com JSON-LD)",
+          "PetGallery (swipe + zoom + thumbs)",
+          "PetMap (SVG inline, sem deps)",
+          "PetFavoriteButton (persistente)",
+          "PetSimilar (carrossel)",
+          "PetReportButton (modal)",
+          "PetTimeline (eventos)",
+          "PetTemperament (9 traits)",
+          "PetRatingSummary (estrelas)",
+          "PetStickyCta (bottom mobile)"
+        ],
+        "wrapperChanges": [
+          "PetDetail.jsx → wrapper com React.lazy",
+          "PetDetail.v1.jsx → V1 renomeado (mantido)",
+          "PetDetailV3.jsx → novo (24.5KB)"
+        ],
+        "improvements": [
+          "Breadcrumb + JSON-LD",
+          "Galeria swipe + zoom + aspect 3:4",
+          "Mapa com pin (sem Leaflet dep)",
+          "Favoritar com optimistic UI",
+          "Pets similares do mesmo responsável",
+          "Reportar com modal + 5 motivos",
+          "Timeline de eventos do pet",
+          "Temperamento com ícones Sora",
+          "Sumário de avaliação visível",
+          "Sticky CTA mobile",
+          "Collapsible Sobre/Saúde",
+          "Card bloqueio sempre visível (sem flag)",
+          "Compact mode + dark mode + reduced motion"
+        ]
+      }
+    },
+    {
+      "id": "TASK-928",
+      "title": "FIX: BottomTabBar em todos os viewports + topbar autohide + sw-v9",
+      "status": "done",
+      "phase": "V3-UI-5-Fix",
+      "priority": "critical",
+      "createdAt": "2026-07-17T21:05:00Z",
+      "doneAt": "2026-07-17T21:05:00Z",
+      "evidence": {
+        "commits": [
+          "d821fc55"
+        ],
+        "deployTimestamp": "2026-07-17T21:04:36Z",
+        "swBump": "sw-v8.js → sw-v9.js",
+        "bugs": [
+          "BUG 1: BottomTabBar FIXED escondido em desktop (md:hidden)",
+          "BUG 2: Topbar some quando clica (PWA cache de versão antiga)",
+          "BUG 3: topBarMode não era aplicado no Layout"
+        ],
+        "fixes": [
+          "FIX 1: Removido md:hidden — FIXED/AUTOHIDE em todos os viewports",
+          "FIX 2: bump sw.js para v9 — invalida cache de versões antigas",
+          "FIX 3: Layout aplica topBarMode (FIXED/AUTOHIDE/HIDDEN)",
+          "FIX 4: main com padding-top dinâmico = altura da topbar (ResizeObserver)"
+        ],
+        "validation": {
+          "bottomTabBar": "10 testes passando",
+          "layout": "4 testes passando",
+          "build": "verde",
+          "sw": "v9 deployed (force update mobile)"
+        }
+      }
+    },
+    {
+      "id": "TASK-929",
+      "title": "FIX: BottomTabBar só mobile + LegalFooter FIXED desktop + useLegalFooterHeight",
+      "status": "done",
+      "phase": "V3-UI-6",
+      "priority": "critical",
+      "createdAt": "2026-07-17T21:17:00Z",
+      "doneAt": "2026-07-17T21:17:00Z",
+      "evidence": {
+        "commits": [
+          "9f4bdd21"
+        ],
+        "deployTimestamp": "2026-07-17T21:16:38Z",
+        "swBump": "sw-v9.js → sw-v10.js",
+        "viewport_split": {
+          "mobile": "BottomTabBar (md:hidden OFF mobile)",
+          "desktop": "LegalFooter (md:fixed md:bottom-0)"
+        },
+        "changes": [
+          "BottomTabBar: md:hidden restaurado (só mobile)",
+          "LegalFooter FIXED: relative mobile + md:fixed md:bottom-0 desktop",
+          "Layout: mainPaddingBottom = max(bottomTabHeight, footerHeight, 5rem)",
+          "useLegalFooterHeight hook criado (ResizeObserver + CSS var)",
+          "Vite sw-v10.js (force update PWA)"
+        ],
+        "validation": {
+          "bottomTabBar": "10 testes passando",
+          "legalFooter": "6 testes passando",
+          "build": "verde",
+          "bundle": "md:hidden (BottomTabBar) + md:fixed (LegalFooter) presentes"
+        }
+      }
+    },
+    {
+      "id": "TASK-930",
+      "title": "V3 Legal: redesign completo das páginas legais + fix bug PrivacyPolicy/static.jsx recursivo",
+      "status": "done",
+      "phase": "V3-LEGAL-1",
+      "priority": "high",
+      "createdAt": "2026-07-17T23:42:00Z",
+      "evidence": {},
+      "owner": "unassigned",
+      "updatedAt": "2026-07-17T23:41:59",
+      "resolvedAt": "2026-07-17"
     }
   ],
   "definitionOfDone": [
@@ -16769,7 +17090,7 @@
       "feat/ds-v2-motion-2026-07-16",
       "feat/ds-v2-audit-2026-07-16"
     ],
-    "mainCommit": "d63e2ef3669650f856c8f7040ab8c2c01684945a",
+    "mainCommit": "d23be6f5a5afce2ce760c841c5d9d9f6808b4d9b",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -16779,8 +17100,8 @@
     ],
     "openTODOs": 5,
     "openLegalReviews": 3,
-    "totalTasks": 624,
-    "done": 623,
+    "totalTasks": 634,
+    "done": 633,
     "inProgress": 0,
     "inReview": 0,
     "blocked": 0,
@@ -16814,7 +17135,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-17T12:35:04.162Z — via sync.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-17T23:51:13.074Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
