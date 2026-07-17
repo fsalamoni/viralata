@@ -1,4 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
+import { recordClientError } from '@/core/services/observabilityService';
+import { captureError } from '@/core/services/errorTracker';
 import { concatSafe } from '@/core/lib/concatSafe';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -98,8 +100,12 @@ class TabErrorBoundary extends React.Component {
   constructor(props) { super(props); this.state = { err: null }; }
   static getDerivedStateFromError(err) { return { err }; }
   componentDidCatch(err, info) {
+    const label = this.props.label || '?';
     // eslint-disable-next-line no-console
-    console.error('[TabErrorBoundary]', this.props.label, err, info);
+    console.error('[TabErrorBoundary]', label, err, info);
+    // Registrar no sistema de observabilidade para diagnóstico em produção
+    recordClientError(err, { source: 'TabErrorBoundary', tab: label, info, fatal: false });
+    captureError(err, { source: 'TabErrorBoundary', tab: label, info, fatal: false });
   }
   render() {
     if (this.state.err) {
