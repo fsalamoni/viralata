@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo } from 'react';
 import { concatSafe } from '@/core/lib/concatSafe';
+import { recordClientError } from '@/core/services/observabilityService';
+import { captureError } from '@/core/services/errorTracker';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
@@ -94,13 +96,19 @@ function safeTabs(...sources) {
 // ErrorBoundary local para isolar falhas de uma aba sem derrubar o painel
 // inteiro. TASK-069 — se ReportsTab ou KanbanPage lançar (ex: query falha),
 // as outras abas continuam funcionando.
+// AUDIT FIX (TASK-818): agora também chama recordClientError + captureError
+// para que erros de tab sejam trackeados (não só log no console).
 class TabErrorBoundary extends React.Component {
   constructor(props) { super(props); this.state = { err: null }; }
   static getDerivedStateFromError(err) { return { err }; }
   componentDidCatch(err, info) {
     // eslint-disable-next-line no-console
     console.error('[TabErrorBoundary]', this.props.label, err, info);
+    // Track to observability + Sentry/fallback
+    recordClientError(err, { source: 'TabErrorBoundary', tab: this.props.label, info });
+    captureError(err, { source: 'TabErrorBoundary', tab: this.props.label, info });
   }
+  resetError = () => { this.setState({ err: null }); };
   render() {
     if (this.state.err) {
       const showDebug = typeof window !== 'undefined' && (
@@ -111,8 +119,22 @@ class TabErrorBoundary extends React.Component {
         <div className="rounded-2xl border border-destructive/30 bg-destructive/5 p-6 text-sm">
           <p className="font-semibold text-destructive">Não foi possível carregar esta aba ({this.props.label || '?'}).</p>
           <p className="mt-1 text-muted-foreground">
-            O restante do painel continua funcionando. Tente recarregar a página.
+            O restante do painel continua funcionando.
           </p>
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <button
+              onClick={this.resetError}
+              className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:opacity-90"
+            >
+              Tentar novamente
+            </button>
+            <button
+              onClick={() => window.location.reload()}
+              className="rounded-md border border-border px-3 py-1.5 text-xs font-medium hover:bg-muted/50"
+            >
+              Recarregar página
+            </button>
+          </div>
           {showDebug && (
             <details className="mt-3">
               <summary className="cursor-pointer text-xs font-medium">Ver detalhes do erro</summary>
