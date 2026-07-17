@@ -23,10 +23,10 @@ import {
 } from '@/modules/shelter/services/exhibitionPublicService';
 
 const STATUS_TONE = {
-  scheduled: 'bg-blue-100 text-blue-800 border-blue-200',
-  active: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-  completed: 'bg-slate-100 text-slate-700 border-slate-200',
-  cancelled: 'bg-rose-100 text-rose-700 border-rose-200',
+  scheduled: 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/40 dark:text-blue-300 dark:border-blue-800',
+  active: 'bg-emerald-100 text-emerald-800 border-emerald-200 dark:bg-emerald-900/40 dark:text-emerald-300 dark:border-emerald-800',
+  completed: 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700',
+  cancelled: 'bg-rose-100 text-rose-700 border-rose-200 dark:bg-rose-900/40 dark:text-rose-300 dark:border-rose-800',
 };
 
 function formatDate(iso) {
@@ -51,7 +51,7 @@ function ExhibitionCard({ ex }) {
           <h3 className="font-semibold text-base line-clamp-2 flex-1">
             {ex.title || 'Vitrinha'}
           </h3>
-          <Badge className={STATUS_TONE[ex.status] || 'bg-slate-100'}>
+          <Badge className={STATUS_TONE[ex.status] || 'bg-slate-100 dark:bg-slate-800 dark:text-slate-300'}>
             {EXHIBITION_STATUS_LABELS[ex.status] || ex.status}
           </Badge>
         </div>
