@@ -75,23 +75,37 @@ export function subscribePlatformSettings(cb) {
  * `FeatureFlagsContext.migrateLegacyFlags`. Aumentar quando a lógica de
  * upgrade mudar.
  */
-export const FLAGS_MIGRATION_VERSION = 3; // Bumped to 3 (2026-07-17) —HOTFIX-001 v3 migration now covers (1) all-false → migrate all AND (2) mixed → migrate SHELTER_* undefined/null only. This bumps from v2 to ensure the marker reflects the current logic.
+export const FLAGS_MIGRATION_VERSION = 4; // Bumped to 4 (2026-07-17) — now persists migrated flags to Firestore so they survive cache clear. Previously wrote only the marker (_migrations.flags) but not the corrected feature_flags values, so after cache clear the stale Firestore values would be re-loaded and overlaid over DEFAULT_FEATURE_FLAGS.
 
 /**
  * Marca a migração de flags como aplicada no doc `platform_settings/global`.
  * Chamada automaticamente pelo AdminFlags (uma vez por sessão, no mount)
  * e por setFeatureFlag. Idempotente.
+ *
+ * TASK-815 FIX: agora também persiste os valores migrados no Firestore.
+ * Antes, só escrevia o marker (_migrations.flags = N) mas não as
+ * feature_flags corrigidas. Resultado: após limpar cache, os valores
+ * estocados eram recarregados do Firestore (ainda antigos) e sobrepostos
+ * sobre DEFAULT_FEATURE_FLAGS, fazendo com que flags corrigidas em memória
+ * não persistissem entre sessões.
+ *
+ * @param {object|null} actor — usuário autenticado (para auditoria)
+ * @param {object|null} migratedFlags — valores migrados a persistir no Firestore
+ *                                    (lidos de migratedFlagsRef em FeatureFlagsContext)
  */
-export async function markFlagsMigrationApplied(actor = null) {
+export async function markFlagsMigrationApplied(actor = null, migratedFlags = null) {
   try {
-    await setDoc(
-      settingsRef(),
-      {
-        _migrations: { flags: FLAGS_MIGRATION_VERSION },
-        updated_at: serverTimestamp(),
-      },
-      { merge: true },
-    );
+    const writeData = {
+      _migrations: { flags: FLAGS_MIGRATION_VERSION },
+      updated_at: serverTimestamp(),
+    };
+    // TASK-815: persiste os flags migrados para que sobrevivam à limpeza de cache.
+    // mergedFlags pode vir de migratedFlagsRef (AdminFlags) ou ser null em
+    // contextos não-admin onde a escrita Firestore não é necessária.
+    if (migratedFlags && typeof migratedFlags === 'object') {
+      writeData.feature_flags = { ...migratedFlags };
+    }
+    await setDoc(settingsRef(), writeData, { merge: true });
     if (actor) {
       await createAuditLog({
         action: 'platform_flags_migration_acknowledged',
