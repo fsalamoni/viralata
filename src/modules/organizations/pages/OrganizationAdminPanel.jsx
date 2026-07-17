@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import {
   ArrowLeft, Building2, LayoutGrid, PawPrint, MessageSquare, HandCoins, Wallet, Users, ShieldCheck, Info, MessageCircle, BarChart2, TrendingUp,
   LayoutDashboard, Kanban, Eye, Heart, Stethoscope, Pill, Clock, Home,
-  Compass, Users2, Megaphone, Receipt, Settings as SettingsIcon,
+  Compass, Users2, Megaphone, Receipt, Settings as SettingsIcon, ChevronRight,
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -103,12 +103,26 @@ class TabErrorBoundary extends React.Component {
   }
   render() {
     if (this.state.err) {
+      const showDebug = typeof window !== 'undefined' && (
+        window.location.search.includes('debug=1') ||
+        window.location.search.includes('showError=1')
+      );
       return (
         <div className="rounded-2xl border border-destructive/30 bg-destructive/5 p-6 text-sm">
-          <p className="font-semibold text-destructive">Não foi possível carregar esta aba.</p>
+          <p className="font-semibold text-destructive">Não foi possível carregar esta aba ({this.props.label || '?'}).</p>
           <p className="mt-1 text-muted-foreground">
             O restante do painel continua funcionando. Tente recarregar a página.
           </p>
+          {showDebug && (
+            <details className="mt-3">
+              <summary className="cursor-pointer text-xs font-medium">Ver detalhes do erro</summary>
+              <pre className="mt-2 max-h-40 overflow-auto whitespace-pre-wrap rounded bg-destructive/10 p-2 text-xs">
+                {String(this.state.err?.message || this.state.err)}
+                {'\n\n'}
+                {this.state.err?.stack || ''}
+              </pre>
+            </details>
+          )}
         </div>
       );
     }
@@ -124,8 +138,8 @@ export default function OrganizationAdminPanel() {
   const { orgId } = useParams();
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuth();
-  const { data: club, isLoading: loadingClub } = useClub(orgId);
-  const { data: membership, isLoading: loadingMembership } = useMyMembership(orgId);
+  const { data: club, isLoading: loadingClub, error: clubError } = useClub(orgId);
+  const { data: membership, isLoading: loadingMembership, error: membershipError } = useMyMembership(orgId);
   const [searchParams, setSearchParams] = useSearchParams();
 
   // Shelter feature flags — `useFeatureFlag` retorna um booleano, NÃO um
@@ -316,6 +330,31 @@ export default function OrganizationAdminPanel() {
       <div className={loadingClass}>
         <Skeleton className="h-28 rounded-[2rem]" />
         <Skeleton className="h-96 rounded-[2rem]" />
+      </div>
+    );
+  }
+
+  // Erros de permissão Firestore ou leitura do clube. Mostra estado
+  // dedicado em vez de cair no ErrorBoundary global — facilita diagnóstico
+  // e dá ao usuário uma ação concreta (recarregar / voltar).
+  if (clubError || membershipError) {
+    const errLabel = clubError?.code || membershipError?.code || 'unknown';
+    const errMsg = clubError?.message || membershipError?.message || 'Erro desconhecido';
+    return (
+      <div className={errorClass}>
+        <EmptyState
+          icon={ShieldCheck}
+          title="Não foi possível carregar este painel"
+          description={`Erro ${errLabel}: ${errMsg}. Verifique sua conexão e tente recarregar.`}
+          action={
+            <div className="flex flex-col items-center gap-2 sm:flex-row">
+              <Button onClick={() => window.location.reload()}>Recarregar</Button>
+              <Button asChild variant="ghost">
+                <Link to="/organizacoes">Voltar para Organizações</Link>
+              </Button>
+            </div>
+          }
+        />
       </div>
     );
   }
