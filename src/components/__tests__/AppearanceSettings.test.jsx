@@ -14,6 +14,9 @@ vi.mock('@/core/hooks/useUiPreferences', () => ({
   ],
   FOOTER_MODES: { FIXED: 'fixed', AUTOHIDE: 'autohide', HIDDEN: 'hidden' },
   BOTTOM_TAB_MODES: { FIXED: 'fixed', AUTOHIDE: 'autohide', HIDDEN: 'hidden' },
+  TOPBAR_MODES: { FIXED: 'fixed', AUTOHIDE: 'autohide', HIDDEN: 'hidden' },
+  CARDS_PER_PAGE_OPTIONS: { mobile: [4, 8, 12], tablet: [8, 12, 20], desktop: [12, 20, 40, 100] },
+  GRID_COLUMNS_OPTIONS: { auto: 'auto', 1: 1, 2: 2, 3: 3, 4: 4, 5: 5 },
 }));
 
 const { AppearanceSettings } = await import('@/components/AppearanceSettings.jsx');

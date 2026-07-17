@@ -10,6 +10,8 @@ import NotificationsMenu from '@/modules/notifications/components/NotificationsM
 import { Button } from '@/components/ui/button';
 import SwUpdateBanner from '@/components/SwUpdateBanner';
 import LegalFooter from '@/components/LegalFooter';
+import BottomTabBar, { useBottomTabBarHeight } from '@/components/BottomTabBar';
+import { useUiPreferences, BOTTOM_TAB_MODES } from '@/core/hooks/useUiPreferences';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import ThemeMenu from '@/components/ThemeMenu';
 import {
@@ -62,7 +64,20 @@ export default function Layout({ children, currentPageName }) {
   const location = useLocation();
   const { user, userProfile, isAuthenticated, isPlatformAdmin, signOut } = useAuth();
   const { settings } = usePlatformSettings();
+  const [uiPrefs] = useUiPreferences();
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  // V3 (TASK-V3-UI-4): a barra inferior (BottomTabBar) é fixa e ocupa
+  // espaço na viewport. Para que o conteúdo do <main> não role por trás
+  // dela quando "sempre visível" estiver ativo, aplicamos padding-bottom
+  // DINÂMICO igual à altura real da barra (medida via ResizeObserver).
+  // Quando bottomTabBarMode === 'hidden' ou não autenticado, height = 0
+  // e o main não tem padding extra.
+  const bottomTabMode = uiPrefs?.bottomTabBarMode || BOTTOM_TAB_MODES.FIXED;
+  const bottomTabHeight = useBottomTabBarHeight(bottomTabMode);
+  const mainPaddingBottom = isAuthenticated && bottomTabMode !== BOTTOM_TAB_MODES.HIDDEN
+    ? { paddingBottom: `max(${bottomTabHeight}px, 5rem)` }
+    : {};
 
   if (STANDALONE_PAGES.includes(currentPageName)) {
     return <>{children}</>;
@@ -76,14 +91,6 @@ export default function Layout({ children, currentPageName }) {
   const displayName = userProfile?.full_name || user?.displayName || user?.email || 'Usuário';
   const photoURL = userProfile?.photo_url || user?.photoURL;
   const initials = displayName.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
-  const bottomTabItems = [
-    { label: 'Feed', icon: PawPrint, to: '/feed' },
-    { label: 'ONGs', icon: Building2, to: '/organizacoes' },
-    { label: 'Comunidade', icon: Users, to: '/comunidade' },
-    { label: settings.ui_labels.mobile_create_pet_cta, icon: Plus, to: '/pets/new', center: true },
-    { label: 'Chat', icon: MessageCircle, to: '/chat' },
-    { label: 'Perfil', icon: User, to: '/perfil' },
-  ];
 
   return (
     <div className="arena-page min-h-screen flex flex-col">
@@ -240,8 +247,16 @@ export default function Layout({ children, currentPageName }) {
       {/* Skip link */}
       <SkipLink targetId="main-content" />
 
-      {/* Main */}
-      <main id="main-content" className={cn('flex-1 relative', isAuthenticated && 'pb-20 md:pb-0')}>
+      {/* Main — V3 (TASK-V3-UI-4): padding-bottom dinâmico = altura da
+          BottomTabBar. Isso garante que o conteúdo da página se encerre
+          na linha SUPERIOR da barra inferior quando "sempre visível" está
+          ativo, sem rolar por trás dela. Em desktop (md+) ou quando a
+          barra está oculta, padding é 0. */}
+      <main
+        id="main-content"
+        className="flex-1 relative"
+        style={mainPaddingBottom}
+      >
         {children}
       </main>
 
@@ -250,42 +265,10 @@ export default function Layout({ children, currentPageName }) {
           antigo mesmo com skipWaiting+clientsClaim. */}
       <SwUpdateBanner />
 
-      {/* Bottom tab bar (mobile, autenticado) */}
-      {isAuthenticated && (
-        <nav className="safe-pb fixed inset-x-0 bottom-0 z-40 flex items-end justify-around border-t border-border bg-card/95 px-2 pt-2 backdrop-blur-xl md:hidden">
-          {bottomTabItems.map(({ label, icon: Icon, to, center }) => {
-            const active = location.pathname.startsWith(to);
-            if (center) {
-              return (
-                <Link
-                  key={to}
-                  to={to}
-                  className="flex flex-1 flex-col items-center gap-1 pb-1.5"
-                  aria-label={label}
-                >
-                  <span className="-mt-6 flex h-12 w-12 items-center justify-center rounded-full bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--highlight))_100%)] text-white shadow-[0_14px_26px_-10px_rgba(64,34,18,0.6)]">
-                    <Icon className="h-5 w-5" />
-                  </span>
-                  <span className="text-[11px] font-medium text-muted-foreground">{label}</span>
-                </Link>
-              );
-            }
-            return (
-              <Link
-                key={to}
-                to={to}
-                className={cn(
-                  'flex flex-1 flex-col items-center gap-1 rounded-xl px-1 py-1.5 text-[11px] font-medium transition-colors',
-                  active ? 'text-primary' : 'text-muted-foreground hover:text-foreground/80',
-                )}
-              >
-                <Icon className="h-5 w-5" />
-                {label}
-              </Link>
-            );
-          })}
-        </nav>
-      )}
+      {/* Bottom tab bar (mobile, autenticado) — TASK-V3-UI-4
+          Componente dedicado com 3 modos (FIXED/AUTOHIDE/HIDDEN) que
+          respeita a preferência visual do usuário. */}
+      <BottomTabBar />
 
       {/* Rodapé com links legais. TASK-051: links exigidos pelo Guia
           de Implementação Legal v2 (10/07/2026) §5. TASK-401: agora
