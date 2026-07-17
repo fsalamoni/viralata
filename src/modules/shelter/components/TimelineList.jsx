@@ -15,6 +15,8 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import { EmptyState } from '@/components/ui/empty-state';
 import { useToast } from '@/components/ui/use-toast';
 import {
   TIMELINE_EVENT_LABELS,
@@ -63,7 +65,11 @@ export function TimelineList({
   }
 
   if (isLoading) {
-    return <p className="text-sm text-muted-foreground">Carregando histórico…</p>;
+    return (
+      <div className="space-y-3">
+        {[1, 2, 3].map((i) => <Skeleton key={i} className="h-20 rounded-xl" />)}
+      </div>
+    );
   }
 
   // Filtrar: ocultar internos se não for staff
