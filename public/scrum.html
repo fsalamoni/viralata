@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.1.0",
-  "generatedAt": "2026-07-17T05:11:28.936Z",
+  "generatedAt": "2026-07-17T05:15:05.080Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W29",
@@ -398,11 +398,11 @@
   },
   "activeWorktrees": [
     {
-      "id": "wt-TASK-863",
-      "branch": "feat/audit-TASK-863-2026-07-17",
-      "head": "743bff7290a01fb60b70252678f528dfd9c9144c",
-      "headTitle": "feat: TASK-863+TASK-864+TASK-865 — AdminUsers + AdminContentEditor + AdminOrganizations audit",
-      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-TASK-863",
+      "id": "wt-TASK-866",
+      "branch": "feat/audit-TASK-866-2026-07-17",
+      "head": "e862b3d3491b3f2e39b0ec1953450e5fe8c2f9ae",
+      "headTitle": "feat: TASK-866+TASK-867+TASK-868 — AdminCommunities + AdminPets + PlatformHealth audit",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-TASK-866",
       "status": "in-sync",
       "commitsAhead": 0,
       "primarySession": null,
@@ -15254,7 +15254,7 @@
       "title": "AUDIT: AdminCommunities (/admin/communities) — verificar DataGrid",
       "type": "feature",
       "category": "audit",
-      "status": "backlog",
+      "status": "done",
       "priority": "high",
       "owner": "loop_420680956387556",
       "branch": "main",
@@ -15268,14 +15268,15 @@
       "blockedBy": [],
       "description": "Ler src/modules/admin/pages/AdminCommunities.jsx. Verificar: (1) DataGrid com comunidades; (2) filtros; (3) actions; (4) tokens semânticos; (5) skeleton; (6) arena-admin-tabs.",
       "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17"
+      "updatedAt": "2026-07-17T05:12:02",
+      "resolution": "done"
     },
     {
       "id": "TASK-867",
       "title": "AUDIT: AdminPets (/admin/pets) — verificar DataGrid + filtros",
       "type": "feature",
       "category": "audit",
-      "status": "backlog",
+      "status": "done",
       "priority": "high",
       "owner": "loop_420680956387556",
       "branch": "main",
@@ -15289,14 +15290,15 @@
       "blockedBy": [],
       "description": "Ler src/modules/admin/pages/AdminPets.jsx. Verificar: (1) DataGrid com pets; (2) filtros (status, porte, espécie); (3) actions; (4) tokens semânticos; (5) skeleton; (6) arena-admin-tabs.",
       "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17"
+      "updatedAt": "2026-07-17",
+      "resolution": "done"
     },
     {
       "id": "TASK-868",
       "title": "AUDIT: PlatformHealth (/admin/platform-health) — verificar status cards",
       "type": "feature",
       "category": "audit",
-      "status": "backlog",
+      "status": "done",
       "priority": "high",
       "owner": "loop_420680956387556",
       "branch": "main",
@@ -15310,7 +15312,8 @@
       "blockedBy": [],
       "description": "Ler src/modules/admin/pages/PlatformHealth.jsx. Verificar: (1) status cards (Firestore, Functions, Hosting, Auth); (2) uptime monitors; (3) tokens semânticos (verde/vermelho); (4) skeleton.",
       "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17"
+      "updatedAt": "2026-07-17",
+      "resolution": "done"
     },
     {
       "id": "TASK-869",
@@ -16646,7 +16649,7 @@
       "feat/ds-v2-motion-2026-07-16",
       "feat/ds-v2-audit-2026-07-16"
     ],
-    "mainCommit": "acb2af957298bf2562251da3aca83ac1c0224ceb",
+    "mainCommit": "b3ed619708e1d6ed926e0f32bdacd5a7e5843937",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -16657,12 +16660,12 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 624,
-    "done": 564,
+    "done": 567,
     "inProgress": 1,
     "inReview": 0,
     "blocked": 0,
     "ready": 3,
-    "backlog": 58,
+    "backlog": 55,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
     "contribuicaoCoder": {
@@ -16691,7 +16694,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-17T05:11:28.959Z — via sync.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-17T05:15:05.103Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
