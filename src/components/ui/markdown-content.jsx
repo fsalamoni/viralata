@@ -12,15 +12,35 @@ import { cn } from '@/core/lib/utils';
  *
  * Estilização manual via overrides de componentes (o projeto não usa o plugin
  * de typography do Tailwind).
+ *
+ * V3 (TASK-V3-LEGAL-7): h1-h6 recebem `id` automático (slugify do texto)
+ * para que o `LegalToc` consiga scrollar e destacar a seção ativa.
  */
 
+function slugify(text) {
+  return String(text || '')
+    .toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^\w\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-');
+}
+
+function withId(Component) {
+  return ({ node, children, ...props }) => {
+    const text = typeof children === 'string' ? children : '';
+    const id = slugify(text);
+    return <Component id={id || undefined} {...props}>{children}</Component>;
+  };
+}
+
 const COMPONENTS = {
-  h1: ({ node, ...props }) => <h1 className="mt-4 mb-2 text-xl font-bold text-foreground first:mt-0" {...props} />,
-  h2: ({ node, ...props }) => <h2 className="mt-4 mb-2 text-lg font-bold text-foreground first:mt-0" {...props} />,
-  h3: ({ node, ...props }) => <h3 className="mt-3 mb-1.5 text-base font-semibold text-foreground first:mt-0" {...props} />,
-  h4: ({ node, ...props }) => <h4 className="mt-3 mb-1.5 text-sm font-semibold text-foreground first:mt-0" {...props} />,
-  h5: ({ node, ...props }) => <h5 className="mt-2 mb-1 text-sm font-semibold text-foreground first:mt-0" {...props} />,
-  h6: ({ node, ...props }) => <h6 className="mt-2 mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground first:mt-0" {...props} />,
+  h1: withId(({ id, ...props }) => <h1 id={id} className="mt-4 mb-2 text-xl font-bold text-foreground first:mt-0" {...props} />),
+  h2: withId(({ id, ...props }) => <h2 id={id} className="mt-4 mb-2 text-lg font-bold text-foreground first:mt-0" {...props} />),
+  h3: withId(({ id, ...props }) => <h3 id={id} className="mt-3 mb-1.5 text-base font-semibold text-foreground first:mt-0" {...props} />),
+  h4: withId(({ id, ...props }) => <h4 id={id} className="mt-3 mb-1.5 text-sm font-semibold text-foreground first:mt-0" {...props} />),
+  h5: withId(({ id, ...props }) => <h5 id={id} className="mt-2 mb-1 text-sm font-semibold text-foreground first:mt-0" {...props} />),
+  h6: withId(({ id, ...props }) => <h6 id={id} className="mt-2 mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground first:mt-0" {...props} />),
   p: ({ node, ...props }) => <p className="my-2 leading-7 first:mt-0 last:mb-0" {...props} />,
   a: ({ node, ...props }) => (
     <a

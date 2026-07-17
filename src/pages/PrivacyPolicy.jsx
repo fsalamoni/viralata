@@ -1,22 +1,35 @@
 /**
- * @fileoverview Política de Privacidade — wrapper de LegalDocView.
+ * @fileoverview PrivacyPolicy — wrapper que escolhe V3 ou V1.
  *
- * TASK-021: CMS de conteúdo institucional via Markdown.
+ * Flag `V3_PAGE_LEGAL` (default OFF) → PrivacyPolicyV3 (TASK-V3-LEGAL-5).
+ * Senão → PrivacyPolicyV1.
  *
- * Estratégia: mantém o JSX estático como FALLBACK (resiliente se Firestore
- * falhar). Quando o doc ativo está no Firestore, o LegalDocView renderiza
- * o Markdown do banco no lugar do JSX. Equipe jurídica pode editar o doc
- * direto no Firestore sem precisar de deploy.
- *
- * Schema do doc (legal_docs/privacy_policy_v2):
- *   title, version (string), author, effectiveAt (timestamp),
- *   content (markdown GFM), active (bool), publishedAt (timestamp)
+ * IMPORTANTE: React.lazy com dynamic import para V3 (D-VITE-LAZY-01).
  */
-import React from 'react';
-import LegalDocView from '@/components/legal/LegalDocView';
-import { LEGAL_DOCS } from '@/core/services/legalDocsService';
-import StaticPrivacyPolicy from './PrivacyPolicy.static';
+import { lazy, Suspense } from 'react';
+import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
+import { FEATURE_FLAG } from '@/core/featureFlags';
+import PrivacyPolicyV1 from './PrivacyPolicy.v1';
 
-export default function PrivacyPolicy() {
-  return <LegalDocView docKey={LEGAL_DOCS.PRIVACY_POLICY} fallback={<StaticPrivacyPolicy />} />;
+const PrivacyPolicyV3 = lazy(() => import(/* webpackChunkName: "PrivacyPolicyV3" */ './PrivacyPolicy.v3'));
+
+function PageFallback() {
+  return (
+    <div className="mx-auto max-w-3xl px-4 py-8">
+      <div className="h-6 w-1/2 rounded-md bg-muted" />
+      <div className="mt-4 h-32 w-full rounded-md bg-muted" />
+    </div>
+  );
+}
+
+export default function PrivacyPolicyWrapper() {
+  const useV3 = useFeatureFlag(FEATURE_FLAG.V3_PAGE_LEGAL);
+  if (useV3) {
+    return (
+      <Suspense fallback={<PageFallback />}>
+        <PrivacyPolicyV3 />
+      </Suspense>
+    );
+  }
+  return <PrivacyPolicyV1 />;
 }
