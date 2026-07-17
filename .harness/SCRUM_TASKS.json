@@ -16263,6 +16263,35 @@
           "radiusOptions": "100 km presente"
         }
       }
+    },
+    {
+      "id": "TASK-925",
+      "title": "DOC: REGENCY_FEED_V3.md atualizado com implementação completa + 6 lições",
+      "status": "done",
+      "phase": "V3-Doc",
+      "priority": "high",
+      "createdAt": "2026-07-17T19:50:00Z",
+      "doneAt": "2026-07-17T19:50:00Z",
+      "evidence": {
+        "file": "docs/REGENCY_FEED_V3.md",
+        "size": "25.7KB (468 linhas)",
+        "sections": 13,
+        "covers": [
+          "Identidade + prioridade de seleção (lazy)",
+          "Estrutura visual completa (AdSlot movido, Collapsible fechado)",
+          "32 funcionalidades (F1-F32) com hooks/services",
+          "Componentes lazy (V3/Enhanced/V1 chunks separados)",
+          "17 hooks + services com paths",
+          "~30 textos visíveis (todos)",
+          "15 estados da página",
+          "Acessibilidade completa",
+          "Performance",
+          "Testes (161 passando, E2E planejado)",
+          "Histórico com 6 iterações",
+          "6 lições permanentes (D-VITE-LAZY-01, D-FEATURE-META-01, D-V3-FEED-FIX-01, D-BOTTOM-TAB-01, D-CHIPS-TYPE-01, D-APP-01, D-CACHE-01)",
+          "Links relacionados"
+        ]
+      }
     }
   ],
   "definitionOfDone": [
@@ -16537,8 +16566,8 @@
     ],
     "openTODOs": 5,
     "openLegalReviews": 3,
-    "totalTasks": 628,
-    "done": 627,
+    "totalTasks": 629,
+    "done": 628,
     "inProgress": 0,
     "inReview": 0,
     "blocked": 0,
