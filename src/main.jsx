@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App.jsx';
 import ErrorBoundary from './components/ErrorBoundary.jsx';
 import { registerPwa } from '@core/pwa/registerPwa';
-import { cleanupStaleCaches } from '@core/pwa/cleanupStaleCaches';
+import { nukeAllCaches } from '@core/pwa/cleanupStaleCaches';
 import './index.css';
 import { initErrorTracker } from '@/core/services/errorTracker';
 import { recordClientError } from '@/core/services/observabilityService';
@@ -14,7 +14,33 @@ initErrorTracker().catch(() => {});
 // HOTFIX-003: limpar caches stale ANTES de qualquer coisa. Idempotente.
 // Se o user tem PWA cacheado de versão bugada (sw-v5.js = index.html
 // fantasma), o cleanup acontece silenciosamente e o app carrega fresh.
-cleanupStaleCaches().catch(() => {});
+// HOTFIX-005: opção NUCLEAR. Detecta SW legacy (public/sw.js v5) e
+// forç nuke + reload automático. Resolve o ciclo vicioso onde o SW
+// antigo assume controle via skipWaiting e serve cache stale
+// antes do sw-v8. Set sessionStorage flag pra evitar loop infinito.
+(async () => {
+  if (typeof window === 'undefined') return;
+  try {
+    if ('serviceWorker' in navigator) {
+      const regs = await navigator.serviceWorker.getRegistrations();
+      const hasLegacy = regs.some((r) => {
+        const url = r.active?.scriptURL || r.installing?.scriptURL || r.waiting?.scriptURL || '';
+        return url.endsWith('/sw.js') || /\/sw-v[0-5]\.js$/.test(url);
+      });
+      if (hasLegacy && !sessionStorage.getItem('hotfix-005-reload')) {
+        // eslint-disable-next-line no-console
+        console.warn('[HOTFIX-005] Legacy SW detected, performing nuclear reset...');
+        await nukeAllCaches();
+        sessionStorage.setItem('hotfix-005-reload', '1');
+        window.location.reload();
+        return;
+      }
+    }
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.warn('[HOTFIX-005] detection failed:', e);
+  }
+})();
 
 // ─── Global error handlers — capturam erros fora do tree React ──────────────────
 // window.onerror: exceções síncronas não capturadas por ErrorBoundary.
