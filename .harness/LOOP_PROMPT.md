@@ -42,6 +42,45 @@ User alertou 2026-07-16 17:13:
 
 ---
 
+## 🔴 REGRA ESPECIAL — ATIVAR/MEXER EM FEATURE FLAGS (2026-07-16 23:14) 🔴
+
+**Lição crítica** do HOTFIX-001 (commit `f6c9ed6`):
+
+Quando você ativar uma feature flag (TASK tipo "ativar flag X → ON") ou
+mudar `DEFAULT_FEATURE_FLAGS` em massa:
+
+1. **Mudar `DEFAULT_FEATURE_FLAGS` em `src/core/featureFlags.js` não basta.**
+   O doc Firestore `platform_settings/global` tem valores salvos que
+   sobrescrevem o default. A migração v2 só rodava se TODAS as flags
+   estavam em false, então DEFAULT novo nunca aplicava.
+
+2. **SEMPRE atualizar `migrateLegacyFlags`** em
+   `src/core/lib/FeatureFlagsContext.migration.js` para cobrir a nova
+   flag no critério de migração. A v3 (2026-07-16) tem 2 critérios:
+   - TODAS flags em false → migra tudo.
+   - Caso contrário → migra apenas SHELTER_* undefined/null.
+
+3. **Bump `FLAGS_MIGRATION_VERSION`** em `platformSettingsService.js`
+   para invalidar caches e forçar re-execução.
+
+4. **Adicionar teste** em `FeatureFlagsContext.migration.test.js`
+   cobrindo o cenário.
+
+5. **Após merge, pedir ao user para limpar cache** (`Ctrl+Shift+R`) e
+   confirmar que a flag aparece ON em `/admin/flags` E a funcionalidade
+   está visível. Se não aparecer → investigar doc Firestore stale.
+
+**Erro real que aconteceu** (2026-07-16 23:14):
+- TASK-792..797 mudou DEFAULT de 9 flags SHELTER_* para true.
+- User reportou "Não apareceu nenhuma flag nova".
+- Causa: doc Firestore persistido tinha false, migração v2 não rodou.
+- Correção: migração v3 + HOTFIX-001 merged em `e37f0a1`.
+
+**REGRA**: mudar DEFAULT em massa SEMPRE vem acompanhado de migração.
+Documentado em `docs/CORE_DIRECTIVES.md` §9.2 (D-FLAG-05, D-FLAG-06, D-FLAG-07).
+
+---
+
 ## REGRAS INEGOCIÁVEIS (regras do user)
 
 1. **Não estrague nada.** Antes de mudar, leia o componente. Se tiver teste, rode o teste ANTES e DEPOIS.

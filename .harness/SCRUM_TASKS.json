@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.1.0",
-  "generatedAt": "2026-07-17T02:24:31.216Z",
+  "generatedAt": "2026-07-17T02:50:24.996Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W29",
@@ -13701,6 +13701,25 @@
       "createdAt": "2026-07-16",
       "updatedAt": "2026-07-16",
       "evidence": "merge f6c9ed6"
+    },
+    {
+      "id": "TASK-812",
+      "title": "HOTFIX-002: PWA cache v5→v6 + ClubDetail/CommunityDetail 2 fileiras",
+      "description": "User reportou 23:33 'a página de admin de abrigo segue não entrando, bem como a página publica de abrigo segue sem alterações'. Causa: PWA cache imutável servia versão antiga. Fix: vite.config.js filename 'sw-v6.js' (força invalidação). ClubDetail: 7 abas em arena-tab-bar (flex-wrap) → arena-admin-tabs (flex-nowrap + overflow-x-auto). CommunityDetail: wrapper flex flex-wrap → flex-nowrap overflow-x-auto.",
+      "status": "done",
+      "phase": "hotfix",
+      "tags": [
+        "hotfix",
+        "pwa",
+        "cache",
+        "regra-a"
+      ],
+      "owner": "mvs_Mavis",
+      "pr": null,
+      "branch": "hotfix/admin-error-2026-07-16",
+      "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16",
+      "evidence": "merge 7879b06"
     }
   ],
   "definitionOfDone": [
@@ -13965,7 +13984,7 @@
       "feat/ds-v2-motion-2026-07-16",
       "feat/ds-v2-audit-2026-07-16"
     ],
-    "mainCommit": "39a67fab9868120189f642b5ea00dbb4e72de34f",
+    "mainCommit": "6c0064e011d7d5e6d086437653906974ec8e5151",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -13975,8 +13994,8 @@
     ],
     "openTODOs": 5,
     "openLegalReviews": 3,
-    "totalTasks": 516,
-    "done": 511,
+    "totalTasks": 517,
+    "done": 512,
     "inProgress": 0,
     "inReview": 0,
     "blocked": 0,
@@ -14010,7 +14029,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-17T02:24:31.237Z — via sync.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-17T02:50:25.016Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
