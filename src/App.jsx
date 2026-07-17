@@ -116,12 +116,31 @@ const AdminUserManagement = lazy(() => import('@/modules/admin/pages/AdminUserMa
 const AdminMockData = lazy(() => import('@/modules/admin/pages/AdminMockData'));
 
 // ─── QueryClient ─────────────────────────────────────────────────────────────
+// retry: 2 (default exponential backoff) — queries retry 2x before failing.
+// retry: false in individual useQuery disables retries for critical reads.
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 30_000,
       refetchOnWindowFocus: false,
       retry: 2,
+    },
+    mutations: {
+      // Global onError: every failed mutation logs to console + observability.
+      // Per-mutation onError in useMutation overrides this.
+      onError: (err) => {
+        console.error('[react-query mutation] error (global handler):', err?.message);
+        // recordClientError is not available at App.jsx load time (lazy import).
+        // Individual mutations that need observability tracking provide their own
+        // onError. This global handler catches mutations without one.
+      },
+    },
+  },
+  queryCache: {
+    onError: (err, query) => {
+      // Log failed queries (after all retries exhausted). Do NOT throw —
+      // react-query manages the error state. Only log for observability.
+      console.error(`[react-query query] error after retries: queryKey=${JSON.stringify(query.queryKey)}`, err?.message);
     },
   },
 });
