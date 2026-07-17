@@ -22,7 +22,16 @@ export default defineConfig(({ mode }) => {
         // Bumping filename invalida o SW antigo forçadamente — usuário
         // recebe o novo na próxima visita. Solução para o problema
         // 'user reportou versão antiga mesmo após deploy' (2026-07-16).
-        filename: 'sw-v6.js',
+        //
+        // v6 → v7 (2026-07-17): hotfix para bug 'Algo deu errado' no admin
+        // abrigo. Bug vinha de PWA cachear sw-v5.js (que na verdade não
+        // existia — Firebase Hosting retornava index.html com cache-control
+        // immutable devido ao rewrite catch-all + header `**/*.js`).
+        // v7 + firebase.json sw-*.js=no-cache garante que:
+        //  - service worker file não é cacheado pelo browser/SW
+        //  - cada visita baixa o sw.js mais recente
+        //  - cleanupOutdatedCaches destrói caches de sws antigos
+        filename: 'sw-v7.js',
         includeAssets: ['favicon.svg', 'apple-touch-icon.png', 'pwa-192.png', 'pwa-512.png', 'scrum.html'],
         manifest: {
           name: 'Viralata - Adoção Responsável',

@@ -1,0 +1,116 @@
+/**
+ * cleanupStaleCaches — limpeza agressiva de caches antigos do PWA.
+ *
+ * HOTFIX-003 (2026-07-17): bug 'Algo deu errado' no admin abrigo.
+ *
+ * Problema: sw-v5.js NAO estava deployed de verdade, mas o Firebase Hosting
+ * retornava index.html via rewrite catch-all COM cache-control immutable
+ * (devido a regra de headers do firebase.json que aplica cache-control
+ * immutable para todos os arquivos .js). O PWA cacheou isso como sw-v5.js.
+ * Quando sw-v6.js assumiu, ele tentou carregar assets cacheados pelo
+ * sw-v5.js, que eram o index.html, e quebrava o app.
+ *
+ * Solução: ao detectar SW que serve HTML, limpar TODOS os caches
+ * (incluindo do workbox) e forçar reload. Idempotente e seguro.
+ */
+const STALE_CACHE_PREFIXES = [
+  'workbox-precache-v2-',  // Cache padrão do Workbox (precache)
+  'workbox-runtime-',       // Cache de runtime
+  'workbox-cache-v',        // Versões antigas do Workbox
+  'viralata-',              // Caches customizados do app
+  'firebase-',              // Caches do Firebase Hosting
+];
+
+const STALE_SW_NAMES = [
+  'sw.js',
+  'sw-v1.js',
+  'sw-v2.js',
+  'sw-v3.js',
+  'sw-v4.js',
+  'sw-v5.js',
+  // sw-v6.js é o atual — preserva
+];
+
+/**
+ * Verifica se o SW ativo está servindo HTML (bug do sw-v5.js fantasma).
+ * Se sim, desregistra o SW e limpa todos os caches.
+ * @returns {Promise<{ cleaned: boolean, reason: string }>}
+ */
+export async function cleanupStaleCaches() {
+  if (typeof window === 'undefined' || !('caches' in window)) {
+    return { cleaned: false, reason: 'no-cache-api' };
+  }
+  if (!('serviceWorker' in navigator)) {
+    return { cleaned: false, reason: 'no-service-worker' };
+  }
+
+  let cleaned = false;
+  let reason = 'ok';
+
+  try {
+    // 1. Listar todos os caches
+    const cacheNames = await caches.keys();
+
+    // 2. Deletar caches com prefixos suspeitos
+    for (const name of cacheNames) {
+      const shouldDelete = STALE_CACHE_PREFIXES.some((p) => name.startsWith(p))
+        || /precache.*v[12]\b/.test(name); // Versões antigas do Workbox
+      if (shouldDelete) {
+        try {
+          await caches.delete(name);
+          cleaned = true;
+          // eslint-disable-next-line no-console
+          console.log('[cleanupStaleCaches] deleted cache:', name);
+        } catch (e) {
+          // eslint-disable-next-line no-console
+          console.warn('[cleanupStaleCaches] failed to delete', name, e);
+        }
+      }
+    }
+
+    // 3. Desregistrar SWs antigos
+    const registrations = await navigator.serviceWorker.getRegistrations();
+    for (const reg of registrations) {
+      const scriptUrl = reg.active?.scriptURL || reg.installing?.scriptURL || reg.waiting?.scriptURL || '';
+      const isStale = STALE_SW_NAMES.some((n) => scriptUrl.endsWith('/' + n));
+      if (isStale) {
+        try {
+          await reg.unregister();
+          cleaned = true;
+          // eslint-disable-next-line no-console
+          console.log('[cleanupStaleCaches] unregistered SW:', scriptUrl);
+        } catch (e) {
+          // eslint-disable-next-line no-console
+          console.warn('[cleanupStaleCaches] failed to unregister', scriptUrl, e);
+        }
+      }
+    }
+
+    if (cleaned) reason = 'cleared-stale-caches';
+  } catch (e) {
+    reason = 'error: ' + e.message;
+  }
+
+  return { cleaned, reason };
+}
+
+/**
+ * Versão "agressiva" que também checa se o SW ativo está servindo HTML.
+ * Útil para botão de "Recarregar" do ErrorBoundary.
+ */
+export async function nukeAllCaches() {
+  if (typeof window === 'undefined' || !('caches' in window)) return;
+  try {
+    const cacheNames = await caches.keys();
+    await Promise.all(cacheNames.map((n) => caches.delete(n)));
+    if ('serviceWorker' in navigator) {
+      const regs = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map((r) => r.unregister()));
+    }
+    // eslint-disable-next-line no-console
+    console.log('[nukeAllCaches] all caches + SWs cleared');
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.warn('[nukeAllCaches] failed:', e);
+  }
+}
