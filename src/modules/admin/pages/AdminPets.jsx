@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { collection, getDocs, query, orderBy, doc, deleteDoc } from 'firebase/firestore';
 import { db } from '@/core/config/firebase';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
-import { Trash2, Eye } from 'lucide-react';
+import { Trash2, Eye, Shield } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import PageHero from '@/components/PageHero';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
@@ -17,6 +17,8 @@ export default function AdminPets() {
   const [pets, setPets] = useState([]);
   const [loading, setLoading] = useState(true);
   const wrapperClass = useArenaPageClasses('arena-page mx-auto max-w-5xl space-y-6 px-4 py-6');
+  const deniedClass = useArenaPageClasses('arena-page mx-auto max-w-3xl py-16 text-center');
+  const loadingClass = useArenaPageClasses('arena-page mx-auto max-w-5xl px-4 py-16');
 
   useEffect(() => {
     if (!isPlatformAdmin) return;
@@ -32,7 +34,29 @@ export default function AdminPets() {
     toast.success('Pet removido.');
   }
 
-  if (!isPlatformAdmin) return null;
+  if (!isPlatformAdmin) {
+    return (
+      <div className={deniedClass}>
+        <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+          <Shield className="h-5 w-5" />
+        </div>
+        <p className="text-base font-semibold text-foreground">Acesso restrito</p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Esta página é exclusiva do administrador da plataforma.
+        </p>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className={loadingClass}>
+        <div className="space-y-3">
+          {[1, 2, 3, 4, 5].map((i) => <Skeleton key={i} className="h-16 w-full rounded-xl" />)}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={wrapperClass}>
