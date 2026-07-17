@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.1.0",
-  "generatedAt": "2026-07-17T06:28:35.931Z",
+  "generatedAt": "2026-07-17T10:24:04.269Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W29",
@@ -396,32 +396,7 @@
     "endsAt": "2026-07-22",
     "goal": "DS_V2 Fase 4 — Reaplicar design system oficial v1.0 bloco a bloco, cada área com feature flag default OFF. Começar pelo Bloco A (docs) ✅, agora Bloco B (tokens + Material Symbols). User valida visualmente cada bloco antes da próxima. Zero regressão em regra de negócio."
   },
-  "activeWorktrees": [
-    {
-      "id": "wt-TASK-823",
-      "branch": "feat/audit-TASK-823-2026-07-17",
-      "head": "a12d34203557064e6b45195e27b60b2f9a7cc93e",
-      "headTitle": "chore(scrum): topbar auto-update f78bc4e (workflow)",
-      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-TASK-823",
-      "status": "in-sync",
-      "commitsAhead": 0,
-      "primarySession": null,
-      "sessionTitle": null,
-      "focus": []
-    },
-    {
-      "id": "wt-TASK-864",
-      "branch": "feat/audit-TASK-864-2026-07-17",
-      "head": "6d5b65e6f59549bdbbf3b83db1c78d11864b963f",
-      "headTitle": "feat: TASK-864 — AdminContentEditor audit — 2 real fixes",
-      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-TASK-864",
-      "status": "in-sync",
-      "commitsAhead": 0,
-      "primarySession": null,
-      "sessionTitle": null,
-      "focus": []
-    }
-  ],
+  "activeWorktrees": [],
   "activeSessions": [
     {
       "id": "mvs_311d078987d0414a90f57ef28b789b18",
@@ -16135,7 +16110,7 @@
       "title": "AUDIT: Firestore timestamps — verificar serverTimestamp vs Date.now()",
       "type": "feature",
       "category": "audit",
-      "status": "backlog",
+      "status": "done",
       "priority": "medium",
       "owner": "loop_420680956387556",
       "branch": "main",
@@ -16157,7 +16132,7 @@
       "title": "AUDIT: Firestore realtime listeners — verificar unsubscribe + cleanup",
       "type": "feature",
       "category": "audit",
-      "status": "backlog",
+      "status": "done",
       "priority": "high",
       "owner": "loop_420680956387556",
       "branch": "main",
@@ -16179,7 +16154,7 @@
       "title": "REFACTOR: Extrair useFetchClub + useFetchOrganization hooks",
       "type": "feature",
       "category": "refactor",
-      "status": "backlog",
+      "status": "done",
       "priority": "high",
       "owner": "loop_420680956387556",
       "branch": "main",
@@ -16201,7 +16176,7 @@
       "title": "REFACTOR: Extrair useFetchCommunity + useFetchEvent hooks",
       "type": "feature",
       "category": "refactor",
-      "status": "backlog",
+      "status": "done",
       "priority": "high",
       "owner": "loop_420680956387556",
       "branch": "main",
@@ -16223,7 +16198,7 @@
       "title": "REFACTOR: Criar src/components/arena/AdminSidebar + AdminHeader",
       "type": "feature",
       "category": "refactor",
-      "status": "backlog",
+      "status": "done",
       "priority": "medium",
       "owner": "loop_420680956387556",
       "branch": "main",
@@ -16245,7 +16220,7 @@
       "title": "REFACTOR: Criar src/components/arena/DataGridSkeleton + StatCardSkeleton",
       "type": "feature",
       "category": "refactor",
-      "status": "backlog",
+      "status": "done",
       "priority": "medium",
       "owner": "loop_420680956387556",
       "branch": "main",
@@ -16267,7 +16242,7 @@
       "title": "REFACTOR: Criar src/components/arena/BadgeStatus + StatusDot",
       "type": "feature",
       "category": "refactor",
-      "status": "backlog",
+      "status": "done",
       "priority": "medium",
       "owner": "loop_420680956387556",
       "branch": "main",
@@ -16289,7 +16264,7 @@
       "title": "REFACTOR: Mover CSS inline de componentes para arena.css ou index.css",
       "type": "feature",
       "category": "refactor",
-      "status": "backlog",
+      "status": "done",
       "priority": "low",
       "owner": "loop_420680956387556",
       "branch": "main",
@@ -16304,14 +16279,15 @@
       "description": "grep -rn \"style={{\" src/ para identificar CSS inline. Para estilos reutilizáveis (>2 componentes): mover para src/styles/arena.css. Para estilos únicos: manter inline ou extrair para CSS modules.",
       "createdAt": "2026-07-17",
       "updatedAt": "2026-07-17",
-      "phase": "Fase 9"
+      "phase": "Fase 9",
+      "evidence": "VERIFIED — no meaningful inline CSS found. All style={{}} usages are dynamic: var(--cover-gradient) set by JS, dynamic widths/transforms, strengthColor() function. Patterns already use CSS variables. No static inline CSS to extract."
     },
     {
       "id": "TASK-910",
       "title": "REFACTOR: Criar src/core/hooks/useDirtyState para forms",
       "type": "feature",
       "category": "refactor",
-      "status": "backlog",
+      "status": "done",
       "priority": "medium",
       "owner": "loop_420680956387556",
       "branch": "main",
@@ -16333,7 +16309,7 @@
       "title": "REFACTOR: Criar src/core/hooks/useOfflineDetector",
       "type": "feature",
       "category": "refactor",
-      "status": "backlog",
+      "status": "done",
       "priority": "low",
       "owner": "loop_420680956387556",
       "branch": "main",
@@ -16355,7 +16331,7 @@
       "title": "DOCS: Escrever docs/ARCHITECTURE.md — overview da arquitetura",
       "type": "chore",
       "category": "docs",
-      "status": "backlog",
+      "status": "done",
       "priority": "high",
       "owner": "loop_420680956387556",
       "branch": "main",
@@ -16377,7 +16353,7 @@
       "title": "DOCS: Escrever docs/HOOKS.md — todos os hooks customizados",
       "type": "chore",
       "category": "docs",
-      "status": "backlog",
+      "status": "done",
       "priority": "medium",
       "owner": "loop_420680956387556",
       "branch": "main",
@@ -16399,7 +16375,7 @@
       "title": "DOCS: Escrever docs/SERVICES.md — todos os Firebase services",
       "type": "chore",
       "category": "docs",
-      "status": "backlog",
+      "status": "done",
       "priority": "medium",
       "owner": "loop_420680956387556",
       "branch": "main",
@@ -16421,7 +16397,7 @@
       "title": "DOCS: Escrever docs/FLAG_LIFECYCLE.md - como ativar/desativar flags",
       "type": "chore",
       "category": "docs",
-      "status": "backlog",
+      "status": "done",
       "priority": "high",
       "owner": "loop_420680956387556",
       "branch": "main",
@@ -16443,7 +16419,7 @@
       "title": "DOCS: Escrever docs/PWA_CACHE.md — como PWA cache funciona",
       "type": "chore",
       "category": "docs",
-      "status": "backlog",
+      "status": "done",
       "priority": "high",
       "owner": "loop_420680956387556",
       "branch": "main",
@@ -16465,7 +16441,7 @@
       "title": "DOCS: Escrever docs/SCRUM_PROTOCOL.md — como o loop funciona",
       "type": "chore",
       "category": "docs",
-      "status": "backlog",
+      "status": "done",
       "priority": "high",
       "owner": "loop_420680956387556",
       "branch": "main",
@@ -16487,7 +16463,7 @@
       "title": "DOCS: Escrever docs/UI_STANDARDS.md — padrões de UI/UX",
       "type": "chore",
       "category": "docs",
-      "status": "backlog",
+      "status": "done",
       "priority": "medium",
       "owner": "loop_420680956387556",
       "branch": "main",
@@ -16509,7 +16485,7 @@
       "title": "DOCS: Atualizar README.md com setup + deploy + архитектура",
       "type": "chore",
       "category": "docs",
-      "status": "backlog",
+      "status": "done",
       "priority": "high",
       "owner": "loop_420680956387556",
       "branch": "main",
@@ -16789,7 +16765,7 @@
       "feat/ds-v2-motion-2026-07-16",
       "feat/ds-v2-audit-2026-07-16"
     ],
-    "mainCommit": "cb9c2dbea2db208fa71071ead4678afe2e35013b",
+    "mainCommit": "fc3231aa915de2c7d91412b87de504dab7ffffd8",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -16800,12 +16776,12 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 624,
-    "done": 564,
-    "inProgress": 1,
+    "done": 619,
+    "inProgress": 0,
     "inReview": 0,
     "blocked": 0,
     "ready": 0,
-    "backlog": 58,
+    "backlog": 4,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
     "contribuicaoCoder": {
@@ -16834,7 +16810,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-17T06:28:35.951Z — via sync.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-17T10:24:04.290Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
@@ -17217,7 +17193,7 @@
 }
   </script>
 <<<<<<< HEAD
-  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-17T06:28:36.001Z">
+  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-17T10:24:04.354Z">
 =======
   <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-16T03:26:48.025Z">
 >>>>>>> 2fdaf3d (design(ux): TASK-603 - hero home com hierarquia clara - H1 menor mobile, badge compacto, remove chips decorativos)
@@ -17235,7 +17211,7 @@
       </div>
     </div>
     <div class="sprint-info">
-      <span class="pill mono">main @ 6d5f1a4</span>
+      <span class="pill mono">main @ fc3231a</span>
       <span class="pill">0 worktrees ativos</span>
       <span class="pill goal">Goal: estabilizar pós-22 fases + fechar worktrees</span>
     </div>
