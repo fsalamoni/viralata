@@ -58,13 +58,7 @@ const STATUS_COLOR = {
 function getStepColor(key, failed, done) {
   if (failed) return STATUS_COLOR.rejected;
   if (!done) return { icon: Circle, dot: 'bg-muted-foreground/30', text: 'text-muted-foreground', label: 'bg-secondary text-muted-foreground' };
-  switch (key) {
-    case 'created': return STATUS_COLOR.applied;
-    case 'terms': return STATUS_COLOR.terms_accepted;
-    case 'review': return STATUS_COLOR.under_review;
-    case 'final': return isTerminal(null) ? STATUS_COLOR.approved : STATUS_COLOR.approved;
-    default: return STATUS_COLOR.approved;
-  }
+  return STATUS_COLOR.approved;
 }
 
 /**
@@ -149,6 +143,50 @@ function TimelineStep({ step }) {
   );
 }
 
+/**
+ * Loading skeleton — espelha o layout real da página.
+ * ANTES: mostrava só skeletons soltos sem wrapper arena-section-card,
+ * fazendo a transição loading→conteúdo parecer um salto de layout.
+ */
+function LoadingSkeleton({ wrapperClass }) {
+  return (
+    <div className={wrapperClass}>
+      {/* Back button skeleton */}
+      <Skeleton className="h-8 w-44 rounded-lg mb-3" />
+      {/* Card skeleton */}
+      <section className="arena-section-card rounded-2xl p-6 lg:p-7">
+        <div className="arena-section-card-header">
+          <div className="flex flex-wrap items-center gap-2">
+            <Skeleton className="h-5 w-36 rounded" />
+            <Skeleton className="h-5 w-20 rounded-full" />
+          </div>
+          <Skeleton className="h-4 w-48 rounded mt-1.5" />
+        </div>
+        <div className="arena-section-card-body p-0 pt-4 space-y-6">
+          {/* Fase 1 skeleton */}
+          <div>
+            <div className="flex items-center gap-2 mb-3 px-1">
+              <Skeleton className="h-5 w-5 rounded-full" />
+              <Skeleton className="h-3 w-20 rounded" />
+            </div>
+            <ol className="relative ml-2 space-y-5 border-l border-border pl-5">
+              {[1, 2].map((i) => (
+                <li key={i} className="relative flex items-start gap-3">
+                  <Skeleton className="h-7 w-7 rounded-full shrink-0" />
+                  <div className="flex-1 space-y-1.5 pt-1">
+                    <Skeleton className="h-4 w-40 rounded" />
+                    <Skeleton className="h-3 w-28 rounded" />
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
+
 export default function AdoptionDetail() {
   const { clubId, applicationId } = useParams();
   const wrapperClass = useArenaPageClasses('arena-page mx-auto w-full max-w-2xl px-4 py-6 sm:px-6');
@@ -163,17 +201,17 @@ export default function AdoptionDetail() {
   });
 
   if (isLoading) {
-    return (
-      <div className={wrapperClass}>
-        <Skeleton className="h-8 w-40 rounded-lg" />
-        <Skeleton className="mt-4 h-72 w-full rounded-2xl" />
-      </div>
-    );
+    return <LoadingSkeleton wrapperClass={wrapperClass} />;
   }
 
   if (isError || !app) {
     return (
       <div className={wrapperClass}>
+        <Button asChild variant="ghost" size="sm" className="-ml-2 mb-3 text-muted-foreground">
+          <Link to="/perfil#adocoes">
+            <ArrowLeft className="mr-1.5 h-4 w-4" /> Minhas adoções
+          </Link>
+        </Button>
         <EmptyState
           icon={FileText}
           title="Pedido não encontrado"
@@ -208,7 +246,7 @@ export default function AdoptionDetail() {
         </Link>
       </Button>
 
-      <section className="arena-section-card rounded-[24px] p-6 lg:p-7">
+      <section className="arena-section-card p-6 lg:p-7">
         <div className="arena-section-card-header">
           <div className="flex flex-wrap items-center gap-2">
             <h3 className="arena-section-card-title">Pedido de adoção</h3>
