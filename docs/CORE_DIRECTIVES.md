@@ -491,6 +491,35 @@ Cada diretriz abaixo **previne** um ou mais erros acima.
 - ❌ Ligar flag no commit.
 - ✅ `DEFAULT_FEATURE_FLAGS[X] = false`. User liga manualmente.
 
+#### D-FLAG-05: Mudar DEFAULT de flag em massa exige MIGRAÇÃO no Firestore (2026-07-16 23:14)
+- ❌ **ERRADO**: mudar `DEFAULT_FEATURE_FLAGS[X] = true` e parar. User não vai ver a flag ON porque o Firestore `platform_settings/global` tem valor `false` salvo (de quando ligou/desligou manualmente).
+- ✅ **CERTO**: ao mudar DEFAULT em massa, **rodar migração client-side** que aplique o novo default em quem ainda não setou explicitamente.
+- **Mecanismo**: a função `migrateLegacyFlags` em `src/core/lib/FeatureFlagsContext.migration.js` roda no `useEffect` do `FeatureFlagsProvider`. Migração v3 (2026-07-16) tem 2 critérios:
+  1. Se TODAS flags em false → migra tudo.
+  2. Caso contrário → migra apenas `SHELTER_*` que estão `undefined`/`null` (preserva controles explícitos do admin: true ou false salvos não são tocados).
+- **Por que importa**: bug clássico 2026-07-16 — user reportou 'Não apareceu nenhuma flag nova para mim' após TASK-792..797. Loop mudou DEFAULT para true, mas Firestore persistido tinha false. Migração v2 só aplicava se TODAS false (não era o caso). v3 corrige.
+- **REGRA ao mudar DEFAULT em massa**:
+  1. Mudar DEFAULT no `featureFlags.js`.
+  2. Atualizar `migrateLegacyFlags` (adicionar a flag ao critério de migração se necessário).
+  3. Atualizar `FLAGS_MIGRATION_VERSION` em `platformSettingsService.js` para invalidar caches.
+  4. Adicionar teste na `FeatureFlagsContext.migration.test.js` cobrindo o cenário.
+  5. Validar que `npm run build` verde.
+  6. Commitar com mensagem descritiva: "fix(flags): migração vN — <motivo>".
+
+#### D-FLAG-06: Verificar estado REAL das flags no Firestore após ativar
+- ❌ **ERRADO**: assumir que mudar `DEFAULT_FEATURE_FLAGS` + mergear = flag ON para todos.
+- ✅ **CERTO**: após merge + deploy, pedir ao user que limpe cache (`Ctrl+Shift+R`) e confirme que a flag aparece ON no painel `/admin/flags` E que a funcionalidade está visível.
+- Se user reportar "não aparece", investigar:
+  1. Cache do navegador (resolução 90% dos casos).
+  2. Doc Firestore `platform_settings/global` com valor stale (resolver com migração v3 ou script admin).
+  3. Código com `useFeatureFlag` errado (chave incorreta ou fallback que sempre retorna false).
+- **Por que importa**: 2026-07-16 23:14, user reportou "Não apareceu nenhuma flag nova para mim" + "página dos antigos não está entrando". Os 2 problemas tinham a MESMA causa raiz (Firestore stale). Resolvido com migração v3.
+
+#### D-FLAG-07: Ativação de flag por URL/regra do admin é INSUFICIENTE se DEFAULT já mudou
+- ❌ **ERRADO**: pensar "user pode ligar manualmente em /admin/flags se quiser". Não resolve a real intent.
+- ✅ **CERTO**: se a intenção é entregar a funcionalidade PARA TODOS os usuários imediatamente, mudar DEFAULT + migração no Firestore. User ligar manualmente só funciona se ele souber que a flag existe e onde ligar.
+- **Por que importa**: TASK-792..797 mudou DEFAULT para true (intenção: ativar para todos). Mas a UI `/admin/flags` mostrava todas OFF (Firestore stale) — user não sabia que precisava ligar. Default mudou DEVE resultar em default efetivo.
+
 ### 9.3. Code & Build Quality
 
 #### D-BUILD-01: `npm run build` verde ANTES do commit

@@ -586,6 +586,33 @@ restante do site.
 
 ---
 
+## ⚠️ LESSON LEARNED — HOTFIX 2026-07-16 23:14 (CRÍTICA)
+
+**Sintoma**: User reportou "Não apareceu nenhuma flag nova para mim" + "A página dos antigos não está entrando" após TASK-786..810 estarem todas done (incluindo TASK-792..797 que ativaram SHELTER_*).
+
+**Causa raiz**:
+1. TASK-792..797 mudaram `DEFAULT_FEATURE_FLAGS` para `true` no código.
+2. O doc Firestore `platform_settings/global` (que `subscribePlatformSettings` lê) tinha `false` salvo para essas flags (de quando admin ligou/desligou manualmente em algum momento).
+3. A migração v2 (`migrateLegacyFlags`) só aplicava DEFAULT novo se TODAS as flags estavam em false. Como UX flags já estavam ON, `storedAllFalse=false` → migração NÃO rodava.
+4. Resultado: Firestore persistido continuou com `false` mesmo após merge + deploy. UI `/admin/flags` mostrava OFF. Painel admin abrigo não mostrava abas SHELTER_* (dependem de `SHELTER_FOUNDATION=true`).
+
+**Correção** (commit `f6c9ed6`, HOTFIX-001): migração v3 com 2 critérios:
+- Critério 1: TODAS flags em false → migra tudo.
+- Critério 2: Caso contrário → migra apenas `SHELTER_*` que estão `undefined`/`null`. Preserva controles explícitos do admin (true/false salvos não são tocados).
+
+**REGRA ao mudar DEFAULT de flag em massa** (D-FLAG-05, CORE_DIRECTIVES §9.2):
+1. Mudar DEFAULT no `featureFlags.js`.
+2. Atualizar `migrateLegacyFlags` em `FeatureFlagsContext.migration.js` (cobrir a nova flag no critério de migração).
+3. Atualizar `FLAGS_MIGRATION_VERSION` em `platformSettingsService.js`.
+4. Adicionar teste na `FeatureFlagsContext.migration.test.js`.
+5. `npm run build` verde.
+6. Commitar com mensagem: "fix(flags): migração vN — <motivo>".
+7. **Pedir ao user para limpar cache** (`Ctrl+Shift+R`) e validar visualmente.
+
+**REGRA anti-facada**: mudar DEFAULT no código não basta. SEMPRE verificar que o Firestore persistido herda o novo DEFAULT.
+
+---
+
 *Documento vivo. Atualizar a cada bloco finalizado.*
 
-*Cross-references: `docs/CORE_DIRECTIVES.md` §3.3 (Feature Flag Lifecycle), `docs/AGENTS.md` Regra A (Avaliação Plena).*
+*Cross-references: `docs/CORE_DIRECTIVES.md` §9.2 (D-FLAG-05, D-FLAG-06, D-FLAG-07), `docs/AGENTS.md` Regra A (Avaliação Plena).*
