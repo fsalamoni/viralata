@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.1.0",
-  "generatedAt": "2026-07-17T03:25:28.625Z",
+  "generatedAt": "2026-07-17T03:30:38.202Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W29",
@@ -14096,1611 +14096,2239 @@
     },
     {
       "id": "TASK-813",
-      "title": "[AUDIT-0.1] Investigar OrganizationAdminPanel \"Algo deu errado\"",
-      "status": "done",
-      "priority": "P1",
-      "owner": "Mavis (root)",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:25:26",
-      "phase": "Fase 0",
+      "title": "DIAG: Investigar \"Algo deu errado\" em /admin/abrigo (PWA cache + código stale)",
+      "type": "bug",
+      "category": "bug",
+      "status": "backlog",
+      "priority": "critical",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-0",
+        "pwa",
+        "admin"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 0",
-      "branch": "hotfix/audit-task-813-admin-error-2026-07-17",
-      "worktree": "wt-task-813",
-      "resolvedAt": "2026-07-17"
+      "blockedBy": [],
+      "description": "User reportou \"Algo deu errado\" ao acessar admin de abrigo no celular (PWA). Investigar: (1) se há código React referencing campos não existentes no Firestore; (2) se hooks usam campos undefined; (3) se ErrorBoundary genérico esconde o erro real. Ler ClubDetail.jsx, OrganizationAdminPanel.jsx e hooks relacionados.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-814",
-      "title": "[AUDIT-0.2] Investigar subscribePlatformSettings + Firestore flags",
+      "title": "DIAG: Investigar página pública de abrigo sem estilo DS (design verde 2-fileiras)",
+      "type": "bug",
+      "category": "bug",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 0",
+      "priority": "critical",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-0",
+        "design",
+        "club"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 0"
+      "blockedBy": [],
+      "description": "User reportou página pública /abrigo/{id} mostrando design VERDE e abas em 2 fileiras (layout antigo). Corrigido em HOTFIX-002 mas precisamos AUDITAR todas as páginas públicas para garantir que não há regressão. Ler ClubDetail.jsx, CommunityDetail.jsx e verificar arena-admin-tabs.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-815",
-      "title": "[AUDIT-0.3] Investigar ClubDetail/CommunityDetail DS_V2 ainda não aplicado",
+      "title": "DIAG: Investigar feature flags não aparecendo após limpa cache (Firestore migration)",
+      "type": "bug",
+      "category": "bug",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 0",
+      "priority": "critical",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-0",
+        "flags",
+        "firestore"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 0"
+      "blockedBy": [],
+      "description": "User reportou que flags não apareceram após limpar cache (Ctrl+Shift+R). Investigar se migrateLegacyFlags v3 cobre todos os critérios, se FLAGS_MIGRATION_VERSION está bumpado, e se AdminFlags.jsx realmente lê do contexto certo. Ler FeatureFlagsContext.migration.js, platformSettingsService.js, AdminFlags.jsx.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-816",
-      "title": "[AUDIT-0.4] Adicionar flag SHOW_DEBUG_ERRORS para stack trace em produção",
+      "title": "DIAG: Verificar estado real do PWA sw.js — bumpou para v6?",
+      "type": "chore",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 0",
+      "priority": "high",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-0",
+        "pwa"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 0"
+      "blockedBy": [],
+      "description": "Verificar se vite.config.js tem filename: \"sw-v6.js\" (ou superior).HOTFIX-002 committou sw-v6 mas é crítico confirmar que o arquivo existe e foi pushado. Grep por sw-v na pasta dist/ após build.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-817",
-      "title": "[AUDIT-0.5] Aplicar fix emergencial para admin abrigo com base no diagnóstico",
-      "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 0",
+      "title": "DIAG: Mapear todas as páginas com TabList 5+ items para garantir arena-admin-tabs",
+      "type": "chore",
+      "category": "audit",
+      "status": "done",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "feat/audit-TASK-817-tab-patterns-2026-07-17",
+      "pr": "merged",
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-0",
+        "tabs",
+        "ui"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 0"
+      "blockedBy": [],
+      "description": "grep -rn \"TabList|arena-tab-bar\" src/ para identificar TODAS as páginas com 5+ tabs. CROSS-CHECK: cada uma usa arena-admin-tabs (não arena-tab-bar com flex-wrap). Documentar e corrigir as que usam o padrão errado.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17",
+      "worktree": ".worktrees/wt-TASK-817"
     },
     {
       "id": "TASK-818",
-      "title": "[AUDIT-1.1] ErrorBoundary global — sempre mostrar erro real (com toggle)",
+      "title": "AUDIT: ErrorBoundary — verificar se captura todos os erros React",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 1",
+      "priority": "high",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-1",
+        "error-boundary"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 1"
+      "blockedBy": [],
+      "description": "Ler src/core/components/ErrorBoundary.jsx e verificar: componentDidCatch, getDerivedStateFromError, fallback prop, retry button, Sentry integration. Verificar uso em App.jsx e rotas.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-819",
-      "title": "[AUDIT-1.2] TabErrorBoundary local — não isolar erro crítico",
+      "title": "AUDIT: TabErrorBoundary — verificar tratamento de erros em tabs",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 1",
+      "priority": "high",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-1",
+        "error-boundary"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 1"
+      "blockedBy": [],
+      "description": "grep -rn \"TabErrorBoundary|TabBoundary\" src/ para localizar e ler o componente. Verificar se cada TabErrorBoundary tem fallback específico e se o onReset limpa o estado.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-820",
-      "title": "[AUDIT-1.3] Validar todas as rotas em App.jsx — nenhuma rota quebrada",
+      "title": "AUDIT: Rotas com lazy() + Suspense — verificar fallback correto",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 1",
+      "priority": "high",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-1",
+        "routing",
+        "lazy"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 1"
+      "blockedBy": [],
+      "description": "grep -rn \"lazy|Suspense\" src/ para verificar todas as rotas lazy-loaded. Cada Suspense deve ter fallback=<LoadingSpinner/> (não null). Garantir que não há Suspense fora de rotas.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-821",
-      "title": "[AUDIT-1.4] useArenaPageClasses — uso consistente em TODAS páginas",
+      "title": "AUDIT: useErrorHandler — verificar se todos os hooks de dados usam",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 1",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-1",
+        "hooks",
+        "error"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 1"
+      "blockedBy": [],
+      "description": "grep -rn \"useErrorHandler\" src/ e grep -rn \"onError|setError\" src/hooks/. Verificar que todo useQuery, useMutation do react-query tem onError handler. Identificar gaps.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-822",
-      "title": "[AUDIT-1.5] useFeatureFlag — chave correta em todos os usos",
+      "title": "AUDIT: react-query error retry — configurar limites corretos",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 1",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-1",
+        "react-query",
+        "error"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 1"
+      "blockedBy": [],
+      "description": "grep -rn \"QueryClient|useQuery|useMutation\" src/ e ler a config do QueryClientProvider. Verificar: retry (1-3x max), staleTime, gcTime, refetchOnWindowFocus. Garantir que erros de rede não fazem loop infinito.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-823",
-      "title": "[AUDIT-1.6] useAuth / useMyMembership — fallback de loading + error",
+      "title": "AUDIT: Global error handler (window.onerror + unhandledrejection)",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 1",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-1",
+        "error"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 1"
+      "blockedBy": [],
+      "description": "grep -rn \"window.onerror|unhandledrejection\" src/ e verificar se existe um global handler. Se não existir, criar em src/core/lib/globalErrorHandler.js e importar em main.jsx.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-824",
-      "title": "[AUDIT-1.7] React.lazy / Suspense — fallback de loading consistente",
+      "title": "AUDIT: Firebase onSnapshot error handling — verificar listeners",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 1",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-1",
+        "firebase",
+        "error"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 1"
+      "blockedBy": [],
+      "description": "grep -rn \"onSnapshot|onValue|subscribeFirestore\" src/ . Verificar que todos os listeners têm onError callback, error state, e unsubscribe no cleanup (useEffect return). Identificar listeners sem unsubscribe.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-825",
-      "title": "[AUDIT-1.8] react-query — error/loading states em todos os hooks",
+      "title": "AUDIT: Form validation errors — verificar UX de erros",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 1",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-1",
+        "forms",
+        "error"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 1"
+      "blockedBy": [],
+      "description": "grep -rn \"error|validation|required|validate\" src/ em components de form. Verificar se erros de validação são mostrados inline (não em alert/console). Verificar se campos obrigatórios têm aria-required e aria-describedby.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-826",
-      "title": "[AUDIT-2.1] DEFAULT_FEATURE_FLAGS vs FEATURE_FLAG_META — todas flags documentadas",
+      "title": "AUDIT: DEFAULT_FEATURE_FLAGS vs META flags — identificar gaps",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 2",
+      "priority": "high",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-2",
+        "flags"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 2"
+      "blockedBy": [],
+      "description": "Ler src/core/featureFlags.js. Comparar DEFAULT_FEATURE_FLAGS com META_FLAG_DEFINITIONS. Identificar flags em DEFAULT sem META e vice-versa. Verificar se todas as META têm default value consistente.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-827",
-      "title": "[AUDIT-2.2] migrateLegacyFlags v3 — test com Firestore persistido real",
+      "title": "AUDIT: migrateLegacyFlags v3 — verificar se cobre todos os critérios",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 2",
+      "priority": "high",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-2",
+        "flags",
+        "migration"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 2"
+      "blockedBy": [],
+      "description": "Ler src/core/lib/FeatureFlagsContext.migration.js. Verificar se migrateLegacyFlags v3 cobre: (1) TODAS flags false → migra tudo; (2) caso contrário → migra undefined/null. Comparar com FLAGS_MIGRATION_VERSION em platformSettingsService.js.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-828",
-      "title": "[AUDIT-2.3] setFeatureFlag / markFlagsMigrationApplied — fluxo completo",
+      "title": "AUDIT: FLAGS_MIGRATION_VERSION — verificar se está bumpado após últimas mudanças",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 2",
+      "priority": "high",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-2",
+        "flags"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 2"
+      "blockedBy": [],
+      "description": "grep -rn \"FLAGS_MIGRATION_VERSION|FLAGS_MIGRATION_V\" src/. Verificar se o número está correto após HOTFIX-001. Se não, bumpar para garantir que a migração rode para todos os usuários.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-829",
-      "title": "[AUDIT-2.4] FLAGS_MIGRATION_VERSION — bump em cada mudança de critério",
+      "title": "AUDIT: AdminFlags.jsx — verificar se usa useFeatureFlag corretamente",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 2",
+      "priority": "high",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-2",
+        "flags",
+        "admin"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 2"
+      "blockedBy": [],
+      "description": "Ler src/modules/admin/pages/AdminFlags.jsx (ou similar). Verificar: (1) usa useFeatureFlag(key) — não lê Firestore direto; (2) toggle salva em Firestore via toggleFeatureFlag(); (3) mostra META description para cada flag.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-830",
-      "title": "[AUDIT-2.5] platformSettingsService — todas as 4 entradas sincronizadas",
+      "title": "AUDIT: useFeatureFlag — verificar se nunca retorna undefined após mount",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 2",
+      "priority": "high",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-2",
+        "flags",
+        "hooks"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 2"
+      "blockedBy": [],
+      "description": "Ler src/core/hooks/useFeatureFlag.js. Verificar: (1) useState com initialValue do DEFAULT; (2) subscribePlatformSettings no useEffect; (3) NUNCA retorna undefined/null após loading. Garantir que o fallback do contexto cobre tudo.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-831",
-      "title": "[AUDIT-2.6] AdminFlags — UI mostra todas as flags + histórico + auto-save",
+      "title": "AUDIT: SHELTER_* flags — verificar se estão migrando corretamente",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 2",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-2",
+        "flags",
+        "shelter"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 2"
+      "blockedBy": [],
+      "description": "grep -rn \"SHELTER_\" src/core/featureFlags.js. Verificar que todas as SHELTER_* estão em DEFAULT_FEATURE_FLAGS, META_FLAG_DEFINITIONS e migrateLegacyFlags v3. Garantir que o filtro de migração as cobre.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-832",
-      "title": "[AUDIT-2.7] getPlatformSettings / subscribePlatformSettings — fallback gracioso",
+      "title": "AUDIT: FeatureFlagsContext.test.js — verificar se cobre migração v3",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 2",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-2",
+        "flags",
+        "test"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 2"
+      "blockedBy": [],
+      "description": "Ler src/core/lib/FeatureFlagsContext.migration.test.js. Verificar que os 4 novos casos de teste (HOTFIX-001) estão presentes: (1) todas false; (2) mix false+undefined; (3) todas true; (4) flag recém-adicionada undefined.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-833",
-      "title": "[AUDIT-2.8] Adicionar flag SHOW_DEBUG_ERRORS — mostra stack trace em produção",
+      "title": "AUDIT: platformSettingsService — verificar subscribe + toggle functions",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 2",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-2",
+        "flags",
+        "service"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 2"
+      "blockedBy": [],
+      "description": "Ler src/core/services/platformSettingsService.js. Verificar: subscribePlatformSettings(topic, callback), toggleFeatureFlag(key, value), getPlatformSettings(). Garantir que todas as funções têm erro handling e não crasham se Firestore estiver offline.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-834",
-      "title": "[AUDIT-3.1] vite.config.js PWA — versionar sw filename em cada deploy crítico",
+      "title": "AUDIT: vite.config.js — verificar filename do sw (sw-v6 ou superior)",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 3",
+      "priority": "critical",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-3",
+        "pwa"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 3"
+      "blockedBy": [],
+      "description": "Ler vite.config.js. Verificar que sw.js filename foi bumpado para sw-v6.js (ou maior) após HOTFIX-002. Se ainda sw.js ou sw-v5.js, corrigir. Garantir que registerSW.js referencia o nome certo.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-835",
-      "title": "[AUDIT-3.2] firebase.json headers — index.html e registerSW.js com TTL adequado",
+      "title": "AUDIT: firebase.json — verificar headers de cache para assets",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 3",
+      "priority": "high",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-3",
+        "pwa",
+        "firebase"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 3"
+      "blockedBy": [],
+      "description": "Ler firebase.json. Verificar hosting.headers para sw.js e assets: cache-control: public, max-age=31536000, immutable. Para index.html: cache-control: no-cache ou max-age=0 para forçar reload.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-836",
-      "title": "[AUDIT-3.3] Adicionar navigateFallback network-first para HTML",
+      "title": "AUDIT: navigateFallback em vite.config.js — verificar index page",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 3",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-3",
+        "pwa"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 3"
+      "blockedBy": [],
+      "description": "grep -rn \"navigateFallback\" vite.config.js. Verificar que aponta para index.html (SPA fallback). Garantir que todas as rotas públicas (/*) têm SW para interceptar requests.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-837",
-      "title": "[AUDIT-3.4] Adicionar cleanupOutdatedCaches + skipWaiting no workbox",
+      "title": "AUDIT: cleanupOutdatedCaches — verificar se SW limpa caches velhos",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 3",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-3",
+        "pwa"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 3"
+      "blockedBy": [],
+      "description": "grep -rn \"cleanupOutdatedCaches|CacheStorage\" vite.config.js ou src/ . Verificar que o SW tem estratégia de limpar caches de versões anteriores (sw-v1, sw-v2, etc.).",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-838",
-      "title": "[AUDIT-3.5] manifest.webmanifest — ícones, start_url, scope, display",
+      "title": "AUDIT: Service Worker registration — verificar em main.jsx/App.jsx",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 3",
+      "priority": "high",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-3",
+        "pwa"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 3"
+      "blockedBy": [],
+      "description": "grep -rn \"registerSW|serviceWorker|navigator.serviceWorker\" src/ . Verificar que o SW é registrado em main.jsx, que há um window.updateSW() exposto para forçar reload, e que o SW só é registrado em produção (não em dev).",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-839",
-      "title": "[AUDIT-3.6] Bump sw-v7.js para garantir invalidação da v6",
+      "title": "AUDIT: PWA manifest.json — verificar theme_color e icons",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 3",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-3",
+        "pwa"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 3"
+      "blockedBy": [],
+      "description": "Ler public/manifest.json. Verificar: (1) theme_color = design system primary; (2) icons com todos os tamanhos (192, 512, maskable); (3) start_url = /; (4) display = standalone; (5) background_color definido.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-840",
-      "title": "[AUDIT-3.7] Adicionar caches.keys() cleanup mais agressivo",
+      "title": "AUDIT: vite-plugin-pwa build output — verificar dist/sw.js existe",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 3",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-3",
+        "pwa"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 3"
+      "blockedBy": [],
+      "description": "npm run build e verificar que dist/sw-v6.js (ou equivalente) existe e tem conteúdo. Verificar que dist/workbox-*.js está presente (se injectManifest mode). Garantir que firebase.json hosting.ignore lista o sw.js.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-841",
-      "title": "[AUDIT-4.1] / Home — DS_V2 + arena-stats-grid + arena-section-card",
+      "title": "AUDIT: HomePage (/) — verificar arena-admin-tabs para tabs, design tokens",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 4",
+      "priority": "high",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-4",
+        "public",
+        "home"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 4"
+      "blockedBy": [],
+      "description": "Ler src/modules/home/pages/HomePage.jsx. Verificar: (1) TabList com arena-admin-tabs (não arena-tab-bar com flex-wrap); (2) nenhuma cor literal Tailwind (bg-emerald, text-green, etc.); (3) skeleton loading states; (4) SEO meta tags.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-842",
-      "title": "[AUDIT-4.2] /feed — DS_V2 + arena-pet-card + hover states",
+      "title": "AUDIT: FeedPage (/feed) — verificar cards, lazy loading, empty state",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 4",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-4",
+        "public",
+        "feed"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 4"
+      "blockedBy": [],
+      "description": "Ler src/modules/feed/pages/FeedPage.jsx. Verificar: (1) FeedCard usa tokens semânticos; (2) IntersectionObserver ou similar para infinite scroll; (3) empty state quando sem posts; (4) skeleton cards durante loading.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-843",
-      "title": "[AUDIT-4.3] /abrigos — DS_V2 + arena-stat-card + grid responsivo",
+      "title": "AUDIT: SheltersPage (/abrigos) — verificar grid, filtros, map",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 4",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-4",
+        "public",
+        "shelters"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 4"
+      "blockedBy": [],
+      "description": "Ler src/modules/shelters/pages/SheltersPage.jsx. Verificar: (1) mapa interativo com marcadores; (2) cards com info do abrigo; (3) filtros por UF/cidade; (4) loading skeleton; (5) empty state; (6) arena-admin-tabs se tiver tabs.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-844",
-      "title": "[AUDIT-4.4] /organizacoes/{id} — DS_V2 + 2-layer tabs + arena-cover",
+      "title": "AUDIT: OrganizationDetail (/organizacoes/{id}) — verificar design tokens",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 4",
+      "priority": "high",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-4",
+        "public",
+        "organization"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 4"
+      "blockedBy": [],
+      "description": "Ler src/modules/organizations/pages/OrganizationDetail.jsx. Verificar: (1) arena-admin-tabs para tabs (TASK-817 cross-check); (2) tokens semânticos; (3) hero banner com logo; (4) seção \"sobre\" com empty state; (5) CTA de doação.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-845",
-      "title": "[AUDIT-4.5] /comunidade/{id} — DS_V2 + 2-layer tabs",
+      "title": "AUDIT: ClubDetail (/abrigo/{id}) — verificar design tokens + tabs (regressão)",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 4",
+      "priority": "critical",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-4",
+        "public",
+        "club"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 4"
+      "blockedBy": [],
+      "description": "Ler src/modules/organizations/pages/ClubDetail.jsx. Verificar: (1) arena-admin-tabs (HOTFIX-002); (2) SEM design verde; (3) SEM 2 fileiras de tabs; (4) tokens semânticos; (5) foto do abrigo; (6) seção \"animais disponíveis\".",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-846",
-      "title": "[AUDIT-4.6] /pet/{id} — DS_V2 + arena-pet-profile + gallery",
+      "title": "AUDIT: CommunityDetail (/comunidade/{id}) — verificar design tokens + tabs",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 4",
+      "priority": "high",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-4",
+        "public",
+        "community"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 4"
+      "blockedBy": [],
+      "description": "Ler src/modules/communities/pages/CommunityDetail.jsx. Verificar: (1) arena-admin-tabs; (2) tokens semânticos; (3) info da comunidade; (4) mural/posts da comunidade; (5) eventos; (6) empty state.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-847",
-      "title": "[AUDIT-4.7] /evento/{id} — DS_V2 + arena-event-detail + RSVP",
+      "title": "AUDIT: PetDetail (/pet/{id}) — verificar cards, galeria, botão adotar",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 4",
+      "priority": "high",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-4",
+        "public",
+        "pet"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 4"
+      "blockedBy": [],
+      "description": "Ler src/modules/pets/pages/PetDetail.jsx. Verificar: (1) galeria de fotos; (2) info do pet (nome, porte, temperamento); (3) botão \"Quero adotar\" (CTA); (4) histórico médico; (5) abrigo de origem; (6) loading skeleton.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-848",
-      "title": "[AUDIT-4.8] /vitrines — DS_V2 + arena-card-grid",
+      "title": "AUDIT: EventDetail (/evento/{id}) — verificar data, local, inscrições",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 4",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-4",
+        "public",
+        "event"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 4"
+      "blockedBy": [],
+      "description": "Ler src/modules/events/pages/EventDetail.jsx. Verificar: (1) data/hora formatada (Intl.DateTimeFormat); (2) mapa/local; (3) botão de inscrição; (4) descrição; (5) organizador; (6) eventos relacionados.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-849",
-      "title": "[AUDIT-4.9] /voluntarios — DS_V2 + arena-cta-card",
+      "title": "AUDIT: VitrinesPage (/vitrines) — verificar grid de animais",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 4",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-4",
+        "public",
+        "vitrines"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 4"
+      "blockedBy": [],
+      "description": "Ler src/modules/vitrines/pages/VitrinesPage.jsx. Verificar: (1) grid responsivo de pets; (2) filtros (porte, espécie, UF); (3) infinite scroll; (4) PetCard com tokens semânticos; (5) skeleton loading; (6) empty state.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-850",
-      "title": "[AUDIT-4.10] /busca — DS_V2 + arena-search-bar + facets",
+      "title": "AUDIT: VoluntariosPage (/voluntarios) — verificar CTA + cards",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 4",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-4",
+        "public",
+        "volunteers"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 4"
+      "blockedBy": [],
+      "description": "Ler src/modules/volunteers/pages/VoluntariosPage.jsx. Verificar: (1) CTA \"Seja voluntário\"; (2) cards de oportunidades; (3) área de atuação; (4) empty state; (5) tokens semânticos.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-851",
-      "title": "[AUDIT-4.11] /comunidades — DS_V2 + arena-card-grid",
+      "title": "AUDIT: SearchPage (/busca) — verificar input, resultados, empty",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 4",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-4",
+        "public",
+        "search"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 4"
+      "blockedBy": [],
+      "description": "Ler src/modules/search/pages/SearchPage.jsx. Verificar: (1) SearchInput com ícone e clear button; (2) debounce na busca; (3) resultado com PetCard/OrganizationCard; (4) empty state \"nenhum resultado\"; (5) loading skeleton.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-852",
-      "title": "[AUDIT-4.12] /adocoes — DS_V2 + arena-adoption-card",
+      "title": "AUDIT: AdocoesPage (/adocoes) — verificar grid + filtros",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 4",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-4",
+        "public",
+        "adoption"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 4"
+      "blockedBy": [],
+      "description": "Ler src/modules/adoption/pages/AdocoesPage.jsx. Verificar: (1) filtros (porte, idade, UF); (2) grid de pets disponíveis; (3) PetCard com tokens semânticos; (4) empty state; (5) skeleton.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-853",
-      "title": "[AUDIT-4.13] /eventos — DS_V2 + arena-event-card",
+      "title": "AUDIT: EventosPage (/eventos) — verificar lista + calendário",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 4",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-4",
+        "public",
+        "events"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 4"
+      "blockedBy": [],
+      "description": "Ler src/modules/events/pages/EventosPage.jsx. Verificar: (1) tabs (futuros/passados); (2) EventCard com tokens semânticos; (3) calendário visual; (4) filtros; (5) empty state.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-854",
-      "title": "[AUDIT-4.14] /chat — DS_V2 + arena-message-bubble",
+      "title": "AUDIT: ChatPage (/chat) — verificar interface de mensagens",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 4",
+      "priority": "high",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-4",
+        "public",
+        "chat"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 4"
+      "blockedBy": [],
+      "description": "Ler src/modules/chat/pages/ChatPage.jsx. Verificar: (1) MessageBubble com tokens semânticos; (2) input com send button; (3) scroll automático; (4) loading skeleton; (5) empty state; (6) timestamp formatado.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-855",
-      "title": "[AUDIT-4.15] /login — DS_V2 + arena-form + arena-input",
+      "title": "AUDIT: LoginPage (/login) — verificar form, validação, OAuth",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 4",
+      "priority": "high",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-4",
+        "public",
+        "auth"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 4"
+      "blockedBy": [],
+      "description": "Ler src/modules/auth/pages/LoginPage.jsx. Verificar: (1) email + senha com validação inline; (2) botão \"Esqueci minha senha\"; (3) botão OAuth (Google); (4) tokens semânticos; (5) loading state; (6) link para registro.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-856",
-      "title": "[AUDIT-5.1] /admin/flags — DS_V2 + arena-stat-card + history",
+      "title": "AUDIT: AdminFlags (/admin/flags) — verificar toggle + META descriptions",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 5",
+      "priority": "critical",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-5",
+        "admin",
+        "flags"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 5"
+      "blockedBy": [],
+      "description": "Ler src/modules/admin/pages/AdminFlags.jsx. Verificar: (1) lista TODAS as flags (DEFAULT + META); (2) toggle funcional; (3) mostra description da META; (4) mostra status (ON/OFF); (5) busca por nome; (6) loading skeleton.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-857",
-      "title": "[AUDIT-5.2] /admin/dashboard — DS_V2 + arena-stats-grid",
+      "title": "AUDIT: AdminDashboard (/admin/dashboard) — verificar métricas + gráficos",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 5",
+      "priority": "high",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-5",
+        "admin",
+        "dashboard"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 5"
+      "blockedBy": [],
+      "description": "Ler src/modules/admin/pages/AdminDashboard.jsx. Verificar: (1) stat cards com tokens semânticos; (2) gráficos com recharts ou similar; (3) filtros de período; (4) skeleton loading; (5) arena-admin-tabs se tiver tabs.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-858",
-      "title": "[AUDIT-5.3] /admin/metrics — DS_V2 + recharts + arena-chart-card",
+      "title": "AUDIT: AdminMetrics (/admin/metrics) — verificar gráficos + export",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 5",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-5",
+        "admin",
+        "metrics"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 5"
+      "blockedBy": [],
+      "description": "Ler src/modules/admin/pages/AdminMetrics.jsx. Verificar: (1) gráficos de métricas; (2) filtros de data; (3) export CSV/PDF; (4) tokens semânticos; (5) loading skeleton.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-859",
-      "title": "[AUDIT-5.4] /admin/audit — DS_V2 + filters + export",
+      "title": "AUDIT: AdminAudit (/admin/audit) — verificar log + filtros",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 5",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-5",
+        "admin",
+        "audit"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 5"
+      "blockedBy": [],
+      "description": "Ler src/modules/admin/pages/AdminAudit.jsx. Verificar: (1) tabela de log de auditoria; (2) filtros por usuário/ação/data; (3) tokens semânticos; (4) empty state; (5) skeleton.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-860",
-      "title": "[AUDIT-5.5] /admin/security — DS_V2 + runbooks",
+      "title": "AUDIT: AdminSecurity (/admin/security) — verificar sessão + 2FA",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 5",
+      "priority": "high",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-5",
+        "admin",
+        "security"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 5"
+      "blockedBy": [],
+      "description": "Ler src/modules/admin/pages/AdminSecurity.jsx. Verificar: (1) sessão ativa; (2) logout de outros dispositivos; (3) tokens semânticos; (4) loading skeleton.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-861",
-      "title": "[AUDIT-5.6] /admin/notifications — DS_V2 + templates",
+      "title": "AUDIT: AdminNotifications (/admin/notifications) — verificar list + actions",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 5",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-5",
+        "admin",
+        "notifications"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 5"
+      "blockedBy": [],
+      "description": "Ler src/modules/admin/pages/AdminNotifications.jsx. Verificar: (1) lista de notificações; (2) marcar como lida; (3) delete; (4) tokens semânticos; (5) empty state; (6) skeleton.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-862",
-      "title": "[AUDIT-5.7] /admin/reports — DS_V2 + filters",
+      "title": "AUDIT: AdminReports (/admin/reports) — verificar list + filters",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 5",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-5",
+        "admin",
+        "reports"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 5"
+      "blockedBy": [],
+      "description": "Ler src/modules/admin/pages/AdminReports.jsx. Verificar: (1) lista de relatórios; (2) filtros; (3) download; (4) tokens semânticos; (5) empty state; (6) skeleton.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-863",
-      "title": "[AUDIT-5.8] /admin/users — DS_V2 + ban workflow",
+      "title": "AUDIT: AdminUsers (/admin/users) — verificar DataGrid + filtros",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 5",
+      "priority": "high",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-5",
+        "admin",
+        "users"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 5"
+      "blockedBy": [],
+      "description": "Ler src/modules/admin/pages/AdminUsers.jsx. Verificar: (1) DataGrid com usuários; (2) filtros por papel; (3) actions (edit, disable); (4) tokens semânticos; (5) skeleton; (6) arena-admin-tabs se tiver tabs.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-864",
-      "title": "[AUDIT-5.9] /admin/content — DS_V2 + rich text harmonizado",
+      "title": "AUDIT: AdminContent (/admin/content) — verificar editor + preview",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 5",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-5",
+        "admin",
+        "content"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 5"
+      "blockedBy": [],
+      "description": "Ler src/modules/admin/pages/AdminContent.jsx. Verificar: (1) editor WYSIWYG; (2) preview; (3) salvar como rascunho/publicado; (4) tokens semânticos; (5) skeleton.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-865",
-      "title": "[AUDIT-5.10] /admin/organizations — DS_V2 + filters",
+      "title": "AUDIT: AdminOrganizations (/admin/organizations) — verificar DataGrid",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 5",
+      "priority": "high",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-5",
+        "admin",
+        "organizations"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 5"
+      "blockedBy": [],
+      "description": "Ler src/modules/admin/pages/AdminOrganizations.jsx. Verificar: (1) DataGrid com organizações; (2) filtros; (3) actions; (4) tokens semânticos; (5) skeleton; (6) arena-admin-tabs.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-866",
-      "title": "[AUDIT-5.11] /admin/communities — DS_V2 + filters",
+      "title": "AUDIT: AdminCommunities (/admin/communities) — verificar DataGrid",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 5",
+      "priority": "high",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-5",
+        "admin",
+        "communities"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 5"
+      "blockedBy": [],
+      "description": "Ler src/modules/admin/pages/AdminCommunities.jsx. Verificar: (1) DataGrid com comunidades; (2) filtros; (3) actions; (4) tokens semânticos; (5) skeleton; (6) arena-admin-tabs.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-867",
-      "title": "[AUDIT-5.12] /admin/pets — DS_V2 + filters",
+      "title": "AUDIT: AdminPets (/admin/pets) — verificar DataGrid + filtros",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 5",
+      "priority": "high",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-5",
+        "admin",
+        "pets"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 5"
+      "blockedBy": [],
+      "description": "Ler src/modules/admin/pages/AdminPets.jsx. Verificar: (1) DataGrid com pets; (2) filtros (status, porte, espécie); (3) actions; (4) tokens semânticos; (5) skeleton; (6) arena-admin-tabs.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-868",
-      "title": "[AUDIT-5.13] /admin/platform-health — DS_V2 + métricas",
+      "title": "AUDIT: PlatformHealth (/admin/platform-health) — verificar status cards",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 5",
+      "priority": "high",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-5",
+        "admin",
+        "platform"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 5"
+      "blockedBy": [],
+      "description": "Ler src/modules/admin/pages/PlatformHealth.jsx. Verificar: (1) status cards (Firestore, Functions, Hosting, Auth); (2) uptime monitors; (3) tokens semânticos (verde/vermelho); (4) skeleton.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-869",
-      "title": "[AUDIT-6.1] OrganizationAdminPanel — 19→6 grupos + ErrorBoundary robusto",
+      "title": "AUDIT: OrganizationAdminPanel — verificar estrutura + tabs",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 6",
+      "priority": "critical",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-6",
+        "shelter",
+        "admin"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 6"
+      "blockedBy": [],
+      "description": "Ler src/modules/organizations/components/OrganizationAdminPanel.jsx. Verificar: (1) arena-admin-tabs (TASK-817 cross-check); (2) sidebar com logo; (3) info do abrigo; (4) tokens semânticos; (5) skeleton.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-870",
-      "title": "[AUDIT-6.2] OverviewTab — 4 stat cards + ShortcutCards + Loading/Empty",
+      "title": "AUDIT: OverviewTab — verificar stat cards + atalhos",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 6",
+      "priority": "high",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-6",
+        "shelter",
+        "overview"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 6"
+      "blockedBy": [],
+      "description": "Ler src/modules/organizations/components/tabs/OverviewTab.jsx. Verificar: (1) 4 stat cards (Animais, Seguidores, Fundação, Adoções); (2) ShortcutCards com URL state; (3) skeleton; (4) tokens semânticos.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-871",
-      "title": "[AUDIT-6.3] ClubGeneralAdminTab — dirty state + sticky save + logo + CNPJ",
+      "title": "AUDIT: ClubGeneralAdminTab — verificar dirty state + CNPJ mask",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 6",
+      "priority": "high",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-6",
+        "shelter",
+        "general"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 6"
+      "blockedBy": [],
+      "description": "Ler src/modules/organizations/components/tabs/ClubGeneralAdminTab.jsx. Verificar: (1) dirty state indicator (3 estados); (2) botão Cancelar com RotateCcw; (3) sticky save bar; (4) logo preview 128x128; (5) CNPJ mask; (6) UF uppercase; (7) type=url no campo doação.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-872",
-      "title": "[AUDIT-6.4] ClubPetsDataGrid — DS_V2 + arena-pet-card",
+      "title": "AUDIT: ClubPetsDataGrid — verificar DataGrid + status badges",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 6",
+      "priority": "high",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-6",
+        "shelter",
+        "pets"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 6"
+      "blockedBy": [],
+      "description": "Ler src/modules/organizations/components/tabs/ClubPetsDataGrid.jsx. Verificar: (1) DataGrid com animais; (2) status badges com tokens semânticos; (3) filtros; (4) actions (editar, ver detalhes); (5) skeleton; (6) empty state.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-873",
-      "title": "[AUDIT-6.5] ClubFeedTab — DS_V2 + composer harmonizado",
+      "title": "AUDIT: ClubFeedTab — verificar posts + create post",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 6",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-6",
+        "shelter",
+        "feed"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 6"
+      "blockedBy": [],
+      "description": "Ler src/modules/organizations/components/tabs/ClubFeedTab.jsx. Verificar: (1) lista de posts; (2) botão \"Novo post\"; (3) tokens semânticos; (4) skeleton; (5) empty state.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-874",
-      "title": "[AUDIT-6.6] ClubDonationsTab — CRUD de campanhas (TASK-790)",
+      "title": "AUDIT: ClubDonationsTab — verificar listagem + métricas",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 6",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-6",
+        "shelter",
+        "donations"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 6"
+      "blockedBy": [],
+      "description": "Ler src/modules/organizations/components/tabs/ClubDonationsTab.jsx. Verificar: (1) lista de doações; (2) métricas de doação; (3) tokens semânticos; (4) skeleton; (5) empty state.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-875",
-      "title": "[AUDIT-6.7] ClubFinanceTab — sistema de lançamentos (TASK-791)",
+      "title": "AUDIT: ClubFinanceTab — verificar gráficos + tabela",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 6",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-6",
+        "shelter",
+        "finance"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 6"
+      "blockedBy": [],
+      "description": "Ler src/modules/organizations/components/tabs/ClubFinanceTab.jsx. Verificar: (1) gráficos de receitas/despesas; (2) tabela de lançamentos; (3) tokens semânticos; (4) skeleton; (5) empty state.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-876",
-      "title": "[AUDIT-6.8] ClubChatAdminTab — DS_V2 + chat harmonizado",
+      "title": "AUDIT: ClubChatAdminTab — verificar mensagens + status",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 6",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-6",
+        "shelter",
+        "chat"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 6"
+      "blockedBy": [],
+      "description": "Ler src/modules/organizations/components/tabs/ClubChatAdminTab.jsx. Verificar: (1) lista de conversas; (2) mensagens; (3) tokens semânticos; (4) skeleton; (5) empty state.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-877",
-      "title": "[AUDIT-6.9] ClubTeamTab — DS_V2 + permissões granulares",
+      "title": "AUDIT: ClubTeamTab — verificar volunteers + roles",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 6",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-6",
+        "shelter",
+        "team"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 6"
+      "blockedBy": [],
+      "description": "Ler src/modules/organizations/components/tabs/ClubTeamTab.jsx. Verificar: (1) lista de voluntários; (2) roles (Admin, Voluntário, Foster); (3) tokens semânticos; (4) skeleton; (5) empty state.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-878",
-      "title": "[AUDIT-6.10] ClubAdminTab (settings) — DS_V2 + danger zone",
+      "title": "AUDIT: ClubAdminTab — verificar settings + dangerous zone",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 6",
+      "priority": "high",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-6",
+        "shelter",
+        "admin-settings"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 6"
+      "blockedBy": [],
+      "description": "Ler src/modules/organizations/components/tabs/ClubAdminTab.jsx. Verificar: (1) configurações do abrigo; (2) zona perigosa (delete/archive); (3) tokens semânticos; (4) skeleton.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-879",
-      "title": "[AUDIT-6.11] DashboardPage (shelter) — DS_V2 + KPIs",
+      "title": "AUDIT: DashboardPage (/abrigo/{id}/dashboard) — verificar métricas",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 6",
+      "priority": "high",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-6",
+        "shelter",
+        "dashboard"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 6"
+      "blockedBy": [],
+      "description": "Ler src/modules/shelter/pages/DashboardPage.jsx. Verificar: (1) métricas principais; (2) gráficos; (3) tokens semânticos; (4) skeleton.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-880",
-      "title": "[AUDIT-6.12] KanbanPage — DS_V2 + columns + cards harmonizados",
+      "title": "AUDIT: KanbanPage (/abrigo/{id}/kanban) — verificar board + cards",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 6",
+      "priority": "high",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-6",
+        "shelter",
+        "kanban"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 6"
+      "blockedBy": [],
+      "description": "Ler src/modules/shelter/pages/KanbanPage.jsx. Verificar: (1) kanban board com colunas; (2) drag-and-drop; (3) pet cards; (4) tokens semânticos; (5) skeleton.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-881",
-      "title": "[AUDIT-6.13] ExhibitionsList — DS_V2 + arena-event-card",
+      "title": "AUDIT: ExhibitionsList — verificar lista de exposições",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 6",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-6",
+        "shelter",
+        "exhibitions"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 6"
+      "blockedBy": [],
+      "description": "Ler src/modules/shelter/components/ExhibitionsList.jsx. Verificar: (1) lista de exposições; (2) status badges; (3) tokens semânticos; (4) skeleton; (5) empty state.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-882",
-      "title": "[AUDIT-6.14] VolunteersAdminTab — DS_V2 + roster + auditoria",
+      "title": "AUDIT: VolunteersAdminTab — verificar DataGrid + filtros",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 6",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-6",
+        "shelter",
+        "volunteers"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 6"
+      "blockedBy": [],
+      "description": "Ler src/modules/shelter/components/tabs/VolunteersAdminTab.jsx. Verificar: (1) DataGrid de voluntários; (2) filtros; (3) tokens semânticos; (4) skeleton; (5) empty state.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-883",
-      "title": "[AUDIT-6.15] MedicalRecordsList — DS_V2 + arena-med-card",
+      "title": "AUDIT: MedicalRecordsList — verificar tabela + histórico",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 6",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-6",
+        "shelter",
+        "medical"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 6"
+      "blockedBy": [],
+      "description": "Ler src/modules/shelter/components/MedicalRecordsList.jsx. Verificar: (1) histórico médico; (2) DataGrid; (3) tokens semânticos; (4) skeleton; (5) empty state.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-884",
-      "title": "[AUDIT-6.16] MedicationsList — DS_V2 + arena-med-card",
+      "title": "AUDIT: MedicationsList — verificar meds + dosagem",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 6",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-6",
+        "shelter",
+        "medications"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 6"
+      "blockedBy": [],
+      "description": "Ler src/modules/shelter/components/MedicationsList.jsx. Verificar: (1) lista de medicamentos; (2) dosagem; (3) status; (4) tokens semânticos; (5) skeleton; (6) empty state.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-885",
-      "title": "[AUDIT-6.17] TimelineList — DS_V2 + arena-timeline",
+      "title": "AUDIT: TimelineList — verificar timeline + eventos",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 6",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-6",
+        "shelter",
+        "timeline"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 6"
+      "blockedBy": [],
+      "description": "Ler src/modules/shelter/components/TimelineList.jsx. Verificar: (1) timeline de eventos; (2) filtros; (3) tokens semânticos; (4) skeleton; (5) empty state.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-886",
-      "title": "[AUDIT-6.18] FostersList — DS_V2 + arena-foster-card",
+      "title": "AUDIT: FostersList — verificar Foster parents + status",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 6",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-6",
+        "shelter",
+        "fosters"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 6"
+      "blockedBy": [],
+      "description": "Ler src/modules/shelter/components/FostersList.jsx. Verificar: (1) lista de Foster parents; (2) status (ativo/inativo); (3) pets em foster; (4) tokens semânticos; (5) skeleton; (6) empty state.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-887",
-      "title": "[AUDIT-6.19] ReportsTab — DS_V2 + export cards",
+      "title": "AUDIT: ReportsTab — verificar list + download",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 6",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-6",
+        "shelter",
+        "reports"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 6"
+      "blockedBy": [],
+      "description": "Ler src/modules/shelter/components/tabs/ReportsTab.jsx. Verificar: (1) lista de relatórios; (2) download; (3) tokens semânticos; (4) skeleton; (5) empty state.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-888",
-      "title": "[AUDIT-6.20] IndicatorsTab — DS_V2 + KPI cards",
+      "title": "AUDIT: IndicatorsTab — verificar KPIs + gráficos",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 6",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-6",
+        "shelter",
+        "indicators"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 6"
+      "blockedBy": [],
+      "description": "Ler src/modules/shelter/components/tabs/IndicatorsTab.jsx. Verificar: (1) KPIs; (2) gráficos; (3) tokens semânticos; (4) skeleton.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-889",
-      "title": "[AUDIT-7.1] CommunityAdminPanel — DS_V2 + 2-layer tabs",
+      "title": "AUDIT: CommunityAdminPanel — verificar estrutura + tabs",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 7",
+      "priority": "high",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-7",
+        "community",
+        "admin"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 7"
+      "blockedBy": [],
+      "description": "Ler src/modules/communities/components/CommunityAdminPanel.jsx. Verificar: (1) arena-admin-tabs; (2) sidebar; (3) tokens semânticos; (4) skeleton.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-890",
-      "title": "[AUDIT-7.2] MuralTabAdmin — DS_V2 + composer + moderação",
+      "title": "AUDIT: MuralTabAdmin — verificar posts + moderation",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 7",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-7",
+        "community",
+        "mural"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 7"
+      "blockedBy": [],
+      "description": "Ler src/modules/communities/components/tabs/MuralTabAdmin.jsx. Verificar: (1) posts do mural; (2) moderation actions; (3) tokens semânticos; (4) skeleton; (5) empty state.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-891",
-      "title": "[AUDIT-7.3] CommunityEventParticipantsPanel — DS_V2 + RSVP",
+      "title": "AUDIT: CommunityEventParticipantsPanel — verificar participantes",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 7",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-7",
+        "community",
+        "events"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 7"
+      "blockedBy": [],
+      "description": "Ler src/modules/communities/components/CommunityEventParticipantsPanel.jsx. Verificar: (1) lista de participantes; (2) status; (3) tokens semânticos; (4) skeleton; (5) empty state.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-892",
-      "title": "[AUDIT-7.4] CommunityTeamTab — DS_V2 + permissões",
+      "title": "AUDIT: CommunityTeamTab — verificar membros + roles",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 7",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-7",
+        "community",
+        "team"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 7"
+      "blockedBy": [],
+      "description": "Ler src/modules/communities/components/CommunityTeamTab.jsx. Verificar: (1) membros; (2) roles; (3) tokens semânticos; (4) skeleton; (5) empty state.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-893",
-      "title": "[AUDIT-7.5] CreateForumThreadDialog — DS_V2",
+      "title": "AUDIT: CreateForumThreadDialog — verificar form + validação",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 7",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-7",
+        "community",
+        "forum"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 7"
+      "blockedBy": [],
+      "description": "Ler src/modules/communities/components/CreateForumThreadDialog.jsx. Verificar: (1) título + descrição; (2) validação inline; (3) tokens semânticos; (4) loading state.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-894",
-      "title": "[AUDIT-7.6] AboutTab — DS_V2",
+      "title": "AUDIT: AboutTab (community) — verificar edit + save",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 7",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-7",
+        "community",
+        "about"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 7"
+      "blockedBy": [],
+      "description": "Ler src/modules/communities/components/tabs/AboutTab.jsx. Verificar: (1) form de edição; (2) dirty state; (3) save button; (4) tokens semânticos; (5) skeleton.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-895",
-      "title": "[AUDIT-7.7] EventsTab — DS_V2 + arena-event-card",
+      "title": "AUDIT: EventsTab (community) — verificar eventos + criar",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 7",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-7",
+        "community",
+        "events"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 7"
+      "blockedBy": [],
+      "description": "Ler src/modules/communities/components/tabs/EventsTab.jsx. Verificar: (1) lista de eventos; (2) botão criar; (3) tokens semânticos; (4) skeleton; (5) empty state.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-896",
-      "title": "[AUDIT-8.1] firestore.rules — todas collections + return explícito",
+      "title": "AUDIT: firestore.rules — verificar TODAS as functions com return",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 8",
+      "priority": "critical",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-8",
+        "firestore",
+        "security"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 8"
+      "blockedBy": [],
+      "description": "Ler firestore.rules. grep -n \"function \" firestore.rules. Para CADA function: verificar que termina com return (não só allow). Functions sem return = security hole (escrita negada mas query não).",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-897",
-      "title": "[AUDIT-8.2] firestore.indexes.json — sem collectionGroup single-field",
+      "title": "AUDIT: firestore.rules — verificar indexes vs queries executadas",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 8",
+      "priority": "high",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-8",
+        "firestore",
+        "indexes"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 8"
+      "blockedBy": [],
+      "description": "Ler firestore.indexes.json. Comparar com queries do app (grep -rn \"where|orderBy\" src/). Adicionar indexes faltantes. Verificar que não há composite index em campos que mudam muito (lastMessageAt em conversas ativas = problema).",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-898",
-      "title": "[AUDIT-8.3] storage.rules — paths + tipos de mídia",
+      "title": "AUDIT: storage.rules — verificar uploads + segurança",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 8",
+      "priority": "high",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-8",
+        "storage",
+        "security"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 8"
+      "blockedBy": [],
+      "description": "Ler storage.rules. Verificar: (1) uploads só por users autenticados; (2) mime type validation; (3) size limit; (4) paths corretos (/pets/, /organizations/, /users/); (5) delete rules.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-899",
-      "title": "[AUDIT-8.4] Cloud Functions — todas com global.__viralataInitialized guard",
+      "title": "AUDIT: Cloud Functions init — verificar global.__viralataInitialized guard",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 8",
+      "priority": "high",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-8",
+        "firebase",
+        "functions"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 8"
+      "blockedBy": [],
+      "description": "grep -rn \"__viralataInitialized|global.\" functions/ . Verificar que TODAS as functions usam o guard: if (global.__viralataInitialized) return; global.__viralataInitialized = true;",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-900",
-      "title": "[AUDIT-8.5] CORS — cors: true + IAM=allUsers em callable v2",
+      "title": "AUDIT: Firebase CORS — verificar firebase.json hosting cors",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 8",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-8",
+        "firebase",
+        "cors"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 8"
+      "blockedBy": [],
+      "description": "grep -rn \"cors\" firebase.json functions/package.json. Verificar: (1) cors config para Cloud Functions; (2) allowedOrigins; (3) não há cors wildcard em produção.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-901",
-      "title": "[AUDIT-8.6] db exports — todos os services usando db consistente",
+      "title": "AUDIT: Firestore data exports — verificar scheduled backups",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 8",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-8",
+        "firestore",
+        "backup"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 8"
+      "blockedBy": [],
+      "description": "grep -rn \"export|backup|scheduled\" functions/ . Verificar: (1) função de export existe; (2) está scheduled; (3) aponta para Cloud Storage bucket certo; (4) credentials configuradas.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-902",
-      "title": "[AUDIT-8.7] Timestamps — serverTimestamp() em writes + parseTimestamp() em reads",
+      "title": "AUDIT: Firestore timestamps — verificar serverTimestamp vs Date.now()",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 8",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-8",
+        "firestore",
+        "timestamps"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 8"
+      "blockedBy": [],
+      "description": "grep -rn \"serverTimestamp|Date.now()|new Date()\" src/ . Verificar: (1) TODO Firestore write usa serverTimestamp (não Date.now()); (2) leituras convertem para Date/ISO string; (3) não há timezone bugs.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-903",
-      "title": "[AUDIT-8.8] Realtime listeners — cleanup em unmount (sem memory leaks)",
+      "title": "AUDIT: Firestore realtime listeners — verificar unsubscribe + cleanup",
+      "type": "feature",
+      "category": "audit",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 8",
+      "priority": "high",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-8",
+        "firestore",
+        "listeners"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 8"
+      "blockedBy": [],
+      "description": "grep -rn \"onSnapshot|subscribeFirestore|useSubscription\" src/ . Para cada listener: verificar (1) useEffect com return cleanup; (2) unsubscribe(); (3) loading state; (4) error state; (5) não faz subscribe em render (deve ser em useEffect).",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-904",
-      "title": "[AUDIT-9.1] ClubDetail — extrair hooks + subcomponentes",
+      "title": "REFACTOR: Extrair useFetchClub + useFetchOrganization hooks",
+      "type": "feature",
+      "category": "refactor",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 9",
+      "priority": "high",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-9",
+        "refactor",
+        "hooks"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 9"
+      "blockedBy": [],
+      "description": "Identificar código repetido de fetch em OrganizationAdminPanel.jsx e ClubDetail.jsx. Extrair para src/core/hooks/useFetchOrganization.js e useFetchClub.js. DRY: cada hook encapsula Firestore query + loading + error.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-905",
-      "title": "[AUDIT-9.2] CommunityDetail — extrair hooks + subcomponentes",
+      "title": "REFACTOR: Extrair useFetchCommunity + useFetchEvent hooks",
+      "type": "feature",
+      "category": "refactor",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 9",
+      "priority": "high",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-9",
+        "refactor",
+        "hooks"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 9"
+      "blockedBy": [],
+      "description": "Identificar código repetido de fetch em CommunityAdminPanel.jsx e CommunityDetail.jsx. Extrair para src/core/hooks/useFetchCommunity.js e useFetchEvent.js. DRY.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-906",
-      "title": "[AUDIT-9.3] OrganizationAdminPanel — extrair subcomponentes por grupo",
+      "title": "REFACTOR: Criar src/components/arena/AdminSidebar + AdminHeader",
+      "type": "feature",
+      "category": "refactor",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 9",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-9",
+        "refactor",
+        "components"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 9"
+      "blockedBy": [],
+      "description": "Extrair sidebar + header repetidos em OrganizationAdminPanel e CommunityAdminPanel para src/components/arena/AdminSidebar.jsx e AdminHeader.jsx. Props: logo, orgName, tabs.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-907",
-      "title": "[AUDIT-9.4] CommunityAdminPanel — extrair subcomponentes por grupo",
+      "title": "REFACTOR: Criar src/components/arena/DataGridSkeleton + StatCardSkeleton",
+      "type": "feature",
+      "category": "refactor",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 9",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-9",
+        "refactor",
+        "components"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 9"
+      "blockedBy": [],
+      "description": "Identificar skeletons repetidos (h-8 bg-gray-200 animate-pulse) em todas as páginas. Criar src/components/arena/DataGridSkeleton.jsx e StatCardSkeleton.jsx com variants (small, medium, large).",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-908",
-      "title": "[AUDIT-9.5] PetDetail — extrair hooks de data fetching",
+      "title": "REFACTOR: Criar src/components/arena/BadgeStatus + StatusDot",
+      "type": "feature",
+      "category": "refactor",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 9",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-9",
+        "refactor",
+        "components"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 9"
+      "blockedBy": [],
+      "description": "Identificar badges de status repetidos (Ativo/Inativo, Disponível/Adotado) em todo app. Criar src/components/arena/BadgeStatus.jsx com variants: success, warning, danger, neutral. StatusDot para online/offline.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-909",
-      "title": "[AUDIT-9.6] EventDetail — extrair hooks",
+      "title": "REFACTOR: Mover CSS inline de componentes para arena.css ou index.css",
+      "type": "feature",
+      "category": "refactor",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 9",
+      "priority": "low",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-9",
+        "refactor",
+        "css"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 9"
+      "blockedBy": [],
+      "description": "grep -rn \"style={{\" src/ para identificar CSS inline. Para estilos reutilizáveis (>2 componentes): mover para src/styles/arena.css. Para estilos únicos: manter inline ou extrair para CSS modules.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-910",
-      "title": "[AUDIT-9.7] Criar src/components/arena/ com todos os componentes DS_V2",
+      "title": "REFACTOR: Criar src/core/hooks/useDirtyState para forms",
+      "type": "feature",
+      "category": "refactor",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 9",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-9",
+        "refactor",
+        "hooks"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 9"
+      "blockedBy": [],
+      "description": "ClubGeneralAdminTab.jsx tem dirty state manual. Extrair para useDirtyState(initialValues) hook em src/core/hooks/useDirtyState.js. Retorna: { values, setValues, isDirty, hasChanges, reset }.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-911",
-      "title": "[AUDIT-9.8] Mover arena-* CSS de index.css para arquivo separado",
+      "title": "REFACTOR: Criar src/core/hooks/useOfflineDetector",
+      "type": "feature",
+      "category": "refactor",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 9",
+      "priority": "low",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-9",
+        "refactor",
+        "hooks"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 9"
+      "blockedBy": [],
+      "description": "Criar useOfflineDetector() hook que detecta navigator.onLine + evento online/offline. Usar para mostrar banner \"Você está offline\" em todas as páginas que escrevem dados.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-912",
-      "title": "[AUDIT-10.1] Doc de cada módulo (funcionalidade, arquivos, hooks, services)",
+      "title": "DOCS: Escrever docs/ARCHITECTURE.md — overview da arquitetura",
+      "type": "chore",
+      "category": "docs",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 10",
+      "priority": "high",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-10",
+        "docs",
+        "architecture"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 10"
+      "blockedBy": [],
+      "description": "docs/ARCHITECTURE.md: (1) stack overview (React + Vite + Firebase); (2) pasta src/ e responsabilidade de cada módulo; (3) fluxo de dados (Firestore → React Query → UI); (4) feature flags; (5) PWA; (6) auth flow.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-913",
-      "title": "[AUDIT-10.2] Doc de cada hook custom (props, retorno, exemplo)",
+      "title": "DOCS: Escrever docs/HOOKS.md — todos os hooks customizados",
+      "type": "chore",
+      "category": "docs",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 10",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-10",
+        "docs",
+        "hooks"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 10"
+      "blockedBy": [],
+      "description": "docs/HOOKS.md: listar TODOS os hooks em src/core/hooks/ com: (1) nome; (2) parâmetros; (3) retorno; (4) exemplo de uso; (5) quando usar; (6) armadilhas conhecidas.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-914",
-      "title": "[AUDIT-10.3] Doc de cada service (métodos, parâmetros, retorno)",
+      "title": "DOCS: Escrever docs/SERVICES.md — todos os Firebase services",
+      "type": "chore",
+      "category": "docs",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 10",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-10",
+        "docs",
+        "services"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 10"
+      "blockedBy": [],
+      "description": "docs/SERVICES.md: listar TODOS os services em src/core/services/ com: (1) nome; (2) funções; (3) parâmetros; (4) retorno; (5) erros possíveis; (6) exemplo de uso.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-915",
-      "title": "[AUDIT-10.4] Doc do fluxo de feature flags (DEFAULT + META + Firestore + migration)",
+      "title": "DOCS: Escrever docs/FLAG_LIFECYCLE.md - como ativar/desativar flags",
+      "type": "chore",
+      "category": "docs",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 10",
+      "priority": "high",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-10",
+        "docs",
+        "flags"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 10"
+      "blockedBy": [],
+      "description": "docs/FLAG_LIFECYCLE.md: (1) o que e uma feature flag; (2) DEFAULT vs META; (3) migrateLegacyFlags v3 - quando roda; (4) FLAGS_MIGRATION_VERSION - quando bumpar; (5) como adicionar nova flag; (6) como ativar para todos; (7) troubleshoot.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-916",
-      "title": "[AUDIT-10.5] Doc do fluxo de PWA (cache + versionamento + invalidação)",
+      "title": "DOCS: Escrever docs/PWA_CACHE.md — como PWA cache funciona",
+      "type": "chore",
+      "category": "docs",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 10",
+      "priority": "high",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-10",
+        "docs",
+        "pwa"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 10"
+      "blockedBy": [],
+      "description": "docs/PWA_CACHE.md: (1) como PWA SW cache funciona; (2) sw-vN.js versioning (quando bumpar); (3) como user força update no mobile; (4) firebase.json headers; (5) troubleshooting (user vê versão antiga).",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-917",
-      "title": "[AUDIT-10.6] Doc do fluxo de SCRUM (tasks, transitions, metrics, sync)",
+      "title": "DOCS: Escrever docs/SCRUM_PROTOCOL.md — como o loop funciona",
+      "type": "chore",
+      "category": "docs",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 10",
+      "priority": "high",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-10",
+        "docs",
+        "scrum"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 10"
+      "blockedBy": [],
+      "description": "docs/SCRUM_PROTOCOL.md: (1) ciclo do loop (30min); (2) worktree workflow; (3) SCRUM_TASKS.json; (4) sync.cjs; (5) como adicionar tasks; (6) como resolver conflitos; (7) anti-fachada rules.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-918",
-      "title": "[AUDIT-10.7] Doc do fluxo de git (worktree, merge, cleanup, deploy)",
+      "title": "DOCS: Escrever docs/UI_STANDARDS.md — padrões de UI/UX",
+      "type": "chore",
+      "category": "docs",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 10",
+      "priority": "medium",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-10",
+        "docs",
+        "ui"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 10"
+      "blockedBy": [],
+      "description": "docs/UI_STANDARDS.md: (1) arena-admin-tabs pattern (TASK-817); (2) tokens semânticos (nunca bg-emerald-*, text-green-*); (3) skeleton loading; (4) empty state; (5) dirty state; (6) sticky save bar; (7) CNPJ/CPF masks; (8) UF uppercase.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     },
     {
       "id": "TASK-919",
-      "title": "[AUDIT-10.8] Doc do fluxo de UI (DS_V2, arena-*, 2-layer, mobile-first)",
+      "title": "DOCS: Atualizar README.md com setup + deploy + архитектура",
+      "type": "chore",
+      "category": "docs",
       "status": "backlog",
-      "priority": "P1",
-      "owner": "unassigned",
-      "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
-      "phase": "Fase 10",
+      "priority": "high",
+      "owner": "loop_420680956387556",
+      "branch": "main",
+      "pr": null,
       "tags": [
         "full-audit",
-        "2026-07-17"
+        "phase-10",
+        "docs",
+        "readme"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 10"
+      "blockedBy": [],
+      "description": "Atualizar README.md: (1) setup local (npm install, .env); (2) como rodar localmente (npm run dev); (3) deploy para Firebase (npm run deploy); (4) estrutura de pastas; (5) link para docs/*.",
+      "createdAt": "2026-07-17",
+      "updatedAt": "2026-07-17"
     }
   ],
   "definitionOfDone": [
@@ -15965,7 +16593,7 @@
       "feat/ds-v2-motion-2026-07-16",
       "feat/ds-v2-audit-2026-07-16"
     ],
-    "mainCommit": "c6a5d5249329cda68849e54ff8cc9651601d8391",
+    "mainCommit": "6fa9603aa1064e990b057352a51c3560287da37f",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -16010,7 +16638,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-17T03:25:28.648Z — via sync.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-17T03:30:38.222Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
@@ -16391,7 +17019,7 @@
 }
   </script>
 <<<<<<< HEAD
-  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-17T03:25:28.715Z">
+  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-17T03:30:38.280Z">
 =======
   <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-16T03:26:48.025Z">
 >>>>>>> 2fdaf3d (design(ux): TASK-603 - hero home com hierarquia clara - H1 menor mobile, badge compacto, remove chips decorativos)
@@ -16409,7 +17037,7 @@
       </div>
     </div>
     <div class="sprint-info">
-      <span class="pill mono">main @ 2dea75d</span>
+      <span class="pill mono">main @ 6fa9603</span>
       <span class="pill">0 worktrees ativos</span>
       <span class="pill goal">Goal: estabilizar pós-22 fases + fechar worktrees</span>
     </div>
