@@ -126,7 +126,7 @@ export default function EventDetail() {
       </section>
 
       <Tabs value={tab} onValueChange={setTab} className="w-full">
-        <TabsList className="arena-tab-bar">
+        <TabsList className="arena-admin-tabs">
           <TabsTrigger value="detalhes" className="arena-tab-pill">
             <Info className="mr-1.5 h-4 w-4" /> Detalhes e datas
           </TabsTrigger>
