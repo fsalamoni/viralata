@@ -47,3 +47,14 @@ export async function getAllReports() {
   const snap = await getDocs(query(collection(db, COLLECTION), orderBy('created_at', 'desc')));
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 }
+
+export async function updateReportStatus(reportId, status, actor) {
+  if (!db) throw new Error('Firebase não disponível');
+  const { doc, updateDoc } = await import('firebase/firestore');
+  await updateDoc(doc(db, COLLECTION, reportId), {
+    status,
+    updated_at: serverTimestamp(),
+    updated_by: actor?.uid || null,
+  });
+  await createAuditLog({ action: `abuse_report_status_changed`, actor, details: { report_id: reportId, new_status: status } });
+}
