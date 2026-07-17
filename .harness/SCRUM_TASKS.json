@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.1.0",
-  "generatedAt": "2026-07-17T04:56:35.207Z",
+  "generatedAt": "2026-07-17T04:59:08.952Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W29",
@@ -12,11 +12,11 @@
   },
   "activeWorktrees": [
     {
-      "id": "wt-TASK-856",
-      "branch": "feat/audit-TASK-856-2026-07-17",
-      "head": "48e78df7e437fce5130d7a6d3a729cd542d0d3d7",
-      "headTitle": "feat: TASK-856 — AdminFlags audit",
-      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-TASK-856",
+      "id": "wt-TASK-857",
+      "branch": "feat/audit-TASK-857-2026-07-17",
+      "head": "ba0753fc954629d8c51e11c86fc8f9f6d76b568e",
+      "headTitle": "feat: TASK-857 — AdminDashboard audit",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-TASK-857",
       "status": "in-sync",
       "commitsAhead": 0,
       "primarySession": null,
@@ -14671,7 +14671,7 @@
       "title": "AUDIT: AdminDashboard (/admin/dashboard) — verificar métricas + gráficos",
       "type": "feature",
       "category": "audit",
-      "status": "backlog",
+      "status": "done",
       "priority": "high",
       "owner": "loop_420680956387556",
       "branch": "main",
@@ -14685,7 +14685,8 @@
       "blockedBy": [],
       "description": "Ler src/modules/admin/pages/AdminDashboard.jsx. Verificar: (1) stat cards com tokens semânticos; (2) gráficos com recharts ou similar; (3) filtros de período; (4) skeleton loading; (5) arena-admin-tabs se tiver tabs.",
       "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17"
+      "updatedAt": "2026-07-17T04:56:52",
+      "resolution": "done"
     },
     {
       "id": "TASK-858",
@@ -16252,7 +16253,7 @@
       "feat/ds-v2-motion-2026-07-16",
       "feat/ds-v2-audit-2026-07-16"
     ],
-    "mainCommit": "f8c9b0720fab6617574051a0c4355352a055ddaf",
+    "mainCommit": "0d5645a22bb3996270384684f8bfb1e44f21f2a4",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -16263,12 +16264,12 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 624,
-    "done": 556,
+    "done": 557,
     "inProgress": 1,
     "inReview": 0,
     "blocked": 0,
     "ready": 0,
-    "backlog": 67,
+    "backlog": 66,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
     "contribuicaoCoder": {
@@ -16297,7 +16298,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-17T04:56:35.229Z — via sync.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-17T04:59:08.976Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
