@@ -32,8 +32,14 @@ export function FilterChipsRow({
   testId = `filter-chips-${field}`,
 }) {
   const isActive = (opt) => {
-    if (multiple) return Array.isArray(value) && value.includes(opt.value);
-    return value === opt.value;
+    if (multiple) {
+      return Array.isArray(value) && value.map((v) => String(v)).includes(String(opt.value));
+    }
+    // V3 (TASK-V3-FEED-FIX-02): comparação robusta via String().
+    // O useUrlFilters pode devolver número (parse de '50' → 50) enquanto
+    // as options normalmente têm strings. Sem normalização, '50' === 50
+    // dá false e o chip não fica ativo mesmo quando o user clicou.
+    return String(value) === String(opt.value);
   };
 
   const handleClick = (opt) => {
