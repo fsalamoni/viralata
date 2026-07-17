@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.1.0",
-  "generatedAt": "2026-07-17T05:15:05.080Z",
+  "generatedAt": "2026-07-17T05:19:12.074Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W29",
@@ -398,11 +398,11 @@
   },
   "activeWorktrees": [
     {
-      "id": "wt-TASK-866",
-      "branch": "feat/audit-TASK-866-2026-07-17",
-      "head": "e862b3d3491b3f2e39b0ec1953450e5fe8c2f9ae",
-      "headTitle": "feat: TASK-866+TASK-867+TASK-868 — AdminCommunities + AdminPets + PlatformHealth audit",
-      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-TASK-866",
+      "id": "wt-TASK-858",
+      "branch": "feat/audit-TASK-858-2026-07-17",
+      "head": "44519fd62618cbb81ef909fd7afb0891ec708a61",
+      "headTitle": "merge: feat/audit-TASK-862-2026-07-17",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-TASK-858",
       "status": "in-sync",
       "commitsAhead": 0,
       "primarySession": null,
@@ -15167,7 +15167,7 @@
       "title": "AUDIT: AdminReports (/admin/reports) — verificar list + filters",
       "type": "feature",
       "category": "audit",
-      "status": "ready",
+      "status": "done",
       "priority": "medium",
       "owner": "loop_420680956387556",
       "branch": "main",
@@ -15181,7 +15181,8 @@
       "blockedBy": [],
       "description": "Ler src/modules/admin/pages/AdminReports.jsx. Verificar: (1) lista de relatórios; (2) filtros; (3) download; (4) tokens semânticos; (5) empty state; (6) skeleton.",
       "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17"
+      "updatedAt": "2026-07-17T05:19:08",
+      "resolvedAt": "2026-07-17"
     },
     {
       "id": "TASK-863",
@@ -16649,7 +16650,7 @@
       "feat/ds-v2-motion-2026-07-16",
       "feat/ds-v2-audit-2026-07-16"
     ],
-    "mainCommit": "b3ed619708e1d6ed926e0f32bdacd5a7e5843937",
+    "mainCommit": "4e62676e902dda187ab5b6e2f3c039e5415e6be5",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -16660,11 +16661,11 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 624,
-    "done": 567,
-    "inProgress": 1,
+    "done": 568,
+    "inProgress": 0,
     "inReview": 0,
     "blocked": 0,
-    "ready": 3,
+    "ready": 0,
     "backlog": 55,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -16694,7 +16695,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-17T05:15:05.103Z — via sync.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-17T05:19:12.095Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
@@ -17075,7 +17076,7 @@
 }
   </script>
 <<<<<<< HEAD
-  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-17T05:15:05.187Z">
+  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-17T05:19:12.148Z">
 =======
   <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-16T03:26:48.025Z">
 >>>>>>> 2fdaf3d (design(ux): TASK-603 - hero home com hierarquia clara - H1 menor mobile, badge compacto, remove chips decorativos)
@@ -17093,8 +17094,8 @@
       </div>
     </div>
     <div class="sprint-info">
-      <span class="pill mono">main @ a87e7a7</span>
-      <span class="pill">0 worktrees ativos</span>
+      <span class="pill mono">main @ 4e62676</span>
+      <span class="pill">+1 worktree ativo</span>
       <span class="pill goal">Goal: estabilizar pós-22 fases + fechar worktrees</span>
     </div>
     <div class="topbar-actions">
