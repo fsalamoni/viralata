@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { FEATURE_FLAG_META } from '@/core/featureFlags';
@@ -7,6 +7,7 @@ import { setFeatureFlag, listFeatureFlagHistory, markFlagsMigrationApplied } fro
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
+import { Skeleton } from '@/components/ui/skeleton';
 import PageHero from '@/components/PageHero';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import { Flag, Shield, Sparkles, ArrowLeft } from 'lucide-react';
@@ -20,7 +21,7 @@ import { toast } from 'sonner';
  */
 export default function AdminFlags() {
   const { isPlatformAdmin, user } = useAuth();
-  const { settings } = usePlatformSettings();
+  const { settings, isLoading: settingsLoading } = usePlatformSettings();
   const [savingFlag, setSavingFlag] = useState('');
   const qc = useQueryClient();
   // TASK-167: histórico de mudanças de flags (audit_logs).
@@ -37,7 +38,7 @@ export default function AdminFlags() {
   // Auto-marca a migração de flags como aplicada (idempotente, fire-and-forget).
   // Evita que o FeatureFlagsProvider rode a migração legado a cada load e
   // documenta que o admin já está gerenciando flags manualmente.
-  React.useEffect(() => {
+  useEffect(() => {
     if (isPlatformAdmin) {
       markFlagsMigrationApplied(user);
     }
@@ -53,6 +54,20 @@ export default function AdminFlags() {
         <p className="mt-1 text-sm text-muted-foreground">
           Esta página é exclusiva do administrador da plataforma.
         </p>
+      </div>
+    );
+  }
+
+  // Loading skeleton para quando settings ainda estão carregando do Firestore.
+  if (settingsLoading) {
+    return (
+      <div className={successClass}>
+        <PageHero eyebrow="Admin" title="Flags de atualizações" />
+        <div className="space-y-3">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <Skeleton key={i} className="h-20 w-full rounded-2xl" />
+          ))}
+        </div>
       </div>
     );
   }
@@ -114,6 +129,11 @@ export default function AdminFlags() {
           {flags.map(([flagKey, meta]) => {
             const isOn = Boolean(settings.feature_flags[flagKey]);
             const isSaving = savingFlag === flagKey;
+            const switchLabel = isSaving
+              ? `Salvando ${meta.label}…`
+              : isOn
+                ? `Desativar ${meta.label}`
+                : `Ativar ${meta.label}`;
             return (
               <div
                 key={flagKey}
@@ -140,7 +160,7 @@ export default function AdminFlags() {
                   checked={isOn}
                   disabled={isSaving}
                   onCheckedChange={(checked) => handleToggle(flagKey, checked === true)}
-                  aria-label={`Ativar ou desativar ${meta.label}`}
+                  aria-label={switchLabel}
                 />
               </div>
             );
@@ -155,24 +175,30 @@ export default function AdminFlags() {
           {flagHistory.length === 0 ? (
             <p className="text-sm text-muted-foreground">Nenhuma mudança registrada ainda.</p>
           ) : (
-            <ol className="space-y-2">
-              {flagHistory.map((h) => (
-                <li key={h.id} className="rounded-lg border border-border p-2.5 text-xs">
-                  <span className="font-semibold">{h.details?.flag}</span>{' '}
-                  <span className="text-muted-foreground">
-                    {String(h.details?.from_value ?? '—')} → {String(h.details?.to_value ?? h.details?.enabled)}
-                  </span>
-                  {' · '}
-                  <span className="text-muted-foreground">{h.actor_name || h.actor_id}</span>
-                  {' · '}
-                  <span className="text-muted-foreground">
-                    {h.created_at_ms ? new Date(h.created_at_ms).toLocaleString('pt-BR') : ''}
-                  </span>
-                  {h.details?.reason && (
-                    <p className="mt-1 text-muted-foreground">Motivo: {h.details.reason}</p>
-                  )}
-                </li>
-              ))}
+            <ol className="space-y-2" aria-label="Histórico de mudanças de feature flags">
+              {flagHistory.map((h) => {
+                const date = h.created_at_ms ? new Date(h.created_at_ms) : null;
+                const dateISO = date ? date.toISOString() : '';
+                return (
+                  <li key={h.id} className="rounded-lg border border-border p-2.5 text-xs">
+                    <span className="font-semibold">{h.details?.flag}</span>{' '}
+                    <span className="text-muted-foreground">
+                      {String(h.details?.from_value ?? '—')} → {String(h.details?.to_value ?? h.details?.enabled)}
+                    </span>
+                    {' · '}
+                    <span className="text-muted-foreground">{h.actor_name || h.actor_id}</span>
+                    {' · '}
+                    {date && (
+                      <time dateTime={dateISO} className="text-muted-foreground">
+                        {date.toLocaleString('pt-BR')}
+                      </time>
+                    )}
+                    {h.details?.reason && (
+                      <p className="mt-1 text-muted-foreground">Motivo: {h.details.reason}</p>
+                    )}
+                  </li>
+                );
+              })}
             </ol>
           )}
         </div>
