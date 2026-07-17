@@ -36,9 +36,18 @@ export default function Login() {
     if (isAuthenticated) navigate(isProfileComplete ? from : '/onboarding', { replace: true });
   }, [isAuthenticated, isProfileComplete, navigate, from]);
 
+  // Mostrar toast de erro quando authError muda.
+  // FIX: authError?.message como dependência (antes omitido) — garante
+  // que o toast aparece quando o erro muda mesmo que a ref authError
+  // mantenha o mesmo objeto (memoização interna do auth provider).
+  const prevErrorRef = { current: null };
   useEffect(() => {
-    if (authError?.message) toast.error(authError.message);
-  }, [authError]);
+    const msg = authError?.message;
+    if (msg && msg !== prevErrorRef.current) {
+      prevErrorRef.current = msg;
+      toast.error(msg);
+    }
+  }, [authError?.message]);
 
   const onClick = async () => {
     setBusy(true);
@@ -134,7 +143,7 @@ export default function Login() {
               </Button>
 
               {!isAuthAvailable && (
-                <p className="mt-4 rounded-[1.15rem] border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-900">
+                <p role="alert" className="mt-4 rounded-[1.15rem] border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-900">
                   {authUnavailableReason || 'Configure o Firebase para habilitar autenticação.'}
                 </p>
               )}
