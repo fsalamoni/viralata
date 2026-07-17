@@ -124,6 +124,14 @@ const queryClient = new QueryClient({
       staleTime: 30_000,
       refetchOnWindowFocus: false,
       retry: 2,
+      // Global onError: every failed query (after retries) logs to console.
+      // Per-query onError in useQuery overrides this when present.
+      onError: (err, query) => {
+        console.error(
+          `[react-query query] error after retries: queryKey=${JSON.stringify(query.queryKey)}`,
+          err?.message,
+        );
+      },
     },
     mutations: {
       // Global onError: every failed mutation logs to console + observability.
@@ -134,13 +142,6 @@ const queryClient = new QueryClient({
         // Individual mutations that need observability tracking provide their own
         // onError. This global handler catches mutations without one.
       },
-    },
-  },
-  queryCache: {
-    onError: (err, query) => {
-      // Log failed queries (after all retries exhausted). Do NOT throw —
-      // react-query manages the error state. Only log for observability.
-      console.error(`[react-query query] error after retries: queryKey=${JSON.stringify(query.queryKey)}`, err?.message);
     },
   },
 });
