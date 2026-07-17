@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
-import { Building2, Eye, ShieldCheck, Sparkles, ArrowLeft } from 'lucide-react';
+import { Building2, Eye, ShieldCheck, Sparkles, ArrowLeft, Shield } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
@@ -23,6 +23,7 @@ export default function AdminOrganizations() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [communityFilter, setCommunityFilter] = useState('all');
   const wrapperClass = useArenaPageClasses('arena-page mx-auto flex max-w-6xl flex-col gap-6 px-4 py-6');
+  const deniedClass = useArenaPageClasses('arena-page mx-auto max-w-3xl py-16 text-center');
 
   const { data: clubs = [], isLoading: loadingClubs } = useQuery({
     queryKey: ['admin-clubs'],
@@ -72,7 +73,19 @@ export default function AdminOrganizations() {
     }
   }
 
-  if (!isPlatformAdmin) return null;
+  if (!isPlatformAdmin) {
+    return (
+      <div className={deniedClass}>
+        <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+          <Shield className="h-5 w-5" />
+        </div>
+        <p className="text-base font-semibold text-foreground">Acesso restrito</p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Esta página é exclusiva do administrador da plataforma.
+        </p>
+      </div>
+    );
+  }
 
   const clubsInReview = clubs.filter((club) => (club.directory_status || CLUB_DIRECTORY_STATUS.ACTIVE) === CLUB_DIRECTORY_STATUS.REVIEW).length;
   const clubsSuspended = clubs.filter((club) => (club.directory_status || CLUB_DIRECTORY_STATUS.ACTIVE) === CLUB_DIRECTORY_STATUS.SUSPENDED).length;
