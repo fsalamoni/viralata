@@ -10,6 +10,8 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import { EmptyState } from '@/components/ui/empty-state';
 import { useToast } from '@/components/ui/use-toast';
 import {
   MEDICAL_RECORD_TYPES,
@@ -38,7 +40,11 @@ export function MedicalRecordsList({ petId, shelterClubId, canEdit = false, acto
   if (!petId || !shelterClubId) {
     return <p className="text-sm text-muted-foreground">Pet/abrigo não definidos.</p>;
   }
-  if (isLoading) return <p className="text-sm text-muted-foreground">Carregando prontuário…</p>;
+  if (isLoading) return (
+    <div className="space-y-3">
+      {[1, 2, 3].map((i) => <Skeleton key={i} className="h-20 rounded-xl" />)}
+    </div>
+  );
 
   const handleSubmit = async (input) => {
     try {
@@ -104,9 +110,10 @@ export function MedicalRecordsList({ petId, shelterClubId, canEdit = false, acto
         )}
 
         {visible.length === 0 ? (
-          <p className="text-sm text-muted-foreground py-4 text-center">
-            Nenhum registro {typeFilter ? `(${MEDICAL_RECORD_LABELS[typeFilter]})` : 'ainda'}.
-          </p>
+          <EmptyState
+            title="Nenhum registro médico"
+            description={typeFilter ? `Não há registros do tipo "${MEDICAL_RECORD_LABELS[typeFilter]}".` : 'Adicione o primeiro registro médico deste animal.'}
+          />
         ) : (
           <ol className="space-y-3">
             {visible.map((r) => (
