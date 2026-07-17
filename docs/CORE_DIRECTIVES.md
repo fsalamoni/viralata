@@ -520,6 +520,22 @@ Cada diretriz abaixo **previne** um ou mais erros acima.
 - ✅ **CERTO**: se a intenção é entregar a funcionalidade PARA TODOS os usuários imediatamente, mudar DEFAULT + migração no Firestore. User ligar manualmente só funciona se ele souber que a flag existe e onde ligar.
 - **Por que importa**: TASK-792..797 mudou DEFAULT para true (intenção: ativar para todos). Mas a UI `/admin/flags` mostrava todas OFF (Firestore stale) — user não sabia que precisava ligar. Default mudou DEVE resultar em default efetivo.
 
+#### D-CACHE-01: PWA Service Worker cache pode servir versão antiga após deploy (2026-07-16 23:33)
+- ❌ **ERRADO**: vite-plugin-pwa gera `sw.js` com mesmo nome. Service Worker com `cache-control: public, max-age=31536000, immutable`. User mobile com PWA instalado: HTML/JS antigos servidos mesmo após deploy → "Algo deu errado" no admin abrigo + página pública verde (layout antigo).
+- ✅ **CERTO**: bump `filename: 'sw-vN.js'` em `vite.config.js` a cada deploy crítico. Próximo deploy gera `sw-v6.js` + `registerSW.js` atualiza. User mobile pega o novo na próxima visita.
+- **Por que importa**: 2026-07-16 23:33, user reportou "cache clear não resolveu" + "tentei várias vezes". Causa: PWA service worker serve versão antiga com `max-age=31536000, immutable`. Cache clear do browser NÃO remove service worker persistente.
+- **Como o user força update do PWA**:
+  1. **Modo anônimo** do browser mobile (PWA não instala em anônimo).
+  2. **Desinstalar PWA** (Android: long-press no ícone → "Desinstalar"; iOS: long-press → "Remover app").
+  3. Limpar dados do site: Settings → Apps → Chrome → Storage → Clear site data.
+- **Alternativa técnica**: deploy com `filename: 'sw-v6.js'` (v6 > v5 → SW antigo é invalidado pelo navegador).
+- **Anti-facada**: mudar HTML/JSX sem pensar em PWA = fachada. User em mobile pode estar vendo versão de 7 dias atrás.
+
+#### D-CACHE-02: Flex-wrap com muitas tabs/pills = sobreposição garantida (2026-07-16 23:33)
+- ❌ **ERRADO**: usar `flex flex-wrap` em TabList com 6+ items. Quebra em 2 fileiras e sobrepõe o conteúdo abaixo.
+- ✅ **CERTO**: usar `arena-admin-tabs` (flex-nowrap + overflow-x-auto + scrollbar-hide) ou aplicar padrão 2-layer (grupos + sub-pills) quando > 5 abas.
+- **Por que importa**: 2026-07-16 23:33, user reportou "página publica de abrigo segue com padrão antigo e fora do design system, abas em 2 fileiras com sobreposição". Causa: `arena-tab-bar` em `ClubDetail.jsx` com 7 abas usando `flex flex-wrap`. Fix: substituir por `arena-admin-tabs` (flex-nowrap + overflow-x-auto) e harmonizar wrapper externo.
+
 ### 9.3. Code & Build Quality
 
 #### D-BUILD-01: `npm run build` verde ANTES do commit
