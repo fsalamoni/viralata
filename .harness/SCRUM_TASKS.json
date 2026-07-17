@@ -16362,6 +16362,39 @@
           "Compact mode + dark mode + reduced motion"
         ]
       }
+    },
+    {
+      "id": "TASK-928",
+      "title": "FIX: BottomTabBar em todos os viewports + topbar autohide + sw-v9",
+      "status": "done",
+      "phase": "V3-UI-5-Fix",
+      "priority": "critical",
+      "createdAt": "2026-07-17T21:05:00Z",
+      "doneAt": "2026-07-17T21:05:00Z",
+      "evidence": {
+        "commits": [
+          "d821fc55"
+        ],
+        "deployTimestamp": "2026-07-17T21:04:36Z",
+        "swBump": "sw-v8.js → sw-v9.js",
+        "bugs": [
+          "BUG 1: BottomTabBar FIXED escondido em desktop (md:hidden)",
+          "BUG 2: Topbar some quando clica (PWA cache de versão antiga)",
+          "BUG 3: topBarMode não era aplicado no Layout"
+        ],
+        "fixes": [
+          "FIX 1: Removido md:hidden — FIXED/AUTOHIDE em todos os viewports",
+          "FIX 2: bump sw.js para v9 — invalida cache de versões antigas",
+          "FIX 3: Layout aplica topBarMode (FIXED/AUTOHIDE/HIDDEN)",
+          "FIX 4: main com padding-top dinâmico = altura da topbar (ResizeObserver)"
+        ],
+        "validation": {
+          "bottomTabBar": "10 testes passando",
+          "layout": "4 testes passando",
+          "build": "verde",
+          "sw": "v9 deployed (force update mobile)"
+        }
+      }
     }
   ],
   "definitionOfDone": [
@@ -16636,8 +16669,8 @@
     ],
     "openTODOs": 5,
     "openLegalReviews": 3,
-    "totalTasks": 631,
-    "done": 630,
+    "totalTasks": 632,
+    "done": 631,
     "inProgress": 0,
     "inReview": 0,
     "blocked": 0,
