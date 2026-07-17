@@ -1,22 +1,45 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
-import { Shield, PawPrint, Building2, AlertTriangle, Users, BarChart3, ScrollText, Bell, SlidersHorizontal, Flag, Activity, DollarSign, Database, Siren } from 'lucide-react';
+import {
+  Shield, PawPrint, Building2, AlertTriangle, Users, UserCog,
+  BarChart3, ScrollText, Bell, SlidersHorizontal, Flag,
+  Activity, Siren, Database,
+} from 'lucide-react';
 import PageHero from '@/components/PageHero';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 
+/**
+ * AdminDashboard — página principal do admin da plataforma.
+ * Ver TASK-857: auditoria DS_V2, accessibility, consistência.
+ */
 export default function AdminDashboard() {
   const { isPlatformAdmin } = useAuth();
   const wrapperClass = useArenaPageClasses('arena-page max-w-4xl mx-auto px-4 py-6 space-y-6');
-  if (!isPlatformAdmin) return <div className="text-center py-16 text-muted-foreground">Acesso restrito.</div>;
+  const deniedClass = useArenaPageClasses('arena-page mx-auto max-w-3xl py-16 text-center');
+
+  if (!isPlatformAdmin) {
+    return (
+      <div className={deniedClass}>
+        <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+          <Shield className="h-5 w-5" />
+        </div>
+        <p className="text-base font-semibold text-foreground">Acesso restrito</p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Esta página é exclusiva do administrador da plataforma.
+        </p>
+      </div>
+    );
+  }
 
   const sections = [
     { icon: PawPrint, title: 'Gerenciar Pets', desc: 'Moderar anúncios, aprovar ou remover pets', link: '/admin/pets', tone: 'bg-primary/10 text-primary' },
     { icon: Building2, title: 'Abrigos', desc: 'Moderar diretório de abrigos e organizações parceiras', link: '/admin/organizacoes', tone: 'bg-accent/10 text-accent' },
     { icon: Users, title: 'Comunidades', desc: 'Gerenciar grupos, fóruns e espaços sociais de usuários', link: '/admin/comunidades', tone: 'bg-primary/10 text-primary' },
     { icon: AlertTriangle, title: 'Denúncias', desc: 'Revisar denúncias de maus-tratos', link: '/admin/denuncias', tone: 'bg-destructive/10 text-destructive' },
-    { icon: Users, title: 'Usuários', desc: 'Gerenciar contas, papéis e banimentos', link: '/admin/usuarios', tone: 'bg-highlight/20 text-[hsl(30,60%,32%)]' },
+    // FIX: 'Usuários' usava ícone duplicado Users igual a 'Comunidades'.
+    // Diferenciado com UserCog (ícone semanticamente melhor para admin de usuários).
+    { icon: UserCog, title: 'Usuários', desc: 'Gerenciar contas, papéis e banimentos', link: '/admin/usuarios', tone: 'bg-highlight/20 text-[hsl(30,60%,32%)]' },
     { icon: Shield, title: 'Platform Admins', desc: 'Delegar e revogar acesso admin master (só o owner pode)', link: '/admin/admins', tone: 'bg-highlight/20 text-[hsl(30,60%,32%)]' },
     { icon: BarChart3, title: 'Métricas', desc: 'Adoções, crescimento e denúncias em gráficos', link: '/admin/metricas', tone: 'bg-secondary text-secondary-foreground' },
     { icon: ScrollText, title: 'Auditoria', desc: 'Trilha completa de ações registradas na plataforma', link: '/admin/auditoria', tone: 'bg-primary/10 text-primary' },
