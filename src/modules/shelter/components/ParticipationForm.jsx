@@ -48,6 +48,7 @@ function defaultForm(volunteerUid, volunteerName) {
 export function ParticipationForm({ shelterClubId, actor, defaultVolunteer, onSaved }) {
   const isV1Enabled = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_VOLUNTEER_PROFILE_V1);
   const [form, setForm] = useState(() => defaultForm(defaultVolunteer?.uid, defaultVolunteer?.name));
+  const [errors, setErrors] = useState({});
   const createMutation = useCreateParticipation();
   const { toast } = useToast();
   const { data: roster = [], isLoading: isLoadingRoster, error: rosterError } = useShelterVolunteers(
@@ -55,7 +56,10 @@ export function ParticipationForm({ shelterClubId, actor, defaultVolunteer, onSa
     { status: 'active' },
   );
 
-  const update = (field, value) => setForm((prev) => ({ ...prev, [field]: value }));
+  const update = (field, value) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+    if (errors[field]) setErrors((prev) => ({ ...prev, [field]: null }));
+  };
 
   const handleVolunteerChange = (volunteerUid) => {
     const v = roster.find((r) => r.id === volunteerUid || r.volunteer_uid === volunteerUid);
@@ -68,12 +72,18 @@ export function ParticipationForm({ shelterClubId, actor, defaultVolunteer, onSa
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const newErrors = {};
     if (!form.volunteer_uid || !form.volunteer_name) {
-      toast({ title: 'Selecione um voluntário da rostagem.', variant: 'destructive' });
-      return;
+      newErrors.volunteer_uid = 'Selecione um voluntário da rostagem.';
     }
-    if (!form.event_label || !form.event_date) {
-      toast({ title: 'Preencha o nome e a data do evento.', variant: 'destructive' });
+    if (!form.event_label) {
+      newErrors.event_label = 'Nome do evento é obrigatório.';
+    }
+    if (!form.event_date) {
+      newErrors.event_date = 'Data e hora são obrigatórias.';
+    }
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       return;
     }
     try {
@@ -92,6 +102,7 @@ export function ParticipationForm({ shelterClubId, actor, defaultVolunteer, onSa
       await createMutation.mutateAsync({ input, actor });
       toast({ title: '✓ Participation registrada.' });
       setForm(defaultForm(defaultVolunteer?.uid, defaultVolunteer?.name));
+      setErrors({});
       if (onSaved) onSaved();
     } catch (err) {
       toast({ title: 'Erro', description: String(err?.message || err), variant: 'destructive' });
@@ -112,36 +123,43 @@ export function ParticipationForm({ shelterClubId, actor, defaultVolunteer, onSa
             <div>
               <Label htmlFor="volunteer_uid">Voluntário</Label>
               {rosterError ? (
-                <p className="text-sm text-red-700">Erro ao carregar rostagem.</p>
+                <p className="text-sm text-destructive">Erro ao carregar rostagem.</p>
               ) : (
-                <Select
-                  value={form.volunteer_uid || undefined}
-                  onValueChange={handleVolunteerChange}
-                  disabled={isLoadingRoster}
-                >
-                  <SelectTrigger id="volunteer_uid">
-                    <SelectValue placeholder={isLoadingRoster ? 'Carregando…' : 'Selecione um voluntário'} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {roster.length === 0 && !isLoadingRoster && (
-                      <SelectItem value="__empty__" disabled>
-                        Nenhum voluntário ativo na rostagem
-                      </SelectItem>
-                    )}
-                    {roster.map((v) => {
-                      const vid = v.id || v.volunteer_uid;
-                      return (
-                        <SelectItem key={vid} value={vid}>
-                          {v.volunteer_name}
+                <>
+                  <Select
+                    value={form.volunteer_uid || undefined}
+                    onValueChange={handleVolunteerChange}
+                    disabled={isLoadingRoster}
+                  >
+                    <SelectTrigger id="volunteer_uid" aria-invalid={Boolean(errors.volunteer_uid)} aria-describedby={errors.volunteer_uid ? 'volunteer_uid-error' : undefined}>
+                      <SelectValue placeholder={isLoadingRoster ? 'Carregando…' : 'Selecione um voluntário'} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {roster.length === 0 && !isLoadingRoster && (
+                        <SelectItem value="__empty__" disabled>
+                          Nenhum voluntário ativo na rostagem
                         </SelectItem>
-                      );
-                    })}
-                  </SelectContent>
-                </Select>
+                      )}
+                      {roster.map((v) => {
+                        const vid = v.id || v.volunteer_uid;
+                        return (
+                          <SelectItem key={vid} value={vid}>
+                            {v.volunteer_name}
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectContent>
+                  </Select>
+                  {errors.volunteer_uid && (
+                    <p id="volunteer_uid-error" className="text-xs text-destructive flex items-center gap-1 mt-1" role="alert">
+                      {errors.volunteer_uid}
+                    </p>
+                  )}
+                </>
               )}
             </div>
             <div>
-              <Label htmlFor="event_type">Tipo de evento</Label>
+              <label htmlFor="event_type" className="block text-sm font-medium text-foreground mb-1">Tipo de evento</label>
               <select
                 id="event_type"
                 className="w-full border rounded px-3 py-2 text-sm"
@@ -165,7 +183,14 @@ export function ParticipationForm({ shelterClubId, actor, defaultVolunteer, onSa
                 placeholder="Vitrine da Praça XV"
                 required
                 maxLength={200}
+                aria-invalid={Boolean(errors.event_label)}
+                aria-describedby={errors.event_label ? 'event_label-error' : undefined}
               />
+              {errors.event_label && (
+                <p id="event_label-error" className="text-xs text-destructive flex items-center gap-1 mt-1" role="alert">
+                  {errors.event_label}
+                </p>
+              )}
             </div>
             <div>
               <Label htmlFor="event_date">Data e hora</Label>
@@ -175,7 +200,14 @@ export function ParticipationForm({ shelterClubId, actor, defaultVolunteer, onSa
                 value={form.event_date}
                 onChange={(e) => update('event_date', e.target.value)}
                 required
+                aria-invalid={Boolean(errors.event_date)}
+                aria-describedby={errors.event_date ? 'event_date-error' : undefined}
               />
+              {errors.event_date && (
+                <p id="event_date-error" className="text-xs text-destructive flex items-center gap-1 mt-1" role="alert">
+                  {errors.event_date}
+                </p>
+              )}
             </div>
           </div>
 
@@ -205,7 +237,7 @@ export function ParticipationForm({ shelterClubId, actor, defaultVolunteer, onSa
           )}
 
           <div>
-            <Label htmlFor="role">Papel</Label>
+            <label htmlFor="role" className="block text-sm font-medium text-foreground mb-1">Papel</label>
             <select
               id="role"
               className="w-full border rounded px-3 py-2 text-sm"
@@ -219,10 +251,10 @@ export function ParticipationForm({ shelterClubId, actor, defaultVolunteer, onSa
           </div>
 
           <div>
-            <Label htmlFor="notes">Observações</Label>
+            <label htmlFor="notes" className="block text-sm font-medium text-foreground mb-1">Observações</label>
             <textarea
               id="notes"
-              className="w-full border rounded p-2 text-sm min-h-[60px]"
+              className="w-full border rounded px-3 py-2 text-sm min-h-[60px]"
               value={form.notes}
               onChange={(e) => update('notes', e.target.value)}
               maxLength={2000}

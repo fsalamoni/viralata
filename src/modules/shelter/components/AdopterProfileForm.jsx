@@ -11,7 +11,7 @@
  * @see docs/SHELTER_MGMT_ROADMAP.md § Fase 4
  */
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -133,7 +133,7 @@ export function AdopterProfileForm({ actorUid, actorDisplayName }) {
         <div className="arena-section-card-body space-y-6">
           {/* Identidade */}
           <Section title="Identidade">
-            <Field id="full_name" label="Nome completo" required>
+            <Field id="full_name" label="Nome completo" required error={errors.full_name}>
               <Input
                 id="full_name"
                 value={draft?.full_name || ''}
@@ -141,7 +141,6 @@ export function AdopterProfileForm({ actorUid, actorDisplayName }) {
                 maxLength={120}
                 required
               />
-              {errors.full_name && <p className="text-xs text-destructive mt-1">{errors.full_name}</p>}
             </Field>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <Field id="cpf" label="CPF">
@@ -443,14 +442,23 @@ function Section({ title, children }) {
   );
 }
 
-function Field({ id, label, required, children }) {
+function Field({ id, label, required, error, children }) {
+  const errorId = error ? `${id}-error` : undefined;
   return (
     <div>
       <Label htmlFor={id}>
         {label}
         {required ? ' *' : ''}
       </Label>
-      {children}
+      {React.cloneElement(children, {
+        'aria-invalid': error ? true : undefined,
+        'aria-describedby': errorId,
+      })}
+      {error && (
+        <p id={errorId} className="text-xs text-destructive flex items-center gap-1 mt-1" role="alert">
+          {error}
+        </p>
+      )}
     </div>
   );
 }

@@ -108,6 +108,8 @@ export default function AdoptionFormFill({
                       maxLength={FORM_LIMITS.ANSWER_MAX}
                       value={answers[field.id] || ''}
                       onChange={(e) => setAnswer(field.id, e.target.value)}
+                      aria-invalid={Boolean(errors[field.id])}
+                      aria-describedby={errors[field.id] ? `${field.id}-error` : undefined}
                     />
                   )}
 
@@ -116,6 +118,8 @@ export default function AdoptionFormFill({
                       maxLength={FORM_LIMITS.ANSWER_MAX}
                       value={answers[field.id] || ''}
                       onChange={(e) => setAnswer(field.id, e.target.value)}
+                      aria-invalid={Boolean(errors[field.id])}
+                      aria-describedby={errors[field.id] ? `${field.id}-error` : undefined}
                     />
                   )}
 
@@ -142,7 +146,11 @@ export default function AdoptionFormFill({
                     </div>
                   )}
 
-                  {errors[field.id] && <p className="text-xs text-destructive">{errors[field.id]}</p>}
+                  {errors[field.id] && (
+                    <p id={`${field.id}-error`} className="text-xs text-destructive flex items-center gap-1" role="alert">
+                      {errors[field.id]}
+                    </p>
+                  )}
                 </div>
               ))}
             </div>
