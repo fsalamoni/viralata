@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { SkipLink } from '@/components/ui/skip-link';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import SwUpdateBanner from '@/components/SwUpdateBanner';
 import LegalFooter from '@/components/LegalFooter';
 import BottomTabBar, { useBottomTabBarHeight } from '@/components/BottomTabBar';
-import { useUiPreferences, BOTTOM_TAB_MODES } from '@/core/hooks/useUiPreferences';
+import { useUiPreferences, BOTTOM_TAB_MODES, TOPBAR_MODES } from '@/core/hooks/useUiPreferences';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import ThemeMenu from '@/components/ThemeMenu';
 import {
@@ -79,6 +79,58 @@ export default function Layout({ children, currentPageName }) {
     ? { paddingBottom: `max(${bottomTabHeight}px, 5rem)` }
     : {};
 
+  // V3 (TASK-V3-UI-5-FIX): topbar respeita topBarMode (FIXED/AUTOHIDE/HIDDEN).
+  // FIXED (default) = sempre visível, sticky no topo.
+  // AUTOHIDE = aparece com scroll-up, some com scroll-down.
+  // HIDDEN = não renderiza.
+  const topBarMode = uiPrefs?.topBarMode || TOPBAR_MODES.FIXED;
+  const [topBarVisible, setTopBarVisible] = useState(true);
+  const lastScrollYForTop = useRef(0);
+  useEffect(() => {
+    if (topBarMode !== TOPBAR_MODES.AUTOHIDE) {
+      setTopBarVisible(true);
+      return undefined;
+    }
+    const handleScroll = () => {
+      const currentY = window.scrollY;
+      const delta = currentY - lastScrollYForTop.current;
+      if (Math.abs(delta) > 4) {
+        setTopBarVisible(delta < 0);
+      }
+      lastScrollYForTop.current = currentY;
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [topBarMode]);
+
+  // V3 (TASK-V3-UI-5-FIX): se a topbar está visível, mede a altura dela para
+  // aplicar padding-top no <main> (quando FIXED, sempre = altura; quando
+  // AUTOHIDE visível, também = altura). Quando hidden ou autohide-sumido,
+  // não tem padding-top.
+  const topBarRef = useRef(null);
+  const [topBarHeight, setTopBarHeight] = useState(64);
+  useEffect(() => {
+    if (topBarMode === TOPBAR_MODES.HIDDEN) {
+      setTopBarHeight(0);
+      return undefined;
+    }
+    const measure = () => {
+      const h = topBarRef.current?.offsetHeight || 64;
+      setTopBarHeight(h);
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    if (topBarRef.current) ro.observe(topBarRef.current);
+    window.addEventListener('resize', measure);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', measure);
+    };
+  }, [topBarMode]);
+  const mainPaddingTop = topBarMode === TOPBAR_MODES.HIDDEN
+    ? {}
+    : { paddingTop: topBarVisible ? `${topBarHeight}px` : 0, transition: 'padding-top 200ms ease-out' };
+
   if (STANDALONE_PAGES.includes(currentPageName)) {
     return <>{children}</>;
   }
@@ -94,8 +146,22 @@ export default function Layout({ children, currentPageName }) {
 
   return (
     <div className="arena-page min-h-screen flex flex-col">
-      {/* Header */}
-      <header className="sticky top-0 z-40 border-b border-border/70 bg-background/80 backdrop-blur-xl">
+      {/* Header — V3 (TASK-V3-UI-5-FIX): respeita topBarMode.
+          FIXED (default) = sticky top-0 sempre visível.
+          AUTOHIDE = translate-y-0/[-100%] com scroll up/down.
+          HIDDEN = não renderiza. */}
+      {topBarMode !== TOPBAR_MODES.HIDDEN && (
+        <header
+          ref={topBarRef}
+          className={cn(
+            'sticky top-0 z-50 border-b border-border/70 bg-background/80 backdrop-blur-xl',
+            topBarMode === TOPBAR_MODES.AUTOHIDE && cn(
+              'transition-transform duration-200 ease-out',
+              topBarVisible ? 'translate-y-0' : '-translate-y-full',
+            ),
+          )}
+          data-top-bar-mode={topBarMode}
+        >
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4 safe-px">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 flex-shrink-0 group">
@@ -243,19 +309,21 @@ export default function Layout({ children, currentPageName }) {
           </div>
         )}
       </header>
+      )}
 
       {/* Skip link */}
       <SkipLink targetId="main-content" />
 
-      {/* Main — V3 (TASK-V3-UI-4): padding-bottom dinâmico = altura da
-          BottomTabBar. Isso garante que o conteúdo da página se encerre
+      {/* Main — V3 (TASK-V3-UI-4/5): padding-bottom dinâmico = altura da
+          BottomTabBar. padding-top dinâmico = altura da topBar (se
+          HIDDEN, 0). Isso garante que o conteúdo da página se encerre
           na linha SUPERIOR da barra inferior quando "sempre visível" está
-          ativo, sem rolar por trás dela. Em desktop (md+) ou quando a
-          barra está oculta, padding é 0. */}
+          ativo, sem rolar por trás dela. E o conteúdo começa logo abaixo
+          da topbar (que é sticky). */}
       <main
         id="main-content"
         className="flex-1 relative"
-        style={mainPaddingBottom}
+        style={{ ...mainPaddingBottom, ...mainPaddingTop }}
       >
         {children}
       </main>
@@ -267,7 +335,9 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Bottom tab bar (mobile, autenticado) — TASK-V3-UI-4
           Componente dedicado com 3 modos (FIXED/AUTOHIDE/HIDDEN) que
-          respeita a preferência visual do usuário. */}
+          respeita a preferência visual do usuário em todos os viewports
+          (TASK-V3-UI-5-FIX: removido md:hidden para que FIXED apareça
+          também em desktop). */}
       <BottomTabBar />
 
       {/* Rodapé com links legais. TASK-051: links exigidos pelo Guia

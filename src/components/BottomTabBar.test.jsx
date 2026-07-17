@@ -53,14 +53,22 @@ describe('BottomTabBar — modo FIXED', () => {
     useAuthMock.mockReturnValue({ isAuthenticated: true });
   });
 
-  it('renderiza nav com aria-label "Navegação inferior (mobile)"', () => {
+  it('renderiza nav com aria-label "Navegação inferior"', () => {
+    // V3 (TASK-V3-UI-5-FIX): o aria-label mudou de "Navegação inferior (mobile)"
+    // para "Navegação inferior" porque a barra agora respeita FIXED em
+    // todos os viewports (não só mobile).
     const html = renderInRouter(React.createElement(BottomTabBar));
-    expect(html).toContain('aria-label="Navegação inferior (mobile)"');
+    expect(html).toContain('aria-label="Navegação inferior"');
   });
 
   it('tem data-bottom-tab-mode="fixed"', () => {
     const html = renderInRouter(React.createElement(BottomTabBar));
     expect(html).toContain('data-bottom-tab-mode="fixed"');
+  });
+
+  it('NÃO tem mais md:hidden (FIXED em todos os viewports)', () => {
+    const html = renderInRouter(React.createElement(BottomTabBar));
+    expect(html).not.toContain('md:hidden');
   });
 
   it('renderiza os 6 itens (Feed, ONGs, Comunidade, +, Chat, Perfil)', () => {
@@ -107,6 +115,22 @@ describe('BottomTabBar — modo HIDDEN', () => {
   it('NÃO renderiza nada', () => {
     const html = renderInRouter(React.createElement(BottomTabBar));
     expect(html).toBe('');
+  });
+});
+
+describe('BottomTabBar — em todos os viewports (TASK-V3-UI-5-FIX)', () => {
+  beforeEach(() => {
+    useUiPreferencesMock.mockReturnValue([
+      { bottomTabBarMode: 'fixed' },
+      vi.fn(),
+      { saving: false, error: null, syncedAt: null },
+    ]);
+    useAuthMock.mockReturnValue({ isAuthenticated: true });
+  });
+
+  it('NÃO tem md:hidden no className (FIXED em desktop também)', () => {
+    const html = renderInRouter(React.createElement(BottomTabBar));
+    expect(html).not.toContain('md:hidden');
   });
 });
 

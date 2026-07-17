@@ -127,10 +127,14 @@ export default function BottomTabBar() {
   return (
     <nav
       ref={navRef}
-      aria-label="Navegação inferior (mobile)"
+      aria-label="Navegação inferior"
       data-bottom-tab-mode={mode}
       className={cn(
-        'safe-pb fixed inset-x-0 bottom-0 z-40 flex items-end justify-around border-t border-border bg-card/95 px-2 pt-2 backdrop-blur-xl md:hidden',
+        'safe-pb fixed inset-x-0 bottom-0 z-30 flex items-end justify-around border-t border-border bg-card/95 px-2 pt-2 backdrop-blur-xl',
+        // V3 (TASK-V3-UI-5-FIX): remover `md:hidden` para que a barra respeite
+        // a preferência do usuário em TODOS os viewports quando FIXED.
+        // Em desktop, a barra continua funcional (acessível via teclado,
+        // mostra labels, e mantém-se no bottom da viewport).
         isAutohide && cn(
           'transition-transform duration-200 ease-out',
           visible ? 'translate-y-0' : 'translate-y-full',
