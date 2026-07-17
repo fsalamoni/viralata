@@ -141,11 +141,11 @@ function PieChartComponent({ data, nameKey = 'name', valueKey = 'value', colors,
 
 function StatCard({ label, value, icon: Icon, tone = 'default' }) {
   const toneClass = {
-    default: 'border-white/80 bg-white/80',
+    default: 'border-border bg-card',
     success: 'border-emerald-200/80 bg-emerald-50/80 dark:border-emerald-900/60 dark:bg-emerald-950/60',
     danger: 'border-red-200/80 bg-red-50/80 dark:border-red-900/60 dark:bg-red-950/60',
     info: 'border-blue-200/80 bg-blue-50/80 dark:border-blue-900/60 dark:bg-blue-950/60',
-  }[tone] || 'border-white/80 bg-white/80';
+  }[tone] || 'border-border bg-card';
 
   return (
     <div className={`arena-stat-card ${toneClass}`}>
@@ -277,7 +277,7 @@ function ComparativeReport({ data }) {
         />
       </section>
       <div className="overflow-x-auto">
-        <div className="arena-table-wrap rounded-2xl border border-white/80 bg-white/80 shadow-[0_14px_34px_-28px_hsl(20_40%_20%/0.4)] backdrop-blur-xl">
+        <div className="arena-table-wrap rounded-2xl border border-border bg-card">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border/60 bg-secondary/40">
