@@ -3,12 +3,18 @@ import ReactDOM from 'react-dom/client';
 import App from './App.jsx';
 import ErrorBoundary from './components/ErrorBoundary.jsx';
 import { registerPwa } from '@core/pwa/registerPwa';
+import { cleanupStaleCaches } from '@core/pwa/cleanupStaleCaches';
 import './index.css';
 import { initErrorTracker } from '@/core/services/errorTracker';
 import { recordClientError } from '@/core/services/observabilityService';
 import { captureError } from '@/core/services/errorTracker';
 
 initErrorTracker().catch(() => {});
+
+// HOTFIX-003: limpar caches stale ANTES de qualquer coisa. Idempotente.
+// Se o user tem PWA cacheado de versão bugada (sw-v5.js = index.html
+// fantasma), o cleanup acontece silenciosamente e o app carrega fresh.
+cleanupStaleCaches().catch(() => {});
 
 // ─── Global error handlers — capturam erros fora do tree React ──────────────────
 // window.onerror: exceções síncronas não capturadas por ErrorBoundary.

@@ -1,6 +1,7 @@
 import React from 'react';
 import { recordClientError } from '@/core/services/observabilityService';
 import { captureError } from '@/core/services/errorTracker';
+import { nukeAllCaches } from '@core/pwa/cleanupStaleCaches';
 
 export default class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -38,12 +39,24 @@ export default class ErrorBoundary extends React.Component {
             <p className="text-sm text-muted-foreground mb-4">
               Ocorreu um erro inesperado. Recarregue a página para tentar novamente.
             </p>
-            <button
-              onClick={() => window.location.reload()}
-              className="inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:opacity-90"
-            >
-              Recarregar
-            </button>
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => window.location.reload()}
+                className="inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:opacity-90"
+              >
+                Recarregar
+              </button>
+              <button
+                onClick={async () => {
+                  await nukeAllCaches();
+                  window.location.reload();
+                }}
+                className="inline-flex items-center justify-center rounded-md border border-border bg-secondary text-secondary-foreground px-4 py-2 text-sm font-medium hover:opacity-90"
+                title="Limpa todos os caches do PWA e recarrega (útil se o erro persistir após Recarregar)"
+              >
+                Limpar cache e recarregar
+              </button>
+            </div>
             {(import.meta.env.DEV || isDebug) && (
               <div className="mt-4 space-y-3">
                 <div className="p-3 bg-red-50 border border-red-300 rounded text-xs">
