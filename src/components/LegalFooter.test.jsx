@@ -42,9 +42,17 @@ describe('LegalFooter — flag OFF (sem footer)', () => {
     useFeatureFlagMock.mockReturnValue(false);
   });
 
-  it('NÃO renderiza nada (flag OFF oculta totalmente)', () => {
+  it('renderiza footer com rotas LEGADAS (flag OFF não oculta mais)', () => {
+    // V3 (TASK-V3-LEGAL-FOOTER-1): o rodapé é SEMPRE visível. A flag
+    // SHELTER_LEGAL_TERMS_V1 apenas controla QUAL conjunto de links:
+    //   - flag ON  → /legal/<slug>
+    //   - flag OFF → /termos, /politica-privacidade, /legislacao
+    // O footer em si nunca oculta por causa da flag.
     const html = renderInRouter(React.createElement(LegalFooter));
-    expect(html).toBe('');
+    expect(html).toContain('<footer');
+    expect(html).toContain('aria-label="Rodapé com documentos legais"');
+    expect(html).toContain('href="/termos"');
+    expect(html).toContain('href="/politica-privacidade"');
   });
 });
 

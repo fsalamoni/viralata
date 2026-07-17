@@ -85,6 +85,14 @@ function useAutoHideVisibility(active) {
 }
 
 export default function LegalFooter() {
+  // V3 (TASK-V3-LEGAL-FOOTER-1): o rodapé é SEMPRE visível por padrão
+  // (Guia de Implementação Legal v2 §5: "links devem estar sempre acessíveis
+  // a qualquer visitante"). A flag `SHELTER_LEGAL_TERMS_V1` foi removida
+  // do gate — agora ela apenas controla QUAL conjunto de links mostrar:
+  //   - flag ON  → /legal/* (rotas novas, 5 páginas estáticas)
+  //   - flag OFF → /termos, /politica-privacidade, /legislacao (rotas legadas)
+  // O rodapé em si nunca oculta por causa da flag.
+  // O gate de exibição é APENAS o `footerMode` do usuário (fixed/autohide/hidden).
   const enabled = useFeatureFlag(FEATURE_FLAG.SHELTER_LEGAL_TERMS_V1);
   const [uiPrefs] = useUiPreferences();
   const links = buildFooterLinks(enabled);
@@ -93,8 +101,6 @@ export default function LegalFooter() {
   const autoHideActive = mode === FOOTER_MODES.AUTOHIDE;
   const visible = useAutoHideVisibility(autoHideActive);
 
-  // Se flag OFF, oculta totalmente (modo nenhum)
-  if (!enabled) return null;
   // Se usuário escolheu 'hidden', oculta
   if (mode === FOOTER_MODES.HIDDEN) return null;
 

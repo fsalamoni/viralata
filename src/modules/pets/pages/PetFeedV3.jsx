@@ -18,17 +18,16 @@
  *  - A11y completo
  *  - 0 uso de emerald/green/teal
  */
-import React, { useMemo, useState, useEffect, useRef } from 'react';
+import React, { useMemo, useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MapPin, SwitchCamera } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { usePetFeed, useCreateInterest } from '../hooks/usePets';
-import { hasKnownCoords, lookupCityCoordsByName, filterPetsByRadius } from '../domain/geoDistance';
+import { hasKnownCoords, lookupCityCoordsByName, filterPetsByRadius, normalizePlaceText } from '../domain/geoDistance';
 import PetCard from '../components/PetCard';
 import SwipeDeck from '../components/SwipeDeck';
 import AdSlot from '@/components/AdSlot';
 import { Switch } from '@/components/ui/switch';
-import { Select } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -98,7 +97,7 @@ export default function PetFeedV3() {
   const { settings } = usePlatformSettings();
   const [uiPrefs] = useUiPreferences();
   const { viewport } = useViewport();
-  const { prefs: feedPrefs, setShowOwnPets } = useFeedPreferences();
+  const [feedPrefs, setFeedPrefs] = useFeedPreferences();
   const createInterest = useCreateInterest();
 
   const firstName = (userProfile?.name || user?.displayName || '').split(' ')[0];
@@ -134,6 +133,11 @@ export default function PetFeedV3() {
   const perPage = getCardsPerPageForViewport(uiPrefs, viewport);
   const colsPref = getGridColumnsForViewport(uiPrefs, viewport);
   const showOwnPets = feedPrefs?.showOwnPets !== false; // default true
+  // V3 (TASK-V3-FEED-1-FIX): useFeedPreferences retorna [prefs, setPrefs, status].
+  // O toggle "Mostrar meus pets" atualiza via setFeedPrefs(prev => ...)
+  const handleToggleShowOwnPets = useCallback((checked) => {
+    setFeedPrefs((prev) => ({ ...prev, showOwnPets: checked }));
+  }, [setFeedPrefs]);
 
   // Query
   const trimmedCity = (city || '').trim();
@@ -143,7 +147,10 @@ export default function PetFeedV3() {
     size: size === 'all' ? undefined : size,
     age_group: age === 'all' ? undefined : age,
     sex: sex === 'all' ? undefined : sex,
-    city: radiusActive ? undefined : (trimmedCity || undefined),
+    // V3 (TASK-V3-FEED-4): NÃO passamos city pro Firestore porque ele faz
+    // match EXATO (sem normalização de acentos/case). O filtro de cidade é
+    // feito CLIENTE-side abaixo, com normalizePlaceText (NFD + lowercase).
+    // Assim "porto alegre" ≡ "Porto Alegre" ≡ "PORTO ALEGRE".
     limitCount: radiusActive ? 500 : undefined,
   };
   const { data: fetchedPets = [], isLoading, isError, refetch } = usePetFeed(queryFilters);
@@ -153,6 +160,16 @@ export default function PetFeedV3() {
     let visiblePets = user?.uid && !showOwnPets
       ? fetchedPets.filter((pet) => pet.owner_id !== user.uid)
       : fetchedPets;
+    // V3 (TASK-V3-FEED-4): filtro de cidade cliente-side inteligente.
+    // Compara versão normalizada (sem acentos, lowercase) do texto digitado
+    // com a versão normalizada de pet.city. Aceita também match por prefixo.
+    if (trimmedCity && !radiusActive) {
+      const needle = normalizePlaceText(trimmedCity);
+      visiblePets = visiblePets.filter((pet) => {
+        const hay = normalizePlaceText(pet.city || '');
+        return hay.includes(needle);
+      });
+    }
     if (radiusActive) {
       const origin = lookupCityCoordsByName(trimmedCity);
       visiblePets = filterPetsByRadius(visiblePets, origin, radius) ?? visiblePets;
@@ -316,7 +333,7 @@ export default function PetFeedV3() {
           </div>
           <div className="flex items-center gap-2 text-sm font-medium text-foreground">
             <span>{showOwnPets ? 'Exibindo' : 'Ocultando'}</span>
-            <Switch checked={showOwnPets} onCheckedChange={setShowOwnPets} />
+            <Switch checked={showOwnPets} onCheckedChange={handleToggleShowOwnPets} />
           </div>
         </div>
       )}
@@ -334,6 +351,17 @@ export default function PetFeedV3() {
         />
       )}
 
+      {/* V3 (TASK-V3-FEED-2): Espaço de Parceiros FORA do Collapsible.
+          Aparece entre o SwipeDeck e "Todos os pets disponíveis" com
+          margem balanceada em harmonia com a plataforma. */}
+      <div className="my-8 sm:my-10">
+        <AdSlot
+          slotId="feed-between-sections"
+          fallbackTitle="Espaço para parceiros"
+          className="w-full"
+        />
+      </div>
+
       {/* Collapsible: "Ver todos os pets disponíveis" */}
       <CollapsibleCard
         title="Todos os pets disponíveis"
@@ -347,7 +375,10 @@ export default function PetFeedV3() {
           ) : null
         }
       >
-        {/* Sort dropdown */}
+        {/* Sort dropdown — V3 (TASK-V3-FEED-3): usa <select> HTML nativo
+            pois o componente `Select` do Radix exige API diferente
+            (SelectTrigger/Content/Item). O nativo é mais leve e funciona
+            perfeitamente aqui. */}
         <div className="mb-4 flex items-center justify-between gap-2">
           <p className="text-sm text-muted-foreground">
             Mostrando {pagedPets.length} de {totalItems}
@@ -356,17 +387,17 @@ export default function PetFeedV3() {
             <label htmlFor="sort-select" className="text-sm font-medium text-foreground">
               Ordenar por
             </label>
-            <Select
+            <select
               id="sort-select"
               value={sort}
               onChange={(e) => setFilter('sort', e.target.value)}
-              className="h-9 min-w-[160px]"
+              className="h-9 min-w-[160px] rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
               data-testid="sort-select"
             >
               {SORT_OPTIONS.map((o) => (
                 <option key={o.value} value={o.value}>{o.label}</option>
               ))}
-            </Select>
+            </select>
           </div>
         </div>
 
@@ -398,11 +429,8 @@ export default function PetFeedV3() {
         {!isLoading && !isError && pagedPets.length > 0 && (
           <>
             <div className={cn('grid gap-4', gridColsClass)}>
-              {pagedPets.map((pet, i) => (
-                <React.Fragment key={pet.id}>
-                  <PetCard pet={pet} />
-                  {(i + 1) % 8 === 0 && <AdSlot className="col-span-full" />}
-                </React.Fragment>
+              {pagedPets.map((pet) => (
+                <PetCard key={pet.id} pet={pet} />
               ))}
             </div>
             <div className="mt-6">
