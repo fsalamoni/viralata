@@ -22,12 +22,11 @@ export function registerPwa() {
   // Em dev o SW não traz benefício e pode confundir o HMR; só em produção.
   if (import.meta.env.DEV) return;
 
-  // Bumped to sw-v7.js (2026-07-17) — MUST match vite.config.js filename.
-  // sw.js still exists in dist/ (legacy) but we register sw-v7.js for new sessions.
-  // v6→v7 hotfix: corrige bug 'Algo deu errado' no admin abrigo, causado por
-  // cache de sw-v5.js (que não existia deployed — Firebase Hosting servia
-  // index.html com cache-control immutable via rewrite catch-all).
-  const swUrl = `${import.meta.env.BASE_URL || '/'}sw-v7.js`.replace(/\/{2,}/g, '/');
+  // Bumped to sw-v8.js (2026-07-17) — MUST match vite.config.js filename.
+  // v7→v8 hotfix: o SW custom public/sw.js v5 ainda assume controle e
+  // serve cache 'viralata-v5' com assets antigos. v8 + update no
+  // public/sw.js (v6) garante limpeza total de caches legacy.
+  const swUrl = `${import.meta.env.BASE_URL || '/'}sw-v8.js`.replace(/\/{2,}/g, '/');
 
   // IMPORTANTE: não recarregamos automaticamente quando o SW troca de
   // controller. O componente <SwUpdateBanner> (montado em Layout.jsx)

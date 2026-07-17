@@ -23,15 +23,15 @@ export default defineConfig(({ mode }) => {
         // recebe o novo na próxima visita. Solução para o problema
         // 'user reportou versão antiga mesmo após deploy' (2026-07-16).
         //
-        // v6 → v7 (2026-07-17): hotfix para bug 'Algo deu errado' no admin
-        // abrigo. Bug vinha de PWA cachear sw-v5.js (que na verdade não
-        // existia — Firebase Hosting retornava index.html com cache-control
-        // immutable devido ao rewrite catch-all + header `**/*.js`).
-        // v7 + firebase.json sw-*.js=no-cache garante que:
-        //  - service worker file não é cacheado pelo browser/SW
-        //  - cada visita baixa o sw.js mais recente
-        //  - cleanupOutdatedCaches destrói caches de sws antigos
-        filename: 'sw-v7.js',
+        // v7 → v8 (2026-07-17): segundo hotfix porque o user ainda vê
+        // 'getQueryCache().get is not a function' mesmo com sw-v7.
+        // Causa: o SW custom `public/sw.js` (v5) tem cache v5 imutável
+        // + ainda assume controle via skipWaiting. sw-v8 + update no
+        // public/sw.js (v6) garante que:
+        //  - qualquer cache 'viralata-v*' é deletado no activate
+        //  - o SW custom v5 deixa de controlar e dá lugar ao workbox
+        //    atualizado que delega para a network.
+        filename: 'sw-v8.js',
         includeAssets: ['favicon.svg', 'apple-touch-icon.png', 'pwa-192.png', 'pwa-512.png', 'scrum.html'],
         manifest: {
           name: 'Viralata - Adoção Responsável',
