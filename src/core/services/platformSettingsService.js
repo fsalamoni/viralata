@@ -113,26 +113,35 @@ export async function setFeatureFlag(flagKey, enabled, actor, reason = null) {
   // TASK-167: captura o valor anterior para a trilha from→to.
   const current = await getPlatformSettings().catch(() => null);
   const fromValue = current?.feature_flags?.[flagKey] ?? null;
-  await setDoc(
-    settingsRef(),
-    {
-      feature_flags: { [flagKey]: Boolean(enabled) },
-      _migrations: { flags: FLAGS_MIGRATION_VERSION },
-      updated_at: serverTimestamp(),
-    },
-    { merge: true },
-  );
-  await createAuditLog({
-    action: 'platform_feature_flag_changed',
-    actor,
-    details: {
-      flag: flagKey,
-      enabled: Boolean(enabled),
-      from_value: fromValue,
-      to_value: Boolean(enabled),
-      reason: reason || null,
-    },
-  });
+  try {
+    await setDoc(
+      settingsRef(),
+      {
+        feature_flags: { [flagKey]: Boolean(enabled) },
+        _migrations: { flags: FLAGS_MIGRATION_VERSION },
+        updated_at: serverTimestamp(),
+      },
+      { merge: true },
+    );
+  } catch (err) {
+    throw new Error(`Falha ao salvar feature flag '${flagKey}': ${err?.message}`);
+  }
+  try {
+    await createAuditLog({
+      action: 'platform_feature_flag_changed',
+      actor,
+      details: {
+        flag: flagKey,
+        enabled: Boolean(enabled),
+        from_value: fromValue,
+        to_value: Boolean(enabled),
+        reason: reason || null,
+      },
+    });
+  } catch (auditErr) {
+    // Não-bloqueante: flag foi salva; auditoria pode ser re-tentada.
+    console.warn('[platform] createAuditLog failed after setFeatureFlag:', auditErr?.message);
+  }
 }
 
 const SETTINGS_SECTIONS = ['ui_labels', 'ui_text', 'operational_limits'];
@@ -142,22 +151,31 @@ export async function updatePlatformSettingsSection(section, value, actor) {
     throw new Error(`Seção de configuração desconhecida: ${section}`);
   }
   const normalized = normalizePlatformSettings({ [section]: value });
-  await setDoc(
-    settingsRef(),
-    {
-      [section]: normalized[section],
-      updated_at: serverTimestamp(),
-    },
-    { merge: true },
-  );
-  await createAuditLog({
-    action: 'platform_settings_updated',
-    actor,
-    details: {
-      section,
-      keys: Object.keys(normalized[section]),
-    },
-  });
+  try {
+    await setDoc(
+      settingsRef(),
+      {
+        [section]: normalized[section],
+        updated_at: serverTimestamp(),
+      },
+      { merge: true },
+    );
+  } catch (err) {
+    throw new Error(`Falha ao atualizar seção '${section}': ${err?.message}`);
+  }
+  try {
+    await createAuditLog({
+      action: 'platform_settings_updated',
+      actor,
+      details: {
+        section,
+        keys: Object.keys(normalized[section]),
+      },
+    });
+  } catch (auditErr) {
+    // Não-bloqueante: seção foi salva; auditoria pode ser re-tentada.
+    console.warn('[platform] createAuditLog failed after updatePlatformSettingsSection:', auditErr?.message);
+  }
   return normalized[section];
 }
 
@@ -168,12 +186,16 @@ export async function updatePlatformSettingsSection(section, value, actor) {
  */
 export async function listFeatureFlagHistory(maxResults = 20) {
   if (!db) return [];
-  const q = query(
-    collection(db, 'audit_logs'),
-    where('action', '==', 'platform_feature_flag_changed'),
-    orderBy('created_at_ms', 'desc'),
-    limit(maxResults),
-  );
-  const snap = await getDocs(q);
-  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+  try {
+    const q = query(
+      collection(db, 'audit_logs'),
+      where('action', '==', 'platform_feature_flag_changed'),
+      orderBy('created_at_ms', 'desc'),
+      limit(maxResults),
+    );
+    const snap = await getDocs(q);
+    return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+  } catch {
+    return [];
+  }
 }
