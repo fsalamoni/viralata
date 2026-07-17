@@ -45,8 +45,8 @@ const STATUS_BADGE = {
   pending: 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300',
   active: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300',
   extended: 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300',
-  ended: 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300',
-  cancelled: 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300',
+  ended: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
+  cancelled: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
   interrupted: 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300',
 };
 
