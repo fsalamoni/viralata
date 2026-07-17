@@ -4,7 +4,6 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   PawPrint, Heart, Building2, MessageCircle, User, Menu, X, BookHeart,
   Plus, Shield, ShieldCheck, AlertTriangle, LogOut, Radar, Users, HeartHandshake,
-  Sun, Moon
 } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import NotificationsMenu from '@/modules/notifications/components/NotificationsMenu';
@@ -12,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import SwUpdateBanner from '@/components/SwUpdateBanner';
 import LegalFooter from '@/components/LegalFooter';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import ThemeMenu from '@/components/ThemeMenu';
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
   DropdownMenuTrigger, DropdownMenuSeparator,
@@ -120,7 +120,7 @@ export default function Layout({ children, currentPageName }) {
           {/* Ações direita */}
           <div className="flex items-center gap-2">
             {/* Dark mode toggle — sempre visível */}
-            <ColorModeToggle />
+            <ThemeMenu />
             {isAuthenticated ? (
               <>
                 {/* Cadastrar Pet — presente no cabeçalho em todas as páginas (item 2) */}
