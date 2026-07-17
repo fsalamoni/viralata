@@ -3,16 +3,19 @@
  *
  * A migração resolve o cenário legado: o doc `platform_settings/global` foi
  * criado com todas as flags em false (default antigo). Quando os defaults
- * locais mudaram (PR #26 — UX flags ON), o doc persistido continuou
- * segurando false, e o `normalizeFeatureFlags` preserva o false. Resultado:
- * as features não funcionam para o admin que nunca visitou /admin/flags.
+ * locais mudaram (PR #26 — UX flags ON, depois SHELTER_* ON), o doc
+ * persistido continuou segurando false. Sem a migração, mudar
+ * DEFAULT_FEATURE_FLAGS localmente não afeta quem já tem o doc persistido.
  *
  * A função `migrateLegacyFlags` detecta o estado legado e força os defaults
- * atuais — mas só se TODAS as flags estiverem em false (para não sobrescrever
- * o admin que explicitamente desligou uma flag específica).
+ * atuais. Migração v3 (2026-07-16) tem DOIS critérios:
+ *  1. TODAS as flags em false → migra tudo.
+ *  2. Caso contrário → migra apenas SHELTER_* que estão undefined/null
+ *     (preserva controle explícito do admin sobre outras flags).
  */
 import { describe, it, expect } from 'vitest';
 import { DEFAULT_FEATURE_FLAGS, FEATURE_FLAG } from '@/core/featureFlags';
+import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
 import { migrateLegacyFlagsForTest } from '@/core/lib/FeatureFlagsContext.migration';
 
 describe('migrateLegacyFlags — detecção de estado legado', () => {
@@ -58,5 +61,53 @@ describe('migrateLegacyFlags — detecção de estado legado', () => {
     const migrated = migrateLegacyFlagsForTest(withExtra);
     expect(migrated.custom_key).toBe('something');
     expect(migrated[FEATURE_FLAG.MURAL_RICH_POSTS]).toBe(DEFAULT_FEATURE_FLAGS[FEATURE_FLAG.MURAL_RICH_POSTS]);
+  });
+});
+
+describe('migrateLegacyFlags — migração v3 (SHELTER_* parciais)', () => {
+  it('migra apenas SHELTER_* que estão undefined, preservando as explicitamente setadas', () => {
+    const stored = {
+      ...DEFAULT_FEATURE_FLAGS,
+      [SHELTER_FEATURE_FLAG.SHELTER_FOUNDATION]: true,
+      [SHELTER_FEATURE_FLAG.SHELTER_KANBAN]: true,
+      [SHELTER_FEATURE_FLAG.SHELTER_DASHBOARD]: true,
+    };
+    const migrated = migrateLegacyFlagsForTest(stored);
+    expect(migrated[SHELTER_FEATURE_FLAG.SHELTER_FOUNDATION]).toBe(true);
+    expect(migrated[SHELTER_FEATURE_FLAG.SHELTER_KANBAN]).toBe(true);
+    expect(migrated[SHELTER_FEATURE_FLAG.SHELTER_DASHBOARD]).toBe(true);
+    const defFoster = DEFAULT_FEATURE_FLAGS[SHELTER_FEATURE_FLAG.SHELTER_FOSTER];
+    expect(migrated[SHELTER_FEATURE_FLAG.SHELTER_FOSTER]).toBe(defFoster);
+    const defReports = DEFAULT_FEATURE_FLAGS[SHELTER_FEATURE_FLAG.SHELTER_REPORTS];
+    expect(migrated[SHELTER_FEATURE_FLAG.SHELTER_REPORTS]).toBe(defReports);
+  });
+
+  it('NÃO sobrescreve SHELTER_* explicitamente em false (admin desligou)', () => {
+    const stored = {
+      ...DEFAULT_FEATURE_FLAGS,
+      [SHELTER_FEATURE_FLAG.SHELTER_FOUNDATION]: true,
+      [SHELTER_FEATURE_FLAG.SHELTER_FOSTER]: false,
+    };
+    const migrated = migrateLegacyFlagsForTest(stored);
+    expect(migrated[SHELTER_FEATURE_FLAG.SHELTER_FOSTER]).toBe(false);
+  });
+
+  it('NÃO toca em flags não-SHELTER (preserva controle explícito)', () => {
+    const stored = {
+      ...DEFAULT_FEATURE_FLAGS,
+      [FEATURE_FLAG.HOME_STATS_V1]: false,
+    };
+    const migrated = migrateLegacyFlagsForTest(stored);
+    expect(migrated[FEATURE_FLAG.HOME_STATS_V1]).toBe(false);
+  });
+
+  it('retorna a mesma estrutura se não há SHELTER_* para migrar', () => {
+    const stored = {
+      ...DEFAULT_FEATURE_FLAGS,
+      [SHELTER_FEATURE_FLAG.SHELTER_FOUNDATION]: true,
+      [SHELTER_FEATURE_FLAG.SHELTER_DASHBOARD]: true,
+    };
+    const migrated = migrateLegacyFlagsForTest(stored);
+    expect(migrated).toEqual(stored);
   });
 });
