@@ -33,7 +33,10 @@ export function migrateLegacyFlags(rawFlags) {
   const stored = rawFlags || {};
 
   // Critério 1: todas as flags em false (incluindo undefined) → migra tudo.
-  const storedAllFalse = allFlagKeys.every((k) => !stored || stored[k] === false);
+  // BUG FIX: stored[k] === false retorna false para undefined (key not in stored),
+  // fazendo storedAllFalse = false quando stored = {}. Corrigido: usar !(k in stored)
+  // para detectar keys ausentes (equivalentes a false).
+  const storedAllFalse = allFlagKeys.every((k) => !(k in stored) || stored[k] === false);
   if (storedAllFalse) {
     return { ...stored, ...DEFAULT_FEATURE_FLAGS };
   }
