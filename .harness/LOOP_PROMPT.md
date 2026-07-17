@@ -1,20 +1,22 @@
 # LOOP_PROMPT — viralata (atualizado 2026-07-17 02:20 UTC)
 
-**Contexto**: /workspace/viralata, branch main @ 2c91b28, React+Vite+Firebase.
+**Contexto**: /workspace/viralata, branch main @ 8747770e, React+Vite+Firebase.
 **Repo**: https://github.com/fsalamoni/viralata.git
 **Sessão**: Mavis root (loop autônomo, **30min**, 24/7 sem limite de horário).
-**Janela ativa**: ~5h restantes da FULL_AUDIT_2026-07-17.
 
 **Missão**: **VARREDURA COMPLETA FULL_AUDIT_2026-07-17** (107 tasks, TASK-813..TASK-919).
 Ver `docs/FULL_AUDIT_2026-07-17.md` para o documento canônico.
 
-**MODO ATUAL**: MERGE+DEPLOY A CADA TASK. **ANTI-FACHADA ATIVA** (v3 — pós-análise).
+**MODO ATUAL**: MERGE+DEPLOY A CADA TASK. **ANTI-FACHADA ATIVA** (v3).
 
-**Métricas atuais (após reversão)**:
-- 542 done, 30 FULL_AUDIT done (com commit)
-- 80 backlog
-- 19 tasks que tinham sido marcadas done SEM commit → revertidas para backlog
-- **REGRAS REFORÇADAS** abaixo
+**Métricas atuais (2026-07-17 06:28 UTC)**:
+- ALL: 596 done, 27 backlog, 624 total
+- FULL_AUDIT: 84 done, 23 backlog, 107 total
+- Fase 0-7: ✅ TODAS COMPLETAS (84 tasks)
+- Fase 8 (DB): 1 done, 7 backlog
+- Fase 9 (Refatoração): 0 done, 8 backlog
+- Fase 10 (Docs): 0 done, 8 backlog
+- Remaining: 23 tasks (Fases 8-10)
 
 ---
 
