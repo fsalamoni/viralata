@@ -22,7 +22,9 @@ export function registerPwa() {
   // Em dev o SW não traz benefício e pode confundir o HMR; só em produção.
   if (import.meta.env.DEV) return;
 
-  const swUrl = `${import.meta.env.BASE_URL || '/'}sw.js`.replace(/\/{2,}/g, '/');
+  // Bumped to sw-v6.js (2026-07-17) — MUST match vite.config.js filename.
+  // sw.js still exists in dist/ (legacy) but we register sw-v6.js for new sessions.
+  const swUrl = `${import.meta.env.BASE_URL || '/'}sw-v6.js`.replace(/\/{2,}/g, '/');
 
   // IMPORTANTE: não recarregamos automaticamente quando o SW troca de
   // controller. O componente <SwUpdateBanner> (montado em Layout.jsx)
