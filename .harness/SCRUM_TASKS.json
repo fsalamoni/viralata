@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.1.0",
-  "generatedAt": "2026-07-17T05:04:48.451Z",
+  "generatedAt": "2026-07-17T05:06:55.128Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W29",
@@ -12,11 +12,11 @@
   },
   "activeWorktrees": [
     {
-      "id": "wt-TASK-857",
-      "branch": "feat/audit-TASK-857-2026-07-17",
-      "head": "ba0753fc954629d8c51e11c86fc8f9f6d76b568e",
-      "headTitle": "feat: TASK-857 — AdminDashboard audit",
-      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-TASK-857",
+      "id": "wt-TASK-860",
+      "branch": "feat/audit-TASK-860-2026-07-17",
+      "head": "f01f9502cdc6682ff3c7b005dcb30b653beef26d",
+      "headTitle": "feat: TASK-860+TASK-861 — AdminSecurity/SecurityAlerts + AdminNotifications audit",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-TASK-860",
       "status": "in-sync",
       "commitsAhead": 0,
       "primarySession": null,
@@ -14707,7 +14707,8 @@
       "blockedBy": [],
       "description": "Ler src/modules/admin/pages/AdminMetrics.jsx. Verificar: (1) gráficos de métricas; (2) filtros de data; (3) export CSV/PDF; (4) tokens semânticos; (5) loading skeleton.",
       "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T05:04:48"
+      "updatedAt": "2026-07-17T04:59:29",
+      "resolution": "done"
     },
     {
       "id": "TASK-859",
@@ -14728,14 +14729,15 @@
       "blockedBy": [],
       "description": "Ler src/modules/admin/pages/AdminAudit.jsx. Verificar: (1) tabela de log de auditoria; (2) filtros por usuário/ação/data; (3) tokens semânticos; (4) empty state; (5) skeleton.",
       "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17"
+      "updatedAt": "2026-07-17",
+      "resolution": "done"
     },
     {
       "id": "TASK-860",
       "title": "AUDIT: AdminSecurity (/admin/security) — verificar sessão + 2FA",
       "type": "feature",
       "category": "audit",
-      "status": "backlog",
+      "status": "done",
       "priority": "high",
       "owner": "loop_420680956387556",
       "branch": "main",
@@ -14749,14 +14751,15 @@
       "blockedBy": [],
       "description": "Ler src/modules/admin/pages/AdminSecurity.jsx. Verificar: (1) sessão ativa; (2) logout de outros dispositivos; (3) tokens semânticos; (4) loading skeleton.",
       "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17"
+      "updatedAt": "2026-07-17T05:02:38",
+      "resolution": "done"
     },
     {
       "id": "TASK-861",
       "title": "AUDIT: AdminNotifications (/admin/notifications) — verificar list + actions",
       "type": "feature",
       "category": "audit",
-      "status": "backlog",
+      "status": "done",
       "priority": "medium",
       "owner": "loop_420680956387556",
       "branch": "main",
@@ -14770,14 +14773,15 @@
       "blockedBy": [],
       "description": "Ler src/modules/admin/pages/AdminNotifications.jsx. Verificar: (1) lista de notificações; (2) marcar como lida; (3) delete; (4) tokens semânticos; (5) empty state; (6) skeleton.",
       "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17"
+      "updatedAt": "2026-07-17",
+      "resolution": "done"
     },
     {
       "id": "TASK-862",
       "title": "AUDIT: AdminReports (/admin/reports) — verificar list + filters",
       "type": "feature",
       "category": "audit",
-      "status": "backlog",
+      "status": "ready",
       "priority": "medium",
       "owner": "loop_420680956387556",
       "branch": "main",
@@ -16253,7 +16257,7 @@
       "feat/ds-v2-motion-2026-07-16",
       "feat/ds-v2-audit-2026-07-16"
     ],
-    "mainCommit": "0d5645a22bb3996270384684f8bfb1e44f21f2a4",
+    "mainCommit": "844ab49db8937330de8bc6a2d1c55e13b694a450",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -16264,12 +16268,12 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 624,
-    "done": 557,
+    "done": 561,
     "inProgress": 1,
     "inReview": 0,
     "blocked": 0,
-    "ready": 0,
-    "backlog": 65,
+    "ready": 2,
+    "backlog": 61,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
     "contribuicaoCoder": {
@@ -16298,7 +16302,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-17T05:04:48 — via scrum.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-17T05:06:55.150Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
