@@ -16119,6 +16119,50 @@
       "createdAt": "2026-07-17",
       "updatedAt": "2026-07-17",
       "phase": "Fase 10"
+    },
+    {
+      "id": "TASK-921",
+      "title": "FIX: 3 bugs críticos V3 Feed (React.lazy + import SwipeDeck + FEATURE_FLAG_META)",
+      "status": "done",
+      "phase": "V3-Feed-Hotfix",
+      "priority": "critical",
+      "createdAt": "2026-07-17T18:48:00Z",
+      "doneAt": "2026-07-17T18:48:00Z",
+      "evidence": {
+        "commits": [
+          "5786fc52 — V3_PAGE_FEED no AdminFlags + espaçamento SwipeDeck",
+          "6899e91c — React.lazy para V3/Enhanced",
+          "bb82f182 — Importar SwipeDeck em PetFeedV3",
+          "853fb546 — Push final"
+        ],
+        "deployTimestamp": "2026-07-17T18:46:48Z",
+        "bundleV3": "PetFeedV3-BPw-UN_j.js (26KB)",
+        "tests": "153 passing",
+        "bugs": [
+          "BUG 1: Vite constant folding eliminava V3 do bundle",
+          "BUG 2: SwipeDeck usado mas não importado em PetFeedV3",
+          "BUG 3: FEATURE_FLAG_META sem V3_PAGE_* (flag invisível no admin)"
+        ],
+        "fixes": [
+          "FIX 1: React.lazy() com dynamic import para V3/Enhanced",
+          "FIX 2: import SwipeDeck from \"../components/SwipeDeck\"",
+          "FIX 3: 19 V3_PAGE_* adicionados ao FEATURE_FLAG_META com labels"
+        ],
+        "validation": {
+          "v3ChunkDeployed": "PetFeedV3-BPw-UN_j.js",
+          "swipeDeckRender": "onSwipeRight/onSwipeLeft presente",
+          "collapsibleCard": "arena-section-card presente",
+          "paginationControls": "onPageChange presente",
+          "inputCityAutocomplete": "userCity presente",
+          "filterChipsRow": "field: presente",
+          "skeletonGrid": "tt.Grid presente",
+          "emptyState": "Limpar filtros presente",
+          "errorState": "Não foi possível presente",
+          "undo": "Desfazer presente",
+          "newSpacing": "mt-10/gap-10 presente"
+        },
+        "partnerSpaces": "docs/V3_PARTNER_SPACES.md criado (10.7KB, 13 seções, Fase 14 do V3)"
+      }
     }
   ],
   "definitionOfDone": [
