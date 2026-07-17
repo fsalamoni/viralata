@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.1.0",
-  "generatedAt": "2026-07-16T21:30:52.312Z",
+  "generatedAt": "2026-07-17T02:24:31.216Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W29",
@@ -398,11 +398,11 @@
   },
   "activeWorktrees": [
     {
-      "id": "wt-TASK-808",
-      "branch": "feat/admin-content-editor-polish-2026-07-16",
-      "head": "88d651d18b81f4212a065eefd1310809e24b42b3",
-      "headTitle": "feat(TASK-808): DS_V2 polish AdminContentEditor — dirty state, skeleton loading, sticky save bar",
-      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-TASK-808",
+      "id": "wt-register-flags",
+      "branch": "feat/register-ds-v2-flags",
+      "head": "7cc5dfd48c505773ed9259aa9f87348f16a9cfaf",
+      "headTitle": "feat(flags): registrar 11 flags DS_V2 (Fase 4) em core/featureFlags.js",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-register-flags",
       "status": "in-sync",
       "commitsAhead": 0,
       "primarySession": null,
@@ -14053,7 +14053,7 @@
       "id": "TASK-810",
       "title": "Documents: revisar consistência do padrão 2-layer em todo o app",
       "description": "Auditoria final: cada página que tenha tabs com mais de 5 itens deve seguir o padrão 2-layer documentado em DESIGN_SYSTEM.md §3.5.1.",
-      "status": "ready",
+      "status": "done",
       "phase": "ux-ds-v2-audit",
       "tags": [
         "ux",
@@ -14065,8 +14065,28 @@
       "pr": null,
       "branch": "feat/final-2layer-audit-2026-07-16",
       "createdAt": "2026-07-16",
+      "updatedAt": "2026-07-16T21:27:16",
+      "evidence": null,
+      "resolvedAt": "2026-07-16"
+    },
+    {
+      "id": "TASK-811",
+      "title": "HOTFIX: migração de feature flags v3 (SHELTER_* parciais)",
+      "description": "User reportou 2026-07-16 23:14 'Não apareceu nenhuma flag nova para mim'. Causa: DEFAULT_FEATURE_FLAGS tinha SHELTER_* em true, mas doc Firestore persistido tinha false. Migração v2 só aplicava se TODAS flags estavam false. Migração v3 aplica DEFAULTs das SHELTER_* que estão undefined, preservando controles explícitos.",
+      "status": "done",
+      "phase": "hotfix",
+      "tags": [
+        "hotfix",
+        "feature-flags",
+        "migracao",
+        "regra-a"
+      ],
+      "owner": "mvs_Mavis",
+      "pr": null,
+      "branch": "hotfix/force-flags-default-2026-07-16",
+      "createdAt": "2026-07-16",
       "updatedAt": "2026-07-16",
-      "evidence": null
+      "evidence": "merge f6c9ed6"
     }
   ],
   "definitionOfDone": [
@@ -14331,7 +14351,7 @@
       "feat/ds-v2-motion-2026-07-16",
       "feat/ds-v2-audit-2026-07-16"
     ],
-    "mainCommit": "1ec0a23442115843109b90b3ef4c8bd64f35ddfd",
+    "mainCommit": "39a67fab9868120189f642b5ea00dbb4e72de34f",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -14341,12 +14361,12 @@
     ],
     "openTODOs": 5,
     "openLegalReviews": 3,
-    "totalTasks": 515,
-    "done": 509,
+    "totalTasks": 516,
+    "done": 511,
     "inProgress": 0,
     "inReview": 0,
     "blocked": 0,
-    "ready": 1,
+    "ready": 0,
     "backlog": 4,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
@@ -14376,7 +14396,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-16T21:30:52.341Z — via sync.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-17T02:24:31.237Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
@@ -14757,7 +14777,7 @@
 }
   </script>
 <<<<<<< HEAD
-  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-16T21:25:49.001Z">
+  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-16T21:27:23.272Z">
 =======
   <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-16T03:26:48.025Z">
 >>>>>>> 2fdaf3d (design(ux): TASK-603 - hero home com hierarquia clara - H1 menor mobile, badge compacto, remove chips decorativos)
