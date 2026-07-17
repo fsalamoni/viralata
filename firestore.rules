@@ -680,6 +680,21 @@ service cloud.firestore {
       allow write: if isPlatformAdmin();
     }
 
+    // ─── TASK-021: CMS de documentos legais/institucionais (Markdown) ────
+    // Documentos públicos (Privacy, Terms, Legislation). Páginas usam
+    // LegalDocView com fallback estático se Firestore falhar.
+    //   legal_docs/{docKey} — privacy_policy_v2 | terms_v2 | legislation_v2
+    //   campos: title, version, author, effectiveAt, content, active, publishedAt
+    // Escrita: platform_admin OU user com role 'legal' (TASK-021: criar).
+    match /legal_docs/{docId} {
+      allow read: if true;
+      allow create, update: if isAuth() && (
+        isPlatformAdmin() ||
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'legal'
+      );
+      allow delete: if isPlatformAdmin();
+    }
+
     // ─── Fase 21: Painel de Saúde da Plataforma (admin master) ─────────────
     // Coleções de observabilidade/admin. Apenas platform_admin lê; escrita
     // é via Cloud Function (admin SDK) para os snapshots, e via admin
