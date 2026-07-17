@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.1.0",
-  "generatedAt": "2026-07-17T10:24:04.269Z",
+  "generatedAt": "2026-07-17T10:32:07.456Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W29",
@@ -980,7 +980,7 @@
       "title": "Dark mode completo com switch (tokens .dark já existem)",
       "type": "feature",
       "category": "design",
-      "status": "backlog",
+      "status": "done",
       "priority": "low",
       "owner": "unassigned",
       "branch": null,
@@ -996,7 +996,8 @@
       "evidence": "docs/ROADMAP.md §Fase 3",
       "description": "Tokens .dark já estão em src/index.css mas não são usados. Implementar switch no header + persistir em localStorage. Aproveitar prefers-color-scheme no primeiro acesso.",
       "createdAt": "2026-07-11",
-      "updatedAt": "2026-07-11"
+      "updatedAt": "2026-07-17T10:31:58",
+      "resolvedAt": "2026-07-17"
     },
     {
       "id": "TASK-021",
@@ -16765,7 +16766,7 @@
       "feat/ds-v2-motion-2026-07-16",
       "feat/ds-v2-audit-2026-07-16"
     ],
-    "mainCommit": "fc3231aa915de2c7d91412b87de504dab7ffffd8",
+    "mainCommit": "fbdfe7a2e848cfe443f5687949806732a2e38bb2",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -16776,12 +16777,12 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 624,
-    "done": 619,
+    "done": 620,
     "inProgress": 0,
     "inReview": 0,
     "blocked": 0,
     "ready": 0,
-    "backlog": 4,
+    "backlog": 3,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
     "contribuicaoCoder": {
@@ -16810,7 +16811,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-17T10:24:04.290Z — via sync.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-17T10:32:07.478Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
@@ -17193,7 +17194,7 @@
 }
   </script>
 <<<<<<< HEAD
-  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-17T10:24:04.354Z">
+  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-17T10:32:07.541Z">
 =======
   <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-16T03:26:48.025Z">
 >>>>>>> 2fdaf3d (design(ux): TASK-603 - hero home com hierarquia clara - H1 menor mobile, badge compacto, remove chips decorativos)
@@ -17211,7 +17212,7 @@
       </div>
     </div>
     <div class="sprint-info">
-      <span class="pill mono">main @ 263d9d1</span>
+      <span class="pill mono">main @ fbdfe7a</span>
       <span class="pill">0 worktrees ativos</span>
       <span class="pill goal">Goal: estabilizar pós-22 fases + fechar worktrees</span>
     </div>
