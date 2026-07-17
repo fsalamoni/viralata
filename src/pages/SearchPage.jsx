@@ -32,26 +32,54 @@ const ENTITY_META = {
   pet: { label: 'Animais', icon: PawPrint, url: (r) => `/pet/${r.id}` },
 };
 
-function ResultCard({ result }) {
+/**
+ * ResultCard — refatorado para evitar nested interactive elements.
+ *
+ * Para shelters (sem shelter selecionado): renderiza <button>
+ * para selecionar o abrigo, sem Link dentro.
+ * Para pets / shelters já selecionados: renderiza <Link> normal.
+ *
+ * Fix: antes usava <button> wrapper em torno de <ResultCard> que
+ * internamente tinha <Link> — accessibility violation (WCAG 4.1.2).
+ */
+function ResultCard({ result, onShelterClick }) {
   const meta = ENTITY_META[result.entity] || {};
   const Icon = meta.icon || Search;
   const to = meta.url ? meta.url(result) : '#';
+
+  const cardContent = (
+    <section className="arena-section-card transition-colors hover:bg-secondary/30">
+      <div className="arena-section-card-body flex items-center gap-3 p-3.5">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+          <Icon className="h-4.5 w-4.5 text-primary" />
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-semibold text-foreground">{result.title || result.id}</p>
+          {result.snippet && (
+            <p className="truncate text-xs text-muted-foreground">{result.snippet}</p>
+          )}
+        </div>
+        <Badge variant="outline" className="shrink-0 text-[10px]">{meta.label || result.entity}</Badge>
+      </div>
+    </section>
+  );
+
+  if (result.entity === 'shelter' && onShelterClick) {
+    return (
+      <button
+        type="button"
+        className="w-full text-left"
+        onClick={onShelterClick}
+        aria-label={`Selecionar abrigo ${result.title || result.id}`}
+      >
+        {cardContent}
+      </button>
+    );
+  }
+
   return (
     <Link to={to} className="block">
-      <section className="arena-section-card transition-colors hover:bg-secondary/30">
-        <div className="arena-section-card-body flex items-center gap-3 p-3.5">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10">
-            <Icon className="h-4.5 w-4.5 text-primary" />
-          </span>
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold text-foreground">{result.title || result.id}</p>
-            {result.snippet && (
-              <p className="truncate text-xs text-muted-foreground">{result.snippet}</p>
-            )}
-          </div>
-          <Badge variant="outline" className="shrink-0 text-[10px]">{meta.label || result.entity}</Badge>
-        </div>
-      </section>
+      {cardContent}
     </Link>
   );
 }
@@ -76,10 +104,18 @@ export default function SearchPage() {
   const { data, isLoading, hasError, refetch } = useSmartSearch(filters || {}, {}, {});
   const results = filters ? (data?.results || []) : [];
 
+  const handleShelterSelect = (shelter) => {
+    setSelectedShelter({ id: shelter.id, title: shelter.title });
+    setQuery('');
+  };
+
+  const showEmptyQuery = !filters || query.trim().length < 2;
+  const showNoResults = !isLoading && !hasError && filters && results.length === 0;
+
   return (
     <div className={wrapperClass}>
       <Seo title="Busca" description="Busque abrigos e animais para adoção no Viralata." />
-      <h1 className="mb-1 text-xl font-bold">Busca</h1>
+      <h1 className="mb-1 text-2xl font-bold text-foreground">Busca</h1>
       <p className="mb-4 text-sm text-muted-foreground">
         {selectedShelter
           ? <>Buscando animais em <strong>{selectedShelter.title}</strong>.</>
@@ -132,37 +168,41 @@ export default function SearchPage() {
                 <Skeleton className="h-16 w-full rounded-xl" />
               </>
             )}
+
             {hasError && (
               <p className="text-sm text-muted-foreground">
                 A busca falhou.{' '}
                 <button type="button" className="underline" onClick={() => refetch()}>Tentar de novo</button>
               </p>
             )}
-            {!isLoading && !hasError && filters && results.length === 0 && (
+
+            {/* Estado vazio: query curta */}
+            {showEmptyQuery && !isLoading && (
               <p className="py-6 text-center text-sm text-muted-foreground">
-                Nenhum resultado para “{query}”.
+                Digite pelo menos 2 caracteres para buscar.
               </p>
             )}
-            {!isLoading && !hasError && filters && results.length === 0 && (
+
+            {/* Estado vazio: nenhum resultado */}
+            {showNoResults && (
               <EmptyState
                 icon={Search}
                 title="Nenhum resultado encontrado"
                 description={`Nenhum resultado para "${query}". Tente buscar outro termo ou selecione outro abrigo.`}
               />
             )}
+
+            {/* Cards de resultado */}
             {!isLoading && !hasError && results.map((r) => (
-              r.entity === 'shelter' && !selectedShelter ? (
-                <button
-                  key={`${r.entity}-${r.id}`}
-                  type="button"
-                  className="w-full text-left"
-                  onClick={() => { setSelectedShelter({ id: r.id, title: r.title }); setQuery(''); }}
-                >
-                  <ResultCard result={r} />
-                </button>
-              ) : (
-                <ResultCard key={`${r.entity}-${r.id}`} result={r} />
-              )
+              <ResultCard
+                key={`${r.entity}-${r.id}`}
+                result={r}
+                onShelterClick={
+                  r.entity === 'shelter' && !selectedShelter
+                    ? () => handleShelterSelect(r)
+                    : undefined
+                }
+              />
             ))}
           </div>
         </>
