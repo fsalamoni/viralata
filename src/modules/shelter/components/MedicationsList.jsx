@@ -10,6 +10,8 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import { EmptyState } from '@/components/ui/empty-state';
 import { useToast } from '@/components/ui/use-toast';
 import {
   MEDICATION_FREQUENCIES,
@@ -31,10 +33,10 @@ import { MedicationForm } from './MedicationForm';
 import { confirmDialog } from '@/components/ui/confirm-provider';
 
 const STATUS_TONES = {
-  active: 'bg-green-100 text-green-900',
-  paused: 'bg-amber-100 text-amber-900',
-  completed: 'bg-zinc-100 text-zinc-700',
-  cancelled: 'bg-zinc-100 text-zinc-700',
+  active: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300',
+  paused: 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300',
+  completed: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
+  cancelled: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
 };
 
 export function MedicationsList({ petId, shelterClubId, canEdit = false, actor }) {
@@ -53,7 +55,11 @@ export function MedicationsList({ petId, shelterClubId, canEdit = false, actor }
   if (!petId || !shelterClubId) {
     return <p className="text-sm text-muted-foreground">Pet/abrigo não definidos.</p>;
   }
-  if (isLoading) return <p className="text-sm text-muted-foreground">Carregando medicações…</p>;
+  if (isLoading) return (
+    <div className="space-y-3">
+      {[1, 2, 3].map((i) => <Skeleton key={i} className="h-20 rounded-xl" />)}
+    </div>
+  );
 
   const handleCreate = async (input) => {
     try {
