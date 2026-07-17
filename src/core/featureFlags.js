@@ -229,6 +229,30 @@ export const FEATURE_FLAG = Object.freeze({
    * Aditivo — desligada, tokens literais permanecem.
    */
   DS_V2_AUDIT: 'ds_v2_audit',
+
+  // ─── V3 — Redesign página por página (TASK-V3-FEED-1) ──────────────
+  // Cada flag = 1 página. Default OFF. Ativada no admin master quando
+  // o redesign da página estiver pronto e validado. Ver
+  // docs/PLAN_V3_REDESIGN.md.
+  V3_PAGE_FEED: 'v3_page_feed',
+  V3_PAGE_HOME: 'v3_page_home',
+  V3_PAGE_LOGIN: 'v3_page_login',
+  V3_PAGE_LEGAL: 'v3_page_legal',
+  V3_PAGE_PET_DETAIL: 'v3_page_pet_detail',
+  V3_PAGE_COMMUNITY_DETAIL: 'v3_page_community_detail',
+  V3_PAGE_CLUB_DETAIL: 'v3_page_club_detail',
+  V3_PAGE_PROFILE: 'v3_page_profile',
+  V3_PAGE_CHAT: 'v3_page_chat',
+  V3_PAGE_ADOPTION: 'v3_page_adoption',
+  V3_PAGE_ORG_ADMIN: 'v3_page_org_admin',
+  V3_PAGE_COMMUNITY_ADMIN: 'v3_page_community_admin',
+  V3_PAGE_SHELTER_ADMIN: 'v3_page_shelter_admin',
+  V3_PAGE_SEARCH: 'v3_page_search',
+  V3_PAGE_EVENTS: 'v3_page_events',
+  V3_PAGE_FOSTER: 'v3_page_foster',
+  V3_PAGE_VOLUNTEER: 'v3_page_volunteer',
+  V3_PAGE_MURAL: 'v3_page_mural',
+  V3_PAGE_ADMIN: 'v3_page_admin',
 });
 
 /** Metadados de exibição para o painel de flags (admin master). */
@@ -502,6 +526,28 @@ export const DEFAULT_FEATURE_FLAGS = Object.freeze({
   [FEATURE_FLAG.DS_V2_PAGES_CHAT]: false,
   [FEATURE_FLAG.DS_V2_MOTION]: false,
   [FEATURE_FLAG.DS_V2_AUDIT]: false,
+
+  // V3 Redesign — todas OFF por default. Cada página será ativada após
+  // validação visual no admin master. Ver docs/PLAN_V3_REDESIGN.md.
+  [FEATURE_FLAG.V3_PAGE_FEED]: false,
+  [FEATURE_FLAG.V3_PAGE_HOME]: false,
+  [FEATURE_FLAG.V3_PAGE_LOGIN]: false,
+  [FEATURE_FLAG.V3_PAGE_LEGAL]: false,
+  [FEATURE_FLAG.V3_PAGE_PET_DETAIL]: false,
+  [FEATURE_FLAG.V3_PAGE_COMMUNITY_DETAIL]: false,
+  [FEATURE_FLAG.V3_PAGE_CLUB_DETAIL]: false,
+  [FEATURE_FLAG.V3_PAGE_PROFILE]: false,
+  [FEATURE_FLAG.V3_PAGE_CHAT]: false,
+  [FEATURE_FLAG.V3_PAGE_ADOPTION]: false,
+  [FEATURE_FLAG.V3_PAGE_ORG_ADMIN]: false,
+  [FEATURE_FLAG.V3_PAGE_COMMUNITY_ADMIN]: false,
+  [FEATURE_FLAG.V3_PAGE_SHELTER_ADMIN]: false,
+  [FEATURE_FLAG.V3_PAGE_SEARCH]: false,
+  [FEATURE_FLAG.V3_PAGE_EVENTS]: false,
+  [FEATURE_FLAG.V3_PAGE_FOSTER]: false,
+  [FEATURE_FLAG.V3_PAGE_VOLUNTEER]: false,
+  [FEATURE_FLAG.V3_PAGE_MURAL]: false,
+  [FEATURE_FLAG.V3_PAGE_ADMIN]: false,
 });
 
 /**

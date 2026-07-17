@@ -106,6 +106,13 @@ const BY_NAME_ONLY = Object.fromEntries(
   Object.entries(BR_CITY_COORDS).map(([key, coords]) => [key.split('|')[0], coords]),
 );
 
+// V3 (TASK-V3-FEED): lista de cidades disponíveis para o autocomplete do
+// InputCityAutocomplete. Ordenada alfabeticamente.
+const ALL_CITY_NAMES = Object.keys(BR_CITY_COORDS)
+  .map((key) => key.split('|')[0])
+  .filter((name, i, arr) => arr.indexOf(name) === i)
+  .sort((a, b) => a.localeCompare(b, 'pt-BR'));
+
 /**
  * Normaliza texto de cidade para comparação: trim, minúsculas e sem acentos.
  * Exportado para o filtro do Feed comparar cidades digitadas livremente com
@@ -196,4 +203,21 @@ export function filterByRadius(items, originCoords, radiusKm, originCityText = '
 /** true se a cidade informada (só nome, texto livre) tem coordenadas conhecidas. */
 export function hasKnownCoords(cityText) {
   return lookupCityCoordsByName(cityText) !== null;
+}
+
+/**
+ * V3 (TASK-V3-FEED): retorna a lista de cidades disponíveis para autocomplete
+ * (usado por `<InputCityAutocomplete>`). Inclui a cidade do user (se não
+ * estiver na tabela) como primeiro item.
+ * @param {string} [userCity] - cidade do user (vem do profile)
+ * @returns {string[]}
+ */
+export function getCitySuggestions(userCity) {
+  const list = [...ALL_CITY_NAMES];
+  if (!userCity) return list;
+  const normalizedUser = normalizeKey(userCity);
+  if (normalizedUser && !list.some((c) => normalizeKey(c) === normalizedUser)) {
+    return [userCity, ...list];
+  }
+  return list;
 }

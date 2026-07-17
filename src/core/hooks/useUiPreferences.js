@@ -39,9 +39,57 @@ export const BOTTOM_TAB_MODES = Object.freeze({
   HIDDEN: 'hidden',
 });
 
+/**
+ * V3 (TASK-V3-UI-1): modos da barra superior (header) do site.
+ * Mesmo padrão das outras barras: sempre visível, autohide (some com
+ * scroll down, aparece com scroll up), ou escondida.
+ * Default `fixed` — user sempre vê onde está.
+ */
+export const TOPBAR_MODES = Object.freeze({
+  FIXED: 'fixed',
+  AUTOHIDE: 'autohide',
+  HIDDEN: 'hidden',
+});
+
+/**
+ * V3 (TASK-V3-UI-2): cards por página do feed de pets, por viewport.
+ * - Mobile (<640px): opções [4, 8, 12], default 8 (1 coluna)
+ * - Tablet (640-1024px): opções [8, 12, 20], default 12 (2 colunas)
+ * - Desktop (>=1024px): opções [12, 20, 40, 100], default 12 (3-5 colunas)
+ * Múltiplos de 4 para casar com 4 colunas; mobile usa 1 coluna então
+ * aceita qualquer múltiplo de 4.
+ */
+export const CARDS_PER_PAGE_OPTIONS = Object.freeze({
+  mobile: [4, 8, 12],
+  tablet: [8, 12, 20],
+  desktop: [12, 20, 40, 100],
+});
+
+/**
+ * V3 (TASK-V3-UI-3): nº de colunas do grid de pets por viewport.
+ * `auto` = responsivo (1 mobile, 2 tablet, 3-4 desktop, 4 desktop wide).
+ * User pode fixar `3`, `4`, `5` (desktop) ou `1`, `2` (mobile/tablet).
+ */
+export const GRID_COLUMNS_OPTIONS = Object.freeze({
+  auto: 'auto',
+  1: 1, 2: 2, 3: 3, 4: 4, 5: 5,
+});
+
 const DEFAULT_PREFS = Object.freeze({
   footerMode: FOOTER_MODES.FIXED,
   bottomTabBarMode: BOTTOM_TAB_MODES.FIXED,
+  // V3 additions
+  topBarMode: TOPBAR_MODES.FIXED,
+  feedCardsPerPage: Object.freeze({
+    mobile: 8,
+    tablet: 12,
+    desktop: 12,
+  }),
+  feedGridColumns: Object.freeze({
+    mobile: 'auto',
+    tablet: 'auto',
+    desktop: 'auto',
+  }),
   compactMode: false,
   reduceMotion: false,
 });
@@ -131,6 +179,34 @@ export function useUiPreferences() {
   );
 
   return [prefs, setPrefs, status];
+}
+
+/**
+ * V3 (TASK-V3-UI-2 helper): retorna o nº de cards por página baseado no
+ * viewport atual + preferência do user. Usado pelo PaginationControls.
+ * @param {object} prefs - retorno de useUiPreferences()
+ * @param {'mobile'|'tablet'|'desktop'} viewport
+ * @returns {number}
+ */
+export function getCardsPerPageForViewport(prefs, viewport) {
+  const v = viewport === 'mobile' || viewport === 'tablet' ? viewport : 'desktop';
+  const val = prefs?.feedCardsPerPage?.[v];
+  if (typeof val === 'number') return val;
+  return DEFAULT_PREFS.feedCardsPerPage[v];
+}
+
+/**
+ * V3 (TASK-V3-UI-3 helper): retorna o nº de colunas do grid para o viewport.
+ * `auto` = deixa o Tailwind decidir (`grid-cols-1 sm:grid-cols-2 lg:grid-cols-4`).
+ * @param {object} prefs
+ * @param {'mobile'|'tablet'|'desktop'} viewport
+ * @returns {'auto'|1|2|3|4|5}
+ */
+export function getGridColumnsForViewport(prefs, viewport) {
+  const v = viewport === 'mobile' || viewport === 'tablet' ? viewport : 'desktop';
+  const val = prefs?.feedGridColumns?.[v];
+  if (val === 'auto' || val === 1 || val === 2 || val === 3 || val === 4 || val === 5) return val;
+  return 'auto';
 }
 
 export const UI_PREFERENCES_DEFAULTS = DEFAULT_PREFS;
