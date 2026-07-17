@@ -90,7 +90,7 @@ export function SwipeDeck({ pets, onLike, onPass, onOpenDetail, onUndo }) {
         )}
       </div>
       <div
-        className="relative mx-auto h-[460px] w-full max-w-[360px]"
+        className="relative mx-auto h-[480px] w-full max-w-[380px]"
         data-testid="swipe-deck"
         role="region"
         aria-label="Cartas de pets para descobrir"
@@ -117,7 +117,7 @@ export function SwipeDeck({ pets, onLike, onPass, onOpenDetail, onUndo }) {
           ))}
         </AnimatePresence>
       </div>
-      <div className="mt-5 flex items-center justify-center gap-6">
+      <div className="mt-10 flex items-center justify-center gap-10">
         <button
           type="button"
           disabled={!topId}

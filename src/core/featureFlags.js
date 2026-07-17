@@ -460,6 +460,91 @@ export const FEATURE_FLAG_META = Object.freeze({
       + 'badge.jsx, user-avatar.jsx, AdminMockData.jsx. Relatório em '
       + 'docs/AUDIT_DS_V2.md. Aderente à paleta oficial spec §2.1.',
   },
+
+  // V3 — Redesign página por página (TASK-V3-FEED-1, 2026-07-17)
+  // Cada flag = 1 página. Default OFF. Ativada no admin master quando
+  // o redesign da página estiver pronto e validado visualmente.
+  // Ver docs/PLAN_V3_REDESIGN.md e docs/REGENCY_<PAGE>.md.
+  [FEATURE_FLAG.V3_PAGE_FEED]: {
+    label: 'V3 · Feed (/feed)',
+    description:
+      'Redesign da página /feed. 6 filtros (espécie, porte, idade, sexo, '
+      + 'cidade, raio), ordenação, paginação responsiva por viewport, '
+      + 'SwipeDeck com UNDO + haptic, "Ver todos os pets" começa '
+      + 'fechado (Collapsible). Doc: docs/REGENCY_FEED_V3.md.',
+  },
+  [FEATURE_FLAG.V3_PAGE_HOME]: {
+    label: 'V3 · Home (/)',
+    description: 'Redesign da home/landing.',
+  },
+  [FEATURE_FLAG.V3_PAGE_LOGIN]: {
+    label: 'V3 · Login (/login)',
+    description: 'Redesign da página de login.',
+  },
+  [FEATURE_FLAG.V3_PAGE_LEGAL]: {
+    label: 'V3 · Páginas legais (privacidade, termos, legislação)',
+    description: 'Redesign das páginas legais (já parcialmente refatoradas pelo TASK-021 CMS Markdown).',
+  },
+  [FEATURE_FLAG.V3_PAGE_PET_DETAIL]: {
+    label: 'V3 · PetDetail (/pets/:id)',
+    description: 'Redesign da página de detalhe do pet.',
+  },
+  [FEATURE_FLAG.V3_PAGE_COMMUNITY_DETAIL]: {
+    label: 'V3 · CommunityDetail (/comunidades/:slug)',
+    description: 'Redesign da página de comunidade. Hoje tem layout 2 colunas (Conteúdo + Gestão) — refatorar.',
+  },
+  [FEATURE_FLAG.V3_PAGE_CLUB_DETAIL]: {
+    label: 'V3 · ClubDetail (/organizacoes/:id)',
+    description: 'Redesign da página do abrigo. Harmonizar FosterCtaCard (verde-água) com VolunteerCtaCard (laranja).',
+  },
+  [FEATURE_FLAG.V3_PAGE_PROFILE]: {
+    label: 'V3 · Perfil (/perfil)',
+    description: 'Redesign do perfil do adotante. Hoje tem tabs estranhas ("Dados pessoais, Adotante, Visual, Voluntário, Lares Temp, Adoções, Privacidade") e "Salvar perfil" sticky mal posicionado.',
+  },
+  [FEATURE_FLAG.V3_PAGE_CHAT]: {
+    label: 'V3 · Chat (/chat)',
+    description: 'Redesign do chat.',
+  },
+  [FEATURE_FLAG.V3_PAGE_ADOPTION]: {
+    label: 'V3 · Adoção (fluxo wizard + detail)',
+    description: 'Redesign do fluxo de adoção (wizard + detail).',
+  },
+  [FEATURE_FLAG.V3_PAGE_ORG_ADMIN]: {
+    label: 'V3 · OrganizationAdminPanel',
+    description: 'Redesign do painel admin da organização.',
+  },
+  [FEATURE_FLAG.V3_PAGE_COMMUNITY_ADMIN]: {
+    label: 'V3 · CommunityAdminPanel',
+    description: 'Redesign do painel admin da comunidade.',
+  },
+  [FEATURE_FLAG.V3_PAGE_SHELTER_ADMIN]: {
+    label: 'V3 · ShelterAdminDashboard',
+    description: 'Redesign do dashboard admin do abrigo.',
+  },
+  [FEATURE_FLAG.V3_PAGE_SEARCH]: {
+    label: 'V3 · Busca (/busca)',
+    description: 'Redesign da busca global.',
+  },
+  [FEATURE_FLAG.V3_PAGE_EVENTS]: {
+    label: 'V3 · Eventos (/eventos + detalhes)',
+    description: 'Redesign do feed de eventos e detalhes.',
+  },
+  [FEATURE_FLAG.V3_PAGE_FOSTER]: {
+    label: 'V3 · Lar Temporário (público + dashboard)',
+    description: 'Redesign das páginas de Lar Temporário.',
+  },
+  [FEATURE_FLAG.V3_PAGE_VOLUNTEER]: {
+    label: 'V3 · Voluntariado (programa + signup + termo)',
+    description: 'Redesign das páginas de Voluntariado.',
+  },
+  [FEATURE_FLAG.V3_PAGE_MURAL]: {
+    label: 'V3 · Mural (/mural)',
+    description: 'Redesign do mural público.',
+  },
+  [FEATURE_FLAG.V3_PAGE_ADMIN]: {
+    label: 'V3 · Admin (16 páginas)',
+    description: 'Redesign das 16 páginas do painel admin master. Inclui gerenciador de Espaço de Parceiros (TASK-V3-PARTNER-1).',
+  },
 });
 
 /**
