@@ -16239,6 +16239,30 @@
           "autohideTransition": "translate-y-full presente"
         }
       }
+    },
+    {
+      "id": "TASK-924",
+      "title": "FIX: Chips de raio (10/25/50/100 km) não mudavam de cor ao clicar",
+      "status": "done",
+      "phase": "V3-Feed-Hotfix-3",
+      "priority": "high",
+      "createdAt": "2026-07-17T19:46:00Z",
+      "doneAt": "2026-07-17T19:46:00Z",
+      "evidence": {
+        "commits": [
+          "9a94ad6f"
+        ],
+        "deployTimestamp": "2026-07-17T19:44:39Z",
+        "bundleV3": "PetFeedV3-DrN1nYyG.js (26.6KB)",
+        "tests": "161 passing",
+        "bug": "isActive() comparava value (number) === opt.value (string) → false sempre",
+        "fix": "String(value) === String(opt.value) — normalização de tipo",
+        "validation": {
+          "stringComparison": "String(s)===String(i.value) no V3 bundle",
+          "ariaPressed": "aria-pressed no V3 bundle",
+          "radiusOptions": "100 km presente"
+        }
+      }
     }
   ],
   "definitionOfDone": [
@@ -16513,8 +16537,8 @@
     ],
     "openTODOs": 5,
     "openLegalReviews": 3,
-    "totalTasks": 627,
-    "done": 626,
+    "totalTasks": 628,
+    "done": 627,
     "inProgress": 0,
     "inReview": 0,
     "blocked": 0,
