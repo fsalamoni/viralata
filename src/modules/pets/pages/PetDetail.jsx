@@ -273,13 +273,13 @@ export default function PetDetail() {
           )}
 
           {pet.health_notes && (
-            <div className="bg-highlight/[0.12] border border-highlight/35 rounded-2xl p-3.5 text-[13px] leading-[1.6] text-[hsl(30,60%,26%)]">
+            <div className="bg-highlight/10 border border-highlight/30 rounded-2xl p-3.5 text-[13px] leading-[1.6] text-foreground">
               <strong>Observações de saúde:</strong> {pet.health_notes}
             </div>
           )}
 
           {pet.adoption_requirements && (
-            <div className="bg-accent/10 border border-accent/30 rounded-2xl p-3.5 text-[13px] leading-[1.6] text-[hsl(86,40%,20%)]">
+            <div className="bg-accent/10 border border-accent/30 rounded-2xl p-3.5 text-[13px] leading-[1.6] text-foreground">
               <strong>Requisitos para adoção:</strong> {pet.adoption_requirements}
             </div>
           )}
