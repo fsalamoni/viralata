@@ -292,6 +292,7 @@ export default function PetFeedEnhanced() {
   const navigate = useNavigate();
   const { userProfile, user } = useAuth();
   const { settings } = usePlatformSettings();
+  const wrapperClass = useArenaPageClasses('arena-page mx-auto max-w-6xl px-5 py-5.5 pb-12');
   const [feedPrefs, setFeedPrefs] = useFeedPreferences();
   const species = feedPrefs.species;
   const size = feedPrefs.size;
@@ -361,7 +362,7 @@ export default function PetFeedEnhanced() {
   const hasFilters = species !== 'all' || size !== 'all' || Boolean(trimmedCity) || Boolean(radius);
 
   return (
-    <div className={useArenaPageClasses('arena-page mx-auto max-w-6xl px-5 py-5.5 pb-12')}>
+    <div className={wrapperClass}>
       <PageHero
         eyebrow="Feed"
         title={`Encontre seu novo melhor amigo${firstName ? `, ${firstName}` : ''}`}
