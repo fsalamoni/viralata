@@ -75,7 +75,7 @@ export function subscribePlatformSettings(cb) {
  * `FeatureFlagsContext.migrateLegacyFlags`. Aumentar quando a lógica de
  * upgrade mudar.
  */
-export const FLAGS_MIGRATION_VERSION = 2;
+export const FLAGS_MIGRATION_VERSION = 3; // Bumped to 3 (2026-07-17) —HOTFIX-001 v3 migration now covers (1) all-false → migrate all AND (2) mixed → migrate SHELTER_* undefined/null only. This bumps from v2 to ensure the marker reflects the current logic.
 
 /**
  * Marca a migração de flags como aplicada no doc `platform_settings/global`.

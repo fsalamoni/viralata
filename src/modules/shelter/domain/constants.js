@@ -14,7 +14,9 @@
  * seus próprios enums aqui.
  */
 
-import { FEATURE_FLAG as FF } from '@/core/featureFlags';
+// NOTE: FEATURE_FLAG é re-exportado por featureFlags.js diretamente.
+// Evitamos importar FEATURE_FLAG de featureFlags.js aqui para quebrar o
+// ciclo: featureFlags.js importa SHELTER_FEATURE_FLAG daqui.
 
 /**
  * Feature flags do Sistema de Gestão do Abrigo.
@@ -371,5 +373,4 @@ export const SHELTER_TYPE = Object.freeze({
 //  ABRIGO: 'abrigo',  // (removido TASK-088 — era label, não flag)
 });
 
-/** Re-exporta FF para componentes que querem apenas o SHELTER_FEATURE_FLAG */
-export { FF };
+// FEATURE_FLAG completo vem de @core/featureFlags (sem ciclo aqui).
