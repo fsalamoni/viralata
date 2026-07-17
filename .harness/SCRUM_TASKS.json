@@ -16163,6 +16163,45 @@
         },
         "partnerSpaces": "docs/V3_PARTNER_SPACES.md criado (10.7KB, 13 seções, Fase 14 do V3)"
       }
+    },
+    {
+      "id": "TASK-922",
+      "title": "FIX: 5 bugs do Feed V3 (toggle, AdSlot, sort, cidades, rodapé)",
+      "status": "done",
+      "phase": "V3-Feed-Hotfix-2",
+      "priority": "high",
+      "createdAt": "2026-07-17T19:12:00Z",
+      "doneAt": "2026-07-17T19:12:00Z",
+      "evidence": {
+        "commits": [
+          "a4c401ae"
+        ],
+        "deployTimestamp": "2026-07-17T19:10:21Z",
+        "bundleV3": "PetFeedV3-CAT7xKnj.js (26.5KB)",
+        "tests": "159 passing",
+        "bugs": [
+          "BUG 1: useFeedPreferences retorno array vs destruturação objeto",
+          "BUG 2: AdSlot (espaço de parceiros) DENTRO do Collapsible",
+          "BUG 3: Select do Radix não suporta <option> children (sort)",
+          "BUG 4: Firestore match exato vs escrita inteligente (cidades)",
+          "BUG 5: LegalFooter if(!enabled) return null mesmo com flag"
+        ],
+        "fixes": [
+          "FIX 1: const [feedPrefs, setFeedPrefs] = useFeedPreferences(); + handleToggleShowOwnPets",
+          "FIX 2: AdSlot movido para FORA do Collapsible, entre SwipeDeck e Collapsible (my-8 sm:my-10)",
+          "FIX 3: Select Radix → <select> HTML nativo com classes do DS",
+          "FIX 4: Filtro de cidade client-side com normalizePlaceText (NFD + lowercase)",
+          "FIX 5: LegalFooter always render; flag SHELTER_LEGAL_TERMS_V1 só controla QUAL links mostrar"
+        ],
+        "validation": {
+          "v3ChunkDeployed": "PetFeedV3-CAT7xKnj.js",
+          "showOwnPets": "handler presente",
+          "adSlotForaCollapsible": "feed-between-sections presente",
+          "sortSelect": "sort-select presente",
+          "normalizacaoCidade": "I(F.city||\"\").includes(C) inline-ado",
+          "legalFooterAlways": "flag agora só controla links, não visibilidade"
+        }
+      }
     }
   ],
   "definitionOfDone": [
@@ -16437,8 +16476,8 @@
     ],
     "openTODOs": 5,
     "openLegalReviews": 3,
-    "totalTasks": 624,
-    "done": 623,
+    "totalTasks": 626,
+    "done": 625,
     "inProgress": 0,
     "inReview": 0,
     "blocked": 0,
