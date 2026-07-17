@@ -16292,6 +16292,26 @@
           "Links relacionados"
         ]
       }
+    },
+    {
+      "id": "TASK-926",
+      "title": "ANÁLISE: V3 PetDetail - 20 features existentes, 12 lacunas, 10 bugs, 15 Q&A",
+      "status": "done",
+      "phase": "V3-PetDetail-Analysis",
+      "priority": "high",
+      "createdAt": "2026-07-17T19:55:00Z",
+      "doneAt": "2026-07-17T19:55:00Z",
+      "evidence": {
+        "file": "docs/V3_PET_DETAIL_QUESTIONS.md",
+        "size": "11.5KB",
+        "analysis": {
+          "existingFeatures": 20,
+          "gaps": 30,
+          "bugs": 10,
+          "questions": 15,
+          "designDecisions": 12
+        }
+      }
     }
   ],
   "definitionOfDone": [
@@ -16566,8 +16586,8 @@
     ],
     "openTODOs": 5,
     "openLegalReviews": 3,
-    "totalTasks": 629,
-    "done": 628,
+    "totalTasks": 630,
+    "done": 629,
     "inProgress": 0,
     "inReview": 0,
     "blocked": 0,
