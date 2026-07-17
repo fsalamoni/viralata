@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.1.0",
-  "generatedAt": "2026-07-17T04:59:08.952Z",
+  "generatedAt": "2026-07-17T05:02:19.892Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W29",
@@ -398,11 +398,11 @@
   },
   "activeWorktrees": [
     {
-      "id": "wt-TASK-857",
-      "branch": "feat/audit-TASK-857-2026-07-17",
-      "head": "ba0753fc954629d8c51e11c86fc8f9f6d76b568e",
-      "headTitle": "feat: TASK-857 — AdminDashboard audit",
-      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-TASK-857",
+      "id": "wt-TASK-858",
+      "branch": "feat/audit-TASK-858-2026-07-17",
+      "head": "460df43183b0942d6e5b453b8b33e77093dd796e",
+      "headTitle": "feat: TASK-858+TASK-859 — AdminMetrics + AdminAuditLog audit",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-TASK-858",
       "status": "in-sync",
       "commitsAhead": 0,
       "primarySession": null,
@@ -15079,7 +15079,7 @@
       "title": "AUDIT: AdminMetrics (/admin/metrics) — verificar gráficos + export",
       "type": "feature",
       "category": "audit",
-      "status": "backlog",
+      "status": "done",
       "priority": "medium",
       "owner": "loop_420680956387556",
       "branch": "main",
@@ -15093,14 +15093,15 @@
       "blockedBy": [],
       "description": "Ler src/modules/admin/pages/AdminMetrics.jsx. Verificar: (1) gráficos de métricas; (2) filtros de data; (3) export CSV/PDF; (4) tokens semânticos; (5) loading skeleton.",
       "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17"
+      "updatedAt": "2026-07-17T04:59:29",
+      "resolution": "done"
     },
     {
       "id": "TASK-859",
       "title": "AUDIT: AdminAudit (/admin/audit) — verificar log + filtros",
       "type": "feature",
       "category": "audit",
-      "status": "backlog",
+      "status": "done",
       "priority": "medium",
       "owner": "loop_420680956387556",
       "branch": "main",
@@ -15114,7 +15115,8 @@
       "blockedBy": [],
       "description": "Ler src/modules/admin/pages/AdminAudit.jsx. Verificar: (1) tabela de log de auditoria; (2) filtros por usuário/ação/data; (3) tokens semânticos; (4) empty state; (5) skeleton.",
       "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17"
+      "updatedAt": "2026-07-17",
+      "resolution": "done"
     },
     {
       "id": "TASK-860",
@@ -16639,7 +16641,7 @@
       "feat/ds-v2-motion-2026-07-16",
       "feat/ds-v2-audit-2026-07-16"
     ],
-    "mainCommit": "0d5645a22bb3996270384684f8bfb1e44f21f2a4",
+    "mainCommit": "758ff5139fd9d333274739e1c2b94c9dc8ba9cfa",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -16650,12 +16652,12 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 624,
-    "done": 557,
+    "done": 559,
     "inProgress": 1,
     "inReview": 0,
     "blocked": 0,
-    "ready": 0,
-    "backlog": 66,
+    "ready": 1,
+    "backlog": 64,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
     "contribuicaoCoder": {
@@ -16684,7 +16686,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-17T04:59:08.976Z — via sync.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-17T05:02:19.918Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
@@ -17065,7 +17067,7 @@
 }
   </script>
 <<<<<<< HEAD
-  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-17T04:56:35.291Z">
+  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-17T04:59:09.033Z">
 =======
   <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-16T03:26:48.025Z">
 >>>>>>> 2fdaf3d (design(ux): TASK-603 - hero home com hierarquia clara - H1 menor mobile, badge compacto, remove chips decorativos)
