@@ -64,7 +64,7 @@ function TaskRow({ task }) {
         <div className="flex items-center gap-1.5 flex-wrap text-xs text-muted-foreground">
           {task.shelter_name && <span>{task.shelter_name}</span>}
           {task.due_at && (
-            <span className={cn('inline-flex items-center gap-1', overdue && 'text-red-600 font-medium')}>
+            <span className={cn('inline-flex items-center gap-1', overdue && 'text-destructive font-medium')}>
               <Clock className="h-3 w-3" /> {formatDate(task.due_at)}
             </span>
           )}
@@ -98,10 +98,10 @@ function ApplicationRow({ app }) {
       <Badge
         className={cn(
           'text-[10px]',
-          app.status === 'approved' && 'bg-emerald-100 text-emerald-800 border-emerald-200',
-          app.status === 'rejected' && 'bg-red-100 text-red-800 border-red-200',
-          app.status === 'in_review' && 'bg-amber-100 text-amber-800 border-amber-200',
-          !['approved', 'rejected', 'in_review'].includes(app.status) && 'bg-slate-100 text-slate-700 border-slate-200',
+          app.status === 'approved' && 'bg-emerald-100 text-emerald-800 border-emerald-200 dark:bg-emerald-900/40 dark:text-emerald-300 dark:border-emerald-800',
+          app.status === 'rejected' && 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/40 dark:text-red-300 dark:border-red-800',
+          app.status === 'in_review' && 'bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-900/40 dark:text-amber-300 dark:border-amber-800',
+          !['approved', 'rejected', 'in_review'].includes(app.status) && 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700',
         )}
       >
         {app.status || 'pending'}
