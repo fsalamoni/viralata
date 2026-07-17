@@ -25,6 +25,7 @@ import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { usePetFeed, useCreateInterest } from '../hooks/usePets';
 import { hasKnownCoords, lookupCityCoordsByName, filterPetsByRadius } from '../domain/geoDistance';
 import PetCard from '../components/PetCard';
+import SwipeDeck from '../components/SwipeDeck';
 import AdSlot from '@/components/AdSlot';
 import { Switch } from '@/components/ui/switch';
 import { Select } from '@/components/ui/select';
