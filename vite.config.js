@@ -41,6 +41,9 @@ export default defineConfig(({ mode }) => {
           ],
         },
         workbox: {
+          // CleanupOutdatedCaches: limpa caches de SWs antigos ao ativar.
+          // Combina com skipWaiting:true para forçar o SW novo imediatamente.
+          cleanupOutdatedCaches: true,
           // Padrões separados — evita o glob composto que causa warning/erro no Workbox.
           // `.ico`/`.webp` ficaram de fora de propósito: o projeto não gera nenhum
           // arquivo desses tipos (ícone é `favicon.svg`) — mantê-los no padrão só
