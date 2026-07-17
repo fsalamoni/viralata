@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.1.0",
-  "generatedAt": "2026-07-17T04:20:24.717Z",
+  "generatedAt": "2026-07-17T04:25:49.898Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W29",
@@ -14456,7 +14456,7 @@
       "title": "AUDIT: useFeatureFlag — verificar se nunca retorna undefined após mount",
       "type": "feature",
       "category": "audit",
-      "status": "backlog",
+      "status": "done",
       "priority": "high",
       "owner": "loop_420680956387556",
       "branch": "main",
@@ -14470,14 +14470,15 @@
       "blockedBy": [],
       "description": "Ler src/core/hooks/useFeatureFlag.js. Verificar: (1) useState com initialValue do DEFAULT; (2) subscribePlatformSettings no useEffect; (3) NUNCA retorna undefined/null após loading. Garantir que o fallback do contexto cobre tudo.",
       "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17"
+      "updatedAt": "2026-07-17T04:22:13",
+      "resolvedAt": "2026-07-17"
     },
     {
       "id": "TASK-831",
       "title": "AUDIT: SHELTER_* flags — verificar se estão migrando corretamente",
       "type": "feature",
       "category": "audit",
-      "status": "backlog",
+      "status": "done",
       "priority": "medium",
       "owner": "loop_420680956387556",
       "branch": "main",
@@ -14491,14 +14492,15 @@
       "blockedBy": [],
       "description": "grep -rn \"SHELTER_\" src/core/featureFlags.js. Verificar que todas as SHELTER_* estão em DEFAULT_FEATURE_FLAGS, META_FLAG_DEFINITIONS e migrateLegacyFlags v3. Garantir que o filtro de migração as cobre.",
       "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17"
+      "updatedAt": "2026-07-17T04:22:14",
+      "resolvedAt": "2026-07-17"
     },
     {
       "id": "TASK-832",
       "title": "AUDIT: FeatureFlagsContext.test.js — verificar se cobre migração v3",
       "type": "feature",
       "category": "audit",
-      "status": "backlog",
+      "status": "done",
       "priority": "medium",
       "owner": "loop_420680956387556",
       "branch": "main",
@@ -14512,14 +14514,15 @@
       "blockedBy": [],
       "description": "Ler src/core/lib/FeatureFlagsContext.migration.test.js. Verificar que os 4 novos casos de teste (HOTFIX-001) estão presentes: (1) todas false; (2) mix false+undefined; (3) todas true; (4) flag recém-adicionada undefined.",
       "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17"
+      "updatedAt": "2026-07-17T04:22:14",
+      "resolvedAt": "2026-07-17"
     },
     {
       "id": "TASK-833",
       "title": "AUDIT: platformSettingsService — verificar subscribe + toggle functions",
       "type": "feature",
       "category": "audit",
-      "status": "backlog",
+      "status": "done",
       "priority": "medium",
       "owner": "loop_420680956387556",
       "branch": "main",
@@ -14533,14 +14536,15 @@
       "blockedBy": [],
       "description": "Ler src/core/services/platformSettingsService.js. Verificar: subscribePlatformSettings(topic, callback), toggleFeatureFlag(key, value), getPlatformSettings(). Garantir que todas as funções têm erro handling e não crasham se Firestore estiver offline.",
       "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17"
+      "updatedAt": "2026-07-17T04:22:14",
+      "resolvedAt": "2026-07-17"
     },
     {
       "id": "TASK-834",
       "title": "AUDIT: vite.config.js — verificar filename do sw (sw-v6 ou superior)",
       "type": "feature",
       "category": "audit",
-      "status": "backlog",
+      "status": "done",
       "priority": "critical",
       "owner": "loop_420680956387556",
       "branch": "main",
@@ -14553,14 +14557,15 @@
       "blockedBy": [],
       "description": "Ler vite.config.js. Verificar que sw.js filename foi bumpado para sw-v6.js (ou maior) após HOTFIX-002. Se ainda sw.js ou sw-v5.js, corrigir. Garantir que registerSW.js referencia o nome certo.",
       "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17"
+      "updatedAt": "2026-07-17T04:22:14",
+      "resolvedAt": "2026-07-17"
     },
     {
       "id": "TASK-835",
       "title": "AUDIT: firebase.json — verificar headers de cache para assets",
       "type": "feature",
       "category": "audit",
-      "status": "backlog",
+      "status": "done",
       "priority": "high",
       "owner": "loop_420680956387556",
       "branch": "main",
@@ -14574,14 +14579,15 @@
       "blockedBy": [],
       "description": "Ler firebase.json. Verificar hosting.headers para sw.js e assets: cache-control: public, max-age=31536000, immutable. Para index.html: cache-control: no-cache ou max-age=0 para forçar reload.",
       "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17"
+      "updatedAt": "2026-07-17T04:25:15",
+      "resolvedAt": "2026-07-17"
     },
     {
       "id": "TASK-836",
       "title": "AUDIT: navigateFallback em vite.config.js — verificar index page",
       "type": "feature",
       "category": "audit",
-      "status": "backlog",
+      "status": "done",
       "priority": "medium",
       "owner": "loop_420680956387556",
       "branch": "main",
@@ -14594,14 +14600,15 @@
       "blockedBy": [],
       "description": "grep -rn \"navigateFallback\" vite.config.js. Verificar que aponta para index.html (SPA fallback). Garantir que todas as rotas públicas (/*) têm SW para interceptar requests.",
       "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17"
+      "updatedAt": "2026-07-17T04:25:15",
+      "resolvedAt": "2026-07-17"
     },
     {
       "id": "TASK-837",
       "title": "AUDIT: cleanupOutdatedCaches — verificar se SW limpa caches velhos",
       "type": "feature",
       "category": "audit",
-      "status": "backlog",
+      "status": "done",
       "priority": "medium",
       "owner": "loop_420680956387556",
       "branch": "main",
@@ -14614,14 +14621,15 @@
       "blockedBy": [],
       "description": "grep -rn \"cleanupOutdatedCaches|CacheStorage\" vite.config.js ou src/ . Verificar que o SW tem estratégia de limpar caches de versões anteriores (sw-v1, sw-v2, etc.).",
       "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17"
+      "updatedAt": "2026-07-17T04:25:15",
+      "resolvedAt": "2026-07-17"
     },
     {
       "id": "TASK-838",
       "title": "AUDIT: Service Worker registration — verificar em main.jsx/App.jsx",
       "type": "feature",
       "category": "audit",
-      "status": "backlog",
+      "status": "done",
       "priority": "high",
       "owner": "loop_420680956387556",
       "branch": "main",
@@ -14634,14 +14642,15 @@
       "blockedBy": [],
       "description": "grep -rn \"registerSW|serviceWorker|navigator.serviceWorker\" src/ . Verificar que o SW é registrado em main.jsx, que há um window.updateSW() exposto para forçar reload, e que o SW só é registrado em produção (não em dev).",
       "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17"
+      "updatedAt": "2026-07-17T04:25:16",
+      "resolvedAt": "2026-07-17"
     },
     {
       "id": "TASK-839",
       "title": "AUDIT: PWA manifest.json — verificar theme_color e icons",
       "type": "feature",
       "category": "audit",
-      "status": "backlog",
+      "status": "done",
       "priority": "medium",
       "owner": "loop_420680956387556",
       "branch": "main",
@@ -14654,14 +14663,15 @@
       "blockedBy": [],
       "description": "Ler public/manifest.json. Verificar: (1) theme_color = design system primary; (2) icons com todos os tamanhos (192, 512, maskable); (3) start_url = /; (4) display = standalone; (5) background_color definido.",
       "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17"
+      "updatedAt": "2026-07-17T04:25:16",
+      "resolvedAt": "2026-07-17"
     },
     {
       "id": "TASK-840",
       "title": "AUDIT: vite-plugin-pwa build output — verificar dist/sw.js existe",
       "type": "feature",
       "category": "audit",
-      "status": "backlog",
+      "status": "done",
       "priority": "medium",
       "owner": "loop_420680956387556",
       "branch": "main",
@@ -14674,7 +14684,8 @@
       "blockedBy": [],
       "description": "npm run build e verificar que dist/sw-v6.js (ou equivalente) existe e tem conteúdo. Verificar que dist/workbox-*.js está presente (se injectManifest mode). Garantir que firebase.json hosting.ignore lista o sw.js.",
       "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17"
+      "updatedAt": "2026-07-17T04:25:42",
+      "resolvedAt": "2026-07-17"
     },
     {
       "id": "TASK-841",
@@ -16598,7 +16609,7 @@
       "feat/ds-v2-motion-2026-07-16",
       "feat/ds-v2-audit-2026-07-16"
     ],
-    "mainCommit": "b674a9dc1df6925e1766d0d67806f3f8b271de43",
+    "mainCommit": "4905d495372dcb31da7c663fa0e7ae8083a675b7",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -16609,12 +16620,12 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 624,
-    "done": 529,
+    "done": 540,
     "inProgress": 0,
     "inReview": 0,
     "blocked": 0,
     "ready": 0,
-    "backlog": 94,
+    "backlog": 83,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
     "contribuicaoCoder": {
@@ -16643,7 +16654,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-17T04:20:24.740Z — via sync.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-17T04:25:49.919Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
@@ -17024,7 +17035,7 @@
 }
   </script>
 <<<<<<< HEAD
-  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-17T04:20:24.820Z">
+  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-17T04:25:49.982Z">
 =======
   <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-16T03:26:48.025Z">
 >>>>>>> 2fdaf3d (design(ux): TASK-603 - hero home com hierarquia clara - H1 menor mobile, badge compacto, remove chips decorativos)
@@ -17042,7 +17053,7 @@
       </div>
     </div>
     <div class="sprint-info">
-      <span class="pill mono">main @ 9c1afdb</span>
+      <span class="pill mono">main @ 4905d49</span>
       <span class="pill">0 worktrees ativos</span>
       <span class="pill goal">Goal: estabilizar pós-22 fases + fechar worktrees</span>
     </div>
