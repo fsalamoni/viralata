@@ -14,6 +14,7 @@
  */
 
 import { useState, useEffect } from 'react';
+import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import { Link } from 'react-router-dom';
 import {
   CheckSquare, FileText, PawPrint, Home, Clock, ChevronRight,
@@ -146,6 +147,12 @@ function PetRow({ pet }) {
 export function ShelterAdminDashboard({ clubId }) {
   const { user } = useAuth();
   const flagEnabled = useFeatureFlag('SHELTER_ADMIN_DASHBOARD_V1');
+  // FIX: todas as 3 views agora usam useArenaPageClasses em vez de
+  // className hardcoded 'container py-8 max-w-Xxl', garantindo consistência DS_V2.
+  const disabledClass = useArenaPageClasses('arena-page mx-auto max-w-2xl px-4 py-8');
+  const signinClass = useArenaPageClasses('arena-page mx-auto max-w-2xl px-4 py-8');
+  const mainClass = useArenaPageClasses('arena-page mx-auto max-w-5xl px-4 py-8');
+  const loadingClass = useArenaPageClasses('arena-page mx-auto max-w-5xl px-4');
 
   const [tasks, setTasks] = useState([]);
   const [apps, setApps] = useState([]);
@@ -216,7 +223,7 @@ export function ShelterAdminDashboard({ clubId }) {
 
   if (!flagEnabled) {
     return (
-      <main className="container py-8 max-w-2xl" data-testid="admin-dash-disabled">
+      <main className={disabledClass} data-testid="admin-dash-disabled">
         <EmptyState
           icon={Home}
           title="Dashboard pessoal do admin"
@@ -228,7 +235,7 @@ export function ShelterAdminDashboard({ clubId }) {
 
   if (!user) {
     return (
-      <main className="container py-8 max-w-2xl" data-testid="admin-dash-signin">
+      <main className={signinClass} data-testid="admin-dash-signin">
         <EmptyState
           icon={Home}
           title="Faça login para acessar"
@@ -244,7 +251,7 @@ export function ShelterAdminDashboard({ clubId }) {
   }
 
   return (
-    <main className="container py-8 max-w-5xl" data-testid="shelter-admin-dashboard">
+    <main className={mainClass} data-testid="shelter-admin-dashboard">
       <Seo title="Meu painel do abrigo" description="Minhas tasks, applications e pets cadastrados." />
       <PageHero
         icon={Home}
@@ -253,8 +260,10 @@ export function ShelterAdminDashboard({ clubId }) {
       />
 
       {loading ? (
-        <div className="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-3">
-          {[1, 2, 3].map((i) => <Skeleton key={i} className="h-64 w-full" />)}
+        <div className={loadingClass}>
+          <div className="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-3">
+            {[1, 2, 3].map((i) => <Skeleton key={i} className="h-64 w-full rounded-xl" />)}
+          </div>
         </div>
       ) : (
         <div className="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-3">
