@@ -75,7 +75,7 @@ export function subscribePlatformSettings(cb) {
  * `FeatureFlagsContext.migrateLegacyFlags`. Aumentar quando a lógica de
  * upgrade mudar.
  */
-export const FLAGS_MIGRATION_VERSION = 2;
+export const FLAGS_MIGRATION_VERSION = 3;
 
 /**
  * Marca a migração de flags como aplicada no doc `platform_settings/global`.
