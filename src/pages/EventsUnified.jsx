@@ -26,6 +26,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Input } from '@/components/ui/input';
 import PageHero from '@/components/PageHero';
+import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import { listPublicExhibitions } from '@/modules/shelter/services/exhibitionPublicService';
 import { listPublicMuralPosts } from '@/modules/communities/services/publicMuralService';
 import { cn } from '@/core/lib/utils';
@@ -50,6 +51,17 @@ function formatTime(iso) {
   return d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 }
 
+/**
+ * Extrai o campo de data relevante por tipo de item.
+ * FIX: exhibitions usam datetime_start, community_events usam event_date.
+ * Antes o filtro de data usava só datetime_start para ambos, fazendo
+ * exhibitions sem datetime_start passarem no filtro "Próximos" incorretamente.
+ */
+function getDateForItem(item, type) {
+  if (type === 'exhibition') return item.datetime_start;
+  return item.event_date;
+}
+
 function isFuture(iso) {
   if (!iso) return false;
   const d = typeof iso === 'string' ? new Date(iso) : iso?.toDate?.();
@@ -67,7 +79,7 @@ function isToday(iso) {
 function UnifiedCard({ item, type }) {
   const meta = TYPE_LABELS[type] || TYPE_LABELS.exhibition;
   const Icon = meta.icon;
-  const startKey = type === 'exhibition' ? item.datetime_start : item.event_date;
+  const startKey = getDateForItem(item, type);
   const title = item.title || item.name || 'Evento';
   const link = type === 'exhibition'
     ? `/vitrines/${item.id}`
@@ -139,6 +151,7 @@ const DATE_FILTERS = [
 ];
 
 export default function EventsUnified() {
+  const pageClass = useArenaPageClasses('arena-page');
   const [exhibitions, setExhibitions] = useState([]);
   const [communityEvents, setCommunityEvents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -181,20 +194,22 @@ export default function EventsUnified() {
     return allItems
       .filter((item) => {
         if (typeFilter !== 'all' && item._type !== typeFilter) return false;
-        if (dateFilter === 'upcoming' && !isFuture(item.datetime_start || item.event_date)) return false;
-        if (dateFilter === 'today' && !isToday(item.datetime_start || item.event_date)) return false;
+
+        const date = getDateForItem(item, item._type);
+        if (dateFilter === 'upcoming' && !isFuture(date)) return false;
+        if (dateFilter === 'today' && !isToday(date)) return false;
         if (cityFilter && !((item.city || '').toLowerCase().includes(cityFilter.toLowerCase()))) return false;
         return true;
       })
       .sort((a, b) => {
-        const da = new Date(a.datetime_start || a.event_date || 0);
-        const db_ = new Date(b.datetime_start || b.event_date || 0);
-        return da - db_;
+        const da = new Date(getDateForItem(a, a._type) || 0);
+        const db = new Date(getDateForItem(b, b._type) || 0);
+        return da - db;
       });
   }, [allItems, typeFilter, dateFilter, cityFilter]);
 
   return (
-    <main className="container py-8 max-w-6xl" data-testid="events-unified-page">
+    <main className={cn(pageClass, 'max-w-6xl')} data-testid="events-unified-page">
       <PageHero
         icon={Sparkles}
         title="Eventos da comunidade"
@@ -205,12 +220,13 @@ export default function EventsUnified() {
         {/* Tipo */}
         <div className="space-y-1">
           <label className="text-xs font-medium text-muted-foreground">Tipo</label>
-          <div className="flex flex-wrap gap-1">
+          <div className="flex flex-wrap gap-1" role="group" aria-label="Filtrar por tipo">
             {TYPE_FILTERS.map((f) => (
               <button
                 key={f.value}
                 type="button"
                 onClick={() => setTypeFilter(f.value)}
+                aria-pressed={typeFilter === f.value}
                 className={cn(
                   'text-xs px-2.5 py-1.5 rounded-full border transition-colors',
                   typeFilter === f.value
@@ -227,12 +243,13 @@ export default function EventsUnified() {
         {/* Data */}
         <div className="space-y-1">
           <label className="text-xs font-medium text-muted-foreground">Quando</label>
-          <div className="flex flex-wrap gap-1">
+          <div className="flex flex-wrap gap-1" role="group" aria-label="Filtrar por data">
             {DATE_FILTERS.map((f) => (
               <button
                 key={f.value}
                 type="button"
                 onClick={() => setDateFilter(f.value)}
+                aria-pressed={dateFilter === f.value}
                 className={cn(
                   'text-xs px-2.5 py-1.5 rounded-full border transition-colors',
                   dateFilter === f.value
@@ -248,11 +265,14 @@ export default function EventsUnified() {
 
         {/* Cidade */}
         <div className="space-y-1">
-          <label className="text-xs font-medium text-muted-foreground">Cidade</label>
+          <label className="text-xs font-medium text-muted-foreground" htmlFor="city-filter">
+            Cidade
+          </label>
           <div className="relative">
-            <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
+            <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" aria-hidden="true" />
             <Input
               type="text"
+              id="city-filter"
               placeholder="Ex: São Paulo"
               value={cityFilter}
               onChange={(e) => setCityFilter(e.target.value)}
@@ -266,7 +286,7 @@ export default function EventsUnified() {
       {loading ? (
         <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} className="h-32 w-full" />
+            <Skeleton key={i} className="h-32 w-full rounded-xl" />
           ))}
         </div>
       ) : filtered.length === 0 ? (
