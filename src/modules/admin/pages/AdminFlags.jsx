@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { FEATURE_FLAG_META } from '@/core/featureFlags';
-import { usePlatformSettings } from '@/core/lib/FeatureFlagsContext';
+import { usePlatformSettings, migratedFlagsRef } from '@/core/lib/FeatureFlagsContext';
 import { setFeatureFlag, listFeatureFlagHistory, markFlagsMigrationApplied } from '@/core/services/platformSettingsService';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
@@ -36,11 +36,13 @@ export default function AdminFlags() {
   const successClass = useArenaPageClasses('arena-page mx-auto flex max-w-4xl flex-col gap-6 px-4 py-6');
 
   // Auto-marca a migração de flags como aplicada (idempotente, fire-and-forget).
-  // Evita que o FeatureFlagsProvider rode a migração legado a cada load e
-  // documenta que o admin já está gerenciando flags manualmente.
+  // TASK-815 FIX: também persiste os flags migrados no Firestore para que
+  // sobrevivam à limpeza de cache. Sem isto, os valores migrados ficavam
+  // apenas em memória e eram sobrepostos pelos valores estocados do Firestore
+  // a cada reload (após cache clear).
   useEffect(() => {
     if (isPlatformAdmin) {
-      markFlagsMigrationApplied(user);
+      markFlagsMigrationApplied(user, migratedFlagsRef.current);
     }
   }, [isPlatformAdmin, user]);
 

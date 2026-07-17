@@ -111,3 +111,19 @@ describe('migrateLegacyFlags — migração v3 (SHELTER_* parciais)', () => {
     expect(migrated).toEqual(stored);
   });
 });
+
+describe('TASK-815 — migratedFlagsRef export', () => {
+  it('FeatureFlagsContext exports migratedFlagsRef as a shared ref', async () => {
+    const { migratedFlagsRef } = await import('@/core/lib/FeatureFlagsContext');
+    expect(migratedFlagsRef).toBeDefined();
+    expect(typeof migratedFlagsRef).toBe('object');
+    expect('current' in migratedFlagsRef).toBe(true);
+  });
+});
+
+describe('TASK-815 — FLAGS_MIGRATION_VERSION bump', () => {
+  it('FLAGS_MIGRATION_VERSION is 4 after the TASK-815 fix', async () => {
+    const { FLAGS_MIGRATION_VERSION } = await import('@/core/services/platformSettingsService');
+    expect(FLAGS_MIGRATION_VERSION).toBe(4);
+  });
+});

@@ -9,7 +9,7 @@
  * mudar DEFAULT_FEATURE_FLAGS localmente não afeta quem já tem o doc
  * persistido.
  *
- * Migração v3 (2026-07-16): dois critérios.
+ * Migração v4 (2026-07-17, TASK-815): dois critérios (mesma lógica da v3).
  *  1. Se TODAS as flags estão em false → migra tudo (caso legado puro).
  *  2. Caso contrário → migra APENAS as flags SHELTER_* que ainda não
  *     foram explicitamente setadas (preserva controle explícito do admin
@@ -17,6 +17,11 @@
  *     Uma flag é considerada "explicitamente setada" se o valor salvo
  *     for estritamente true ou false. Se for undefined/null, o default
  *     é aplicado.
+ *
+ * NOTA: esta lógica agora é PERSISTIDA no Firestore via markFlagsMigrationApplied
+ * (FLAGS_MIGRATION_VERSION = 4) quando o admin visita /admin/flags. Antes,
+ * os valores migrados ficavam apenas em memória e eram sobrepostos pelos
+ * valores estocados do Firestore após limpeza de cache.
  */
 import {
   DEFAULT_FEATURE_FLAGS,

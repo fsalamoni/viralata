@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { DEFAULT_FEATURE_FLAGS } from '@/core/featureFlags';
 import { PLATFORM_SETTINGS_DEFAULTS } from '@/core/platformSettings';
 import { subscribePlatformSettings } from '@/core/services/platformSettingsService';
@@ -9,6 +9,13 @@ const FeatureFlagsContext = createContext({
   settings: PLATFORM_SETTINGS_DEFAULTS,
   isLoading: true,
 });
+
+/**
+ * Ref compartilhado para guardar os flags migrados mais recentes.
+ * Usado por `markFlagsMigrationApplied` para persistir a migração no Firestore
+ * (assim os valores corretos sobrevivem a limpeza de cache).
+ */
+export const migratedFlagsRef = { current: null };
 
 /**
  * Provider global das feature flags. Observa o documento de configurações da
@@ -25,6 +32,7 @@ export function FeatureFlagsProvider({ children }) {
       const migrated = migrateLegacyFlags(settings.feature_flags);
       setSettings({ ...settings, feature_flags: migrated });
       setFlags(migrated);
+      migratedFlagsRef.current = migrated;
       setIsLoading(false);
     });
     return () => {
