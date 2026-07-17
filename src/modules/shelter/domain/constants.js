@@ -133,6 +133,15 @@ export const SHELTER_FEATURE_FLAG_META = Object.freeze({
       + 'vacinas, adoções, devoluções, etc.). Auto-preenchido pelas '
       + 'features do abrigo.',
   },
+  [SHELTER_FEATURE_FLAG.SHELTER_APPLICATION_SCORING]: {
+    label: 'Abrigos · scoring de compatibilidade nas applications',
+    description:
+      'Exibe score de compatibilidade adotante×pet nas ApplicationsList. '
+      + 'Baseado em critérios configuráveis (porte, espécie, experiência, '
+      + 'moradia). Score é calculado client-side no componente e salvo no '
+      + 'doc application em background. Sem efeito se a application não '
+      + 'tiver answers preenchidos.',
+  },
   [SHELTER_FEATURE_FLAG.SHELTER_ADOPTION_WORKFLOW]: {
     label: 'Abrigos · workflow de adoção',
     description:
