@@ -16202,6 +16202,43 @@
           "legalFooterAlways": "flag agora só controla links, não visibilidade"
         }
       }
+    },
+    {
+      "id": "TASK-923",
+      "title": "FEAT: BottomTabBar dedicado com 3 modos + padding dinâmico (TASK-V3-UI-4)",
+      "status": "done",
+      "phase": "V3-UI-4",
+      "priority": "high",
+      "createdAt": "2026-07-17T19:40:00Z",
+      "doneAt": "2026-07-17T19:40:00Z",
+      "evidence": {
+        "commits": [
+          "f4ddded4"
+        ],
+        "deployTimestamp": "2026-07-17T19:39:09Z",
+        "bundle": "index-BhNTJdpo.js",
+        "newFiles": [
+          "src/components/BottomTabBar.jsx",
+          "src/components/BottomTabBar.test.jsx"
+        ],
+        "tests": "8 testes do BottomTabBar passando",
+        "changes": [
+          "NOVO: BottomTabBar.jsx com 3 modos (FIXED/AUTOHIDE/HIDDEN)",
+          "NOVO: useBottomTabBarHeight hook (CSS var --bottom-tab-bar-height)",
+          "NOVO: ResizeObserver mede altura real da barra (varia com safe-area inset)",
+          "NOVO: AUTOHIDE com transition-transform (scroll-up/down)",
+          "Layout.jsx: main com style={{ paddingBottom: max(N px, 5rem) }}",
+          "Layout.jsx: removido bloco da BottomTabBar inline (75 → 32 insertions/deletions)",
+          "AppearanceSettings.test.jsx: mock com TOPBAR_MODES etc"
+        ],
+        "validation": {
+          "ariaLabel": "Navegação inferior (mobile) presente",
+          "dataMode": "data-bottom-tab-mode presente",
+          "cssVar": "bottom-tab-bar-height presente",
+          "modes": "BOTTOM_TAB_MODES presente (2x)",
+          "autohideTransition": "translate-y-full presente"
+        }
+      }
     }
   ],
   "definitionOfDone": [
@@ -16476,8 +16513,8 @@
     ],
     "openTODOs": 5,
     "openLegalReviews": 3,
-    "totalTasks": 626,
-    "done": 625,
+    "totalTasks": 627,
+    "done": 626,
     "inProgress": 0,
     "inReview": 0,
     "blocked": 0,
