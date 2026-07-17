@@ -15,6 +15,23 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Viralata" />
+
+    <!-- TASK-020: anti-FOUC dark mode. Aplica tema ANTES do React montar
+         para evitar flash claro→escuro na primeira renderização. Lê do
+         localStorage OU cai para prefers-color-scheme do sistema. -->
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('viralata-color-mode');
+          var mode = (stored === 'dark' || stored === 'light') ? stored : 'system';
+          var isDark = mode === 'dark'
+            || (mode === 'system' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          if (isDark) document.documentElement.classList.add('dark');
+        } catch (_) {
+          // localStorage indisponível (modo privado) — segue light.
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -2,84 +2,84 @@
  * useColorMode — gerencia dark/light mode com localStorage + prefers-color-scheme.
  * TASK-618
  */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 const STORAGE_KEY = 'viralata-color-mode';
+
+function getSystemPrefersDark() {
+  if (typeof window === 'undefined' || !window.matchMedia) return false;
+  return window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
+
+function readStoredMode() {
+  if (typeof window === 'undefined') return 'system';
+  try {
+    const stored = window.localStorage.getItem(STORAGE_KEY);
+    if (stored === 'dark' || stored === 'light' || stored === 'system') return stored;
+  } catch (_) {
+    // localStorage indisponível (modo privado) — segue system.
+  }
+  return 'system';
+}
 
 /**
  * @returns {{ mode: 'dark'|'light'|'system', setMode: (m:'dark'|'light'|'system')=>void, isDark: boolean }}
  */
 export function useColorMode() {
-  const [mode, setModeState] = useState(() => {
-    // Inicialização: localStorage > system preference
-    if (typeof window === 'undefined') return 'system';
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored === 'dark' || stored === 'light') return stored;
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-  });
+  const [mode, setModeState] = useState(readStoredMode);
+  // isDark é derivado de `mode` + sistema; nunca armazenado em state
+  // para evitar dessincronia entre a classe do <html> e o valor reportado.
+  const isDark =
+    mode === 'dark' || (mode === 'system' && getSystemPrefersDark());
 
-  const [isDark, setIsDark] = useState(() => {
-    if (mode === 'dark') return true;
-    if (mode === 'light') return false;
-    return window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false;
-  });
-
-  useEffect(() => {
+  const applyMode = useCallback((next) => {
     const root = document.documentElement;
-    if (mode === 'dark') {
+    let isDarkNow;
+    if (next === 'dark') {
       root.classList.add('dark');
-      localStorage.setItem(STORAGE_KEY, 'dark');
-      setIsDark(true);
-    } else if (mode === 'light') {
+      isDarkNow = true;
+    } else if (next === 'light') {
       root.classList.remove('dark');
-      localStorage.setItem(STORAGE_KEY, 'light');
-      setIsDark(false);
+      isDarkNow = false;
     } else {
       // system
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      if (prefersDark) {
-        root.classList.add('dark');
-      } else {
-        root.classList.remove('dark');
-      }
-      localStorage.removeItem(STORAGE_KEY);
-      setIsDark(prefersDark);
+      isDarkNow = getSystemPrefersDark();
+      if (isDarkNow) root.classList.add('dark');
+      else root.classList.remove('dark');
     }
-  }, [mode]);
-
-  // Escuta mudanças de prefers-color-scheme só no modo "system"
-  useEffect(() => {
-    if (mode !== 'system') return;
-    const mq = window.matchMedia('(prefers-color-scheme: dark)');
-    const handler = (e) => {
-      const root = document.documentElement;
-      if (e.matches) {
-        root.classList.add('dark');
-        setIsDark(true);
+    try {
+      if (next === 'system') {
+        window.localStorage.removeItem(STORAGE_KEY);
       } else {
-        root.classList.remove('dark');
-        setIsDark(false);
+        window.localStorage.setItem(STORAGE_KEY, next);
       }
+    } catch (_) {
+      // localStorage indisponível — modo só dura a sessão.
+    }
+    return isDarkNow;
+  }, []);
+
+  useEffect(() => {
+    applyMode(mode);
+  }, [mode, applyMode]);
+
+  // Escuta mudanças do sistema quando mode === 'system'
+  useEffect(() => {
+    if (mode !== 'system' || typeof window === 'undefined') return undefined;
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    const handler = () => {
+      const root = document.documentElement;
+      if (mq.matches) root.classList.add('dark');
+      else root.classList.remove('dark');
     };
     mq.addEventListener('change', handler);
     return () => mq.removeEventListener('change', handler);
   }, [mode]);
 
-  // Aplica modo inicial na carga da página (evita FOUC)
-  useEffect(() => {
-    const root = document.documentElement;
-    if (mode === 'dark') {
-      root.classList.add('dark');
-    } else if (mode === 'light') {
-      root.classList.remove('dark');
-    } else {
-      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        root.classList.add('dark');
-      }
-    }
-  }, []); // só roda uma vez na montagem
-
-  const setMode = (m) => setModeState(m);
+  const setMode = useCallback((m) => {
+    if (m !== 'dark' && m !== 'light' && m !== 'system') return;
+    setModeState(m);
+  }, []);
 
   return { mode, setMode, isDark };
 }
