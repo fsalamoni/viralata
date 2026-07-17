@@ -29,6 +29,7 @@ export default function ChatPage() {
   useEffect(() => {
     const param = searchParams.get('c') || routeConversationId || null;
     setSelectedId(param);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [routeConversationId, searchParams]);
 
   const selectConversation = (id) => {
@@ -71,28 +72,43 @@ export default function ChatPage() {
   return (
     <div className="space-y-4">
       {isPreviewMode && (
-        <section className="arena-section-card rounded-2xl border-amber-300/70 bg-amber-50/85 p-4 text-sm leading-6 text-amber-950">
+        <section
+          role="alert"
+          className="arena-section-card rounded-2xl border-amber-300/70 bg-amber-50/85 p-4 text-sm leading-6 text-amber-950"
+        >
           Prévia local sem Firebase: o chat não carrega conversas neste ambiente.
         </section>
       )}
 
-      <section className="arena-section-card grid h-[calc(100dvh-11rem)] min-h-[30rem] grid-cols-1 overflow-hidden rounded-2xl border-border bg-card/90 lg:grid-cols-[20rem,1fr] xl:grid-cols-[22rem,1fr]">
+      {/* Main chat grid — arena-section-card já tem rounded-2xl;
+          REMOVIDO rounded-2xl redundante do wrapper.
+          FIX: height calc usa 100dvh (dynamic viewport height) em vez
+          de 100vh para evitar problemas com mobile browser chrome. */}
+      <section
+        className="arena-section-card grid h-[calc(100dvh-11rem)] min-h-[30rem] grid-cols-1 overflow-hidden border-border bg-card/90 lg:grid-cols-[20rem,1fr] xl:grid-cols-[22rem,1fr]"
+        aria-label="Chat"
+      >
         {/* Lista de conversas */}
-        <aside className={cn('flex min-h-0 flex-col border-r border-primary/10', selectedConversation && 'hidden lg:flex')}>
+        <aside
+          className={cn('flex min-h-0 flex-col border-r border-primary/10', selectedConversation && 'hidden lg:flex')}
+          aria-label="Lista de conversas"
+        >
           <div className="space-y-3 border-b border-primary/10 p-3">
             <div className="flex items-center justify-between gap-2">
               <h2 className="text-base font-semibold text-foreground">Conversas</h2>
-              <Button size="sm" onClick={() => setNewOpen(true)}>
+              <Button size="sm" onClick={() => setNewOpen(true)} aria-label="Nova conversa">
                 <Plus className="mr-1.5 h-4 w-4" /> Nova
               </Button>
             </div>
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/80" />
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/80" aria-hidden="true" />
               <Input
+                type="search"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Buscar conversa"
                 className="h-9 pl-9"
+                aria-label="Buscar conversa"
               />
             </div>
           </div>
@@ -108,7 +124,7 @@ export default function ChatPage() {
         </aside>
 
         {/* Janela da conversa */}
-        <section className={cn('min-h-0 flex-col', selectedConversation ? 'flex' : 'hidden lg:flex')}>
+        <section className={cn('min-h-0 flex-col', selectedConversation ? 'flex' : 'hidden lg:flex')} aria-label="Conversa">
           {selectedConversation ? (
             <ChatWindow
               conversation={selectedConversation}
