@@ -9,9 +9,22 @@
  *    só entra como fallback offline. Assets com hash são imutáveis (cache-first).
  *  - skipWaiting + clients.claim garantem que atualizações entram sem ficar presas.
  */
-const VERSION = 'v5';
+// HOTFIX-004: força invalidação TOTAL do cache. Versão v6 limpa
+// viralata-v5 E qualquer cache com nome similar que tenha ficado
+// preso (workbox, firebase, sw-*).
+const VERSION = 'v6';
 const CACHE = `viralata-${VERSION}`;
 const SHELL_URL = '/index.html';
+
+// Caches que devem ser limpos ao ativar (legacy, workbox, firebase).
+const LEGACY_CACHE_PREFIXES = [
+  'viralata-v',       // versões antigas (v1..v5)
+  'workbox-precache',
+  'workbox-runtime',
+  'workbox-cache',
+  'firebase-',
+  'cdn-',
+];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(self.skipWaiting());
@@ -21,8 +34,15 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(
     (async () => {
       const keys = await caches.keys();
-      await Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k)));
+      const toDelete = keys.filter((k) => {
+        if (k === CACHE) return false;
+        return LEGACY_CACHE_PREFIXES.some((p) => k.startsWith(p));
+      });
+      await Promise.all(toDelete.map((k) => caches.delete(k)));
       await self.clients.claim();
+      // Avisa clientes que o cache foi limpo (UI pode mostrar banner).
+      const clients = await self.clients.matchAll({ includeUncontrolled: true });
+      clients.forEach((c) => c.postMessage({ type: 'CACHE_CLEARED', version: VERSION }));
     })(),
   );
 });
