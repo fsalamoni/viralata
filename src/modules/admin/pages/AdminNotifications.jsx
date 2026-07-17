@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import BroadcastComposer from '../components/BroadcastComposer';
 import { collection, limit, onSnapshot, orderBy, query } from 'firebase/firestore';
-import { Bell, Search, ExternalLink } from 'lucide-react';
+import { Bell, Search, ExternalLink, Shield } from 'lucide-react';
 import { db } from '@/core/config/firebase';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { formatAuditDate } from '@/core/services/auditService';
@@ -25,7 +25,7 @@ const TYPE_OPTIONS = [
 ];
 export default function AdminNotifications() {
   const { isPlatformAdmin } = useAuth();
-  const { settings } = usePlatformSettings();
+  const { settings, isLoading: settingsLoading } = usePlatformSettings();
   const [notifications, setNotifications] = useState([]);
   const [error, setError] = useState(null);
   const [search, setSearch] = useState('');
@@ -33,6 +33,8 @@ export default function AdminNotifications() {
   const [readFilter, setReadFilter] = useState('all');
   const maxNotifications = settings.operational_limits.admin_notifications_limit;
   const wrapperClass = useArenaPageClasses('arena-page mx-auto max-w-6xl px-4 py-6 space-y-6');
+  const deniedClass = useArenaPageClasses('arena-page mx-auto max-w-3xl py-16 text-center');
+  const loadingClass = useArenaPageClasses('arena-page mx-auto max-w-6xl px-4 py-16');
 
   useEffect(() => {
     if (!isPlatformAdmin) return undefined;
@@ -72,7 +74,27 @@ export default function AdminNotifications() {
     });
   }, [notifications, readFilter, search, typeFilter]);
 
-  if (!isPlatformAdmin) return <div className="text-center py-16 text-muted-foreground">Acesso restrito.</div>;
+  if (!isPlatformAdmin) {
+    return (
+      <div className={deniedClass}>
+        <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+          <Shield className="h-5 w-5" />
+        </div>
+        <p className="text-base font-semibold text-foreground">Acesso restrito</p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Esta página é exclusiva do administrador da plataforma.
+        </p>
+      </div>
+    );
+  }
+
+  if (settingsLoading) {
+    return (
+      <div className={loadingClass}>
+        <p className="text-center text-muted-foreground">Carregando configurações…</p>
+      </div>
+    );
+  }
 
   return (
     <div className={wrapperClass}>

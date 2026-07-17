@@ -14,7 +14,7 @@
  * @see functions/securityAlerts.js
  */
 
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Shield, AlertTriangle, Filter, RotateCw, CheckCircle2 } from 'lucide-react';
 import PageHero from '@/components/PageHero';
 import { Button } from '@/components/ui/button';
