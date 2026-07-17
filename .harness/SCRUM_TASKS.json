@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.1.0",
-  "generatedAt": "2026-07-17T03:15:15.661Z",
+  "generatedAt": "2026-07-17T03:25:28.625Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W29",
@@ -10,20 +10,7 @@
     "endsAt": "2026-07-22",
     "goal": "DS_V2 Fase 4 — Reaplicar design system oficial v1.0 bloco a bloco, cada área com feature flag default OFF. Começar pelo Bloco A (docs) ✅, agora Bloco B (tokens + Material Symbols). User valida visualmente cada bloco antes da próxima. Zero regressão em regra de negócio."
   },
-  "activeWorktrees": [
-    {
-      "id": "wt-register-flags",
-      "branch": "feat/register-ds-v2-flags",
-      "head": "7cc5dfd48c505773ed9259aa9f87348f16a9cfaf",
-      "headTitle": "feat(flags): registrar 11 flags DS_V2 (Fase 4) em core/featureFlags.js",
-      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-register-flags",
-      "status": "in-sync",
-      "commitsAhead": 0,
-      "primarySession": null,
-      "sessionTitle": null,
-      "focus": []
-    }
-  ],
+  "activeWorktrees": [],
   "activeSessions": [
     {
       "id": "mvs_311d078987d0414a90f57ef28b789b18",
@@ -13724,17 +13711,20 @@
     {
       "id": "TASK-813",
       "title": "[AUDIT-0.1] Investigar OrganizationAdminPanel \"Algo deu errado\"",
-      "status": "backlog",
+      "status": "done",
       "priority": "P1",
-      "owner": "unassigned",
+      "owner": "Mavis (root)",
       "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17T03:15:15",
+      "updatedAt": "2026-07-17T03:25:26",
       "phase": "Fase 0",
       "tags": [
         "full-audit",
         "2026-07-17"
       ],
-      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 0"
+      "evidence": "Mission: FULL_AUDIT_2026-07-17 — see docs/FULL_AUDIT_2026-07-17.md §Fase 0",
+      "branch": "hotfix/audit-task-813-admin-error-2026-07-17",
+      "worktree": "wt-task-813",
+      "resolvedAt": "2026-07-17"
     },
     {
       "id": "TASK-814",
@@ -15589,7 +15579,7 @@
       "feat/ds-v2-motion-2026-07-16",
       "feat/ds-v2-audit-2026-07-16"
     ],
-    "mainCommit": "6c0064e011d7d5e6d086437653906974ec8e5151",
+    "mainCommit": "c6a5d5249329cda68849e54ff8cc9651601d8391",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -15600,12 +15590,12 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 624,
-    "done": 512,
+    "done": 513,
     "inProgress": 0,
     "inReview": 0,
     "blocked": 0,
     "ready": 0,
-    "backlog": 111,
+    "backlog": 110,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
     "contribuicaoCoder": {
@@ -15634,7 +15624,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-17T03:15:15 — via .harness/_add-audit-2026-07-17-tasks.cjs (FULL_AUDIT_2026-07-17)",
+    "lastUpdate": "2026-07-17T03:25:28.648Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
