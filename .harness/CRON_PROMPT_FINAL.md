@@ -8,11 +8,10 @@
 **Missão 10h**: **VARREDURA COMPLETA FULL_AUDIT_2026-07-17** (107 tasks, TASK-813..TASK-919).
 Ver `docs/FULL_AUDIT_2026-07-17.md` para o documento canônico.
 
-**MODO ATUAL**: MERGE+DEPLOY A CADA TASK. User pediu 2026-07-17 00:00:
-> "Quero pedir que durante a noite você faça uma varredura completa em loop automático em todos os aspectos da plataforma... sem minha intervenção. A partir de agora, nenhum erro é aceitável!"
+**MODO ATUAL**: MERGE+DEPLOY A CADA TASK.
 
 **Métricas iniciais**: 512 done, 0 ready, 0 in_progress, 4 backlog, 1 dropped.
-**Após seed**: 512 done, **107 backlog** (TASK-813..TASK-919), 0 ready, 0 in_progress, 0 in_review, 0 blocked.
+**Após seed**: 512 done, **107 backlog** (TASK-813..TASK-919), 0 ready.
 
 ---
 
@@ -22,6 +21,9 @@ Ver `docs/FULL_AUDIT_2026-07-17.md` para o documento canônico.
 
 User alertou 2026-07-16 17:13:
 > "Lembre-se, eu quero aprimoramento, melhoria e otimização real e verdadeira! O agente do loop não pode fingir que viu, precisa olhar de fato, precisa analisar a realidade e fazer as mudanças reais!"
+
+E 2026-07-17 00:00:
+> "Não quero que finja ou que tenha preguiça, preciso que entre em todos o código, leia e análise linha por linha. Quero tudo, literalmente tudo corrigido... A partir de agora, nenhum erro é aceitável!"
 
 **PROIBIÇÕES ABSOLUTAS**:
 - ❌ PROIBIDO: ler só o nome do arquivo e marcar como "audit only" sem ler o conteúdo.
@@ -43,153 +45,90 @@ User alertou 2026-07-16 17:13:
 - ✅ Rodar `npm run build` verde **antes** do commit.
 - ✅ Commitar com mensagem descritiva (o que mudou e por quê).
 - ✅ Conferir o diff com `git show HEAD --stat` antes de fazer merge.
-- ✅ Atualizar `docs/<arquivo>` correspondente com o que mudou.
-
-**Se a task é "audit only"**: ler TODOS os arquivos do módulo, listar achados específicos, **não** dizer "está OK" genericamente.
 
 ---
 
 ## 🔴 REGRA ESPECIAL — ATIVAR/MEXER EM FEATURE FLAGS (2026-07-16 23:14) 🔴
 
-**Lição crítica** do HOTFIX-001 (commit `f6c9ed6`):
-
-Quando você ativar uma feature flag (TASK tipo "ativar flag X → ON") ou mudar `DEFAULT_FEATURE_FLAGS` em massa:
+Quando ativar uma feature flag ou mudar `DEFAULT_FEATURE_FLAGS` em massa:
 
 1. **Mudar `DEFAULT_FEATURE_FLAGS` em `src/core/featureFlags.js` não basta.**
-   O doc Firestore `platform_settings/global` tem valores salvos que sobrescrevem o default. A migração v2 só rodava se TODAS as flags estavam em false, então DEFAULT novo nunca aplicava.
+2. **SEMPRE atualizar `migrateLegacyFlags`** em `src/core/lib/FeatureFlagsContext.migration.js`.
+3. **Bump `FLAGS_MIGRATION_VERSION`** em `platformSettingsService.js`.
+4. **Adicionar teste** em `FeatureFlagsContext.migration.test.js`.
+5. **Após merge, pedir ao user para limpar cache** e confirmar visualmente.
 
-2. **SEMPRE atualizar `migrateLegacyFlags`** em
-   `src/core/lib/FeatureFlagsContext.migration.js` para cobrir a nova flag no critério de migração. A v3 (2026-07-16) tem 2 critérios:
-   - TODAS flags em false → migra tudo.
-   - Caso contrário → migra apenas SHELTER_* undefined/null.
-
-3. **Bump `FLAGS_MIGRATION_VERSION`** em `platformSettingsService.js`
-   para invalidar caches e forçar re-execução.
-
-4. **Adicionar teste** em `FeatureFlagsContext.migration.test.js`
-   cobrindo o cenário.
-
-5. **Após merge, pedir ao user para limpar cache** (`Ctrl+Shift+R`) e
-   confirmar que a flag aparece ON em `/admin/flags` E a funcionalidade
-   está visível. Se não aparecer → investigar doc Firestore stale.
-
-**Erro real que aconteceu** (2026-07-16 23:14):
-- TASK-792..797 mudou DEFAULT de 9 flags SHELTER_* para true.
-- User reportou "Não apareceu nenhuma flag nova".
-- Causa: doc Firestore persistido tinha false, migração v2 não rodou.
-- Correção: migração v3 + HOTFIX-001 merged em `f6c9ed6`.
-
-**REGRA**: mudar DEFAULT em massa SEMPRE vem acompanhado de migração.
 Documentado em `docs/CORE_DIRECTIVES.md` §9.2 (D-FLAG-05, D-FLAG-06, D-FLAG-07).
 
 ---
 
 ## 🔴 REGRA ESPECIAL — PWA CACHE (2026-07-16 23:33) 🔴
 
-**Lição crítica** do HOTFIX-002 (commit `7879b06`):
+PWA `vite-plugin-pwa` gera `sw.js` (mesmo nome) com `cache-control: public, max-age=31536000, immutable`. PWA instalado no celular do user mantém SW persistente que serve assets antigos.
 
-PWA `vite-plugin-pwa` gera `sw.js` (mesmo nome) com `cache-control: public, max-age=31536000, immutable`. PWA instalado no celular do user mantém SW persistente que serve assets antigos mesmo após deploy.
+**REGRA #C-1**: Ao alterar layout, navegação, ou feature flags, SEMPRE bump `filename: 'sw-vN.js'` em `vite.config.js`.
 
-**SEMPRE considerar PWA cache ao fazer deploy de UI crítica**:
-- Mudanças em `OrganizationAdminPanel`, `ClubDetail`, `CommunityDetail`, etc → bump `filename: 'sw-vN.js'` em `vite.config.js`.
-- Mudanças em `featureFlags.js` que afetam UX → considerar bump.
-- Mudanças em rotas, navegação, layout → considerar bump.
-- Builds que mudam HTML/JSX sem bump = user mobile pode estar preso em versão antiga.
+**REGRA #C-3**: Toda página com TabList com 5+ items DEVE usar `arena-admin-tabs` (flex-nowrap + overflow-x-auto). Nunca `arena-tab-bar` (flex-wrap).
 
-**REGRA #C-2**: Cache clear do browser NÃO remove service worker persistente. Para resetar PWA: uninstall + reinstall OR clear site data.
-
-**REGRA #C-3**: Toda página com TabList com 5+ items DEVE usar `arena-admin-tabs` (flex-nowrap + overflow-x-auto). Nunca `arena-tab-bar` (flex-wrap) com 5+ items.
-
-**REGRA #C-4** (NOVA): Ao alterar layout, navegação, ou feature flags, SEMPRE fazer bump do `filename: 'sw-vN.js'` em `vite.config.js`. vN deve ser incrementado.
+**REGRA #C-4** (NOVA): Mudanças UI críticas SEMPRE bump sw.js.
 
 ---
 
-## 🎯 MISSÃO DO TURNO (30 min) — MODO MERGE+DEPLOY (TASK A TASK)
-
-### PASSO 0: Self-check antes de tudo
+## 🎯 CICLO DO LOOP (30 min, MERGE+DEPLOY a cada task)
 
 ```bash
 cd /workspace/viralata
 git status  # garantir clean
 git pull --no-rebase origin main
 git log --oneline -1
-# Se main mudou: rebuild, garantir que build está verde
-```
 
-### PASSO 1: Pegar próxima task READY
-```bash
-NEXT_TASK=$(node -e "const j=require('./.harness/SCRUM_TASKS.json'); const t=j.tasks.find(t=>t.status==='ready'&&t.tags?.includes('full-audit')); console.log(t?.id || 'NONE');")
-# Se não tiver, promover uma do backlog:
-node -e "const j=require('./.harness/SCRUM_TASKS.json'); const t=j.tasks.find(t=>t.status==='backlog'&&t.tags?.includes('full-audit')); if(t){t.status='ready'; require('fs').writeFileSync('./.harness/SCRUM_TASKS.json', JSON.stringify(j,null,2)); console.log(t.id, '→ ready');}"
+# Pegar próxima task READY (ou promover do backlog)
+NEXT_TASK=$(node -e "const j=require('./.harness/SCRUM_TASKS.json'); const r=j.tasks.find(t=>t.status==='ready'&&t.tags?.includes('full-audit')); if(!r){const b=j.tasks.find(t=>t.status==='backlog'&&t.tags?.includes('full-audit')); if(b){b.status='ready'; require('fs').writeFileSync('./.harness/SCRUM_TASKS.json', JSON.stringify(j,null,2));}} console.log((r||b)?.id || 'NONE');")
+
+if [ "$NEXT_TASK" = "NONE" ]; then
+  echo "✅ Nada para fazer. Aguardar."
+  exit 0
+fi
 
 BRANCH="feat/audit-${NEXT_TASK,,}-2026-07-17"
+node .harness/scrum.cjs start $NEXT_TASK
 git worktree add .worktrees/wt-$NEXT_TASK -b $BRANCH main
 cd .worktrees/wt-$NEXT_TASK
-```
 
-### PASSO 2: Investigação REAL (NÃO pule)
-```bash
-# LER O CÓDIGO INTEIRO do componente alvo (não só head -50)
-wc -l src/path/to/Component.jsx  # saber tamanho
-cat src/path/to/Component.jsx    # LER INTEIRO
+# INVESTIGAÇÃO REAL (ler INTEIRO, não head -50)
+wc -l src/path/to/Component.jsx
+cat src/path/to/Component.jsx
+grep -rn "ComponentName" src/ | head -20
 
-# Grep para entender uso
-grep -rn "Component" src/ | head -20  # quem importa
-grep -rn "ComponentName" src/modules/admin/ | head -10  # quem usa
-
-# Se for admin tab, ver o estado visual atual
-grep -nE "TabsList|TabsContent" src/path/Component.jsx
-```
-
-### PASSO 3: Identificar problemas REAIS
-Liste **3-5 problemas específicos** que o componente tem hoje. Exemplo real:
-- "Linha 142: `<div className='flex flex-wrap'>` sem overflow-x → quebra em 2 fileiras"
-- "Linha 230: gap-1.5 entre stat cards mas p-0 no wrapper → sem respiro lateral"
-- "Linha 318: Card sem EmptyState quando lista vazia → tela em branco"
-
-**NÃO invente problemas que não existem. NÃO minimize os reais.**
-
-### PASSO 4: Mudança PERCEPTÍVEL (NÃO cosmética)
-- Mexer em **estrutura**, não só em classe
-- Adicionar features visuais úteis (loading, empty state, hover state, transition)
-- Se for Polish, alterar **layout/hierarquia**, não só cor
-- Se a task diz "aplicar DS_V2", usar `arena-*` classes do Design System
-
-### PASSO 5: Build verde OBRIGATÓRIO
-```bash
-npm run build  # EXIT 0 OBRIGATÓRIO
-# Se quebrar: git reset --hard HEAD, refazer
-```
-
-### PASSO 6: Conferir o diff
-```bash
+# Identificar 3-5 problemas REAIS (não inventar)
+# IMPLEMENTAR (mudança perceptível)
+npm run build  # verde obrigatório
 git add -A
-git commit -m "feat(...): descrição REAL do que mudou (não genérica)"
-git show HEAD --stat  # ver o que mudou
-# Mudou < 5 linhas? Provavelmente fachada. Refazer com mudança maior.
-```
+git commit -m "feat: $NEXT_TASK — descrição REAL do que mudou"
 
-### PASSO 7: Merge em main + cleanup
-```bash
+# CONFERIR DIFF (anti-fachada)
+git show HEAD --stat
+# Se < 5 linhas mudou: refazer com mudança maior
+
+# MERGE EM MAIN
 cd /workspace/viralata
 git checkout main
 git pull --no-rebase origin main
 git merge --no-ff $BRANCH -m "merge: $BRANCH"
+
+# Limpar
 git worktree remove --force .worktrees/wt-$NEXT_TASK
 git worktree prune
 git branch -D $BRANCH
-```
 
-### PASSO 8: REGRA #0 (SCRUM) + REGRA #1 (METRICS)
-```bash
+# REGRA #0: SCRUM update
 node .harness/scrum.cjs review $NEXT_TASK
 node .harness/scrum.cjs done $NEXT_TASK --reason "merge em main OK"
 
+# REGRA #1: metrics sync
 python3 -c "import json; d=json.load(open('.harness/SCRUM_TASKS.json')); m=d.setdefault('metrics',{}); m['totalTasks']=len(d['tasks']); m['done']=len([t for t in d['tasks'] if t['status']=='done']); m['ready']=len([t for t in d['tasks'] if t['status']=='ready']); m['inProgress']=len([t for t in d['tasks'] if t['status']=='in_progress']); m['inReview']=len([t for t in d['tasks'] if t['status']=='in_review']); m['blocked']=len([t for t in d['tasks'] if t['status']=='blocked']); m['backlog']=len([t for t in d['tasks'] if t['status']=='backlog']); json.dump(d, open('.harness/SCRUM_TASKS.json','w'), indent=2)"
-```
 
-### PASSO 9: Re-embed + push (DEPLOY automático)
-```bash
+# Re-embed + push (DEPLOY automático via GitHub Actions)
 node .harness/sync.cjs --fix
 git add -A
 git commit -m "chore(scrum): $NEXT_TASK done"
@@ -202,7 +141,7 @@ git push origin main
 ## 🆕 CANDIDATAS — FULL_AUDIT_2026-07-17 (107 tasks)
 
 ### Fase 0 — Diagnóstico (5 tasks, CRÍTICA, fazer PRIMEIRO)
-- TASK-813..817: investigar e corrigir os 3 problemas reportados pelo user (admin abrigo "Algo deu errado", flags não vêm, DS_V2 ainda não aplicado)
+- TASK-813..817: investigar e corrigir os 3 problemas reportados pelo user
 
 ### Fase 1 — Auditoria de erros runtime (8 tasks)
 - TASK-818..825: ErrorBoundary, TabErrorBoundary, rotas, hooks, lazy/Suspense, react-query
@@ -234,23 +173,12 @@ git push origin main
 ### Fase 10 — Documentação completa (8 tasks)
 - TASK-912..919: docs de módulos, hooks, services, fluxos (flags, PWA, SCRUM, git, UI)
 
-**Total**: 107 tasks. A 30min/task = 53h. A 15min/task = 27h. **A 10min/task = 17h** (loop completo).
-
 ---
 
 ## 📊 MÉTRICAS INICIAIS (2026-07-17 00:15 UTC)
 
 - **done=512**, **ready=0**, **in_progress=0**, **in_review=0**, **blocked=0**, **backlog=111** (4 antigos + 107 do FULL_AUDIT)
 - **Main**: `e872443`
-
-## 🏁 FIM DO TURNO
-
-1. REGRA #0 (scrum update)
-2. REGRA #1 (metrics sync)
-3. sync.cjs --fix
-4. Commit + push
-5. Atualizar LOOP_PROMPT.md se missão mudou
-6. **MERGE+DEPLOY já foi feito** durante o turno
 
 ## ⏰ HORÁRIO
 - **24/7**, loop a cada **30min** (10h direto, 20 iterações).
@@ -267,16 +195,11 @@ git push origin main
 - ❌ Esquecer `pull --no-rebase` antes de push
 - ❌ Mudar `DEFAULT_FEATURE_FLAGS` sem migrateLegacyFlags
 - ❌ Mudar UI crítica sem bump sw.js
-- ❌ Esquecer de bump `sw-v7.js` quando a UI crítica mudar
 
 ---
 
-## 🔁 SELF-REMINDER
+## REGRA DE OURO
 
-A cada 2h (= 4 iterações), verificar:
-- Tasks done desde último check
-- Build verde em 100% dos commits
-- Sync.cjs --fix em 100% dos commits
-- Métricas sincronizadas
-
-Se QUALQUER coisa quebrar, parar e logar.
+**Se o user reclamou que o visual está ruim, é porque está ruim.**
+**MELHOR É MELHOR, mesmo que mude o que existia. SEM FACADA.**
+**NENHUM ERRO É ACEITÁVEL.**
