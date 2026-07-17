@@ -19,6 +19,10 @@ export default defineConfig(({ mode }) => {
         // usuário ainda vê o bundle velho cacheado pelo SW antigo".
         skipWaiting: true,
         clientsClaim: true,
+        // Bumping filename invalida o SW antigo forçadamente — usuário
+        // recebe o novo na próxima visita. Solução para o problema
+        // 'user reportou versão antiga mesmo após deploy' (2026-07-16).
+        filename: 'sw-v6.js',
         includeAssets: ['favicon.svg', 'apple-touch-icon.png', 'pwa-192.png', 'pwa-512.png', 'scrum.html'],
         manifest: {
           name: 'Viralata - Adoção Responsável',

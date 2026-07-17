@@ -181,9 +181,9 @@ export default function ClubDetail() {
 
         {/* TABS + ações de "Pedir para ingressar" à direita (visitante) */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <div className="mt-2 flex flex-wrap items-end justify-between gap-3 border-b border-border/60 pb-1 sm:mt-3">
+          <div className="mt-2 flex flex-nowrap items-end justify-between gap-3 overflow-x-auto border-b border-border/60 pb-1 sm:mt-3">
             <div className="w-full sm:w-auto">
-              <TabsList className="arena-tab-bar">
+              <TabsList className="arena-admin-tabs">
                 {TABS.map((tab) => {
                   const badge = tab.badgeKey === 'pets' ? stats.animals
                     : tab.badgeKey === 'donations' ? null // doações: badge dinâmico poderia ser adicionado depois
