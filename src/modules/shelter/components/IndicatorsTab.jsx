@@ -430,7 +430,7 @@ export default function IndicatorsTab({ clubId }) {
       </div>
 
       <Tabs defaultValue="exhibition_summary" className="w-full">
-        <TabsList className="arena-tab-bar">
+        <TabsList className="arena-admin-tabs">
           {tabs.map((tab) => (
             <TabsTrigger key={tab.value} value={tab.value} className="text-xs">
               {tab.label}

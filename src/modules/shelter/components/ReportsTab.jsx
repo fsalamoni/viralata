@@ -643,7 +643,7 @@ export default function ReportsTab({ clubId }) {
 
       {/* Relatórios */}
       <Tabs defaultValue="rescues" className="w-full">
-        <TabsList className="arena-tab-bar">
+        <TabsList className="arena-admin-tabs">
           {tabs.map((tab) => (
             <TabsTrigger key={tab.value} value={tab.value} className="text-xs px-2 py-1">
               {tab.label}
