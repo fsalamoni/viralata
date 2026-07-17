@@ -610,7 +610,7 @@ export default function ShelterPublic() {
 
         {/* Tabs (TASK-303 — página rica) */}
         <Tabs defaultValue="about" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-5" role="tablist">
+          <TabsList className="arena-admin-tabs flex w-full overflow-x-auto" role="tablist">
             <TabsTrigger value="about" role="tab">
               <Info className="mr-1.5 h-3.5 w-3.5" /> Sobre
             </TabsTrigger>
@@ -651,8 +651,8 @@ export default function ShelterPublic() {
               </section>
               <section className="arena-section-card">
                 <div className="arena-section-card-body flex flex-col items-start gap-2 p-4">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-pink-100">
-                    <Heart className="h-5 w-5 text-pink-600" />
+                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+                    <Heart className="h-5 w-5 text-primary" />
                   </span>
                   <p className="font-['Sora'] text-2xl font-bold text-foreground">
                     {adoptionsCount.toLocaleString('pt-BR')}
@@ -662,8 +662,8 @@ export default function ShelterPublic() {
               </section>
               <section className="arena-section-card">
                 <div className="arena-section-card-body flex flex-col items-start gap-2 p-4">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100">
-                    <Users className="h-5 w-5 text-blue-600" />
+                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/10">
+                    <Users className="h-5 w-5 text-accent" />
                   </span>
                   <p className="font-['Sora'] text-2xl font-bold text-foreground">
                     {(club.member_count || 0).toLocaleString('pt-BR')}
@@ -673,8 +673,8 @@ export default function ShelterPublic() {
               </section>
               <section className="arena-section-card">
                 <div className="arena-section-card-body flex flex-col items-start gap-2 p-4">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100">
-                    <Calendar className="h-5 w-5 text-amber-600" />
+                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-secondary">
+                    <Calendar className="h-5 w-5 text-secondary-foreground" />
                   </span>
                   <p className="font-['Sora'] text-2xl font-bold text-foreground">
                     {exhibitions.length.toLocaleString('pt-BR')}
