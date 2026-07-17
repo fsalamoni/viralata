@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
-import { FileText, AlertCircle, CheckCircle2, Info, RotateCcw, Save, Shield } from 'lucide-react';
+import { FileText, AlertCircle, CheckCircle2, Info, RotateCcw, Save, Shield, Eye, Edit3 } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { MarkdownEditor } from '@/components/ui/markdown-editor';
+import { MarkdownContent } from '@/components/ui/markdown-content';
 import { cn } from '@/core/lib/utils';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import {
@@ -21,6 +22,7 @@ export default function AdminContentEditor() {
   const deniedClass = useArenaPageClasses('arena-page mx-auto max-w-3xl py-16 text-center');
   const [page, setPage] = useState(PLATFORM_CONTENT_PAGES.TERMOS);
   const [body, setBody] = useState(DEFAULT_PLATFORM_CONTENT[PLATFORM_CONTENT_PAGES.TERMOS]);
+  const [editorMode, setEditorMode] = useState('edit'); // 'edit' | 'preview'
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [lastSavedAt, setLastSavedAt] = useState(null);
@@ -48,12 +50,16 @@ export default function AdminContentEditor() {
     return () => { active = false; };
   }, [page, isPlatformAdmin]);
 
-  // Keep baseline in sync when body changes (user typing)
+  // Track loaded value: only set on initial load (when loading→false transition).
+  // DO NOT update on every body change — that would always make dirty=false.
+  const prevLoadingRef = useRef(true);
   useEffect(() => {
-    if (!loading) {
+    if (prevLoadingRef.current && !loading) {
+      // Loading just finished: this is the loaded value, mark it as baseline.
       baselineRef.current[page] = body;
     }
-  }, [body, loading, page]);
+    prevLoadingRef.current = loading;
+  }, [loading, body, page]);
 
   if (!isPlatformAdmin) {
     return (
@@ -144,9 +150,51 @@ export default function AdminContentEditor() {
                   <Skeleton className="h-64 w-full rounded-xl" />
                 ) : (
                   <>
-                    <MarkdownEditor value={body} onChange={setBody} rows={18} maxLength={40000} disabled={saving} />
+                    {/* Edit / Preview toggle */}
+                <div className="flex items-center gap-1 border border-border rounded-lg p-1 w-fit">
+                  <button
+                    type="button"
+                    onClick={() => setEditorMode('edit')}
+                    aria-pressed={editorMode === 'edit'}
+                    className={cn(
+                      'flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
+                      editorMode === 'edit'
+                        ? 'bg-primary text-primary-foreground'
+                        : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                    )}
+                  >
+                    <Edit3 className="h-3.5 w-3.5" />
+                    Editar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setEditorMode('preview')}
+                    aria-pressed={editorMode === 'preview'}
+                    className={cn(
+                      'flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
+                      editorMode === 'preview'
+                        ? 'bg-primary text-primary-foreground'
+                        : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                    )}
+                  >
+                    <Eye className="h-3.5 w-3.5" />
+                    Visualizar
+                  </button>
+                </div>
 
-                    {/* Sticky save bar com dirty indicator + Cancelar + Salvar */}
+                {editorMode === 'edit' ? (
+                  <MarkdownEditor value={body} onChange={setBody} rows={18} maxLength={40000} disabled={saving} />
+                ) : (
+                  <div className="rounded-xl border border-border bg-card p-6 min-h-[400px] prose prose-sm max-w-none">
+                    {body.trim() ? (
+                      <MarkdownContent>{body}</MarkdownContent>
+                    ) : (
+                      <p className="text-muted-foreground italic">Nenhum conteúdo para visualizar.</p>
+                    )}
+                  </div>
+                )}
+
+                {/* Sticky save bar com dirty indicator + Cancelar + Salvar */}
                     <div className="sticky bottom-4 z-20">
                       <div
                         className={cn(
