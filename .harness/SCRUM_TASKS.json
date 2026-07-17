@@ -16395,6 +16395,39 @@
           "sw": "v9 deployed (force update mobile)"
         }
       }
+    },
+    {
+      "id": "TASK-929",
+      "title": "FIX: BottomTabBar só mobile + LegalFooter FIXED desktop + useLegalFooterHeight",
+      "status": "done",
+      "phase": "V3-UI-6",
+      "priority": "critical",
+      "createdAt": "2026-07-17T21:17:00Z",
+      "doneAt": "2026-07-17T21:17:00Z",
+      "evidence": {
+        "commits": [
+          "9f4bdd21"
+        ],
+        "deployTimestamp": "2026-07-17T21:16:38Z",
+        "swBump": "sw-v9.js → sw-v10.js",
+        "viewport_split": {
+          "mobile": "BottomTabBar (md:hidden OFF mobile)",
+          "desktop": "LegalFooter (md:fixed md:bottom-0)"
+        },
+        "changes": [
+          "BottomTabBar: md:hidden restaurado (só mobile)",
+          "LegalFooter FIXED: relative mobile + md:fixed md:bottom-0 desktop",
+          "Layout: mainPaddingBottom = max(bottomTabHeight, footerHeight, 5rem)",
+          "useLegalFooterHeight hook criado (ResizeObserver + CSS var)",
+          "Vite sw-v10.js (force update PWA)"
+        ],
+        "validation": {
+          "bottomTabBar": "10 testes passando",
+          "legalFooter": "6 testes passando",
+          "build": "verde",
+          "bundle": "md:hidden (BottomTabBar) + md:fixed (LegalFooter) presentes"
+        }
+      }
     }
   ],
   "definitionOfDone": [
@@ -16669,8 +16702,8 @@
     ],
     "openTODOs": 5,
     "openLegalReviews": 3,
-    "totalTasks": 632,
-    "done": 631,
+    "totalTasks": 633,
+    "done": 632,
     "inProgress": 0,
     "inReview": 0,
     "blocked": 0,
