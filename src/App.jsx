@@ -9,6 +9,7 @@ import { CookieBanner } from '@/components/CookieBanner';
 import CommandPalette from '@/components/CommandPalette';
 import { Toaster } from '@/components/ui/sonner';
 import { recordPageView } from '@/core/services/observabilityService';
+import ErrorBoundary from '@/components/ErrorBoundary.jsx';
 
 // ─── Páginas Públicas ─────────────────────────────────────────────────────────
 const Home = lazy(() => import('@/pages/Home'));
@@ -176,9 +177,12 @@ function FullScreenSpinner() {
 
 function withLayout(pageName, Component) {
   return (
-    <Layout currentPageName={pageName}>
-      <Component />
-    </Layout>
+    // ErrorBoundary: falhas isoladas por rota — não derruba app inteiro.
+    <ErrorBoundary>
+      <Layout currentPageName={pageName}>
+        <Component />
+      </Layout>
+    </ErrorBoundary>
   );
 }
 
