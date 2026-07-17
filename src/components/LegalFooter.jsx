@@ -5,20 +5,25 @@
  * (10/07/2026) §5: "Estes documentos devem estar sempre acessíveis
  * a qualquer visitante, com links no rodapé de todas as páginas."
  *
- * **Modos de exibição (TASK-401)** — controlado por preferência do
- * usuário (`useUiPreferences().footerMode`):
- *  - `fixed`     (default) — sempre visível no final do conteúdo
- *  - `autohide`  — fixo no rodapé da viewport, aparece quando o
- *    mouse se aproxima (desktop). Em mobile, fica sempre visível
+ * **Modos de exibição (TASK-401 + TASK-V3-UI-6)** — controlado por
+ * preferência do usuário (`useUiPreferences().footerMode`):
+ *  - `fixed`     (default) — SEMPRE visível, FIXO no bottom da viewport
+ *    (em DESKTOP). Em MOBILE, fica no fluxo normal (relativo, depois do
+ *    conteúdo) porque o BottomTabBar já ocupa o bottom mobile.
+ *  - `autohide`  — fixo no rodapé da viewport, aparece quando o mouse se
+ *    aproxima (desktop). Em mobile, fica sempre visível.
  *  - `hidden`    — não renderiza (LGPD/legal ainda acessível via
  *    Settings/Ajuda; use com cuidado)
  *
- * Quando flag `SHELTER_LEGAL_TERMS_V1` está OFF, o componente
- * se oculta (sem nenhum modo) — links não devem ser visíveis sem
- * docs implementados.
+ * Quando flag `SHELTER_LEGAL_TERMS_V1` está OFF, o componente apenas
+ * escolhe QUAL conjunto de links mostrar (rotas /legal/* vs legadas).
+ * O rodapé em si nunca oculta por causa da flag.
+ *
+ * **Altura medida via ResizeObserver** e exposta via CSS var
+ * `--legal-footer-height` no :root, para que o <main> aplique
+ * padding-bottom correto (igual ao BottomTabBar).
  */
-
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
@@ -35,6 +40,8 @@ const PUBLIC_SLUGS = new Set([
   'codigo-de-conduta',
 ]);
 
+const LEGAL_FOOTER_HEIGHT_VAR = '--legal-footer-height';
+
 function buildFooterLinks(enabled) {
   if (enabled) {
     return LEGAL_PAGES
@@ -48,18 +55,11 @@ function buildFooterLinks(enabled) {
   ];
 }
 
-/**
- * Hook interno: gerencia visibilidade do footer em modo `autohide`
- * - Aparece quando mouse está no bottom 80px da viewport
- * - Some após 1.5s sem mouse próximo
- * - Em mobile (touch), fica sempre visível (autohide não faz sentido)
- */
 function useAutoHideVisibility(active) {
   const [visible, setVisible] = useState(true);
   useEffect(() => {
     if (!active) return undefined;
     if (typeof window === 'undefined') return undefined;
-    // Touch device: sempre visível
     if (window.matchMedia('(hover: none)').matches) {
       setVisible(true);
       return undefined;
@@ -84,18 +84,44 @@ function useAutoHideVisibility(active) {
   return visible;
 }
 
+/**
+ * Hook utilitário: retorna a altura atual do LegalFooter em pixels.
+ * @param {string} mode - 'fixed' | 'autohide' | 'hidden'
+ * @returns {number} altura em px (0 quando hidden)
+ */
+export function useLegalFooterHeight(mode) {
+  const [height, setHeight] = useState(0);
+
+  useEffect(() => {
+    if (mode === FOOTER_MODES.HIDDEN) {
+      setHeight(0);
+      return undefined;
+    }
+    const read = () => {
+      const v = getComputedStyle(document.documentElement)
+        .getPropertyValue(LEGAL_FOOTER_HEIGHT_VAR)
+        .trim();
+      const num = parseInt(v, 10);
+      if (Number.isFinite(num)) setHeight(num);
+    };
+    read();
+    const observer = new MutationObserver(read);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['style'] });
+    window.addEventListener('resize', read);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', read);
+    };
+  }, [mode]);
+
+  return height;
+}
+
 export default function LegalFooter() {
-  // V3 (TASK-V3-LEGAL-FOOTER-1): o rodapé é SEMPRE visível por padrão
-  // (Guia de Implementação Legal v2 §5: "links devem estar sempre acessíveis
-  // a qualquer visitante"). A flag `SHELTER_LEGAL_TERMS_V1` foi removida
-  // do gate — agora ela apenas controla QUAL conjunto de links mostrar:
-  //   - flag ON  → /legal/* (rotas novas, 5 páginas estáticas)
-  //   - flag OFF → /termos, /politica-privacidade, /legislacao (rotas legadas)
-  // O rodapé em si nunca oculta por causa da flag.
-  // O gate de exibição é APENAS o `footerMode` do usuário (fixed/autohide/hidden).
   const enabled = useFeatureFlag(FEATURE_FLAG.SHELTER_LEGAL_TERMS_V1);
   const [uiPrefs] = useUiPreferences();
   const links = buildFooterLinks(enabled);
+  const footerRef = useRef(null);
 
   const mode = uiPrefs?.footerMode || FOOTER_MODES.FIXED;
   const autoHideActive = mode === FOOTER_MODES.AUTOHIDE;
@@ -107,15 +133,34 @@ export default function LegalFooter() {
   const isFixed = mode === FOOTER_MODES.FIXED;
   const isAutohide = mode === FOOTER_MODES.AUTOHIDE;
 
+  // V3 (TASK-V3-UI-6): mede a altura real do footer e expõe via CSS var
+  // para que o <main> tenha padding-bottom dinâmico.
+  useEffect(() => {
+    const el = footerRef.current;
+    if (!el) return undefined;
+    const measure = () => {
+      const h = el.offsetHeight;
+      document.documentElement.style.setProperty(LEGAL_FOOTER_HEIGHT_VAR, `${h}px`);
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
   return (
     <footer
+      ref={footerRef}
       aria-label="Rodapé com documentos legais"
       data-footer-mode={mode}
       className={cn(
         // Base
         'border-t border-border bg-secondary/30 px-5 py-6 text-xs text-muted-foreground',
-        // Fixed: fluxo normal (depois do conteúdo)
-        isFixed && 'relative',
+        // V3 (TASK-V3-UI-6): FIXED em DESKTOP = `fixed bottom-0` para que
+        // o rodapé flutue no bottom da viewport (igual BottomTabBar no mobile).
+        // Em MOBILE, fica `relative` (no fluxo) para não brigar com a
+        // BottomTabBar que também é fixed bottom.
+        isFixed && 'relative md:fixed md:inset-x-0 md:bottom-0 md:z-30 md:bg-card/95 md:backdrop-blur-xl md:border-t md:shadow-[0_-8px_24px_-12px_rgba(0,0,0,0.12)]',
         // Autohide: fixed no bottom, com transição de opacidade/transform
         isAutohide && cn(
           'fixed inset-x-0 bottom-0 z-30 transition-all duration-200 ease-out',

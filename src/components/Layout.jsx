@@ -9,9 +9,9 @@ import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import NotificationsMenu from '@/modules/notifications/components/NotificationsMenu';
 import { Button } from '@/components/ui/button';
 import SwUpdateBanner from '@/components/SwUpdateBanner';
-import LegalFooter from '@/components/LegalFooter';
+import LegalFooter, { useLegalFooterHeight } from '@/components/LegalFooter';
 import BottomTabBar, { useBottomTabBarHeight } from '@/components/BottomTabBar';
-import { useUiPreferences, BOTTOM_TAB_MODES, TOPBAR_MODES } from '@/core/hooks/useUiPreferences';
+import { useUiPreferences, BOTTOM_TAB_MODES, TOPBAR_MODES, FOOTER_MODES } from '@/core/hooks/useUiPreferences';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import ThemeMenu from '@/components/ThemeMenu';
 import {
@@ -67,17 +67,21 @@ export default function Layout({ children, currentPageName }) {
   const [uiPrefs] = useUiPreferences();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  // V3 (TASK-V3-UI-4): a barra inferior (BottomTabBar) é fixa e ocupa
-  // espaço na viewport. Para que o conteúdo do <main> não role por trás
-  // dela quando "sempre visível" estiver ativo, aplicamos padding-bottom
-  // DINÂMICO igual à altura real da barra (medida via ResizeObserver).
-  // Quando bottomTabBarMode === 'hidden' ou não autenticado, height = 0
-  // e o main não tem padding extra.
+  // V3 (TASK-V3-UI-6): padding-bottom dinâmico = SOMA das alturas reais
+  // de BottomTabBar (mobile) + LegalFooter (desktop).
+  // Mobile: só BottomTabBar é fixed
+  // Desktop: só LegalFooter é fixed (BottomTabBar tem md:hidden)
+  // Assim o <main> NUNCA rola por trás de uma barra fixa.
   const bottomTabMode = uiPrefs?.bottomTabBarMode || BOTTOM_TAB_MODES.FIXED;
   const bottomTabHeight = useBottomTabBarHeight(bottomTabMode);
-  const mainPaddingBottom = isAuthenticated && bottomTabMode !== BOTTOM_TAB_MODES.HIDDEN
-    ? { paddingBottom: `max(${bottomTabHeight}px, 5rem)` }
-    : {};
+  const footerMode = uiPrefs?.footerMode || FOOTER_MODES.FIXED;
+  const footerHeight = useLegalFooterHeight(footerMode);
+  const mainPaddingBottom = {
+    // Mobile: padding = bottomTabHeight (BottomTabBar)
+    // Desktop: padding = footerHeight (LegalFooter)
+    // O navegador escolhe via @media (CSS) qual aplicar
+    paddingBottom: `max(${bottomTabHeight}px, ${footerHeight}px, 5rem)`,
+  };
 
   // V3 (TASK-V3-UI-5-FIX): topbar respeita topBarMode (FIXED/AUTOHIDE/HIDDEN).
   // FIXED (default) = sempre visível, sticky no topo.
@@ -343,7 +347,9 @@ export default function Layout({ children, currentPageName }) {
       {/* Rodapé com links legais. TASK-051: links exigidos pelo Guia
           de Implementação Legal v2 (10/07/2026) §5. TASK-401: agora
           respeita a preferência do usuário (footerMode: fixed/autohide/hidden)
-          e se oculta quando SHELTER_LEGAL_TERMS_V1 está OFF. */}
+          e se oculta quando SHELTER_LEGAL_TERMS_V1 está OFF.
+          TASK-V3-UI-6: em DESKTOP, FIXED = `fixed bottom-0` (igual BottomTabBar
+          no mobile) para que a barra fique sempre visível na tela. */}
       <LegalFooter />
     </div>
   );
