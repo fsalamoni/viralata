@@ -256,22 +256,22 @@ export default function ClubFinanceTab({ clubId, canManage = false }) {
           topo do card (a correção do problema reportado pelo usuário).
           CardContent com p-6 e space-y-2 para valor generoso. */}
       <div className="pt-4 sm:pt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <section className="arena-section-card rounded-2xl border-[hsl(150_38%_36%/0.25)] bg-[hsl(150_38%_36%/0.08)]">
+        <section className="arena-section-card rounded-2xl border-primary/25 bg-primary/8">
           <div className="arena-section-card-body space-y-2 p-6 sm:p-7">
-            <div className="text-xs font-semibold uppercase tracking-wider text-[hsl(150_38%_26%)]">Receitas</div>
-            <div className="text-2xl font-extrabold text-[hsl(150_38%_24%)] sm:text-3xl">{brl(revenueTotal)}</div>
+            <div className="text-xs font-semibold uppercase tracking-wider text-primary/70">Receitas</div>
+            <div className="text-2xl font-extrabold text-primary sm:text-3xl">{brl(revenueTotal)}</div>
           </div>
         </section>
-        <section className="arena-section-card rounded-2xl border-[hsl(9_62%_46%/0.22)] bg-[hsl(9_62%_46%/0.07)]">
+        <section className="arena-section-card rounded-2xl border-destructive/20 bg-destructive/5">
           <div className="arena-section-card-body space-y-2 p-6 sm:p-7">
-            <div className="text-xs font-semibold uppercase tracking-wider text-[hsl(9_62%_38%)]">Despesas</div>
-            <div className="text-2xl font-extrabold text-[hsl(9_62%_36%)] sm:text-3xl">{brl(expenseTotal)}</div>
+            <div className="text-xs font-semibold uppercase tracking-wider text-destructive/80">Despesas</div>
+            <div className="text-2xl font-extrabold text-destructive sm:text-3xl">{brl(expenseTotal)}</div>
           </div>
         </section>
         <section className="arena-section-card rounded-2xl">
           <div className="arena-section-card-body space-y-2 p-6 sm:p-7">
             <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Saldo</div>
-            <div className={cn('text-2xl font-extrabold sm:text-3xl', balance >= 0 ? 'text-[hsl(150_38%_24%)]' : 'text-[hsl(9_62%_36%)]')}>
+            <div className={cn('text-2xl font-extrabold sm:text-3xl', balance >= 0 ? 'text-primary' : 'text-destructive')}>
               {brl(balance)}
             </div>
           </div>
@@ -281,8 +281,8 @@ export default function ClubFinanceTab({ clubId, canManage = false }) {
       <TimelineChart entries={entries} />
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <CategoryList title="Receitas por categoria" rows={revenueByCategory} barClassName="bg-[hsl(150_38%_40%)]" />
-        <CategoryList title="Despesas por categoria" rows={expenseByCategory} barClassName="bg-[hsl(9_62%_50%)]" />
+        <CategoryList title="Receitas por categoria" rows={revenueByCategory} barClassName="bg-primary" />
+        <CategoryList title="Despesas por categoria" rows={expenseByCategory} barClassName="bg-destructive" />
       </div>
 
       {filtered.length > 0 && (
@@ -290,12 +290,12 @@ export default function ClubFinanceTab({ clubId, canManage = false }) {
           <div className="arena-section-card-body divide-y p-0">
             {filtered.map((entry) => (
               <div key={entry.id} className="flex items-center gap-3 p-3">
-                <span className={cn('h-2 w-2 shrink-0 rounded-full', entry.type === LEDGER_TYPE.REVENUE ? 'bg-[hsl(150_38%_40%)]' : 'bg-[hsl(9_62%_50%)]')} />
+                <span className={cn('h-2 w-2 shrink-0 rounded-full', entry.type === LEDGER_TYPE.REVENUE ? 'bg-primary' : 'bg-destructive')} />
                 <div className="min-w-0 flex-1">
                   <div className="truncate text-sm font-medium">{entry.category}{entry.note ? ` — ${entry.note}` : ''}</div>
                   <div className="text-xs text-muted-foreground">{entry.date}</div>
                 </div>
-                <span className={cn('shrink-0 text-sm font-semibold', entry.type === LEDGER_TYPE.REVENUE ? 'text-[hsl(150_38%_24%)]' : 'text-[hsl(9_62%_36%)]')}>
+                <span className={cn('shrink-0 text-sm font-semibold', entry.type === LEDGER_TYPE.REVENUE ? 'text-primary' : 'text-destructive')}>
                   {entry.type === LEDGER_TYPE.REVENUE ? '+' : '-'}{brl(entry.value)}
                 </span>
                 {canManage && (
