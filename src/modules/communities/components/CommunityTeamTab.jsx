@@ -4,6 +4,8 @@ import { Shield, ShieldAlert, Trash2, MoreVertical, Crown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import { EmptyState } from '@/components/ui/empty-state';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator,
@@ -20,7 +22,11 @@ import { useAuth } from '@/core/lib/FirebaseAuthContext';
 export default function CommunityTeamTab({ community, membership }) {
   const { data: members = [], isLoading } = useCommunityMembers(community.id);
 
-  if (isLoading) return <div>Carregando equipe...</div>;
+  if (isLoading) return (
+    <div className="space-y-3">
+      {[1, 2, 3].map((i) => <Skeleton key={i} className="h-16 rounded-xl" />)}
+    </div>
+  );
 
   return (
     <div className="space-y-4">
@@ -31,14 +37,21 @@ export default function CommunityTeamTab({ community, membership }) {
         </div>
         <div className="arena-section-card-body space-y-3 p-4 pt-0 sm:p-5 sm:pt-0">
           <div className="space-y-2">
-            {members.map((member) => (
-              <MemberItem
-                key={member.id}
-                member={member}
-                community={community}
-                myMembership={membership}
+            {members.length === 0 ? (
+              <EmptyState
+                title="Nenhum membro"
+                description="Convide pessoas para participar da comunidade."
               />
-            ))}
+            ) : (
+              members.map((member) => (
+                <MemberItem
+                  key={member.id}
+                  member={member}
+                  community={community}
+                  myMembership={membership}
+                />
+              ))
+            )}
           </div>
         </div>
       </section>
