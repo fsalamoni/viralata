@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.1.0",
-  "generatedAt": "2026-07-17T05:18:52.181Z",
+  "generatedAt": "2026-07-17T05:25:55.771Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W29",
@@ -398,13 +398,25 @@
   },
   "activeWorktrees": [
     {
-      "id": "wt-TASK-869",
-      "branch": "feat/audit-TASK-869-2026-07-17",
-      "head": "955af5ed7dbb21abd638c936e4fa1c0a578c788b",
-      "headTitle": "feat: TASK-869 — ShelterAdminDashboard (OrganizationAdminPanel) audit",
-      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-TASK-869",
-      "status": "ahead-of-main",
-      "commitsAhead": 1,
+      "id": "wt-TASK-823",
+      "branch": "feat/audit-TASK-823-2026-07-17",
+      "head": "a12d34203557064e6b45195e27b60b2f9a7cc93e",
+      "headTitle": "chore(scrum): topbar auto-update f78bc4e (workflow)",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-TASK-823",
+      "status": "in-sync",
+      "commitsAhead": 0,
+      "primarySession": null,
+      "sessionTitle": null,
+      "focus": []
+    },
+    {
+      "id": "wt-TASK-864",
+      "branch": "feat/audit-TASK-864-2026-07-17",
+      "head": "6d5b65e6f59549bdbbf3b83db1c78d11864b963f",
+      "headTitle": "feat: TASK-864 — AdminContentEditor audit — 2 real fixes",
+      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/wt-TASK-864",
+      "status": "in-sync",
+      "commitsAhead": 0,
       "primarySession": null,
       "sessionTitle": null,
       "focus": []
@@ -14334,7 +14346,7 @@
       "title": "AUDIT: Global error handler (window.onerror + unhandledrejection)",
       "type": "feature",
       "category": "audit",
-      "status": "backlog",
+      "status": "done",
       "priority": "medium",
       "owner": "loop_420680956387556",
       "branch": "main",
@@ -14347,7 +14359,7 @@
       "blockedBy": [],
       "description": "grep -rn \"window.onerror|unhandledrejection\" src/ e verificar se existe um global handler. Se não existir, criar em src/core/lib/globalErrorHandler.js e importar em main.jsx.",
       "createdAt": "2026-07-17",
-      "updatedAt": "2026-07-17",
+      "updatedAt": "2026-07-17T05:20:03",
       "evidence": " [REVERTED 2026-07-17: no commit, anti-fachada v3]",
       "phase": "Fase 1"
     },
@@ -16763,7 +16775,7 @@
     "firestoreIndexes": 35,
     "bundleSizeKB": 5529,
     "shelterPhases": "22/22 completas em produção",
-    "activeWorktreesAheadOfMain": 1,
+    "activeWorktreesAheadOfMain": 0,
     "mergedWorktreesThisSprint": [
       "feat/ds-v2-docs-2026-07-16",
       "feat/ds-v2-tokens-2026-07-16",
@@ -16777,7 +16789,7 @@
       "feat/ds-v2-motion-2026-07-16",
       "feat/ds-v2-audit-2026-07-16"
     ],
-    "mainCommit": "8d9e70842db1a0e6ac4b4a3894efff3e8379a1b3",
+    "mainCommit": "5da63a6fad431678523d1e093bdff9ab34ed98b1",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -16793,7 +16805,7 @@
     "inReview": 0,
     "blocked": 0,
     "ready": 1,
-    "backlog": 70,
+    "backlog": 69,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
     "contribuicaoCoder": {
@@ -16822,7 +16834,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-17T05:18:52.203Z — via sync.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-17T05:25:55.789Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
