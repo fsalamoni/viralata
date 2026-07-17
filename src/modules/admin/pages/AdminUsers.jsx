@@ -10,7 +10,8 @@
  * Rota: /admin/admins
  */
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { Shield } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import {
   listPlatformAdmins,
@@ -21,6 +22,7 @@ import {
 } from '../services/adminUsersService';
 import { listAllUsers } from '../services/adminService';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -38,6 +40,8 @@ export default function AdminUsers() {
   const [loading, setLoading] = useState(true);
   const [acting, setActing] = useState(null);
   const wrapperClass = useArenaPageClasses('arena-page mx-auto max-w-5xl space-y-6 px-4 py-6');
+  const deniedClass = useArenaPageClasses('arena-page mx-auto max-w-3xl py-16 text-center');
+  const loadingClass = useArenaPageClasses('arena-page mx-auto max-w-5xl px-4 py-16');
 
   const isOwner = isPlatformOwnerEmail(user?.email) || userProfile?.email === PLATFORM_OWNER_EMAIL;
 
@@ -97,7 +101,27 @@ export default function AdminUsers() {
   }
 
   if (!isPlatformAdmin) {
-    return <div className="text-center py-16 text-muted-foreground">Acesso restrito.</div>;
+    return (
+      <div className={deniedClass}>
+        <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+          <Shield className="h-5 w-5" />
+        </div>
+        <p className="text-base font-semibold text-foreground">Acesso restrito</p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Esta página é exclusiva do administrador da plataforma.
+        </p>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className={loadingClass}>
+        <div className="space-y-3">
+          {[1, 2, 3].map((i) => <Skeleton key={i} className="h-16 w-full rounded-xl" />)}
+        </div>
+      </div>
+    );
   }
 
   const filteredAdmins = filterList(admins, search);

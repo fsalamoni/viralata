@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
-import { FileText, AlertCircle, CheckCircle2, Info, RotateCcw, Save } from 'lucide-react';
+import { FileText, AlertCircle, CheckCircle2, Info, RotateCcw, Save, Shield } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -18,6 +18,7 @@ import {
 
 export default function AdminContentEditor() {
   const { user, isPlatformAdmin } = useAuth();
+  const deniedClass = useArenaPageClasses('arena-page mx-auto max-w-3xl py-16 text-center');
   const [page, setPage] = useState(PLATFORM_CONTENT_PAGES.TERMOS);
   const [body, setBody] = useState(DEFAULT_PLATFORM_CONTENT[PLATFORM_CONTENT_PAGES.TERMOS]);
   const [loading, setLoading] = useState(true);
@@ -30,7 +31,7 @@ export default function AdminContentEditor() {
   const baseline = baselineRef.current[page];
   const dirty = baseline !== undefined && body !== baseline;
 
-  const pageClass = useArenaPageClasses('space-y-5');
+  const pageClass = useArenaPageClasses('arena-page space-y-5');
 
   useEffect(() => {
     if (!isPlatformAdmin) return;
@@ -54,7 +55,19 @@ export default function AdminContentEditor() {
     }
   }, [body, loading, page]);
 
-  if (!isPlatformAdmin) return null;
+  if (!isPlatformAdmin) {
+    return (
+      <div className={deniedClass}>
+        <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+          <Shield className="h-5 w-5" />
+        </div>
+        <p className="text-base font-semibold text-foreground">Acesso restrito</p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Esta página é exclusiva do administrador da plataforma.
+        </p>
+      </div>
+    );
+  }
 
   async function handleSave() {
     if (dirty) {
