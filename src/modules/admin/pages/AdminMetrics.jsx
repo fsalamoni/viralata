@@ -1,14 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   ResponsiveContainer, BarChart, Bar, LineChart, Line,
   XAxis, YAxis, CartesianGrid, Tooltip,
 } from 'recharts';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Shield } from 'lucide-react';
 import { fetchMetricsData, groupByMonth, groupByDay, groupByField } from '../services/metricsService';
 import PageHero from '@/components/PageHero';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 
+/**
+ * AdminMetrics — painel de métricas da plataforma (TASK-172).
+ * Ver TASK-858: auditoria DS_V2, loading state, access denied.
+ */
 export default function AdminMetrics() {
   const { isPlatformAdmin } = useAuth();
   const [loading, setLoading] = useState(true);
@@ -16,17 +22,41 @@ export default function AdminMetrics() {
   // TASK-172: janela temporal dos gráficos (30/90/365 dias).
   const [rangeDays, setRangeDays] = useState(365);
 
+  // Hooks de classe dos wrappers. Devem ficar ANTES dos early-returns.
+  const deniedClass = useArenaPageClasses('arena-page mx-auto max-w-3xl py-16 text-center');
+  const successClass = useArenaPageClasses('arena-page mx-auto max-w-5xl space-y-6 px-4 py-6');
+  const loadingClass = useArenaPageClasses('arena-page max-w-5xl mx-auto px-4 py-16');
+
   useEffect(() => {
     if (!isPlatformAdmin) return;
     fetchMetricsData().then(setData).finally(() => setLoading(false));
   }, [isPlatformAdmin]);
 
-  // Hooks de classe dos wrappers. Devem ficar ANTES dos early-returns.
-  const loadingClass = useArenaPageClasses('max-w-5xl mx-auto px-4 py-16 text-center text-muted-foreground');
-  const successClass = useArenaPageClasses('arena-page mx-auto max-w-5xl space-y-6 px-4 py-6');
+  if (!isPlatformAdmin) {
+    return (
+      <div className={deniedClass}>
+        <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+          <Shield className="h-5 w-5" />
+        </div>
+        <p className="text-base font-semibold text-foreground">Acesso restrito</p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Esta página é exclusiva do administrador da plataforma.
+        </p>
+      </div>
+    );
+  }
 
-  if (!isPlatformAdmin) return null;
-  if (loading) return <div className={loadingClass}>Carregando métricas...</div>;
+  if (loading) {
+    return (
+      <div className={loadingClass}>
+        <Skeleton className="h-8 w-64 rounded-lg mb-6" />
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+          {[1, 2, 3, 4].map((i) => <Skeleton key={i} className="h-20 rounded-xl" />)}
+        </div>
+        <Skeleton className="h-64 w-full rounded-xl" />
+      </div>
+    );
+  }
 
   // 30/90 dias → agregação diária; 365 dias → mensal (12 buckets).
   const groupSeries = (docs, field) => (rangeDays === 365
@@ -46,13 +76,14 @@ export default function AdminMetrics() {
       />
 
       {/* TASK-172: seletor de janela temporal */}
-      <div className="flex justify-end gap-2">
+      <div className="flex justify-end gap-2" role="group" aria-label="Janela temporal dos gráficos">
         {[[30, '30 dias'], [90, '90 dias'], [365, '12 meses']].map(([days, label]) => (
           <Button
             key={days}
             size="sm"
             variant={rangeDays === days ? 'default' : 'outline'}
             onClick={() => setRangeDays(days)}
+            aria-pressed={rangeDays === days}
           >
             {label}
           </Button>
