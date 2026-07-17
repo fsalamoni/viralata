@@ -16312,6 +16312,56 @@
           "designDecisions": 12
         }
       }
+    },
+    {
+      "id": "TASK-927",
+      "title": "V3 PetDetail completo: 10 componentes novos + PetDetailV3 (24.5KB)",
+      "status": "done",
+      "phase": "V3-PetDetail-Impl",
+      "priority": "high",
+      "createdAt": "2026-07-17T20:06:00Z",
+      "doneAt": "2026-07-17T20:06:00Z",
+      "evidence": {
+        "commits": [
+          "a924ab6b"
+        ],
+        "deployTimestamp": "2026-07-17T20:05:34Z",
+        "bundle": "PetDetailV3-cwJtsfgX.js (48KB)",
+        "tests": "180 passing",
+        "newFiles": 10,
+        "newComponents": [
+          "PetBreadcrumb (com JSON-LD)",
+          "PetGallery (swipe + zoom + thumbs)",
+          "PetMap (SVG inline, sem deps)",
+          "PetFavoriteButton (persistente)",
+          "PetSimilar (carrossel)",
+          "PetReportButton (modal)",
+          "PetTimeline (eventos)",
+          "PetTemperament (9 traits)",
+          "PetRatingSummary (estrelas)",
+          "PetStickyCta (bottom mobile)"
+        ],
+        "wrapperChanges": [
+          "PetDetail.jsx → wrapper com React.lazy",
+          "PetDetail.v1.jsx → V1 renomeado (mantido)",
+          "PetDetailV3.jsx → novo (24.5KB)"
+        ],
+        "improvements": [
+          "Breadcrumb + JSON-LD",
+          "Galeria swipe + zoom + aspect 3:4",
+          "Mapa com pin (sem Leaflet dep)",
+          "Favoritar com optimistic UI",
+          "Pets similares do mesmo responsável",
+          "Reportar com modal + 5 motivos",
+          "Timeline de eventos do pet",
+          "Temperamento com ícones Sora",
+          "Sumário de avaliação visível",
+          "Sticky CTA mobile",
+          "Collapsible Sobre/Saúde",
+          "Card bloqueio sempre visível (sem flag)",
+          "Compact mode + dark mode + reduced motion"
+        ]
+      }
     }
   ],
   "definitionOfDone": [
@@ -16586,8 +16636,8 @@
     ],
     "openTODOs": 5,
     "openLegalReviews": 3,
-    "totalTasks": 630,
-    "done": 629,
+    "totalTasks": 631,
+    "done": 630,
     "inProgress": 0,
     "inReview": 0,
     "blocked": 0,
