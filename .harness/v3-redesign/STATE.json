@@ -1,0 +1,31 @@
+{
+  "currentKey": "HOME",
+  "currentFlag": "V3_PAGE_HOME",
+  "currentTask": "TASK-V3-HOME",
+  "currentPhase": "step-1",
+  "lastRun": 0,
+  "lastError": null,
+  "queue": [
+    "HOME",
+    "LOGIN",
+    "PROFILE",
+    "CHAT",
+    "ADOPTION",
+    "COMMUNITY_DETAIL",
+    "CLUB_DETAIL",
+    "SEARCH",
+    "EVENTS",
+    "FOSTER",
+    "VOLUNTEER",
+    "MURAL",
+    "ADMIN",
+    "ORG_ADMIN",
+    "COMMUNITY_ADMIN",
+    "SHELTER_ADMIN"
+  ],
+  "history": [
+    { "key": "FEED", "task": "TASK-920", "doneAt": "2026-07-17T18:00:00Z", "commitSha": "0cab8ea9", "regency": "docs/REGENCY_FEED_V3.md" },
+    { "key": "PET_DETAIL", "task": "TASK-927", "doneAt": "2026-07-17T20:06:00Z", "commitSha": "a924ab6b", "regency": "docs/REGENCY_PET_DETAIL_V3.md" },
+    { "key": "LEGAL", "task": "TASK-930", "doneAt": "2026-07-17T23:51:00Z", "commitSha": "caeed857", "regency": "docs/REGENCY_LEGAL_V3.md" }
+  ]
+}
