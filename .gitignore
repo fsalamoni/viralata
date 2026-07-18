@@ -32,5 +32,7 @@ functions/node_modules
 .harness/.autosync.lock
 .harness/.scrum.lock
 audit.json
-.harness/v3-redesign/STATE.json
 .harness/v3-redesign/LOG/
+/tmp/v3-redesign-loop.lock
+/tmp/commit-msg-*.txt
+v3-redesign-loop.lock

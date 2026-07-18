@@ -29,7 +29,7 @@ console.log(`[step-4] Iniciando deploy de ${KEY}...`);
 
 // 1. Rodar testes do V3
 console.log(`[step-4] Rodando vitest...`);
-const testResult = spawnSync('npx', ['vitest', 'run', `--reporter=basic`], {
+const testResult = spawnSync('npx', ['vitest', 'run'], {
   cwd: wtDir,
   stdio: 'inherit',
   timeout: 5 * 60 * 1000,

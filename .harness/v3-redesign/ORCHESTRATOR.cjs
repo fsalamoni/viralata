@@ -167,8 +167,34 @@ function disableCron() {
   }
 }
 
+function acquireLock() {
+  const lockPath = '/tmp/v3-redesign-loop.lock';
+  const lockAge = 1000 * 60 * 60 * 2; // 2h
+  if (fs.existsSync(lockPath)) {
+    const stat = fs.statSync(lockPath);
+    const age = Date.now() - stat.mtimeMs;
+    if (age < lockAge) {
+      log(`LOCK ativo (${Math.round(age/1000)}s atrás). Outra execução em andamento. Saindo com exit 0 (cron vai tentar de novo).`);
+      process.exit(0);
+    }
+    log(`Lock stale (${Math.round(age/1000)}s atrás). Removendo.`);
+  }
+  fs.writeFileSync(lockPath, `${process.pid}@${Date.now()}`);
+}
+
+function releaseLock() {
+  const lockPath = '/tmp/v3-redesign-loop.lock';
+  try {
+    const content = fs.readFileSync(lockPath, 'utf8');
+    if (content.startsWith(`${process.pid}@`)) {
+      fs.unlinkSync(lockPath);
+    }
+  } catch {}
+}
+
 function main() {
   log('=== V3 Redesign Orchestrator ===');
+  acquireLock();
   ensureRepo();
   const state = loadState();
   log(`Estado: ${state.currentKey} | ${state.currentPhase} | fila restante: ${state.queue.length}`);
@@ -176,6 +202,7 @@ function main() {
   if (state.currentPhase === 'done' || state.queue.length === 0) {
     log('ALL_DONE — fila vazia.');
     disableCron();
+    releaseLock();
     process.exit(42);
   }
 
@@ -189,14 +216,17 @@ function main() {
     if (result === 'ALL_DONE') {
       log('Fila completa. Desabilitando cron.');
       disableCron();
+      releaseLock();
       process.exit(42);
     }
     log(`OK. Próximo: ${state.currentKey} | ${state.currentPhase}`);
+    releaseLock();
     process.exit(0);
   } else {
     state.lastError = `Step ${state.currentPhase} falhou com exit ${exitCode}`;
     saveState(state);
     log(`ERRO: ${state.lastError}. Mesma página, mesma fase na próxima iteração.`);
+    releaseLock();
     process.exit(1);
   }
 }
