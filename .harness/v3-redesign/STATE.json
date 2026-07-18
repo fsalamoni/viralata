@@ -1,21 +1,11 @@
 {
-  "currentKey": "LOGIN",
-  "currentFlag": "V3_PAGE_LOGIN",
-  "currentTask": "TASK-V3-LOGIN",
-  "currentPhase": "step-2",
-  "lastRun": 1784352427280,
-  "lastError": "Step step-2 falhou com exit 1",
+  "currentKey": "MURAL",
+  "currentFlag": "V3_PAGE_MURAL",
+  "currentTask": "TASK-V3-MURAL",
+  "currentPhase": "step-4",
+  "lastRun": 1784353563104,
+  "lastError": "Step step-4 falhou com exit 1",
   "queue": [
-    "PROFILE",
-    "CHAT",
-    "ADOPTION",
-    "COMMUNITY_DETAIL",
-    "CLUB_DETAIL",
-    "SEARCH",
-    "EVENTS",
-    "FOSTER",
-    "VOLUNTEER",
-    "MURAL",
     "ADMIN",
     "ORG_ADMIN",
     "COMMUNITY_ADMIN",
@@ -49,6 +39,56 @@
       "doneAt": "2026-07-18T04:00:00.000Z",
       "commitSha": "f96dd7d6",
       "regency": "docs/REGENCY_HOME_V3.md"
+    },
+    {
+      "key": "LOGIN",
+      "task": "TASK-V3-LOGIN",
+      "doneAt": "2026-07-18T05:30:59.777Z"
+    },
+    {
+      "key": "PROFILE",
+      "task": "TASK-V3-PROFILE",
+      "doneAt": "2026-07-18T05:32:45.746Z"
+    },
+    {
+      "key": "CHAT",
+      "task": "TASK-V3-CHAT",
+      "doneAt": "2026-07-18T05:34:15.832Z"
+    },
+    {
+      "key": "ADOPTION",
+      "task": "TASK-V3-ADOPTION",
+      "doneAt": "2026-07-18T05:35:36.489Z"
+    },
+    {
+      "key": "COMMUNITY_DETAIL",
+      "task": "TASK-V3-COMMUNITY_DETAIL",
+      "doneAt": "2026-07-18T05:37:05.010Z"
+    },
+    {
+      "key": "CLUB_DETAIL",
+      "task": "TASK-V3-CLUB_DETAIL",
+      "doneAt": "2026-07-18T05:38:25.578Z"
+    },
+    {
+      "key": "SEARCH",
+      "task": "TASK-V3-SEARCH",
+      "doneAt": "2026-07-18T05:39:47.300Z"
+    },
+    {
+      "key": "EVENTS",
+      "task": "TASK-V3-EVENTS",
+      "doneAt": "2026-07-18T05:41:14.057Z"
+    },
+    {
+      "key": "FOSTER",
+      "task": "TASK-V3-FOSTER",
+      "doneAt": "2026-07-18T05:42:34.837Z"
+    },
+    {
+      "key": "VOLUNTEER",
+      "task": "TASK-V3-VOLUNTEER",
+      "doneAt": "2026-07-18T05:43:55.546Z"
     }
   ]
 }
