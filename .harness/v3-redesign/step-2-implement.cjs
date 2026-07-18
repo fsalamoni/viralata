@@ -95,7 +95,10 @@ if (!fs.existsSync(wtV1)) {
   }
 }
 
-// 3. Criar <Page>.v3.jsx (esqueleto — o agente completa)
+// 3. Criar <Page>.v3.jsx (ARQUIVO SEPARADO, não sobreescrever wrapper)
+// CRITICAL FIX: .v3.jsx deve existir como arquivo separado para o React.lazy resolver.
+// O wrapper (Login.jsx) importa './Login.v3' — se o arquivo não existir, build quebra.
+const v3File = pageFull.replace(/\.jsx$/, '.v3.jsx');
 const v3Template = `/**
  * @fileoverview ${KEY} V3 — redesign completo no padrão DS-V2.
  *
@@ -112,7 +115,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ErrorState';
 
-export default function ${KEY}V3() {
+export default function ${PC}V3() {
   // TODO: implementar V3 do zero (NÃO aproveitar V1)
   // Estrutura base — preencher com:
   // - banner/hero
@@ -138,8 +141,8 @@ export default function ${KEY}V3() {
 }
 `;
 
-fs.writeFileSync(pageFull, v3Template);
-console.log(`[step-2] V3 esqueleto criado no worktree: ${path.basename(pageFull)}`);
+fs.writeFileSync(v3File, v3Template);
+console.log(`[step-2] V3 esqueleto criado no worktree: ${path.basename(v3File)}`);
 
 // 4. Criar wrapper com React.lazy + flag
 const wrapperContent = `/**
