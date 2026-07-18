@@ -118,6 +118,13 @@
       "doneAt": "2026-07-18T08:23:28.943Z",
       "commitSha": "777d85e4",
       "regency": "docs/REGENCY_PROFILE_V3.md"
+    },
+    {
+      "key": "ADOPTION",
+      "task": "TASK-V3-ADOPTION",
+      "doneAt": "2026-07-18T08:50:07.226Z",
+      "commitSha": "f11a513c",
+      "regency": "docs/REGENCY_ADOPTION_V3.md"
     }
   ]
 }
