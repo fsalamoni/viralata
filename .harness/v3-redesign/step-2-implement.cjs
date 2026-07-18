@@ -39,8 +39,8 @@ const PAGE_PATHS = {
   PROFILE: 'src/pages/Profile.jsx',
   CHAT: 'src/modules/chat/pages/ChatPage.jsx',
   ADOPTION: 'src/pages/AdoptionWizard.jsx',
-  COMMUNITY_DETAIL: 'src/modules/communities/pages/CommunityPublic.jsx',
-  CLUB_DETAIL: 'src/modules/organizations/pages/ShelterPublic.jsx',
+  COMMUNITY_DETAIL: 'src/modules/communities/pages/CommunityDetail.jsx',
+  CLUB_DETAIL: 'src/modules/organizations/pages/ClubDetail.jsx',
   SEARCH: 'src/pages/SearchPage.jsx',
   EVENTS: 'src/pages/EventsUnified.jsx',
   FOSTER: 'src/pages/FosterDashboard.jsx',
@@ -49,7 +49,7 @@ const PAGE_PATHS = {
   ADMIN: 'src/modules/admin/pages/AdminDashboard.jsx',
   ORG_ADMIN: 'src/modules/organizations/pages/OrganizationAdminPanel.jsx',
   COMMUNITY_ADMIN: 'src/modules/communities/pages/CommunityAdminPanel.jsx',
-  SHELTER_ADMIN: 'src/modules/shelter/pages/ShelterAdminPanel.jsx',
+  SHELTER_ADMIN: 'src/modules/shelter/components/ShelterAdminDashboard.jsx',
 };
 
 const pageRel = PAGE_PATHS[KEY];
@@ -155,14 +155,22 @@ export default function ${PC}V3() {
 }
 `;
 
+<<<<<<< HEAD
 // 3a. Criar <Page>.v3.jsx como ARQUIVO SEPARADO (nao sobrescrever o wrapper)
 const v3Full = pageFull.replace(/\.jsx$/, '.v3.jsx');
 fs.writeFileSync(v3Full, v3Template);
 console.log(`[step-2] V3 esqueleto criado: ${path.basename(v3Full)}`);
 
 // 3b. O wrapper vai no lugar do .jsx original (ja copiado v1 para .v1.jsx acima)
+=======
+fs.writeFileSync(v3File, v3Template);
+console.log(`[step-2] V3 esqueleto criado no worktree: ${path.basename(v3File)}`);
+>>>>>>> v3-redesign/chat
 
 // 4. Criar wrapper com React.lazy + flag
+// D-WRAPPER-FILENAME-01: usar basename real do arquivo (nao ${PC}) para imports
+// CHAT → ChatPage.v1.jsx (nao Chat.v1.jsx)
+const pageBasename = path.basename(pageFull, '.jsx'); // ex: ChatPage, Home, Profile
 const wrapperContent = `/**
  * @fileoverview ${PC} — wrapper que escolhe V3 ou V1.
  *
@@ -175,9 +183,15 @@ const wrapperContent = `/**
 import { lazy, Suspense } from 'react';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
+<<<<<<< HEAD
+import ${PC}V1 from './${pageBasename}.v1';
+
+const ${PC}V3 = lazy(() => import(/* webpackChunkName: "${PC}V3" */ './${pageBasename}.v3.jsx'));
+=======
 import ${PC}V1 from './${baseName}.v1';
 
 const ${PC}V3 = lazy(() => import(/* webpackChunkName: "${PC}V3" */ './${PC}.v3'));
+>>>>>>> v3-redesign/chat
 
 function PageFallback() {
   return (
