@@ -32,8 +32,23 @@ function log(msg) {
 
 function loadState() {
   if (!fs.existsSync(STATE_PATH)) {
-    log('FATAL: STATE.json não existe. Execute setup primeiro.');
-    process.exit(1);
+    log('STATE.json não existe. Criando estado inicial (HOME = próxima página)...');
+    const initialState = {
+      currentKey: 'HOME',
+      currentFlag: 'V3_PAGE_HOME',
+      currentTask: 'TASK-V3-HOME',
+      currentPhase: 'step-1',
+      lastRun: 0,
+      lastError: null,
+      queue: ['LOGIN', 'PROFILE', 'CHAT', 'ADOPTION', 'COMMUNITY_DETAIL', 'CLUB_DETAIL', 'SEARCH', 'EVENTS', 'FOSTER', 'VOLUNTEER', 'MURAL', 'ADMIN', 'ORG_ADMIN', 'COMMUNITY_ADMIN', 'SHELTER_ADMIN'],
+      history: [
+        { key: 'FEED', task: 'TASK-920', doneAt: '2026-07-17T00:00:00.000Z', commitSha: '0cab8ea9', regency: 'docs/REGENCY_FEED_V3.md' },
+        { key: 'PET_DETAIL', task: 'TASK-927', doneAt: '2026-07-17T00:00:00.000Z', commitSha: 'a924ab6b', regency: 'docs/REGENCY_PET_DETAIL_V3.md' },
+        { key: 'LEGAL', task: 'TASK-930', doneAt: '2026-07-17T00:00:00.000Z', commitSha: 'caeed857', regency: 'docs/REGENCY_LEGAL_V3.md' },
+      ],
+    };
+    saveState(initialState);
+    return initialState;
   }
   return JSON.parse(fs.readFileSync(STATE_PATH, 'utf8'));
 }
