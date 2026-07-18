@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.1.0",
-  "generatedAt": "2026-07-18T08:22:59.334Z",
+  "generatedAt": "2026-07-18T08:50:05.957Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W29",
@@ -17273,6 +17273,97 @@
       "priority": "medium",
       "owner": "Mavis",
       "parent": "TASK-V3-PROFILE"
+    },
+    {
+      "id": "TASK-V3-ADOPTION",
+      "title": "V3 redesign ADOPTION wizard (6 steps)",
+      "type": "redesign",
+      "category": "adoption",
+      "status": "done",
+      "priority": "high",
+      "owner": "Mavis",
+      "branch": "v3-redesign/adoption",
+      "flag": "V3_PAGE_ADOPTION"
+    },
+    {
+      "id": "TASK-V3-ADOPTION-1",
+      "title": "Stepper sticky com 6 etapas + indicator visual",
+      "type": "feat",
+      "category": "adoption",
+      "status": "done",
+      "priority": "high",
+      "owner": "Mavis",
+      "parent": "TASK-V3-ADOPTION"
+    },
+    {
+      "id": "TASK-V3-ADOPTION-2",
+      "title": "6 sub-componentes (Pet/About/Quest/Terms/Review/Confirm)",
+      "type": "feat",
+      "category": "adoption",
+      "status": "done",
+      "priority": "high",
+      "owner": "Mavis",
+      "parent": "TASK-V3-ADOPTION"
+    },
+    {
+      "id": "TASK-V3-ADOPTION-3",
+      "title": "Validação inline por step (nome/reason/signature)",
+      "type": "feat",
+      "category": "adoption",
+      "status": "done",
+      "priority": "high",
+      "owner": "Mavis",
+      "parent": "TASK-V3-ADOPTION"
+    },
+    {
+      "id": "TASK-V3-ADOPTION-4",
+      "title": "Term scroll detection + signature SHA-256",
+      "type": "feat",
+      "category": "adoption",
+      "status": "done",
+      "priority": "high",
+      "owner": "Mavis",
+      "parent": "TASK-V3-ADOPTION"
+    },
+    {
+      "id": "TASK-V3-ADOPTION-5",
+      "title": "Animações staggered + reduced motion",
+      "type": "feat",
+      "category": "adoption",
+      "status": "done",
+      "priority": "high",
+      "owner": "Mavis",
+      "parent": "TASK-V3-ADOPTION"
+    },
+    {
+      "id": "TASK-V3-ADOPTION-6",
+      "title": "Acessibilidade WCAG AA (labels, aria-describedby)",
+      "type": "feat",
+      "category": "a11y",
+      "status": "done",
+      "priority": "high",
+      "owner": "Mavis",
+      "parent": "TASK-V3-ADOPTION"
+    },
+    {
+      "id": "TASK-V3-ADOPTION-7",
+      "title": "Testes unitários V3",
+      "type": "test",
+      "category": "adoption",
+      "status": "pending",
+      "priority": "medium",
+      "owner": "Mavis",
+      "parent": "TASK-V3-ADOPTION"
+    },
+    {
+      "id": "TASK-V3-ADOPTION-8",
+      "title": "E2E Playwright (wizard completo)",
+      "type": "test",
+      "category": "e2e",
+      "status": "pending",
+      "priority": "medium",
+      "owner": "Mavis",
+      "parent": "TASK-V3-ADOPTION"
     }
   ],
   "definitionOfDone": [
@@ -17537,7 +17628,7 @@
       "feat/ds-v2-motion-2026-07-16",
       "feat/ds-v2-audit-2026-07-16"
     ],
-    "mainCommit": "038cef9d3ecf59b9c4f048531f973bb32b6199d8",
+    "mainCommit": "9618c0a2cfa8d147429ca518d9c301ed1133f656",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -17582,7 +17673,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-18T08:22:59.356Z — via sync.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-18T08:50:05.980Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
@@ -17965,7 +18056,7 @@
 }
   </script>
 <<<<<<< HEAD
-  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-18T08:22:59.412Z">
+  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-18T08:50:06.040Z">
 =======
   <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-16T03:26:48.025Z">
 >>>>>>> 2fdaf3d (design(ux): TASK-603 - hero home com hierarquia clara - H1 menor mobile, badge compacto, remove chips decorativos)
@@ -17983,7 +18074,7 @@
       </div>
     </div>
     <div class="sprint-info">
-      <span class="pill mono">main @ 43a6c16</span>
+      <span class="pill mono">main @ 9618c0a</span>
       <span class="pill">0 worktrees ativos</span>
       <span class="pill goal">Goal: estabilizar pós-22 fases + fechar worktrees</span>
     </div>
