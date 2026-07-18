@@ -1,13 +1,30 @@
 #!/usr/bin/env node
+/**
+ * .harness/v3-redesign/step-4-deploy.cjs
+ *
+ * STEP 4: Testes + Build + Commit + Push + SCRUM.
+ *
+ * Estratégia (revisada 2026-07-18):
+ *  - O step-2 cria um worktree em `.worktrees/v3-<KEY>` e commita lá
+ *  - O worktree compartilha o .git com o main, mas é um diretório separado
+ *  - O branch `v3-redesign/<key>` existe APENAS no worktree (não no main nem no remote)
+ *  - step-4 precisa: detectar worktree, fazer build lá, depois voltar pro main, merge, push
+ *
+ * IMPORTANTE (D-WORKTREE-STEP4-01): step-4 SEMPRE opera dentro do worktree
+ * até o momento do merge. Se o worktree não existir mais, exit 1 (step-2 falhou).
+ */
 'use strict';
+
 const fs = require('fs');
 const path = require('path');
 const { execSync, spawnSync } = require('child_process');
 
 const REPO = '/workspace/viralata';
 const KEY = process.env.V3_KEY || 'HOME';
+const FLAG = process.env.V3_FLAG || `V3_PAGE_${KEY}`;
 const TASK = process.env.V3_TASK || `TASK-V3-${KEY}`;
 const BRANCH = `v3-redesign/${KEY.toLowerCase()}`;
+const wtDir = path.join(REPO, '.worktrees', `v3-${KEY}`);
 const TOKEN = process.env.GITHUB_PAT || process.env.GITHUB_TOKEN;
 
 function gitCmd(cwd, cmd) {
@@ -20,86 +37,140 @@ function push(cwd, ref) {
   return gitCmd(cwd, `git push ${remote} ${ref}`);
 }
 
-const pcKey = KEY.charAt(0) + KEY.slice(1).toLowerCase().replace(/_([a-z])/g, (_, c) => c.toUpperCase());
+// Converte KEY em PascalCase para o nome do componente
+// HOME → Home, CLUB_DETAIL → ClubDetail
+function toPascalCase(k) {
+  return k.split('_').map(p => p.charAt(0) + p.slice(1).toLowerCase()).join('');
+}
+const PC = toPascalCase(KEY);
 
-// === MAIN ===
 console.log(`[step-4] Deploy ${KEY}...`);
 
-// Checkout branch
-const cur = gitCmd(REPO, 'git branch --show-current').trim();
-if (cur !== BRANCH) {
-  const wtDir = path.join(REPO, '.worktrees', `v3-${KEY}`);
-  if (fs.existsSync(wtDir)) {
-    try { execSync(`git worktree remove --force ${wtDir}`, { cwd: REPO, stdio: 'pipe' }); } catch {}
-    try { execSync(`git branch -D ${BRANCH}`, { cwd: REPO, stdio: 'pipe' }); } catch {}
-    execSync('git worktree prune', { cwd: REPO, stdio: 'pipe' });
-  }
-  try { gitCmd(REPO, 'git stash push -m "step4"'); } catch {}
-  try { gitCmd(REPO, `git checkout ${BRANCH}`); } catch(e) {
-    console.error(`FATAL checkout: ${e.message}`); process.exit(1);
-  }
-  try { gitCmd(REPO, 'git stash pop'); } catch {}
+// 0. Verificar se o worktree existe (passo 2 deve ter criado)
+if (!fs.existsSync(wtDir)) {
+  console.error(`[step-4] FATAL: worktree nao encontrado em ${wtDir} (step-2 falhou?)`);
+  process.exit(1);
 }
 
-// Build
-console.log('[step-4] Build...');
-const r = spawnSync('npm', ['run', 'build'], { cwd: REPO, stdio: 'inherit', timeout: 5*60*1000 });
-if (r.status !== 0) { console.error('FAIL: build'); try { gitCmd(REPO,'git checkout main'); } catch {} process.exit(1); }
+// 1. Verificar que o branch existe no worktree
+let curBranch;
+try {
+  curBranch = gitCmd(wtDir, 'git branch --show-current').trim();
+} catch (e) {
+  console.error(`[step-4] FATAL: nao consegui ler branch do worktree: ${e.message}`);
+  process.exit(1);
+}
+if (curBranch !== BRANCH) {
+  console.error(`[step-4] FATAL: worktree esta em '${curBranch}', esperado '${BRANCH}'`);
+  process.exit(1);
+}
+console.log(`[step-4] Worktree OK: ${wtDir} (branch ${BRANCH})`);
 
-// Anti-fachada
-const distDir = path.join(REPO, 'dist', 'assets');
-const chunk = fs.readdirSync(distDir).find(f =>
-  (f.startsWith(`${pcKey}.v3-`) || f.startsWith(`${pcKey}V3-`)) && f.endsWith('.js')
-);
-if (!chunk) { console.error(`FAIL: chunk V3 nao encontrado`); try { gitCmd(REPO,'git checkout main'); } catch {} process.exit(1); }
-const size = fs.statSync(path.join(distDir, chunk)).size;
-console.log(`[step-4] V3 chunk: ${chunk} (${size} bytes)`);
-if (size < 500) { console.error(`FAIL: chunk < 500 bytes`); try { gitCmd(REPO,'git checkout main'); } catch {} process.exit(1); }
-
-// Bump sw.js
+// 2. Bump sw.js (no worktree — vai pro commit do branch)
 console.log('[step-4] Bump sw...');
-const vc = path.join(REPO, 'vite.config.js');
+const vc = path.join(wtDir, 'vite.config.js');
 let v = fs.readFileSync(vc, 'utf-8');
 const m = v.match(/filename:\s*'sw-v(\d+)\.js'/);
+let swOldN = null, swNewN = null;
 if (m) {
-  v = v.replace(/filename:\s*'sw-v\d+\.js'/, `filename: 'sw-v${parseInt(m[1])+1}.js'`);
+  swOldN = parseInt(m[1], 10);
+  swNewN = swOldN + 1;
+  v = v.replace(/filename:\s*'sw-v\d+\.js'/, `filename: 'sw-v${swNewN}.js'`);
   fs.writeFileSync(vc, v);
-  console.log(`[step-4] sw-v${m[1]}.js → sw-v${parseInt(m[1])+1}.js`);
+  console.log(`[step-4] sw-v${swOldN}.js → sw-v${swNewN}.js`);
 }
 
-// Commit + push branch
+// 3. Build (no worktree)
+console.log('[step-4] Build...');
+const r = spawnSync('npm', ['run', 'build'], {
+  cwd: wtDir,
+  stdio: 'inherit',
+  timeout: 5 * 60 * 1000,
+});
+if (r.status !== 0) {
+  console.error(`[step-4] FAIL: build (exit ${r.status})`);
+  process.exit(1);
+}
+
+// 4. Anti-fachada: verificar que o chunk V3 existe e tem tamanho razoável
+const distDir = path.join(wtDir, 'dist', 'assets');
+if (!fs.existsSync(distDir)) {
+  console.error(`[step-4] FAIL: dist/assets nao existe`);
+  process.exit(1);
+}
+const chunk = fs.readdirSync(distDir).find(f =>
+  (f.startsWith(`${PC}.v3-`) || f.startsWith(`${PC}V3-`)) && f.endsWith('.js')
+);
+if (!chunk) {
+  console.error(`[step-4] FAIL: chunk V3 nao encontrado em dist/assets (procurei ${PC}.v3-* ou ${PC}V3-*)`);
+  process.exit(1);
+}
+const size = fs.statSync(path.join(distDir, chunk)).size;
+console.log(`[step-4] V3 chunk: ${chunk} (${size} bytes)`);
+if (size < 500) {
+  console.error(`[step-4] FAIL: chunk V3 < 500 bytes — fachada?`);
+  process.exit(1);
+}
+
+// 5. Commit + push branch (no worktree)
 try {
-  gitCmd(REPO, 'git add -A');
-  gitCmd(REPO, `git commit -m "chore: V3 ${KEY} build + sw bump (${TASK})"`);
-  push(REPO, BRANCH);
+  gitCmd(wtDir, 'git add -A');
+  const commitMsg = `chore(${KEY.toLowerCase()}): V3 build + sw-v${swNewN} (${TASK})`;
+  gitCmd(wtDir, `git commit -m ${JSON.stringify(commitMsg)}`);
+  push(wtDir, BRANCH);
   console.log(`[step-4] Branch push OK`);
-} catch(e) {
-  if (!e.message.includes('nothing to commit')) console.error(`WARN push: ${e.message}`);
+} catch (e) {
+  if (!e.message.includes('nothing to commit')) {
+    console.error(`[step-4] FAIL: commit/push: ${e.message}`);
+    process.exit(1);
+  }
+  console.log(`[step-4] Nada a commitar (já estava atualizado)`);
 }
 
-// Merge
-console.log('[step-4] Merge...');
+// 6. Voltar pro main e fazer merge
+console.log('[step-4] Merge em main...');
 try {
-  gitCmd(REPO, 'git checkout main');
-  gitCmd(REPO, `git merge --no-ff ${BRANCH} -m "merge: V3 redesign ${KEY} (${TASK})"`);
+  // Garantir que estamos no main
+  const mainCur = gitCmd(REPO, 'git branch --show-current').trim();
+  if (mainCur !== 'main') {
+    gitCmd(REPO, 'git checkout main');
+  }
+  // Pull latest (pode ter topbar auto-update)
+  try { gitCmd(REPO, 'git pull --no-rebase origin main'); } catch {}
+  // Merge
+  const mergeMsg = `merge: V3 redesign ${KEY} (${TASK})`;
+  gitCmd(REPO, `git merge --no-ff ${BRANCH} -m ${JSON.stringify(mergeMsg)}`);
   push(REPO, 'main');
   console.log('[step-4] Merge OK');
-} catch(e) {
-  console.error(`FAIL merge: ${e.message}`); process.exit(1);
+} catch (e) {
+  console.error(`[step-4] FAIL merge: ${e.message}`);
+  process.exit(1);
 }
 
-// SCRUM
+// 7. Limpar worktree
+try {
+  execSync(`git worktree remove --force ${wtDir}`, { cwd: REPO, stdio: 'pipe' });
+  execSync(`git branch -D ${BRANCH}`, { cwd: REPO, stdio: 'pipe' });
+  execSync('git worktree prune', { cwd: REPO, stdio: 'pipe' });
+  console.log('[step-4] Worktree limpo');
+} catch (e) {
+  console.warn(`[step-4] WARN cleanup: ${e.message}`);
+}
+
+// 8. SCRUM update
 console.log('[step-4] SCRUM...');
 try {
   gitCmd(REPO, `node .harness/scrum.cjs review ${TASK}`);
   gitCmd(REPO, `node .harness/scrum.cjs done ${TASK}`);
   gitCmd(REPO, 'node .harness/sync.cjs --fix');
   gitCmd(REPO, 'git add -A');
-  gitCmd(REPO, `git commit -m "chore(scrum): ${TASK} done — V3 ${KEY} deployed"`);
+  const scrumMsg = `chore(scrum): ${TASK} done — V3 ${KEY} deployed`;
+  gitCmd(REPO, `git commit -m ${JSON.stringify(scrumMsg)}`);
   push(REPO, 'main');
   console.log('[step-4] SCRUM OK');
-} catch(e) {
-  console.error(`WARN SCRUM: ${e.message}`);
+} catch (e) {
+  console.error(`[step-4] FAIL SCRUM: ${e.message}`);
+  process.exit(1);
 }
 
 console.log(`[step-4] PASS. V3 ${KEY} deployed.`);
