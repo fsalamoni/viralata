@@ -1,12 +1,11 @@
 {
-  "currentKey": "CLUB_DETAIL",
-  "currentFlag": "V3_PAGE_CLUB_DETAIL",
-  "currentTask": "TASK-V3-CLUB_DETAIL",
+  "currentKey": "SEARCH",
+  "currentFlag": "V3_PAGE_SEARCH",
+  "currentTask": "TASK-V3-SEARCH",
   "currentPhase": "step-1",
   "lastRun": 0,
   "lastError": null,
   "queue": [
-    "CLUB_DETAIL",
     "SEARCH",
     "EVENTS",
     "FOSTER",
@@ -26,6 +25,7 @@
     { "key": "PROFILE", "task": "TASK-V3-PROFILE", "doneAt": "2026-07-18T04:00:00Z", "commitSha": "ec93bd88", "regency": "docs/REGENCY_PROFILE_V3.md" },
     { "key": "CHAT", "task": "TASK-V3-CHAT", "doneAt": "2026-07-18T04:30:00Z", "commitSha": "85867659", "regency": "docs/REGENCY_CHAT_V3.md" },
     { "key": "ADOPTION", "task": "TASK-V3-ADOPTION", "doneAt": "2026-07-18T04:45:00Z", "commitSha": "d681b182", "regency": "docs/REGENCY_ADOPTION_V3.md" },
-    { "key": "COMMUNITY_DETAIL", "task": "TASK-V3-COMMUNITY_DETAIL", "doneAt": "2026-07-18T05:00:00Z", "commitSha": "7d3a2024", "regency": "docs/REGENCY_COMMUNITY_DETAIL_V3.md" }
+    { "key": "COMMUNITY_DETAIL", "task": "TASK-V3-COMMUNITY_DETAIL", "doneAt": "2026-07-18T05:00:00Z", "commitSha": "7d3a2024", "regency": "docs/REGENCY_COMMUNITY_DETAIL_V3.md" },
+    { "key": "CLUB_DETAIL", "task": "TASK-V3-CLUB_DETAIL", "doneAt": "2026-07-18T05:10:00Z", "commitSha": "9f537a19", "regency": "docs/REGENCY_CLUB_DETAIL_V3.md" }
   ]
 }
