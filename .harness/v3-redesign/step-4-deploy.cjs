@@ -183,24 +183,32 @@ try {
     gitCmd(REPO, 'git checkout main');
   }
   // Backup harness scripts (têm fixes locais que o reset --hard perderia)
-  const BACKUP_DIR = '/tmp/v3-harness-backup';
+  const BACKUP_DIR = '/tmp/v3-harness-backup-v2';
   const fs2 = require('fs');
-  if (!fs2.existsSync(BACKUP_DIR)) fs2.mkdirSync(BACKUP_DIR, { recursive: true });
+  if (fs2.existsSync(BACKUP_DIR)) fs2.rmSync(BACKUP_DIR, { recursive: true });
+  fs2.mkdirSync(BACKUP_DIR, { recursive: true });
   const harnessDir = path.join(REPO, '.harness', 'v3-redesign');
   ['ORCHESTRATOR.cjs', 'step-1-analyze.cjs', 'step-2-implement.cjs', 'step-3-regency.cjs', 'step-4-deploy.cjs'].forEach(f => {
     const src = path.join(harnessDir, f);
     if (fs2.existsSync(src)) fs2.copyFileSync(src, path.join(BACKUP_DIR, f));
   });
-  // Reset para origin/main
+  // Reset para origin/main (descarta TODO working tree + index — sem stash)
   gitCmd(REPO, 'git fetch origin');
   gitCmd(REPO, 'git reset --hard origin/main');
-  // Restore harness scripts (com fixes locais)
+  // Restore harness scripts (com fixes locais) NO FEATURE BRANCH
+  // Assim o merge traz os fixes junto (nao precisa stagear em main)
+  const wtHarness = path.join(wtDir, '.harness', 'v3-redesign');
+  if (!fs2.existsSync(wtHarness)) fs2.mkdirSync(wtHarness, { recursive: true });
   fs2.readdirSync(BACKUP_DIR).forEach(f => {
-    fs2.copyFileSync(path.join(BACKUP_DIR, f), path.join(harnessDir, f));
+    fs2.copyFileSync(path.join(BACKUP_DIR, f), path.join(wtHarness, f));
   });
-  // Merge
+  gitCmd(wtDir, 'git add .harness/v3-redesign/');
+  try { gitCmd(wtDir, `git commit -m "chore: merge harness fixes locally" || true`); } catch {}
+  // Merge do feature branch (que agora tem os fixes) em main
+
+
   const mergeMsg = `merge: V3 redesign ${KEY} (${TASK})`;
-  gitCmd(REPO, `git merge --no-ff ${BRANCH} -m ${JSON.stringify(mergeMsg)}`);
+  gitCmd(REPO, `git merge -X ours --no-ff ${BRANCH} -m ${JSON.stringify(mergeMsg)}`);
   push(REPO, 'main');
   console.log('[step-4] Merge OK');
 } catch (e) {
@@ -241,6 +249,19 @@ try {
 } catch (e) {
   console.warn(`[step-4] WARN SCRUM: ${e.message} — continuando mesmo assim`);
 }
+// Update STATE.json history
+try {
+  const statePath = path.join(REPO, '.harness', 'v3-redesign', 'STATE.json');
+  const state = JSON.parse(require('fs').readFileSync(statePath, 'utf8'));
+  state.history = state.history.filter(h => h.key !== KEY);
+  state.history.push({key: KEY, task: TASK, doneAt: new Date().toISOString()});
+  require('fs').writeFileSync(statePath, JSON.stringify(state, null, 2));
+  gitCmd(REPO, 'git add .harness/v3-redesign/STATE.json');
+  gitCmd(REPO, "git commit -m 'chore(scrum): " + TASK + " done -- history updated'");
+  try { push(REPO, 'main'); } catch {}
+  console.log('[step-4] STATE.json history updated');
+} catch(e) { console.warn('[step-4] WARN state: ' + e.message); }
 
 console.log(`[step-4] PASS. V3 ${KEY} deployed.`);
 process.exit(0);
+
