@@ -12,7 +12,7 @@ import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
 import LoginV1 from './Login.v1';
 
-<const LoginV3 = lazy(() => import(/* webpackChunkName: "LoginV3" */ './Login.v3'));
+const LoginV3 = lazy(() => import(/* webpackChunkName: "LoginV3" */ './Login.v3.jsx'));
 
 function PageFallback() {
   return (
