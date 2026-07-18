@@ -12,7 +12,6 @@ import React from 'react';
 import Seo from '@/components/Seo';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
-import { Link } from 'react-router-dom';
 
 export default function LoginV3() {
   return (
