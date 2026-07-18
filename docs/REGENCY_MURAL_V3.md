@@ -3,7 +3,7 @@
 > **Status**: 🟡 EM CONSTRUÇÃO (TASK-TASK-V3-MURAL)
 > **Diretriz ETERNA**: `docs/PAGE_REGENCY_TEMPLATE.md`
 > **Modelo**: `docs/REGENCY_FEED_V3.md` (25.7KB) + `REGENCY_PET_DETAIL_V3.md` (22KB) + `REGENCY_LEGAL_V3.md` (17.6KB)
-> **Atualizado em**: 2026-07-18T05:35:08.856Z
+> **Atualizado em**: 2026-07-18T05:44:04.903Z
 
 ---
 
