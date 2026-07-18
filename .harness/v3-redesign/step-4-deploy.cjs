@@ -34,7 +34,19 @@ function push(cwd, ref) {
   const remote = TOKEN
     ? `https://${TOKEN}@github.com/fsalamoni/viralata.git`
     : 'origin';
-  return gitCmd(cwd, `git push ${remote} ${ref}`);
+  try {
+    return gitCmd(cwd, `git push ${remote} ${ref}`);
+  } catch (e) {
+    // Push rejeitado (non-fast-forward, fetch first, rejected, etc.)
+    const errMsg = e.message || '';
+    const isDiverge = errMsg.includes('non-fast-forward') || errMsg.includes('rejected') || errMsg.includes('fetch first');
+    if (!isDiverge) throw e;
+    console.log(`[step-4] Push rejeitado — fazendo fetch + merge theirs...`);
+    gitCmd(cwd, `git fetch origin`);
+    const branchName = ref.replace('refs/heads/', '');
+    gitCmd(cwd, `git merge -X theirs origin/${branchName} -m ${JSON.stringify('merge: aceitar remote changes em ' + ref)}`);
+    return gitCmd(cwd, `git push ${remote} ${ref}`);
+  }
 }
 
 // Converte KEY em PascalCase para o nome do componente
@@ -154,8 +166,22 @@ try {
   if (mainCur !== 'main') {
     gitCmd(REPO, 'git checkout main');
   }
-  // Pull latest (pode ter topbar auto-update)
-  try { gitCmd(REPO, 'git pull --no-rebase origin main'); } catch {}
+  // Backup harness scripts (têm fixes locais que o reset --hard perderia)
+  const BACKUP_DIR = '/tmp/v3-harness-backup';
+  const fs2 = require('fs');
+  if (!fs2.existsSync(BACKUP_DIR)) fs2.mkdirSync(BACKUP_DIR, { recursive: true });
+  const harnessDir = path.join(REPO, '.harness', 'v3-redesign');
+  ['ORCHESTRATOR.cjs', 'step-1-analyze.cjs', 'step-2-implement.cjs', 'step-3-regency.cjs', 'step-4-deploy.cjs'].forEach(f => {
+    const src = path.join(harnessDir, f);
+    if (fs2.existsSync(src)) fs2.copyFileSync(src, path.join(BACKUP_DIR, f));
+  });
+  // Reset para origin/main
+  gitCmd(REPO, 'git fetch origin');
+  gitCmd(REPO, 'git reset --hard origin/main');
+  // Restore harness scripts (com fixes locais)
+  fs2.readdirSync(BACKUP_DIR).forEach(f => {
+    fs2.copyFileSync(path.join(BACKUP_DIR, f), path.join(harnessDir, f));
+  });
   // Merge
   const mergeMsg = `merge: V3 redesign ${KEY} (${TASK})`;
   gitCmd(REPO, `git merge --no-ff ${BRANCH} -m ${JSON.stringify(mergeMsg)}`);

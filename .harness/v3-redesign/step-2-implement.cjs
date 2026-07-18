@@ -65,14 +65,27 @@ console.log(`[step-2] Implementando V3 de ${KEY} (${pageRel})...`);
 const wtDir = path.join(REPO, '.worktrees', `v3-${KEY}`);
 const branchName = `v3-redesign/${KEY.toLowerCase()}`;
 
+// Worktree reuse: preservar commits anteriores se branch remoto existir
+let worktreeReused = false;
+// Primeiro: limpar worktree e branch locais (se existirem)
+try { execSync(`git worktree remove --force ${wtDir}`, { cwd: REPO, stdio: 'pipe' }); } catch {}
+try { execSync(`git branch -D ${branchName}`, { cwd: REPO, stdio: 'pipe' }); } catch {}
+// Buscar todos os remotes (inclusive branches novos)
+execSync('git fetch origin', { cwd: REPO, stdio: 'pipe' });
+// Tentar criar do branch remoto existente (preserva commits do remote)
 try {
-  try { execSync(`git worktree remove --force ${wtDir}`, { cwd: REPO, stdio: 'pipe' }); } catch {}
-  try { execSync(`git branch -D ${branchName}`, { cwd: REPO, stdio: 'pipe' }); } catch {}
-  execSync(`git worktree add ${wtDir} -b ${branchName} main`, { cwd: REPO, stdio: 'inherit' });
-  console.log(`[step-2] Worktree criado: ${wtDir}`);
-} catch (e) {
-  console.error(`[step-2] FATAL: worktree falhou: ${e.message}`);
-  process.exit(1);
+  execSync(`git worktree add ${wtDir} ${branchName}`, { cwd: REPO, stdio: 'pipe' });
+  console.log(`[step-2] Worktree criado a partir do branch remoto: ${wtDir}`);
+  worktreeReused = true;
+} catch {
+  // Branch remoto não existe — criar do zero a partir de main
+  try {
+    execSync(`git worktree add ${wtDir} -b ${branchName} main`, { cwd: REPO, stdio: 'inherit' });
+    console.log(`[step-2] Worktree criado do zero a partir de main: ${wtDir}`);
+  } catch (e) {
+    console.error(`[step-2] FATAL: worktree falhou: ${e.message}`);
+    process.exit(1);
+  }
 }
 
 // 2. pageFull no WORKTREE (não no main repo)
