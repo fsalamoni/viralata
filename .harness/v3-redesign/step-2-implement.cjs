@@ -31,7 +31,7 @@ const TASK = process.env.V3_TASK || `TASK-V3-${KEY}`;
 function toPascalCase(k) {
   return k.split('_').map(p => p.charAt(0) + p.slice(1).toLowerCase()).join('');
 }
-const PC = toPascalCase(KEY); // ex: HOME → Home, CLUB_DETAIL → ClubDetail
+const PC = toPascalCase(KEY);
 
 const PAGE_PATHS = {
   HOME: 'src/pages/Home.jsx',
@@ -39,8 +39,8 @@ const PAGE_PATHS = {
   PROFILE: 'src/pages/Profile.jsx',
   CHAT: 'src/modules/chat/pages/ChatPage.jsx',
   ADOPTION: 'src/pages/AdoptionWizard.jsx',
-  COMMUNITY_DETAIL: 'src/modules/communities/pages/CommunityPublic.jsx',
-  CLUB_DETAIL: 'src/modules/organizations/pages/ShelterPublic.jsx',
+  COMMUNITY_DETAIL: 'src/modules/communities/pages/CommunityDetail.jsx',
+  CLUB_DETAIL: 'src/modules/organizations/pages/ClubDetail.jsx',
   SEARCH: 'src/pages/SearchPage.jsx',
   EVENTS: 'src/pages/EventsUnified.jsx',
   FOSTER: 'src/pages/FosterDashboard.jsx',
@@ -49,10 +49,11 @@ const PAGE_PATHS = {
   ADMIN: 'src/modules/admin/pages/AdminDashboard.jsx',
   ORG_ADMIN: 'src/modules/organizations/pages/OrganizationAdminPanel.jsx',
   COMMUNITY_ADMIN: 'src/modules/communities/pages/CommunityAdminPanel.jsx',
-  SHELTER_ADMIN: 'src/modules/shelter/pages/ShelterAdminPanel.jsx',
+  SHELTER_ADMIN: 'src/modules/shelter/components/ShelterAdminDashboard.jsx',
 };
 
 const pageRel = PAGE_PATHS[KEY];
+const baseName = path.basename(pageRel, ".jsx");
 const pageMain = path.join(REPO, pageRel);
 if (!fs.existsSync(pageMain)) {
   console.error(`[step-2] FATAL: V1 não encontrado em ${pageRel} (main repo)`);
@@ -154,12 +155,17 @@ export default function ${PC}V3() {
 }
 `;
 
+<<<<<<< HEAD
 // 3a. Criar <Page>.v3.jsx como ARQUIVO SEPARADO (nao sobrescrever o wrapper)
 const v3Full = pageFull.replace(/\.jsx$/, '.v3.jsx');
 fs.writeFileSync(v3Full, v3Template);
 console.log(`[step-2] V3 esqueleto criado: ${path.basename(v3Full)}`);
 
 // 3b. O wrapper vai no lugar do .jsx original (ja copiado v1 para .v1.jsx acima)
+=======
+fs.writeFileSync(v3File, v3Template);
+console.log(`[step-2] V3 esqueleto criado no worktree: ${path.basename(v3File)}`);
+>>>>>>> v3-redesign/chat
 
 // 4. Criar wrapper com React.lazy + flag
 // D-WRAPPER-FILENAME-01: usar basename real do arquivo (nao ${PC}) para imports
