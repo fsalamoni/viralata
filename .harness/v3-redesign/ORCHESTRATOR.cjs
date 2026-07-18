@@ -78,6 +78,18 @@ function ensureRepo() {
     } catch (e) {
       log(`WARN: pull falhou (não fatal): ${e.message}`);
     }
+    // Fix: origin/main pode ter conflict markers nos harness scripts
+    // Restaurar working tree + index para versao LOCAL (sem conflictos)
+    try {
+      const { execSync: exec2 } = require('child_process');
+      const harnessDir = path.join(REPO, '.harness', 'v3-redesign');
+      const step2File = path.join(harnessDir, 'step-2-implement.cjs');
+      const wtHash = exec2(`git hash-object ${step2File}`, {cwd: REPO, encoding: 'utf8'}).trim();
+      if (wtHash) {
+        require('fs').writeFileSync('/tmp/git-idx.txt', `100644 ${wtHash} 0\t.harness/v3-redesign/step-2-implement.cjs\n`);
+        try { exec2(`git update-index --index-info < /tmp/git-idx.txt`, {cwd: REPO, stdio: 'pipe'}); } catch {}
+      }
+    } catch {}
   }
 }
 
