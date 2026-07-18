@@ -1,13 +1,11 @@
 {
-  "currentKey": "SEARCH",
-  "currentFlag": "V3_PAGE_SEARCH",
-  "currentTask": "TASK-V3-SEARCH",
-  "currentPhase": "step-1",
-  "lastRun": 0,
-  "lastError": null,
+  "currentKey": "EVENTS",
+  "currentFlag": "V3_PAGE_EVENTS",
+  "currentTask": "TASK-V3-EVENTS",
+  "currentPhase": "step-2",
+  "lastRun": 1784352058043,
+  "lastError": "Step step-2 falhou com exit 1",
   "queue": [
-    "SEARCH",
-    "EVENTS",
     "FOSTER",
     "VOLUNTEER",
     "MURAL",
@@ -17,15 +15,85 @@
     "SHELTER_ADMIN"
   ],
   "history": [
-    { "key": "FEED", "task": "TASK-920", "doneAt": "2026-07-17T00:00:00Z", "commitSha": "0cab8ea9", "regency": "docs/REGENCY_FEED_V3.md" },
-    { "key": "PET_DETAIL", "task": "TASK-927", "doneAt": "2026-07-17T00:00:00Z", "commitSha": "a924ab6b", "regency": "docs/REGENCY_PET_DETAIL_V3.md" },
-    { "key": "LEGAL", "task": "TASK-930", "doneAt": "2026-07-17T00:00:00Z", "commitSha": "caeed857", "regency": "docs/REGENCY_LEGAL_V3.md" },
-    { "key": "HOME", "task": "TASK-V3-HOME", "doneAt": "2026-07-18T02:06:00Z", "commitSha": "89fdca3d", "regency": "docs/REGENCY_HOME_V3.md" },
-    { "key": "LOGIN", "task": "TASK-V3-LOGIN", "doneAt": "2026-07-18T03:53:00Z", "commitSha": "47f900e5", "regency": "docs/REGENCY_LOGIN_V3.md" },
-    { "key": "PROFILE", "task": "TASK-V3-PROFILE", "doneAt": "2026-07-18T04:00:00Z", "commitSha": "ec93bd88", "regency": "docs/REGENCY_PROFILE_V3.md" },
-    { "key": "CHAT", "task": "TASK-V3-CHAT", "doneAt": "2026-07-18T04:30:00Z", "commitSha": "85867659", "regency": "docs/REGENCY_CHAT_V3.md" },
-    { "key": "ADOPTION", "task": "TASK-V3-ADOPTION", "doneAt": "2026-07-18T04:45:00Z", "commitSha": "d681b182", "regency": "docs/REGENCY_ADOPTION_V3.md" },
-    { "key": "COMMUNITY_DETAIL", "task": "TASK-V3-COMMUNITY_DETAIL", "doneAt": "2026-07-18T05:00:00Z", "commitSha": "7d3a2024", "regency": "docs/REGENCY_COMMUNITY_DETAIL_V3.md" },
-    { "key": "CLUB_DETAIL", "task": "TASK-V3-CLUB_DETAIL", "doneAt": "2026-07-18T05:10:00Z", "commitSha": "9f537a19", "regency": "docs/REGENCY_CLUB_DETAIL_V3.md" }
+    {
+      "key": "FEED",
+      "task": "TASK-920",
+      "doneAt": "2026-07-17T00:00:00Z",
+      "commitSha": "0cab8ea9",
+      "regency": "docs/REGENCY_FEED_V3.md"
+    },
+    {
+      "key": "PET_DETAIL",
+      "task": "TASK-927",
+      "doneAt": "2026-07-17T00:00:00Z",
+      "commitSha": "a924ab6b",
+      "regency": "docs/REGENCY_PET_DETAIL_V3.md"
+    },
+    {
+      "key": "LEGAL",
+      "task": "TASK-930",
+      "doneAt": "2026-07-17T00:00:00Z",
+      "commitSha": "caeed857",
+      "regency": "docs/REGENCY_LEGAL_V3.md"
+    },
+    {
+      "key": "HOME",
+      "task": "TASK-V3-HOME",
+      "doneAt": "2026-07-18T02:06:00Z",
+      "commitSha": "89fdca3d",
+      "regency": "docs/REGENCY_HOME_V3.md"
+    },
+    {
+      "key": "LOGIN",
+      "task": "TASK-V3-LOGIN",
+      "doneAt": "2026-07-18T03:53:00Z",
+      "commitSha": "47f900e5",
+      "regency": "docs/REGENCY_LOGIN_V3.md"
+    },
+    {
+      "key": "PROFILE",
+      "task": "TASK-V3-PROFILE",
+      "doneAt": "2026-07-18T04:00:00Z",
+      "commitSha": "ec93bd88",
+      "regency": "docs/REGENCY_PROFILE_V3.md"
+    },
+    {
+      "key": "CHAT",
+      "task": "TASK-V3-CHAT",
+      "doneAt": "2026-07-18T04:30:00Z",
+      "commitSha": "85867659",
+      "regency": "docs/REGENCY_CHAT_V3.md"
+    },
+    {
+      "key": "ADOPTION",
+      "task": "TASK-V3-ADOPTION",
+      "doneAt": "2026-07-18T04:45:00Z",
+      "commitSha": "d681b182",
+      "regency": "docs/REGENCY_ADOPTION_V3.md"
+    },
+    {
+      "key": "COMMUNITY_DETAIL",
+      "task": "TASK-V3-COMMUNITY_DETAIL",
+      "doneAt": "2026-07-18T05:00:00Z",
+      "commitSha": "7d3a2024",
+      "regency": "docs/REGENCY_COMMUNITY_DETAIL_V3.md"
+    },
+    {
+      "key": "CLUB_DETAIL",
+      "task": "TASK-V3-CLUB_DETAIL",
+      "doneAt": "2026-07-18T05:10:00Z",
+      "commitSha": "9f537a19",
+      "regency": "docs/REGENCY_CLUB_DETAIL_V3.md"
+    },
+    {
+      "key": "SEARCH",
+      "task": "TASK-V3-SEARCH",
+      "doneAt": "2026-07-18T05:09:12.809Z"
+    },
+    {
+      "key": "SEARCH",
+      "task": "TASK-V3-SEARCH",
+      "doneAt": "2026-07-18T05:17:45.810Z"
+    }
   ]
 }

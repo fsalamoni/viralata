@@ -78,17 +78,25 @@ function ensureRepo() {
     } catch (e) {
       log(`WARN: pull falhou (não fatal): ${e.message}`);
     }
-    // Fix: origin/main pode ter conflict markers nos harness scripts
-    // Restaurar working tree + index para versao LOCAL (sem conflictos)
+    // Fix: origin/main pode ter conflict markers — remover do working tree
     try {
-      const { execSync: exec2 } = require('child_process');
       const harnessDir = path.join(REPO, '.harness', 'v3-redesign');
-      const step2File = path.join(harnessDir, 'step-2-implement.cjs');
-      const wtHash = exec2(`git hash-object ${step2File}`, {cwd: REPO, encoding: 'utf8'}).trim();
-      if (wtHash) {
-        require('fs').writeFileSync('/tmp/git-idx.txt', `100644 ${wtHash} 0\t.harness/v3-redesign/step-2-implement.cjs\n`);
-        try { exec2(`git update-index --index-info < /tmp/git-idx.txt`, {cwd: REPO, stdio: 'pipe'}); } catch {}
-      }
+      ['step-2-implement.cjs', 'step-4-deploy.cjs'].forEach(f => {
+        const fp = path.join(harnessDir, f);
+        if (!require('fs').existsSync(fp)) return;
+        const c = require('fs').readFileSync(fp, 'utf8');
+        if ('<<<<' in c || '=====' in c) {
+          const lines = c.split('\n'), out = [], skip = false;
+          for (const l of lines) {
+            if ('<<<<' in l) { skip = true; continue; }
+            if ('=====' in l) { skip = false; continue; }
+            if ('>>>>' in l) { skip = false; continue; }
+            if (!skip) out.push(l);
+          }
+          require('fs').writeFileSync(fp, out.join('\n') + '\n');
+          log(`FIX: conflict markers removidos de ${f}`);
+        }
+      });
     } catch {}
   }
 }
