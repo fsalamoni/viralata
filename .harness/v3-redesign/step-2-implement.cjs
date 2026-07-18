@@ -27,6 +27,12 @@ const KEY = process.env.V3_KEY || 'HOME';
 const FLAG = process.env.V3_FLAG || `V3_PAGE_${KEY}`;
 const TASK = process.env.V3_TASK || `TASK-V3-${KEY}`;
 
+// Converte HOME → Home, CLUB_DETAIL → ClubDetail, etc.
+function toPascalCase(k) {
+  return k.split('_').map(p => p.charAt(0) + p.slice(1).toLowerCase()).join('');
+}
+const PC = toPascalCase(KEY); // ex: HOME → Home, CLUB_DETAIL → ClubDetail
+
 const PAGE_PATHS = {
   HOME: 'src/pages/Home.jsx',
   LOGIN: 'src/pages/Login.jsx',
@@ -137,7 +143,7 @@ console.log(`[step-2] V3 esqueleto criado no worktree: ${path.basename(pageFull)
 
 // 4. Criar wrapper com React.lazy + flag
 const wrapperContent = `/**
- * @fileoverview ${KEY} — wrapper que escolhe V3 ou V1.
+ * @fileoverview ${PC} — wrapper que escolhe V3 ou V1.
  *
  * Flag \`${FLAG}\` (default OFF) → V3.
  * Senão → V1.
@@ -148,9 +154,9 @@ const wrapperContent = `/**
 import { lazy, Suspense } from 'react';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
-import ${KEY}V1 from './${KEY}.v1';
+import ${PC}V1 from './${PC}.v1';
 
-const ${KEY}V3 = lazy(() => import(/* webpackChunkName: "${KEY}V3" */ './${KEY}.v3'));
+const ${PC}V3 = lazy(() => import(/* webpackChunkName: "${PC}V3" */ './${PC}.v3'));
 
 function PageFallback() {
   return (
@@ -161,16 +167,16 @@ function PageFallback() {
   );
 }
 
-export default function ${KEY}Wrapper() {
+export default function ${PC}Wrapper() {
   const useV3 = useFeatureFlag(FEATURE_FLAG.${FLAG});
   if (useV3) {
     return (
       <Suspense fallback={<PageFallback />}>
-        <${KEY}V3 />
+        <${PC}V3 />
       </Suspense>
     );
   }
-  return <${KEY}V1 />;
+  return <${PC}V1 />;
 }
 `;
 
