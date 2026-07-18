@@ -1,12 +1,11 @@
 {
-  "currentKey": "LOGIN",
-  "currentFlag": "V3_PAGE_LOGIN",
-  "currentTask": "TASK-V3-LOGIN",
-  "currentPhase": "step-4",
-  "lastRun": 1784346897106,
-  "lastError": "Step step-4 falhou com exit 1",
+  "currentKey": "PROFILE",
+  "currentFlag": "V3_PAGE_PROFILE",
+  "currentTask": "TASK-V3-PROFILE",
+  "currentPhase": "step-1",
+  "lastRun": 1784346000000,
+  "lastError": null,
   "queue": [
-    "PROFILE",
     "CHAT",
     "ADOPTION",
     "COMMUNITY_DETAIL",
@@ -22,33 +21,10 @@
     "SHELTER_ADMIN"
   ],
   "history": [
-    {
-      "key": "FEED",
-      "task": "TASK-920",
-      "doneAt": "2026-07-17T00:00:00.000Z",
-      "commitSha": "0cab8ea9",
-      "regency": "docs/REGENCY_FEED_V3.md"
-    },
-    {
-      "key": "PET_DETAIL",
-      "task": "TASK-927",
-      "doneAt": "2026-07-17T00:00:00.000Z",
-      "commitSha": "a924ab6b",
-      "regency": "docs/REGENCY_PET_DETAIL_V3.md"
-    },
-    {
-      "key": "LEGAL",
-      "task": "TASK-930",
-      "doneAt": "2026-07-17T00:00:00.000Z",
-      "commitSha": "caeed857",
-      "regency": "docs/REGENCY_LEGAL_V3.md"
-    },
-    {
-      "key": "HOME",
-      "task": "TASK-V3-HOME",
-      "doneAt": "2026-07-18T02:06:00.000Z",
-      "commitSha": "89fdca3d",
-      "regency": "docs/REGENCY_HOME_V3.md"
-    }
+    { "key": "FEED", "task": "TASK-920", "doneAt": "2026-07-17T00:00:00.000Z", "commitSha": "0cab8ea9", "regency": "docs/REGENCY_FEED_V3.md" },
+    { "key": "PET_DETAIL", "task": "TASK-927", "doneAt": "2026-07-17T00:00:00.000Z", "commitSha": "a924ab6b", "regency": "docs/REGENCY_PET_DETAIL_V3.md" },
+    { "key": "LEGAL", "task": "TASK-930", "doneAt": "2026-07-17T00:00:00.000Z", "commitSha": "caeed857", "regency": "docs/REGENCY_LEGAL_V3.md" },
+    { "key": "HOME", "task": "TASK-V3-HOME", "doneAt": "2026-07-18T02:06:00.000Z", "commitSha": "89fdca3d", "regency": "docs/REGENCY_HOME_V3.md" },
+    { "key": "LOGIN", "task": "TASK-V3-LOGIN", "doneAt": "2026-07-18T03:53:00.000Z", "commitSha": "47f900e5", "regency": "docs/REGENCY_LOGIN_V3.md" }
   ]
 }

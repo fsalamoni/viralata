@@ -16552,82 +16552,90 @@
     {
       "id": "TASK-V3-LOGIN-F1",
       "title": "V3 LOGIN Feature #1 — a definir no step-2",
-      "status": "backlog",
+      "status": "done",
       "phase": "V3-LOGIN",
       "priority": "medium",
       "parentTask": "TASK-V3-LOGIN",
       "createdAt": "2026-07-18T03:50:12.596Z",
-      "evidence": {}
+      "evidence": {},
+      "completedAt": "2026-07-18T03:53:00.000Z"
     },
     {
       "id": "TASK-V3-LOGIN-F2",
       "title": "V3 LOGIN Feature #2 — a definir no step-2",
-      "status": "backlog",
+      "status": "done",
       "phase": "V3-LOGIN",
       "priority": "medium",
       "parentTask": "TASK-V3-LOGIN",
       "createdAt": "2026-07-18T03:50:12.597Z",
-      "evidence": {}
+      "evidence": {},
+      "completedAt": "2026-07-18T03:53:00.000Z"
     },
     {
       "id": "TASK-V3-LOGIN-F3",
       "title": "V3 LOGIN Feature #3 — a definir no step-2",
-      "status": "backlog",
+      "status": "done",
       "phase": "V3-LOGIN",
       "priority": "medium",
       "parentTask": "TASK-V3-LOGIN",
       "createdAt": "2026-07-18T03:50:12.597Z",
-      "evidence": {}
+      "evidence": {},
+      "completedAt": "2026-07-18T03:53:00.000Z"
     },
     {
       "id": "TASK-V3-LOGIN-F4",
       "title": "V3 LOGIN Feature #4 — a definir no step-2",
-      "status": "backlog",
+      "status": "done",
       "phase": "V3-LOGIN",
       "priority": "medium",
       "parentTask": "TASK-V3-LOGIN",
       "createdAt": "2026-07-18T03:50:12.597Z",
-      "evidence": {}
+      "evidence": {},
+      "completedAt": "2026-07-18T03:53:00.000Z"
     },
     {
       "id": "TASK-V3-LOGIN-F5",
       "title": "V3 LOGIN Feature #5 — a definir no step-2",
-      "status": "backlog",
+      "status": "done",
       "phase": "V3-LOGIN",
       "priority": "medium",
       "parentTask": "TASK-V3-LOGIN",
       "createdAt": "2026-07-18T03:50:12.599Z",
-      "evidence": {}
+      "evidence": {},
+      "completedAt": "2026-07-18T03:53:00.000Z"
     },
     {
       "id": "TASK-V3-LOGIN-F6",
       "title": "V3 LOGIN Feature #6 — a definir no step-2",
-      "status": "backlog",
+      "status": "done",
       "phase": "V3-LOGIN",
       "priority": "medium",
       "parentTask": "TASK-V3-LOGIN",
       "createdAt": "2026-07-18T03:50:12.599Z",
-      "evidence": {}
+      "evidence": {},
+      "completedAt": "2026-07-18T03:53:00.000Z"
     },
     {
       "id": "TASK-V3-LOGIN-F7",
       "title": "V3 LOGIN Feature #7 — a definir no step-2",
-      "status": "backlog",
+      "status": "done",
       "phase": "V3-LOGIN",
       "priority": "medium",
       "parentTask": "TASK-V3-LOGIN",
       "createdAt": "2026-07-18T03:50:12.599Z",
-      "evidence": {}
+      "evidence": {},
+      "completedAt": "2026-07-18T03:53:00.000Z"
     },
     {
       "id": "TASK-V3-LOGIN-F8",
       "title": "V3 LOGIN Feature #8 — a definir no step-2",
-      "status": "backlog",
+      "status": "done",
       "phase": "V3-LOGIN",
       "priority": "medium",
       "parentTask": "TASK-V3-LOGIN",
       "createdAt": "2026-07-18T03:50:12.599Z",
-      "evidence": {}
+      "evidence": {},
+      "completedAt": "2026-07-18T03:53:00.000Z"
     }
   ],
   "definitionOfDone": [
