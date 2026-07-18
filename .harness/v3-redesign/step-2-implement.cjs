@@ -31,7 +31,8 @@ const TASK = process.env.V3_TASK || `TASK-V3-${KEY}`;
 function toPascalCase(k) {
   return k.split('_').map(p => p.charAt(0) + p.slice(1).toLowerCase()).join('');
 }
-const PC = toPascalCase(KEY); // ex: HOME → Home, CLUB_DETAIL → ClubDetail
+const PC = toPascalCase(KEY);
+const baseName = path.basename(pageRel, '.jsx'); // ex: HOME → Home, CLUB_DETAIL → ClubDetail
 
 const PAGE_PATHS = {
   HOME: 'src/pages/Home.jsx',
@@ -157,7 +158,7 @@ const wrapperContent = `/**
 import { lazy, Suspense } from 'react';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
-import ${PC}V1 from './${PC}.v1';
+import ${PC}V1 from './${baseName}.v1';
 
 const ${PC}V3 = lazy(() => import(/* webpackChunkName: "${PC}V3" */ './${PC}.v3'));
 
