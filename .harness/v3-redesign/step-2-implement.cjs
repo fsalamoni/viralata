@@ -141,8 +141,12 @@ export default function ${PC}V3() {
 }
 `;
 
-fs.writeFileSync(v3File, v3Template);
-console.log(`[step-2] V3 esqueleto criado no worktree: ${path.basename(v3File)}`);
+// 3a. Criar <Page>.v3.jsx como ARQUIVO SEPARADO (nao sobrescrever o wrapper)
+const v3Full = pageFull.replace(/\.jsx$/, '.v3.jsx');
+fs.writeFileSync(v3Full, v3Template);
+console.log(`[step-2] V3 esqueleto criado: ${path.basename(v3Full)}`);
+
+// 3b. O wrapper vai no lugar do .jsx original (ja copiado v1 para .v1.jsx acima)
 
 // 4. Criar wrapper com React.lazy + flag
 const wrapperContent = `/**
@@ -159,7 +163,7 @@ import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
 import ${PC}V1 from './${PC}.v1';
 
-const ${PC}V3 = lazy(() => import(/* webpackChunkName: "${PC}V3" */ './${PC}.v3'));
+const ${PC}V3 = lazy(() => import(/* webpackChunkName: "${PC}V3" */ './${PC}.v3.jsx'));
 
 function PageFallback() {
   return (

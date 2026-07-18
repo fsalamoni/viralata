@@ -14,7 +14,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ErrorState';
 
-export default function ProfileV3() {
+export default function PROFILEV3() {
   // TODO: implementar V3 do zero (NÃO aproveitar V1)
   // Estrutura base — preencher com:
   // - banner/hero

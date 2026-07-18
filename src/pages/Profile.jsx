@@ -12,7 +12,7 @@ import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
 import ProfileV1 from './Profile.v1';
 
-const ProfileV3 = lazy(() => import(/* webpackChunkName: "ProfileV3" */ './Profile.v3'));
+const ProfileV3 = lazy(() => import(/* webpackChunkName: "ProfileV3" */ './Profile.v3.jsx'));
 
 function PageFallback() {
   return (
