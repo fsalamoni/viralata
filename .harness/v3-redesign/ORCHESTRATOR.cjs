@@ -72,11 +72,11 @@ function ensureRepo() {
       process.exit(1);
     }
   } else {
-    log('Workspace existe. git pull...');
+    log('Workspace existe. git fetch only (no pull to avoid harness conflicts)...');
     try {
-      execSync('git pull --no-rebase origin main', { cwd: REPO, stdio: 'inherit' });
+      execSync('git fetch origin', { cwd: REPO, stdio: 'pipe' });
     } catch (e) {
-      log(`WARN: pull falhou (não fatal): ${e.message}`);
+      log(`WARN: fetch falhou (não fatal): ${e.message}`);
     }
     // Fix: origin/main pode ter conflict markers — remover do working tree
     try {
