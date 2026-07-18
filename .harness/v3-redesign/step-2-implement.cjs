@@ -138,8 +138,12 @@ export default function ${KEY}V3() {
 }
 `;
 
-fs.writeFileSync(pageFull, v3Template);
-console.log(`[step-2] V3 esqueleto criado no worktree: ${path.basename(pageFull)}`);
+// 3a. Criar <Page>.v3.jsx como ARQUIVO SEPARADO (nao sobrescrever o wrapper)
+const v3Full = pageFull.replace(/\.jsx$/, '.v3.jsx');
+fs.writeFileSync(v3Full, v3Template);
+console.log(`[step-2] V3 esqueleto criado: ${path.basename(v3Full)}`);
+
+// 3b. O wrapper vai no lugar do .jsx original (ja copiado v1 para .v1.jsx acima)
 
 // 4. Criar wrapper com React.lazy + flag
 const wrapperContent = `/**
