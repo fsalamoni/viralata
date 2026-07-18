@@ -32,7 +32,6 @@ function toPascalCase(k) {
   return k.split('_').map(p => p.charAt(0) + p.slice(1).toLowerCase()).join('');
 }
 const PC = toPascalCase(KEY);
-const baseName = path.basename(pageRel, '.jsx'); // ex: HOME → Home, CLUB_DETAIL → ClubDetail
 
 const PAGE_PATHS = {
   HOME: 'src/pages/Home.jsx',
@@ -54,6 +53,7 @@ const PAGE_PATHS = {
 };
 
 const pageRel = PAGE_PATHS[KEY];
+const baseName = path.basename(pageRel, ".jsx");
 const pageMain = path.join(REPO, pageRel);
 if (!fs.existsSync(pageMain)) {
   console.error(`[step-2] FATAL: V1 não encontrado em ${pageRel} (main repo)`);
