@@ -5,7 +5,7 @@
  * Senão → V1.
  *
  * IMPORTANTE: React.lazy com dynamic import (D-VITE-LAZY-01).
- * Vite faz constant folding em if/else estático e ELIMINA branches alternativas.
+ * Vite faz constant folding em if/else com flag estática e ELIMINA branches alternativas.
  */
 import { lazy, Suspense } from 'react';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';

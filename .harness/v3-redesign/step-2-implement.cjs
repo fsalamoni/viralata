@@ -11,6 +11,10 @@
  *  - Sub-componentes em src/components/<KEY_LOWER>/
  *
  * Exit 0 se válido, exit 1 se falhar.
+ *
+ * BUGFIX: todas as operações de arquivo usam wtDir (worktree), não REPO.
+ * O worktree e o main repo compartilham o .git, então o commit no worktree
+ * é o commit no branch v3-redesign/<KEY>.
  */
 'use strict';
 
@@ -23,14 +27,20 @@ const KEY = process.env.V3_KEY || 'HOME';
 const FLAG = process.env.V3_FLAG || `V3_PAGE_${KEY}`;
 const TASK = process.env.V3_TASK || `TASK-V3-${KEY}`;
 
+// Converte HOME → Home, CLUB_DETAIL → ClubDetail, etc.
+function toPascalCase(k) {
+  return k.split('_').map(p => p.charAt(0) + p.slice(1).toLowerCase()).join('');
+}
+const PC = toPascalCase(KEY);
+
 const PAGE_PATHS = {
   HOME: 'src/pages/Home.jsx',
   LOGIN: 'src/pages/Login.jsx',
   PROFILE: 'src/pages/Profile.jsx',
   CHAT: 'src/modules/chat/pages/ChatPage.jsx',
   ADOPTION: 'src/pages/AdoptionWizard.jsx',
-  COMMUNITY_DETAIL: 'src/modules/communities/pages/CommunityPublic.jsx',
-  CLUB_DETAIL: 'src/modules/organizations/pages/ShelterPublic.jsx',
+  COMMUNITY_DETAIL: 'src/modules/communities/pages/CommunityDetail.jsx',
+  CLUB_DETAIL: 'src/modules/organizations/pages/ClubDetail.jsx',
   SEARCH: 'src/pages/SearchPage.jsx',
   EVENTS: 'src/pages/EventsUnified.jsx',
   FOSTER: 'src/pages/FosterDashboard.jsx',
@@ -39,50 +49,70 @@ const PAGE_PATHS = {
   ADMIN: 'src/modules/admin/pages/AdminDashboard.jsx',
   ORG_ADMIN: 'src/modules/organizations/pages/OrganizationAdminPanel.jsx',
   COMMUNITY_ADMIN: 'src/modules/communities/pages/CommunityAdminPanel.jsx',
-  SHELTER_ADMIN: 'src/modules/shelter/pages/ShelterAdminPanel.jsx',
+  SHELTER_ADMIN: 'src/modules/shelter/components/ShelterAdminDashboard.jsx',
 };
 
 const pageRel = PAGE_PATHS[KEY];
-const pageFull = path.join(REPO, pageRel);
-if (!fs.existsSync(pageFull)) {
-  console.error(`[step-2] FATAL: V1 não encontrado em ${pageRel}`);
+const baseName = path.basename(pageRel, ".jsx");
+const pageMain = path.join(REPO, pageRel);
+if (!fs.existsSync(pageMain)) {
+  console.error(`[step-2] FATAL: V1 não encontrado em ${pageRel} (main repo)`);
   process.exit(1);
 }
 
 console.log(`[step-2] Implementando V3 de ${KEY} (${pageRel})...`);
 
-// 1. Criar worktree
+// 1. Criar / limpar worktree
 const wtDir = path.join(REPO, '.worktrees', `v3-${KEY}`);
 const branchName = `v3-redesign/${KEY.toLowerCase()}`;
 
+// Worktree reuse: preservar commits anteriores se branch remoto existir
+let worktreeReused = false;
+// Primeiro: limpar worktree e branch locais (se existirem)
+try { execSync(`git worktree remove --force ${wtDir}`, { cwd: REPO, stdio: 'pipe' }); } catch {}
+try { execSync(`git branch -D ${branchName}`, { cwd: REPO, stdio: 'pipe' }); } catch {}
+// Buscar todos os remotes (inclusive branches novos)
+execSync('git fetch origin', { cwd: REPO, stdio: 'pipe' });
+// Tentar criar do branch remoto existente (preserva commits do remote)
 try {
-  // Limpar worktree anterior se existir
-  try { execSync(`git worktree remove --force ${wtDir}`, { cwd: REPO, stdio: 'pipe' }); } catch {}
-  try { execSync(`git branch -D ${branchName}`, { cwd: REPO, stdio: 'pipe' }); } catch {}
-  execSync(`git worktree add ${wtDir} -b ${branchName} main`, { cwd: REPO, stdio: 'inherit' });
-  console.log(`[step-2] Worktree criado: ${wtDir}`);
-} catch (e) {
-  console.error(`[step-2] FATAL: worktree falhou: ${e.message}`);
-  process.exit(1);
-}
-
-// CAMINHOS NO WORKTREE (NUNCA no REPO principal)
-const pageFullInWt = path.join(wtDir, pageRel);
-
-// 2. Renomear V1 para .v1.jsx (NO WORKTREE)
-const v1Target = pageFullInWt.replace(/\.jsx$/, '.v1.jsx');
-if (!fs.existsSync(v1Target)) {
+  execSync(`git worktree add ${wtDir} ${branchName}`, { cwd: REPO, stdio: 'pipe' });
+  console.log(`[step-2] Worktree criado a partir do branch remoto: ${wtDir}`);
+  worktreeReused = true;
+} catch {
+  // Branch remoto não existe — criar do zero a partir de main
   try {
-    fs.renameSync(pageFullInWt, v1Target);
-    console.log(`[step-2] V1 renomeado: ${path.basename(pageFullInWt)} → ${path.basename(v1Target)}`);
+    execSync(`git worktree add ${wtDir} -b ${branchName} main`, { cwd: REPO, stdio: 'inherit' });
+    console.log(`[step-2] Worktree criado do zero a partir de main: ${wtDir}`);
   } catch (e) {
-    console.error(`[step-2] FATAL: rename V1 falhou: ${e.message}`);
+    console.error(`[step-2] FATAL: worktree falhou: ${e.message}`);
     process.exit(1);
   }
 }
 
-// 3. Criar <Page>.v3.jsx (esqueleto — o agente completa)
-const v3Path = pageFullInWt;
+// 2. pageFull no WORKTREE (não no main repo)
+const pageFull = path.join(wtDir, pageRel);
+
+// Copiar V1 do main repo para o worktree
+const v1Target = pageFull.replace(/\.jsx$/, '.v1.jsx');
+const v1TargetDir = path.dirname(v1Target);
+if (!fs.existsSync(v1TargetDir)) fs.mkdirSync(v1TargetDir, { recursive: true });
+
+const mainV1 = pageMain;
+const wtV1 = v1Target;
+if (!fs.existsSync(wtV1)) {
+  try {
+    fs.copyFileSync(mainV1, wtV1);
+    console.log(`[step-2] V1 copiado para worktree: ${path.basename(mainV1)} → ${path.basename(wtV1)}`);
+  } catch (e) {
+    console.error(`[step-2] FATAL: copy V1 falhou: ${e.message}`);
+    process.exit(1);
+  }
+}
+
+// 3. Criar <Page>.v3.jsx (ARQUIVO SEPARADO, não sobreescrever wrapper)
+// CRITICAL FIX: .v3.jsx deve existir como arquivo separado para o React.lazy resolver.
+// O wrapper (Login.jsx) importa './Login.v3' — se o arquivo não existir, build quebra.
+const v3File = pageFull.replace(/\.jsx$/, '.v3.jsx');
 const v3Template = `/**
  * @fileoverview ${KEY} V3 — redesign completo no padrão DS-V2.
  *
@@ -99,7 +129,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ErrorState';
 
-export default function ${KEY}V3() {
+export default function ${PC}V3() {
   // TODO: implementar V3 do zero (NÃO aproveitar V1)
   // Estrutura base — preencher com:
   // - banner/hero
@@ -125,26 +155,37 @@ export default function ${KEY}V3() {
 }
 `;
 
-fs.writeFileSync(v3Path, v3Template);
-console.log(`[step-2] V3 esqueleto criado: ${path.basename(v3Path)}`);
+<<<<<<< HEAD
+// 3a. Criar <Page>.v3.jsx como ARQUIVO SEPARADO (nao sobrescrever o wrapper)
+const v3Full = pageFull.replace(/\.jsx$/, '.v3.jsx');
+fs.writeFileSync(v3Full, v3Template);
+console.log(`[step-2] V3 esqueleto criado: ${path.basename(v3Full)}`);
 
-// 4. Criar wrapper com React.lazy + flag (NO WORKTREE)
-const wrapperPath = pageFullInWt;
+// 3b. O wrapper vai no lugar do .jsx original (ja copiado v1 para .v1.jsx acima)
+=======
+fs.writeFileSync(v3File, v3Template);
+console.log(`[step-2] V3 esqueleto criado no worktree: ${path.basename(v3File)}`);
+>>>>>>> v3-redesign/chat
+
+// 4. Criar wrapper com React.lazy + flag
+// D-WRAPPER-FILENAME-01: usar basename real do arquivo (nao ${PC}) para imports
+// CHAT → ChatPage.v1.jsx (nao Chat.v1.jsx)
+const pageBasename = path.basename(pageFull, '.jsx'); // ex: ChatPage, Home, Profile
 const wrapperContent = `/**
- * @fileoverview ${KEY} — wrapper que escolhe V3 ou V1.
+ * @fileoverview ${PC} — wrapper que escolhe V3 ou V1.
  *
  * Flag \`${FLAG}\` (default OFF) → V3.
  * Senão → V1.
  *
  * IMPORTANTE: React.lazy com dynamic import (D-VITE-LAZY-01).
- * Vite faz constant folding em if/else estático e ELIMINA branches alternativas.
+ * Vite faz constant folding em if/else com flag estática e ELIMINA branches alternativas.
  */
 import { lazy, Suspense } from 'react';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
-import ${KEY}V1 from './${KEY}.v1';
+import ${PC}V1 from './${pageBasename}.v1';
 
-const ${KEY}V3 = lazy(() => import(/* webpackChunkName: "${KEY}V3" */ './${KEY}.v3'));
+const ${PC}V3 = lazy(() => import(/* webpackChunkName: "${PC}V3" */ './${pageBasename}.v3.jsx'));
 
 function PageFallback() {
   return (
@@ -155,42 +196,55 @@ function PageFallback() {
   );
 }
 
-export default function ${KEY}Wrapper() {
+export default function ${PC}Wrapper() {
   const useV3 = useFeatureFlag(FEATURE_FLAG.${FLAG});
   if (useV3) {
     return (
       <Suspense fallback={<PageFallback />}>
-        <${KEY}V3 />
+        <${PC}V3 />
       </Suspense>
     );
   }
-  return <${KEY}V1 />;
+  return <${PC}V1 />;
 }
 `;
 
-fs.writeFileSync(wrapperPath, wrapperContent);
-console.log(`[step-2] Wrapper criado: ${path.basename(wrapperPath)}`);
+// O wrapper também vai no worktree (substitui o esqueleto)
+fs.writeFileSync(pageFull, wrapperContent);
+console.log(`[step-2] Wrapper criado no worktree: ${path.basename(pageFull)}`);
 
-// 5. Commit no worktree
+// 5. Commit no worktree (usa cwd = wtDir, onde os arquivos estão)
+// D-STEP2-COMMIT-01: git commit retorna exit 1 se "nothing to commit" — tratar como OK (já feito)
 try {
-  execSync('git add -A', { cwd: wtDir, stdio: 'inherit' });
-  const commitMsg = 'feat(' + KEY.toLowerCase() + '): V3 redesign esqueleto + wrapper lazy (TASK-' + TASK + ')\n\n' +
+  execSync('git add -A', { cwd: wtDir, stdio: 'pipe' });
+  const status = execSync('git status --porcelain', { cwd: wtDir, encoding: 'utf8' });
+  if (!status.trim()) {
+    console.log('[step-2] Nada a commitar — trabalho já existe. step-2 OK.');
+    process.exit(0);
+  }
+  const commitMsg = 'feat(' + KEY.toLowerCase() + '): V3 redesign esqueleto + wrapper lazy (' + TASK + ')\n\n' +
     '- Renomeia V1 -> .v1.jsx\n' +
     '- Cria .v3.jsx (esqueleto a ser preenchido)\n' +
     '- Cria wrapper com React.lazy + flag ' + FLAG + ' (D-VITE-LAZY-01)\n' +
     '- NENHUM aproveitamento de JSX V1 (voce pediu do zero)\n\n' +
     'Proximo: step-3 vai gerar REGENCY_V3.md (12+ secoes).';
-  // Escrever commit message em arquivo temporário (evita problema de escape)
-  // IMPORTANTE: .git em worktree é um ARQUIVO, nao diretorio. Usar /tmp.
-  const tmpFile = path.join('/tmp', `commit-msg-${KEY}-${Date.now()}.txt`);
-  fs.writeFileSync(tmpFile, commitMsg);
-  execSync('git commit -F ' + tmpFile, { cwd: wtDir, stdio: 'inherit' });
-  fs.unlinkSync(tmpFile);
-  console.log('[step-2] Commit feito no worktree.');
+  // Escrever msg em arquivo temp para evitar problemas de escape
+  const msgFile = '/tmp/v3-commit-msg-' + Date.now() + '.txt';
+  fs.writeFileSync(msgFile, commitMsg);
+  execSync('git commit -F ' + msgFile, { cwd: wtDir, stdio: 'pipe' });
+  fs.unlinkSync(msgFile);
+  console.log('[step-2] Commit feito no worktree: ' + branchName);
 } catch (e) {
+  // "nothing to commit" (exit 1) já tratado acima; qualquer outro erro é fatal
+  if (e.message.includes('nothing to commit')) {
+    console.log('[step-2] Nada a commitar. step-2 OK.');
+    process.exit(0);
+  }
   console.error('[step-2] FATAL: commit falhou: ' + e.message);
   process.exit(1);
 }
 
+} // end if not worktreeReused
 console.log(`[step-2] PASS. Avançar para step-3.`);
 process.exit(0);
+

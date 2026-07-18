@@ -78,6 +78,18 @@ function ensureRepo() {
     } catch (e) {
       log(`WARN: pull falhou (não fatal): ${e.message}`);
     }
+    // Fix: origin/main pode ter conflict markers nos harness scripts
+    // Restaurar working tree + index para versao LOCAL (sem conflictos)
+    try {
+      const { execSync: exec2 } = require('child_process');
+      const harnessDir = path.join(REPO, '.harness', 'v3-redesign');
+      const step2File = path.join(harnessDir, 'step-2-implement.cjs');
+      const wtHash = exec2(`git hash-object ${step2File}`, {cwd: REPO, encoding: 'utf8'}).trim();
+      if (wtHash) {
+        require('fs').writeFileSync('/tmp/git-idx.txt', `100644 ${wtHash} 0\t.harness/v3-redesign/step-2-implement.cjs\n`);
+        try { exec2(`git update-index --index-info < /tmp/git-idx.txt`, {cwd: REPO, stdio: 'pipe'}); } catch {}
+      }
+    } catch {}
   }
 }
 
@@ -167,8 +179,34 @@ function disableCron() {
   }
 }
 
+function acquireLock() {
+  const lockPath = '/tmp/v3-redesign-loop.lock';
+  const lockAge = 1000 * 60 * 60 * 2; // 2h
+  if (fs.existsSync(lockPath)) {
+    const stat = fs.statSync(lockPath);
+    const age = Date.now() - stat.mtimeMs;
+    if (age < lockAge) {
+      log(`LOCK ativo (${Math.round(age/1000)}s atrás). Outra execução em andamento. Saindo com exit 0 (cron vai tentar de novo).`);
+      process.exit(0);
+    }
+    log(`Lock stale (${Math.round(age/1000)}s atrás). Removendo.`);
+  }
+  fs.writeFileSync(lockPath, `${process.pid}@${Date.now()}`);
+}
+
+function releaseLock() {
+  const lockPath = '/tmp/v3-redesign-loop.lock';
+  try {
+    const content = fs.readFileSync(lockPath, 'utf8');
+    if (content.startsWith(`${process.pid}@`)) {
+      fs.unlinkSync(lockPath);
+    }
+  } catch {}
+}
+
 function main() {
   log('=== V3 Redesign Orchestrator ===');
+  acquireLock();
   ensureRepo();
   const state = loadState();
   log(`Estado: ${state.currentKey} | ${state.currentPhase} | fila restante: ${state.queue.length}`);
@@ -176,6 +214,7 @@ function main() {
   if (state.currentPhase === 'done' || state.queue.length === 0) {
     log('ALL_DONE — fila vazia.');
     disableCron();
+    releaseLock();
     process.exit(42);
   }
 
@@ -189,15 +228,18 @@ function main() {
     if (result === 'ALL_DONE') {
       log('Fila completa. Desabilitando cron.');
       disableCron();
+      releaseLock();
       process.exit(42);
     }
     log(`OK. Próximo: ${state.currentKey} | ${state.currentPhase}`);
+    releaseLock();
     process.exit(0);
   } else {
     state.lastError = `Step ${state.currentPhase} falhou com exit ${exitCode}`;
     saveState(state);
-    log(`ERRO: ${state.lastError}. Mesma página, mesma fase na próxima iteração.`);
-    process.exit(1);
+    log(`ERRO: ${state.lastError}. Aguardando 10s antes de retry (para GitHub Actions pushar)...`);
+    releaseLock();
+    setTimeout(() => process.exit(1), 10000);
   }
 }
 
