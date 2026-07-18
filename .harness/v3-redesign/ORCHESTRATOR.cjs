@@ -72,11 +72,11 @@ function ensureRepo() {
       process.exit(1);
     }
   } else {
-    log('Workspace existe. git pull...');
+    log('Workspace existe. git fetch only (no pull to avoid harness conflicts)...');
     try {
-      execSync('git pull --no-rebase origin main', { cwd: REPO, stdio: 'inherit' });
+      execSync('git fetch origin', { cwd: REPO, stdio: 'pipe' });
     } catch (e) {
-      log(`WARN: pull falhou (não fatal): ${e.message}`);
+      log(`WARN: fetch falhou (não fatal): ${e.message}`);
     }
   }
 }
@@ -225,9 +225,9 @@ function main() {
   } else {
     state.lastError = `Step ${state.currentPhase} falhou com exit ${exitCode}`;
     saveState(state);
-    log(`ERRO: ${state.lastError}. Mesma página, mesma fase na próxima iteração.`);
+    log(`ERRO: ${state.lastError}. Aguardando 10s antes de retry (para GitHub Actions pushar)...`);
     releaseLock();
-    process.exit(1);
+    setTimeout(() => process.exit(1), 10000);
   }
 }
 
