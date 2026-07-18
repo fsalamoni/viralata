@@ -49,7 +49,6 @@ function push(cwd, ref) {
   }
 }
 
-<<<<<<< Updated upstream
 // Converte KEY em PascalCase para o nome do componente
 // HOME → Home, CLUB_DETAIL → ClubDetail
 function toPascalCase(k) {

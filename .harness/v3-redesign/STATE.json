@@ -2,9 +2,9 @@
   "currentKey": "LOGIN",
   "currentFlag": "V3_PAGE_LOGIN",
   "currentTask": "TASK-V3-LOGIN",
-  "currentPhase": "step-1",
-  "lastRun": 1784353000000,
-  "lastError": null,
+  "currentPhase": "step-2",
+  "lastRun": 1784352427280,
+  "lastError": "Step step-2 falhou com exit 1",
   "queue": [
     "PROFILE",
     "CHAT",

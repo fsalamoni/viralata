@@ -2,7 +2,7 @@
 
 > Gerado por `.harness/v3-redesign/step-1-analyze.cjs`
 > Task: `TASK-V3-LOGIN` | Flag: `V3_PAGE_LOGIN`
-> Página V1: `src/pages/Login.jsx` (176 linhas)
+> Página V1: `src/pages/Login.jsx` (37 linhas)
 
 ---
 
@@ -13,11 +13,11 @@
 | KEY | LOGIN |
 | Rota | / |
 | Componente V1 | `src/pages/Login.jsx` |
-| Linhas V1 | 176 |
-| Bytes V1 | 8382 |
-| Imports V1 | 6 (react, react-router-dom, sonner, lucide-react, @/core/lib/FirebaseAuthContext...) |
-| Hooks V1 | 5 (Effect, State, Navigate, Location, Auth) |
-| Componentes V1 | 4 (Link, PawPrint, Button, GoogleIcon...) |
+| Linhas V1 | 37 |
+| Bytes V1 | 1005 |
+| Imports V1 | 4 (react, @/core/lib/FeatureFlagsContext, @/core/featureFlags, ./Login.v1...) |
+| Hooks V1 | 2 (FeatureFlag, V3) |
+| Componentes V1 | 5 (Skeleton, Suspense, PageFallback, LoginV3, LoginV1...) |
 | Flag V3 | `V3_PAGE_LOGIN` (default OFF) |
 
 ---
@@ -27,14 +27,14 @@
 | # | Feature | Existe no V1? | Notas |
 |---|---|---|---|
 | F1 | Render principal | ✅ | componente default export |
-| F2 | Layout responsivo | ✅ | classes Tailwind detectadas |
+| F2 | Layout responsivo | ❌ | classes Tailwind detectadas |
 | F3 | Loading state | ✅ | - |
 | F4 | Error state | ❌ | - |
 | F5 | Empty state | ❌ | - |
-| F6 | Acessibilidade (a11y) | ✅ | - |
+| F6 | Acessibilidade (a11y) | ❌ | - |
 | F7 | Dark mode | ❌ | - |
 | F8 | SEO <head> | ❌ | - |
-| F9 | Analytics / tracking | ✅ | - |
+| F9 | Analytics / tracking | ❌ | - |
 | F10 | i18n / múltiplos idiomas | ✅ | - |
 
 ---

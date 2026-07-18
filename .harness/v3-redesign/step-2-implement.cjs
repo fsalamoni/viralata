@@ -18,21 +18,6 @@
  */
 'use strict';
 
-// Auto-fix: remove conflict markers trazidos pelo git pull antes de qualquer execucao
-(function fixConflicts() {
-  const me = __filename;
-  const c = require('fs').readFileSync(me, 'utf8');
-  if ('<<<<' in c || '=====' in c) {
-    const lines = c.split('\n'), out = [], skip = false;
-    for (const l of lines) {
-      if ('<<<<' in l) { skip = true; continue; }
-      if ('=====' in l) { skip = false; continue; }
-      if ('>>>>' in l) { skip = false; continue; }
-      if (!skip) out.push(l);
-    }
-    require('fs').writeFileSync(me, out.join('\n') + '\n');
-  }
-})();
 
 const fs = require('fs');
 const path = require('path');
@@ -256,4 +241,6 @@ try {
 } // end if not worktreeReused
 console.log(`[step-2] PASS. Avançar para step-3.`);
 process.exit(0);
+
+
 
