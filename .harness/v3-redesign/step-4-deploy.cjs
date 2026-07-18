@@ -52,6 +52,25 @@ if (!fs.existsSync(wtDir)) {
   process.exit(1);
 }
 
+// 0a. Garantir node_modules no worktree (symlink do main ou install)
+const wtNm = path.join(wtDir, 'node_modules');
+if (!fs.existsSync(wtNm)) {
+  // Tentar symlink do main primeiro
+  const mainNm = path.join(REPO, 'node_modules');
+  if (fs.existsSync(mainNm)) {
+    try {
+      fs.symlinkSync(mainNm, wtNm, 'dir');
+      console.log(`[step-4] node_modules symlink: ${mainNm} -> ${wtNm}`);
+    } catch (e) {
+      console.log(`[step-4] symlink falhou, fazendo npm install: ${e.message}`);
+      execSync('npm install', { cwd: wtDir, stdio: 'inherit', timeout: 600000 });
+    }
+  } else {
+    console.log(`[step-4] node_modules nao existe no main, rodando npm install...`);
+    execSync('npm install', { cwd: wtDir, stdio: 'inherit', timeout: 600000 });
+  }
+}
+
 // 1. Verificar que o branch existe no worktree
 let curBranch;
 try {
