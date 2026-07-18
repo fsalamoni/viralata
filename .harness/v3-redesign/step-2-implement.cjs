@@ -244,5 +244,7 @@ try {
   process.exit(1);
 }
 
+} // end if not worktreeReused
 console.log(`[step-2] PASS. Avançar para step-3.`);
 process.exit(0);
+
