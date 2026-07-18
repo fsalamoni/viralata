@@ -1,10 +1,10 @@
 {
-  "currentKey": "MURAL",
-  "currentFlag": "V3_PAGE_MURAL",
-  "currentTask": "TASK-V3-MURAL",
-  "currentPhase": "step-4",
-  "lastRun": 1784353563104,
-  "lastError": "Step step-4 falhou com exit 1",
+  "currentKey": "ADMIN",
+  "currentFlag": "V3_PAGE_ADMIN",
+  "currentTask": "TASK-V3-ADMIN",
+  "currentPhase": "step-2",
+  "lastRun": 1784354158551,
+  "lastError": null,
   "queue": [
     "ADMIN",
     "ORG_ADMIN",
@@ -89,6 +89,13 @@
       "key": "VOLUNTEER",
       "task": "TASK-V3-VOLUNTEER",
       "doneAt": "2026-07-18T05:43:55.546Z"
+    },
+    {
+      "key": "MURAL",
+      "task": "TASK-V3-MURAL",
+      "doneAt": "2026-07-18T05:55:00Z",
+      "commitSha": "2fdc2c0e",
+      "regency": "docs/REGENCY_MURAL_V3.md"
     }
   ]
 }

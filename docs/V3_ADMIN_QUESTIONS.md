@@ -2,7 +2,7 @@
 
 > Gerado por `.harness/v3-redesign/step-1-analyze.cjs`
 > Task: `TASK-V3-ADMIN` | Flag: `V3_PAGE_ADMIN`
-> Página V1: `src/modules/admin/pages/AdminDashboard.jsx` (90 linhas)
+> Página V1: `src/modules/admin/pages/AdminDashboard.jsx` (37 linhas)
 
 ---
 
@@ -13,11 +13,11 @@
 | KEY | ADMIN |
 | Rota | / |
 | Componente V1 | `src/modules/admin/pages/AdminDashboard.jsx` |
-| Linhas V1 | 90 |
-| Bytes V1 | 5833 |
-| Imports V1 | 6 (react-router-dom, @/core/lib/FirebaseAuthContext, @/components/ui/button, lucide-react, @/components/PageHero...) |
-| Hooks V1 | 2 (Auth, ArenaPageClasses) |
-| Componentes V1 | 5 (Shield, PageHero, Icon, Button, Link...) |
+| Linhas V1 | 37 |
+| Bytes V1 | 1023 |
+| Imports V1 | 4 (react, @/core/lib/FeatureFlagsContext, @/core/featureFlags, ./AdminDashboard.v1...) |
+| Hooks V1 | 2 (FeatureFlag, V3) |
+| Componentes V1 | 5 (Skeleton, Suspense, PageFallback, AdminV3, AdminV1...) |
 | Flag V3 | `V3_PAGE_ADMIN` (default OFF) |
 
 ---
@@ -27,15 +27,15 @@
 | # | Feature | Existe no V1? | Notas |
 |---|---|---|---|
 | F1 | Render principal | ✅ | componente default export |
-| F2 | Layout responsivo | ✅ | classes Tailwind detectadas |
-| F3 | Loading state | ❌ | - |
+| F2 | Layout responsivo | ❌ | classes Tailwind detectadas |
+| F3 | Loading state | ✅ | - |
 | F4 | Error state | ❌ | - |
 | F5 | Empty state | ❌ | - |
 | F6 | Acessibilidade (a11y) | ❌ | - |
 | F7 | Dark mode | ❌ | - |
 | F8 | SEO <head> | ❌ | - |
 | F9 | Analytics / tracking | ❌ | - |
-| F10 | i18n / múltiplos idiomas | ❌ | - |
+| F10 | i18n / múltiplos idiomas | ✅ | - |
 
 ---
 
