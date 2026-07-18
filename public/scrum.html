@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.1.0",
-  "generatedAt": "2026-07-18T06:20:21.748Z",
+  "generatedAt": "2026-07-18T08:22:59.334Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W29",
@@ -396,20 +396,7 @@
     "endsAt": "2026-07-22",
     "goal": "DS_V2 Fase 4 — Reaplicar design system oficial v1.0 bloco a bloco, cada área com feature flag default OFF. Começar pelo Bloco A (docs) ✅, agora Bloco B (tokens + Material Symbols). User valida visualmente cada bloco antes da próxima. Zero regressão em regra de negócio."
   },
-  "activeWorktrees": [
-    {
-      "id": "v3-SEARCH",
-      "branch": "v3-redesign/search",
-      "head": "60e9d28a376e4cb6e1518a9d12b57834bd79633c",
-      "headTitle": "chore(search): V3 build + sw-v28 (TASK-V3-SEARCH)",
-      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/v3-SEARCH",
-      "status": "in-sync",
-      "commitsAhead": 0,
-      "primarySession": null,
-      "sessionTitle": null,
-      "focus": []
-    }
-  ],
+  "activeWorktrees": [],
   "activeSessions": [
     {
       "id": "mvs_311d078987d0414a90f57ef28b789b18",
@@ -17205,6 +17192,87 @@
       "parentTask": "TASK-V3-ADMIN",
       "createdAt": "2026-07-18T05:55:58.530Z",
       "evidence": {}
+    },
+    {
+      "id": "TASK-V3-PROFILE",
+      "title": "V3 redesign PROFILE (página de perfil)",
+      "type": "redesign",
+      "category": "profile",
+      "status": "done",
+      "priority": "high",
+      "owner": "Mavis",
+      "branch": "v3-redesign/profile",
+      "flag": "V3_PAGE_PROFILE"
+    },
+    {
+      "id": "TASK-V3-PROFILE-1",
+      "title": "Hook useProfileStats com 4 count queries",
+      "type": "feat",
+      "category": "profile",
+      "status": "done",
+      "priority": "high",
+      "owner": "Mavis",
+      "parent": "TASK-V3-PROFILE"
+    },
+    {
+      "id": "TASK-V3-PROFILE-2",
+      "title": "5 tabs Radix sticky (overview/volunteer/adoptions/events/privacy)",
+      "type": "feat",
+      "category": "profile",
+      "status": "done",
+      "priority": "high",
+      "owner": "Mavis",
+      "parent": "TASK-V3-PROFILE"
+    },
+    {
+      "id": "TASK-V3-PROFILE-3",
+      "title": "Hero gradient com avatar + 4 stat cards",
+      "type": "feat",
+      "category": "profile",
+      "status": "done",
+      "priority": "high",
+      "owner": "Mavis",
+      "parent": "TASK-V3-PROFILE"
+    },
+    {
+      "id": "TASK-V3-PROFILE-4",
+      "title": "Reusar 9 componentes V1 via props (zero duplicação)",
+      "type": "feat",
+      "category": "profile",
+      "status": "done",
+      "priority": "high",
+      "owner": "Mavis",
+      "parent": "TASK-V3-PROFILE"
+    },
+    {
+      "id": "TASK-V3-PROFILE-5",
+      "title": "Testes unitários V3",
+      "type": "test",
+      "category": "profile",
+      "status": "pending",
+      "priority": "medium",
+      "owner": "Mavis",
+      "parent": "TASK-V3-PROFILE"
+    },
+    {
+      "id": "TASK-V3-PROFILE-6",
+      "title": "Teste E2E Playwright (tabs + export)",
+      "type": "test",
+      "category": "profile",
+      "status": "pending",
+      "priority": "medium",
+      "owner": "Mavis",
+      "parent": "TASK-V3-PROFILE"
+    },
+    {
+      "id": "TASK-V3-PROFILE-7",
+      "title": "Lighthouse ≥ 90 em prod",
+      "type": "perf",
+      "category": "profile",
+      "status": "pending",
+      "priority": "medium",
+      "owner": "Mavis",
+      "parent": "TASK-V3-PROFILE"
     }
   ],
   "definitionOfDone": [
@@ -17469,7 +17537,7 @@
       "feat/ds-v2-motion-2026-07-16",
       "feat/ds-v2-audit-2026-07-16"
     ],
-    "mainCommit": "e6cf1a6d1c02ae4827fe8c212625874ac96a08d4",
+    "mainCommit": "038cef9d3ecf59b9c4f048531f973bb32b6199d8",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -17514,7 +17582,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-18T06:20:21.768Z — via sync.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-18T08:22:59.356Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
@@ -17897,7 +17965,7 @@
 }
   </script>
 <<<<<<< HEAD
-  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-18T06:07:28.362Z">
+  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-18T06:20:21.822Z">
 =======
   <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-07-16T03:26:48.025Z">
 >>>>>>> 2fdaf3d (design(ux): TASK-603 - hero home com hierarquia clara - H1 menor mobile, badge compacto, remove chips decorativos)
