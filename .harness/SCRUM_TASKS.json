@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.1.0",
-  "generatedAt": "2026-07-18T02:06:30.512Z",
+  "generatedAt": "2026-07-18T02:06:49.962Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W29",
@@ -16440,6 +16440,99 @@
       "owner": "unassigned",
       "updatedAt": "2026-07-17T23:41:59",
       "resolvedAt": "2026-07-17"
+    },
+    {
+      "id": "TASK-V3-HOME",
+      "title": "V3 redesign HOME (página principal /)",
+      "type": "redesign",
+      "category": "home",
+      "status": "done",
+      "priority": "high",
+      "owner": "Mavis",
+      "branch": "v3-redesign/home",
+      "flag": "V3_PAGE_HOME",
+      "resolvedAt": "2026-07-18",
+      "updatedAt": "2026-07-18T02:06:49"
+    },
+    {
+      "id": "TASK-V3-HOME-1",
+      "title": "Hook useHomeStats com cache 5min + fallback estático",
+      "type": "feat",
+      "category": "home",
+      "status": "done",
+      "priority": "high",
+      "owner": "Mavis",
+      "parent": "TASK-V3-HOME"
+    },
+    {
+      "id": "TASK-V3-HOME-2",
+      "title": "6 sub-componentes V3 (Hero/Stats/Steps/Features/Stories/CtaSection)",
+      "type": "feat",
+      "category": "home",
+      "status": "done",
+      "priority": "high",
+      "owner": "Mavis",
+      "parent": "TASK-V3-HOME"
+    },
+    {
+      "id": "TASK-V3-HOME-3",
+      "title": "Testes unitários V3 (render com flag ON/OFF, loading/error states)",
+      "type": "test",
+      "category": "home",
+      "status": "pending",
+      "priority": "medium",
+      "owner": "Mavis",
+      "parent": "TASK-V3-HOME"
+    },
+    {
+      "id": "TASK-V3-HOME-4",
+      "title": "Skip link + landmarks ARIA (TASK-V3-A11Y-1)",
+      "type": "feat",
+      "category": "a11y",
+      "status": "pending",
+      "priority": "medium",
+      "owner": "Mavis",
+      "parent": "TASK-V3-HOME"
+    },
+    {
+      "id": "TASK-V3-HOME-5",
+      "title": "Open Graph + JSON-LD (Organization + SearchAction)",
+      "type": "feat",
+      "category": "seo",
+      "status": "pending",
+      "priority": "medium",
+      "owner": "Mavis",
+      "parent": "TASK-V3-HOME"
+    },
+    {
+      "id": "TASK-V3-HOME-6",
+      "title": "Lighthouse ≥ 90 em prod (medir PageSpeed Insights)",
+      "type": "perf",
+      "category": "home",
+      "status": "pending",
+      "priority": "medium",
+      "owner": "Mavis",
+      "parent": "TASK-V3-HOME"
+    },
+    {
+      "id": "TASK-V3-HOME-7",
+      "title": "E2E spec Playwright (home + feed + onboarding)",
+      "type": "test",
+      "category": "e2e",
+      "status": "pending",
+      "priority": "low",
+      "owner": "Mavis",
+      "parent": "TASK-V3-HOME"
+    },
+    {
+      "id": "TASK-V3-HOME-8",
+      "title": "Validação com usuários (3 adoções reais)",
+      "type": "research",
+      "category": "ux",
+      "status": "pending",
+      "priority": "low",
+      "owner": "human",
+      "parent": "TASK-V3-HOME"
     }
   ],
   "definitionOfDone": [
@@ -16704,7 +16797,7 @@
       "feat/ds-v2-motion-2026-07-16",
       "feat/ds-v2-audit-2026-07-16"
     ],
-    "mainCommit": "8a26dcfa82aadacb32b15c55514a110a74e85b8a",
+    "mainCommit": "c7e8ff45f583609cd5cc9a1a78cd9977d82a14a2",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -16714,8 +16807,8 @@
     ],
     "openTODOs": 5,
     "openLegalReviews": 3,
-    "totalTasks": 634,
-    "done": 633,
+    "totalTasks": 643,
+    "done": 636,
     "inProgress": 0,
     "inReview": 0,
     "blocked": 0,
@@ -16749,7 +16842,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-18T02:06:30.536Z — via sync.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-18T02:06:49.983Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
