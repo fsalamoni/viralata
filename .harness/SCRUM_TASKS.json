@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.1.0",
-  "generatedAt": "2026-07-18T04:21:30.959Z",
+  "generatedAt": "2026-07-18T04:28:43.119Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W29",
@@ -10,20 +10,7 @@
     "endsAt": "2026-07-22",
     "goal": "DS_V2 Fase 4 — Reaplicar design system oficial v1.0 bloco a bloco, cada área com feature flag default OFF. Começar pelo Bloco A (docs) ✅, agora Bloco B (tokens + Material Symbols). User valida visualmente cada bloco antes da próxima. Zero regressão em regra de negócio."
   },
-  "activeWorktrees": [
-    {
-      "id": "v3-PROFILE",
-      "branch": "v3-redesign/profile",
-      "head": "5a1273670c8be3ff569cacae22227626a572f43f",
-      "headTitle": "chore(profile): V3 build + sw-v20 (TASK-V3-PROFILE)",
-      "path": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/viralata/.worktrees/v3-PROFILE",
-      "status": "ahead-of-main",
-      "commitsAhead": 13,
-      "primarySession": null,
-      "sessionTitle": null,
-      "focus": []
-    }
-  ],
+  "activeWorktrees": [],
   "activeSessions": [
     {
       "id": "mvs_311d078987d0414a90f57ef28b789b18",
@@ -16899,7 +16886,7 @@
     "firestoreIndexes": 35,
     "bundleSizeKB": 5529,
     "shelterPhases": "22/22 completas em produção",
-    "activeWorktreesAheadOfMain": 1,
+    "activeWorktreesAheadOfMain": 0,
     "mergedWorktreesThisSprint": [
       "feat/ds-v2-docs-2026-07-16",
       "feat/ds-v2-tokens-2026-07-16",
@@ -16913,7 +16900,7 @@
       "feat/ds-v2-motion-2026-07-16",
       "feat/ds-v2-audit-2026-07-16"
     ],
-    "mainCommit": "972d220121bc065395c1cf8e20d1438217055a59",
+    "mainCommit": "85867659e62bab36d04ebcd4d9eddfccd9cdbb29",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -16958,7 +16945,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-18T04:21:30.982Z — via sync.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-07-18T04:28:43.149Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [

@@ -162,6 +162,9 @@ console.log(`[step-2] V3 esqueleto criado: ${path.basename(v3Full)}`);
 // 3b. O wrapper vai no lugar do .jsx original (ja copiado v1 para .v1.jsx acima)
 
 // 4. Criar wrapper com React.lazy + flag
+// D-WRAPPER-FILENAME-01: usar basename real do arquivo (nao ${PC}) para imports
+// CHAT → ChatPage.v1.jsx (nao Chat.v1.jsx)
+const pageBasename = path.basename(pageFull, '.jsx'); // ex: ChatPage, Home, Profile
 const wrapperContent = `/**
  * @fileoverview ${PC} — wrapper que escolhe V3 ou V1.
  *
@@ -174,9 +177,9 @@ const wrapperContent = `/**
 import { lazy, Suspense } from 'react';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
-import ${PC}V1 from './${PC}.v1';
+import ${PC}V1 from './${pageBasename}.v1';
 
-const ${PC}V3 = lazy(() => import(/* webpackChunkName: "${PC}V3" */ './${PC}.v3.jsx'));
+const ${PC}V3 = lazy(() => import(/* webpackChunkName: "${PC}V3" */ './${pageBasename}.v3.jsx'));
 
 function PageFallback() {
   return (
