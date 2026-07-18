@@ -78,6 +78,27 @@ function ensureRepo() {
     } catch (e) {
       log(`WARN: pull falhou (não fatal): ${e.message}`);
     }
+    // Fix: origin/main pode ter conflict markers nos harness scripts
+    // Remove markers de conflicto do WORKING TREE e atualiza index
+    try {
+      const { execSync: exec2 } = require('child_process');
+      const harnessDir = path.join(REPO, '.harness', 'v3-redesign');
+      const step2File = path.join(harnessDir, 'step-2-implement.cjs');
+      const content2 = require('fs').readFileSync(step2File, 'utf8');
+      if (content2.includes('<<<<') || content2.includes('=====')) {
+        const lines = content2.split('\n');
+        let fixed = [];
+        let skip = false;
+        for (const line of lines) {
+          if (line.includes('<<<<')) { skip = true; continue; }
+          if (line.includes('=====')) { skip = false; continue; }
+          if (line.includes('>>>>')) { skip = false; continue; }
+          if (!skip) fixed.push(line);
+        }
+        require('fs').writeFileSync(step2File, fixed.join('\n') + '\n');
+        log(`FIX: conflict markers removidos de step-2-implement.cjs (${fixed.length} linhas)`);
+      }
+    } catch (e) { log(`WARN fix conflict: ${e.message}`); }
   }
 }
 
@@ -225,9 +246,9 @@ function main() {
   } else {
     state.lastError = `Step ${state.currentPhase} falhou com exit ${exitCode}`;
     saveState(state);
-    log(`ERRO: ${state.lastError}. Mesma página, mesma fase na próxima iteração.`);
+    log(`ERRO: ${state.lastError}. Aguardando 10s antes de retry (para GitHub Actions pushar)...`);
     releaseLock();
-    process.exit(1);
+    setTimeout(() => process.exit(1), 10000);
   }
 }
 
