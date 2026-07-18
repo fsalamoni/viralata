@@ -237,9 +237,9 @@ function main() {
   } else {
     state.lastError = `Step ${state.currentPhase} falhou com exit ${exitCode}`;
     saveState(state);
-    log(`ERRO: ${state.lastError}. Mesma página, mesma fase na próxima iteração.`);
+    log(`ERRO: ${state.lastError}. Aguardando 10s antes de retry (para GitHub Actions pushar)...`);
     releaseLock();
-    process.exit(1);
+    setTimeout(() => process.exit(1), 10000);
   }
 }
 
