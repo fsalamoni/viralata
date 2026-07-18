@@ -98,11 +98,6 @@
       "doneAt": "2026-07-18T06:01:32.143Z"
     },
     {
-      "key": "ORG_ADMIN",
-      "task": "TASK-V3-ORG_ADMIN",
-      "doneAt": "2026-07-18T06:01:32.143Z"
-    },
-    {
       "key": "COMMUNITY_ADMIN",
       "task": "TASK-V3-COMMUNITY_ADMIN",
       "doneAt": "2026-07-18T06:01:32.143Z"
@@ -111,6 +106,11 @@
       "key": "SHELTER_ADMIN",
       "task": "TASK-V3-SHELTER_ADMIN",
       "doneAt": "2026-07-18T06:01:32.143Z"
+    },
+    {
+      "key": "ORG_ADMIN",
+      "task": "TASK-V3-ORG_ADMIN",
+      "doneAt": "2026-07-18T06:20:25.289Z"
     }
   ]
 }
