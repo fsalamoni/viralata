@@ -7,7 +7,11 @@
  * Fluxo:
  *  1. Checkout do branch v3-redesign/<KEY> no main repo (mesmo .git)
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
  *  2. Build (valida compilação — vitest pulado na fase esqueleto)
+=======
+ *  2. Build (valida compilação)
+>>>>>>> Stashed changes
 =======
  *  2. Build (valida compilação)
 >>>>>>> Stashed changes
@@ -37,7 +41,10 @@ function gitCmd(cwd, cmd) {
 }
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 =======
+=======
+>>>>>>> Stashed changes
 function gitFatal(cwd, cmd, msg) {
   try { gitCmd(cwd, cmd); } catch(e) {
     console.error(`[step-4] FATAL: ${msg}: ${e.message}`);
@@ -46,6 +53,9 @@ function gitFatal(cwd, cmd, msg) {
   }
 }
 
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 function spawnFatal(cwd, cmd, args, timeoutMs) {
   const r = spawnSync(cmd, args, { cwd, stdio: 'inherit', timeout: timeoutMs });
@@ -59,14 +69,20 @@ function spawnFatal(cwd, cmd, args, timeoutMs) {
 console.log(`[step-4] Iniciando deploy de ${KEY}...`);
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 // 0. Checkout do branch no main repo
 const currentBranch = gitCmd(REPO, 'git branch --show-current').trim();
 if (currentBranch !== BRANCH) {
 =======
+=======
+>>>>>>> Stashed changes
 // 0. Checkout do branch no main repo (mesmo .git compartilhado)
 const currentBranch = gitCmd(REPO, 'git branch --show-current').trim();
 if (currentBranch !== BRANCH) {
   // Remover worktree se existir (mesmo branch não pode estar em dois lugares)
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
   const wtDir = path.join(REPO, '.worktrees', `v3-${KEY}`);
   if (fs.existsSync(wtDir)) {
@@ -75,6 +91,7 @@ if (currentBranch !== BRANCH) {
     execSync('git worktree prune', { cwd: REPO, stdio: 'pipe' });
   }
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   try { gitCmd(REPO, 'git stash push -m "step-4 local"'); } catch {}
   console.log(`[step-4] Checkout branch ${BRANCH}...`);
   try { gitCmd(REPO, `git checkout ${BRANCH}`); } catch(e) {
@@ -82,6 +99,8 @@ if (currentBranch !== BRANCH) {
     process.exit(1);
   }
 =======
+=======
+>>>>>>> Stashed changes
   // Stash local changes para não perder
   try {
     const stashMsg = gitCmd(REPO, 'git stash push -m "step-4 local changes"').trim();
@@ -90,6 +109,9 @@ if (currentBranch !== BRANCH) {
   console.log(`[step-4] Checkout branch ${BRANCH}...`);
   gitFatal(REPO, `git checkout ${BRANCH}`, 'checkout branch falhou');
   // Restore stash
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
   try { gitCmd(REPO, 'git stash pop'); } catch {}
 } else {
@@ -97,8 +119,13 @@ if (currentBranch !== BRANCH) {
 }
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 // 1. Build (vitest completo >5min — pulado na fase esqueleto)
 console.log(`[step-4] Build...`);
+=======
+// 1. Build (valida compilação — mais importante que vitest pra esqueleto)
+console.log(`[step-4] Rodando build...`);
+>>>>>>> Stashed changes
 =======
 // 1. Build (valida compilação — mais importante que vitest pra esqueleto)
 console.log(`[step-4] Rodando build...`);
@@ -110,8 +137,12 @@ const distDir = path.join(REPO, 'dist', 'assets');
 if (!fs.existsSync(distDir)) {
   console.error(`[step-4] FAIL: dist/assets não existe`);
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   try { gitCmd(REPO, 'git checkout main'); } catch {}
   process.exit(1);
+=======
+  gitFatal(REPO, 'git checkout main', '');
+>>>>>>> Stashed changes
 =======
   gitFatal(REPO, 'git checkout main', '');
 >>>>>>> Stashed changes
@@ -120,6 +151,7 @@ if (!fs.existsSync(distDir)) {
 const files = fs.readdirSync(distDir);
 const v3Chunk = files.find(f => f.match(new RegExp(KEY + 'V3-[^.]+\\.js$', 'i')));
 if (!v3Chunk) {
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
   // Fallback: qualquer arquivo com KEY + V3
   const alt = files.find(f => f.includes('V3') && f.includes(KEY) && f.endsWith('.js'));
@@ -130,6 +162,8 @@ if (!v3Chunk) {
     try { gitCmd(REPO, 'git checkout main'); } catch {}
     process.exit(1);
 =======
+=======
+>>>>>>> Stashed changes
   // Tenta prefixo alternativo (Home.v3 → HomeV3)
   const alt = fs.readdirSync(distDir).find((f) =>
     (f.includes('HomeV3') || f.includes('Home')) && f.endsWith('.js') && f.includes(KEY));
@@ -138,6 +172,9 @@ if (!v3Chunk) {
   } else {
     console.error(`[step-4] FAIL: chunk V3 não encontrado em dist/assets/`);
     gitFatal(REPO, 'git checkout main', '');
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
   }
 }
@@ -147,8 +184,12 @@ console.log(`[step-4] V3 chunk: ${chunkFile} (${v3Size} bytes)`);
 if (v3Size < 500) {
   console.error(`[step-4] FAIL: V3 chunk muito pequeno (${v3Size} bytes) — fachada?`);
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   try { gitCmd(REPO, 'git checkout main'); } catch {}
   process.exit(1);
+=======
+  gitFatal(REPO, 'git checkout main', '');
+>>>>>>> Stashed changes
 =======
   gitFatal(REPO, 'git checkout main', '');
 >>>>>>> Stashed changes
@@ -168,7 +209,11 @@ if (m) {
 }
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 // 4. Commit + push
+=======
+// 4. Commit bump + push
+>>>>>>> Stashed changes
 =======
 // 4. Commit bump + push
 >>>>>>> Stashed changes
@@ -180,6 +225,7 @@ try {
   console.log(`[step-4] Branch ${BRANCH} push OK`);
 } catch (e) {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   if (!e.message.includes('nothing to commit')) {
     console.error(`[step-4] FAIL: git: ${e.message}`);
     try { gitCmd(REPO, 'git checkout main'); } catch {}
@@ -187,6 +233,8 @@ try {
   }
   console.log(`[step-4] Nada a commitar (build já feito)`);
 =======
+=======
+>>>>>>> Stashed changes
   // Se não há mudanças, ignora
   if (!e.message.includes('nothing to commit')) {
     console.error(`[step-4] FAIL: git commit/push: ${e.message}`);
@@ -194,6 +242,9 @@ try {
   } else {
     console.log(`[step-4] Nada a commitar (já em dia)`);
   }
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 }
 
@@ -206,7 +257,11 @@ try {
   console.log(`[step-4] Merge OK`);
 } catch (e) {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   console.error(`[step-4] FAIL: merge: ${e.message}`);
+=======
+  console.error(`[step-4] FAIL: merge/push main: ${e.message}`);
+>>>>>>> Stashed changes
 =======
   console.error(`[step-4] FAIL: merge/push main: ${e.message}`);
 >>>>>>> Stashed changes
@@ -225,7 +280,11 @@ try {
   console.log(`[step-4] SCRUM OK`);
 } catch (e) {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   console.error(`[step-4] WARN: SCRUM falhou: ${e.message} (não bloqueia deploy)`);
+=======
+  console.error(`[step-4] WARN: SCRUM update falhou: ${e.message} (não bloqueia deploy)`);
+>>>>>>> Stashed changes
 =======
   console.error(`[step-4] WARN: SCRUM update falhou: ${e.message} (não bloqueia deploy)`);
 >>>>>>> Stashed changes
