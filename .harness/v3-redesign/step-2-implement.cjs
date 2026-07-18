@@ -31,7 +31,7 @@ const TASK = process.env.V3_TASK || `TASK-V3-${KEY}`;
 function toPascalCase(k) {
   return k.split('_').map(p => p.charAt(0) + p.slice(1).toLowerCase()).join('');
 }
-const PC = toPascalCase(KEY); // ex: HOME → Home, CLUB_DETAIL → ClubDetail
+const PC = toPascalCase(KEY);
 
 const PAGE_PATHS = {
   HOME: 'src/pages/Home.jsx',
@@ -53,6 +53,7 @@ const PAGE_PATHS = {
 };
 
 const pageRel = PAGE_PATHS[KEY];
+const baseName = path.basename(pageRel, ".jsx");
 const pageMain = path.join(REPO, pageRel);
 if (!fs.existsSync(pageMain)) {
   console.error(`[step-2] FATAL: V1 não encontrado em ${pageRel} (main repo)`);
@@ -154,12 +155,8 @@ export default function ${PC}V3() {
 }
 `;
 
-// 3a. Criar <Page>.v3.jsx como ARQUIVO SEPARADO (nao sobrescrever o wrapper)
-const v3Full = pageFull.replace(/\.jsx$/, '.v3.jsx');
-fs.writeFileSync(v3Full, v3Template);
-console.log(`[step-2] V3 esqueleto criado: ${path.basename(v3Full)}`);
-
-// 3b. O wrapper vai no lugar do .jsx original (ja copiado v1 para .v1.jsx acima)
+fs.writeFileSync(v3File, v3Template);
+console.log(`[step-2] V3 esqueleto criado no worktree: ${path.basename(v3File)}`);
 
 // 4. Criar wrapper com React.lazy + flag
 // D-WRAPPER-FILENAME-01: usar basename real do arquivo (nao ${PC}) para imports
@@ -207,7 +204,10 @@ export default function ${PC}Wrapper() {
 fs.writeFileSync(pageFull, wrapperContent);
 console.log(`[step-2] Wrapper criado no worktree: ${path.basename(pageFull)}`);
 
-// 5. Commit no worktree (usa cwd = wtDir, onde os arquivos estão)
+// 5. Commit no worktree (usa cwd = wtDir, onde os arquivos estao)
+if (worktreeReused) {
+  console.log('[step-2] Worktree do branch remoto — pula commit (ja comitado)');
+} else {
 try {
   execSync('git add -A', { cwd: wtDir, stdio: 'inherit' });
   const commitMsg = 'feat(' + KEY.toLowerCase() + '): V3 redesign esqueleto + wrapper lazy (' + TASK + ')\n\n' +
@@ -223,5 +223,7 @@ try {
   process.exit(1);
 }
 
+} // end if not worktreeReused
 console.log(`[step-2] PASS. Avançar para step-3.`);
 process.exit(0);
+

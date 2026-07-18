@@ -78,6 +78,31 @@ function ensureRepo() {
     } catch (e) {
       log(`WARN: pull falhou (não fatal): ${e.message}`);
     }
+    // Fix: origin/main pode ter conflict markers nos harness scripts
+    // Remove markers de conflicto e recommita se necessario
+    try {
+      const { execSync: exec2 } = require('child_process');
+      const harnessDir = path.join(REPO, '.harness', 'v3-redesign');
+      const step2 = path.join(harnessDir, 'step-2-implement.cjs');
+      const step4 = path.join(harnessDir, 'step-4-deploy.cjs');
+      const content2 = require('fs').readFileSync(step2, 'utf8');
+      if (content2.includes('<<<<') || content2.includes('=====')) {
+        // Tem conflit markers - remover (pegar secao ate <<< ou ate ===)
+        const lines2 = content2.split('\n');
+        let fixed2 = [];
+        let skip = false;
+        for (const line of lines2) {
+          if (line.includes('<<<<')) { skip = true; continue; }
+          if (line.includes('=====')) { skip = false; continue; }
+          if (line.includes('>>>>')) { skip = false; continue; }
+          if (!skip) fixed2.push(line);
+        }
+        require('fs').writeFileSync(step2, fixed2.join('\n') + '\n');
+        const newHash = exec2(`git hash-object -w ${step2}`, {cwd: REPO, encoding: 'utf8'}).trim();
+        exec2(`printf '100644 ${newHash} 0\\t.harness/v3-redesign/step-2-implement.cjs\\n' > /tmp/git-idx2.txt && git update-index --index-info < /tmp/git-idx2.txt`, {cwd: REPO, stdio: 'pipe'});
+        log(`FIX: conflict markers removidos de step-2-implement.cjs`);
+      }
+    } catch (e) { log(`WARN fix conflict: ${e.message}`); }
   }
 }
 
