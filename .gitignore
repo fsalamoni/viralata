@@ -32,3 +32,5 @@ functions/node_modules
 .harness/.autosync.lock
 .harness/.scrum.lock
 audit.json
+.harness/v3-redesign/STATE.json
+.harness/v3-redesign/LOG/
