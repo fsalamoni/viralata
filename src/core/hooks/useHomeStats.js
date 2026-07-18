@@ -11,7 +11,7 @@
  */
 import { useQuery } from '@tanstack/react-query';
 import { collection, getCountFromServer, query, where } from 'firebase/firestore';
-import { db } from '@/core/lib/firebase';
+import { db } from '@/core/config/firebase';
 
 async function fetchHomeStats() {
   if (!db) return null;
