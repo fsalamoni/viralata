@@ -16440,6 +16440,86 @@
       "owner": "unassigned",
       "updatedAt": "2026-07-17T23:41:59",
       "resolvedAt": "2026-07-17"
+    },
+    {
+      "id": "TASK-V3-HOME-F1",
+      "title": "V3 HOME Feature #1 — a definir no step-2",
+      "status": "backlog",
+      "phase": "V3-HOME",
+      "priority": "medium",
+      "parentTask": "TASK-V3-HOME",
+      "createdAt": "2026-07-18T01:55:43.875Z",
+      "evidence": {}
+    },
+    {
+      "id": "TASK-V3-HOME-F2",
+      "title": "V3 HOME Feature #2 — a definir no step-2",
+      "status": "backlog",
+      "phase": "V3-HOME",
+      "priority": "medium",
+      "parentTask": "TASK-V3-HOME",
+      "createdAt": "2026-07-18T01:55:43.875Z",
+      "evidence": {}
+    },
+    {
+      "id": "TASK-V3-HOME-F3",
+      "title": "V3 HOME Feature #3 — a definir no step-2",
+      "status": "backlog",
+      "phase": "V3-HOME",
+      "priority": "medium",
+      "parentTask": "TASK-V3-HOME",
+      "createdAt": "2026-07-18T01:55:43.875Z",
+      "evidence": {}
+    },
+    {
+      "id": "TASK-V3-HOME-F4",
+      "title": "V3 HOME Feature #4 — a definir no step-2",
+      "status": "backlog",
+      "phase": "V3-HOME",
+      "priority": "medium",
+      "parentTask": "TASK-V3-HOME",
+      "createdAt": "2026-07-18T01:55:43.875Z",
+      "evidence": {}
+    },
+    {
+      "id": "TASK-V3-HOME-F5",
+      "title": "V3 HOME Feature #5 — a definir no step-2",
+      "status": "backlog",
+      "phase": "V3-HOME",
+      "priority": "medium",
+      "parentTask": "TASK-V3-HOME",
+      "createdAt": "2026-07-18T01:55:43.878Z",
+      "evidence": {}
+    },
+    {
+      "id": "TASK-V3-HOME-F6",
+      "title": "V3 HOME Feature #6 — a definir no step-2",
+      "status": "backlog",
+      "phase": "V3-HOME",
+      "priority": "medium",
+      "parentTask": "TASK-V3-HOME",
+      "createdAt": "2026-07-18T01:55:43.878Z",
+      "evidence": {}
+    },
+    {
+      "id": "TASK-V3-HOME-F7",
+      "title": "V3 HOME Feature #7 — a definir no step-2",
+      "status": "backlog",
+      "phase": "V3-HOME",
+      "priority": "medium",
+      "parentTask": "TASK-V3-HOME",
+      "createdAt": "2026-07-18T01:55:43.878Z",
+      "evidence": {}
+    },
+    {
+      "id": "TASK-V3-HOME-F8",
+      "title": "V3 HOME Feature #8 — a definir no step-2",
+      "status": "backlog",
+      "phase": "V3-HOME",
+      "priority": "medium",
+      "parentTask": "TASK-V3-HOME",
+      "createdAt": "2026-07-18T01:55:43.878Z",
+      "evidence": {}
     }
   ],
   "definitionOfDone": [
