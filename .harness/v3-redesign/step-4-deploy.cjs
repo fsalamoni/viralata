@@ -249,6 +249,19 @@ try {
 } catch (e) {
   console.warn(`[step-4] WARN SCRUM: ${e.message} — continuando mesmo assim`);
 }
+// Update STATE.json history
+try {
+  const statePath = path.join(REPO, '.harness', 'v3-redesign', 'STATE.json');
+  const state = JSON.parse(require('fs').readFileSync(statePath, 'utf8'));
+  state.history = state.history.filter(h => h.key !== KEY);
+  state.history.push({key: KEY, task: TASK, doneAt: new Date().toISOString()});
+  require('fs').writeFileSync(statePath, JSON.stringify(state, null, 2));
+  gitCmd(REPO, 'git add .harness/v3-redesign/STATE.json');
+  gitCmd(REPO, "git commit -m 'chore(scrum): " + TASK + " done -- history updated'");
+  try { push(REPO, 'main'); } catch {}
+  console.log('[step-4] STATE.json history updated');
+} catch(e) { console.warn('[step-4] WARN state: ' + e.message); }
 
 console.log(`[step-4] PASS. V3 ${KEY} deployed.`);
 process.exit(0);
+
