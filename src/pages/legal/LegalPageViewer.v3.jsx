@@ -92,15 +92,22 @@ export default function LegalPageViewerV3() {
           return;
         }
         setPage(p);
-        // Tenta carregar texto markdown
-        try {
-          const mod = await import(`@/modules/shelter/domain/legal/texts/${slugToFile(slug)}`);
-          const textKey = Object.keys(mod).find((k) => k.endsWith('_TEXT') || k.endsWith('Text'));
-          if (textKey && mod[textKey]) {
-            if (!cancelled) setText(mod[textKey]);
+        // Tenta carregar texto markdown — prefere v2 (Markdown estruturado),
+        // fallback para v1 (texto puro, que V1 do LegalPageViewer renderizava).
+        let loaded = false;
+        const variants = [`${slugToFile(slug)}.v2`, slugToFile(slug)];
+        for (const variant of variants) {
+          if (loaded) break;
+          try {
+            const mod = await import(`@/modules/shelter/domain/legal/texts/${variant}`);
+            const textKey = Object.keys(mod).find((k) => k.endsWith('_TEXT') || k.endsWith('Text'));
+            if (textKey && mod[textKey]) {
+              if (!cancelled) setText(mod[textKey]);
+              loaded = true;
+            }
+          } catch {
+            // tenta próxima variante
           }
-        } catch {
-          // Sem texto — sem problema, mostra "em construção"
         }
       } catch (e) {
         setError(e?.message || 'Erro ao carregar');

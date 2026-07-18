@@ -18,8 +18,10 @@ const RELATED = [
 ];
 
 export default function TermsV3() {
-  const { data, loading, error } = useLegalDoc(LEGAL_DOCS.TERMS);
+  const { data, loading } = useLegalDoc(LEGAL_DOCS.TERMS);
   const content = data?.content?.trim() ? data.content : null;
+  // Se Firestore retornar vazio (offline) e não está mais carregando, usa fallback estático
+  const showFallback = !content && !loading;
   const description = 'Termos de uso da plataforma Viralata — adoção responsável de pets.';
 
   return (
@@ -27,10 +29,10 @@ export default function TermsV3() {
       title="Termos de Uso"
       description={description}
       markdown={content}
-      fallback={loading ? null : <StaticTerms />}
-      version={data?.version}
-      author={data?.author}
-      effectiveAt={data?.effectiveAt}
+      fallback={showFallback ? <StaticTerms /> : null}
+      version={data?.version || '2.0.0'}
+      author={data?.author || 'Equipe jurídica Viralata'}
+      effectiveAt={data?.effectiveAt || '2026-07-10'}
       source={data?.source}
       relatedLinks={RELATED}
       breadcrumbItems={[

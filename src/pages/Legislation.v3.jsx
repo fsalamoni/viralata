@@ -20,6 +20,7 @@ const RELATED = [
 export default function LegislationV3() {
   const { data, loading } = useLegalDoc(LEGAL_DOCS.LEGISLATION);
   const content = data?.content?.trim() ? data.content : null;
+  const showFallback = !content && !loading;
   const description = 'Legislação animal brasileira e posse responsável — Lei 9.605/98, Lei 14.064/20, LGPD.';
 
   return (
@@ -27,10 +28,10 @@ export default function LegislationV3() {
       title="Legislação Animal & Posse Responsável"
       description={description}
       markdown={content}
-      fallback={loading ? null : <StaticLegislation />}
-      version={data?.version}
-      author={data?.author}
-      effectiveAt={data?.effectiveAt}
+      fallback={showFallback ? <StaticLegislation /> : null}
+      version={data?.version || '2.0.0'}
+      author={data?.author || 'Equipe jurídica Viralata'}
+      effectiveAt={data?.effectiveAt || '2026-07-10'}
       source={data?.source}
       relatedLinks={RELATED}
       breadcrumbItems={[

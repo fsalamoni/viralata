@@ -123,13 +123,13 @@ export default function LegalPageViewer() {
     }
   }, [text]);
 
-  // Flag desligada: redireciona para a rota legada correspondente
-  // (ou 404 se não houver equivalente). Mantém URL semanticamente
-  // equivalente.
+  // Flag desligada: redireciona para a rota legada correspondente.
+  // Slugs SEM legacy (cookies, avisos-legais, codigo-de-conduta)
+  // renderizam a V1 normalmente — não damos 404.
   if (!enabled) {
     const legacy = LEGACY_SLUG_MAP[slug];
     if (legacy) return <Navigate to={legacy} replace />;
-    return <PageNotFound />;
+    // Sem legacy mas página existe — renderiza V1 (não 404)
   }
 
   if (!page || !textLoader) {

@@ -24,6 +24,7 @@ const RELATED = [
 export default function PrivacyPolicyV3() {
   const { data, loading } = useLegalDoc(LEGAL_DOCS.PRIVACY_POLICY);
   const content = data?.content?.trim() ? data.content : null;
+  const showFallback = !content && !loading;
   const description = 'Política de Privacidade do Viralata — LGPD Art. 50.';
 
   return (
@@ -31,10 +32,10 @@ export default function PrivacyPolicyV3() {
       title="Política de Privacidade"
       description={description}
       markdown={content}
-      fallback={loading ? null : <StaticPrivacyPolicy />}
-      version={data?.version}
-      author={data?.author}
-      effectiveAt={data?.effectiveAt}
+      fallback={showFallback ? <StaticPrivacyPolicy /> : null}
+      version={data?.version || '2.0.0'}
+      author={data?.author || 'Equipe jurídica Viralata'}
+      effectiveAt={data?.effectiveAt || '2026-07-10'}
       source={data?.source}
       relatedLinks={RELATED}
       breadcrumbItems={[
