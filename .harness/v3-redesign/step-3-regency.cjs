@@ -19,7 +19,13 @@ const KEY = process.env.V3_KEY || 'HOME';
 const FLAG = process.env.V3_FLAG || `V3_PAGE_${KEY}`;
 const TASK = process.env.V3_TASK || `TASK-V3-${KEY}`;
 
-const regencyPath = path.join(REPO, `docs/REGENCY_${KEY}_V3.md`);
+// SEMPRE escrever no worktree (commit junto com V3)
+const wtDir = path.join(REPO, '.worktrees', `v3-${KEY}`);
+if (!fs.existsSync(wtDir)) {
+  console.error(`[step-3] FATAL: worktree nao encontrado em ${wtDir} (step-2 nao rodou?)`);
+  process.exit(1);
+}
+const regencyPath = path.join(wtDir, `docs/REGENCY_${KEY}_V3.md`);
 
 const doc = `# Documento de Regência — ${KEY} V3
 

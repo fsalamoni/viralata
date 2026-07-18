@@ -66,12 +66,15 @@ try {
   process.exit(1);
 }
 
-// 2. Renomear V1 para .v1.jsx
-const v1Target = pageFull.replace(/\.jsx$/, '.v1.jsx');
+// CAMINHOS NO WORKTREE (NUNCA no REPO principal)
+const pageFullInWt = path.join(wtDir, pageRel);
+
+// 2. Renomear V1 para .v1.jsx (NO WORKTREE)
+const v1Target = pageFullInWt.replace(/\.jsx$/, '.v1.jsx');
 if (!fs.existsSync(v1Target)) {
   try {
-    fs.renameSync(pageFull, v1Target);
-    console.log(`[step-2] V1 renomeado: ${path.basename(pageFull)} → ${path.basename(v1Target)}`);
+    fs.renameSync(pageFullInWt, v1Target);
+    console.log(`[step-2] V1 renomeado: ${path.basename(pageFullInWt)} → ${path.basename(v1Target)}`);
   } catch (e) {
     console.error(`[step-2] FATAL: rename V1 falhou: ${e.message}`);
     process.exit(1);
@@ -79,7 +82,7 @@ if (!fs.existsSync(v1Target)) {
 }
 
 // 3. Criar <Page>.v3.jsx (esqueleto — o agente completa)
-const v3Path = pageFull;
+const v3Path = pageFullInWt;
 const v3Template = `/**
  * @fileoverview ${KEY} V3 — redesign completo no padrão DS-V2.
  *
@@ -125,8 +128,8 @@ export default function ${KEY}V3() {
 fs.writeFileSync(v3Path, v3Template);
 console.log(`[step-2] V3 esqueleto criado: ${path.basename(v3Path)}`);
 
-// 4. Criar wrapper com React.lazy + flag
-const wrapperPath = pageFull;
+// 4. Criar wrapper com React.lazy + flag (NO WORKTREE)
+const wrapperPath = pageFullInWt;
 const wrapperContent = `/**
  * @fileoverview ${KEY} — wrapper que escolhe V3 ou V1.
  *
@@ -177,7 +180,12 @@ try {
     '- Cria wrapper com React.lazy + flag ' + FLAG + ' (D-VITE-LAZY-01)\n' +
     '- NENHUM aproveitamento de JSX V1 (voce pediu do zero)\n\n' +
     'Proximo: step-3 vai gerar REGENCY_V3.md (12+ secoes).';
-  execSync('git commit -m ' + JSON.stringify(commitMsg), { cwd: wtDir, stdio: 'inherit' });
+  // Escrever commit message em arquivo temporário (evita problema de escape)
+  // IMPORTANTE: .git em worktree é um ARQUIVO, nao diretorio. Usar /tmp.
+  const tmpFile = path.join('/tmp', `commit-msg-${KEY}-${Date.now()}.txt`);
+  fs.writeFileSync(tmpFile, commitMsg);
+  execSync('git commit -F ' + tmpFile, { cwd: wtDir, stdio: 'inherit' });
+  fs.unlinkSync(tmpFile);
   console.log('[step-2] Commit feito no worktree.');
 } catch (e) {
   console.error('[step-2] FATAL: commit falhou: ' + e.message);
