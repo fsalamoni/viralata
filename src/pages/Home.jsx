@@ -10,9 +10,9 @@
 import { lazy, Suspense } from 'react';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
-import HOMEV1 from './HOME.v1';
+import HOMEV1 from './Home.v1';
 
-const HOMEV3 = lazy(() => import(/* webpackChunkName: "HOMEV3" */ './HOME.v3'));
+const HOMEV3 = lazy(() => import(/* webpackChunkName: "HOMEV3" */ './Home.v3'));
 
 function PageFallback() {
   return (
