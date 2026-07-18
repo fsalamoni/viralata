@@ -219,7 +219,7 @@ function main() {
   const state = loadState();
   log(`Estado: ${state.currentKey} | ${state.currentPhase} | fila restante: ${state.queue.length}`);
 
-  if (state.currentPhase === 'done' || state.queue.length === 0) {
+  if (state.currentPhase === 'done') {
     log('ALL_DONE — fila vazia.');
     disableCron();
     releaseLock();
