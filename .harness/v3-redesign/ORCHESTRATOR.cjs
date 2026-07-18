@@ -78,6 +78,27 @@ function ensureRepo() {
     } catch (e) {
       log(`WARN: pull falhou (não fatal): ${e.message}`);
     }
+    // Fix: origin/main pode ter conflict markers — remover do working tree
+    try {
+      const harnessDir = path.join(REPO, '.harness', 'v3-redesign');
+      ['step-2-implement.cjs', 'step-4-deploy.cjs'].forEach(f => {
+        const fp = path.join(harnessDir, f);
+        if (!require('fs').existsSync(fp)) return;
+        const c = require('fs').readFileSync(fp, 'utf8');
+        if (c.includes('<<<<')) {
+          const lines = c.split('\n'), out = [], skip = false;
+          for (const l of lines) {
+            const t = l.trim();
+            if (t.startsWith('<<<<')) { skip = true; continue; }
+            if (t === '=====') { skip = false; continue; }
+            if (t.startsWith('>>>>')) { skip = false; continue; }
+            if (!skip) out.push(l);
+          }
+          require('fs').writeFileSync(fp, out.join('\n') + '\n');
+          log(`FIX: conflict markers removidos de ${f}`);
+        }
+      });
+    } catch {}
   }
 }
 
@@ -225,9 +246,9 @@ function main() {
   } else {
     state.lastError = `Step ${state.currentPhase} falhou com exit ${exitCode}`;
     saveState(state);
-    log(`ERRO: ${state.lastError}. Mesma página, mesma fase na próxima iteração.`);
+    log(`ERRO: ${state.lastError}. Aguardando 120s (para GitHub Actions pushar)...`);
     releaseLock();
-    process.exit(1);
+    setTimeout(() => process.exit(1), 120000);
   }
 }
 
