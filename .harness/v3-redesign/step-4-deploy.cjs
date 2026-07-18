@@ -129,14 +129,14 @@ if (r.status !== 0) {
 const PAGE_PATHS4 = {
   HOME: 'src/pages/Home.jsx', LOGIN: 'src/pages/Login.jsx', PROFILE: 'src/pages/Profile.jsx',
   CHAT: 'src/modules/chat/pages/ChatPage.jsx', ADOPTION: 'src/pages/AdoptionWizard.jsx',
-  COMMUNITY_DETAIL: 'src/modules/communities/pages/CommunityPublic.jsx',
-  CLUB_DETAIL: 'src/modules/organizations/pages/ShelterPublic.jsx',
+  COMMUNITY_DETAIL: 'src/modules/communities/pages/CommunityDetail.jsx',
+  CLUB_DETAIL: 'src/modules/organizations/pages/ClubDetail.jsx',
   SEARCH: 'src/pages/SearchPage.jsx', EVENTS: 'src/pages/EventsUnified.jsx',
   FOSTER: 'src/pages/FosterDashboard.jsx', VOLUNTEER: 'src/pages/VolunteerProgram.jsx',
   MURAL: 'src/pages/PublicMuralFeed.jsx', ADMIN: 'src/modules/admin/pages/AdminDashboard.jsx',
   ORG_ADMIN: 'src/modules/organizations/pages/OrganizationAdminPanel.jsx',
   COMMUNITY_ADMIN: 'src/modules/communities/pages/CommunityAdminPanel.jsx',
-  SHELTER_ADMIN: 'src/modules/shelter/pages/ShelterAdminPanel.jsx',
+  SHELTER_ADMIN: 'src/modules/shelter/components/ShelterAdminDashboard.jsx',
 };
 const pageRel4 = PAGE_PATHS4[KEY];
 const pageBasename4 = pageRel4 ? path.basename(pageRel4, '.jsx') : PC;
