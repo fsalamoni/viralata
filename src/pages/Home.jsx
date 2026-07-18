@@ -10,9 +10,9 @@
 import { lazy, Suspense } from 'react';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
-import HomeV1 from './Home.v1';
+import HOMEV1 from './HOME.v1';
 
-const HomeV3 = lazy(() => import(/* webpackChunkName: "HomeV3" */ './Home.v3'));
+const HOMEV3 = lazy(() => import(/* webpackChunkName: "HOMEV3" */ './HOME.v3'));
 
 function PageFallback() {
   return (
@@ -23,14 +23,14 @@ function PageFallback() {
   );
 }
 
-export default function HomeWrapper() {
+export default function HOMEWrapper() {
   const useV3 = useFeatureFlag(FEATURE_FLAG.V3_PAGE_HOME);
   if (useV3) {
     return (
       <Suspense fallback={<PageFallback />}>
-        <HomeV3 />
+        <HOMEV3 />
       </Suspense>
     );
   }
-  return <HomeV1 />;
+  return <HOMEV1 />;
 }
