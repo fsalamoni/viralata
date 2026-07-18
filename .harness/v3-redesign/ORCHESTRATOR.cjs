@@ -72,12 +72,32 @@ function ensureRepo() {
       process.exit(1);
     }
   } else {
-    log('Workspace existe. git pull...');
+    log('Workspace existe. git fetch only (no pull to avoid harness conflicts)...');
     try {
-      execSync('git pull --no-rebase origin main', { cwd: REPO, stdio: 'inherit' });
+      execSync('git fetch origin', { cwd: REPO, stdio: 'pipe' });
     } catch (e) {
-      log(`WARN: pull falhou (não fatal): ${e.message}`);
+      log(`WARN: fetch falhou (não fatal): ${e.message}`);
     }
+    // Fix: origin/main pode ter conflict markers — remover do working tree
+    try {
+      const harnessDir = path.join(REPO, '.harness', 'v3-redesign');
+      ['step-2-implement.cjs', 'step-4-deploy.cjs'].forEach(f => {
+        const fp = path.join(harnessDir, f);
+        if (!require('fs').existsSync(fp)) return;
+        const c = require('fs').readFileSync(fp, 'utf8');
+        if ('<<<<' in c || '=====' in c) {
+          const lines = c.split('\n'), out = [], skip = false;
+          for (const l of lines) {
+            if ('<<<<' in l) { skip = true; continue; }
+            if ('=====' in l) { skip = false; continue; }
+            if ('>>>>' in l) { skip = false; continue; }
+            if (!skip) out.push(l);
+          }
+          require('fs').writeFileSync(fp, out.join('\n') + '\n');
+          log(`FIX: conflict markers removidos de ${f}`);
+        }
+      });
+    } catch {}
   }
 }
 
@@ -199,7 +219,7 @@ function main() {
   const state = loadState();
   log(`Estado: ${state.currentKey} | ${state.currentPhase} | fila restante: ${state.queue.length}`);
 
-  if (state.currentPhase === 'done' || state.queue.length === 0) {
+  if (state.currentPhase === 'done') {
     log('ALL_DONE — fila vazia.');
     disableCron();
     releaseLock();
@@ -225,9 +245,9 @@ function main() {
   } else {
     state.lastError = `Step ${state.currentPhase} falhou com exit ${exitCode}`;
     saveState(state);
-    log(`ERRO: ${state.lastError}. Mesma página, mesma fase na próxima iteração.`);
+    log(`ERRO: ${state.lastError}. Aguardando 10s antes de retry (para GitHub Actions pushar)...`);
     releaseLock();
-    process.exit(1);
+    setTimeout(() => process.exit(1), 10000);
   }
 }
 
