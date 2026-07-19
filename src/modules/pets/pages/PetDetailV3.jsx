@@ -355,15 +355,18 @@ export default function PetDetailV3() {
       {/* TABS */}
       <Tabs value={currentTab} onValueChange={setTab} className="w-full">
         <TabsList
-          className="arena-tab-bar sticky top-16 z-20 -mx-4 px-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 sm:mx-0 sm:px-0"
+          className="sticky top-16 z-20 -mx-4 flex h-auto w-[calc(100%+2rem)] flex-nowrap items-center gap-1 overflow-x-auto rounded-2xl border border-border bg-background/95 px-3 py-1.5 backdrop-blur supports-[backdrop-filter]:bg-background/80 sm:mx-0 sm:w-full sm:gap-1.5 sm:px-2"
         >
           {TABS.map((t) => {
             const Icon = t.icon;
             return (
-              <TabsTrigger key={t.id} value={t.id} className="arena-tab-pill gap-1.5">
-                <Icon className="h-3.5 w-3.5" aria-hidden="true" />
-                <span className="hidden sm:inline">{t.label}</span>
-                <span className="sm:hidden">{t.label.charAt(0)}</span>
+              <TabsTrigger
+                key={t.id}
+                value={t.id}
+                className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-[12.5px] font-semibold transition-colors data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm sm:px-4 sm:py-2 sm:text-sm"
+              >
+                <Icon className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                <span>{t.label}</span>
               </TabsTrigger>
             );
           })}

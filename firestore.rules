@@ -466,6 +466,78 @@ service cloud.firestore {
     }
 
 
+    // ─── TASK-V3-PET-DETAIL-FULL: Subcoleções de histórico do pet ───
+    // Adicionadas pelo redesign V3 do PetDetail (4 tabs). Cada uma tem
+    // a mesma lógica de permissão:
+    //  - read: PÚBLICO (transparência — adotantes podem ver o histórico)
+    //  - write: canManagePet (owner do pet ou membro do abrigo vinculado)
+    //  - delete: platform_admin
+    //
+    // 5 subcoleções:
+    //  - vet_visits      (consultas veterinárias)
+    //  - treatments      (sarna, ferida, infecção, reabilitação, etc)
+    //  - care_log        (banho, tosa, escovação, dental, unhas, exercícios)
+    //  - devolutions     (devolução de adoção, com motivo)
+    //  - adopters_history (todos os adotantes desde o cadastro do pet)
+    //
+    // Decisão: público pode LER para gerar confiança; apenas quem gerencia
+    // pode ESCREVER. Não misturar com regras de outras subcoleções (que
+    // são internas por LGPD).
+
+    // ─── health_records (PÚBLICO — paralel o a medical) ─────────────
+    // Vacinas / vermifugação / antipulgas VISÍVEIS ao público (whitelist).
+    // Diferente de `medical` (interno abrigo) e `medications` (privado abrigo).
+    // Público (mesmo anônimo) pode LER para gerar confiança.
+    match /health_records/{recordId} {
+      allow read: if true;
+      allow create, update: if isAuth() && canManagePet(get(/databases/$(database)/documents/pets/$(petId)).data);
+      allow delete: if isAuth() && isPlatformAdmin();
+    }
+    match /vet_visits/{visitId} {
+      allow read: if true;
+      allow create, update: if isAuth() && canManagePet(get(/databases/$(database)/documents/pets/$(petId)).data);
+      allow delete: if isAuth() && isPlatformAdmin();
+    }
+    match /treatments/{treatmentId} {
+      allow read: if true;
+      allow create, update: if isAuth() && canManagePet(get(/databases/$(database)/documents/pets/$(petId)).data);
+      allow delete: if isAuth() && isPlatformAdmin();
+    }
+    match /care_log/{careId} {
+      allow read: if true;
+      allow create, update: if isAuth() && canManagePet(get(/databases/$(database)/documents/pets/$(petId)).data);
+      allow delete: if isAuth() && isPlatformAdmin();
+    }
+    match /devolutions/{devolutionId} {
+      allow read: if true;
+      // Quem pode CRIAR devolução: quem gerencia o pet. O ADOTANTE
+      // que devolveu também pode (campo returned_by_uid == seu uid)
+      // — facilita o registro pelo lado do adotante.
+      allow create: if isAuth() && (
+        canManagePet(get(/databases/$(database)/documents/pets/$(petId)).data) ||
+        (request.resource.data.returned_by_uid == request.auth.uid) ||
+        isPlatformAdmin()
+      );
+      allow update: if isAuth() && canManagePet(get(/databases/$(database)/documents/pets/$(petId)).data);
+      allow delete: if isAuth() && isPlatformAdmin();
+    }
+    match /adopters_history/{historyId} {
+      allow read: if true;
+      // Pode ser criado pelo sistema (completeAdoption), pelo owner
+      // (registro manual de adotante anterior), ou pelo próprio adotante
+      // (registro self-service).
+      allow create: if isAuth() && (
+        canManagePet(get(/databases/$(database)/documents/pets/$(petId)).data) ||
+        (request.resource.data.adopter_uid == request.auth.uid) ||
+        isPlatformAdmin()
+      );
+      allow update: if isAuth() && (
+        canManagePet(get(/databases/$(database)/documents/pets/$(petId)).data) ||
+        isPlatformAdmin()
+      );
+      allow delete: if isAuth() && isPlatformAdmin();
+    }
+
     // ─── Fase 10: Coleção `pet_photos` (Galeria multi-tenant) ─────────
     // Soft delete + purge 30d via Cloud Function galleryPurgeCron.
     // Multi-tenant via shelter_club_id em cada foto. A foto é do pet

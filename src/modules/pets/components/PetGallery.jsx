@@ -1,22 +1,19 @@
 /**
- * @fileoverview PetGallery — galeria de fotos do pet (V3).
+ * @fileoverview PetGallery — galeria de fotos do pet (V3 refinado).
  *
- * TASK-V3-PET-DETAIL-2: substitui a galeria simples do V1.
+ * TASK-V3-PET-DETAIL-FULL-REFINE: ajuste do zoom/lightbox para que a
+ * IMAGEM seja o destaque (não os controles).
  *
- * Features:
- *  - Aspect ratio 3:4 (não 1:1) — melhor para pets em pé
- *  - Swipe horizontal (touch + mouse drag)
- *  - Setas (← →) só visíveis em hover (desktop) ou sempre (touch)
- *  - Thumbs abaixo (1, 2 ou 3+ fotos)
- *  - Click na foto principal → modal zoom (Dialog)
- *  - Contador "1 de 5" discreto no canto
- *  - Skeleton com aspect-ratio enquanto carrega
- *  - EmptyState se pet sem fotos (SVG viralata)
- *  - Acessibilidade: aria-label, role, keyboard navigation
+ * Mudanças vs versão anterior:
+ *  - Lightbox com imagem 95vh × 95vw (max maior)
+ *  - Controles SEMI-TRANSPARENTES no fundo (não compete com imagem)
+ *  - X button canto superior direito (mantido)
+ *  - Setas embaixo (mantido)
+ *  - Click fora da imagem fecha
+ *  - Galeria principal com aspect 4:5 (mais natural p/ fotos de pets)
+ *  - Thumbs mantidas
  *
- * Tokens: `bg-card`, `border-border`, `text-foreground`. Sem cores hard-coded.
- *
- * @see docs/REGENCY_PET_DETAIL_V3.md §"Galeria"
+ * @see docs/V3_PET_DETAIL_FULL_PLAN.md
  */
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, ZoomIn, X } from 'lucide-react';
@@ -48,50 +45,64 @@ export function PetGallery({ photos = [], petName = 'Pet', className }) {
   const total = photos.length;
 
   const goTo = useCallback((idx) => {
-    if (idx < 0) setActiveIdx(total - 1);
-    else if (idx >= total) setActiveIdx(0);
-    else setActiveIdx(idx);
+    if (total === 0) return;
+    setActiveIdx(((idx % total) + total) % total);
   }, [total]);
 
-  const goPrev = useCallback(() => goTo(activeIdx - 1), [activeIdx, goTo]);
-  const goNext = useCallback(() => goTo(activeIdx + 1), [activeIdx, goTo]);
+  const goPrev = useCallback(() => goTo(activeIdx - 1), [goTo, activeIdx]);
+  const goNext = useCallback(() => goTo(activeIdx + 1), [goTo, activeIdx]);
 
-  // Keyboard navigation
-  useEffect(() => {
-    if (zoomOpen) return undefined;
-    const onKey = (e) => {
-      if (e.key === 'ArrowLeft') goPrev();
-      if (e.key === 'ArrowRight') goNext();
-      if (e.key === 'Escape' && zoomOpen) setZoomOpen(false);
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [goPrev, goNext, zoomOpen]);
-
-  // Touch / mouse swipe
-  const handleDragStart = (clientX) => {
+  // Drag/swipe
+  const handleDragStart = useCallback((clientX) => {
+    if (zoomOpen) return;
     dragStart.current = clientX;
     dragDelta.current = 0;
-  };
-  const handleDragMove = (clientX) => {
+  }, [zoomOpen]);
+
+  const handleDragMove = useCallback((clientX) => {
     if (dragStart.current == null) return;
     dragDelta.current = clientX - dragStart.current;
-  };
-  const handleDragEnd = () => {
+  }, []);
+
+  const handleDragEnd = useCallback(() => {
+    if (dragStart.current == null) return;
     if (Math.abs(dragDelta.current) > SWIPE_THRESHOLD) {
       if (dragDelta.current > 0) goPrev();
       else goNext();
     }
     dragStart.current = null;
     dragDelta.current = 0;
-  };
+  }, [goNext, goPrev]);
 
-  // Empty state (sem fotos)
+  // Keyboard
+  useEffect(() => {
+    function onKey(e) {
+      if (zoomOpen && e.key === 'Escape') {
+        setZoomOpen(false);
+        return;
+      }
+      if (zoomOpen) return;
+      if (e.key === 'ArrowLeft') goPrev();
+      if (e.key === 'ArrowRight') goNext();
+    }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [goPrev, goNext, zoomOpen]);
+
+  // Travar scroll do body quando lightbox está aberto
+  useEffect(() => {
+    if (zoomOpen) {
+      const prev = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => { document.body.style.overflow = prev; };
+    }
+  }, [zoomOpen]);
+
   if (total === 0) {
     return (
       <div
         className={cn(
-          'arena-panel flex aspect-[3/4] items-center justify-center rounded-[1.25rem] border border-dashed border-border bg-card',
+          'arena-panel flex aspect-[4/5] items-center justify-center rounded-2xl border border-dashed border-border bg-card',
           className,
         )}
       >
@@ -107,11 +118,11 @@ export function PetGallery({ photos = [], petName = 'Pet', className }) {
   }
 
   return (
-    <div className={cn('space-y-3', className)} data-testid="pet-gallery">
+    <div className={cn('space-y-2.5', className)} data-testid="pet-gallery">
       {/* Foto principal */}
       <div
         ref={containerRef}
-        className="arena-panel relative aspect-[3/4] overflow-hidden rounded-[1.25rem] bg-card"
+        className="group relative aspect-[4/5] overflow-hidden rounded-2xl bg-card shadow-sm cursor-zoom-in select-none"
         onTouchStart={(e) => handleDragStart(e.touches[0].clientX)}
         onTouchMove={(e) => handleDragMove(e.touches[0].clientX)}
         onTouchEnd={handleDragEnd}
@@ -124,59 +135,55 @@ export function PetGallery({ photos = [], petName = 'Pet', className }) {
         }}
         onMouseUp={handleDragEnd}
         onMouseLeave={handleDragEnd}
+        onClick={() => setZoomOpen(true)}
       >
         {!imageLoaded[activeIdx] && (
-          <Skeleton className="absolute inset-0 rounded-[1.25rem]" />
+          <Skeleton className="absolute inset-0 rounded-2xl" />
         )}
         <img
           key={activeIdx}
           src={photos[activeIdx]}
           alt={`${petName} — foto ${activeIdx + 1} de ${total}`}
           className={cn(
-            'h-full w-full cursor-zoom-in object-cover transition-opacity duration-300',
+            'h-full w-full object-cover transition-opacity duration-300',
             imageLoaded[activeIdx] ? 'opacity-100' : 'opacity-0',
           )}
           onLoad={() => setImageLoaded((s) => ({ ...s, [activeIdx]: true }))}
-          onClick={() => setZoomOpen(true)}
           loading={activeIdx === 0 ? 'eager' : 'lazy'}
           fetchPriority={activeIdx === 0 ? 'high' : 'auto'}
+          draggable={false}
         />
 
-        {/* Contador */}
+        {/* Contador discreto (canto) */}
         {total > 1 && (
-          <div className="absolute right-3 top-3 rounded-full bg-black/55 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur-sm">
-            {activeIdx + 1} de {total}
+          <div className="absolute right-3 top-3 rounded-full bg-black/45 px-2.5 py-1 text-[11px] font-medium text-white/95 backdrop-blur-sm">
+            {activeIdx + 1} / {total}
           </div>
         )}
 
-        {/* Botão zoom */}
-        <button
-          type="button"
-          onClick={() => setZoomOpen(true)}
-          aria-label="Ampliar foto"
-          className="absolute bottom-3 right-3 flex h-9 w-9 items-center justify-center rounded-full bg-black/55 text-white backdrop-blur-sm transition-colors hover:bg-black/75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
-        >
-          <ZoomIn className="h-4 w-4" />
-        </button>
+        {/* Botão zoom (canto inferior direito) */}
+        <div className="absolute bottom-3 right-3 flex h-9 w-9 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur-sm transition-opacity group-hover:opacity-100 [@media(hover:none)]:opacity-100">
+          <ZoomIn className="h-4 w-4" aria-hidden="true" />
+        </div>
 
-        {/* Setas (só em hover ou touch) */}
+        {/* Setas (hover/touch) */}
         {total > 1 && (
           <>
             <button
               type="button"
-              onClick={goPrev}
+              onClick={(e) => { e.stopPropagation(); goPrev(); }}
               aria-label="Foto anterior"
-              className="absolute left-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/40 text-white opacity-0 backdrop-blur-sm transition-opacity hover:bg-black/60 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white group-hover:opacity-100 [@media(hover:none)]:opacity-100"
+              className="absolute left-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/35 text-white opacity-0 backdrop-blur-sm transition-opacity hover:bg-black/55 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white group-hover:opacity-100 [@media(hover:none)]:opacity-100"
             >
-              <ChevronLeft className="h-5 w-5" />
+              <ChevronLeft className="h-5 w-5" aria-hidden="true" />
             </button>
             <button
               type="button"
-              onClick={goNext}
+              onClick={(e) => { e.stopPropagation(); goNext(); }}
               aria-label="Próxima foto"
-              className="absolute right-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/40 text-white opacity-0 backdrop-blur-sm transition-opacity hover:bg-black/60 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white group-hover:opacity-100 [@media(hover:none)]:opacity-100"
+              className="absolute right-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/35 text-white opacity-0 backdrop-blur-sm transition-opacity hover:bg-black/55 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white group-hover:opacity-100 [@media(hover:none)]:opacity-100"
             >
-              <ChevronRight className="h-5 w-5" />
+              <ChevronRight className="h-5 w-5" aria-hidden="true" />
             </button>
           </>
         )}
@@ -185,19 +192,20 @@ export function PetGallery({ photos = [], petName = 'Pet', className }) {
       {/* Thumbs (se 2+) */}
       {total > 1 && (
         <div
-          className="flex gap-2 overflow-x-auto pb-1"
+          className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide"
           role="tablist"
           aria-label="Miniaturas"
         >
           {photos.map((url, i) => (
             <button
               key={i}
+              type="button"
               role="tab"
               aria-selected={i === activeIdx}
               aria-label={`Ver foto ${i + 1} de ${total}`}
               onClick={() => goTo(i)}
               className={cn(
-                'flex h-16 w-16 shrink-0 overflow-hidden rounded-xl border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+                'flex h-14 w-14 shrink-0 overflow-hidden rounded-lg border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
                 i === activeIdx
                   ? 'border-primary'
                   : 'border-transparent opacity-70 hover:opacity-100',
@@ -209,52 +217,69 @@ export function PetGallery({ photos = [], petName = 'Pet', className }) {
         </div>
       )}
 
-      {/* Modal zoom */}
+      {/* ============================================================ */}
+      {/* LIGHTBOX — A IMAGEM É O DESTAQUE                              */}
+      {/* ============================================================ */}
       {zoomOpen && (
         <div
           role="dialog"
           aria-modal="true"
           aria-label={`${petName} — foto ampliada`}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur"
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 p-2 sm:p-4"
           onClick={() => setZoomOpen(false)}
         >
-          <button
-            type="button"
-            onClick={() => setZoomOpen(false)}
-            aria-label="Fechar"
-            className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
-          >
-            <X className="h-5 w-5" />
-          </button>
+          {/* IMAGEM — z-index 1, ocupa quase toda a tela */}
           <img
             src={photos[activeIdx]}
             alt={`${petName} — foto ${activeIdx + 1} de ${total} (ampliada)`}
-            className="max-h-[90vh] max-w-[90vw] rounded-2xl object-contain"
+            className="relative z-10 max-h-[95vh] max-w-[95vw] object-contain select-none"
             onClick={(e) => e.stopPropagation()}
+            draggable={false}
           />
+
+          {/* Controles com opacidade baixa, aumentam no hover */}
+          {/* X (canto superior direito) */}
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); setZoomOpen(false); }}
+            aria-label="Fechar"
+            className="absolute right-3 top-3 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-white/60 transition-all hover:bg-white/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white sm:right-5 sm:top-5"
+          >
+            <X className="h-5 w-5" aria-hidden="true" />
+          </button>
+
+          {/* Setas + contador embaixo */}
           {total > 1 && (
-            <div className="absolute bottom-6 left-1/2 flex -translate-x-1/2 items-center gap-3">
+            <div
+              className="absolute bottom-4 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2 sm:bottom-6"
+              onClick={(e) => e.stopPropagation()}
+            >
               <button
                 type="button"
-                onClick={(e) => { e.stopPropagation(); goPrev(); }}
+                onClick={goPrev}
                 aria-label="Foto anterior"
-                className="flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5 text-white/60 transition-all hover:bg-white/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
               >
-                <ChevronLeft className="h-6 w-6" />
+                <ChevronLeft className="h-5 w-5" aria-hidden="true" />
               </button>
-              <span className="rounded-full bg-white/10 px-3 py-1.5 text-sm font-semibold text-white">
-                {activeIdx + 1} de {total}
+              <span className="rounded-full bg-white/5 px-3 py-1 text-xs font-medium text-white/60">
+                {activeIdx + 1} / {total}
               </span>
               <button
                 type="button"
-                onClick={(e) => { e.stopPropagation(); goNext(); }}
+                onClick={goNext}
                 aria-label="Próxima foto"
-                className="flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5 text-white/60 transition-all hover:bg-white/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
               >
-                <ChevronRight className="h-6 w-6" />
+                <ChevronRight className="h-5 w-5" aria-hidden="true" />
               </button>
             </div>
           )}
+
+          {/* Hint discreto (canto inferior esquerdo) */}
+          <div className="absolute bottom-4 left-3 z-20 text-[10.5px] text-white/40 sm:bottom-6 sm:left-5">
+            ESC para fechar
+          </div>
         </div>
       )}
     </div>
