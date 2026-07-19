@@ -10,6 +10,7 @@
 import { lazy, Suspense } from 'react';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
+import { Skeleton } from '@/components/ui/skeleton';
 import ClubDetailV1 from './ClubDetail.v1';
 
 const ClubDetailV3 = lazy(() => import(/* webpackChunkName: "ClubDetailV3" */ './ClubDetail.v3.jsx'));
