@@ -10,6 +10,7 @@
 import { lazy, Suspense } from 'react';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
+import { Skeleton } from '@/components/ui/skeleton';
 import SearchV1 from './SearchPage.v1';
 
 const SearchV3 = lazy(() => import(/* webpackChunkName: "SearchV3" */ './SearchPage.v3.jsx'));
