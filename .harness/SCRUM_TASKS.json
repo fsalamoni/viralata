@@ -16978,6 +16978,95 @@
       "priority": "medium",
       "owner": "Mavis",
       "parent": "TASK-V3-ADOPTION"
+    },
+    {
+      "id": "TASK-V3-ADMIN",
+      "title": "TASK-V3-ADMIN: V3 redesign ADMIN",
+      "status": "done",
+      "parent": "TASK-V3-REDESIGN",
+      "children": [
+        {
+          "id": "TASK-V3-ADMIN-1",
+          "title": "Hero impactante gradient escuro",
+          "status": "done"
+        },
+        {
+          "id": "TASK-V3-ADMIN-2",
+          "title": "4 stat cards plataforma",
+          "status": "done"
+        },
+        {
+          "id": "TASK-V3-ADMIN-3",
+          "title": "6 categorias agrupadas",
+          "status": "done"
+        },
+        {
+          "id": "TASK-V3-ADMIN-4",
+          "title": "Busca com clear + categoria",
+          "status": "done"
+        },
+        {
+          "id": "TASK-V3-ADMIN-5",
+          "title": "CategoryHeader com count",
+          "status": "done"
+        },
+        {
+          "id": "TASK-V3-ADMIN-6",
+          "title": "Section cards com ArrowUpRight",
+          "status": "done"
+        },
+        {
+          "id": "TASK-V3-ADMIN-7",
+          "title": "Ações recentes (mock data)",
+          "status": "done"
+        },
+        {
+          "id": "TASK-V3-ADMIN-8",
+          "title": "Health status 4 cards",
+          "status": "done"
+        },
+        {
+          "id": "TASK-V3-ADMIN-9",
+          "title": "Banner Plataforma operacional",
+          "status": "done"
+        },
+        {
+          "id": "TASK-V3-ADMIN-10",
+          "title": "Access denied estrito",
+          "status": "done"
+        },
+        {
+          "id": "TASK-V3-ADMIN-11",
+          "title": "JSON-LD WebPage schema",
+          "status": "done"
+        },
+        {
+          "id": "TASK-V3-ADMIN-12",
+          "title": "Loading skeleton completo",
+          "status": "done"
+        },
+        {
+          "id": "TASK-V3-ADMIN-13",
+          "title": "Testes unitários V3",
+          "status": "pending"
+        },
+        {
+          "id": "TASK-V3-ADMIN-14",
+          "title": "E2E Playwright",
+          "status": "pending"
+        }
+      ],
+      "files_added": [
+        "src/modules/admin/pages/AdminDashboard.v3.jsx",
+        "docs/REGENCY_ADMIN_V3.md"
+      ],
+      "files_modified": [
+        "src/modules/admin/pages/AdminDashboard.jsx",
+        "vite.config.js (sw-v57)"
+      ],
+      "bundle": "AdminDashboard.v3-Dgv3sScE.js (18.2KB lazy)",
+      "service_worker": "sw-v57",
+      "deployed_at": "2026-07-19T23:50:00Z"
     }
   ],
   "definitionOfDone": [
@@ -17368,7 +17457,10 @@
       "dropped": 1
     },
     "in_progress": 0,
-    "in_review": 0
+    "in_review": 0,
+    "total_done": 1,
+    "last_task": "TASK-V3-ADMIN",
+    "last_update": "2026-07-19T23:50:00Z"
   },
   "protocol": {
     "scrumUpdate": {
