@@ -42,13 +42,17 @@ function formatDate(iso) {
   }
 }
 
-function TreatmentCard({ treatment }) {
+function TreatmentCard({ treatment, canEdit, onEdit }) {
   const typeMeta = TYPE_META[treatment.type] || TYPE_META.other;
   const statusMeta = STATUS_META[treatment.status] || STATUS_META.in_progress;
   const StatusIcon = statusMeta.icon;
   return (
     <li
-      className="rounded-xl border border-border bg-card p-4 transition-shadow hover:shadow-sm"
+      className={cn(
+        'rounded-xl border border-border bg-card p-4 transition-shadow hover:shadow-sm',
+        canEdit && onEdit && 'cursor-pointer',
+      )}
+      onClick={() => canEdit && onEdit && onEdit(treatment)}
       data-testid={`treatment-${treatment.id}`}
     >
       <div className="flex flex-wrap items-start gap-3">
@@ -91,7 +95,7 @@ function TreatmentCard({ treatment }) {
   );
 }
 
-export default function PetTreatments({ treatments, isLoading, canEdit = false, onAdd }) {
+export default function PetTreatments({ treatments, isLoading, canEdit = false, onAdd, onEdit }) {
   if (isLoading) {
     return (
       <div className="space-y-2">
@@ -126,7 +130,7 @@ export default function PetTreatments({ treatments, isLoading, canEdit = false, 
   return (
     <ul className="space-y-2" aria-label="Tratamentos do pet">
       {treatments.map((t) => (
-        <TreatmentCard key={t.id} treatment={t} />
+        <TreatmentCard key={t.id} treatment={t} canEdit={canEdit} onEdit={onEdit} />
       ))}
     </ul>
   );

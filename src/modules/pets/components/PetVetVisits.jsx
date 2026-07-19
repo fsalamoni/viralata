@@ -35,10 +35,14 @@ function formatCurrency(cents) {
   }
 }
 
-function VetVisitCard({ visit }) {
+function VetVisitCard({ visit, canEdit, onEdit }) {
   return (
     <li
-      className="rounded-xl border border-border bg-card p-4 transition-shadow hover:shadow-sm"
+      className={cn(
+        'rounded-xl border border-border bg-card p-4 transition-shadow hover:shadow-sm',
+        canEdit && onEdit && 'cursor-pointer',
+      )}
+      onClick={() => canEdit && onEdit && onEdit(visit)}
       data-testid={`vet-visit-${visit.id}`}
     >
       <div className="flex flex-wrap items-start gap-3">
@@ -95,7 +99,7 @@ function VetVisitCard({ visit }) {
   );
 }
 
-export default function PetVetVisits({ visits, isLoading, canEdit = false, onAdd }) {
+export default function PetVetVisits({ visits, isLoading, canEdit = false, onAdd, onEdit }) {
   if (isLoading) {
     return (
       <div className="space-y-2">
@@ -130,7 +134,7 @@ export default function PetVetVisits({ visits, isLoading, canEdit = false, onAdd
   return (
     <ul className="space-y-2" aria-label="Consultas veterinárias do pet">
       {visits.map((visit) => (
-        <VetVisitCard key={visit.id} visit={visit} />
+        <VetVisitCard key={visit.id} visit={visit} canEdit={canEdit} onEdit={onEdit} />
       ))}
     </ul>
   );

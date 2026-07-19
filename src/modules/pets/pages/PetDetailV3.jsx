@@ -76,6 +76,14 @@ import PetDevolutions from '../components/PetDevolutions';
 import PetAdoptersHistory from '../components/PetAdoptersHistory';
 import PublicHealthRecord from '../components/PublicHealthRecord';
 
+// Forms (TASK-V3-PET-DETAIL-FULL-EDIT)
+import PetEditForm from '../components/PetEditForm';
+import PetMedicationForm from '../components/PetMedicationForm';
+import PetVetVisitForm from '../components/PetVetVisitForm';
+import PetTreatmentForm from '../components/PetTreatmentForm';
+import PetCareLogForm from '../components/PetCareLogForm';
+import PetDevolutionForm from '../components/PetDevolutionForm';
+
 // UI base
 import { CollapsibleCard } from '@/components/ui/collapsible-card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -97,7 +105,7 @@ import { toast } from 'sonner';
 import {
   ArrowLeft, Heart, MapPin, Trash2, Share2, MessageCircle,
   FileText, Eye, Calendar, Activity, Pill, Stethoscope,
-  Bath, History, HeartHandshake, AlertCircle, Users,
+  Bath, History, HeartHandshake, AlertCircle, Users, Edit, Plus,
 } from 'lucide-react';
 
 // ============================================================================
@@ -157,6 +165,17 @@ export default function PetDetailV3() {
   const { isDark } = useColorMode();
   const reduceMotion = useReducedMotionSafe();
   const compact = Boolean(uiPrefs?.compactMode);
+
+  // Dialogs de edição/inserção (canManage only)
+  const [editOpen, setEditOpen] = useState(false);
+  const [medOpen, setMedOpen] = useState(false);
+  const [vetOpen, setVetOpen] = useState(false);
+  const [editingVet, setEditingVet] = useState(null);
+  const [treatmentOpen, setTreatmentOpen] = useState(false);
+  const [editingTreatment, setEditingTreatment] = useState(null);
+  const [careOpen, setCareOpen] = useState(false);
+  const [careType, setCareType] = useState('bath');
+  const [devolutionOpen, setDevolutionOpen] = useState(false);
 
   // Hooks NOVOS
   const { data: medications = [] } = useMedications(petId, pet?.owner_id);
@@ -488,8 +507,9 @@ export default function PetDetailV3() {
               {canManage ? (
                 <div className="flex flex-col gap-2 pt-2">
                   <div className="flex gap-2">
-                    <Button asChild variant="outline" className="flex-1">
-                      <Link to={`/pets/${petId}/edit`}>Editar</Link>
+                    <Button variant="outline" className="flex-1" onClick={() => setEditOpen(true)}>
+                      <Edit className="mr-2 h-4 w-4" aria-hidden="true" />
+                      Editar
                     </Button>
                     <Button variant="destructive" size="icon" onClick={handleDelete} disabled={deletePet.isPending} aria-label="Excluir este pet">
                       <Trash2 className="w-4 h-4" />
@@ -545,27 +565,63 @@ export default function PetDetailV3() {
         <TabsContent value="health" className="mt-4 space-y-6">
           <div className="space-y-6">
             <section>
-              <h2 className="mb-3 flex items-center gap-2 text-lg font-bold text-foreground">
-                <Pill className="h-5 w-5 text-emerald-600" aria-hidden="true" />
-                Medicações contínuas
-              </h2>
+              <div className="mb-3 flex items-center justify-between">
+                <h2 className="flex items-center gap-2 text-lg font-bold text-foreground">
+                  <Pill className="h-5 w-5 text-emerald-600" aria-hidden="true" />
+                  Medicações contínuas
+                </h2>
+                {canEditHistory && (
+                  <Button size="sm" variant="outline" onClick={() => setMedOpen(true)}>
+                    <Plus className="mr-1 h-3.5 w-3.5" aria-hidden="true" />
+                    Nova
+                  </Button>
+                )}
+              </div>
               <PetMedications medications={medications} canEdit={canEditHistory} />
             </section>
 
             <section>
-              <h2 className="mb-3 flex items-center gap-2 text-lg font-bold text-foreground">
-                <Stethoscope className="h-5 w-5 text-sky-600" aria-hidden="true" />
-                Consultas veterinárias
-              </h2>
-              <PetVetVisits visits={vetVisits} isLoading={isLoadingVetVisits} canEdit={canEditHistory} />
+              <div className="mb-3 flex items-center justify-between">
+                <h2 className="flex items-center gap-2 text-lg font-bold text-foreground">
+                  <Stethoscope className="h-5 w-5 text-sky-600" aria-hidden="true" />
+                  Consultas veterinárias
+                </h2>
+                {canEditHistory && (
+                  <Button size="sm" variant="outline" onClick={() => { setEditingVet(null); setVetOpen(true); }}>
+                    <Plus className="mr-1 h-3.5 w-3.5" aria-hidden="true" />
+                    Nova
+                  </Button>
+                )}
+              </div>
+              <PetVetVisits
+                visits={vetVisits}
+                isLoading={isLoadingVetVisits}
+                canEdit={canEditHistory}
+                onAdd={() => { setEditingVet(null); setVetOpen(true); }}
+                onEdit={(v) => { setEditingVet(v); setVetOpen(true); }}
+              />
             </section>
 
             <section>
-              <h2 className="mb-3 flex items-center gap-2 text-lg font-bold text-foreground">
-                <Activity className="h-5 w-5 text-rose-600" aria-hidden="true" />
-                Tratamentos
-              </h2>
-              <PetTreatments treatments={treatments} isLoading={isLoadingTreatments} canEdit={canEditHistory} />
+              <div className="mb-3 flex items-center justify-between">
+                <h2 className="flex items-center gap-2 text-lg font-bold text-foreground">
+                  <Activity className="h-5 w-5 text-rose-600" aria-hidden="true" />
+                  Tratamentos
+                </h2>
+                {canEditHistory && (
+                  <Button size="sm" variant="outline" onClick={() => { setEditingTreatment(null); setTreatmentOpen(true); }}>
+                    <Plus className="mr-1 h-3.5 w-3.5" aria-hidden="true" />
+                    Novo
+                  </Button>
+                )}
+              </div>
+              <PetTreatments
+                treatments={treatments}
+                isLoading={isLoadingTreatments}
+                canEdit={canEditHistory}
+                onAdd={() => { setEditingTreatment(null); setTreatmentOpen(true); }}
+                onEdit={(t) => { setEditingTreatment(t); setTreatmentOpen(true); }}
+              />
             </section>
 
             <section>
@@ -583,14 +639,27 @@ export default function PetDetailV3() {
         {/* ============================================================ */}
         <TabsContent value="care" className="mt-4 space-y-6">
           <section>
-            <h2 className="mb-3 flex items-center gap-2 text-lg font-bold text-foreground">
-              <Bath className="h-5 w-5 text-cyan-600" aria-hidden="true" />
-              Cuidados do dia a dia
-            </h2>
+            <div className="mb-3 flex items-center justify-between">
+              <h2 className="flex items-center gap-2 text-lg font-bold text-foreground">
+                <Bath className="h-5 w-5 text-cyan-600" aria-hidden="true" />
+                Cuidados do dia a dia
+              </h2>
+              {canEditHistory && (
+                <Button size="sm" variant="outline" onClick={() => { setCareType('bath'); setCareOpen(true); }}>
+                  <Plus className="mr-1 h-3.5 w-3.5" aria-hidden="true" />
+                  Novo
+                </Button>
+              )}
+            </div>
             <p className="mb-3 text-xs text-muted-foreground">
               Banho, tosa, escovação, dental, unhas e exercícios. A próxima data é calculada automaticamente quando você define uma frequência.
             </p>
-            <PetCareLog careLogs={careLogs} isLoading={isLoadingCare} canEdit={canEditHistory} />
+            <PetCareLog
+              careLogs={careLogs}
+              isLoading={isLoadingCare}
+              canEdit={canEditHistory}
+              onAdd={(type) => { setCareType(type || 'bath'); setCareOpen(true); }}
+            />
           </section>
         </TabsContent>
 
@@ -621,11 +690,24 @@ export default function PetDetailV3() {
           </section>
 
           <section>
-            <h2 className="mb-3 flex items-center gap-2 text-lg font-bold text-foreground">
-              <AlertCircle className="h-5 w-5 text-amber-600" aria-hidden="true" />
-              Devoluções
-            </h2>
-            <PetDevolutions devolutions={devolutions} isLoading={isLoadingDevolutions} canEdit={canEditHistory} />
+            <div className="mb-3 flex items-center justify-between">
+              <h2 className="flex items-center gap-2 text-lg font-bold text-foreground">
+                <AlertCircle className="h-5 w-5 text-amber-600" aria-hidden="true" />
+                Devoluções
+              </h2>
+              {canEditHistory && (
+                <Button size="sm" variant="outline" onClick={() => setDevolutionOpen(true)}>
+                  <Plus className="mr-1 h-3.5 w-3.5" aria-hidden="true" />
+                  Registrar
+                </Button>
+              )}
+            </div>
+            <PetDevolutions
+              devolutions={devolutions}
+              isLoading={isLoadingDevolutions}
+              canEdit={canEditHistory}
+              onAdd={() => setDevolutionOpen(true)}
+            />
           </section>
         </TabsContent>
       </Tabs>
@@ -692,6 +774,45 @@ export default function PetDetailV3() {
       >
         <PetShareCard ref={shareCardRef} pet={pet} shareUrl={`${window.location.origin}/pets/${petId}`} />
       </div>
+
+      {/* ============================================================ */}
+      {/* DIALOGS DE EDIÇÃO (canManage only)                           */}
+      {/* ============================================================ */}
+      {canEditHistory && (
+        <>
+          <PetEditForm open={editOpen} onOpenChange={setEditOpen} pet={pet} />
+          <PetMedicationForm
+            open={medOpen}
+            onOpenChange={setMedOpen}
+            petId={petId}
+            shelterClubId={pet?.owner_id}
+          />
+          <PetVetVisitForm
+            open={vetOpen}
+            onOpenChange={(o) => { setVetOpen(o); if (!o) setEditingVet(null); }}
+            petId={petId}
+            visit={editingVet}
+          />
+          <PetTreatmentForm
+            open={treatmentOpen}
+            onOpenChange={(o) => { setTreatmentOpen(o); if (!o) setEditingTreatment(null); }}
+            petId={petId}
+            treatment={editingTreatment}
+          />
+          <PetCareLogForm
+            open={careOpen}
+            onOpenChange={setCareOpen}
+            petId={petId}
+            defaultType={careType}
+          />
+          <PetDevolutionForm
+            open={devolutionOpen}
+            onOpenChange={setDevolutionOpen}
+            petId={petId}
+            isAdopter={isAdopter}
+          />
+        </>
+      )}
     </div>
   );
 }
