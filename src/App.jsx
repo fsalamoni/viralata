@@ -87,6 +87,7 @@ const CreateReport = lazy(() => import('@/modules/reports/pages/CreateReport'));
 
 // ─── Perfil ───────────────────────────────────────────────────────────────────
 const Profile = lazy(() => import('@/pages/Profile'));
+const Preferences = lazy(() => import('@/pages/Preferences'));
 // TASK-266: página dedicada /perfil/voluntario
 const VolunteerProfile = lazy(() => import('@/pages/VolunteerProfile'));
 // TASK-130: página individual do pedido de adoção (timeline).
@@ -449,6 +450,11 @@ export default function App() {
                 <Route
                   path="/perfil"
                   element={<ProtectedRoute>{withLayout('Profile', Profile)}</ProtectedRoute>}
+                />
+                {/* TASK-PREFERENCIAS-1: /preferencias (UI + notificações + conta) */}
+                <Route
+                  path="/preferencias"
+                  element={<ProtectedRoute>{withLayout('Preferences', Preferences)}</ProtectedRoute>}
                 />
                 <Route
                   path="/perfil/voluntario"

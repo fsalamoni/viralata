@@ -8,6 +8,7 @@
  * Vite faz constant folding em if/else com flag estática e ELIMINA branches alternativas.
  */
 import { lazy, Suspense } from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
 import FosterV1 from './FosterDashboard.v1';
