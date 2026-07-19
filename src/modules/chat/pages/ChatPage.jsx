@@ -10,6 +10,7 @@
 import { lazy, Suspense } from 'react';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
+import { Skeleton } from '@/components/ui/skeleton';
 import ChatV1 from './ChatPage.v1';
 
 const ChatV3 = lazy(() => import(/* webpackChunkName: "ChatV3" */ './ChatPage.v3.jsx'));
