@@ -10,6 +10,7 @@
 import { lazy, Suspense } from 'react';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
+import { Skeleton } from '@/components/ui/skeleton';
 import CommunityDetailV1 from './CommunityDetail.v1';
 
 const CommunityDetailV3 = lazy(() => import(/* webpackChunkName: "CommunityDetailV3" */ './CommunityDetail.v3.jsx'));
