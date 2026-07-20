@@ -99,7 +99,7 @@ function ApplicationCard({ application, pet, shelter, onCancel, cancelling }) {
               </div>
               <div className="min-w-0">
                 <Link
-                  to={pet ? `/pets/${pet.id}` : '#'}
+                  to={pet ? `/pet/${pet.id}` : '#'}
                   className="font-semibold hover:underline truncate block"
                 >
                   {pet?.name || 'Pet não encontrado'}

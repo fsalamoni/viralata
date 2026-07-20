@@ -41,7 +41,7 @@ export default function PetCard({ pet }) {
       transition={{ duration: 0.4, ease: 'easeOut' }}
       whileHover={{ y: -4 }}
     >
-      <Link to={`/pets/${pet.id}`} className="block">
+      <Link to={`/pet/${pet.id}`} className="block">
         <Card
           size="pet"
           interactive

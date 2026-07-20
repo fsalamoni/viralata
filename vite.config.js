@@ -31,7 +31,7 @@ export default defineConfig(({ mode }) => {
         //  - qualquer cache 'viralata-v*' é deletado no activate
         //  - o SW custom v5 deixa de controlar e dá lugar ao workbox
         //    atualizado que delega para a network.
-        filename: 'sw-v67.js',
+        filename: 'sw-v68.js',
         includeAssets: ['favicon.svg', 'apple-touch-icon.png', 'pwa-192.png', 'pwa-512.png', 'scrum.html'],
         manifest: {
           name: 'Viralata - Adoção Responsável',

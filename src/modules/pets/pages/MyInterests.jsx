@@ -110,7 +110,7 @@ export default function MyInterests() {
               interest={interest}
               pet={pet}
               petLoading={petLoading}
-              onOpen={() => navigate(`/pets/${interest.pet_id}`)}
+              onOpen={() => navigate(`/pet/${interest.pet_id}`)}
               onRemove={() => setConfirmRemove({ petId: interest.pet_id, title: pet?.title || pet?.name || 'este pet' })}
             />
           </li>

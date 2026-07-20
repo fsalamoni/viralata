@@ -153,17 +153,17 @@ export default function PublicPet() {
   function handleAdoptClick() {
     if (!user) {
       // Salva URL para voltar após login
-      sessionStorage.setItem('postLoginRedirect', `/pets/${petId}`);
+      sessionStorage.setItem('postLoginRedirect', `/quero-adotar/${petId}`);
       navigate('/login');
       return;
     }
-    // User logado vai para a página completa de interesse
-    navigate(`/pets/${petId}`);
+    // User logado vai para o wizard de adoção
+    navigate(`/quero-adotar/${petId}`);
   }
 
   function handleChatClick() {
     if (!user) {
-      sessionStorage.setItem('postLoginRedirect', `/pets/${petId}`);
+      sessionStorage.setItem('postLoginRedirect', `/pet/${petId}`);
       navigate('/login');
       toast.info('Faça login para falar com o abrigo.');
       return;

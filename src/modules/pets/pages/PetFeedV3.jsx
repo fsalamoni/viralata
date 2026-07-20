@@ -228,7 +228,7 @@ export default function PetFeedV3() {
   }
   function handlePass() { /* sem persistência */ }
   function handleUndo(petId) { /* apenas re-mostra a carta */ }
-  function handleOpenDetail(petId) { navigate(`/pets/${petId}`); }
+  function handleOpenDetail(petId) { navigate(`/pet/${petId}`); }
 
   function handleClearFilters() {
     resetFilters();

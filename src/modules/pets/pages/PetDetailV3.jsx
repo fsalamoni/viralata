@@ -280,7 +280,7 @@ export default function PetDetailV3() {
   }
 
   async function handleShare() {
-    const shareUrl = `${window.location.origin}/pets/${petId}`;
+    const shareUrl = `${window.location.origin}/pet/${petId}`;
     await shareFromNode(shareCardRef.current, {
       fileName: `${(pet.name || pet.title || 'pet').toLowerCase().replace(/\s+/g, '-')}.png`,
       title: pet.title || pet.name,
@@ -772,7 +772,7 @@ export default function PetDetailV3() {
         style={{ position: 'fixed', top: 0, left: '-99999px', pointerEvents: 'none' }}
         aria-hidden="true"
       >
-        <PetShareCard ref={shareCardRef} pet={pet} shareUrl={`${window.location.origin}/pets/${petId}`} />
+        <PetShareCard ref={shareCardRef} pet={pet} shareUrl={`${window.location.origin}/pet/${petId}`} />
       </div>
 
       {/* ============================================================ */}

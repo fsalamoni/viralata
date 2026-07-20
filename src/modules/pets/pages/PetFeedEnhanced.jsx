@@ -356,7 +356,7 @@ export default function PetFeedEnhanced() {
   }
 
   function handleOpenDetail(petId) {
-    navigate(`/pets/${petId}`);
+    navigate(`/pet/${petId}`);
   }
 
   const hasFilters = species !== 'all' || size !== 'all' || Boolean(trimmedCity) || Boolean(radius);

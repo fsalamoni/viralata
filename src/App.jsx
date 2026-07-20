@@ -10,6 +10,7 @@ import CommandPalette from '@/components/CommandPalette';
 import { Toaster } from '@/components/ui/sonner';
 import { recordPageView } from '@/core/services/observabilityService';
 import ErrorBoundary from '@/components/ErrorBoundary.jsx';
+import PetAdminRoute from '@/components/guards/PetAdminRoute';
 
 // ─── Páginas Públicas ─────────────────────────────────────────────────────────
 const Home = lazy(() => import('@/pages/Home'));
@@ -386,7 +387,11 @@ export default function App() {
                     acesso. */}
                 <Route
                   path="/pets/:petId"
-                  element={<ProtectedRoute>{withLayout('PetDetail', PetDetail)}</ProtectedRoute>}
+                  element={
+                    <PetAdminRoute>
+                      {withLayout('PetDetail', PetDetail)}
+                    </PetAdminRoute>
+                  }
                 />
 
                 {/* ── Pets autenticados ─────────────────────────────────── */}
@@ -396,7 +401,11 @@ export default function App() {
                 />
                 <Route
                   path="/pets/:petId/edit"
-                  element={<ProtectedRoute>{withLayout('CreatePet', CreatePet)}</ProtectedRoute>}
+                  element={
+                    <PetAdminRoute>
+                      {withLayout('CreatePet', CreatePet)}
+                    </PetAdminRoute>
+                  }
                 />
                 <Route
                   path="/meus-pets"

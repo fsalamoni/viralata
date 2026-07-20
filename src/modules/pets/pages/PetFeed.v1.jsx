@@ -265,7 +265,7 @@ export default function PetFeed() {
   }
 
   function handleOpenDetail(petId) {
-    navigate(`/pets/${petId}`);
+    navigate(`/pet/${petId}`);
   }
 
   return (
