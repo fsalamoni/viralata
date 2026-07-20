@@ -15,6 +15,10 @@ import { db } from '@/core/config/firebase';
 import { logger } from '@/core/lib/logger';
 import { createAuditLog } from '@/core/services/auditService';
 import { addTimelineEvent } from '@/modules/shelter/services/timelineService';
+// BUG-30 (2026-07-20): ensureCanMutatePet era REFERENCIADO mas não importado
+// (causava ReferenceError em runtime). Adicionado import + uso em TODA
+// escrita (defense-in-depth de permissões de pet — camada 2/3).
+import { ensureCanMutatePet } from '@/modules/pets/services/petService';
 import {
   createMedicationSchema,
   updateMedicationSchema,

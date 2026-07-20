@@ -44,6 +44,14 @@ vi.mock('@/modules/shelter/services/timelineService', () => ({
   addTimelineEvent: vi.fn().mockResolvedValue({ id: 'tl-1' }),
 }));
 
+// BUG-30 (2026-07-20): medicationService agora chama ensureCanMutatePet
+// em TODA escrita (defense-in-depth de permissões). Mockamos para
+// evitar cross-module pull-in do Firestore real nos testes.
+const mockEnsureCanMutatePet = vi.fn().mockResolvedValue(undefined);
+vi.mock('@/modules/pets/services/petService', () => ({
+  ensureCanMutatePet: (...args) => mockEnsureCanMutatePet(...args),
+}));
+
 const {
   listMedications,
   getMedication,
