@@ -17067,6 +17067,95 @@
       "bundle": "AdminDashboard.v3-Dgv3sScE.js (18.2KB lazy)",
       "service_worker": "sw-v57",
       "deployed_at": "2026-07-19T23:50:00Z"
+    },
+    {
+      "id": "TASK-V3-ORG_ADMIN",
+      "title": "TASK-V3-ORG_ADMIN: V3 redesign ORG_ADMIN",
+      "status": "done",
+      "parent": "TASK-V3-REDESIGN",
+      "children": [
+        {
+          "id": "TASK-V3-ORG_ADMIN-1",
+          "title": "Hero impactante gradient",
+          "status": "done"
+        },
+        {
+          "id": "TASK-V3-ORG_ADMIN-2",
+          "title": "4 stat cards no hero",
+          "status": "done"
+        },
+        {
+          "id": "TASK-V3-ORG_ADMIN-3",
+          "title": "2-layer tabs (group + sub)",
+          "status": "done"
+        },
+        {
+          "id": "TASK-V3-ORG_ADMIN-4",
+          "title": "Busca por funcionalidade",
+          "status": "done"
+        },
+        {
+          "id": "TASK-V3-ORG_ADMIN-5",
+          "title": "Filtro por grupo",
+          "status": "done"
+        },
+        {
+          "id": "TASK-V3-ORG_ADMIN-6",
+          "title": "Quick action cards",
+          "status": "done"
+        },
+        {
+          "id": "TASK-V3-ORG_ADMIN-7",
+          "title": "Atividade recente",
+          "status": "done"
+        },
+        {
+          "id": "TASK-V3-ORG_ADMIN-8",
+          "title": "Sobre a organizacao",
+          "status": "done"
+        },
+        {
+          "id": "TASK-V3-ORG_ADMIN-9",
+          "title": "Avatar com iniciais",
+          "status": "done"
+        },
+        {
+          "id": "TASK-V3-ORG_ADMIN-10",
+          "title": "TabErrorBoundary",
+          "status": "done"
+        },
+        {
+          "id": "TASK-V3-ORG_ADMIN-11",
+          "title": "Reusa tabs V1 via React.lazy",
+          "status": "done"
+        },
+        {
+          "id": "TASK-V3-ORG_ADMIN-12",
+          "title": "JSON-LD WebPage",
+          "status": "done"
+        },
+        {
+          "id": "TASK-V3-ORG_ADMIN-13",
+          "title": "Testes unitarios V3",
+          "status": "pending"
+        },
+        {
+          "id": "TASK-V3-ORG_ADMIN-14",
+          "title": "E2E Playwright",
+          "status": "pending"
+        }
+      ],
+      "files_added": [
+        "src/modules/organizations/pages/OrganizationAdminPanel.v3.jsx",
+        "docs/REGENCY_ORG_ADMIN_V3.md"
+      ],
+      "files_modified": [
+        "src/modules/organizations/pages/OrganizationAdminPanel.jsx",
+        "vite.config.js (sw-v58)"
+      ],
+      "bundle": "OrganizationAdminPanel.v3-BSxI0V-s.js (34.4KB lazy)",
+      "service_worker": "sw-v58",
+      "deployed_at": "2026-07-20T00:15:00Z"
     }
   ],
   "definitionOfDone": [
@@ -17458,9 +17547,9 @@
     },
     "in_progress": 0,
     "in_review": 0,
-    "total_done": 1,
-    "last_task": "TASK-V3-ADMIN",
-    "last_update": "2026-07-19T23:50:00Z"
+    "total_done": 2,
+    "last_task": "TASK-V3-ORG_ADMIN",
+    "last_update": "2026-07-20T00:15:00Z"
   },
   "protocol": {
     "scrumUpdate": {
