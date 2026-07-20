@@ -93,11 +93,21 @@ export const partnerDocSchema = partnerSchema.extend({
 
 /**
  * Schema para Banner.
+ *
+ * NOTA: `imageUrl` é OPCIONAL no schema (Zod) porque o upload para
+ * Storage acontece ANTES de chamar createBanner. O BannerForm garante
+ * que o file foi selecionado antes de submeter, e o AdminPartnerDetail
+ * faz o upload e adiciona o URL ao payload.
  */
 export const bannerSchema = z.object({
   partnerId: z.string().min(1),
 
-  imageUrl: requiredUrl,
+  imageUrl: z
+    .string()
+    .trim()
+    .min(1, 'URL da imagem obrigatória')
+    .max(500)
+    .optional(),
 
   imageUrlMobile: optionalUrl,
 
@@ -114,9 +124,9 @@ export const bannerSchema = z.object({
     { errorMap: () => ({ message: 'Posição inválida' }) },
   ),
 
-  startDate: z.any(), // Timestamp
+  startDate: z.any().nullable().optional(), // Timestamp
 
-  endDate: z.any(), // Timestamp
+  endDate: z.any().nullable().optional(), // Timestamp
 
   weight: z
     .number()

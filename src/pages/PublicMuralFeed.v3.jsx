@@ -381,7 +381,7 @@ export default function PublicMuralFeedV3() {
             </motion.p>
             <motion.div variants={ANIM} className="mt-5 flex flex-wrap items-center gap-2">
               <Button asChild size="lg" className="border-0 bg-white text-rose-700 hover:bg-white/90">
-                <Link to="/comunidades">
+                <Link to="/comunidade">
                   <Users className="mr-1.5 h-4 w-4" aria-hidden="true" />
                   Explorar comunidades
                   <ArrowRight className="ml-1.5 h-4 w-4" aria-hidden="true" />
@@ -569,7 +569,7 @@ export default function PublicMuralFeedV3() {
                     Entre em uma comunidade para postar, curtir e comentar.
                   </p>
                   <Button asChild size="sm" variant="outline" className="mt-2 w-full">
-                    <Link to="/comunidades">
+                    <Link to="/comunidade">
                       Ver comunidades
                       <ChevronRight className="ml-1 h-3 w-3" aria-hidden="true" />
                     </Link>
@@ -603,7 +603,7 @@ export default function PublicMuralFeedV3() {
           }
           action={
             <Button asChild>
-              <Link to="/comunidades">
+              <Link to="/comunidade">
                 <Users className="mr-2 h-4 w-4" aria-hidden="true" />
                 Ver comunidades
               </Link>
@@ -644,7 +644,7 @@ export default function PublicMuralFeedV3() {
           </p>
           <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
             <Button asChild size="lg">
-              <Link to="/comunidades">
+              <Link to="/comunidade">
                 Explorar comunidades
                 <ArrowRight className="ml-1.5 h-4 w-4" aria-hidden="true" />
               </Link>

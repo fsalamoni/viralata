@@ -194,7 +194,7 @@ export default function PublicMuralFeed() {
           description="Tente outra busca ou visite uma comunidade específica."
           action={
             <Button asChild>
-              <Link to="/comunidades">Ver comunidades</Link>
+              <Link to="/comunidade">Ver comunidades</Link>
             </Button>
           }
         />
@@ -221,7 +221,7 @@ export default function PublicMuralFeed() {
                 com outros membros. É gratuito.
               </p>
               <Button asChild size="sm">
-                <Link to="/comunidades">Ver comunidades</Link>
+                <Link to="/comunidade">Ver comunidades</Link>
               </Button>
             </div>
           </div>

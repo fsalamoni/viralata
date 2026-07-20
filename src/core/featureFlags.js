@@ -547,6 +547,14 @@ export const FEATURE_FLAG_META = Object.freeze({
     label: 'V3 · Admin (16 páginas)',
     description: 'Redesign das 16 páginas do painel admin master. Inclui gerenciador de Espaço de Parceiros (TASK-V3-PARTNER-1).',
   },
+  [FEATURE_FLAG.ADMIN_PARTNER_SPACES_V1]: {
+    label: 'Admin · Espaço de Parceiros',
+    description: 'Liga o painel admin de parceiros publicitários em /admin/parceiros (CRUD de parceiros, banners com rotação, relatórios e tracking LGPD-compliant).',
+  },
+  [FEATURE_FLAG.PUBLIC_PARTNER_BANNERS_V1]: {
+    label: 'Público · Banners de Parceiros',
+    description: 'Liga o componente AdSlotBanner para rotação client-side de banners em posições do app (Feed, Home, Search, Detalhes). Requer parceiros ativos com banners para renderizar.',
+  },
 });
 
 /**

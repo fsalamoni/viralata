@@ -10,6 +10,7 @@
 import { lazy, Suspense } from 'react';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
+import { Skeleton } from '@/components/ui/skeleton';
 import MuralV1 from './PublicMuralFeed.v1';
 
 const MuralV3 = lazy(() => import(/* webpackChunkName: "MuralV3" */ './PublicMuralFeed.v3.jsx'));

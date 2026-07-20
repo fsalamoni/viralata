@@ -7,7 +7,7 @@ import { usePetFeed, useCreateInterest } from '../hooks/usePets';
 import { hasKnownCoords } from '../domain/geoDistance';
 import { applyFeedFilters } from '../domain/feedFilters';
 import PetCard from '../components/PetCard';
-import AdSlot from '@/components/AdSlot';
+import AdSlotUnified from "@/components/AdSlotUnified";
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { cn } from '@/core/lib/utils';
@@ -456,7 +456,7 @@ export default function PetFeedEnhanced() {
 
         {!isLoading && pets.length > 0 && (
           <>
-            <AdSlot className="mb-2" />
+            <AdSlotUnified slotId="feed_top" position="feed_inline" page="/feed" className="mb-2" />
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {pets.map((pet) => (
                 <PetCard key={pet.id} pet={pet} />

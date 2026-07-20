@@ -26,6 +26,7 @@ import {
   Home as HomeIcon, Bell, Lock, Download, Trash2,
 } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
+import { useConfirm } from '@/components/ui/confirm-provider';
 import { useQuery } from '@tanstack/react-query';
 import { collection, getCountFromServer, query, where } from 'firebase/firestore';
 import { db } from '@/core/config/firebase';
@@ -43,6 +44,8 @@ import { MyTasksSection } from '@/modules/shelter/components/MyTasksSection';
 import { CrossRosterSection } from '@/modules/shelter/components/CrossRosterSection';
 import { UpcomingEventsSection } from '@/modules/communities/components/UpcomingEventsSection';
 import { exportMyData, downloadDataExport } from '@/core/services/dataExportService';
+import { deleteMyAccount } from '@/core/services/deleteAccountService';
+import { toast } from 'sonner';
 
 // ============================================================================
 // DATA
@@ -272,7 +275,10 @@ function OverviewTab({ user, stats, reduce }) {
 
 function PrivacyTab({ user, reduce }) {
   const [exporting, setExporting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const navigate = useNavigate();
+  const { signOut } = useAuth();
+  const { confirm } = useConfirm();
 
   const handleExport = async () => {
     setExporting(true);
@@ -283,6 +289,30 @@ function PrivacyTab({ user, reduce }) {
       console.error('Export falhou:', err);
     } finally {
       setExporting(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    const ok = await confirm({
+      title: 'Excluir conta permanentemente?',
+      description: 'Esta ação é IRREVERSÍVEL. Todos os seus dados serão removidos, incluindo adoções em andamento, mensagens e configurações de privacidade.',
+      confirmLabel: 'Sim, excluir minha conta',
+      cancelLabel: 'Cancelar',
+      destructive: true,
+    });
+    if (!ok) return;
+    setDeleting(true);
+    try {
+      await deleteMyAccount(user);
+      await signOut();
+      navigate('/');
+    } catch (err) {
+      console.error('Delete account failed:', err);
+      toast.error(err?.code === 'auth/requires-recent-login'
+        ? 'Por segurança, saia e entre novamente antes de excluir sua conta.'
+        : 'Erro ao excluir conta. Tente novamente.');
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -320,11 +350,9 @@ function PrivacyTab({ user, reduce }) {
           Esta ação é <strong>permanente e irreversível</strong>. Todos os seus dados
           serão removidos, incluindo adoções em andamento e mensagens.
         </p>
-        <Button asChild variant="destructive" size="sm" className="mt-3">
-          <Link to="/excluir-conta">
-            <Trash2 className="mr-2 h-3.5 w-3.5" aria-hidden="true" />
-            Excluir conta permanentemente
-          </Link>
+        <Button onClick={handleDeleteAccount} disabled={deleting} variant="destructive" size="sm" className="mt-3">
+          <Trash2 className="mr-2 h-3.5 w-3.5" aria-hidden="true" />
+          {deleting ? 'Excluindo...' : 'Excluir conta permanentemente'}
         </Button>
       </motion.section>
     </motion.div>

@@ -614,7 +614,7 @@ export default function EventsUnifiedV3() {
             </motion.p>
             <motion.div variants={ANIM} className="mt-5 flex flex-wrap items-center gap-2">
               <Button asChild size="lg" className="border-0 bg-white text-violet-700 hover:bg-white/90">
-                <Link to="/comunidades">
+                <Link to="/comunidade">
                   <Users className="mr-1.5 h-4 w-4" aria-hidden="true" />
                   Ver comunidades
                   <ArrowRight className="ml-1.5 h-4 w-4" aria-hidden="true" />
@@ -920,7 +920,7 @@ export default function EventsUnifiedV3() {
           </p>
           <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
             <Button asChild size="lg">
-              <Link to="/comunidades">
+              <Link to="/comunidade">
                 <Users className="mr-1.5 h-4 w-4" aria-hidden="true" />
                 Ver comunidades
               </Link>

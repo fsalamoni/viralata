@@ -566,7 +566,7 @@ export default function ShelterAdminDashboardV3({ clubId: clubIdProp }) {
           action={
             tasks.length > 0 && (
               <Button asChild size="sm" variant="ghost" className="h-7 text-[11px]">
-                <Link to="/abrigos">
+                <Link to="/organizacoes">
                   Ver todos <ArrowUpRight className="ml-0.5 h-3 w-3" aria-hidden="true" />
                 </Link>
               </Button>
@@ -604,7 +604,7 @@ export default function ShelterAdminDashboardV3({ clubId: clubIdProp }) {
           action={
             apps.length > 0 && (
               <Button asChild size="sm" variant="ghost" className="h-7 text-[11px]">
-                <Link to="/abrigos">
+                <Link to="/organizacoes">
                   Ver todas <ArrowUpRight className="ml-0.5 h-3 w-3" aria-hidden="true" />
                 </Link>
               </Button>

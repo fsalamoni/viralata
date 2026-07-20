@@ -508,7 +508,7 @@ export default function CommunityDetailV3() {
               Tentar de novo
             </Button>
             <Button asChild>
-              <Link to="/comunidades">
+              <Link to="/comunidade">
                 Ver todas as comunidades
               </Link>
             </Button>
@@ -553,7 +553,7 @@ export default function CommunityDetailV3() {
               size="sm"
               className="text-white hover:bg-white/15"
             >
-              <Link to="/comunidades">
+              <Link to="/comunidade">
                 <ArrowLeft className="mr-1.5 h-4 w-4" aria-hidden="true" />
                 Voltar
               </Link>
@@ -1026,7 +1026,7 @@ export default function CommunityDetailV3() {
               variant="ghost"
               className="text-white hover:bg-white/15"
             >
-              <Link to="/comunidades">
+              <Link to="/comunidade">
                 Ver outras comunidades
                 <ArrowRight className="ml-1.5 h-4 w-4" aria-hidden="true" />
               </Link>

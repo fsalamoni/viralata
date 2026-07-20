@@ -521,7 +521,7 @@ function ConfirmationStep({ applicationId, pet }) {
           <Link to="/feed">Ver outros pets</Link>
         </Button>
         <Button asChild variant="outline">
-          <Link to="/profile?tab=adoptions">Acompanhar adoções</Link>
+          <Link to="/adoptions">Acompanhar adoções</Link>
         </Button>
       </motion.div>
     </motion.div>

@@ -26,7 +26,7 @@ import { usePetFeed, useCreateInterest } from '../hooks/usePets';
 import { hasKnownCoords, lookupCityCoordsByName, filterPetsByRadius, normalizePlaceText } from '../domain/geoDistance';
 import PetCard from '../components/PetCard';
 import SwipeDeck from '../components/SwipeDeck';
-import AdSlot from '@/components/AdSlot';
+import AdSlotUnified from "@/components/AdSlotUnified";
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -355,9 +355,10 @@ export default function PetFeedV3() {
           Aparece entre o SwipeDeck e "Todos os pets disponíveis" com
           margem balanceada em harmonia com a plataforma. */}
       <div className="my-8 sm:my-10">
-        <AdSlot
+        <AdSlotUnified
           slotId="feed-between-sections"
-          fallbackTitle="Espaço para parceiros"
+          position="feed_inline"
+          page="/feed"
           className="w-full"
         />
       </div>

@@ -767,7 +767,7 @@ export default function SearchPageV3() {
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline">
-              <Link to="/comunidades">
+              <Link to="/comunidade">
                 <Users className="mr-1.5 h-4 w-4" aria-hidden="true" />
                 Ver comunidades
               </Link>
