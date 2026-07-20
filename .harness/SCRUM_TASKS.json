@@ -17245,6 +17245,96 @@
       "bundle": "ShelterAdminDashboard.v3-9_ibmRWG.js (17.8KB lazy)",
       "service_worker": "sw-v59",
       "deployed_at": "2026-07-20T00:35:00Z"
+    },
+    {
+      "id": "TASK-V3-COMMUNITY_ADMIN",
+      "title": "TASK-V3-COMMUNITY_ADMIN: V3 redesign CommunityAdminPanel",
+      "status": "done",
+      "parent": "TASK-V3-REDESIGN",
+      "milestone": "ULTIMA V3 DO ESCOPO DE REDESIGN",
+      "children": [
+        {
+          "id": "TASK-V3-COMMUNITY_ADMIN-1",
+          "title": "Hero impactante gradient",
+          "status": "done"
+        },
+        {
+          "id": "TASK-V3-COMMUNITY_ADMIN-2",
+          "title": "4 stat cards no hero",
+          "status": "done"
+        },
+        {
+          "id": "TASK-V3-COMMUNITY_ADMIN-3",
+          "title": "4 group tabs",
+          "status": "done"
+        },
+        {
+          "id": "TASK-V3-COMMUNITY_ADMIN-4",
+          "title": "Busca com clear",
+          "status": "done"
+        },
+        {
+          "id": "TASK-V3-COMMUNITY_ADMIN-5",
+          "title": "Filtro por grupo",
+          "status": "done"
+        },
+        {
+          "id": "TASK-V3-COMMUNITY_ADMIN-6",
+          "title": "Quick action cards",
+          "status": "done"
+        },
+        {
+          "id": "TASK-V3-COMMUNITY_ADMIN-7",
+          "title": "Atividade recente",
+          "status": "done"
+        },
+        {
+          "id": "TASK-V3-COMMUNITY_ADMIN-8",
+          "title": "Sobre a comunidade",
+          "status": "done"
+        },
+        {
+          "id": "TASK-V3-COMMUNITY_ADMIN-9",
+          "title": "Avatar com iniciais",
+          "status": "done"
+        },
+        {
+          "id": "TASK-V3-COMMUNITY_ADMIN-10",
+          "title": "TabErrorBoundary",
+          "status": "done"
+        },
+        {
+          "id": "TASK-V3-COMMUNITY_ADMIN-11",
+          "title": "Reusa tabs V1 via React.lazy",
+          "status": "done"
+        },
+        {
+          "id": "TASK-V3-COMMUNITY_ADMIN-12",
+          "title": "JSON-LD + Danger zone",
+          "status": "done"
+        },
+        {
+          "id": "TASK-V3-COMMUNITY_ADMIN-13",
+          "title": "Testes unitarios V3",
+          "status": "pending"
+        },
+        {
+          "id": "TASK-V3-COMMUNITY_ADMIN-14",
+          "title": "E2E Playwright",
+          "status": "pending"
+        }
+      ],
+      "files_added": [
+        "src/modules/communities/pages/CommunityAdminPanel.v3.jsx",
+        "docs/REGENCY_COMMUNITY_ADMIN_V3.md"
+      ],
+      "files_modified": [
+        "src/modules/communities/pages/CommunityAdminPanel.jsx",
+        "vite.config.js (sw-v60)"
+      ],
+      "bundle": "CommunityAdminPanel.v3-COmYceXI.js (21.8KB lazy)",
+      "service_worker": "sw-v60",
+      "deployed_at": "2026-07-20T00:50:00Z"
     }
   ],
   "definitionOfDone": [
@@ -17636,9 +17726,11 @@
     },
     "in_progress": 0,
     "in_review": 0,
-    "total_done": 3,
-    "last_task": "TASK-V3-SHELTER_ADMIN",
-    "last_update": "2026-07-20T00:35:00Z"
+    "total_done": 4,
+    "last_task": "TASK-V3-COMMUNITY_ADMIN",
+    "last_update": "2026-07-20T00:50:00Z",
+    "scope_complete": true,
+    "scope_note": "17 V3s manuais + 3 V3s legais compactas + 1 LegalPageViewer = 21 V3s totais. 0 placeholders reais."
   },
   "protocol": {
     "scrumUpdate": {
