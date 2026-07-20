@@ -9,6 +9,7 @@
  */
 import { lazy, Suspense } from 'react';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
+import { Skeleton } from '@/components/ui/skeleton';
 import { FEATURE_FLAG } from '@/core/featureFlags';
 import ShelterAdminV1 from './ShelterAdminDashboard.v1';
 
