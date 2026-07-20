@@ -91,15 +91,16 @@ describe('cleanupStaleCaches', () => {
     expect(caches.delete).not.toHaveBeenCalledWith('google-fonts');
   });
 
-  it('unregister SWs antigos (sw.js até sw-v63.js), preserva sw-v64.js', async () => {
-    // Atualizado para v64 (2026-07-20) — preserva apenas sw-v64 (atual).
+  it('unregister SWs antigos (sw.js até sw-v66.js), preserva sw-v67.js', async () => {
+    // Atualizado para v67 (2026-07-20) — preserva apenas sw-v67 (atual).
     const caches = makeCacheStorage([]);
     globalThis.caches = caches;
     const regs = [
       makeReg('https://viralata.web.app/sw-v5.js'),
       makeReg('https://viralata.web.app/sw.js'),
-      makeReg('https://viralata.web.app/sw-v63.js'),
-      makeReg('https://viralata.web.app/sw-v64.js'),
+      makeReg('https://viralata.web.app/sw-v65.js'),
+      makeReg('https://viralata.web.app/sw-v66.js'),
+      makeReg('https://viralata.web.app/sw-v67.js'),
     ];
     Object.defineProperty(globalThis.navigator, 'serviceWorker', {
       value: { getRegistrations: async () => regs },
@@ -111,8 +112,9 @@ describe('cleanupStaleCaches', () => {
     expect(r.cleaned).toBe(true);
     expect(regs[0].unregister).toHaveBeenCalled();
     expect(regs[1].unregister).toHaveBeenCalled();
-    expect(regs[2].unregister).toHaveBeenCalled(); // v63 também é stale
-    expect(regs[3].unregister).not.toHaveBeenCalled(); // v64 preservado
+    expect(regs[2].unregister).toHaveBeenCalled(); // v65 stale
+    expect(regs[3].unregister).toHaveBeenCalled(); // v66 stale
+    expect(regs[4].unregister).not.toHaveBeenCalled(); // v67 preservado
   });
 
   it('lida com scriptURL undefined (active null)', async () => {

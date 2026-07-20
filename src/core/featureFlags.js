@@ -239,6 +239,11 @@ export const FEATURE_FLAG = Object.freeze({
   V3_PAGE_LOGIN: 'v3_page_login',
   V3_PAGE_LEGAL: 'v3_page_legal',
   V3_PAGE_PET_DETAIL: 'v3_page_pet_detail',
+  // TASK-V3-PET-DETAIL-VIEW: flag EXCLUSIVA da página PÚBLICA de
+  // visualização de pet (rota /pet/:petId, singular). Separada da
+  // V3_PAGE_PET_DETAIL (que rege a página de ADMIN em /pets/:petId).
+  // Ver docs/REGENCY_PET_DETAIL_VIEW_V3.md.
+  PET_DETAIL_VIEW_V1: 'pet_detail_view_v1',
   V3_PAGE_COMMUNITY_DETAIL: 'v3_page_community_detail',
   V3_PAGE_CLUB_DETAIL: 'v3_page_club_detail',
   V3_PAGE_PROFILE: 'v3_page_profile',
@@ -487,6 +492,10 @@ export const FEATURE_FLAG_META = Object.freeze({
     label: 'V3 · Páginas legais (privacidade, termos, legislação)',
     description: 'Redesign das páginas legais (já parcialmente refatoradas pelo TASK-021 CMS Markdown).',
   },
+  [FEATURE_FLAG.PET_DETAIL_VIEW_V1]: {
+    label: 'V3 · Visualização pública de pet (/pet/:petId)',
+    description: 'Página PÚBLICA de visualização de um pet (sem abas, sem botões de gestão). Apresenta o pet de forma atraente para que o visitante se interesse e queira adotar. Tem botão flutuante "Quero adotar" + "Administrar" (este último só visível para quem tem permissão de gestão do pet).',
+  },
   [FEATURE_FLAG.V3_PAGE_PET_DETAIL]: {
     label: 'V3 · PetDetail (/pets/:id)',
     description: 'Redesign da página de detalhe do pet.',
@@ -632,6 +641,10 @@ export const DEFAULT_FEATURE_FLAGS = Object.freeze({
   [FEATURE_FLAG.V3_PAGE_LOGIN]: false,
   [FEATURE_FLAG.V3_PAGE_LEGAL]: false,
   [FEATURE_FLAG.V3_PAGE_PET_DETAIL]: false,
+  // TASK-V3-PET-DETAIL-VIEW: ON por default (rota /pet/:petId pública).
+  // Quando user pediu 'arrume os botões de editar/excluir' — esta flag
+  // é a solução (página V3 não tem esses botões, só o admin tem).
+  [FEATURE_FLAG.PET_DETAIL_VIEW_V1]: true,
   [FEATURE_FLAG.V3_PAGE_COMMUNITY_DETAIL]: false,
   [FEATURE_FLAG.V3_PAGE_CLUB_DETAIL]: false,
   [FEATURE_FLAG.V3_PAGE_PROFILE]: false,

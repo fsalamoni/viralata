@@ -22,13 +22,11 @@ export function registerPwa() {
   // Em dev o SW não traz benefício e pode confundir o HMR; só em produção.
   if (import.meta.env.DEV) return;
 
-  // Bumped to sw-v66.js (2026-07-20) — MUST match vite.config.js filename.
-  // v65→v66: BUG-31 fix — adoptionService._cascadeApproval e
-  // shelterAnimalService.updateShelterAnimalProfile agora chamam
-  // ensureCanMutatePet antes de mutar pets. Defense-in-depth completa.
-  // adminUsersService test: userId → targetUserId (auditLog usa novo padrão).
-  // + 1755 linhas de testes E2E Playwright (smoke/auth/pet-flow/legal).
-  const swUrl = `${import.meta.env.BASE_URL || '/'}sw-v66.js`.replace(/\/{2,}/g, '/');
+  // Bumped to sw-v67.js (2026-07-20) — MUST match vite.config.js filename.
+  // v66→v67: TASK-V3-PET-DETAIL-VIEW — nova página PÚBLICA de visualização
+  // de pet (/pet/:petId, singular). Sem abas, sem botões de editar/excluir.
+  // Botão 'Administrar' SÓ visível para canManage. Flag PET_DETAIL_VIEW_V1.
+  const swUrl = `${import.meta.env.BASE_URL || '/'}sw-v67.js`.replace(/\/{2,}/g, '/');
 
   // IMPORTANTE: não recarregamos automaticamente quando o SW troca de
   // controller. O componente <SwUpdateBanner> (montado em Layout.jsx)

@@ -56,7 +56,9 @@ const LegalGate = lazy(() => import('@/components/legal/LegalGate'));
 // ─── Pets ─────────────────────────────────────────────────────────────────────
 const PetFeed = lazy(() => import('@/modules/pets/pages/PetFeed'));
 const PetDetail = lazy(() => import('@/modules/pets/pages/PetDetail'));
-const PublicPet = lazy(() => import('@/modules/pets/pages/PublicPet'));
+// TASK-V3-PET-DETAIL-VIEW: nova página PÚBLICA de visualização (V3 com
+// flag PET_DETAIL_VIEW_V1). Substitui o PublicPet legado na rota /pet/:petId.
+const PetDetailView = lazy(() => import('@/modules/pets/pages/PetDetailView'));
 const CreatePet = lazy(() => import('@/modules/pets/pages/CreatePet'));
 const MyPets = lazy(() => import('@/modules/pets/pages/MyPets'));
 const MyInterests = lazy(() => import('@/modules/pets/pages/MyInterests'));
@@ -374,7 +376,10 @@ export default function App() {
 
                 {/* ── Feed público de pets (auth opcional) ─────────────── */}
                 <Route path="/feed" element={withLayout('PetFeed', PetFeed)} />
-                <Route path="/pet/:petId" element={<PublicPet />} />
+                {/* TASK-V3-PET-DETAIL-VIEW: /pet/:petId (singular, PÚBLICO) usa
+                    nova página V3 (PetDetailView) com flag PET_DETAIL_VIEW_V1.
+                    Sem tabs, sem botões de editar/excluir. */}
+                <Route path="/pet/:petId" element={<PetDetailView />} />
                 {/* BUG ALTO-PUBLIC-1 (2026-07-20): /pets/:petId (plural) é o detalhe V3
                     autenticado. PetDetailV3 mostra botões de edição que dependem de
                     canManagePet (defense-in-depth). User anônimo não pode ter

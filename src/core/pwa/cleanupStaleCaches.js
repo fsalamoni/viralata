@@ -88,7 +88,8 @@ const STALE_SW_NAMES = [
   'sw-v63.js',
   'sw-v64.js',
   'sw-v65.js',
-  // sw-v66.js é o atual — preserva
+  'sw-v66.js',
+  // sw-v67.js é o atual — preserva
 ];
 
 /**
