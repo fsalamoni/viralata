@@ -16,6 +16,10 @@ import { db } from '@/core/config/firebase';
 import { doc, getDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { logger } from '@/core/lib/logger';
 import { createAuditLog } from '@/core/services/auditService';
+// BUG-31 (2026-07-20): updateShelterAnimalProfile muta diretamente o doc
+// do pet. Defense em profundidade: validate que o actor pode MUTAR o pet
+// antes do updateDoc.
+import { ensureCanMutatePet } from '@/modules/pets/services/petService';
 import {
   shelterAnimalProfileUpdateSchema,
   diffShelterProfile,
@@ -58,6 +62,11 @@ export async function updateShelterAnimalProfile(petId, updates, actor) {
     throw new Error('updates deve ser um objeto');
   }
   if (!actor?.uid) throw new Error('actor.uid é obrigatório');
+
+  // BUG-31 (2026-07-20): defense-in-depth — valida permissão ANTES de
+  // qualquer escrita no doc do pet. Firestore rules também bloqueiam
+  // (canManagePet), mas aqui dá feedback claro em PT-BR.
+  await ensureCanMutatePet(petId, actor);
 
   // 1. Validação Zod — rejeita silenciosamente campos extras (`.strict()`)
   //    e valida formato (microchip 15 dígitos, UF, ISO 8601, etc.)

@@ -71,6 +71,13 @@ vi.mock('@/modules/shelter/services/timelineService', () => ({
   addTimelineEvent: vi.fn().mockResolvedValue({ id: 'tl-evt' }),
 }));
 
+// BUG-31 (2026-07-20): adoptionService agora chama ensureCanMutatePet
+// no _cascadeApproval (defense-in-depth de permissões de pet). Mockamos
+// para não cascatear Firestore real.
+vi.mock('@/modules/pets/services/petService', () => ({
+  ensureCanMutatePet: vi.fn().mockResolvedValue(undefined),
+}));
+
 const {
   submitAdoptionApplication,
   listApplications,

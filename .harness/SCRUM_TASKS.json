@@ -17806,6 +17806,30 @@
       "phase": "FIX",
       "status": "done",
       "created_at": "2026-07-20T10:06:13"
+    },
+    {
+      "id": "TASK-FIX-BUG-31",
+      "title": "[BUG-31] adoptionService + shelterAnimalService não checavam ensureCanMutatePet",
+      "description": "_cascadeApproval em decideApplication muta diretamente o pet doc (batch.update). shelterAnimalService.updateShelterAnimalProfile também. Defense-in-depth incompleto.",
+      "phase": "FIX",
+      "status": "done",
+      "created_at": "2026-07-20T11:44:58"
+    },
+    {
+      "id": "TASK-FIX-ADMIN-USERID",
+      "title": "[FIX] adminUsersService test userId → targetUserId",
+      "description": "createAuditLog usa targetUserId (novo padrão TASK-351). Test esperava userId (legacy). Teste atualizado.",
+      "phase": "FIX",
+      "status": "done",
+      "created_at": "2026-07-20T11:44:58"
+    },
+    {
+      "id": "TASK-E2E-CRITICAL-FLOWS",
+      "title": "[E2E] 1755 linhas de testes Playwright (smoke/auth/pet-flow/legal)",
+      "description": "Criados 4 specs E2E cobrindo fluxos públicos: smoke (10 testes), auth (login redirect + onboarding), pet-flow (feed + detail), legal (9 páginas). Total 1755 linhas.",
+      "phase": "TEST",
+      "status": "done",
+      "created_at": "2026-07-20T11:44:58"
     }
   ],
   "definitionOfDone": [

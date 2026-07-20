@@ -22,13 +22,13 @@ export function registerPwa() {
   // Em dev o SW não traz benefício e pode confundir o HMR; só em produção.
   if (import.meta.env.DEV) return;
 
-  // Bumped to sw-v65.js (2026-07-20) — MUST match vite.config.js filename.
-  // v64→v65: BUG-30 fix — ensureCanMutatePet import estava FALTANDO
-  // em medicationService.js (causeava ReferenceError em runtime).
-  // cleanupStaleCaches test atualizado para v64 (preserva sw-v64, sw-v63 stale).
-  // Layout.legal-links test useLegalFooterHeight mock.
-  // vitest.setup matchMedia + ResizeObserver polyfills.
-  const swUrl = `${import.meta.env.BASE_URL || '/'}sw-v65.js`.replace(/\/{2,}/g, '/');
+  // Bumped to sw-v66.js (2026-07-20) — MUST match vite.config.js filename.
+  // v65→v66: BUG-31 fix — adoptionService._cascadeApproval e
+  // shelterAnimalService.updateShelterAnimalProfile agora chamam
+  // ensureCanMutatePet antes de mutar pets. Defense-in-depth completa.
+  // adminUsersService test: userId → targetUserId (auditLog usa novo padrão).
+  // + 1755 linhas de testes E2E Playwright (smoke/auth/pet-flow/legal).
+  const swUrl = `${import.meta.env.BASE_URL || '/'}sw-v66.js`.replace(/\/{2,}/g, '/');
 
   // IMPORTANTE: não recarregamos automaticamente quando o SW troca de
   // controller. O componente <SwUpdateBanner> (montado em Layout.jsx)

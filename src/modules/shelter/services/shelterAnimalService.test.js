@@ -38,6 +38,13 @@ vi.mock('@/core/services/auditService', () => ({
   createAuditLog: (...args) => mockCreateAuditLog(...args),
 }));
 
+// BUG-31 (2026-07-20): shelterAnimalService agora chama ensureCanMutatePet
+// no updateShelterAnimalProfile (defense-in-depth de permissões de pet).
+// Mockamos para não cascatear Firestore real.
+vi.mock('@/modules/pets/services/petService', () => ({
+  ensureCanMutatePet: vi.fn().mockResolvedValue(undefined),
+}));
+
 const { updateShelterAnimalProfile, getShelterAnimalProfile, backfillShelterProfileFields } =
   await import('./shelterAnimalService');
 const { INTAKE_TYPES, ASILOMAR_STATUSES } = await import('@/modules/shelter/domain/core/animal');

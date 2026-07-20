@@ -47,6 +47,10 @@ import {
 } from '@/modules/shelter/domain/legal/adoptionTerms';
 import { addTimelineEvent } from '@/modules/shelter/services/timelineService';
 import { getAdopterProfile } from '@/modules/shelter/services/adopterProfileService';
+// BUG-31 (2026-07-20): _cascadeApproval em decideApplication muta
+// diretamente o doc do pet (batch.update(petRef, ...)). Defense em
+// profundidade: validate que o actor pode MUTAR o pet antes do batch.
+import { ensureCanMutatePet } from '@/modules/pets/services/petService';
 
 const CLUBS_COLLECTION = 'clubs';
 const APPS_SUBCOLLECTION = 'adoption_workflow';
@@ -376,6 +380,12 @@ export async function cancelApplication(shelterClubId, applicationId, reason, ac
  */
 async function _cascadeApproval(shelterClubId, approvedAppId, petId, actor, notes) {
   if (!db || !petId) return;
+
+  // BUG-31 (2026-07-20): defense-in-depth — valida permissão ANTES de
+  // qualquer escrita (incluindo batch.update no doc do pet). Firestore
+  // rules também bloqueiam (canManagePet), mas aqui dá feedback claro
+  // em PT-BR para o abrigo.
+  await ensureCanMutatePet(petId, actor);
 
   // 1. Rejeitar outras pendentes
   const pendentes = await getDocs(query(

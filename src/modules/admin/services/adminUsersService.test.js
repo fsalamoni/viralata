@@ -102,7 +102,7 @@ describe('promoteToAdmin', () => {
     expect(payload.role).toBe('platform_admin');
     expect(payload.promoted_by).toBe(OWNER.uid);
     expect(mockCreateAuditLog).toHaveBeenCalledWith(
-      expect.objectContaining({ action: 'platform_admin_promoted', userId: 'target-1' }),
+      expect.objectContaining({ action: 'platform_admin_promoted', targetUserId: 'target-1' }),
     );
   });
 
