@@ -116,6 +116,12 @@ const AdminUserManagement = lazy(() => import('@/modules/admin/pages/AdminUserMa
 // Mock data — painel admin para carregar/limpar dados demo (TASK-400).
 const AdminMockData = lazy(() => import('@/modules/admin/pages/AdminMockData'));
 
+// TASK-V3-PARTNERS: Espaço de Parceiros
+const AdminPartners = lazy(() => import('@/modules/partners/pages/AdminPartners'));
+const AdminPartnerDetail = lazy(() => import('@/modules/partners/pages/AdminPartnerDetail'));
+const AdminPartnerNew = lazy(() => import('@/modules/partners/pages/AdminPartnerNew'));
+const AdminPartnerReports = lazy(() => import('@/modules/partners/pages/AdminPartnerReports'));
+
 // ─── QueryClient ─────────────────────────────────────────────────────────────
 // retry: 2 (default exponential backoff) — queries retry 2x before failing.
 // retry: false in individual useQuery disables retries for critical reads.
@@ -543,6 +549,24 @@ export default function App() {
                 <Route
                   path="/admin/mock-data"
                   element={<AdminRoute>{withLayout('AdminMockData', AdminMockData)}</AdminRoute>}
+                />
+
+                {/* TASK-V3-PARTNERS: Espaco de Parceiros */}
+                <Route
+                  path="/admin/parceiros"
+                  element={<AdminRoute>{withLayout('AdminPartners', AdminPartners)}</AdminRoute>}
+                />
+                <Route
+                  path="/admin/parceiros/novo"
+                  element={<AdminRoute>{withLayout('AdminPartnerNew', AdminPartnerNew)}</AdminRoute>}
+                />
+                <Route
+                  path="/admin/parceiros/relatorios"
+                  element={<AdminRoute>{withLayout('AdminPartnerReports', AdminPartnerReports)}</AdminRoute>}
+                />
+                <Route
+                  path="/admin/parceiros/:partnerId"
+                  element={<AdminRoute>{withLayout('AdminPartnerDetail', AdminPartnerDetail)}</AdminRoute>}
                 />
 
                 {/* ── Redirects legados ─────────────────────────────────── */}

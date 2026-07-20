@@ -31,7 +31,7 @@ import {
   BarChart3, ScrollText, Bell, SlidersHorizontal, Flag,
   Activity, Siren, Database, Search, X, AlertCircle, RefreshCw,
   ChevronRight, ArrowUpRight, Sparkles, Clock, CheckCircle2,
-  Server, Users2, Heart, MessageSquare,
+  Server, Users2, Heart, MessageSquare, Megaphone,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -73,6 +73,7 @@ const SECTIONS = [
   { id: 'pets', category: 'conteudo', icon: PawPrint, title: 'Gerenciar Pets', desc: 'Moderar anúncios, aprovar ou remover pets', link: '/admin/pets', tone: 'bg-primary/10 text-primary' },
   { id: 'orgs', category: 'conteudo', icon: Building2, title: 'Abrigos', desc: 'Moderar diretório de abrigos e organizações parceiras', link: '/admin/organizacoes', tone: 'bg-accent/10 text-accent' },
   { id: 'comms', category: 'conteudo', icon: Users2, title: 'Comunidades', desc: 'Gerenciar grupos, fóruns e espaços sociais de usuários', link: '/admin/comunidades', tone: 'bg-primary/10 text-primary' },
+  { id: 'partners', category: 'conteudo', icon: Megaphone, title: 'Espaço de Parceiros', desc: 'Gerenciar parceiros publicitários, banners e relatórios', link: '/admin/parceiros', tone: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300' },
   // MODERAÇÃO
   { id: 'reports', category: 'moderacao', icon: AlertTriangle, title: 'Denúncias', desc: 'Revisar denúncias de maus-tratos', link: '/admin/denuncias', tone: 'bg-destructive/10 text-destructive' },
   { id: 'users', category: 'moderacao', icon: UserCog, title: 'Usuários', desc: 'Gerenciar contas, papéis e banimentos', link: '/admin/usuarios', tone: 'bg-highlight/20 text-[hsl(30,60%,32%)]' },

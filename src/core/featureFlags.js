@@ -253,6 +253,8 @@ export const FEATURE_FLAG = Object.freeze({
   V3_PAGE_VOLUNTEER: 'v3_page_volunteer',
   V3_PAGE_MURAL: 'v3_page_mural',
   V3_PAGE_ADMIN: 'v3_page_admin',
+  ADMIN_PARTNER_SPACES_V1: 'admin_partner_spaces_v1',
+  PUBLIC_PARTNER_BANNERS_V1: 'public_partner_banners_v1',
 });
 
 /** Metadados de exibição para o painel de flags (admin master). */
@@ -633,6 +635,8 @@ export const DEFAULT_FEATURE_FLAGS = Object.freeze({
   [FEATURE_FLAG.V3_PAGE_VOLUNTEER]: false,
   [FEATURE_FLAG.V3_PAGE_MURAL]: false,
   [FEATURE_FLAG.V3_PAGE_ADMIN]: false,
+  [FEATURE_FLAG.ADMIN_PARTNER_SPACES_V1]: true,
+  [FEATURE_FLAG.PUBLIC_PARTNER_BANNERS_V1]: true,
 });
 
 /**
