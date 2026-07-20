@@ -60,8 +60,10 @@ export const AuthProvider = ({ children }) => {
             const newProfile = {
               uid: firebaseUser.uid,
               email: firebaseUser.email,
-              full_name: firebaseUser.displayName || '',
-              platform_name: firebaseUser.displayName || '',
+              // BUG ALTO (2026-07-20): fallback para email se displayName vazio.
+              // Evita loop infinito de onboarding quando Google não retorna nome.
+              full_name: firebaseUser.displayName || (firebaseUser.email ? firebaseUser.email.split('@')[0] : ''),
+              platform_name: firebaseUser.displayName || (firebaseUser.email ? firebaseUser.email.split('@')[0] : ''),
               phone: '',
               photo_url: firebaseUser.photoURL || '',
               // Localização

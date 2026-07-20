@@ -40,7 +40,9 @@ const PageNotFound = lazy(() => import('@/pages/PageNotFound'));
 const ShelterPublic = lazy(() => import('@/pages/ShelterPublic'));
 const BannedNotice = lazy(() => import('@/pages/BannedNotice'));
 const AdminDebugPage = lazy(() => import('@/pages/AdminDebugPage'));
-const PublicDebugPage = lazy(() => import('@/pages/PublicDebugPage'));
+// BUG CRÍTICO-1 (2026-07-20): rota /public-debug foi REMOVIDA.
+// Renderizava OrganizationAdminPanel + KanbanPage + VolunteersRoster
+// sem auth, via ?debug=1 na URL. Removida por vazamento de UI admin.
 
 // ─── Onboarding ───────────────────────────────────────────────────────────────
 const ShelterContractsList = lazy(() => import('@/modules/contracts/pages/ShelterContractsList'));
@@ -153,7 +155,17 @@ const queryClient = new QueryClient({
   },
 });
 
-const ONBOARDING_ALLOWED_PATHS = ['/onboarding', '/login', '/politica-privacidade', '/termos', '/legislacao'];
+// BUG CRÍTICO-5 (2026-07-20): inclui /legal/* para que o user consiga
+// ler os termos/privacidade/código de conduta durante o onboarding
+// (o consent step abre links target="_blank" para /legal/<slug>).
+const ONBOARDING_ALLOWED_PATHS = [
+  '/onboarding',
+  '/login',
+  '/politica-privacidade',
+  '/termos',
+  '/legislacao',
+  '/legal/',
+];
 
 // ─── Guards ───────────────────────────────────────────────────────────────────
 function ProtectedRoute({ children }) {
@@ -318,11 +330,6 @@ export default function App() {
                 <Route path="/voluntarios/seja" element={withLayout('VolunteerSignup', VolunteerSignup)} />
                 <Route path="/voluntarios/termo" element={withLayout('VolunteerTermPreview', VolunteerTermPreview)} />
 
-                {/* Debug page pública — sem auth. Use ?debug=1 para ativar */}
-                <Route
-                  path="/public-debug"
-                  element={withLayout('PublicDebugPage', PublicDebugPage)}
-                />
                 {/* Debug page (admin only) */}
                 <Route
                   path="/admin-debug"
@@ -335,10 +342,22 @@ export default function App() {
                 <Route path="/busca" element={withLayout('SearchPage', SearchPage)} />
                 <Route path="/vitrines" element={withLayout('PublicExhibitions', PublicExhibitions)} />
                 <Route path="/eventos" element={withLayout('EventsUnified', EventsUnified)} />
-                <Route path="/lares-temporarios/dashboard" element={withLayout('FosterDashboard', FosterDashboard)} />
-                <Route path="/abrigo/:clubId/onboarding" element={withLayout('ShelterOnboarding', ShelterOnboardingWizard)} />
+                {/* BUG CRÍTICO-3 (2026-07-20): rota foster dashboard agora exige auth */}
+                <Route
+                  path="/lares-temporarios/dashboard"
+                  element={<ProtectedRoute>{withLayout('FosterDashboard', FosterDashboard)}</ProtectedRoute>}
+                />
+                {/* BUG CRÍTICO-4 (2026-07-20): rota abrigo onboarding agora exige auth */}
+                <Route
+                  path="/abrigo/:clubId/onboarding"
+                  element={<ProtectedRoute>{withLayout('ShelterOnboarding', ShelterOnboardingWizard)}</ProtectedRoute>}
+                />
                 <Route path="/lares-temporarios/:uid/historico" element={withLayout('PublicFosterHistory', PublicFosterHistory)} />
-                <Route path="/abrigos/:clubId/admin/dashboard" element={withLayout('ShelterAdminDashboard', ShelterAdminDashboard)} />
+                {/* BUG CRÍTICO-2 (2026-07-20): rota shelter admin dashboard agora exige auth */}
+                <Route
+                  path="/abrigos/:clubId/admin/dashboard"
+                  element={<ProtectedRoute>{withLayout('ShelterAdminDashboard', ShelterAdminDashboard)}</ProtectedRoute>}
+                />
                 <Route path="/vitrines/:id" element={withLayout('PublicExhibitionDetail', PublicExhibitionDetail)} />
                 <Route path="/lares-temporarios" element={withLayout('PublicFosterPrograms', PublicFosterPrograms)} />
                 <Route path="/mural" element={withLayout('PublicMuralFeed', PublicMuralFeed)} />
@@ -356,7 +375,14 @@ export default function App() {
                 {/* ── Feed público de pets (auth opcional) ─────────────── */}
                 <Route path="/feed" element={withLayout('PetFeed', PetFeed)} />
                 <Route path="/pet/:petId" element={<PublicPet />} />
-                <Route path="/pets/:petId" element={withLayout('PetDetail', PetDetail)} />
+                {/* BUG ALTO-PUBLIC-1 (2026-07-20): /pets/:petId (plural) é o detalhe V3
+                    autenticado. PetDetailV3 mostra botões de edição que dependem de
+                    canManagePet (defense-in-depth). User anônimo não pode ter
+                    acesso. */}
+                <Route
+                  path="/pets/:petId"
+                  element={<ProtectedRoute>{withLayout('PetDetail', PetDetail)}</ProtectedRoute>}
+                />
 
                 {/* ── Pets autenticados ─────────────────────────────────── */}
                 <Route

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 import { PawPrint } from 'lucide-react';
@@ -40,7 +40,9 @@ export default function Login() {
   // FIX: authError?.message como dependência (antes omitido) — garante
   // que o toast aparece quando o erro muda mesmo que a ref authError
   // mantenha o mesmo objeto (memoização interna do auth provider).
-  const prevErrorRef = { current: null };
+  // BUG ALTO (2026-07-20): era objeto literal `{ current: null }` —
+  // recriado a cada render. Agora é useRef real para preservar entre renders.
+  const prevErrorRef = useRef(null);
   useEffect(() => {
     const msg = authError?.message;
     if (msg && msg !== prevErrorRef.current) {

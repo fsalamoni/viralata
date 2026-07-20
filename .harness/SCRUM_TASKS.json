@@ -17579,6 +17579,217 @@
       "parent_id": "TASK-FIX-BUG-17",
       "status": "done",
       "created_at": "2026-07-20T04:15:26"
+    },
+    {
+      "id": "TASK-FIX-BUG-23",
+      "title": "[BUG-23 CRÍTICO] /public-debug vazava admin UI sem auth",
+      "description": "Rota /public-debug?debug=1 renderizava OrganizationAdminPanel completo (Dashboard/Kanban/Volunteers/Medical/Reports/Indicators) sem nenhuma auth gate. Removido por vazamento de admin UI.",
+      "phase": "FIX",
+      "status": "done",
+      "created_at": "2026-07-20T05:41:24"
+    },
+    {
+      "id": "TASK-FIX-BUG-24",
+      "title": "[BUG-24 CRÍTICO] 3 rotas admin/abrigo sem ProtectedRoute",
+      "description": "/abrigos/:clubId/admin/dashboard, /abrigo/:clubId/onboarding, /lares-temporarios/dashboard estavam públicas. Adicionado ProtectedRoute em todas.",
+      "phase": "FIX",
+      "status": "done",
+      "created_at": "2026-07-20T05:41:24"
+    },
+    {
+      "id": "TASK-FIX-BUG-25",
+      "title": "[BUG-25 CRÍTICO] ONBOARDING_ALLOWED_PATHS não incluía /legal/",
+      "description": "User durante onboarding não conseguia abrir /legal/<slug> (links target=_blank do consent step). Adicionado /legal/ na whitelist.",
+      "phase": "FIX",
+      "status": "done",
+      "created_at": "2026-07-20T05:41:24"
+    },
+    {
+      "id": "TASK-FIX-ONBOARD-V2",
+      "title": "[BUG-19/20/21] Onboarding detecta 1ª vez vs upgrade vs edit",
+      "description": "OnboardingQuestionnaire não diferenciava 1ª vez de upgrade. User com profile_completed=true caía em loop. Adicionado: 1) pickStepsToShow() filtra por version+fields novos; 2) ?edit=1 mostra todos steps com pré-preenchimento; 3) step full_name novo (LGPD Art. 8 + displayName Google pode ser vazio); 4) profileCompletion.getMissingProfileFields() helper.",
+      "phase": "FIX",
+      "status": "done",
+      "created_at": "2026-07-20T05:41:24"
+    },
+    {
+      "id": "TASK-FIX-MISC-V64",
+      "title": "[BUG-26/27/28/29] Outros fixes v64",
+      "description": "26=mobile menu expandido (perfil/preferencias/radar), 27=/pets/:petId agora auth, 28=full_name fallback email, 29=Login.v1 useRef correto (era objeto literal).",
+      "phase": "FIX",
+      "status": "done",
+      "created_at": "2026-07-20T05:41:24"
+    },
+    {
+      "parent": "TASK-FIX-BUG-23",
+      "id": "TASK-FIX-23-1",
+      "title": "[23.1] Remover /public-debug do App.jsx + componente",
+      "phase": "FIX",
+      "parent_id": "TASK-FIX-BUG-23",
+      "status": "done",
+      "created_at": "2026-07-20T05:41:24"
+    },
+    {
+      "parent": "TASK-FIX-BUG-23",
+      "id": "TASK-FIX-23-2",
+      "title": "[23.2] Atualizar useArenaPageClasses test (whitelist)",
+      "phase": "FIX",
+      "parent_id": "TASK-FIX-BUG-23",
+      "status": "done",
+      "created_at": "2026-07-20T05:41:24"
+    },
+    {
+      "parent": "TASK-FIX-BUG-24",
+      "id": "TASK-FIX-24-1",
+      "title": "[24.1] ProtectedRoute em /abrigos/:clubId/admin/dashboard",
+      "phase": "FIX",
+      "parent_id": "TASK-FIX-BUG-24",
+      "status": "done",
+      "created_at": "2026-07-20T05:41:24"
+    },
+    {
+      "parent": "TASK-FIX-BUG-24",
+      "id": "TASK-FIX-24-2",
+      "title": "[24.2] ProtectedRoute em /abrigo/:clubId/onboarding",
+      "phase": "FIX",
+      "parent_id": "TASK-FIX-BUG-24",
+      "status": "done",
+      "created_at": "2026-07-20T05:41:24"
+    },
+    {
+      "parent": "TASK-FIX-BUG-24",
+      "id": "TASK-FIX-24-3",
+      "title": "[24.3] ProtectedRoute em /lares-temporarios/dashboard",
+      "phase": "FIX",
+      "parent_id": "TASK-FIX-BUG-24",
+      "status": "done",
+      "created_at": "2026-07-20T05:41:24"
+    },
+    {
+      "parent": "TASK-FIX-BUG-25",
+      "id": "TASK-FIX-25-1",
+      "title": "[25.1] ONBOARDING_ALLOWED_PATHS inclui /legal/",
+      "phase": "FIX",
+      "parent_id": "TASK-FIX-BUG-25",
+      "status": "done",
+      "created_at": "2026-07-20T05:41:24"
+    },
+    {
+      "parent": "TASK-FIX-ONBOARD-V2",
+      "id": "TASK-FIX-ONBOARD-1",
+      "title": "[ONBOARD.1] pickStepsToShow() filtra por version+newFields",
+      "phase": "FIX",
+      "parent_id": "TASK-FIX-ONBOARD-V2",
+      "status": "done",
+      "created_at": "2026-07-20T05:41:24"
+    },
+    {
+      "parent": "TASK-FIX-ONBOARD-V2",
+      "id": "TASK-FIX-ONBOARD-2",
+      "title": "[ONBOARD.2] ?edit=1 mode no /onboarding",
+      "phase": "FIX",
+      "parent_id": "TASK-FIX-ONBOARD-V2",
+      "status": "done",
+      "created_at": "2026-07-20T05:41:24"
+    },
+    {
+      "parent": "TASK-FIX-ONBOARD-V2",
+      "id": "TASK-FIX-ONBOARD-3",
+      "title": "[ONBOARD.3] Step full_name novo (displayName Google fallback)",
+      "phase": "FIX",
+      "parent_id": "TASK-FIX-ONBOARD-V2",
+      "status": "done",
+      "created_at": "2026-07-20T05:41:24"
+    },
+    {
+      "parent": "TASK-FIX-ONBOARD-V2",
+      "id": "TASK-FIX-ONBOARD-4",
+      "title": "[ONBOARD.4] Profile \"Editar\" link → /onboarding?edit=1",
+      "phase": "FIX",
+      "parent_id": "TASK-FIX-ONBOARD-V2",
+      "status": "done",
+      "created_at": "2026-07-20T05:41:24"
+    },
+    {
+      "parent": "TASK-FIX-ONBOARD-V2",
+      "id": "TASK-FIX-ONBOARD-5",
+      "title": "[ONBOARD.5] getMissingProfileFields() helper",
+      "phase": "FIX",
+      "parent_id": "TASK-FIX-ONBOARD-V2",
+      "status": "done",
+      "created_at": "2026-07-20T05:41:24"
+    },
+    {
+      "parent": "TASK-FIX-ONBOARD-V2",
+      "id": "TASK-FIX-ONBOARD-6",
+      "title": "[ONBOARD.6] Full name fallback para email no AuthContext",
+      "phase": "FIX",
+      "parent_id": "TASK-FIX-ONBOARD-V2",
+      "status": "done",
+      "created_at": "2026-07-20T05:41:24"
+    },
+    {
+      "parent": "TASK-FIX-MISC-V64",
+      "id": "TASK-FIX-26-1",
+      "title": "[26.1] MOBILE_MENU_EXTRA_ITEMS: perfil/preferencias/radar",
+      "phase": "FIX",
+      "parent_id": "TASK-FIX-MISC-V64",
+      "status": "done",
+      "created_at": "2026-07-20T05:41:24"
+    },
+    {
+      "parent": "TASK-FIX-MISC-V64",
+      "id": "TASK-FIX-27-1",
+      "title": "[27.1] ProtectedRoute em /pets/:petId (V3 autenticado)",
+      "phase": "FIX",
+      "parent_id": "TASK-FIX-MISC-V64",
+      "status": "done",
+      "created_at": "2026-07-20T05:41:24"
+    },
+    {
+      "parent": "TASK-FIX-MISC-V64",
+      "id": "TASK-FIX-29-1",
+      "title": "[29.1] Login.v1 useRef (era objeto literal) + useRef import",
+      "phase": "FIX",
+      "parent_id": "TASK-FIX-MISC-V64",
+      "status": "done",
+      "created_at": "2026-07-20T05:41:24"
+    },
+    {
+      "parent": "TASK-FIX-MISC-V64",
+      "id": "TASK-FIX-30-1",
+      "title": "[30.1] vitest.setup: matchMedia + ResizeObserver polyfills",
+      "phase": "FIX",
+      "parent_id": "TASK-FIX-MISC-V64",
+      "status": "done",
+      "created_at": "2026-07-20T05:41:24"
+    },
+    {
+      "parent": "TASK-FIX-MISC-V64",
+      "id": "TASK-FIX-30-2",
+      "title": "[30.2] useArenaPageClasses test whitelist atualizada",
+      "phase": "FIX",
+      "parent_id": "TASK-FIX-MISC-V64",
+      "status": "done",
+      "created_at": "2026-07-20T05:41:24"
+    },
+    {
+      "parent": "TASK-FIX-MISC-V64",
+      "id": "TASK-FIX-30-3",
+      "title": "[30.3] Layout.legal-links.test: useLegalFooterHeight mock",
+      "phase": "FIX",
+      "parent_id": "TASK-FIX-MISC-V64",
+      "status": "done",
+      "created_at": "2026-07-20T05:41:24"
+    },
+    {
+      "parent": "TASK-FIX-MISC-V64",
+      "id": "TASK-FIX-30-4",
+      "title": "[30.4] sw-v63 → sw-v64 + cleanupStaleCaches + registerPwa",
+      "phase": "FIX",
+      "parent_id": "TASK-FIX-MISC-V64",
+      "status": "done",
+      "created_at": "2026-07-20T05:41:24"
     }
   ],
   "definitionOfDone": [

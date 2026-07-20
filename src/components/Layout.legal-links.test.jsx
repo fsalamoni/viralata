@@ -38,6 +38,7 @@ vi.mock('@/core/lib/FeatureFlagsContext', () => ({
 
 vi.mock('@/components/LegalFooter', () => ({
   default: () => React.createElement('footer', { 'data-testid': 'legal-footer' }),
+  useLegalFooterHeight: () => 0,
 }));
 
 vi.mock('@/components/SwUpdateBanner', () => ({

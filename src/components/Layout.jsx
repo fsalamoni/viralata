@@ -37,8 +37,13 @@ const NAV_ITEMS = [
 
 // Menu mobile (hambúrguer) reaproveita o pill nav e soma os atalhos que no
 // desktop vivem só no menu do avatar, já que o mobile não tem esse menu.
+// BUG ALTO-NAV-11 (2026-07-20): agora inclui /perfil, /preferencias, /radar
+// (antes só tinha /meus-pets — user mobile perdia acesso a essas rotas).
 const MOBILE_MENU_EXTRA_ITEMS = [
+  { label: 'Meu Perfil', icon: User, to: '/perfil', auth: true },
+  { label: 'Preferências', icon: ShieldCheck, to: '/preferencias', auth: true },
   { label: 'Meus Pets', icon: Heart, to: '/meus-pets', auth: true },
+  { label: 'Radar de pets', icon: Radar, to: '/radar', auth: true },
 ];
 
 /** Botão de toggle dark/light mode no header — TASK-618 */

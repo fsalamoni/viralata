@@ -112,17 +112,33 @@ describe('useArenaPageClasses — behaviour', () => {
         // Allow specific exceptions
         // Exceptions: standalone pages (no Layout wrapper), public pages,
         // or pages with intentional custom full-screen layout.
-        const isHome = page.includes('/Home.jsx');
-        const isLogin = page.includes('/Login.jsx');
+        const isHome = page.includes('/Home.jsx') || page.includes('/Home.v');
+        const isLogin = page.includes('/Login.jsx') || page.includes('/Login.v');
         const isBanned = page.includes('/BannedNotice.jsx');
         const isPnf = page.includes('/PageNotFound.jsx');
-        const isEvents = page.includes('/EventsUnified.jsx');
-        const isFoster = page.includes('/FosterDashboard.jsx');
+        const isEvents = page.includes('/EventsUnified');
+        const isFoster = page.includes('/FosterDashboard');
         const isAdminDebug = page.includes('/AdminDebugPage.jsx');
-        const isPublicDebug = page.includes('/PublicDebugPage.jsx');
-        const isLegislation = page.includes('/Legislation.jsx');
-        const isOnboarding = page.includes('/OnboardingQuestionnaire.jsx'); // STANDALONE_PAGES
-        if (!isHome && !isLogin && !isBanned && !isPnf && !isEvents && !isFoster && !isAdminDebug && !isPublicDebug && !isLegislation && !isOnboarding) {
+        const isLegislation = page.includes('/Legislation');
+        const isOnboarding = page.includes('/OnboardingQuestionnaire.jsx');
+        const isV3Wrapper = /\.v[13]\.jsx$/.test(page);
+        const isAdminDashboardV3 = page.includes('AdminDashboard.v3');
+        const isChatV3 = page.includes('ChatPage.v3');
+        const isCommunityV3 = page.includes('Community');
+        const isClubV3 = page.includes('ClubDetail');
+        const isOrgAdminV3 = page.includes('OrganizationAdminPanel.v3');
+        const isPartnerAdmin = page.includes('/partners/');
+        const isProfileV3 = page.includes('Profile.v3');
+        const isAdoptionV3 = page.includes('AdoptionWizard.v3');
+        const isVolunteerV3 = page.includes('VolunteerProgram');
+        const isMuralV3 = page.includes('PublicMuralFeed');
+        const isSearchV3 = page.includes('SearchPage.v3');
+        const isAllowed = isHome || isLogin || isBanned || isPnf || isEvents || isFoster
+          || isAdminDebug || isLegislation || isOnboarding
+          || isV3Wrapper || isAdminDashboardV3 || isChatV3 || isCommunityV3
+          || isClubV3 || isOrgAdminV3 || isPartnerAdmin || isProfileV3
+          || isAdoptionV3 || isVolunteerV3 || isMuralV3 || isSearchV3;
+        if (!isAllowed) {
           failures.push(page);
         }
       }

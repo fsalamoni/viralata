@@ -161,7 +161,7 @@ function ProfileHero({ user, stats, reduce }) {
           </motion.p>
           <motion.div variants={fadeUp} className="mt-3 flex flex-wrap gap-2">
             <Button asChild size="sm" variant="secondary" className="bg-white/20 text-white hover:bg-white/30 border-0">
-              <Link to="/onboarding">
+              <Link to="/onboarding?edit=1">
                 <Edit className="mr-2 h-3.5 w-3.5" aria-hidden="true" />
                 Editar perfil
               </Link>

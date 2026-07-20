@@ -56,6 +56,9 @@ export const QUESTIONNAIRE_CHANGELOG = [
  * @returns {Array<{id, field, label, type, options?}>}
  */
 export const QUESTIONNAIRE_FIELDS = [
+  // BUG ALTO (2026-07-20): full_name adicionado como campo versionado
+  // para resolver o problema de displayName Google vazio.
+  { id: 'full_name', field: 'full_name', label: 'Nome completo', type: 'text', minLength: 2 },
   { id: 'housing_type', field: 'housing_type', label: 'Tipo de moradia', type: 'radio' },
   { id: 'daily_walks', field: 'daily_walks', label: 'Rotina de passeios', type: 'radio' },
   { id: 'has_children', field: 'has_children', label: 'Tem crianças', type: 'boolean' },
