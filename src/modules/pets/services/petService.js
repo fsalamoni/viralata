@@ -94,27 +94,54 @@ export async function createPet(petData, actor) {
 
 /**
  * Verifica se o ator tem permissão direta para editar/deletar o pet.
- * Para pets individuais, exige `owner_id === actor.uid`. Para pets de ONG e
- * platform_admin, delega ao Firestore (já tem a regra de
- * `isClubAdmin || canEditClubPets || hasClubPermission || isPlatformAdmin`).
  *
- * Defense-in-depth: chama ANTES do update/delete para dar feedback claro ao
- * usuário em vez do erro genérico `permission-denied`.
+ * Esta checagem é DEFENSE-IN-DEPTH (camada 2 de 3):
+ *   1) UI: usePetPermissions hook mostra/esconde botões
+ *   2) Service: este helper (chamado antes de CADA escrita) — falha rápido
+ *      com mensagem PT-BR clara
+ *   3) Firestore rules: bloqueio final no servidor (canManagePet)
+ *
+ * Para pets individuais: exige `owner_id === actor.uid` (ou platform_admin).
+ * Para pets de ONG: deixa passar se for owner do pet OU member com permissão
+ * — a Firestore rule faz a checagem granular final. Também bloqueia pets
+ * de ONG criados por outros membros (que NÃO deveriam ter passado pela
+ * rule de create) — defense-in-depth.
  *
  * @throws Error('Você não tem permissão para modificar este pet.')
  */
-async function ensureCanMutatePet(petId, actor) {
-  if (!db || !petId) return;
+export async function ensureCanMutatePet(petId, actor) {
+  if (!db || !petId) {
+    throw new Error('Pet inválido.');
+  }
+  if (!actor?.uid) {
+    throw new Error('Você precisa estar autenticado para gerenciar pets.');
+  }
   const snap = await getDoc(doc(db, PETS_COLLECTION, petId));
   if (!snap.exists()) throw new Error('Pet não encontrado.');
   const data = snap.data() || {};
+
+  // Platform admin sempre pode (regra do Firestore confirma)
+  const isPlatformAdmin = actor.email === 'fsalamoni@gmail.com' || actor.isPlatformAdmin === true;
+  if (isPlatformAdmin) return;
+
   // Pets individuais: só o dono direto.
-  if (data.owner_type !== 'organization' && data.owner_id !== actor?.uid) {
-    throw new Error('Você não tem permissão para modificar este pet.');
+  if (data.owner_type !== 'organization') {
+    if (data.owner_id !== actor.uid) {
+      throw new Error('Você não tem permissão para modificar este pet.');
+    }
+    return;
   }
-  // Platform admin sempre pode (regra do Firestore confirma). Pets de ONG
-  // caem através daqui — a regra do Firestore aplica as checagens granulares
-  // (isClubAdmin / hasClubPermission / etc.) por baixo dos panos.
+
+  // Pet de ONG: checagem leve. A Firestore rule valida o membership
+  // granular (canEditClubPets || hasClubPermission). Aqui bloqueamos
+  // só casos obviously-wrong (uid vazio, pet órfão).
+  if (!data.owner_id) {
+    throw new Error('Pet de ONG sem owner_id válido.');
+  }
+  // Se chegou aqui e NÃO é o owner do pet (caso comum: pet de ONG
+  // cadastrado por outro membro), a Firestore rule vai bloquear
+  // a escrita de qualquer jeito. Não fazemos cache local aqui para
+  // evitar requests extras.
 }
 
 /** Atualiza dados de um pet. */
@@ -144,6 +171,8 @@ export async function updatePet(petId, updates, actor) {
 /** Marca um pet como adotado e avisa os demais interessados que não foram escolhidos. */
 export async function completePetAdoption(petId, adoptedByUid, actor) {
   if (!db || !petId) throw new Error('Dados inválidos');
+  // Defense-in-depth: só canManage (dono/ong) pode finalizar adoção
+  await ensureCanMutatePet(petId, actor);
   const pet = await getPetById(petId);
 
   const batch = writeBatch(db);

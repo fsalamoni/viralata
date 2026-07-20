@@ -116,7 +116,7 @@ export default function PetTreatmentForm({ open, onOpenChange, petId, treatment 
         await updateMut.mutateAsync({ treatmentId: treatment.id, updates: payload });
         toast.success('Tratamento atualizado');
       } else {
-        await createMut.mutateAsync({ data: payload, actor: user });
+        await createMut.mutateAsync({ data: payload });
         toast.success('Tratamento registrado');
       }
       onOpenChange(false);

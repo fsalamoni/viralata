@@ -92,7 +92,7 @@ export default function PetDevolutionForm({ open, onOpenChange, petId, isAdopter
       returned_by_uid: user?.uid || null,
     };
     try {
-      await createMut.mutateAsync({ data: payload, actor: user });
+      await createMut.mutateAsync({ data: payload });
       toast.success('Devolução registrada. Obrigado pelo retorno.');
       onOpenChange(false);
     } catch (err) {

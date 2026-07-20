@@ -17439,6 +17439,146 @@
           "status": "done"
         }
       ]
+    },
+    {
+      "id": "TASK-FIX-BUG-15",
+      "title": "[BUG-15] ShelterAdminDashboard não funciona",
+      "description": "Componente V3 do dashboard pessoal do admin estava sempre mostrando empty state \"rollout gradual\". Causa raiz: feature flag SHELTER_ADMIN_DASHBOARD_V1 NÃO EXISTIA, e a query de applications usava coleção errada (adoption_applications vs adoption_workflow).",
+      "phase": "FIX",
+      "status": "done",
+      "created_at": "2026-07-20T04:15:26"
+    },
+    {
+      "id": "TASK-FIX-BUG-16",
+      "title": "[BUG-16] VolunteerSignup trava após ler termo + check",
+      "description": "User reportou que o checkbox de aceite ficava disabled quando o texto do termo cabia em max-h-[50vh]. Causa raiz: onScroll handler só disparava em scroll event, mas texto curto não tem evento de scroll.",
+      "phase": "FIX",
+      "status": "done",
+      "created_at": "2026-07-20T04:15:26"
+    },
+    {
+      "id": "TASK-FIX-BUG-17",
+      "title": "[BUG-17] Pet permissions defense-in-depth",
+      "description": "Subcoleções de pet (vet_visits, treatments, care_log, medications, devolutions, adopters_history) tinham services que faziam deleteDoc/updateDoc DIRETO sem checar canManage. UI tinha canManage mas service não, e Firestore rule canManagePet não incluía platform admin.",
+      "phase": "FIX",
+      "status": "done",
+      "created_at": "2026-07-20T04:15:26"
+    },
+    {
+      "id": "TASK-FIX-BUG-18",
+      "title": "[BUG-18] Documentos legais (verificação completa)",
+      "description": "Verificar que 6 v2.js files existem, 3 static fallbacks (200+ linhas cada), 6 PUBLIC_SLUGS em LegalPageViewer e LegalFooter, legal_docs collection OK no Firestore.",
+      "phase": "FIX",
+      "status": "done",
+      "created_at": "2026-07-20T04:15:26"
+    },
+    {
+      "parent": "TASK-FIX-BUG-15",
+      "id": "TASK-FIX-15-1",
+      "title": "[15.1] Adicionar flag SHELTER_ADMIN_DASHBOARD_V1 (constants + meta + default ON)",
+      "phase": "FIX",
+      "parent_id": "TASK-FIX-BUG-15",
+      "status": "done",
+      "created_at": "2026-07-20T04:15:26"
+    },
+    {
+      "parent": "TASK-FIX-BUG-15",
+      "id": "TASK-FIX-15-2",
+      "title": "[15.2] Bump FLAGS_MIGRATION_VERSION 4 → 5 (usuários existentes migram)",
+      "phase": "FIX",
+      "parent_id": "TASK-FIX-BUG-15",
+      "status": "done",
+      "created_at": "2026-07-20T04:15:26"
+    },
+    {
+      "parent": "TASK-FIX-BUG-15",
+      "id": "TASK-FIX-15-3",
+      "title": "[15.3] Atualizar teste FeatureFlagsContext.migration.test.js (5 expected)",
+      "phase": "FIX",
+      "parent_id": "TASK-FIX-BUG-15",
+      "status": "done",
+      "created_at": "2026-07-20T04:15:26"
+    },
+    {
+      "parent": "TASK-FIX-BUG-15",
+      "id": "TASK-FIX-15-4",
+      "title": "[15.4] Trocar adoption_applications → adoption_workflow no ShelterAdminDashboard",
+      "phase": "FIX",
+      "parent_id": "TASK-FIX-BUG-15",
+      "status": "done",
+      "created_at": "2026-07-20T04:15:26"
+    },
+    {
+      "parent": "TASK-FIX-BUG-15",
+      "id": "TASK-FIX-15-5",
+      "title": "[15.5] Trocar string flag por SHELTER_FEATURE_FLAG.SHELTER_ADMIN_DASHBOARD_V1 constant",
+      "phase": "FIX",
+      "parent_id": "TASK-FIX-BUG-15",
+      "status": "done",
+      "created_at": "2026-07-20T04:15:26"
+    },
+    {
+      "parent": "TASK-FIX-BUG-16",
+      "id": "TASK-FIX-16-1",
+      "title": "[16.1] Criar useScrollEnd hook com ResizeObserver (src/core/hooks/useScrollEnd.js)",
+      "phase": "FIX",
+      "parent_id": "TASK-FIX-BUG-16",
+      "status": "done",
+      "created_at": "2026-07-20T04:15:26"
+    },
+    {
+      "parent": "TASK-FIX-BUG-16",
+      "id": "TASK-FIX-16-2",
+      "title": "[16.2] Refatorar VolunteerSignup.jsx para usar useScrollEnd + allowAccept",
+      "phase": "FIX",
+      "parent_id": "TASK-FIX-BUG-16",
+      "status": "done",
+      "created_at": "2026-07-20T04:15:26"
+    },
+    {
+      "parent": "TASK-FIX-BUG-16",
+      "id": "TASK-FIX-16-3",
+      "title": "[16.3] Criar 3 testes useScrollEnd.test.js (curto, longo, scroll-to-end)",
+      "phase": "FIX",
+      "parent_id": "TASK-FIX-BUG-16",
+      "status": "done",
+      "created_at": "2026-07-20T04:15:26"
+    },
+    {
+      "parent": "TASK-FIX-BUG-17",
+      "id": "TASK-FIX-17-1",
+      "title": "[17.1] Exportar ensureCanMutatePet + adicionar isPlatformOwnerAuth check (petService)",
+      "phase": "FIX",
+      "parent_id": "TASK-FIX-BUG-17",
+      "status": "done",
+      "created_at": "2026-07-20T04:15:26"
+    },
+    {
+      "parent": "TASK-FIX-BUG-17",
+      "id": "TASK-FIX-17-2",
+      "title": "[17.2] Adicionar ensureCanMutatePet em petMedicalService (vet_visits, treatments, care_log, medications)",
+      "phase": "FIX",
+      "parent_id": "TASK-FIX-BUG-17",
+      "status": "done",
+      "created_at": "2026-07-20T04:15:26"
+    },
+    {
+      "parent": "TASK-FIX-BUG-17",
+      "id": "TASK-FIX-17-3",
+      "title": "[17.3] Adicionar ensureCanMutatePet em petHistoryService (devolutions, adopters_history)",
+      "phase": "FIX",
+      "parent_id": "TASK-FIX-BUG-17",
+      "status": "done",
+      "created_at": "2026-07-20T04:15:26"
+    },
+    {
+      "parent": "TASK-FIX-BUG-17",
+      "id": "TASK-FIX-17-4",
+      "title": "[17.4] Refatorar usePetHistory + usePetMedical para usar useAuth().uid (não payload)",
+      "phase": "FIX",
+      "parent_id": "TASK-FIX-BUG-17",
+      "status": "done",
+      "created_at": "2026-07-20T04:15:26"
     }
   ],
   "definitionOfDone": [

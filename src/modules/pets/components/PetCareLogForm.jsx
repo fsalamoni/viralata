@@ -80,7 +80,7 @@ export default function PetCareLogForm({ open, onOpenChange, petId, defaultType 
       next_due_date: data.next_due_date || null,
     };
     try {
-      await createMut.mutateAsync({ data: payload, actor: user });
+      await createMut.mutateAsync({ data: payload });
       toast.success('Cuidado registrado');
       onOpenChange(false);
     } catch (err) {

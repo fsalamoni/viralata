@@ -4,6 +4,17 @@
  * TASK-V3-PET-DETAIL-FULL-05: subcoleções `devolutions`, `adopters_history`
  * em `pets/{petId}/`.
  *
+ * DEFENSE-IN-DEPTH (2026-07-20): TODAS as operações de escrita chamam
+ * `ensureCanMutatePet` ANTES de tocar o Firestore. Isso evita que QUALQUER
+ * usuário autenticado (que não tenha permissão) consiga modificar histórico
+ * de pets alheios — mesmo que o front-end tenha um bug ou o usuário force
+ * a chamada via devtools.
+ *
+ * As Firestore rules JÁ bloqueiam no servidor, mas esta camada:
+ * 1. Dá feedback CLARO ao usuário (toast.error com mensagem PT-BR)
+ * 2. Evita requests desnecessários que retornariam permission-denied
+ * 3. É mais fácil de testar (defesa local)
+ *
  * @see docs/V3_PET_DETAIL_FULL_PLAN.md
  */
 import {
@@ -12,13 +23,14 @@ import {
 } from 'firebase/firestore';
 import { db } from '@/core/config/firebase';
 import { logger } from '@/core/lib/logger';
+import { ensureCanMutatePet } from './petService';
 
 // ============================================================================
 // DEVOLUTIONS — Devoluções
 // ============================================================================
 
 /**
- * Lista devoluções do pet.
+ * Lista devoluções do pet. Leitura PÚBLICA (regra Firestore).
  */
 export async function listDevolutions(petId, maxResults = 50) {
   if (!db || !petId) return [];
@@ -32,18 +44,19 @@ export async function listDevolutions(petId, maxResults = 50) {
 }
 
 /**
- * Registra uma devolução.
+ * Registra uma devolução. Só canManage (owner do pet, membro da ONG
+ * com permissão, ou platform_admin).
  *
  * @param {string} petId
  * @param {object} data
  *   - devolution_date: ISO
  *   - reason: string (≥ 10 chars) — motivo principal
- *   - reason_category: enum (allergy, behavior, housing, health, family_change, other)
+ *   - reason_category: enum
  *   - returned_by_uid: uid do adotante que devolveu
  *   - returned_by_name: nome
  *   - notes: string (opcional)
- *   - pet_condition: enum (excellent, good, fair, poor) — estado do pet na devolução
- *   - foster_to_shelter: boolean — se veio via LT
+ *   - pet_condition: enum
+ *   - foster_to_shelter: boolean
  * @param {object} actor (uid + displayName)
  */
 export async function createDevolution(petId, data, actor) {
@@ -51,6 +64,7 @@ export async function createDevolution(petId, data, actor) {
   if (!data.reason || data.reason.trim().length < 10) {
     throw new Error('Motivo da devolução deve ter ao menos 10 caracteres');
   }
+  await ensureCanMutatePet(petId, actor);
   const payload = {
     ...data,
     created_at: serverTimestamp(),
@@ -62,16 +76,18 @@ export async function createDevolution(petId, data, actor) {
   return ref.id;
 }
 
-export async function updateDevolution(petId, devolutionId, updates) {
+export async function updateDevolution(petId, devolutionId, updates, actor) {
   if (!db) throw new Error('Firebase não disponível');
+  await ensureCanMutatePet(petId, actor);
   await updateDoc(doc(db, 'pets', petId, 'devolutions', devolutionId), {
     ...updates,
     updated_at: serverTimestamp(),
   });
 }
 
-export async function deleteDevolution(petId, devolutionId) {
+export async function deleteDevolution(petId, devolutionId, actor) {
   if (!db) throw new Error('Firebase não disponível');
+  await ensureCanMutatePet(petId, actor);
   await deleteDoc(doc(db, 'pets', petId, 'devolutions', devolutionId));
 }
 
@@ -80,7 +96,7 @@ export async function deleteDevolution(petId, devolutionId) {
 // ============================================================================
 
 /**
- * Lista o histórico de adotantes do pet.
+ * Lista o histórico de adotantes do pet. Leitura PÚBLICA.
  */
 export async function listAdoptersHistory(petId, maxResults = 50) {
   if (!db || !petId) return [];
@@ -94,7 +110,7 @@ export async function listAdoptersHistory(petId, maxResults = 50) {
 }
 
 /**
- * Registra um adotante no histórico.
+ * Registra um adotante no histórico. Só canManage.
  *
  * @param {string} petId
  * @param {object} data
@@ -102,14 +118,16 @@ export async function listAdoptersHistory(petId, maxResults = 50) {
  *   - adopter_name: string
  *   - adopter_email: string
  *   - adopter_phone: string
- *   - start_date: ISO (data da adoção)
- *   - end_date: ISO (data de devolução, null se ativo)
- *   - status: enum (active, returned, transferred, deceased)
- *   - adoption_id: id da adoption (link)
+ *   - start_date: ISO
+ *   - end_date: ISO
+ *   - status: enum
+ *   - adoption_id: id
  *   - notes: string
+ * @param {object} actor
  */
 export async function createAdopterHistory(petId, data, actor) {
   if (!db) throw new Error('Firebase não disponível');
+  await ensureCanMutatePet(petId, actor);
   const payload = {
     ...data,
     created_at: serverTimestamp(),
@@ -121,16 +139,18 @@ export async function createAdopterHistory(petId, data, actor) {
   return ref.id;
 }
 
-export async function updateAdopterHistory(petId, historyId, updates) {
+export async function updateAdopterHistory(petId, historyId, updates, actor) {
   if (!db) throw new Error('Firebase não disponível');
+  await ensureCanMutatePet(petId, actor);
   await updateDoc(doc(db, 'pets', petId, 'adopters_history', historyId), {
     ...updates,
     updated_at: serverTimestamp(),
   });
 }
 
-export async function deleteAdopterHistory(petId, historyId) {
+export async function deleteAdopterHistory(petId, historyId, actor) {
   if (!db) throw new Error('Firebase não disponível');
+  await ensureCanMutatePet(petId, actor);
   await deleteDoc(doc(db, 'pets', petId, 'adopters_history', historyId));
 }
 

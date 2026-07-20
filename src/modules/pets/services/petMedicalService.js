@@ -9,6 +9,10 @@
  *  - read: público (transparência)
  *  - write: dono do pet ou platform_admin
  *
+ * DEFENSE-IN-DEPTH (2026-07-20): TODAS as escritas chamam `ensureCanMutatePet`
+ * ANTES de tocar o Firestore. As Firestore rules JÁ bloqueiam no servidor,
+ * mas esta camada dá feedback claro ao usuário.
+ *
  * @see docs/V3_PET_DETAIL_FULL_PLAN.md
  */
 import {
@@ -17,6 +21,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '@/core/config/firebase';
 import { logger } from '@/core/lib/logger';
+import { ensureCanMutatePet } from './petService';
 
 // ============================================================================
 // VET VISITS — Consultas Veterinárias
@@ -41,7 +46,7 @@ export async function listVetVisits(petId, maxResults = 50) {
 }
 
 /**
- * Cria uma nova consulta veterinária.
+ * Cria uma nova consulta veterinária. Só canManage.
  *
  * @param {string} petId
  * @param {object} data
@@ -58,6 +63,7 @@ export async function listVetVisits(petId, maxResults = 50) {
  */
 export async function createVetVisit(petId, data, actor) {
   if (!db) throw new Error('Firebase não disponível');
+  await ensureCanMutatePet(petId, actor);
   const payload = {
     ...data,
     created_at: serverTimestamp(),
@@ -70,10 +76,11 @@ export async function createVetVisit(petId, data, actor) {
 }
 
 /**
- * Atualiza uma consulta existente.
+ * Atualiza uma consulta existente. Só canManage.
  */
-export async function updateVetVisit(petId, visitId, updates) {
+export async function updateVetVisit(petId, visitId, updates, actor) {
   if (!db) throw new Error('Firebase não disponível');
+  await ensureCanMutatePet(petId, actor);
   await updateDoc(doc(db, 'pets', petId, 'vet_visits', visitId), {
     ...updates,
     updated_at: serverTimestamp(),
@@ -81,10 +88,13 @@ export async function updateVetVisit(petId, visitId, updates) {
 }
 
 /**
- * Deleta uma consulta (apenas platform_admin).
+ * Deleta uma consulta. Só canManage (Firestore rules também exigem
+ * platform_admin para delete — aqui exigimos o mínimo: ownership ou
+ * admin do clube. A Firestore rule vai recusar platform_admin-only).
  */
-export async function deleteVetVisit(petId, visitId) {
+export async function deleteVetVisit(petId, visitId, actor) {
   if (!db) throw new Error('Firebase não disponível');
+  await ensureCanMutatePet(petId, actor);
   await deleteDoc(doc(db, 'pets', petId, 'vet_visits', visitId));
 }
 
@@ -94,9 +104,6 @@ export async function deleteVetVisit(petId, visitId) {
 
 /**
  * Lista os tratamentos do pet.
- *
- * @param {string} petId
- * @returns {Promise<Treatment[]>}
  */
 export async function listTreatments(petId, maxResults = 50) {
   if (!db || !petId) return [];
@@ -110,22 +117,11 @@ export async function listTreatments(petId, maxResults = 50) {
 }
 
 /**
- * Cria um novo tratamento.
- *
- * @param {string} petId
- * @param {object} data
- *   - name: string (ex: "Sarna", "Ferida pata", "Otite")
- *   - type: enum (parasitic, injury, infection, chronic, rehab, other)
- *   - status: enum (in_progress, completed, suspended, paused)
- *   - start_date: ISO
- *   - end_date: ISO (opcional, se status=completed)
- *   - description: string
- *   - medication: string (opcional)
- *   - dosage: string (opcional)
- *   - vet_name: string
+ * Cria um novo tratamento. Só canManage.
  */
 export async function createTreatment(petId, data, actor) {
   if (!db) throw new Error('Firebase não disponível');
+  await ensureCanMutatePet(petId, actor);
   const payload = {
     ...data,
     status: data.status || 'in_progress',
@@ -138,16 +134,18 @@ export async function createTreatment(petId, data, actor) {
   return ref.id;
 }
 
-export async function updateTreatment(petId, treatmentId, updates) {
+export async function updateTreatment(petId, treatmentId, updates, actor) {
   if (!db) throw new Error('Firebase não disponível');
+  await ensureCanMutatePet(petId, actor);
   await updateDoc(doc(db, 'pets', petId, 'treatments', treatmentId), {
     ...updates,
     updated_at: serverTimestamp(),
   });
 }
 
-export async function deleteTreatment(petId, treatmentId) {
+export async function deleteTreatment(petId, treatmentId, actor) {
   if (!db) throw new Error('Firebase não disponível');
+  await ensureCanMutatePet(petId, actor);
   await deleteDoc(doc(db, 'pets', petId, 'treatments', treatmentId));
 }
 
@@ -157,9 +155,6 @@ export async function deleteTreatment(petId, treatmentId) {
 
 /**
  * Lista o histórico de cuidados do pet.
- *
- * @param {string} petId
- * @returns {Promise<CareLog[]>}
  */
 export async function listCareLog(petId, maxResults = 100) {
   if (!db || !petId) return [];
@@ -173,19 +168,11 @@ export async function listCareLog(petId, maxResults = 100) {
 }
 
 /**
- * Cria um registro de cuidado.
- *
- * @param {string} petId
- * @param {object} data
- *   - care_type: enum (bath, grooming, brushing, dental, nails, exercise, other)
- *   - care_date: ISO
- *   - next_due_date: ISO (opcional)
- *   - frequency_days: number (opcional)
- *   - performed_by: string (ex: "Abrigo SP", "João da tosa")
- *   - notes: string
+ * Cria um registro de cuidado. Só canManage.
  */
 export async function createCareLog(petId, data, actor) {
   if (!db) throw new Error('Firebase não disponível');
+  await ensureCanMutatePet(petId, actor);
   const payload = {
     ...data,
     created_at: serverTimestamp(),
@@ -197,15 +184,68 @@ export async function createCareLog(petId, data, actor) {
   return ref.id;
 }
 
-export async function updateCareLog(petId, careId, updates) {
+export async function updateCareLog(petId, careId, updates, actor) {
   if (!db) throw new Error('Firebase não disponível');
+  await ensureCanMutatePet(petId, actor);
   await updateDoc(doc(db, 'pets', petId, 'care_log', careId), {
     ...updates,
     updated_at: serverTimestamp(),
   });
 }
 
-export async function deleteCareLog(petId, careId) {
+export async function deleteCareLog(petId, careId, actor) {
   if (!db) throw new Error('Firebase não disponível');
+  await ensureCanMutatePet(petId, actor);
   await deleteDoc(doc(db, 'pets', petId, 'care_log', careId));
+}
+
+// ============================================================================
+// MEDICATIONS — Medicação contínua
+// ============================================================================
+
+/**
+ * Lista medicações contínuas do pet.
+ */
+export async function listMedications(petId, maxResults = 30) {
+  if (!db || !petId) return [];
+  const q = query(
+    collection(db, 'pets', petId, 'medications'),
+    orderBy('start_date', 'desc'),
+    limit(maxResults),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
+/**
+ * Cria uma medicação contínua. Só canManage.
+ */
+export async function createMedication(petId, data, actor) {
+  if (!db) throw new Error('Firebase não disponível');
+  await ensureCanMutatePet(petId, actor);
+  const payload = {
+    ...data,
+    status: data.status || 'active',
+    created_at: serverTimestamp(),
+    created_by: actor?.uid || null,
+    created_by_name: actor?.displayName || actor?.name || 'Sistema',
+  };
+  const ref = await addDoc(collection(db, 'pets', petId, 'medications'), payload);
+  logger.info('[petMedical] medicação criada', { petId, medicationId: ref.id });
+  return ref.id;
+}
+
+export async function updateMedication(petId, medicationId, updates, actor) {
+  if (!db) throw new Error('Firebase não disponível');
+  await ensureCanMutatePet(petId, actor);
+  await updateDoc(doc(db, 'pets', petId, 'medications', medicationId), {
+    ...updates,
+    updated_at: serverTimestamp(),
+  });
+}
+
+export async function deleteMedication(petId, medicationId, actor) {
+  if (!db) throw new Error('Firebase não disponível');
+  await ensureCanMutatePet(petId, actor);
+  await deleteDoc(doc(db, 'pets', petId, 'medications', medicationId));
 }

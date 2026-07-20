@@ -602,6 +602,9 @@ export const DEFAULT_FEATURE_FLAGS = Object.freeze({
   [SHELTER_FEATURE_FLAG.SHELTER_DONATIONS]: true,
   // TASK-791: SHELTER_FINANCE ativado.
   [SHELTER_FEATURE_FLAG.SHELTER_FINANCE]: true,
+  // BUG-15 fix (2026-07-20): SHELTER_ADMIN_DASHBOARD_V1 ativado por default
+  // (admin pessoal do abrigo). V3 do ShelterAdminDashboard.
+  [SHELTER_FEATURE_FLAG.SHELTER_ADMIN_DASHBOARD_V1]: true,
 
   // Community flags:
   [FEATURE_FLAG.COMMUNITY_EVENT_DETAIL_V1]: false,

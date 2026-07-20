@@ -15,7 +15,7 @@
  * Sucesso → redireciona para /perfil#voluntariadas.
  */
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   HeartHandshake, ScrollText, ClipboardList, Building2, CheckCircle2,
@@ -44,6 +44,7 @@ import { VolunteerProfileForm } from '@/modules/shelter/components/VolunteerProf
 import VolunteerSignupCaptcha from '@/modules/shelter/components/VolunteerSignupCaptcha';
 import { useFCMRequest } from '@/modules/notifications/hooks/useFCMRequest';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
+import { useScrollEnd } from '@/core/hooks/useScrollEnd';
 import { cn } from '@/core/lib/utils';
 
 const STEPS = [
@@ -224,8 +225,9 @@ export default function VolunteerSignup() {
 
   const [step, setStep] = useState('terms');
   const [signatureText, setSignatureText] = useState('');
-  const [scrolledToEnd, setScrolledToEnd] = useState(false);
   const [accepted, setAccepted] = useState(false);
+  const termScrollRef = useRef(null);
+  const scrolledToEnd = useScrollEnd(termScrollRef, { tolerance: 8 });
   // TASK-205: ?abrigo=<clubId> pré-seleciona o abrigo (CTA vindo da
   // página pública do abrigo). Validado contra a lista de clubs abaixo.
   const [searchParams] = useSearchParams();
@@ -254,6 +256,12 @@ export default function VolunteerSignup() {
     if (step === 'terms' && hasAcceptedTerms) setStep('profile');
     if (step === 'profile' && hasProfile) setStep('shelter');
   }, [flagEnabled, isProfileLoading, hasAcceptedTerms, hasProfile, step]);
+
+  // FIX (2026-07-20): Se o termo já foi aceito no servidor e o user voltou
+  // pra step 'terms', NÃO mostrar a trava de scroll. Aceite anterior = OK.
+  // (Quando hasAcceptedTerms for true, useEffect acima já move pra 'profile',
+  //  mas isso serve de safety net.)
+  const allowAccept = scrolledToEnd || hasAcceptedTerms;
 
   if (!flagEnabled) {
     return (
@@ -376,20 +384,15 @@ export default function VolunteerSignup() {
           </div>
           <div className="arena-section-card-body space-y-3">
             <div
+              ref={termScrollRef}
               tabIndex={0}
               role="document"
               aria-label="Texto integral do termo de voluntariado"
-              onScroll={(e) => {
-                const el = e.currentTarget;
-                if (el.scrollTop + el.clientHeight >= el.scrollHeight - 8) {
-                  setScrolledToEnd(true);
-                }
-              }}
               className="max-h-[50vh] overflow-y-auto rounded-md border border-primary/10 bg-white/65 p-3 text-xs leading-6 text-foreground/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <pre className="whitespace-pre-wrap font-mono">{VOLUNTEER_TERMS_TEXT_V2}</pre>
             </div>
-            {!scrolledToEnd && (
+            {!allowAccept && (
               <p className="text-xs text-amber-700">
                 Role até o fim do termo para habilitar o aceite.
               </p>
@@ -409,7 +412,7 @@ export default function VolunteerSignup() {
               <Checkbox
                 checked={accepted}
                 onCheckedChange={setAccepted}
-                disabled={!scrolledToEnd}
+                disabled={!allowAccept}
                 aria-describedby="accept-hint"
               />
               <span id="accept-hint">
@@ -425,7 +428,7 @@ export default function VolunteerSignup() {
               </Button>
               <Button
                 onClick={handleAcceptTerms}
-                disabled={!accepted || !signatureText || acceptTermsMutation.isPending}
+                disabled={!accepted || !signatureText || (!allowAccept && !hasAcceptedTerms) || acceptTermsMutation.isPending}
               >
                 {acceptTermsMutation.isPending ? (
                   <>

@@ -108,7 +108,8 @@ service cloud.firestore {
     }
     // Quem pode gerenciar um pet (dono pessoa física, ou clube dono via admin/permissão).
     function canManagePet(petData) {
-      return petData.owner_id == request.auth.uid ||
+      return isPlatformOwnerAuth() ||
+        petData.owner_id == request.auth.uid ||
         (petData.get('owner_type', '') == 'organization' && (
           isClubOwnerOrAdmin(petData.owner_id) || canEditClubPets(petData.owner_id) || hasClubPermission(petData.owner_id, 'animals')
         ));

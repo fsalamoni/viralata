@@ -122,8 +122,8 @@ describe('TASK-815 — migratedFlagsRef export', () => {
 });
 
 describe('TASK-815 — FLAGS_MIGRATION_VERSION bump', () => {
-  it('FLAGS_MIGRATION_VERSION is 4 after the TASK-815 fix', async () => {
+  it('FLAGS_MIGRATION_VERSION is 5 after the BUG-15 fix (adds SHELTER_ADMIN_DASHBOARD_V1)', async () => {
     const { FLAGS_MIGRATION_VERSION } = await import('@/core/services/platformSettingsService');
-    expect(FLAGS_MIGRATION_VERSION).toBe(4);
+    expect(FLAGS_MIGRATION_VERSION).toBe(5);
   });
 });

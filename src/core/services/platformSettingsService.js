@@ -75,7 +75,7 @@ export function subscribePlatformSettings(cb) {
  * `FeatureFlagsContext.migrateLegacyFlags`. Aumentar quando a lógica de
  * upgrade mudar.
  */
-export const FLAGS_MIGRATION_VERSION = 4; // Bumped to 4 (2026-07-17) — now persists migrated flags to Firestore so they survive cache clear. Previously wrote only the marker (_migrations.flags) but not the corrected feature_flags values, so after cache clear the stale Firestore values would be re-loaded and overlaid over DEFAULT_FEATURE_FLAGS.
+export const FLAGS_MIGRATION_VERSION = 5; // Bumped to 5 (2026-07-20) — added SHELTER_ADMIN_DASHBOARD_V1 flag. Pre-existing users need this in Firestore so the new admin dashboard works on their account.
 
 /**
  * Marca a migração de flags como aplicada no doc `platform_settings/global`.

@@ -234,6 +234,8 @@ export async function resumeMedication(petId, medId, shelterClubId, actor) {
 
 export async function cancelMedication(petId, medId, shelterClubId, reason, actor) {
   if (!db) throw new Error('Firebase não disponível');
+  if (!actor?.uid) throw new Error('actor.uid é obrigatório');
+  await ensureCanMutatePet(petId, actor);
   await _verifyMedTenant(petId, medId, shelterClubId);
   const ref = doc(db, PETS_COLLECTION, petId, MEDICATIONS_SUBCOLLECTION, medId);
   await updateDoc(ref, {
@@ -251,6 +253,8 @@ export async function cancelMedication(petId, medId, shelterClubId, reason, acto
 
 export async function completeMedication(petId, medId, shelterClubId, actor) {
   if (!db) throw new Error('Firebase não disponível');
+  if (!actor?.uid) throw new Error('actor.uid é obrigatório');
+  await ensureCanMutatePet(petId, actor);
   await _verifyMedTenant(petId, medId, shelterClubId);
   const ref = doc(db, PETS_COLLECTION, petId, MEDICATIONS_SUBCOLLECTION, medId);
   await updateDoc(ref, {
@@ -277,6 +281,7 @@ export async function recordDose(petId, medId, shelterClubId, doseInput, actor) 
   if (!db) throw new Error('Firebase não disponível');
   if (!actor?.uid) throw new Error('actor.uid é obrigatório');
 
+  await ensureCanMutatePet(petId, actor);
   await _verifyMedTenant(petId, medId, shelterClubId);
 
   const parsed = recordDoseSchema.parse({

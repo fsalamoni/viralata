@@ -93,7 +93,7 @@ export default function PetVetVisitForm({ open, onOpenChange, petId, visit = nul
         await updateMut.mutateAsync({ visitId: visit.id, updates: payload });
         toast.success('Consulta atualizada');
       } else {
-        await createMut.mutateAsync({ data: payload, actor: user });
+        await createMut.mutateAsync({ data: payload });
         toast.success('Consulta registrada');
       }
       onOpenChange(false);

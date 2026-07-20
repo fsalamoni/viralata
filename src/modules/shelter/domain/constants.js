@@ -103,6 +103,11 @@ export const SHELTER_FEATURE_FLAG = Object.freeze({
   SHELTER_DONATIONS: 'shelter_donations',
   // TASK-791 — Prestação de Contas: lançamentos, saldo, exportação pública (LGPD)
   SHELTER_FINANCE: 'shelter_finance',
+  // BUG-15 fix (2026-07-20): Dashboard pessoal do admin do abrigo
+  // (rota /abrigos/:clubId/admin/dashboard). Lê tasks kanban (collectionGroup
+  // kanban_cards), applications (adoption_workflow), pets cadastrados e
+  // devoluções do abrigo. Adicionado em V3-SHELTER_ADMIN.
+  SHELTER_ADMIN_DASHBOARD_V1: 'shelter_admin_dashboard_v1',
 });
 
 /**
@@ -361,6 +366,15 @@ export const SHELTER_FEATURE_FLAG_META = Object.freeze({
       + 'período, gráfico de evolução temporal e exportação CSV '
       + 'pública (LGPD Art. 18 V — transparência financeira). '
       + 'Coleção `clubs/{clubId}/shelter_ledger`.',
+  },
+  [SHELTER_FEATURE_FLAG.SHELTER_ADMIN_DASHBOARD_V1]: {
+    label: 'Abrigos · dashboard pessoal do admin',
+    description:
+      'Dashboard pessoal do admin do abrigo (rota '
+      + '/abrigos/:clubId/admin/dashboard). Mostra minhas tasks kanban '
+      + '(collectionGroup kanban_cards onde estou em assignees), '
+      + 'applications recentes (adoption_workflow), pets cadastrados '
+      + 'por mim e devoluções no abrigo. V3 do ShelterAdminDashboard.',
   },
 });
 

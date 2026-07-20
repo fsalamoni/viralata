@@ -22,10 +22,12 @@ export function registerPwa() {
   // Em dev o SW não traz benefício e pode confundir o HMR; só em produção.
   if (import.meta.env.DEV) return;
 
-  // Bumped to sw-v62.js (2026-07-20) — MUST match vite.config.js filename.
-  // v61→v62: AUDITORIA completa (14 issues, 11 corrigidos) — links
-  // quebrados, schema, registerPwa, Skeleton import, AdSlotUnified.
-  const swUrl = `${import.meta.env.BASE_URL || '/'}sw-v62.js`.replace(/\/{2,}/g, '/');
+  // Bumped to sw-v63.js (2026-07-20) — MUST match vite.config.js filename.
+  // v62→v63: BUG FIXES (15, 16, 17, 18) — ShelterAdminDashboard flag,
+  // VolunteerSignup scroll, pet permissions defense-in-depth, legal docs
+  // verification. Mais: useScrollEnd hook novo, FLAGS_MIGRATION_VERSION
+  // bump 4→5, removed recursion in VolunteerProfile.
+  const swUrl = `${import.meta.env.BASE_URL || '/'}sw-v63.js`.replace(/\/{2,}/g, '/');
 
   // IMPORTANTE: não recarregamos automaticamente quando o SW troca de
   // controller. O componente <SwUpdateBanner> (montado em Layout.jsx)

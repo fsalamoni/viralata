@@ -202,7 +202,6 @@ export default function VolunteerProfile() {
             <MyTasksSection userUid={user.uid} />
           </section>
         )}
-        )}
 
         {/* Form de edição */}
         {profile && (

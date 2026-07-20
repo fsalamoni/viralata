@@ -47,6 +47,7 @@ import {
 } from 'firebase/firestore';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
+import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
 import { logger } from '@/core/lib/logger';
 
 const ANIM = {
@@ -297,7 +298,7 @@ export default function ShelterAdminDashboardV3({ clubId: clubIdProp }) {
   const { user } = useAuth();
   const params = useParams();
   const clubId = clubIdProp || params?.clubId;
-  const flagEnabled = useFeatureFlag('SHELTER_ADMIN_DASHBOARD_V1');
+  const flagEnabled = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_ADMIN_DASHBOARD_V1);
 
   const [tasks, setTasks] = useState([]);
   const [apps, setApps] = useState([]);
@@ -335,8 +336,10 @@ export default function ShelterAdminDashboardV3({ clubId: clubIdProp }) {
         // 2) Applications recentes deste abrigo
         let appItems = [];
         if (clubId) {
+          // BUG-15 fix (2026-07-20): a subcoleção correta é `adoption_workflow`,
+          // não `adoption_applications`. Confirma com firestore.rules:1383.
           const appsQ = query(
-            collection(db, 'clubs', clubId, 'adoption_applications'),
+            collection(db, 'clubs', clubId, 'adoption_workflow'),
             orderBy('created_at', 'desc'),
             limit(50),
           );

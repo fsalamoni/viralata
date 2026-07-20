@@ -1,20 +1,19 @@
 /**
- * @fileoverview usePetHistory — hooks para subcoleções de histórico.
+ * @fileoverview Hooks React Query para histórico do pet (devoluções,
+ * adotantes anteriores).
  *
- * TASK-V3-PET-DETAIL-FULL-06: usePetDevolutions, usePetAdoptersHistory,
- * useGeneratePetCode com React Query.
- *
- * @see docs/V3_PET_DETAIL_FULL_PLAN.md
+ * @see src/modules/pets/services/petHistoryService.js
  */
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import {
   listDevolutions, createDevolution, updateDevolution, deleteDevolution,
   listAdoptersHistory, createAdopterHistory, updateAdopterHistory, deleteAdopterHistory,
   generatePetCode,
 } from '../services/petHistoryService';
 
-const STALE_TIME_MS = 5 * 60 * 1000;
-const GC_TIME = 30 * 60 * 1000;
+const STALE_TIME_MS = 30_000;
+const GC_TIME = 5 * 60_000;
 
 // ============================================================================
 // DEVOLUTIONS
@@ -32,9 +31,16 @@ export function usePetDevolutions(petId) {
 }
 
 export function useCreateDevolution(petId) {
+  const { user } = useAuth();
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ data, actor }) => createDevolution(petId, data, actor),
+    // actor sempre vem do user autenticado (não confiar no payload)
+    mutationFn: ({ data }) => createDevolution(petId, data, {
+      uid: user?.uid,
+      displayName: user?.displayName,
+      name: user?.displayName,
+      isPlatformAdmin: user?.email === 'fsalamoni@gmail.com',
+    }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['pet', petId, 'devolutions'] });
     },
@@ -42,9 +48,15 @@ export function useCreateDevolution(petId) {
 }
 
 export function useUpdateDevolution(petId) {
+  const { user } = useAuth();
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ devolutionId, updates }) => updateDevolution(petId, devolutionId, updates),
+    mutationFn: ({ devolutionId, updates }) => updateDevolution(petId, devolutionId, updates, {
+      uid: user?.uid,
+      displayName: user?.displayName,
+      name: user?.displayName,
+      isPlatformAdmin: user?.email === 'fsalamoni@gmail.com',
+    }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['pet', petId, 'devolutions'] });
     },
@@ -52,9 +64,15 @@ export function useUpdateDevolution(petId) {
 }
 
 export function useDeleteDevolution(petId) {
+  const { user } = useAuth();
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ devolutionId }) => deleteDevolution(petId, devolutionId),
+    mutationFn: ({ devolutionId }) => deleteDevolution(petId, devolutionId, {
+      uid: user?.uid,
+      displayName: user?.displayName,
+      name: user?.displayName,
+      isPlatformAdmin: user?.email === 'fsalamoni@gmail.com',
+    }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['pet', petId, 'devolutions'] });
     },
@@ -77,9 +95,15 @@ export function usePetAdoptersHistory(petId) {
 }
 
 export function useCreateAdopterHistory(petId) {
+  const { user } = useAuth();
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ data, actor }) => createAdopterHistory(petId, data, actor),
+    mutationFn: ({ data }) => createAdopterHistory(petId, data, {
+      uid: user?.uid,
+      displayName: user?.displayName,
+      name: user?.displayName,
+      isPlatformAdmin: user?.email === 'fsalamoni@gmail.com',
+    }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['pet', petId, 'adopters_history'] });
     },
@@ -87,9 +111,15 @@ export function useCreateAdopterHistory(petId) {
 }
 
 export function useUpdateAdopterHistory(petId) {
+  const { user } = useAuth();
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ historyId, updates }) => updateAdopterHistory(petId, historyId, updates),
+    mutationFn: ({ historyId, updates }) => updateAdopterHistory(petId, historyId, updates, {
+      uid: user?.uid,
+      displayName: user?.displayName,
+      name: user?.displayName,
+      isPlatformAdmin: user?.email === 'fsalamoni@gmail.com',
+    }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['pet', petId, 'adopters_history'] });
     },
@@ -97,9 +127,15 @@ export function useUpdateAdopterHistory(petId) {
 }
 
 export function useDeleteAdopterHistory(petId) {
+  const { user } = useAuth();
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ historyId }) => deleteAdopterHistory(petId, historyId),
+    mutationFn: ({ historyId }) => deleteAdopterHistory(petId, historyId, {
+      uid: user?.uid,
+      displayName: user?.displayName,
+      name: user?.displayName,
+      isPlatformAdmin: user?.email === 'fsalamoni@gmail.com',
+    }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['pet', petId, 'adopters_history'] });
     },
