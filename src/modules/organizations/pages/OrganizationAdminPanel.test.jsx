@@ -76,6 +76,7 @@ vi.mock('@/core/lib/useArenaPageClasses', () => ({
 }));
 
 vi.mock('@/core/featureFlags', () => ({
+  FEATURE_FLAG: new Proxy({}, { get: (_, k) => k }),
   FEATURE_FLAG_META: {},
 }));
 
