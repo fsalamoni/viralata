@@ -332,7 +332,15 @@ export default function Layout({ children, currentPageName }) {
       <main
         id="main-content"
         className="flex-1 relative"
-        style={{ ...mainPaddingBottom, ...mainPaddingTop }}
+        style={{
+          ...mainPaddingBottom,
+          ...mainPaddingTop,
+          // CSS var usada por páginas com hero full-width (ex: PetDetailView V3)
+          // para ancorar o hero logo abaixo da TopBar sticky sem gap.
+          '--top-bar-h': topBarVisible && topBarMode !== TOPBAR_MODES.HIDDEN
+            ? `${topBarHeight}px`
+            : '0px',
+        }}
       >
         {children}
       </main>
