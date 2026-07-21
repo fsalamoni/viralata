@@ -85,19 +85,6 @@ const SPECIES_LABEL = {
   other: 'Outro',
 };
 
-const SPECIES_EMOJI = {
-  dog: '🐕',
-  cat: '🐈',
-  rabbit: '🐇',
-  bird: '🦜',
-  other: '🐾',
-};
-
-const GENDER_LABEL = {
-  male: 'Macho',
-  female: 'Fêmea',
-};
-
 const STATUS = {
   available: {
     label: 'Disponível para adoção',
@@ -250,7 +237,7 @@ export default function PetDetailViewV3() {
   // ─── DERIVED DATA (memorizado, ANTES dos early-returns) ────────────
   const currentPhotoUrl = photos[currentPhoto] || photos[0];
   const statusInfo = pet ? (STATUS[pet.status] || STATUS.available) : STATUS.available;
-  const speciesEmoji = pet ? (SPECIES_EMOJI[pet.species] || '🐾') : '🐾';
+  const speciesEmoji = null; // sem emoji — ícone PawPrint em vez disso (não usado)
   const speciesLabel = pet ? (SPECIES_LABEL[pet.species] || 'Pet') : 'Pet';
   const isOrg = pet ? pet.owner_type === 'organization' : false;
   const isAdopted = pet ? pet.status === 'adopted' : false;
@@ -365,10 +352,13 @@ export default function PetDetailViewV3() {
   if (notFound || !pet) return <PetNotFoundView />;
 
   return (
-    <div className="min-h-screen bg-background" data-testid="pet-detail-view">
+    <div
+      className="min-h-screen bg-background"
+      data-testid="pet-detail-view"
+    >
       <Seo
         title={`${pet.title || pet.name || 'Pet'} — Viralata`}
-        description={`${speciesEmoji} ${speciesLabel} para adoção em ${pet.city || 'Brasil'}. ${pet.description?.slice(0, 140) || 'Conheça no Viralata.'}`}
+        description={`${speciesLabel} para adoção em ${pet.city || 'Brasil'}. ${pet.description?.slice(0, 140) || 'Conheça no Viralata.'}`}
         image={currentPhotoUrl}
         url={`/pet/${petId}`}
         type="article"
@@ -674,9 +664,9 @@ function PetHero({
   return (
     <section
       className={cn(
-        'relative isolate overflow-hidden',
+        'relative isolate -mt-[calc(var(--top-bar-h,0px))] overflow-hidden',
         'bg-gradient-to-br from-rose-500 via-orange-500 to-amber-500',
-        'dark:from-rose-950 dark:via-orange-950 dark:to-amber-950',
+        'dark:from-rose-950 dark:via-orange-950 dark:to-amber-500',
       )}
       data-testid="pet-detail-hero"
     >
@@ -704,15 +694,6 @@ function PetHero({
             <span className="ml-1.5 hidden sm:inline">Voltar</span>
           </Button>
           <div className="flex items-center gap-1.5">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onShare}
-              className="rounded-full bg-white/20 text-white backdrop-blur hover:bg-white/30"
-              aria-label="Compartilhar"
-            >
-              <Share2 className="h-4 w-4" />
-            </Button>
             <SocialShare
               kind="pet"
               id={pet.id}
@@ -748,7 +729,7 @@ function PetHero({
                 />
               ) : (
                 <div className="flex aspect-[4/3] w-full items-center justify-center bg-gradient-to-br from-rose-100 to-amber-100 sm:aspect-[16/10]">
-                  <span className="text-9xl">{speciesEmoji}</span>
+                  <PawPrint className="h-24 w-24 text-rose-700/40" aria-hidden="true" />
                 </div>
               )}
               <span className="absolute bottom-3 right-3 inline-flex items-center gap-1 rounded-full bg-black/60 px-2.5 py-1 text-[11px] font-medium text-white opacity-0 transition-opacity group-hover:opacity-100">
@@ -802,10 +783,13 @@ function PetHero({
               {statusInfo.label}
             </Badge>
 
-            {/* Nome + emoji */}
+            {/* Nome + badge da espécie (sem emoji) */}
             <div className="flex items-center gap-3">
-              <span className="text-5xl sm:text-6xl" aria-hidden="true">
-                {speciesEmoji}
+              <span
+                className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/20 backdrop-blur sm:h-16 sm:w-16"
+                aria-hidden="true"
+              >
+                <PawPrint className="h-7 w-7 text-white sm:h-8 sm:w-8" />
               </span>
               <div>
                 <h1 className="text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
