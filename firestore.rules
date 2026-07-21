@@ -2057,6 +2057,36 @@ service cloud.firestore {
         isPlatformAdmin()
       );
     }
+    // ════════════════════════════════════════════════════════════════════════════
+    // PARTNER SPACES (TASK-V3-PARTNERS) — Espaço de Parceiros
+    // ════════════════════════════════════════════════════════════════════════════
+
+    // Coleção: partners/{partnerId}
+    // Leitura PÚBLICA (necessário para renderizar AdSlot em todas as páginas).
+    // Escrita restrita a platform_admin (CRUD completo).
+    match /partners/{partnerId} {
+      allow read: if true;
+      allow list: if true;
+      allow create, update, delete: if isPlatformAdmin();
+
+      // Subcoleção: partners/{partnerId}/banners/{bannerId}
+      match /banners/{bannerId} {
+        allow read: if true;
+        allow list: if true;
+        allow create, update, delete: if isPlatformAdmin();
+
+        // Subcoleção: partners/{partnerId}/banners/{bannerId}/events/{eventId}
+        // Eventos de tracking (view/click). Leitura só platform_admin.
+        // Criação aberta (com shape mínimo) para tracking client-side.
+        match /events/{eventId} {
+          allow read: if isPlatformAdmin();
+          allow create: if request.resource.data.keys().hasAll(['type', 'timestamp', 'position'])
+            && request.resource.data.type in ['view', 'click']
+            && request.resource.data.timestamp != null;
+          allow update, delete: if isPlatformAdmin();
+        }
+      }
+    }
   }
 }
 
@@ -2065,33 +2095,4 @@ function isContractAdopter(contractData) {
   return contractData.adopter_uid == request.auth.uid;
 }
 
-// ════════════════════════════════════════════════════════════════════════════
-// PARTNER SPACES (TASK-V3-PARTNERS) — Espaço de Parceiros
-// ════════════════════════════════════════════════════════════════════════════
 
-// Coleção: partners/{partnerId}
-// Leitura PÚBLICA (necessário para renderizar AdSlot em todas as páginas).
-// Escrita restrita a platform_admin (CRUD completo).
-match /partners/{partnerId} {
-  allow read: if true;
-  allow list: if true;
-  allow create, update, delete: if isPlatformAdmin();
-
-  // Subcoleção: partners/{partnerId}/banners/{bannerId}
-  match /banners/{bannerId} {
-    allow read: if true;
-    allow list: if true;
-    allow create, update, delete: if isPlatformAdmin();
-
-    // Subcoleção: partners/{partnerId}/banners/{bannerId}/events/{eventId}
-    // Eventos de tracking (view/click). Leitura só platform_admin.
-    // Criação aberta (com shape mínimo) para tracking client-side.
-    match /events/{eventId} {
-      allow read: if isPlatformAdmin();
-      allow create: if request.resource.data.keys().hasAll(['type', 'timestamp', 'position'])
-        && request.resource.data.type in ['view', 'click']
-        && request.resource.data.timestamp != null;
-      allow update, delete: if isPlatformAdmin();
-    }
-  }
-}
