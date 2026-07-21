@@ -58,10 +58,8 @@ import {
   Check, HelpCircle, X, HeartHandshake,
 } from 'lucide-react';
 
-// ============================================================================
-// CONSTANTS
-// ============================================================================
-
+// =====================================================================// CONSTANTS
+// =====================================================================
 const SIZE_LABEL = {
   mini: 'Mini',
   small: 'Pequeno',
@@ -83,6 +81,11 @@ const SPECIES_LABEL = {
   rabbit: 'Coelho',
   bird: 'Pássaro',
   other: 'Outro',
+};
+
+const GENDER_LABEL = {
+  male: 'Macho',
+  female: 'Fêmea',
 };
 
 const STATUS = {
@@ -129,10 +132,8 @@ const STAGGER = {
   show: { transition: { staggerChildren: 0.08 } },
 };
 
-// ============================================================================
-// MAIN COMPONENT
-// ============================================================================
-
+// =====================================================================// MAIN COMPONENT
+// =====================================================================
 export default function PetDetailViewV3() {
   const { petId } = useParams();
   const navigate = useNavigate();
@@ -650,10 +651,8 @@ export default function PetDetailViewV3() {
   );
 }
 
-// ============================================================================
-// HERO
-// ============================================================================
-
+// =====================================================================// HERO
+// =====================================================================
 function PetHero({
   pet, photos, currentPhoto, setCurrentPhoto, currentPhotoUrl,
   statusInfo, speciesEmoji, reduceMotion, onOpenLightbox, onBack, onShare, isAdopted,
@@ -845,10 +844,8 @@ function PetHero({
   );
 }
 
-// ============================================================================
-// SUB-COMPONENTS
-// ============================================================================
-
+// =====================================================================// SUB-COMPONENTS
+// =====================================================================
 function StatCard({ icon: Icon, label, value, color = 'primary' }) {
   const colorMap = {
     primary: { text: 'text-primary', bg: 'bg-primary/10', ring: 'ring-primary/20' },
@@ -1076,10 +1073,8 @@ function LocationCard({ pet }) {
   );
 }
 
-// ============================================================================
-// STICKY CTA (mobile)
-// ============================================================================
-
+// =====================================================================// STICKY CTA (mobile)
+// =====================================================================
 function PetStickyCta({ pet, isAdopted, onAdopt, onChat, onShare }) {
   if (isAdopted) return null;
   return (
@@ -1107,10 +1102,8 @@ function PetStickyCta({ pet, isAdopted, onAdopt, onChat, onShare }) {
   );
 }
 
-// ============================================================================
-// SKELETON
-// ============================================================================
-
+// =====================================================================// SKELETON
+// =====================================================================
 function PetDetailViewSkeleton() {
   return (
     <div className="min-h-screen bg-background" data-testid="pet-detail-view-skeleton">
@@ -1159,10 +1152,8 @@ function PetDetailViewSkeleton() {
   );
 }
 
-// ============================================================================
-// NOT FOUND
-// ============================================================================
-
+// =====================================================================// NOT FOUND
+// =====================================================================
 function PetNotFoundView() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">

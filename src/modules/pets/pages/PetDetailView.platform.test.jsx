@@ -162,4 +162,78 @@ describe('PetDetailView.v3 PÚBLICA - SEM admin/gestão (sw-v72)', () => {
     expect(hero.className).toContain('via-orange-500');
     expect(hero.className).toContain('to-amber-500');
   });
+
+  // D-PET-PUBLIC-V2-RUNTIME-SAFETY (2026-07-21): pet com TODOS os campos
+  // (gender, size, weight, vaccinated, etc.) não pode quebrar a renderização.
+  // Bug anterior: GENDER_LABEL foi removido por engano mas usado em 2 useMemo,
+  // o build passou mas quebrou em runtime. Estes testes garantem cobertura.
+  it('Pet COM gender/size/weight/temperament: renderiza sem erro de runtime', async () => {
+    mockUseAuth.mockReturnValue({ user: null, isPlatformAdmin: false });
+    mockGetDoc.mockResolvedValue({
+      exists: () => true,
+      id: 'p2',
+      data: () => ({
+        id: 'p2',
+        owner_id: 'u1',
+        owner_type: 'user',
+        title: 'Buddy',
+        name: 'Buddy',
+        status: 'available',
+        species: 'dog',
+        breed: 'Vira-lata',
+        size: 'medium',
+        gender: 'male',
+        age_group: 'adult',
+        age_months: 36,
+        weight_kg: 18,
+        city: 'São Paulo',
+        state: 'SP',
+        color: 'Caramelo',
+        vaccinated: 'yes',
+        neutered: true,
+        dewormed: true,
+        temperament: ['Brincalhão', 'Dócil', 'Energético'],
+        description: 'Um cachorro muito amoroso',
+        needs_yard: true,
+        good_with_kids: true,
+        good_with_dogs: true,
+        pet_code: 'VR-001',
+        microchip: '900123456789',
+      }),
+    });
+    renderWithPath('/pet/p2');
+    // Espera renderizar SEM erro (não vai para o catch do ErrorBoundary)
+    await waitFor(() => {
+      expect(screen.queryByTestId('pet-detail-view-skeleton')).toBeNull();
+    }, { timeout: 3000 });
+    // Página renderizou com todos os dados
+    expect(screen.getByTestId('pet-detail-view')).toBeInTheDocument();
+    // GENDER_LABEL renderizou corretamente: "Macho"
+    expect(screen.getAllByText(/Macho/i).length).toBeGreaterThan(0);
+    // SIZE_LABEL renderizou corretamente: "Médio"
+    expect(screen.getAllByText(/Médio/i).length).toBeGreaterThan(0);
+  });
+
+  it('Pet com gender=unknown (não está em GENDER_LABEL): usa fallback pet.gender', async () => {
+    mockUseAuth.mockReturnValue({ user: null, isPlatformAdmin: false });
+    mockGetDoc.mockResolvedValue({
+      exists: () => true,
+      id: 'p3',
+      data: () => ({
+        id: 'p3',
+        owner_id: 'u1',
+        owner_type: 'user',
+        title: 'Pet',
+        status: 'available',
+        gender: 'unknown', // valor fora de GENDER_LABEL
+        size: 'unknown',
+      }),
+    });
+    renderWithPath('/pet/p3');
+    await waitFor(() => {
+      expect(screen.queryByTestId('pet-detail-view-skeleton')).toBeNull();
+    }, { timeout: 3000 });
+    // Renderizou sem erro (fallback foi usado)
+    expect(screen.getByTestId('pet-detail-view')).toBeInTheDocument();
+  });
 });
