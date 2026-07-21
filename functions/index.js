@@ -291,5 +291,5 @@ exports.onKanbanTaskCreated = onKanbanTaskCreated;
 // ─── TASK-022: LLM parser para importação de planilha ──────────────────
 // Endpoint LLM-assistido para inferir colunas de planilha de pets.
 // Requer ANTHROPIC_API_KEY no ambiente. Sem ela, retorna 503.
-const { inferPetColumns } = require('./src/callable/inferPetColumns');
+const { inferPetColumns } = require('./src/callable/inferPetColumns.mjs');
 exports.inferPetColumns = inferPetColumns;
