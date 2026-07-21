@@ -168,7 +168,9 @@ export default function PublicPet() {
       toast.info('Faça login para falar com o abrigo.');
       return;
     }
-    navigate(`/pets/${petId}`);
+    // SEMPRE vai para o chat geral (com petId). Antes ia para /pets/<id>
+    // (admin) que dava flash. Agora vai direto para o chat.
+    navigate(`/chat?pet=${petId}`);
   }
 
   async function handleShare() {

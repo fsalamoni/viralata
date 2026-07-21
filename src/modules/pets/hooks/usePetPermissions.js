@@ -122,6 +122,25 @@ export function canCurrentUserEditPet({ pet, user, userProfile, orgMembership, o
     return { canEdit: true, canDelete: true, reason: null };
   }
   const isOrgPet = pet.owner_type === 'organization';
+
+  // DEFENSE-IN-DEPTH: se é pet de ONG, os dados do clube/membership DEVEM
+  // ser consistentes com o pet. Se orgClub.id !== pet.owner_id, os dados
+  // estão errados (chamador passou clube errado) — bloqueia por segurança.
+  if (isOrgPet && orgClub && orgClub.id && pet.owner_id && orgClub.id !== pet.owner_id) {
+    return {
+      canEdit: false,
+      canDelete: false,
+      reason: 'Dados inconsistentes: clube não corresponde ao pet.',
+    };
+  }
+  if (isOrgPet && orgMembership && orgMembership.user_id && orgMembership.user_id !== user.uid) {
+    return {
+      canEdit: false,
+      canDelete: false,
+      reason: 'Dados inconsistentes: membership não pertence ao usuário.',
+    };
+  }
+
   if (!isOrgPet) {
     if (user.uid === pet.owner_id) {
       return { canEdit: true, canDelete: true, reason: null };

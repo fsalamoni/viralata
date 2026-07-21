@@ -22,14 +22,13 @@ export function registerPwa() {
   // Em dev o SW não traz benefício e pode confundir o HMR; só em produção.
   if (import.meta.env.DEV) return;
 
-  // Bumped to sw-v68.js (2026-07-20) — MUST match vite.config.js filename.
-  // v67→v68: FIX CRÍTICO — /pets/:petId (plural, admin) AGORA protegido
-  // por PetAdminRoute (valida canManage via usePetPermissions). User sem
-  // permissão era redirecionado para /pet/:petId (público). Também
-  // corrigidos os links do feed (PetCard, PetFeedV3, etc.) que apontavam
-  // para /pets/ (admin) em vez de /pet/ (público). Defesa em 3 camadas
+  // Bumped to sw-v69.js (2026-07-20) — MUST match vite.config.js filename.
+  // v68→v69: TASK-V3-PET-DETAIL-VIEW (FIX 2) — podeManage reforçado com validação
+  // de consistência. handleChatClick da V3/V1 vai para /chat?pet=<id> (não mais
+  // para /pets/<id> que dependia de canManage). Força reload para limpar
+  // qualquer cache antigo.
   // completa: UI + service + Firestore rules + route guard.
-  const swUrl = `${import.meta.env.BASE_URL || '/'}sw-v68.js`.replace(/\/{2,}/g, '/');
+  const swUrl = `${import.meta.env.BASE_URL || '/'}sw-v69.js`.replace(/\/{2,}/g, '/');
 
   // IMPORTANTE: não recarregamos automaticamente quando o SW troca de
   // controller. O componente <SwUpdateBanner> (montado em Layout.jsx)

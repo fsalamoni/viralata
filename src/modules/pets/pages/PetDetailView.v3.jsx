@@ -226,14 +226,11 @@ export default function PetDetailViewV3() {
       toast.info('Faça login para falar com o abrigo.');
       return;
     }
-    // Se for ONG pet, vai pro painel admin (que tem chat)
-    if (pet?.owner_type === 'organization') {
-      navigate(`/pets/${petId}`);
-    } else {
-      // Pet pessoal — usa o chat geral
-      navigate(`/chat?pet=${petId}`);
-    }
-  }, [user, petId, pet, navigate]);
+    // SEMPRE usa o chat geral (com petId no query). Anteriormente ia para
+    // /pets/<id> (admin) que dependia de canManage e dava flash. Agora vai
+    // direto para o chat — funciona para pet pessoal e de ONG.
+    navigate(`/chat?pet=${petId}`);
+  }, [user, petId, navigate]);
 
   const handleAdminClick = useCallback(() => {
     // SEMPRE vai para a página de admin
