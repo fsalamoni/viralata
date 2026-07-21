@@ -137,7 +137,7 @@ const STAGGER = {
 export default function PetDetailViewV3() {
   const { petId } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, isPlatformAdmin } = useAuth();
   const reduceMotion = useReducedMotion();
 
   // ─── STATE ─────────────────────────────────────────────────────────
@@ -150,7 +150,12 @@ export default function PetDetailViewV3() {
 
   // ─── PERMISSIONS — usePetPermissions (defense-in-depth) ────────────
   const petPermissions = usePetPermissions(pet);
-  const canManage = petPermissions.canEdit; // só aparece o botão Administrar
+  // canManage: permissão REAL de gestão (criador, membro, dono do abrigo).
+  // Platform admin usa /admin/pets para moderar — NÃO vê este botão em
+  // /pet/<id> (público). canShowAdminButton: combina canManage com a
+  // exclusão de platform admin (que tem /admin/pets para gerenciar).
+  const canManage = petPermissions.canEdit;
+  const canShowAdminButton = canManage && !isPlatformAdmin;
 
   // ─── LOAD PET + OWNER ─────────────────────────────────────────────
   useEffect(() => {
@@ -358,7 +363,7 @@ export default function PetDetailViewV3() {
             <motion.section variants={ANIM} className="hidden lg:block">
               <PetCtaCard
                 pet={pet}
-                canManage={canManage}
+                canManage={canShowAdminButton}
                 isAdopted={isAdopted}
                 isInProcess={isInProcess}
                 onAdopt={handleAdoptClick}
@@ -434,7 +439,7 @@ export default function PetDetailViewV3() {
         >
           <PetCtaCard
             pet={pet}
-            canManage={canManage}
+            canManage={canShowAdminButton}
             isAdopted={isAdopted}
             isInProcess={isInProcess}
             onAdopt={handleAdoptClick}
@@ -450,7 +455,7 @@ export default function PetDetailViewV3() {
       {!reduceMotion && (
         <PetStickyCtaView
           pet={pet}
-          canManage={canManage}
+          canManage={canShowAdminButton}
           isAdopted={isAdopted}
           isInProcess={isInProcess}
           onAdopt={handleAdoptClick}

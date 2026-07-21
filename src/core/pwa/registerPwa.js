@@ -22,13 +22,13 @@ export function registerPwa() {
   // Em dev o SW não traz benefício e pode confundir o HMR; só em produção.
   if (import.meta.env.DEV) return;
 
-  // Bumped to sw-v70.js (2026-07-20) — MUST match vite.config.js filename.
-  // v69→v70: AUDITORIA completa — todas as páginas verificadas, canManage em 12 edge cases de teste. Bump para forçar reload.
+  // Bumped to sw-v71.js (2026-07-20) — MUST match vite.config.js filename.
+  // v70→v71: Platform admin NÃO vê botão 'Administrar' em /pet/<id> (público). canShowAdminButton = canManage v69→v70: AUDITORIA completa — todas as páginas verificadas, canManage em 12 edge cases de teste. Bump para forçar reload.v69→v70: AUDITORIA completa — todas as páginas verificadas, canManage em 12 edge cases de teste. Bump para forçar reload. !isPlatformAdmin. Platform admin usa /admin/pets para moderar.
   // de consistência. handleChatClick da V3/V1 vai para /chat?pet=<id> (não mais
   // para /pets/<id> que dependia de canManage). Força reload para limpar
   // qualquer cache antigo.
   // completa: UI + service + Firestore rules + route guard.
-  const swUrl = `${import.meta.env.BASE_URL || '/'}sw-v70.js`.replace(/\/{2,}/g, '/');
+  const swUrl = `${import.meta.env.BASE_URL || '/'}sw-v71.js`.replace(/\/{2,}/g, '/');
 
   // IMPORTANTE: não recarregamos automaticamente quando o SW troca de
   // controller. O componente <SwUpdateBanner> (montado em Layout.jsx)

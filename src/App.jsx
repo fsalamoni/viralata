@@ -380,7 +380,7 @@ export default function App() {
                 {/* TASK-V3-PET-DETAIL-VIEW: /pet/:petId (singular, PÚBLICO) usa
                     nova página V3 (PetDetailView) com flag PET_DETAIL_VIEW_V1.
                     Sem tabs, sem botões de editar/excluir. */}
-                <Route path="/pet/:petId" element={<PetDetailView />} />
+                <Route path="/pet/:petId" element={withLayout('PetDetailView', PetDetailView)} />
                 {/* BUG ALTO-PUBLIC-1 (2026-07-20): /pets/:petId (plural) é o detalhe V3
                     autenticado. PetDetailV3 mostra botões de edição que dependem de
                     canManagePet (defense-in-depth). User anônimo não pode ter
