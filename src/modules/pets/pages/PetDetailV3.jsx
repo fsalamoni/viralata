@@ -108,7 +108,7 @@ import { cn } from '@/core/lib/utils';
 import { toast } from 'sonner';
 
 import {
-  ArrowLeft, Heart, MapPin, Trash2, Share2, MessageCircle,
+  ArrowLeft, Heart, MapPin, Trash2, Share2, MessageCircle, MessageSquare,
   FileText, Eye, Calendar, Activity, Pill, Stethoscope,
   Bath, History, HeartHandshake, AlertCircle, Users, Edit, Plus,
   Clock, ListChecks, Sparkles,

@@ -31,7 +31,12 @@ export default defineConfig(({ mode }) => {
         //  - qualquer cache 'viralata-v*' é deletado no activate
         //  - o SW custom v5 deixa de controlar e dá lugar ao workbox
         //    atualizado que delega para a network.
-        filename: 'sw-v72.js',
+        //
+        // v72 → v73 (2026-07-22): hotfix porque o user reportou
+        // 'MessageSquare is not defined' quebrando /pets/<id>. O fix
+        // adicionou MessageSquare ao import do lucide-react em
+        // PetDetailV3.jsx (D-PET-OPS-LUCIDE-IMPORT).
+        filename: 'sw-v73.js',
         includeAssets: ['favicon.svg', 'apple-touch-icon.png', 'pwa-192.png', 'pwa-512.png', 'scrum.html'],
         manifest: {
           name: 'Viralata - Adoção Responsável',
