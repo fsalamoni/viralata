@@ -24,6 +24,7 @@ import {
 import { db } from '@/core/config/firebase';
 import { logger } from '@/core/lib/logger';
 import { ensureCanMutatePet } from './petService';
+import { appendPetLog, PET_LOG_ACTIONS } from './petLogService';
 
 // ============================================================================
 // DEVOLUTIONS — Devoluções
@@ -72,6 +73,12 @@ export async function createDevolution(petId, data, actor) {
     created_by_name: actor?.displayName || actor?.name || 'Sistema',
   };
   const ref = await addDoc(collection(db, 'pets', petId, 'devolutions'), payload);
+  await appendPetLog(petId, {
+    action: PET_LOG_ACTIONS.DEVOLUTION_CREATED,
+    actor,
+    target: { collection: 'devolutions', docId: ref.id },
+    details: { reason_preview: (data.reason || '').slice(0, 80) },
+  });
   logger.info('[petHistory] devolução registrada', { petId, devolutionId: ref.id });
   return ref.id;
 }
@@ -83,12 +90,23 @@ export async function updateDevolution(petId, devolutionId, updates, actor) {
     ...updates,
     updated_at: serverTimestamp(),
   });
+  await appendPetLog(petId, {
+    action: PET_LOG_ACTIONS.DEVOLUTION_UPDATED,
+    actor,
+    target: { collection: 'devolutions', docId: devolutionId },
+    details: { changed_fields: Object.keys(updates || {}) },
+  });
 }
 
 export async function deleteDevolution(petId, devolutionId, actor) {
   if (!db) throw new Error('Firebase não disponível');
   await ensureCanMutatePet(petId, actor);
   await deleteDoc(doc(db, 'pets', petId, 'devolutions', devolutionId));
+  await appendPetLog(petId, {
+    action: PET_LOG_ACTIONS.DEVOLUTION_DELETED,
+    actor,
+    target: { collection: 'devolutions', docId: devolutionId },
+  });
 }
 
 // ============================================================================
@@ -135,6 +153,12 @@ export async function createAdopterHistory(petId, data, actor) {
     created_by_name: actor?.displayName || actor?.name || 'Sistema',
   };
   const ref = await addDoc(collection(db, 'pets', petId, 'adopters_history'), payload);
+  await appendPetLog(petId, {
+    action: PET_LOG_ACTIONS.ADOPTER_HISTORY_CREATED,
+    actor,
+    target: { collection: 'adopters_history', docId: ref.id },
+    details: { adopter_uid: data?.adopter_uid, adopter_name: data?.adopter_name },
+  });
   logger.info('[petHistory] adotante registrado', { petId, adopterId: data?.adopter_uid });
   return ref.id;
 }
@@ -146,12 +170,23 @@ export async function updateAdopterHistory(petId, historyId, updates, actor) {
     ...updates,
     updated_at: serverTimestamp(),
   });
+  await appendPetLog(petId, {
+    action: PET_LOG_ACTIONS.ADOPTER_HISTORY_UPDATED,
+    actor,
+    target: { collection: 'adopters_history', docId: historyId },
+    details: { changed_fields: Object.keys(updates || {}) },
+  });
 }
 
 export async function deleteAdopterHistory(petId, historyId, actor) {
   if (!db) throw new Error('Firebase não disponível');
   await ensureCanMutatePet(petId, actor);
   await deleteDoc(doc(db, 'pets', petId, 'adopters_history', historyId));
+  await appendPetLog(petId, {
+    action: PET_LOG_ACTIONS.ADOPTER_HISTORY_DELETED,
+    actor,
+    target: { collection: 'adopters_history', docId: historyId },
+  });
 }
 
 // ============================================================================

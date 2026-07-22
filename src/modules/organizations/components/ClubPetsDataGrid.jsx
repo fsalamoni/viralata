@@ -19,6 +19,7 @@ import {
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from '@/components/ui/dialog';
+import PetsOpsTable from './PetsOpsTable';
 import {
   PET_IMPORT_HEADERS, buildPetImportWorkbook, readImportFile, validateAndMapRows,
 } from '@/modules/organizations/domain/petImport';
@@ -123,7 +124,7 @@ export default function ClubPetsDataGrid({ clubId, canManage = true }) {
   const [importing, setImporting] = useState(false);
   const [parsing, setParsing] = useState(false);
   const [addingRow, setAddingRow] = useState(false);
-  const [viewMode, setViewMode] = useState('table'); // 'table' | 'cards'
+  const [viewMode, setViewMode] = useState('ops'); // 'ops' (nova tabela) | 'table' (legada) | 'cards'
 
   async function handleFieldChange(petId, field, value) {
     setSavingId(petId);
@@ -250,6 +251,19 @@ export default function ClubPetsDataGrid({ clubId, canManage = true }) {
             <div className="flex items-center rounded-lg border border-border bg-card p-0.5">
               <button
                 type="button"
+                onClick={() => setViewMode('ops')}
+                className={cn(
+                  'flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-semibold transition-colors',
+                  viewMode === 'ops'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground hover:text-foreground',
+                )}
+                title="Tabela operacional: ID + colunas funcionais"
+              >
+                <List className="h-3.5 w-3.5" /> Operacional
+              </button>
+              <button
+                type="button"
                 onClick={() => setViewMode('table')}
                 className={cn(
                   'flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-semibold transition-colors',
@@ -257,6 +271,7 @@ export default function ClubPetsDataGrid({ clubId, canManage = true }) {
                     ? 'bg-primary text-primary-foreground'
                     : 'text-muted-foreground hover:text-foreground',
                 )}
+                title="Planilha editável"
               >
                 <List className="h-3.5 w-3.5" /> Planilha
               </button>
@@ -305,6 +320,9 @@ export default function ClubPetsDataGrid({ clubId, canManage = true }) {
           title="Nenhum animal cadastrado"
           description={canManage ? 'Adicione uma linha ou importe uma planilha.' : 'Esta organização ainda não cadastrou animais.'}
         />
+      ) : viewMode === 'ops' ? (
+        // TASK-V3-PET-OPS-LOG: tabela operacional com ID + colunas funcionais
+        <PetsOpsTable pets={pets} isLoading={false} canManage={canManage} search="" />
       ) : viewMode === 'cards' ? (
         // Card view — consistente com a aba pública (ClubPetsPublicTab)
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
