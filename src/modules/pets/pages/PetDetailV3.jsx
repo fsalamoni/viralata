@@ -767,7 +767,7 @@ export default function PetDetailV3() {
             <p className="mb-4 text-sm text-muted-foreground">
               Registro livre de observações dos admins do abrigo. Útil para notas rápidas, lembranças e informações não estruturadas.
             </p>
-            <PetNotes petId={petId} canManage={canEdit} />
+            <PetNotes petId={petId} canManage={canEditHistory} />
           </section>
         </TabsContent>
 
