@@ -10,12 +10,45 @@ export const PWA_ENABLED = import.meta.env.VITE_PWA_ENABLED === 'true';
 export function registerPwa() {
   if (typeof window === 'undefined' || !('serviceWorker' in navigator)) return;
 
+  // D-PWA-STALE-UNREGISTER (NEW, sw-v73.1): Limpa SWS antigos ANTES de
+  // qualquer outra lógica. Sem isso, browsers com SW v72 (ou mais
+  // antigo) ficam presos porque o SW antigo serve do cache e o register
+  // novo nunca substitui.
+  //
+  // Roda SEMPRE (independente de PWA_ENABLED) porque:
+  //  - PWA_ENABLED=true: queremos remover SW v72 stale antes de registrar v73
+  //  - PWA_ENABLED=false: queremos garantir que NENHUM SW está ativo
+  //
+  // Sintoma do bug: 'MessageSquare is not defined' mesmo após o bundle
+  // novo ser deployado, porque o SW v72 cacheado serve o bundle antigo.
+  // Solução: unregister qualquer SW que não seja sw-v73.js, e se havia
+  // controller stale, forçar reload para garantir próxima carga fresca.
+  function unregisterStaleAndMaybeReload() {
+    if (!('serviceWorker' in navigator)) return Promise.resolve(false);
+    return navigator.serviceWorker.getRegistrations().then((regs) => {
+      let hadStaleSw = false;
+      regs.forEach((r) => {
+        const url = r.active?.scriptURL || r.installing?.scriptURL || r.waiting?.scriptURL || '';
+        // Preserva apenas sw-v73.js (versão atual).
+        // - Se url for vazia (registration sem worker ainda), é stale.
+        // - Se url nao for sw-v73.js, é stale.
+        if (!url || (!url.endsWith('/sw-v73.js') && !url.endsWith('/sw-v73'))) {
+          hadStaleSw = true;
+          r.unregister().catch(() => {});
+        }
+      });
+      // Se havia SW antigo controlando a página, forca reload AGORA.
+      if (hadStaleSw && navigator.serviceWorker.controller) {
+        setTimeout(() => { window.location.reload(); }, 50);
+        return true;
+      }
+      return false;
+    }).catch(() => false);
+  }
+
   // Flag desligada: garante que não exista SW registrado (segurança / rollback).
   if (!PWA_ENABLED) {
-    navigator.serviceWorker
-      .getRegistrations()
-      .then((regs) => regs.forEach((r) => r.unregister()))
-      .catch(() => {});
+    unregisterStaleAndMaybeReload();
     return;
   }
 
@@ -23,11 +56,6 @@ export function registerPwa() {
   if (import.meta.env.DEV) return;
 
   // Bumped to sw-v73.js (2026-07-22) — MUST match vite.config.js filename.
-  // v70→v71: Platform admin NÃO vê botão 'Administrar' em /pet/<id> (público). canShowAdminButton = canManage v69→v70: AUDITORIA completa — todas as páginas verificadas, canManage em 12 edge cases de teste. Bump para forçar reload.v69→v70: AUDITORIA completa — todas as páginas verificadas, canManage em 12 edge cases de teste. Bump para forçar reload. !isPlatformAdmin. Platform admin usa /admin/pets para moderar.
-  // de consistência. handleChatClick da V3/V1 vai para /chat?pet=<id> (não mais
-  // para /pets/<id> que dependia de canManage). Força reload para limpar
-  // qualquer cache antigo.
-  // completa: UI + service + Firestore rules + route guard.
   const swUrl = `${import.meta.env.BASE_URL || '/'}sw-v73.js`.replace(/\/{2,}/g, '/');
 
   // IMPORTANTE: não recarregamos automaticamente quando o SW troca de
@@ -37,41 +65,10 @@ export function registerPwa() {
   // interrompe o usuário no meio de algo (digitando, scroll, etc.).
 
   window.addEventListener('load', () => {
-    // D-PWA-STALE-UNREGISTER (NEW, sw-v73.1): Limpa SWS antigos antes
-    // de registrar o novo. Sem isso, browsers com SW v72 (ou mais
-    // antigo) ficam presos no SW antigo porque o register(sw-v73.js)
-    // detecta o v72 ativo e nunca consegue substituí-lo. O user fica
-    // vendo o bundle antigo em cache.
-    //
-    // Sintoma: 'MessageSquare is not defined' mesmo após o bundle
-    // novo ser deployado (porque o SW antigo serve o bundle antigo).
-    // Solução: desregistrar qualquer SW cujo scriptURL NÃO aponta
-    // para o sw-v73.js ATUAL, e depois forçar reload se a página
-    // estava sendo controlada por um SW antigo.
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.getRegistrations().then((regs) => {
-        let hadStaleSw = false;
-        regs.forEach((r) => {
-          const url = r.active?.scriptURL || r.installing?.scriptURL || r.waiting?.scriptURL || '';
-          if (url && !url.endsWith('/sw-v73.js') && !url.endsWith('/sw-v73')) {
-            hadStaleSw = true;
-            r.unregister().catch(() => {});
-          }
-        });
-        // Se havia SW antigo controlando a página, recarrega AGORA.
-        // Sem reload, o SW v72 (mesmo unregistered) pode ter deixado
-        // caches que respondem antes do v73 assumir. O reload garante
-        // que a próxima carga pega os bundles novos direto do servidor.
-        if (hadStaleSw && navigator.serviceWorker.controller) {
-          // controller existe E o registration foi removido → reload
-          // para garantir que a página não está sob controle de SW stale.
-          // Pequeno delay para o unregister propagar.
-          setTimeout(() => { window.location.reload(); }, 50);
-          return;
-        }
-      }).catch(() => {});
-    }
+    // 1. Limpa SWS antigos (v72 e anteriores). Pode disparar reload.
+    unregisterStaleAndMaybeReload();
 
+    // 2. Registra o sw-v73.js (versão atual).
     navigator.serviceWorker
       .register(swUrl)
       .then((reg) => {
