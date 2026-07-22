@@ -343,3 +343,30 @@ Cada bloco segue o mesmo ritual:
   - Firestore rules: sem `[^/]`, sem `r'...'`, preferir `isString() && size() <= N`
 - **Sem retrabalho**: tasks pequenas (≤30min), worktree por bloco, merge
   sequencial e validado.
+
+---
+
+## Pet Ops V3 (TASK-V3-PET-OPS-LOG) — Concluído em 2026-07-22 (sw-v72.4)
+
+### Escopo
+- **Tabela operacional** com ID imutável (`pet_seq`) + colunas funcionais
+- **Log imutável** de todas as mudanças do pet
+- **Anotações** dos admins (CRUD)
+- **Timeline visual** agregando 9 fontes de eventos
+- **Hash router** para deep-link a partir da tabela
+
+### Entregas
+- PR #198 (squash merged) — `feat(pet-ops): Tabela operacional + Log + Anotações + Timeline V3 (sw-v72.4)`
+- Bundle deployed: `PetDetailV3-DyhpBi3o.js` (123692 bytes)
+- Documentação: `docs/REGENCY_PET_OPS_V3.md`
+- 19 testes novos (petLogService: 9, PetsOpsTable: 10)
+- Total de testes: 339/339 passando
+
+### Decisões principais
+- D-PET-SEQ-IMMUTABLE: pet_seq é o ID PERMANENTE do pet, gerado atomicamente
+- D-PET-LOG-IMMUTABLE: pet_audit_log é append-only (update=false, delete=false)
+- D-PET-LOG-PER-CHANGE: cada CRUD registra log via appendPetLog
+- D-PET-OPS-TABLE-PRIMARY-NAVIGATION: cada linha da tabela é ponto de entrada
+- D-HASH-ROUTER-PET-TABS: tabs navegáveis por hash URL
+- D-PET-NOTES-AUTHOR-DELETE: notas só autor/platform_admin podem deletar
+- D-PET-LOG-TIMELINE-AGGREGATION: Timeline combina 9 fontes em 1 view

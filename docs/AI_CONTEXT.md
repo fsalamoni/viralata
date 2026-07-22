@@ -270,6 +270,7 @@ npm --prefix functions test   # Vitest das Cloud Functions
 - `docs/design-system-v2/` — snapshot portátil da v1.0 em 5 formatos
   (`.md` canônico, `.json` tokens, `.html` preview, `.fig` placeholder,
   `.pdf`). Não editar; é material de referência.
+- `docs/REGENCY_PET_OPS_V3.md` — Pet Ops V3 (TASK-V3-PET-OPS-LOG, sw-v72.4): tabela operacional, pet_seq imutável, log de mudanças, anotações e timeline visual.
 - `docs/ROADMAP.md` — histórico do plano de execução por fases. **Fases
   0-3 concluídas (paleta terracota antiga). Fase 4 (DS_V2) em
   andamento**: reaplicação da spec v1.0 por bloco, cada um com
