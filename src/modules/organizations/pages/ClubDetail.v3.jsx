@@ -651,14 +651,14 @@ export default function ClubDetailV3() {
                 Voltar
               </Link>
             </Button>
-            {isAdmin && (
+            {isMember && (
               <Button
                 asChild
                 variant="ghost"
                 size="sm"
                 className="text-white hover:bg-white/15"
               >
-                <Link to={`/organizacao/${orgId}/admin`}>
+                <Link to={`/organizacoes/${orgId}/admin`}>
                   <Settings className="mr-1.5 h-4 w-4" aria-hidden="true" />
                   Painel
                 </Link>
@@ -721,18 +721,6 @@ export default function ClubDetailV3() {
                   >
                     <UserPlus className="mr-1.5 h-4 w-4" aria-hidden="true" />
                     {requesting ? 'Enviando...' : 'Pedir para ingressar'}
-                  </Button>
-                )}
-                {isMember && (
-                  <Button
-                    asChild
-                    size="lg"
-                    className="border-0 bg-white text-emerald-700 hover:bg-white/90"
-                  >
-                    <Link to={`/organizacao/${orgId}/admin`}>
-                      <Settings className="mr-1.5 h-4 w-4" aria-hidden="true" />
-                      Painel
-                    </Link>
                   </Button>
                 )}
                 <Button
@@ -848,42 +836,10 @@ export default function ClubDetailV3() {
         </div>
         {isAdmin && (
           <div className="flex flex-wrap items-center gap-1">
-            <button
-              type="button"
-              onClick={() => setActiveGroup('management')}
-              className={cn(
-                'rounded-md px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition-colors',
-                activeGroup === 'management'
-                  ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300'
-                  : 'text-muted-foreground hover:bg-muted',
-              )}
-              aria-pressed={activeGroup === 'management'}
-            >
-              Gestão
-            </button>
-            <div className="flex flex-wrap items-center gap-1">
-              {TABS_ADMIN.map((tab) => {
-                const Icon = tab.icon;
-                const active = activeGroup === 'management' && activeSubKey === tab.key;
-                return (
-                  <button
-                    key={tab.key}
-                    type="button"
-                    onClick={() => setActiveSub(tab.key)}
-                    className={cn(
-                      'inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
-                      active
-                        ? 'border-amber-500 bg-amber-500 text-white shadow'
-                        : 'border-border bg-card text-muted-foreground hover:border-amber-500/50',
-                    )}
-                    aria-pressed={active}
-                  >
-                    <Icon className="h-3.5 w-3.5" aria-hidden="true" />
-                    {tab.label}
-                  </button>
-                );
-              })}
-            </div>
+            {/* Gestão + Painel removidos (sw-v72.3) — botão do topo do hero é
+                a única porta de entrada para o painel, visível para
+                isMember (inclui owner, equipe com permissão TEAM, membros
+                e voluntários do abrigo). */}
           </div>
         )}
       </div>
@@ -1142,22 +1098,9 @@ export default function ClubDetailV3() {
           </div>
         )}
 
-        {/* PAINEL (admin only) */}
-        {activeGroup === 'management' && activeSubKey === 'painel' && isAdmin && (
-          <EmptyState
-            icon={Settings}
-            title="Painel administrativo"
-            description="Gerencie animais, equipe, finanças, mural e configurações da ONG."
-            action={
-              <Button asChild>
-                <Link to={`/organizacao/${orgId}/admin`}>
-                  Acessar painel
-                  <ArrowRight className="ml-1.5 h-4 w-4" aria-hidden="true" />
-                </Link>
-              </Button>
-            }
-          />
-        )}
+        {/* PAINEL (admin only) — removido em sw-v72.3.
+            O botão "Painel" do topo do hero é a única porta de entrada
+            para o painel, visível para isMember. */}
       </motion.section>
 
       {/* CTA FINAL */}
