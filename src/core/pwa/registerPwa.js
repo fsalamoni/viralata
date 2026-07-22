@@ -37,13 +37,47 @@ export function registerPwa() {
           r.unregister().catch(() => {});
         }
       });
-      // Se havia SW antigo controlando a página, forca reload AGORA.
+      // Se havia SW antigo controlando a página, força reload. MAS só
+      // se a página não tem interação em curso (formulário sendo
+      // preenchido, click handler em andamento). Se o user está
+      // digitando/marcando/clicando, NÃO reload — o user está fazendo
+      // algo importante e o reload interromperia.
+      //
+      // D-PWA-STALE-UNREGISTER-DEFER: detectar atividade de input nos
+      // últimos 5s. Se sim, NÃO reload. O SW unregistered = sem cache
+      // na próxima navegação. Próxima F5/reload manual do user
+      // (botão "Recarregar" do ErrorBoundary ou do SwUpdateBanner)
+      // vai pegar o bundle fresh do servidor.
       if (hadStaleSw && navigator.serviceWorker.controller) {
+        const lastActivity = Number(sessionStorage.getItem('pwa-stale-last-activity') || '0');
+        const now = Date.now();
+        const isInteracting = (now - lastActivity) < 5000;
+        if (isInteracting) {
+          // Adiar reload para daqui 5s (depois que user terminar)
+          // ou até o user reload manual.
+          setTimeout(() => {
+            if (document.visibilityState === 'visible') {
+              window.location.reload();
+            }
+          }, 5000);
+          return true;
+        }
+        // Sem atividade recente: reload imediato (50ms)
         setTimeout(() => { window.location.reload(); }, 50);
         return true;
       }
       return false;
     }).catch(() => false);
+  }
+
+  // Track user activity para o reload inteligente acima
+  if (typeof window !== 'undefined') {
+    const trackActivity = () => {
+      try { sessionStorage.setItem('pwa-stale-last-activity', String(Date.now())); } catch (_) {}
+    };
+    ['keydown', 'mousedown', 'touchstart', 'pointerdown', 'scroll', 'input', 'change'].forEach((evt) => {
+      window.addEventListener(evt, trackActivity, { passive: true, capture: true });
+    });
   }
 
   // Flag desligada: garante que não exista SW registrado (segurança / rollback).
