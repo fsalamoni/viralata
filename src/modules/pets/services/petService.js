@@ -4,13 +4,14 @@
 import { buildSearchKeywords } from '@/modules/shelter/domain/search';
 import {
   collection, doc, getDoc, getDocs, addDoc, updateDoc,
-  deleteDoc, query, where, orderBy, limit, serverTimestamp, writeBatch,
+  deleteDoc, query, where, orderBy, limit, serverTimestamp, writeBatch, runTransaction,
 } from 'firebase/firestore';
 import { db } from '@/core/config/firebase';
 import { logger } from '@/core/lib/logger';
 import { createAuditLog } from '@/core/services/auditService';
 import { notifyUsers, NOTIFICATION_TYPE } from '@/core/services/notificationService';
 import { calculatePriorityScore } from '@/modules/pets/domain/priority';
+import { appendPetLog, PET_LOG_ACTIONS } from './petLogService';
 
 const PETS_COLLECTION = 'pets';
 const INTERESTS_COLLECTION = 'adoption_interests';
@@ -71,11 +72,15 @@ export async function getPetsByOwner(ownerId) {
 export async function createPet(petData, actor) {
   if (!db) throw new Error('Firebase não disponível');
   const priorityScore = calculatePriorityScore({ created_at: { seconds: Date.now() / 1000 } });
+  // TASK-V3-PET-OPS-LOG: pet_seq é o ID imutável e permanente do pet.
+  // Gerado atomicamente via Firestore runTransaction (best-effort: max+1).
+  const petSeq = await getNextPetSeq();
   const payload = {
     ...petData,
     photos: normalizePetPhotoUrls(petData?.photos),
     status: petData.status || 'available',
     priority_score: priorityScore,
+    pet_seq: petSeq, // IMUTÁVEL — número sequencial global, único por pet
     // TASK-075 (Fase 18): keywords normalizados p/ Smart Search
     // (array-contains server-side).
     search_keywords: buildSearchKeywords({
@@ -88,7 +93,14 @@ export async function createPet(petData, actor) {
     updated_at: serverTimestamp(),
   };
   const ref = await addDoc(collection(db, PETS_COLLECTION), payload);
-  await createAuditLog({ action: 'pet_created', actor, details: { pet_id: ref.id, title: petData.title } });
+  await createAuditLog({ action: 'pet_created', actor, details: { pet_id: ref.id, pet_seq: petSeq, title: petData.title } });
+  // TASK-V3-PET-OPS-LOG: registra criação no log imutável do pet.
+  await appendPetLog(ref.id, {
+    action: PET_LOG_ACTIONS.PET_CREATED,
+    actor,
+    target: { collection: 'pets', docId: ref.id },
+    details: { pet_seq: petSeq, title: petData.title, name: petData.name },
+  });
   return ref.id;
 }
 
@@ -148,24 +160,38 @@ export async function ensureCanMutatePet(petId, actor) {
 export async function updatePet(petId, updates, actor) {
   if (!db || !petId) throw new Error('Dados inválidos');
   await ensureCanMutatePet(petId, actor);
+  // D-PET-SEQ-IMMUTABLE: pet_seq NUNCA pode ser alterado depois de criado.
+  // Se algum caller tentar, removemos silenciosamente para evitar erro.
+  const safeUpdates = { ...updates };
+  if (Object.prototype.hasOwnProperty.call(safeUpdates, 'pet_seq')) {
+    logger.warn('[petService] tentativa de alterar pet_seq bloqueada', { petId, attempted: safeUpdates.pet_seq });
+    delete safeUpdates.pet_seq;
+  }
   const normalizedUpdates = {
-    ...updates,
+    ...safeUpdates,
     updated_at: serverTimestamp(),
   };
-  if (Object.prototype.hasOwnProperty.call(updates || {}, 'photos')) {
-    normalizedUpdates.photos = normalizePetPhotoUrls(updates?.photos);
+  if (Object.prototype.hasOwnProperty.call(safeUpdates, 'photos')) {
+    normalizedUpdates.photos = normalizePetPhotoUrls(safeUpdates?.photos);
   }
   // TASK-075: se algum campo pesquisável mudou, recomputa search_keywords.
   const searchable = ['name', 'title', 'breed', 'city'];
-  if (searchable.some((k) => Object.prototype.hasOwnProperty.call(updates || {}, k))) {
+  if (searchable.some((k) => Object.prototype.hasOwnProperty.call(safeUpdates, k))) {
     const current = await getPetById(petId).catch(() => null);
-    const merged = { ...current, ...updates };
+    const merged = { ...current, ...safeUpdates };
     normalizedUpdates.search_keywords = buildSearchKeywords({
       name: merged?.name, title: merged?.title, breed: merged?.breed, city: merged?.city,
     });
   }
   await updateDoc(doc(db, PETS_COLLECTION, petId), normalizedUpdates);
-  await createAuditLog({ action: 'pet_updated', actor, details: { pet_id: petId, changed_fields: Object.keys(updates) } });
+  await createAuditLog({ action: 'pet_updated', actor, details: { pet_id: petId, changed_fields: Object.keys(safeUpdates) } });
+  // TASK-V3-PET-OPS-LOG: registra cada update no log imutável do pet.
+  await appendPetLog(petId, {
+    action: PET_LOG_ACTIONS.PET_UPDATED,
+    actor,
+    target: { collection: 'pets', docId: petId },
+    details: { changed_fields: Object.keys(safeUpdates) },
+  });
 }
 
 /** Marca um pet como adotado e avisa os demais interessados que não foram escolhidos. */
@@ -209,6 +235,12 @@ export async function completePetAdoption(petId, adoptedByUid, actor) {
 export async function deletePet(petId, actor) {
   if (!db || !petId) throw new Error('Dados inválidos');
   await ensureCanMutatePet(petId, actor);
+  // TASK-V3-PET-OPS-LOG: registra ANTES de excluir (depois não tem mais o doc).
+  await appendPetLog(petId, {
+    action: PET_LOG_ACTIONS.PET_DELETED,
+    actor,
+    target: { collection: 'pets', docId: petId },
+  });
   await deleteDoc(doc(db, PETS_COLLECTION, petId));
   await createAuditLog({ action: 'pet_deleted', actor, details: { pet_id: petId } });
 }
@@ -226,5 +258,38 @@ export async function recalculatePriorityScores() {
       batch.update(d.ref, { priority_score: score });
     });
     await batch.commit().catch((err) => logger.error('recalculatePriorityScores batch error', err));
+  }
+}
+
+/**
+ * D-PET-SEQ-IMMUTABLE: gera o próximo número sequencial (pet_seq) para um novo pet.
+ *
+ * Estratégia: runTransaction + contador atômico em /pet_seq_counter/global.
+ * - Lê o counter (ou cria como 0 se não existe)
+ * - Incrementa em 1
+ * - Grava o novo valor
+ * - Retorna o valor incrementado
+ *
+ * O pet_seq é IMUTÁVEL depois de criado (D-PET-SEQ-IMMUTABLE enforced em
+ * firestore.rules: `request.resource.data.pet_seq == resource.data.pet_seq`).
+ *
+ * Fallback (offline/erro): usa timestamp % 1_000_000 como seq de contingência.
+ * Raramente usado porque Firestore é rápido.
+ */
+export async function getNextPetSeq() {
+  if (!db) return Math.floor(Date.now() / 1000) % 1_000_000;
+  try {
+    const next = await runTransaction(db, async (tx) => {
+      const counterRef = doc(db, 'pet_seq_counter', 'global');
+      const snap = await tx.get(counterRef);
+      const current = snap.exists() ? (snap.data()?.value || 0) : 0;
+      const value = current + 1;
+      tx.set(counterRef, { value, updated_at: serverTimestamp() }, { merge: true });
+      return value;
+    });
+    return next;
+  } catch (err) {
+    logger.warn('[petService] getNextPetSeq transaction falhou, usando fallback', err);
+    return Math.floor(Date.now() / 1000) % 1_000_000;
   }
 }

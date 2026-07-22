@@ -273,6 +273,17 @@ service cloud.firestore {
         // de outros criando update com novo owner_id.
         request.resource.data.owner_id == resource.data.owner_id ||
         isPlatformAdmin()
+      ) && (
+        // TASK-V3-PET-OPS-LOG (2026-07-22): pet_seq é IMUTÁVEL depois de
+        // criado. Se um caller tentar alterar, a rule rejeita. Garante
+        // que o ID do pet seja permanente e único.
+        // - Em create: o request.resource.data.pet_seq existe e é setado pelo client.
+        // - Em update: o valor tem que ser igual ao que já estava salvo.
+        // - Se ainda não tinha pet_seq (pets antigos), aceita manter o novo valor
+        //   (mas não permite mudar DEPOIS).
+        (resource.data.pet_seq == null && request.resource.data.pet_seq != null) ||
+        (resource.data.pet_seq == request.resource.data.pet_seq) ||
+        isPlatformAdmin()
       );
       allow delete: if isAuth() && (
         resource.data.owner_id == request.auth.uid ||
@@ -464,6 +475,52 @@ service cloud.firestore {
           allow delete: if isAuth() && isPlatformAdmin();
         }
       }
+
+      // ─── TASK-V3-PET-OPS-LOG: subcoleção `pet_notes` ────────────────
+      // Anotações livres dos admins do pet. Texto, autor, timestamp.
+      // - read: mesmos do pet (transparência para voluntários do abrigo)
+      // - create: canManagePet (qualquer admin pode anotar)
+      // - update: NÃO permitido (notas são imutáveis, só exclui e cria nova)
+      // - delete: só o autor OU platform_admin
+      match /pet_notes/{noteId} {
+        allow read: if isAuth() && (
+          isPlatformAdmin() ||
+          canManagePet(get(/databases/$(database)/documents/pets/$(petId)).data)
+        );
+        allow create: if isAuth() && (
+          isPlatformAdmin() ||
+          canManagePet(get(/databases/$(database)/documents/pets/$(petId)).data)
+        ) && request.resource.data.keys().hasAll(['text', 'author_uid', 'created_at']);
+        allow update: if false; // imutável
+        allow delete: if isAuth() && (
+          isPlatformAdmin() ||
+          resource.data.author_uid == request.auth.uid
+        );
+      }
+
+      // ─── TASK-V3-PET-OPS-LOG: subcoleção `pet_audit_log` ────────────
+      // Log imutável de TODAS as mudanças do pet. Append-only.
+      // - read: canManagePet (só admins do pet veem o log)
+      // - create: canManagePet
+      // - update/delete: NUNCA permitido
+      match /pet_audit_log/{logId} {
+        allow read: if isAuth() && (
+          isPlatformAdmin() ||
+          canManagePet(get(/databases/$(database)/documents/pets/$(petId)).data)
+        );
+        allow create: if isAuth() && (
+          isPlatformAdmin() ||
+          canManagePet(get(/databases/$(database)/documents/pets/$(petId)).data)
+        ) && request.resource.data.keys().hasAll(['action', 'actor_uid', 'created_at']);
+        allow update: if false; // imutável
+        allow delete: if false; // imutável
+      }
+    }
+
+    // TASK-V3-PET-OPS-LOG: counter global para pet_seq (atômico).
+    // Leitura/escrita só platform_admin (transparente para o client via runTransaction).
+    match /pet_seq_counter/{counterId} {
+      allow read, write: if isAuth() && isPlatformAdmin();
     }
 
 

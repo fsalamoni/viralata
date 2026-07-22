@@ -22,6 +22,7 @@ import {
 import { db } from '@/core/config/firebase';
 import { logger } from '@/core/lib/logger';
 import { ensureCanMutatePet } from './petService';
+import { appendPetLog, PET_LOG_ACTIONS } from './petLogService';
 
 // ============================================================================
 // VET VISITS — Consultas Veterinárias
@@ -71,6 +72,12 @@ export async function createVetVisit(petId, data, actor) {
     created_by_name: actor?.displayName || actor?.name || 'Sistema',
   };
   const ref = await addDoc(collection(db, 'pets', petId, 'vet_visits'), payload);
+  await appendPetLog(petId, {
+    action: PET_LOG_ACTIONS.VET_VISIT_CREATED,
+    actor,
+    target: { collection: 'vet_visits', docId: ref.id },
+    details: { visit_date: data?.visit_date, reason: data?.reason },
+  });
   logger.info('[petMedical] vet visit criada', { petId, visitId: ref.id });
   return ref.id;
 }
@@ -85,6 +92,12 @@ export async function updateVetVisit(petId, visitId, updates, actor) {
     ...updates,
     updated_at: serverTimestamp(),
   });
+  await appendPetLog(petId, {
+    action: PET_LOG_ACTIONS.VET_VISIT_UPDATED,
+    actor,
+    target: { collection: 'vet_visits', docId: visitId },
+    details: { changed_fields: Object.keys(updates || {}) },
+  });
 }
 
 /**
@@ -96,6 +109,11 @@ export async function deleteVetVisit(petId, visitId, actor) {
   if (!db) throw new Error('Firebase não disponível');
   await ensureCanMutatePet(petId, actor);
   await deleteDoc(doc(db, 'pets', petId, 'vet_visits', visitId));
+  await appendPetLog(petId, {
+    action: PET_LOG_ACTIONS.VET_VISIT_DELETED,
+    actor,
+    target: { collection: 'vet_visits', docId: visitId },
+  });
 }
 
 // ============================================================================
@@ -130,6 +148,12 @@ export async function createTreatment(petId, data, actor) {
     created_by_name: actor?.displayName || actor?.name || 'Sistema',
   };
   const ref = await addDoc(collection(db, 'pets', petId, 'treatments'), payload);
+  await appendPetLog(petId, {
+    action: PET_LOG_ACTIONS.TREATMENT_CREATED,
+    actor,
+    target: { collection: 'treatments', docId: ref.id },
+    details: { name: data?.name, status: payload.status },
+  });
   logger.info('[petMedical] tratamento criado', { petId, treatmentId: ref.id });
   return ref.id;
 }
@@ -141,12 +165,23 @@ export async function updateTreatment(petId, treatmentId, updates, actor) {
     ...updates,
     updated_at: serverTimestamp(),
   });
+  await appendPetLog(petId, {
+    action: PET_LOG_ACTIONS.TREATMENT_UPDATED,
+    actor,
+    target: { collection: 'treatments', docId: treatmentId },
+    details: { changed_fields: Object.keys(updates || {}) },
+  });
 }
 
 export async function deleteTreatment(petId, treatmentId, actor) {
   if (!db) throw new Error('Firebase não disponível');
   await ensureCanMutatePet(petId, actor);
   await deleteDoc(doc(db, 'pets', petId, 'treatments', treatmentId));
+  await appendPetLog(petId, {
+    action: PET_LOG_ACTIONS.TREATMENT_DELETED,
+    actor,
+    target: { collection: 'treatments', docId: treatmentId },
+  });
 }
 
 // ============================================================================
@@ -180,6 +215,12 @@ export async function createCareLog(petId, data, actor) {
     created_by_name: actor?.displayName || actor?.name || 'Sistema',
   };
   const ref = await addDoc(collection(db, 'pets', petId, 'care_log'), payload);
+  await appendPetLog(petId, {
+    action: PET_LOG_ACTIONS.CARE_LOG_CREATED,
+    actor,
+    target: { collection: 'care_log', docId: ref.id },
+    details: { care_type: data?.care_type, care_date: data?.care_date },
+  });
   logger.info('[petMedical] care log criado', { petId, careId: ref.id });
   return ref.id;
 }
@@ -191,12 +232,23 @@ export async function updateCareLog(petId, careId, updates, actor) {
     ...updates,
     updated_at: serverTimestamp(),
   });
+  await appendPetLog(petId, {
+    action: PET_LOG_ACTIONS.CARE_LOG_UPDATED,
+    actor,
+    target: { collection: 'care_log', docId: careId },
+    details: { changed_fields: Object.keys(updates || {}) },
+  });
 }
 
 export async function deleteCareLog(petId, careId, actor) {
   if (!db) throw new Error('Firebase não disponível');
   await ensureCanMutatePet(petId, actor);
   await deleteDoc(doc(db, 'pets', petId, 'care_log', careId));
+  await appendPetLog(petId, {
+    action: PET_LOG_ACTIONS.CARE_LOG_DELETED,
+    actor,
+    target: { collection: 'care_log', docId: careId },
+  });
 }
 
 // ============================================================================
@@ -231,6 +283,12 @@ export async function createMedication(petId, data, actor) {
     created_by_name: actor?.displayName || actor?.name || 'Sistema',
   };
   const ref = await addDoc(collection(db, 'pets', petId, 'medications'), payload);
+  await appendPetLog(petId, {
+    action: PET_LOG_ACTIONS.MEDICATION_CREATED,
+    actor,
+    target: { collection: 'medications', docId: ref.id },
+    details: { name: data?.name, dosage: data?.dosage },
+  });
   logger.info('[petMedical] medicação criada', { petId, medicationId: ref.id });
   return ref.id;
 }
@@ -242,10 +300,21 @@ export async function updateMedication(petId, medicationId, updates, actor) {
     ...updates,
     updated_at: serverTimestamp(),
   });
+  await appendPetLog(petId, {
+    action: PET_LOG_ACTIONS.MEDICATION_UPDATED,
+    actor,
+    target: { collection: 'medications', docId: medicationId },
+    details: { changed_fields: Object.keys(updates || {}) },
+  });
 }
 
 export async function deleteMedication(petId, medicationId, actor) {
   if (!db) throw new Error('Firebase não disponível');
   await ensureCanMutatePet(petId, actor);
   await deleteDoc(doc(db, 'pets', petId, 'medications', medicationId));
+  await appendPetLog(petId, {
+    action: PET_LOG_ACTIONS.MEDICATION_DELETED,
+    actor,
+    target: { collection: 'medications', docId: medicationId },
+  });
 }

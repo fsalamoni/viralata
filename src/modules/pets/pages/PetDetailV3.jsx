@@ -20,7 +20,7 @@
  * @see docs/V3_PET_DETAIL_FULL_PLAN.md
  * @see docs/REGENCY_PET_DETAIL_V3.md
  */
-import React, { useRef, useState, useMemo } from 'react';
+import React, { useRef, useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { motion, useReducedMotion, AnimatePresence } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
@@ -84,6 +84,11 @@ import PetTreatmentForm from '../components/PetTreatmentForm';
 import PetCareLogForm from '../components/PetCareLogForm';
 import PetDevolutionForm from '../components/PetDevolutionForm';
 
+// TASK-V3-PET-OPS-LOG (2026-07-22): novos componentes de Operacional
+import PetNotes from '../components/PetNotes';
+import PetLog from '../components/PetLog';
+import PetTimelineView from '../components/PetTimelineView';
+
 // UI base
 import { CollapsibleCard } from '@/components/ui/collapsible-card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -106,6 +111,7 @@ import {
   ArrowLeft, Heart, MapPin, Trash2, Share2, MessageCircle,
   FileText, Eye, Calendar, Activity, Pill, Stethoscope,
   Bath, History, HeartHandshake, AlertCircle, Users, Edit, Plus,
+  Clock, ListChecks, Sparkles,
 } from 'lucide-react';
 
 // ============================================================================
@@ -122,6 +128,9 @@ const TABS = [
   { id: 'health', label: 'Saúde', icon: Stethoscope },
   { id: 'care', label: 'Cuidados', icon: Bath },
   { id: 'history', label: 'Histórico', icon: History },
+  { id: 'notes', label: 'Anotações', icon: MessageSquare },
+  { id: 'log', label: 'Log', icon: ListChecks },
+  { id: 'timeline', label: 'Timeline', icon: Clock },
 ];
 
 // ============================================================================
@@ -198,12 +207,47 @@ export default function PetDetailV3() {
   const canManage = petPermissions.canEdit;
   const canEditHistory = canManage;
 
-  // Tab state (default = about)
-  const currentTab = searchParams.get('tab') || 'about';
+  // Tab state — TASK-V3-PET-OPS-LOG: usa hash do URL (#history, #care, etc)
+  // para permitir deep-link direto a partir da tabela operacional.
+  // Fallback para ?tab=... (backward compat).
+  const [hashTab, setHashTab] = useState(() => {
+    if (typeof window === 'undefined') return null;
+    const h = window.location.hash.replace(/^#/, '');
+    if (['about', 'health', 'care', 'history', 'notes', 'log', 'timeline'].includes(h)) return h;
+    return null;
+  });
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined;
+    const onHashChange = () => {
+      const h = window.location.hash.replace(/^#/, '');
+      if (['about', 'health', 'care', 'history', 'notes', 'log', 'timeline'].includes(h)) {
+        setHashTab(h);
+        setSearchParams((prev) => {
+          const next = new URLSearchParams(prev);
+          next.set('tab', h);
+          return next;
+        }, { replace: true });
+        setTimeout(() => {
+          document.getElementById(`tab-${h}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+      }
+    };
+    window.addEventListener('hashchange', onHashChange);
+    onHashChange();
+    return () => window.removeEventListener('hashchange', onHashChange);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const currentTab = hashTab || searchParams.get('tab') || 'about';
   const setTab = (value) => {
     const next = new URLSearchParams(searchParams);
     next.set('tab', value);
     setSearchParams(next, { replace: true });
+    if (typeof window !== 'undefined') {
+      history.replaceState(null, '', `${window.location.pathname}#${value}`);
+    }
+    setHashTab(value);
   };
 
   if (isLoading) return <PetDetailSkeleton />;
@@ -708,6 +752,54 @@ export default function PetDetailV3() {
               canEdit={canEditHistory}
               onAdd={() => setDevolutionOpen(true)}
             />
+          </section>
+        </TabsContent>
+
+        {/* ============================================================ */}
+        {/* TAB: ANOTAÇÕES (TASK-V3-PET-OPS-LOG)                          */}
+        {/* ============================================================ */}
+        <TabsContent value="notes" className="mt-4 space-y-6" id="tab-notes">
+          <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+            <h2 className="mb-4 flex items-center gap-2 text-lg font-extrabold">
+              <MessageSquare className="h-5 w-5 text-sky-600" aria-hidden="true" />
+              Anotações
+            </h2>
+            <p className="mb-4 text-sm text-muted-foreground">
+              Registro livre de observações dos admins do abrigo. Útil para notas rápidas, lembranças e informações não estruturadas.
+            </p>
+            <PetNotes petId={petId} canManage={canEdit} />
+          </section>
+        </TabsContent>
+
+        {/* ============================================================ */}
+        {/* TAB: LOG (TASK-V3-PET-OPS-LOG)                                */}
+        {/* ============================================================ */}
+        <TabsContent value="log" className="mt-4 space-y-6" id="tab-log">
+          <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+            <h2 className="mb-2 flex items-center gap-2 text-lg font-extrabold">
+              <ListChecks className="h-5 w-5 text-primary" aria-hidden="true" />
+              Log de mudanças
+            </h2>
+            <p className="mb-4 text-sm text-muted-foreground">
+              Histórico completo de quem fez o quê e quando. Inclui criação, edição e exclusão de campos do pet e de todas as subcoleções (saúde, cuidados, histórico, anotações).
+            </p>
+            <PetLog petId={petId} />
+          </section>
+        </TabsContent>
+
+        {/* ============================================================ */}
+        {/* TAB: TIMELINE (TASK-V3-PET-OPS-LOG)                          */}
+        {/* ============================================================ */}
+        <TabsContent value="timeline" className="mt-4 space-y-6" id="tab-timeline">
+          <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+            <h2 className="mb-2 flex items-center gap-2 text-lg font-extrabold">
+              <Clock className="h-5 w-5 text-primary" aria-hidden="true" />
+              Timeline do pet
+            </h2>
+            <p className="mb-4 text-sm text-muted-foreground">
+              Visão cronológica de todos os eventos relevantes: cadastro, mudanças, saúde, cuidados, histórico de adoções e anotações.
+            </p>
+            <PetTimelineView petId={petId} pet={pet} />
           </section>
         </TabsContent>
       </Tabs>
