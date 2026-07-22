@@ -1,7 +1,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.1.0",
-  "generatedAt": "2026-07-20T01:20:23.364Z",
+  "generatedAt": "2026-07-22T04:19:43.314Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W29",
@@ -17830,6 +17830,62 @@
       "phase": "TEST",
       "status": "done",
       "created_at": "2026-07-20T11:44:58"
+    },
+    {
+      "id": "TASK-V3-PET-OPS-LOG-01",
+      "title": "Backend: getNextPetSeq + pet_seq imutável em createPet",
+      "status": "done",
+      "epic": "TASK-V3-PET-OPS-LOG",
+      "sw": "sw-v72.4",
+      "time": "15min"
+    },
+    {
+      "id": "TASK-V3-PET-OPS-LOG-02",
+      "title": "Backend: petLogService + appendPetLog em todos os CRUDs",
+      "status": "done",
+      "epic": "TASK-V3-PET-OPS-LOG",
+      "sw": "sw-v72.4",
+      "time": "30min"
+    },
+    {
+      "id": "TASK-V3-PET-OPS-LOG-03",
+      "title": "Backend: petNotesService + firestore rules (imutável)",
+      "status": "done",
+      "epic": "TASK-V3-PET-OPS-LOG",
+      "sw": "sw-v72.4",
+      "time": "20min"
+    },
+    {
+      "id": "TASK-V3-PET-OPS-LOG-04",
+      "title": "Backend: petTimelineService (combina 9 fontes)",
+      "status": "done",
+      "epic": "TASK-V3-PET-OPS-LOG",
+      "sw": "sw-v72.4",
+      "time": "20min"
+    },
+    {
+      "id": "TASK-V3-PET-OPS-LOG-05",
+      "title": "Frontend: PetsOpsTable (ID + colunas funcionais)",
+      "status": "done",
+      "epic": "TASK-V3-PET-OPS-LOG",
+      "sw": "sw-v72.4",
+      "time": "30min"
+    },
+    {
+      "id": "TASK-V3-PET-OPS-LOG-06",
+      "title": "Frontend: PetDetailV3 — 3 novas tabs + hash router",
+      "status": "done",
+      "epic": "TASK-V3-PET-OPS-LOG",
+      "sw": "sw-v72.4",
+      "time": "25min"
+    },
+    {
+      "id": "TASK-V3-PET-OPS-LOG-07",
+      "title": "Testes: 19 novos (petLogService + PetsOpsTable) + 339/339 total",
+      "status": "done",
+      "epic": "TASK-V3-PET-OPS-LOG",
+      "sw": "sw-v72.4",
+      "time": "20min"
     }
   ],
   "definitionOfDone": [
