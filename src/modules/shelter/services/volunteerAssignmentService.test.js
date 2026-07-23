@@ -8,11 +8,10 @@ import {
   updateVolunteerAssignmentSchema,
   listAssignmentsOptionsSchema,
   isAssignmentActive,
+  VOLUNTEER_ASSIGNMENT_CAPABILITIES,
 } from '@/modules/shelter/domain/operational/volunteerAssignment';
 
 describe('VOLUNTEER_ASSIGNMENT_CAPABILITIES', () => {
-  const { VOLUNTEER_ASSIGNMENT_CAPABILITIES } = require('@/modules/shelter/domain/operational/volunteerAssignment');
-
   it('inclui roles de evento', () => {
     expect(VOLUNTEER_ASSIGNMENT_CAPABILITIES).toContain('carregamento');
     expect(VOLUNTEER_ASSIGNMENT_CAPABILITIES).toContain('transporte_ida');

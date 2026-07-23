@@ -19,7 +19,7 @@ vi.mock('firebase/firestore', () => ({
   limit: vi.fn(),
 }));
 
-const { ShelterAdminDashboard } = await import('@/modules/shelter/components/ShelterAdminDashboard.jsx');
+const ShelterAdminDashboard = (await import('@/modules/shelter/components/ShelterAdminDashboard.jsx')).default;
 
 describe('ShelterAdminDashboard (TASK-311)', () => {
   let container, root;

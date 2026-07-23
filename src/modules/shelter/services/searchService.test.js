@@ -178,8 +178,9 @@ describe('searchEntity — foster (subcollection)', () => {
     expect(results.length).toBe(1);
     expect(results[0].entity).toBe('foster');
     expect(results[0].url).toBe('/admin/fosters/f1');
-    // Verifica que a collection chamada foi clubs/c1/fosters
-    expect(mockCollection).toHaveBeenCalledWith(mockDb, 'clubs', 'c1', 'fosters');
+    // Verifica que a collection denormalizada search_fosters foi consultada
+    // (TASK-312: search_* collection é usada em vez de fosters direta)
+    expect(mockCollection).toHaveBeenCalledWith(mockDb, 'clubs', 'c1', 'search_fosters');
   });
 
   it('retorna [] se foster sem shelterId', async () => {
