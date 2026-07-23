@@ -370,3 +370,42 @@ Cada bloco segue o mesmo ritual:
 - D-HASH-ROUTER-PET-TABS: tabs navegáveis por hash URL
 - D-PET-NOTES-AUTHOR-DELETE: notas só autor/platform_admin podem deletar
 - D-PET-LOG-TIMELINE-AGGREGATION: Timeline combina 9 fontes em 1 view
+
+## Hotfixes PWA em cadeia (sw-v72.5 → sw-v73.3) — Concluído em 2026-07-22
+
+### Escopo
+Cadeia de 4 hotfixes para resolver bug onde browser servia bundle
+antigo (sem `MessageSquare`) via Service Worker cacheado, e onde o
+reload de migração estava interrompendo o user no meio de interações.
+
+### Entregas
+- **sw-v72.5 (2026-07-22)**: `MessageSquare` adicionado ao import de
+  `lucide-react` em `PetDetailV3.jsx`. 5 testes novos (1 estático +
+  4 runtime). Script `validate-lucide-imports.mjs`.
+- **sw-v73.1 (2026-07-22)**: auto-unregister de SWS stale no boot.
+- **sw-v73.2 (2026-07-22)**: unregister roda SEMPRE, não só quando
+  `PWA_ENABLED=true` (estava atrás de early-return).
+- **sw-v73.3 (2026-07-22)**: defer reload se user está interagindo
+  (track activity via `pwa-stale-last-activity` no sessionStorage).
+- **sw-v73.3 canEdit fix**: `canEdit` → `canEditHistory` em
+  `PetDetailV3.jsx:770` (PetNotes). `PetDetailV3.runtime.test.jsx`
+  criado para pegar esse tipo de bug.
+- **sw-v73.3 test fixes**: 3 testes quebrados corrigidos em
+  `ShelterAdminDashboard.test.jsx`, `searchService.test.js` (foster
+  usa `search_fosters` denormalizado desde TASK-312),
+  `volunteerAssignmentService.test.js` (misturava ESM/CJS).
+- Bundle deployed: `index-DKT4N-aG.js` (250541 bytes) com lógica defer
+- 6 testes em `registerPwa.test.js` + 1 em `PetDetailV3.runtime.test.jsx`
+
+### Decisões principais
+- **D-PET-OPS-LUCIDE-IMPORT**: SEMPRE validar que todos os ícones do
+  lucide usados em JSX estão no import.
+- **D-PWA-STALE-UNREGISTER**: SWs vN-1 devem ser desregistrados no
+  boot da vN.
+- **D-PWA-STALE-UNREGISTER-DEFER**: NUNCA `window.location.reload()`
+  se user pode estar digitando/rolando/clicando. Track activity.
+- **D-PET-DETAIL-RUNTIME-TEST**: SEMPRE criar `*.runtime.test.jsx`
+  para componentes críticos. Static analysis não pega variáveis
+  undefined declaradas em escopo de componente.
+- **D-TEST-NAMED-VS-DEFAULT-EXPORT**: testes com dynamic import devem
+  usar `.default` se o componente só tem `export default`.

@@ -14,11 +14,11 @@ import ErrorState from './ErrorState.jsx';
 describe('ErrorState', () => {
   it('renderiza a mensagem default quando nenhuma prop é passada', () => {
     const html = renderToString(React.createElement(ErrorState));
-    expect(html).toContain('Não foi possível carregar os dados agora');
+    expect(html).toContain('Algo deu errado');
   });
 
   it('renderiza mensagem customizada', () => {
-    const html = renderToString(React.createElement(ErrorState, { message: 'Pets não disponíveis' }));
+    const html = renderToString(React.createElement(ErrorState, { description: 'Pets não disponíveis' }));
     expect(html).toContain('Pets não disponíveis');
   });
 
