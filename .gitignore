@@ -36,3 +36,4 @@ audit.json
 /tmp/v3-redesign-loop.lock
 /tmp/commit-msg-*.txt
 v3-redesign-loop.lock
+test-e2e.mjs
