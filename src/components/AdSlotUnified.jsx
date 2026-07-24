@@ -2,8 +2,15 @@
  * @fileoverview AdSlotUnified — wrapper que escolhe entre AdSlotBanner (V1 parceiro)
  * e AdSlot legado (provider externo) baseado em flags.
  *
+ * v2 (2026-07-24): Otimização de performance
+ *  - Lazy rendering via IntersectionObserver
+ *  - Não bloqueia FCP/LCP
+ *  - Mostra placeholder imediato, carrega conteúdo depois
+ *  - Skip query se slot não está visível
+ *
  * @see docs/PARTNER_SPACES_PLAN.md §9
  */
+import { useEffect, useRef, useState } from 'react';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
 import { useActiveBannersForPosition } from '@/modules/partners/hooks/usePartners';
@@ -27,6 +34,7 @@ import { AdSlotBanner } from '@/components/AdSlotBanner';
  * @param {string} props.sub - sub do placeholder
  * @param {string} props.className - classes extras
  * @param {number} props.minHeight - altura mínima em px
+ * @param {boolean} props.lazy - se true, só carrega quando visível (default: true)
  */
 export function AdSlotUnified({
   slotId = 'default',
@@ -36,6 +44,71 @@ export function AdSlotUnified({
   sub,
   className = '',
   minHeight = 90,
+  lazy = true,
+}) {
+  const containerRef = useRef(null);
+  const [isVisible, setIsVisible] = useState(!lazy);
+
+  // IntersectionObserver para lazy load
+  useEffect(() => {
+    if (!lazy) return;
+    if (!containerRef.current) return;
+    if (typeof IntersectionObserver === 'undefined') {
+      setIsVisible(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '200px 0px', threshold: 0.01 }
+    );
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, [lazy]);
+
+  // Só carrega dados quando visível
+  if (!isVisible) {
+    return (
+      <div
+        ref={containerRef}
+        className={className}
+        style={{ minHeight: `${minHeight}px` }}
+        aria-hidden="true"
+        data-ad-slot={slotId}
+        data-ad-loading="lazy"
+      />
+    );
+  }
+
+  return (
+    <AdSlotUnifiedContent
+      slotId={slotId}
+      position={position}
+      page={page}
+      label={label}
+      sub={sub}
+      className={className}
+      minHeight={minHeight}
+    />
+  );
+}
+
+/**
+ * Componente interno que faz as queries. Só renderizado após visibilidade.
+ */
+function AdSlotUnifiedContent({
+  slotId,
+  position,
+  page,
+  label,
+  sub,
+  className,
+  minHeight,
 }) {
   const partnerFlag = useFeatureFlag(FEATURE_FLAG.PUBLIC_PARTNER_BANNERS_V1);
   const { data: banners = [], isLoading } = useActiveBannersForPosition(
@@ -48,8 +121,15 @@ export function AdSlotUnified({
   }
 
   // 2. AdSlot legado (provider externo)
-  // Renderiza o componente que tem a sua própria lógica de flag AD_SLOTS
-  return <AdSlot slotId={slotId} label={label} sub={sub} className={className} minHeight={minHeight} />;
+  return (
+    <AdSlot
+      slotId={slotId}
+      label={label}
+      sub={sub}
+      className={className}
+      minHeight={minHeight}
+    />
+  );
 }
 
 export default AdSlotUnified;

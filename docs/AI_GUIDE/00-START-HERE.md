@@ -146,6 +146,15 @@
 | 16 | `16-AGENT-ONBOARDING.md` | ~10KB | Passo-a-passo novo dev/IA |
 | 17 | `17-AUDIT-2026-07-23.md` | ~12KB | Relatório varredura completa |
 | 18 | `18-REGENCY-INDEX.md` | ~6KB | Índice de todos os REGENCY_*.md |
+| 19 | `19-FAQ-AND-MISTAKES.md` | ~14KB | FAQ + armadilhas |
+| 20 | `20-FIRESTORE-SECURITY.md` | ~12KB | Boas práticas segurança |
+| 21 | `21-TESTING-ADVANCED.md` | ~14KB | Patterns avançados |
+| 22 | `22-GIT-WORKFLOW.md` | ~10KB | Workflow Git |
+| 23 | `23-PWA-TROUBLESHOOTING.md` | ~9KB | PWA debug |
+| 24 | `24-PERFORMANCE.md` | ~11KB | Core Web Vitals |
+| 25 | `25-LGPD.md` | ~11KB | Lei Geral Proteção Dados |
+| 26 | `26-ACCESSIBILITY.md` | ~11KB | WCAG 2.1 AA |
+| 27 | `27-PERFORMANCE-FEED.md` | ~7KB | Otimização Feed (LazyAdSlot) |
 
 ### §3.2. Documentos por Módulo (subpasta `modules/`)
 

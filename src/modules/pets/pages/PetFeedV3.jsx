@@ -27,6 +27,7 @@ import { hasKnownCoords, lookupCityCoordsByName, filterPetsByRadius, normalizePl
 import PetCard from '../components/PetCard';
 import SwipeDeck from '../components/SwipeDeck';
 import AdSlotUnified from "@/components/AdSlotUnified";
+import LazyAdSlot from "@/components/LazyAdSlot";
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -353,9 +354,11 @@ export default function PetFeedV3() {
 
       {/* V3 (TASK-V3-FEED-2): Espaço de Parceiros FORA do Collapsible.
           Aparece entre o SwipeDeck e "Todos os pets disponíveis" com
-          margem balanceada em harmonia com a plataforma. */}
+          margem balanceada em harmonia com a plataforma.
+          v2 (2026-07-24): LazyAdSlot só carrega quando browser está idle
+          E o slot está visível (IntersectionObserver). Zero impacto no FCP/LCP. */}
       <div className="my-8 sm:my-10">
-        <AdSlotUnified
+        <LazyAdSlot
           slotId="feed-between-sections"
           position="feed_inline"
           page="/feed"

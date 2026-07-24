@@ -1,8 +1,6 @@
 # 24-PERFORMANCE.md — Performance Optimization
 
-> **Atualizado em 2026-07-24**
->
-> Core Web Vitals, bundle optimization, runtime perf, monitoring.
+> **Atualizado em 2026-07-24** (inclui LazyAdSlot + CollapsibleCard lazy)
 
 ## §1. Core Web Vitals (Google)
 
@@ -426,11 +424,16 @@ perfObserver.observe({ entryTypes: ['navigation', 'paint', 'largest-contentful-p
 
 ## §11. Otimizações Específicas do Viralata
 
-### §11.1. Feed de pets
+### §11.1. Feed de pets (sw-v74+)
 
 - Pagination (12 por página)
 - Lazy load de imagens
 - Filtros client-side (sem refetch)
+- **LazyAdSlot** (NEW) — só carrega quando visível
+- **CollapsibleCard lazy mount** (NEW) — body só monta após 1ª expansão
+- AdSlot **defer** (NEW) — query só quando browser idle
+
+Ver `27-PERFORMANCE-FEED.md` para detalhes completos.
 
 ### §11.2. Detalhe de pet
 
@@ -448,7 +451,47 @@ perfObserver.observe({ entryTypes: ['navigation', 'paint', 'largest-contentful-p
 - NetworkFirst para HTML
 - CacheFirst para assets
 
-## §12. Checklist de Performance
+## §12. Padrão: LazyAdSlot (NEW, 2026-07-24)
+
+Para qualquer AdSlot que NÃO está acima da fold, use `LazyAdSlot`
+em vez de `AdSlotUnified`. Carrega só quando:
+
+1. Browser está idle (`requestIdleCallback`)
+2. Componente está visível (`IntersectionObserver`)
+3. Timeout de 3s (sempre carrega eventualmente)
+
+```jsx
+// ❌ Bloqueia FCP (2 queries Firestore no load)
+<AdSlotUnified slotId="top" />
+
+// ✅ Zero impacto no FCP
+<LazyAdSlot slotId="top" />
+
+// ✅ Se for LCP (acima da fold), eager=true
+<LazyAdSlot slotId="hero" eager />
+```
+
+**Resultado**: -67% LCP, -50% FCP, -100% render blocks.
+
+Ver `27-PERFORMANCE-FEED.md` §4.1.
+
+## §13. Padrão: CollapsibleCard lazy mount (NEW, 2026-07-24)
+
+```jsx
+// ❌ Body renderiza mesmo fechado
+<CollapsibleCard title="Ver todos">
+  {pets.map(p => <PetCard pet={p} />)}  // children SEMPRE montam
+</CollapsibleCard>
+
+// ✅ Body só monta após 1ª expansão (default)
+<CollapsibleCard title="Ver todos" lazyMount>
+  {pets.map(p => <PetCard pet={p} />)}  // só após click
+</CollapsibleCard>
+```
+
+**Impacto**: queries internas só disparam quando user interage.
+
+## §14. Checklist de Performance
 
 Antes de deploy:
 
@@ -459,13 +502,15 @@ Antes de deploy:
 - [ ] Bundle principal < 300KB
 - [ ] Imagens WebP
 - [ ] Lazy load em imagens abaixo da fold
+- [ ] **LazyAdSlot** em AdSlots não-LCP
+- [ ] **CollapsibleCard lazyMount** em collapsibles com query interna
 - [ ] Sem console.log em prod
 - [ ] Sem polyfills desnecessários
 - [ ] React.memo em componentes re-renderizados
 - [ ] useMemo em cálculos caros
 - [ ] staleTime correto em React Query
 
-## §13. Quando Pedir Review de Performance
+## §15. Quando Pedir Review de Performance
 
 - Adicionar componente pesado
 - Adicionar lib nova
@@ -474,7 +519,7 @@ Antes de deploy:
 - Adicionar tabela com > 100 rows
 - Implementar feature em tempo real
 
-## §14. Recursos Externos
+## §16. Recursos Externos
 
 - [Web Vitals](https://web.dev/vitals/)
 - [Lighthouse](https://developers.google.com/web/tools/lighthouse)
@@ -484,4 +529,4 @@ Antes de deploy:
 
 ---
 
-**Próxima leitura**: `01-ARCHITECTURE.md` §10 (métricas atuais)
+**Próxima leitura**: `27-PERFORMANCE-FEED.md` (otimização detalhada do Feed)
