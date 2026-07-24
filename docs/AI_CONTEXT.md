@@ -279,3 +279,52 @@ npm --prefix functions test   # Vitest das Cloud Functions
   0-3 concluídas (paleta terracota antiga). Fase 4 (DS_V2) em
   andamento**: reaplicação da spec v1.0 por bloco, cada um com
   feature flag default OFF.
+
+## 12. ★ NOVO: docs/AI_GUIDE/ — Guia de Leitura Obrigatória (2026-07-24)
+
+> **⚠️ Esta seção é NOVA e é o ponto de entrada oficial para qualquer
+> dev/IA que for trabalhar no projeto.**
+
+Em 2026-07-24 foi criada a pasta **`docs/AI_GUIDE/`** com **18 documentos
+principais + 15 documentos por módulo** (~3000 linhas) que servem como
+guia completo e permanente do projeto.
+
+### Onde começar
+
+1. **LEIA PRIMEIRO**: [`docs/AI_GUIDE/00-START-HERE.md`](AI_GUIDE/00-START-HERE.md)
+   - Documento de leitura obrigatória
+   - Orienta qual doc ler em cada situação
+   - Define o workflow de trabalho
+
+2. **LEITURA ESSENCIAL**: [`docs/AI_GUIDE/11-CORE-DIRECTIVES.md`](AI_GUIDE/11-CORE-DIRECTIVES.md)
+   - **Regras invioláveis** (não prejudicar nada, feature flags, PWA, etc)
+   - Engineering HOT (checklist pré-commit)
+   - D-PET-DETAIL-RUNTIME-TEST e D-PWA-STALE-UNREGISTER-DEFER entre outras
+
+3. **ÍNDICE**: [`docs/AI_GUIDE/INDEX.md`](AI_GUIDE/INDEX.md)
+   - Lista de todos os 18 docs + 15 módulos
+
+### Por que esta pasta existe
+
+- Centraliza toda a documentação dispersa
+- Orienta novos dev/IAs sem partir do zero
+- Preserva decisões importantes (D-*)
+- Documenta fixes recentes (para não reintroduzir bugs)
+- Padroniza o workflow (SCRUM, deploy, testes)
+
+### Estatísticas da pasta
+
+- **Total docs**: 18 + 15 = 33 arquivos
+- **Total linhas**: ~3000
+- **Cobertura**: 100% do projeto
+- **Última atualização**: 2026-07-24
+
+### Relação com docs existentes
+
+A pasta AI_GUIDE **NÃO SUBSTITUI** os documentos legados em `docs/`.
+Ela os **COMPLEMENTA** e os **ORGANIZA**. Documentos importantes
+(REGENCY_*, AUDITS/*, ROADMAP.md) continuam onde estão.
+
+Regra: **novos documentos** vão em `docs/AI_GUIDE/`. Documentos
+**legados** podem ser consultados, mas o conteúdo canônico está
+no AI_GUIDE.

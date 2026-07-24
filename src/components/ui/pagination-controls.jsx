@@ -49,7 +49,7 @@ export function PaginationControls({
       data-testid={testId}
       aria-label="Paginação"
     >
-      <p className="text-sm text-muted-foreground" aria-current="page">
+      <p className="text-sm text-muted-foreground">
         Página <span className="font-semibold text-foreground">{currentPage}</span> de{' '}
         <span className="font-semibold text-foreground">{totalPages}</span>
         {totalItems > 0 && (

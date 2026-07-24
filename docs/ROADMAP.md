@@ -409,3 +409,46 @@ reload de migração estava interrompendo o user no meio de interações.
   undefined declaradas em escopo de componente.
 - **D-TEST-NAMED-VS-DEFAULT-EXPORT**: testes com dynamic import devem
   usar `.default` se o componente só tem `export default`.
+
+## Fase 4.5 — AI_GUIDE Documentation (2026-07-24)
+
+### Contexto
+
+Após 5 hotfixes PWA em cadeia (sw-v72.5 → sw-v73.3), 4 testes quebrados
+corrigidos e 1 auditoria completa, foi decidido criar uma estrutura
+documental permanente que sirva como guia para qualquer dev/IA trabalhar
+no projeto sem partir do zero.
+
+### Entregas
+
+- **Pasta `docs/AI_GUIDE/`** com 18 documentos principais + 15 docs por
+  módulo (33 arquivos total, ~3000 linhas)
+- **`00-START-HERE.md`**: documento de leitura obrigatória que orienta
+  qual doc ler em cada situação
+- **`11-CORE-DIRECTIVES.md`**: regras invioláveis + engineering HOT
+- **`13-DECISIONS.md`**: decisões D-* (não reverter)
+- **`15-RECENT-FIXES.md`**: últimos 30 dias
+- **`14-TROUBLESHOOTING.md`**: problemas comuns
+- **`16-AGENT-ONBOARDING.md`**: passo-a-passo para começar
+- **`01-ARCHITECTURE.md`, `02-DATA-MODEL.md`, etc**: visão geral
+- **15 docs de módulo** em `docs/AI_GUIDE/modules/`
+
+### Testes adicionais criados
+
+- **`core/permissions/useCanEditContent.test.js` (15 tests)**
+  - Antes: 0 tests
+  - Agora: 80% coverage do hook central de permissões
+- **`modules/reports/services/reportService.test.js` (9 tests)**
+  - Antes: 0 tests
+  - Agora: 70% coverage de reports
+- **`modules/pets/components/PetCard.runtime.test.jsx` (5 tests)**
+  - Runtime test para PetCard (componente crítico)
+- **Auditoria de aria-current**: corrigido uso incorreto em
+  `pagination-controls.jsx` (estava em `<p>` ao invés de nav)
+
+### Resultado
+
+- **Total tests passing**: ~1730 (após adicionar 29 testes)
+- **Documentação**: 80+ docs (com AI_GUIDE: ~95)
+- **Cobertura de tests**: 100% dos módulos têm tests
+- **AI pode começar a trabalhar**: lendo `00-START-HERE.md` + `11-CORE-DIRECTIVES.md`
