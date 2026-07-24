@@ -29,10 +29,10 @@ export function registerPwa() {
       let hadStaleSw = false;
       regs.forEach((r) => {
         const url = r.active?.scriptURL || r.installing?.scriptURL || r.waiting?.scriptURL || '';
-        // Preserva apenas sw-v73.js (versão atual).
+        // Preserva apenas sw-v74.js (versão atual).
         // - Se url for vazia (registration sem worker ainda), é stale.
-        // - Se url nao for sw-v73.js, é stale.
-        if (!url || (!url.endsWith('/sw-v73.js') && !url.endsWith('/sw-v73'))) {
+        // - Se url nao for sw-v74.js, é stale.
+        if (!url || (!url.endsWith('/sw-v74.js') && !url.endsWith('/sw-v74'))) {
           hadStaleSw = true;
           r.unregister().catch(() => {});
         }
@@ -89,8 +89,8 @@ export function registerPwa() {
   // Em dev o SW não traz benefício e pode confundir o HMR; só em produção.
   if (import.meta.env.DEV) return;
 
-  // Bumped to sw-v73.js (2026-07-22) — MUST match vite.config.js filename.
-  const swUrl = `${import.meta.env.BASE_URL || '/'}sw-v73.js`.replace(/\/{2,}/g, '/');
+  // Bumped to sw-v74.js (2026-07-24) — MUST match vite.config.js filename.
+  const swUrl = `${import.meta.env.BASE_URL || '/'}sw-v74.js`.replace(/\/{2,}/g, '/');
 
   // IMPORTANTE: não recarregamos automaticamente quando o SW troca de
   // controller. O componente <SwUpdateBanner> (montado em Layout.jsx)
@@ -102,7 +102,7 @@ export function registerPwa() {
     // 1. Limpa SWS antigos (v72 e anteriores). Pode disparar reload.
     unregisterStaleAndMaybeReload();
 
-    // 2. Registra o sw-v73.js (versão atual).
+    // 2. Registra o sw-v74.js (versão atual).
     navigator.serviceWorker
       .register(swUrl)
       .then((reg) => {

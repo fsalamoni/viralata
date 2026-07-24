@@ -36,7 +36,7 @@ export default defineConfig(({ mode }) => {
         // 'MessageSquare is not defined' quebrando /pets/<id>. O fix
         // adicionou MessageSquare ao import do lucide-react em
         // PetDetailV3.jsx (D-PET-OPS-LUCIDE-IMPORT).
-        filename: 'sw-v73.js',
+        filename: 'sw-v74.js',
         includeAssets: ['favicon.svg', 'apple-touch-icon.png', 'pwa-192.png', 'pwa-512.png', 'scrum.html'],
         manifest: {
           name: 'Viralata - Adoção Responsável',
