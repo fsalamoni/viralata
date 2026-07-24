@@ -285,6 +285,8 @@ viralata/
 
 ## §8. Glossário
 
+### §8.1. Termos Técnicos
+
 - **V1 / V3**: primeira e terceira geração de páginas (V2 foi skip).
   Wrappers em `src/pages/*.jsx` decidem qual renderizar via feature flag.
 - **sw-vN**: versão N do Service Worker. Bump a cada deploy de UI.
@@ -300,6 +302,179 @@ viralata/
 - **NGO**: Non-Governmental Organization (abrigo/ONG parceira).
 - **LGPD**: Lei Geral de Proteção de Dados (Brasil).
 - **Runbook**: documento passo-a-passo para executar tarefa rotineira.
+- **PWA**: Progressive Web App. App que funciona offline e pode ser
+  instalado como app nativo.
+- **Precache**: cache de assets críticos do app, gerado pelo workbox.
+- **skipWaiting + clientsClaim**: opções do workbox para forçar novo
+  SW imediatamente.
+- **Hash Router**: navegação por URL com `#` (ex: `/pets/123#log`).
+  Usado em tabs do PetDetailView.
+- **Feature Flag**: toggle que ativa/desativa feature sem deploy.
+  Configurado no Firestore `platform_settings/`.
+- **FLAG_MIGRATION_VERSION**: versão do schema de feature flags.
+  Bump quando muda flags existentes.
+- **Defense-in-Depth**: múltiplas camadas de validação (UI + Hook +
+  Service + Rules).
+
+### §8.2. Siglas
+
+- **API**: Application Programming Interface
+- **CI/CD**: Continuous Integration / Continuous Deployment
+- **CSS**: Cascading Style Sheets
+- **CTA**: Call to Action (botão de ação)
+- **DB**: Database
+- **DOM**: Document Object Model
+- **E2E**: End-to-End (test)
+- **Firestore**: Firebase NoSQL database
+- **GH Actions**: GitHub Actions (CI/CD)
+- **HOC**: Higher-Order Component
+- **HTML**: HyperText Markup Language
+- **JS**: JavaScript
+- **JSON**: JavaScript Object Notation
+- **JSX**: JavaScript XML (React)
+- **LCP**: Largest Contentful Paint (Web Vitals)
+- **LGPD**: Lei Geral de Proteção de Dados
+- **MOC**: Module of Concern (padrão)
+- **MVP**: Minimum Viable Product
+- **NGO**: Non-Governmental Organization
+- **NoSQL**: Not Only SQL (database)
+- **PR**: Pull Request
+- **PWA**: Progressive Web App
+- **QA**: Quality Assurance
+- **RTE**: Rich Text Editor
+- **SEO**: Search Engine Optimization
+- **SLA**: Service Level Agreement
+- **SPA**: Single Page Application
+- **SQL**: Structured Query Language
+- **SSR**: Server-Side Rendering
+- **SW**: Service Worker
+- **TBD**: To Be Determined
+- **TDD**: Test-Driven Development
+- **TS**: TypeScript
+- **UI**: User Interface
+- **UX**: User Experience
+- **WCAG**: Web Content Accessibility Guidelines
+- **WIP**: Work In Progress
+- **WSL**: Windows Subsystem for Linux
+
+### §8.3. Acrônimos do Projeto
+
+- **AI_GUIDE**: Pasta de documentação-guia (`docs/AI_GUIDE/`)
+- **SCRUM**: Task tracking em `.harness/SCRUM_TASKS.json`
+- **V3**: Terceira geração de páginas (V1 é legacy, V2 foi skip)
+- **D-***: Decisões documentadas em `13-DECISIONS.md`
+
+---
+
+## §9. Próximas Ações Recomendadas
+
+(nenhuma imediata)
+
+**Próxima leitura obrigatória**: `11-CORE-DIRECTIVES.md` (regras
+invioláveis). Depois, `01-ARCHITECTURE.md` (visão geral do projeto).
+
+---
+
+## §10. Como Continuar a Documentação
+
+### §10.1. Adicionar Novo Documento
+
+1. Escolher número (próximo disponível: 19, 20, ...)
+2. Criar `docs/AI_GUIDE/<NN>-<NAME>.md`
+3. Adicionar entrada em `INDEX.md`
+4. Adicionar referência em `00-START-HERE.md` §3.1
+5. Commitar + push + deploy
+
+### §10.2. Adicionar Novo Módulo
+
+1. Criar `docs/AI_GUIDE/modules/<NN>-<NAME>.md` (próximo número)
+2. Adicionar entrada em `03-MODULES.md` §2
+3. Adicionar referência em `INDEX.md`
+4. Documentar: visão geral, funcionalidades, componentes, services,
+   hooks, schema, tests
+5. Commitar + push + deploy
+
+### §10.3. Adicionar Nova Decisão (D-*)
+
+1. Identificar decisão importante
+2. Adicionar em `13-DECISIONS.md` com formato:
+   ```md
+   ### D-NOME-CURTO (YYYY-MM-DD)
+
+   **Contexto**: ...
+   **Decisão**: ...
+   **Consequências**: ...
+   **Alternativas consideradas**: ...
+   ```
+3. Adicionar referência em `11-CORE-DIRECTIVES.md` (se aplicável)
+4. Adicionar em `15-RECENT-FIXES.md` (se for fix)
+5. Commitar + push + deploy
+
+### §10.4. Corrigir Bug
+
+1. Verificar se já foi corrigido (`15-RECENT-FIXES.md`)
+2. Documentar em `15-RECENT-FIXES.md` com:
+   - Data, severidade, sintoma, causa raiz, fix
+   - D-* relacionada (se aplicável)
+3. Adicionar test que pega o bug (runtime test preferível)
+4. Se for D-*, adicionar em `13-DECISIONS.md`
+5. Commitar + push + deploy + SCRUM sync
+
+### §10.5. Adicionar Nova Rota
+
+1. Adicionar rota em `src/App.jsx`
+2. Adicionar entrada em `04-PAGES-ROUTES.md`
+3. Se for admin, adicionar guard
+4. Se for V3, criar wrapper V1/V3 em `src/pages/`
+5. Commitar + push + deploy
+
+### §10.6. Adicionar Nova Coleção Firestore
+
+1. Adicionar schema em `02-DATA-MODEL.md`
+2. Adicionar regras em `firestore.rules` (com helpers se necessário)
+3. Adicionar índices em `firestore.indexes.json` (se query composta)
+4. Adicionar service em `src/modules/<módulo>/services/`
+5. Adicionar tests para service
+6. Testar com emulator
+7. Commitar + push + deploy + deploy rules
+   (`firebase deploy --only firestore:rules`)
+
+### §10.7. Adicionar Novo Componente
+
+1. Criar em `src/components/` (geral) ou
+   `src/modules/<módulo>/components/` (específico)
+2. Adicionar em `05-DESIGN-SYSTEM.md` se for primitivo
+3. Criar `*.runtime.test.jsx` (componentes críticos)
+4. Commitar + push + deploy
+
+---
+
+## §11. Como Validar Antes de Declarar "Pronto"
+
+```bash
+# 1. Tests
+npx vitest run
+
+# 2. Build
+npx vite build
+
+# 3. Validações
+node scripts/validate-lucide-imports.mjs
+node scripts/audit-aria-current.mjs
+node scripts/validate-doc-references.mjs
+
+# 4. Auditoria combinada
+node scripts/audit-docs.mjs
+
+# 5. Bundle deployed
+curl -m 10 -s https://viralata.web.app/sw-v74.js | head -3
+curl -m 10 -s https://viralata.web.app/ | grep -oE '"/assets/index[^"]+"' | head -1
+
+# 6. SCRUM sync (após merge)
+node .harness/sync.cjs --fix
+```
+
+**Tudo verde?** Então está pronto. Commitar + push + deploy.
 
 ---
 
