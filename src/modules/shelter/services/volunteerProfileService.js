@@ -167,6 +167,18 @@ export async function acceptVolunteerTerms(uid, acceptance, actor) {
     update.created_at = serverTimestamp();
   }
 
+  // TASK-DEBUG-VOL-SIGNUP (2026-07-27): log do payload + path antes do setDoc
+  // para identificar qual rule/path está falhando em prod. Remover quando
+  // bug for resolvido.
+  console.log('[DEBUG-VOL-SIGNUP] acceptVolunteerTerms payload:', {
+    uid,
+    refPath: `users/${uid}/volunteer_profile/main`,
+    isCreate: !current.exists(),
+    fields: Object.keys(update),
+    signatureTextLength: parsed.signature_text.length,
+    termsVersion: parsed.terms_version,
+  });
+
   await setDoc(ref, update, { merge: true });
 
   // Grava o aceite canônico imutável em users/{uid}/terms_acceptances/
