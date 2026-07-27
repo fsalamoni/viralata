@@ -155,6 +155,7 @@
 | 25 | `25-LGPD.md` | ~11KB | Lei Geral Proteção Dados |
 | 26 | `26-ACCESSIBILITY.md` | ~11KB | WCAG 2.1 AA |
 | 27 | `27-PERFORMANCE-FEED.md` | ~7KB | Otimização Feed (LazyAdSlot) |
+| 28 | `28-VOLUNTEER-SIGNUP-BUGFIX.md` | ~8KB | Bugfix: toast API + signature_text |
 
 ### §3.2. Documentos por Módulo (subpasta `modules/`)
 

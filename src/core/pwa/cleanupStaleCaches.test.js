@@ -91,8 +91,8 @@ describe('cleanupStaleCaches', () => {
     expect(caches.delete).not.toHaveBeenCalledWith('google-fonts');
   });
 
-  it('unregister SWs antigos (sw.js até sw-v73.js), preserva sw-v74.js', async () => {
-    // Atualizado para v74 (2026-07-24) — preserva apenas sw-v74 (atual).
+  it('unregister SWs antigos (sw.js até sw-v74.js), preserva sw-v75.js', async () => {
+    // Atualizado para v75 (2026-07-27) — preserva apenas sw-v75 (atual).
     const caches = makeCacheStorage([]);
     globalThis.caches = caches;
     const regs = [
@@ -101,7 +101,7 @@ describe('cleanupStaleCaches', () => {
       makeReg('https://viralata.web.app/sw-v65.js'),
       makeReg('https://viralata.web.app/sw-v66.js'),
       makeReg('https://viralata.web.app/sw-v72.js'),
-      makeReg('https://viralata.web.app/sw-v74.js'),
+      makeReg('https://viralata.web.app/sw-v75.js'),
     ];
     Object.defineProperty(globalThis.navigator, 'serviceWorker', {
       value: { getRegistrations: async () => regs },

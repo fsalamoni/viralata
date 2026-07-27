@@ -291,14 +291,12 @@ export default function VolunteerSignup() {
 
   const handleAcceptTerms = async () => {
     if (!signatureText || signatureText.trim().length < 2) {
-      toast({ title: 'Digite seu nome completo para assinar.', variant: 'destructive' });
+      toast.error('Digite seu nome completo para assinar.');
       return;
     }
     if (!scrolledToEnd) {
-      toast({
-        title: 'Role até o fim do termo antes de aceitar.',
+      toast.error('Role até o fim do termo antes de aceitar.', {
         description: 'Conforme a Lei 14.063/2020, a leitura integral é obrigatória.',
-        variant: 'destructive',
       });
       return;
     }
@@ -310,25 +308,25 @@ export default function VolunteerSignup() {
         },
         actor: { uid: user.uid, email: user.email },
       });
-      toast({ title: '✓ Termo aceito.' });
+      toast.success('Termo aceito.');
       setStep('profile');
     } catch (err) {
-      toast({ title: 'Erro ao aceitar termo', description: String(err?.message || err), variant: 'destructive' });
+      toast.error('Erro ao aceitar termo', { description: String(err?.message || err) });
     }
   };
 
   const handleProfileSaved = () => {
-    toast({ title: '✓ Perfil salvo.' });
+    toast.success('Perfil salvo.');
     setStep('shelter');
   };
 
   const handleSubmitJoin = async () => {
     if (!selectedShelter) {
-      toast({ title: 'Selecione um abrigo.', variant: 'destructive' });
+      toast.error('Selecione um abrigo.');
       return;
     }
     if (!captchaToken && import.meta.env.VITE_HCAPTCHA_SITE_KEY) {
-      toast({ title: 'Conclua a verificação de segurança.', variant: 'destructive' });
+      toast.error('Conclua a verificação de segurança.');
       return;
     }
     const club = clubs.find((c) => c.id === selectedShelter);
@@ -349,10 +347,10 @@ export default function VolunteerSignup() {
       // TASK-292: após ação relevante (signup voluntário), solicita push permission
       // se ainda não foi pedido nesta sessão.
       requestPushIfAppropriate(user.uid);
-      toast({ title: '✓ Inscrição confirmada!', description: `Você agora faz parte do ${club?.name || 'abrigo'}.` });
+      toast.success('Inscrição confirmada!', { description: `Você agora faz parte do ${club?.name || 'abrigo'}.` });
       navigate('/perfil#voluntariadas', { replace: true });
     } catch (err) {
-      toast({ title: 'Erro na inscrição', description: String(err?.message || err), variant: 'destructive' });
+      toast.error('Erro na inscrição', { description: String(err?.message || err) });
     }
   };
 

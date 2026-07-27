@@ -226,3 +226,37 @@ Quando um bug for corrigido:
 ---
 
 **Próxima leitura**: `16-AGENT-ONBOARDING.md` (onboarding).
+
+### §Y. VolunteerSignup Erro (2026-07-27)
+
+**Data**: 2026-07-27
+**Severidade**: ALTA (quebrava fluxo de inscrição de voluntários)
+**Sintoma**: User clica "Aceitar e continuar" → erro
+"Missing or insufficient permissions" + React error #31.
+
+**Causa raiz (2 bugs)**:
+1. **Toast API errada**: `toast({title, description, variant})` (shadcn) ao
+   invés de `toast.error(msg, { description })` (sonner). Causou
+   React error #31.
+2. **signature_text missing**: `setDoc({merge: true})` no primeiro write
+   é `create`. Rule `volunteer_profile` exigia `signature_text` no
+   create mas service não enviava. Causou Permission denied.
+
+**D-***:
+- D-TOAST-SONNER-API: sempre usar sonner API
+- D-VOLUNTEER-SIGNATURE: sempre incluir signature_text no update
+
+**Fix**:
+- `src/pages/VolunteerSignup.jsx`: 9 calls de toast() convertidos
+- `src/modules/shelter/services/volunteerProfileService.js`:
+  signature_text + signature_hash_input adicionados
+- SW bump v74 → v75
+
+**Tests**:
+- `src/pages/VolunteerSignup.runtime.test.jsx`: 5 tests (era 1)
+- Console error spy detecta React #31
+
+**Documentação**:
+- `docs/AI_GUIDE/28-VOLUNTEER-SIGNUP-BUGFIX.md` (NEW, 8KB)
+
+sw-v75

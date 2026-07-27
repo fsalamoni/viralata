@@ -549,3 +549,35 @@ git push
 ---
 
 **Próxima leitura**: `13-DECISIONS.md` (decisões importantes)
+
+### Q: Meu toast() está dando erro React #31, o que fazer?
+
+**R**: Você provavelmente está usando API shadcn/ui ao invés de sonner:
+
+```js
+// ERRADO (shadcn API, NUNCA use)
+toast({ title: 'msg', description: 'desc', variant: 'destructive' });
+
+// CORRETO (sonner API)
+toast.error('msg');
+toast.error('msg', { description: 'desc' });
+toast.success('msg', { description: 'desc' });
+```
+
+O `useToast()` retorna `sonnerToast` direto. Veja `D-TOAST-SONNER-API` em
+`13-DECISIONS.md` e `28-VOLUNTEER-SIGNUP-BUGFIX.md`.
+
+### Q: setDoc({merge: true}) está dando Permission Denied mesmo eu sendo o owner, o que está errado?
+
+**R**: `setDoc({merge: true})` no primeiro write é `create` no Firestore,
+não `update`. As rules de `create` aplicam. Você precisa incluir TODOS os
+campos obrigatórios da rule de create, não só os de update.
+
+Exemplo real: `volunteer_profile/main` exige `signature_text` no create.
+Mesmo em setDoc com merge, é create no primeiro write. Daí o erro
+"Missing or insufficient permissions".
+
+Solução: incluir `signature_text` (e qualquer outro campo exigido pela
+rule de create) no `setDoc`. Veja `D-VOLUNTEER-SIGNATURE` em
+`13-DECISIONS.md` e `28-VOLUNTEER-SIGNUP-BUGFIX.md`.
+

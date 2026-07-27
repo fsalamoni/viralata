@@ -159,6 +159,8 @@ export async function acceptVolunteerTerms(uid, acceptance, actor) {
     terms_accepted_at: now,
     terms_version: parsed.terms_version,
     document_hash,
+    signature_text: parsed.signature_text,  // D-VOLUNTEER-SIGNATURE: required by firestore.rules create validator
+    signature_hash_input: `${parsed.signature_text}|${parsed.terms_version}|${now}`,  // audit trail
     updated_at: serverTimestamp(),
   };
   if (!current.exists()) {

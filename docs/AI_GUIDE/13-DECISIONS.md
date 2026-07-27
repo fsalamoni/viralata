@@ -290,3 +290,34 @@ V2 foi pulado. Apenas V1 e V3. Decidido para economizar tempo.
 ---
 
 **Próxima leitura**: `14-TROUBLESHOOTING.md` (problemas comuns).
+
+### D-VOLUNTEER-SIGNATURE (2026-07-27)
+
+**Contexto**: `setDoc({merge: true})` no primeiro write é interpretado como
+`create` no Firestore. A rule `volunteer_profile` exigia `signature_text`
+no create, mas o service não estava enviando.
+
+**Decisão**: SEMPRE incluir `signature_text` (e opcionalmente
+`signature_hash_input` para audit trail) no update do
+`acceptVolunteerTerms`. Ver `28-VOLUNTEER-SIGNUP-BUGFIX.md` para RCA
+completo.
+
+**Aplicação**: Qualquer service que faz `setDoc({merge: true})` em
+`volunteer_profile/main` deve incluir os campos obrigatórios do
+create rule.
+
+### D-TOAST-SONNER-API (2026-07-27)
+
+**Contexto**: O `useToast()` retorna `sonnerToast`. A API shadcn/ui
+(`toast({title, description, variant})`) é incompatível com sonner,
+que espera `toast(message)` ou `toast(message, options)`. Uso da API
+errada causa React error #31 em runtime.
+
+**Decisão**: SEMPRE usar sonner API:
+- `toast.success(msg)` / `toast.error(msg)` / `toast.warning(msg)` / `toast.info(msg)`
+- OU `toast(msg, { description: '...' })` para opções
+
+**NUNCA** usar `toast({title, description, variant})` (shadcn API).
+
+**Prevenção**: Adicionar lint rule ou grep em CI para detectar
+`toast({` em código novo.
