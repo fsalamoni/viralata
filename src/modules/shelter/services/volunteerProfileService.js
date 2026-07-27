@@ -177,31 +177,59 @@ export async function acceptVolunteerTerms(uid, acceptance, actor) {
     fields: Object.keys(update),
     signatureTextLength: parsed.signature_text.length,
     termsVersion: parsed.terms_version,
+    documentHash: document_hash,
+    signatureTextPreview: parsed.signature_text.substring(0, 20),
   });
 
-  await setDoc(ref, update, { merge: true });
+  try {
+    await setDoc(ref, update, { merge: true });
+    console.log('[DEBUG-VOL-SIGNUP] setDoc OK:', { uid });
+  } catch (setDocErr) {
+    console.error('[DEBUG-VOL-SIGNUP] setDoc FAILED:', {
+      message: setDocErr?.message,
+      code: setDocErr?.code,
+      name: setDocErr?.name,
+      stack: setDocErr?.stack,
+      customData: setDocErr?.customData,
+      // Tentar extrair path do erro
+      path: setDocErr?.customData?._path?.toString?.() || setDocErr?.path || 'unknown',
+    });
+    throw setDocErr;
+  }
 
   // Grava o aceite canônico imutável em users/{uid}/terms_acceptances/
   // (Firestore rules: update bloqueado após criação).
-  await recordAcceptance(
-    uid,
-    {
-      terms_type: TERMS_TYPE.VOLUNTEER,
-      terms_version: parsed.terms_version,
-      document_hash,
-      signature_text: parsed.signature_text,
-      ip_address: acceptance.ip_address || 'unknown',
-      user_agent: acceptance.user_agent || '',
-      liveness_verified: Boolean(acceptance.liveness_verified),
-      legal_basis: acceptance.legal_basis || 'execução de contrato de voluntário (LGPD Art. 7º V)',
-    },
-    actor,
-  ).catch((err) => {
+  // TASK-DEBUG-VOL-SIGNUP (2026-07-27): log detalhado do recordAcceptance
+  // (estava em .catch, agora loga erro completo)
+  try {
+    await recordAcceptance(
+      uid,
+      {
+        terms_type: TERMS_TYPE.VOLUNTEER,
+        terms_version: parsed.terms_version,
+        document_hash,
+        signature_text: parsed.signature_text,
+        ip_address: acceptance.ip_address || 'unknown',
+        user_agent: acceptance.user_agent || '',
+        liveness_verified: Boolean(acceptance.liveness_verified),
+        legal_basis: acceptance.legal_basis || 'execução de contrato de voluntário (LGPD Art. 7º V)',
+      },
+      actor,
+    );
+    console.log('[DEBUG-VOL-SIGNUP] recordAcceptance OK:', { uid });
+  } catch (recordErr) {
+    console.error('[DEBUG-VOL-SIGNUP] recordAcceptance FAILED (non-blocking):', {
+      message: recordErr?.message,
+      code: recordErr?.code,
+      name: recordErr?.name,
+      stack: recordErr?.stack,
+      customData: recordErr?.customData,
+    });
     logger.warn('volunteerProfileService.acceptVolunteerTerms', {
       msg: 'recordAcceptance failed (non-blocking — perfil atualizado)',
-      err: String(err),
+      err: String(recordErr),
     });
-  });
+  }
 
   await safeCreateAuditLog({
     action: 'volunteer_terms_accepted',
