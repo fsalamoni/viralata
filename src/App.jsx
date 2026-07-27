@@ -149,7 +149,17 @@ const queryClient = new QueryClient({
       // Global onError: every failed mutation logs to console + observability.
       // Per-mutation onError in useMutation overrides this.
       onError: (err) => {
-        console.error('[react-query mutation] error (global handler):', err?.message);
+        // TASK-DEBUG-VOL-SIGNUP (2026-07-27): log completo do erro de Firestore
+        // para identificar qual rule/path está falhando. Inclui code, customData
+        // (path, op, requestData), stack. Remover quando bug for resolvido.
+        console.error('[react-query mutation] error (global handler):', {
+          message: err?.message,
+          code: err?.code,
+          name: err?.name,
+          stack: err?.stack,
+          customData: err?.customData,
+          raw: String(err),
+        });
         // recordClientError is not available at App.jsx load time (lazy import).
         // Individual mutations that need observability tracking provide their own
         // onError. This global handler catches mutations without one.
