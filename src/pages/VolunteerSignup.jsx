@@ -224,7 +224,28 @@ export default function VolunteerSignup() {
   const flagEnabled = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_VOLUNTEER_PROFILE_V1);
 
   const [step, setStep] = useState('terms');
-  const [signatureText, setSignatureText] = useState('');
+  // D-VOLUNTEER-SIGN-PERSIST (2026-07-28): signatureText persistido em
+  // sessionStorage para sobreviver a reloads entre passos do fluxo. Sem
+  // isso, ao recarregar entre aceitação do termo e confirmação, o state
+  // local reseta para '' e o zod rejeita 'too_small signature_text'.
+  const [signatureText, setSignatureTextState] = useState(() => {
+    if (typeof window === 'undefined') return '';
+    try {
+      return window.sessionStorage.getItem('viralata:volunteer-signature-text') || '';
+    } catch { return ''; }
+  });
+  const setSignatureText = (val) => {
+    setSignatureTextState(val);
+    if (typeof window !== 'undefined') {
+      try {
+        if (val) {
+          window.sessionStorage.setItem('viralata:volunteer-signature-text', val);
+        } else {
+          window.sessionStorage.removeItem('viralata:volunteer-signature-text');
+        }
+      } catch { /* sessionStorage indisponível */ }
+    }
+  };
   const [accepted, setAccepted] = useState(false);
   const termScrollRef = useRef(null);
   const scrolledToEnd = useScrollEnd(termScrollRef, { tolerance: 8 });
@@ -349,6 +370,8 @@ export default function VolunteerSignup() {
       // se ainda não foi pedido nesta sessão.
       requestPushIfAppropriate(user.uid);
       toast.success('Inscrição confirmada!', { description: `Você agora faz parte do ${club?.name || 'abrigo'}.` });
+      // D-VOLUNTEER-SIGN-PERSIST: limpar cache após sucesso
+      setSignatureText('');
       navigate('/perfil#voluntariadas', { replace: true });
     } catch (err) {
       toast.error('Erro na inscrição', { description: String(err?.message || err) });
