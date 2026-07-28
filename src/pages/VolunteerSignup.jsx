@@ -325,7 +325,7 @@ export default function VolunteerSignup() {
       await acceptTermsMutation.mutateAsync({
         acceptance: {
           terms_version: VOLUNTEER_TERMS_VERSION,
-          signature_text: signatureText.trim(),
+          signature_text: joinSignature,
         },
         actor: { uid: user.uid, email: user.email },
       });
@@ -351,6 +351,18 @@ export default function VolunteerSignup() {
       return;
     }
     const club = clubs.find((c) => c.id === selectedShelter);
+    // D-VOLUNTEER-SIGNATURE-SOURCE (2026-07-28): usar signature_text do
+    // volunteer_profile (Firestore) como fonte canônica. Se cair no passo
+    // 'confirm' sem ter digitado no passo 1 (termo já aceito em sessão
+    // anterior via useEffect que auto-avança o step), o state local
+    // signatureText pode estar vazio mas profile.signature_text tem o valor.
+    const joinSignature = (profile?.signature_text && profile.signature_text.length >= 3)
+      ? profile.signature_text
+      : signatureText.trim();
+    if (!joinSignature || joinSignature.length < 3) {
+      toast.error('Assinatura não encontrada. Volte ao passo 1 e digite seu nome novamente.');
+      return;
+    }
     try {
       // D-VOLUNTEER-SIGN-MIN-3 (2026-07-28): schema exige >= 3 chars.
       await joinMutation.mutateAsync({
@@ -362,7 +374,7 @@ export default function VolunteerSignup() {
           volunteer_phone: userProfile?.phone || undefined,
           volunteer_photo_url: userProfile?.photo_url || user.photoURL || undefined,
           terms_version: VOLUNTEER_TERMS_VERSION,
-          signature_text: signatureText.trim(),
+          signature_text: joinSignature,
         },
         actor: { uid: user.uid, email: user.email },
       });

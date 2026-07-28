@@ -89,8 +89,8 @@ const STALE_SW_NAMES = [
   'sw-v64.js',
   'sw-v65.js',
   'sw-v66.js',
-  'sw-v67.js', 'sw-v68.js', 'sw-v69.js', 'sw-v70.js', 'sw-v71.js', 'sw-v72.js', 'sw-v73.js', 'sw-v74.js', 'sw-v75.js', 'sw-v76.js', 'sw-v77.js', 'sw-v78.js', 'sw-v79.js', 'sw-v80.js',
-  // sw-v81.js é o atual — preserva
+  'sw-v67.js', 'sw-v68.js', 'sw-v69.js', 'sw-v70.js', 'sw-v71.js', 'sw-v72.js', 'sw-v73.js', 'sw-v74.js', 'sw-v75.js', 'sw-v76.js', 'sw-v77.js', 'sw-v78.js', 'sw-v79.js', 'sw-v80.js', 'sw-v81.js',
+  // sw-v82.js é o atual — preserva
 ];
 
 /**
