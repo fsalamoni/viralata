@@ -104,7 +104,7 @@ export function VolunteerProfileForm({ uid, actor, existing, readOnly = false, o
 
   const handleAcceptTerms = async () => {
     if (!signatureText || signatureText.trim().length < 2) {
-      toast({ title: 'Digite seu nome completo para assinar.', variant: 'destructive' });
+      toast.error('Digite seu nome completo para assinar.');
       return;
     }
     try {
@@ -112,32 +112,35 @@ export function VolunteerProfileForm({ uid, actor, existing, readOnly = false, o
         acceptance: { terms_version: VOLUNTEER_TERMS_VERSION, signature_text: signatureText.trim() },
         actor,
       });
-      toast({ title: '✓ Termo aceito. Obrigado!' });
+      toast.success('Termo aceito. Obrigado!');
     } catch (err) {
-      toast({ title: 'Erro', description: String(err?.message || err), variant: 'destructive' });
+      toast.error('Erro', { description: String(err?.message || err) });
     }
   };
 
   const handleSave = async (e) => {
     e.preventDefault();
     if (!hasAcceptedTerms) {
-      toast({ title: 'Você precisa aceitar o termo antes de salvar.', variant: 'destructive' });
+      toast.error('Você precisa aceitar o termo antes de salvar.');
       return;
     }
+    // D-FIRESTORE-NO-UNDEFINED (2026-07-27): Firestore não aceita undefined em
+    // setDoc. Usar deleteField() ou null para campos opcionais vazios.
+    // Aqui usamos null para consistência (deleteField requer import extra).
     const input = {
       skills,
       availability,
-      radius_km: radiusKm === '' ? undefined : Number(radiusKm),
+      radius_km: radiusKm === '' ? null : Number(radiusKm),
       transport_available: transportAvailable,
       has_vehicle: hasVehicle,
-      notes: notes.trim() || undefined,
+      notes: notes.trim() || null,
     };
     try {
       await upsertMutation.mutateAsync({ input, actor });
-      toast({ title: '✓ Perfil salvo.' });
+      toast.success('Perfil salvo.');
       if (onSaved) onSaved();
     } catch (err) {
-      toast({ title: 'Erro', description: String(err?.message || err), variant: 'destructive' });
+      toast.error('Erro', { description: String(err?.message || err) });
     }
   };
 
