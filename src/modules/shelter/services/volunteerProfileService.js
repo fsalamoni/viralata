@@ -167,48 +167,12 @@ export async function acceptVolunteerTerms(uid, acceptance, actor) {
     update.created_at = serverTimestamp();
   }
 
-  // TASK-DEBUG-VOL-SIGNUP (2026-07-27): log COMPLETO do payload + path
-  // + Firebase Auth currentUser ANTES do setDoc. Mostra se uid bate com
-  // auth.currentUser.uid. Remover quando bug for resolvido.
-  const { getAuth } = await import('firebase/auth');
-  const currentAuthUser = getAuth().currentUser;
-  console.log('[DEBUG-VOL-SIGNUP] FULL CONTEXT:', JSON.stringify({
-    uid,
-    authCurrentUserUid: currentAuthUser?.uid,
-    authCurrentUserEmail: currentAuthUser?.email,
-    authCurrentUserEmailVerified: currentAuthUser?.emailVerified,
-    authCurrentUserIsAnonymous: currentAuthUser?.isAnonymous,
-    authProviderIds: currentAuthUser?.providerData?.map(p => p.providerId),
-    refPath: `users/${uid}/volunteer_profile/main`,
-    isCreate: !current.exists(),
-    fields: Object.keys(update),
-    signatureTextLength: parsed.signature_text.length,
-    termsVersion: parsed.terms_version,
-    documentHash: document_hash,
-    signatureTextPreview: parsed.signature_text.substring(0, 20),
-    update: JSON.parse(JSON.stringify(update, (k, v) => v && typeof v === 'object' && v._isServerTimestamp ? '<serverTimestamp>' : v)),
-  }));
-
-  try {
-    await setDoc(ref, update, { merge: true });
-    console.log('[DEBUG-VOL-SIGNUP] setDoc OK:', { uid });
-  } catch (setDocErr) {
-    console.error('[DEBUG-VOL-SIGNUP] setDoc FAILED:', JSON.stringify({
-      message: setDocErr?.message,
-      code: setDocErr?.code,
-      name: setDocErr?.name,
-      stack: setDocErr?.stack,
-      customData: setDocErr?.customData,
-      path: setDocErr?.customData?._path?.toString?.() || setDocErr?.path || 'unknown',
-      allKeys: Object.keys(setDocErr || {}),
-    }));
-    throw setDocErr;
-  }
+  // BUG FIX: input validation garante que update não tem undefined/null
+  // (zod schema rejeita null em campos opcionais; ver VolunteerProfileForm).
+  await setDoc(ref, update, { merge: true });
 
   // Grava o aceite canônico imutável em users/{uid}/terms_acceptances/
   // (Firestore rules: update bloqueado após criação).
-  // TASK-DEBUG-VOL-SIGNUP (2026-07-27): log detalhado do recordAcceptance
-  // (estava em .catch, agora loga erro completo)
   try {
     await recordAcceptance(
       uid,
@@ -224,15 +188,7 @@ export async function acceptVolunteerTerms(uid, acceptance, actor) {
       },
       actor,
     );
-    console.log('[DEBUG-VOL-SIGNUP] recordAcceptance OK:', { uid });
   } catch (recordErr) {
-    console.error('[DEBUG-VOL-SIGNUP] recordAcceptance FAILED (non-blocking):', {
-      message: recordErr?.message,
-      code: recordErr?.code,
-      name: recordErr?.name,
-      stack: recordErr?.stack,
-      customData: recordErr?.customData,
-    });
     logger.warn('volunteerProfileService.acceptVolunteerTerms', {
       msg: 'recordAcceptance failed (non-blocking — perfil atualizado)',
       err: String(recordErr),

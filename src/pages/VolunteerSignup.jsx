@@ -290,8 +290,8 @@ export default function VolunteerSignup() {
   const goTo = (next) => setStep(next);
 
   const handleAcceptTerms = async () => {
-    if (!signatureText || signatureText.trim().length < 2) {
-      toast.error('Digite seu nome completo para assinar.');
+    if (!signatureText || signatureText.trim().length < 3) {
+      toast.error('Digite seu nome completo para assinar (mínimo 3 caracteres).');
       return;
     }
     if (!scrolledToEnd) {
@@ -331,26 +331,20 @@ export default function VolunteerSignup() {
     }
     const club = clubs.find((c) => c.id === selectedShelter);
     try {
-      // TASK-DEBUG-VOL-SIGNUP (2026-07-27): log do payload antes do mutate
-      // para investigar 'too_small signature_text' no joinShelter.
-      const joinInput = {
-        shelter_club_id: selectedShelter,
-        volunteer_uid: user.uid,
-        volunteer_name: (userProfile?.full_name || user.displayName || user.email || '').trim(),
-        volunteer_email: user.email || undefined,
-        volunteer_phone: userProfile?.phone || undefined,
-        volunteer_photo_url: userProfile?.photo_url || user.photoURL || undefined,
-        terms_version: VOLUNTEER_TERMS_VERSION,
-        signature_text: signatureText.trim(),
-      };
-      console.log('[DEBUG-VOL-SIGNUP] joinShelter input:', {
-        signature_text_length: joinInput.signature_text.length,
-        signature_text_preview: joinInput.signature_text.substring(0, 20),
-        signature_text_empty: joinInput.signature_text === '',
-        stateSignatureText: signatureText,
-        stateSignatureTextLength: signatureText.length,
+      // D-VOLUNTEER-SIGN-MIN-3 (2026-07-28): schema exige >= 3 chars.
+      await joinMutation.mutateAsync({
+        input: {
+          shelter_club_id: selectedShelter,
+          volunteer_uid: user.uid,
+          volunteer_name: (userProfile?.full_name || user.displayName || user.email || '').trim(),
+          volunteer_email: user.email || undefined,
+          volunteer_phone: userProfile?.phone || undefined,
+          volunteer_photo_url: userProfile?.photo_url || user.photoURL || undefined,
+          terms_version: VOLUNTEER_TERMS_VERSION,
+          signature_text: signatureText.trim(),
+        },
+        actor: { uid: user.uid, email: user.email },
       });
-      await joinMutation.mutateAsync({ input: joinInput, actor: { uid: user.uid, email: user.email } });
       // TASK-292: após ação relevante (signup voluntário), solicita push permission
       // se ainda não foi pedido nesta sessão.
       requestPushIfAppropriate(user.uid);
@@ -433,7 +427,7 @@ export default function VolunteerSignup() {
               </Button>
               <Button
                 onClick={handleAcceptTerms}
-                disabled={!accepted || !signatureText || (!allowAccept && !hasAcceptedTerms) || acceptTermsMutation.isPending}
+                disabled={!accepted || signatureText.trim().length < 3 || (!allowAccept && !hasAcceptedTerms) || acceptTermsMutation.isPending}
               >
                 {acceptTermsMutation.isPending ? (
                   <>

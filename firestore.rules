@@ -218,10 +218,11 @@ service cloud.firestore {
       // campos relevantes para `clubs/{clubId}/volunteers/{uid}`. Esse
       // snapshot é o que o abrigo vê — defense-in-depth.
       match /volunteer_profile/{profileId} {
-        // TEMP-DIAG (2026-07-27): regras simplificadas para investigar Permission Denied.
-        // VOLTAR PARA A VERSÃO COM VALIDAÇÕES COMPLETAS APÓS DIAGNÓSTICO.
         allow read: if isAuth() && (isOwner(userId) || isPlatformAdmin());
-        allow create: if isOwner(userId);
+        allow create: if isOwner(userId) &&
+          request.resource.data.get('terms_accepted_at', '') is string &&
+          request.resource.data.get('terms_accepted_at', '').matches('^\\d{4}-\\d{2}-\\d{2}T') &&
+          request.resource.data.get('signature_text', '').size() >= 2;
         allow update: if isOwner(userId);
         allow delete: if isOwner(userId) || isPlatformAdmin();
       }

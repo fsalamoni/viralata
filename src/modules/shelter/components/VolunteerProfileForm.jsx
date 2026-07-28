@@ -124,16 +124,18 @@ export function VolunteerProfileForm({ uid, actor, existing, readOnly = false, o
       toast.error('Você precisa aceitar o termo antes de salvar.');
       return;
     }
-    // D-FIRESTORE-NO-UNDEFINED (2026-07-27): Firestore não aceita undefined em
-    // setDoc. Usar deleteField() ou null para campos opcionais vazios.
-    // Aqui usamos null para consistência (deleteField requer import extra).
+    // D-FIRESTORE-NO-UNDEFINED (2026-07-27): Firestore rejeita undefined em
+    // setDoc. O zod schema (upsertVolunteerProfileSchema) também rejeita null
+    // para campos opcionais (z.string().optional() só aceita string|undefined).
+    // SOLUÇÃO: construir input omitindo campos vazios (condicional spread).
+    // radius_km: só envia se preenchido. notes: só envia se não-vazio.
     const input = {
       skills,
       availability,
-      radius_km: radiusKm === '' ? null : Number(radiusKm),
       transport_available: transportAvailable,
       has_vehicle: hasVehicle,
-      notes: notes.trim() || null,
+      ...(radiusKm !== '' ? { radius_km: Number(radiusKm) } : {}),
+      ...(notes.trim() ? { notes: notes.trim() } : {}),
     };
     try {
       await upsertMutation.mutateAsync({ input, actor });
