@@ -1215,25 +1215,18 @@ service cloud.firestore {
           // O próprio voluntário pode ler sua rostagem
           volunteerUid == request.auth.uid
         );
-        allow create: if isAuth() && (
+        // TEMP-DIAG-VOL (2026-07-29): regra simplificada para isolar
+        // permission-denied. Apenas: isAuth() + validações de shape
+        // + volunteerUid == request.auth.uid (auto-join do próprio
+        // voluntário). Sem isAppCheckVerified, sem isPlatformAdmin,
+        // sem isClubOwnerOrAdmin. Se isso passar, era uma dessas
+        // funções que estava retornando false.
+        allow create: if isAuth() &&
           request.resource.data.shelter_club_id == clubId &&
-          request.resource.data.volunteer_uid is string &&
-          request.resource.data.volunteer_uid.size() > 0 &&
+          request.resource.data.volunteer_uid == request.auth.uid &&
           request.resource.data.volunteer_name is string &&
           request.resource.data.volunteer_name.size() >= 2 &&
-          request.resource.data.terms_accepted_at is string &&
-          request.resource.data.terms_accepted_at.matches('^\\d{4}-\\d{2}-\\d{2}T') &&
-          // TEMP-DIAG-VOL (2026-07-29): removido isAppCheckVerified() para
-          // diagnosticar permission-denied. App Check não está sendo emitido
-          // pelo client; o user é platform owner (isPlatformAdmin deveria
-          // liberar). Investigar por que isPlatformAdmin retorna false
-          // OU por que get() do doc users/$(uid) falha.
-          (isPlatformAdmin() ||
-           isClubOwnerOrAdmin(clubId) ||
-           canEditClubPets(clubId) ||
-           hasClubPermission(clubId, 'volunteers') ||
-           volunteerUid == request.auth.uid)
-        );
+          request.resource.data.terms_accepted_at is string;
         allow update: if isAuth() && (
           // shelter_club_id e volunteer_uid IMUTÁVEIS
           request.resource.data.shelter_club_id == resource.data.shelter_club_id &&
