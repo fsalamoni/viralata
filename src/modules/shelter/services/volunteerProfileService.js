@@ -296,8 +296,23 @@ export async function joinShelterAsVolunteer(input, actor) {
   }
 
   const ref = shelterVolunteerRef(parsed.shelter_club_id, parsed.volunteer_uid);
-  const existing = await getDoc(ref);
-  if (existing.exists()) {
+  // TEMP-DIAG-VOL (2026-07-29): getDoc pode falhar com permission-denied
+  // se a rule de READ não permitir o user. Se falhar, ASSUMIMOS que o doc
+  // não existe (ou que não temos acesso) e tentamos o setDoc. O setDoc
+  // vai falhar com ALREADY_EXISTS se já existir (e o catch trata).
+  let existing = null;
+  try {
+    const existingSnap = await getDoc(ref);
+    existing = existingSnap.exists() ? existingSnap : null;
+  } catch (readErr) {
+    // eslint-disable-next-line no-console
+    console.warn('[TEMP-DIAG-VOL] joinShelterAsVolunteer getDoc (existing check) failed, assuming doc does not exist', {
+      errCode: readErr?.code,
+      errMessage: readErr?.message,
+    });
+    existing = null;
+  }
+  if (existing) {
     throw new Error('Voluntário já está na rostagem deste abrigo.');
   }
 
@@ -362,6 +377,12 @@ export async function joinShelterAsVolunteer(input, actor) {
       actorUid: actor.uid,
       payloadKeys: Object.keys(doc_data),
     });
+    // TEMP-DIAG-VOL (2026-07-29): traduzir ALREADY_EXISTS em mensagem
+    // amigável quando o user já está na rostagem (race condition ou
+    // check de existing falhou por permissão).
+    if (setDocErr?.code === 'permission-denied') {
+      throw new Error('Sem permissão para entrar na rostagem deste abrigo. Faça login novamente e tente de novo.');
+    }
     throw setDocErr;
   }
 

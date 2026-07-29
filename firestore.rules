@@ -1207,14 +1207,19 @@ service cloud.firestore {
       //   volunteer_uid são IMUTÁVEIS.
       // - delete: só platform_admin (hard delete)
       match /volunteers/{volunteerUid} {
-        allow read: if isAuth() && (
-          isPlatformAdmin() ||
-          isClubOwnerOrAdmin(clubId) ||
-          canEditClubPets(clubId) ||
-          hasClubPermission(clubId, 'volunteers') ||
-          // O próprio voluntário pode ler sua rostagem
-          volunteerUid == request.auth.uid
-        );
+        // TEMP-DIAG-VOL (2026-07-29): rule de READ também relaxada
+        // para diagnosticar permission-denied no getDoc (que faz
+        // existing.exists() check). Apenas isAuth() + é o próprio user.
+        allow read: if isAuth() &&
+          volunteerUid == request.auth.uid;
+        // allow read: if isAuth() && (
+        //   isPlatformAdmin() ||
+        //   isClubOwnerOrAdmin(clubId) ||
+        //   canEditClubPets(clubId) ||
+        //   hasClubPermission(clubId, 'volunteers') ||
+        //   // O próprio voluntário pode ler sua rostagem
+        //   volunteerUid == request.auth.uid
+        // );
         // TEMP-DIAG-VOL (2026-07-29): regra SUPER relaxada para isolar
         // permission-denied. Apenas isAuth() + é o próprio user. TODA
         // outra validação foi removida temporariamente.
