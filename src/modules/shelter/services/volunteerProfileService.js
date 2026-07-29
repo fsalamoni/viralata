@@ -319,7 +319,51 @@ export async function joinShelterAsVolunteer(input, actor) {
     updated_at: serverTimestamp(),
   };
 
-  await setDoc(ref, doc_data);
+  // TEMP-DIAG-VOL (2026-07-29): log ANTES do setDoc para diagnosticar
+  // permission-denied. Vê o estado real do payload, do ref, e do user.
+  // eslint-disable-next-line no-console
+  console.log('[TEMP-DIAG-VOL] joinShelterAsVolunteer BEFORE setDoc', {
+    refPath: ref.path,
+    refId: ref.id,
+    actorUid: actor.uid,
+    actorEmail: actor.email,
+    payload: JSON.stringify({
+      shelter_club_id: doc_data.shelter_club_id,
+      volunteer_uid: doc_data.volunteer_uid,
+      volunteer_name: doc_data.volunteer_name,
+      volunteer_name_type: typeof doc_data.volunteer_name,
+      volunteer_name_size: doc_data.volunteer_name?.length,
+      terms_accepted_at: doc_data.terms_accepted_at,
+      terms_accepted_at_type: typeof doc_data.terms_accepted_at,
+      terms_version: doc_data.terms_version,
+      signature_text: doc_data.signature_text?.substring(0, 20) + '...',
+      signature_text_size: doc_data.signature_text?.length,
+      status: doc_data.status,
+      joined_at: doc_data.joined_at,
+      background_check_status: doc_data.background_check_status,
+    }, null, 2),
+    profileTermsAcceptedAt: profile.terms_accepted_at,
+    profileTermsVersion: profile.terms_version,
+  });
+
+  try {
+    await setDoc(ref, doc_data);
+    // eslint-disable-next-line no-console
+    console.log('[TEMP-DIAG-VOL] joinShelterAsVolunteer AFTER setDoc OK');
+  } catch (setDocErr) {
+    // eslint-disable-next-line no-console
+    console.error('[TEMP-DIAG-VOL] joinShelterAsVolunteer setDoc FAILED', {
+      errMessage: setDocErr?.message,
+      errCode: setDocErr?.code,
+      errName: setDocErr?.name,
+      errStack: setDocErr?.stack?.substring(0, 500),
+      errCustomData: setDocErr?.customData,
+      refPath: ref.path,
+      actorUid: actor.uid,
+      payloadKeys: Object.keys(doc_data),
+    });
+    throw setDocErr;
+  }
 
   await safeCreateAuditLog({
     action: 'volunteer_joined_shelter',

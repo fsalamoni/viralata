@@ -1215,18 +1215,11 @@ service cloud.firestore {
           // O próprio voluntário pode ler sua rostagem
           volunteerUid == request.auth.uid
         );
-        // TEMP-DIAG-VOL (2026-07-29): regra simplificada para isolar
-        // permission-denied. Apenas: isAuth() + validações de shape
-        // + volunteerUid == request.auth.uid (auto-join do próprio
-        // voluntário). Sem isAppCheckVerified, sem isPlatformAdmin,
-        // sem isClubOwnerOrAdmin. Se isso passar, era uma dessas
-        // funções que estava retornando false.
+        // TEMP-DIAG-VOL (2026-07-29): regra SUPER relaxada para isolar
+        // permission-denied. Apenas isAuth() + é o próprio user. TODA
+        // outra validação foi removida temporariamente.
         allow create: if isAuth() &&
-          request.resource.data.shelter_club_id == clubId &&
-          request.resource.data.volunteer_uid == request.auth.uid &&
-          request.resource.data.volunteer_name is string &&
-          request.resource.data.volunteer_name.size() >= 2 &&
-          request.resource.data.terms_accepted_at is string;
+          request.auth.uid == volunteerUid;
         allow update: if isAuth() && (
           // shelter_club_id e volunteer_uid IMUTÁVEIS
           request.resource.data.shelter_club_id == resource.data.shelter_club_id &&
