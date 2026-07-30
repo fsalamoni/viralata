@@ -1207,24 +1207,34 @@ service cloud.firestore {
       //   volunteer_uid são IMUTÁVEIS.
       // - delete: só platform_admin (hard delete)
       match /volunteers/{volunteerUid} {
-        // TEMP-DIAG-VOL (2026-07-29): rule de READ também relaxada
-        // para diagnosticar permission-denied no getDoc (que faz
-        // existing.exists() check). Apenas isAuth() + é o próprio user.
-        allow read: if isAuth() &&
-          volunteerUid == request.auth.uid;
-        // allow read: if isAuth() && (
-        //   isPlatformAdmin() ||
-        //   isClubOwnerOrAdmin(clubId) ||
-        //   canEditClubPets(clubId) ||
-        //   hasClubPermission(clubId, 'volunteers') ||
-        //   // O próprio voluntário pode ler sua rostagem
-        //   volunteerUid == request.auth.uid
-        // );
-        // TEMP-DIAG-VOL (2026-07-29): regra SUPER relaxada para isolar
-        // permission-denied. Apenas isAuth() + é o próprio user. TODA
-        // outra validação foi removida temporariamente.
-        allow create: if isAuth() &&
-          request.auth.uid == volunteerUid;
+        allow read: if isAuth() && (
+          isPlatformAdmin() ||
+          isClubOwnerOrAdmin(clubId) ||
+          canEditClubPets(clubId) ||
+          hasClubPermission(clubId, 'volunteers') ||
+          // O próprio voluntário pode ler sua rostagem
+          volunteerUid == request.auth.uid
+        );
+        // D-VOLUNTEER-JOIN-RULE (sw-v85): join é idempotente (D-IDEMPOTENT-JOIN).
+        // O service trata existing.exists()=true como sucesso. Por isso a rule
+        // de create pode ser estrita: abrigo owner/admin OU o próprio voluntário.
+        // O get() em isPlatformAdmin() / isClubOwnerOrAdmin() / canEditClubPets()
+        // pode falhar em race condition (auth ainda não propagou role); mas o
+        // service TEM try/catch no getDoc do existing, então a falha é tratada.
+        allow create: if isAuth() && (
+          request.resource.data.shelter_club_id == clubId &&
+          request.resource.data.volunteer_uid is string &&
+          request.resource.data.volunteer_uid.size() > 0 &&
+          request.resource.data.volunteer_name is string &&
+          request.resource.data.volunteer_name.size() >= 2 &&
+          request.resource.data.terms_accepted_at is string &&
+          request.resource.data.terms_accepted_at.matches('^\\d{4}-\\d{2}-\\d{2}T') &&
+          (isPlatformAdmin() ||
+           isClubOwnerOrAdmin(clubId) ||
+           canEditClubPets(clubId) ||
+           hasClubPermission(clubId, 'volunteers') ||
+           volunteerUid == request.auth.uid)
+        );
         allow update: if isAuth() && (
           // shelter_club_id e volunteer_uid IMUTÁVEIS
           request.resource.data.shelter_club_id == resource.data.shelter_club_id &&
