@@ -526,6 +526,11 @@ function OverviewTab({ club, pets, user, navigate }) {
 // MAIN COMPONENT
 // ============================================================================
 
+// D-DEBUG-PANEL-2026-07-30: feature flag para desabilitar a aba volunteers
+// (React #306 loop infinito em investigação). Default false.
+// Trocar para true quando o bug for corrigido.
+const SHOW_VOLUNTEERS_TAB = false;
+
 export default function OrganizationAdminPanelV3() {
   const reduce = useReducedMotion();
   const { orgId } = useParams();
@@ -928,7 +933,7 @@ export default function OrganizationAdminPanelV3() {
             <ClubTeamTab club={club} viewerMembership={membership} viewerUid={user?.uid} />
           </SafeTab>
         )}
-        {false && activeGroupKey === 'people' && activeSubKey === 'volunteers' && shelterFoundation && shelterVolunteers && shelterVolunteerProfileV1 && canViewVolunteers && (
+        {SHOW_VOLUNTEERS_TAB && activeGroupKey === 'people' && activeSubKey === 'volunteers' && shelterFoundation && shelterVolunteers && shelterVolunteerProfileV1 && canViewVolunteers && (
           <SafeTab label="volunteers">
             <VolunteersAdminTab
               shelterClubId={orgId}
