@@ -365,7 +365,7 @@ export default function VolunteerSignup() {
     }
     try {
       // D-VOLUNTEER-SIGN-MIN-3 (2026-07-28): schema exige >= 3 chars.
-      await joinMutation.mutateAsync({
+      const joinResult = await joinMutation.mutateAsync({
         input: {
           shelter_club_id: selectedShelter,
           volunteer_uid: user.uid,
@@ -381,7 +381,15 @@ export default function VolunteerSignup() {
       // TASK-292: após ação relevante (signup voluntário), solicita push permission
       // se ainda não foi pedido nesta sessão.
       requestPushIfAppropriate(user.uid);
-      toast.success('Inscrição confirmada!', { description: `Você agora faz parte do ${club?.name || 'abrigo'}.` });
+      // FIX DEFINITIVO (sw-v85): se já existia, mostrar mensagem específica
+      // (D-IDEMPOTENT-JOIN: chamar 2x = mesmo resultado)
+      if (joinResult?._alreadyExisted) {
+        toast.success('Você já está na rostagem deste abrigo!', {
+          description: `Sua inscrição em ${club?.name || 'este abrigo'} já foi confirmada anteriormente.`,
+        });
+      } else {
+        toast.success('Inscrição confirmada!', { description: `Você agora faz parte do ${club?.name || 'abrigo'}.` });
+      }
       // D-VOLUNTEER-SIGN-PERSIST: limpar cache após sucesso
       setSignatureText('');
       navigate('/perfil#voluntariadas', { replace: true });

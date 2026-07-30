@@ -312,8 +312,16 @@ export async function joinShelterAsVolunteer(input, actor) {
     });
     existing = null;
   }
+  // FIX DEFINITIVO (sw-v85): se o user JÁ ESTÁ na rostagem, isso é
+  // SUCESSO idempotente, não erro. O doc foi criado em uma tentativa
+  // anterior (race condition entre sw-v82/83/84). Devolvemos o doc
+  // existente e o UI navega para o sucesso normalmente.
   if (existing) {
-    throw new Error('Voluntário já está na rostagem deste abrigo.');
+    // eslint-disable-next-line no-console
+    console.log('[TEMP-DIAG-VOL] joinShelterAsVolunteer doc already exists, treating as idempotent success', {
+      existingData: existing.data(),
+    });
+    return { id: existing.id, ...existing.data(), _alreadyExisted: true };
   }
 
   const now = new Date().toISOString();

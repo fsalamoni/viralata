@@ -495,15 +495,20 @@ describe('joinShelterAsVolunteer', () => {
     ).rejects.toThrow(/aceitar o termo globalmente/);
   });
 
-  it('rejeita se voluntário já está no roster', async () => {
+  it('retorna sucesso idempotente se voluntário já está no roster', async () => {
+    // FIX DEFINITIVO (sw-v85): se o user JÁ ESTÁ na rostagem, é SUCESSO
+    // idempotente, não erro. Race condition entre sw-v82/83/84 criou o doc
+    // mas o UI não navegou. Devolvemos o doc existente e o UI navega para
+    // o sucesso normalmente.
     mockGetDoc.mockResolvedValueOnce(snap({
       terms_accepted_at: new Date().toISOString(),
       terms_version: VOLUNTEER_TERMS_VERSION,
     }, 'main'));
-    mockGetDoc.mockResolvedValueOnce(snap({ shelter_club_id: 'c1' }, 'u-1'));
-    await expect(
-      joinShelterAsVolunteer(valid, { uid: 'u-1' }),
-    ).rejects.toThrow(/já está na rostagem/);
+    mockGetDoc.mockResolvedValueOnce(snap({ shelter_club_id: 'c1', status: 'active' }, 'u-1'));
+    const result = await joinShelterAsVolunteer(valid, { uid: 'u-1' });
+    expect(result._alreadyExisted).toBe(true);
+    expect(result.id).toBe('u-1');
+    expect(result.shelter_club_id).toBe('c1');
   });
 
   it('rejeita versão errada do termo', async () => {
