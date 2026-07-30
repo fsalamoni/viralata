@@ -63,8 +63,13 @@ export function useAcceptVolunteerTerms(uid) {
 // ════════════════════════════════════════════════════════════════════
 
 export function useShelterVolunteers(shelterClubId, options = {}) {
+  // D-REACT-QUERY-KEY-PRIMITIVES (2026-07-30): queryKey deve usar PRIMITIVOS,
+  // não objetos. Se options for objeto, o React Query compara por referência
+  // e cada render cria novo objeto → loop infinito (React error #306).
+  // Extrair campos individuais e usar primitivos no queryKey.
+  const { status, maxResults } = options;
   return useQuery({
-    queryKey: ['shelter-volunteers', shelterClubId, options],
+    queryKey: ['shelter-volunteers', shelterClubId, status ?? null, maxResults ?? 200],
     queryFn: () => listShelterVolunteers(shelterClubId, options),
     enabled: Boolean(shelterClubId),
     staleTime: STALE_TIME_MS,
@@ -120,8 +125,10 @@ export function useLeaveShelter(shelterClubId) {
  * presente. Útil para /perfil → "Minhas voluntariadas".
  */
 export function useUserVolunteerRosters(uid, options = {}) {
+  // D-REACT-QUERY-KEY-PRIMITIVES (2026-07-30): queryKey deve usar PRIMITIVOS.
+  const { status, maxResults } = options;
   return useQuery({
-    queryKey: ['user-volunteer-rosters', uid, options],
+    queryKey: ['user-volunteer-rosters', uid, status ?? null, maxResults ?? 200],
     queryFn: () => listUserVolunteerRosters(uid, options),
     enabled: Boolean(uid),
     staleTime: STALE_TIME_MS,

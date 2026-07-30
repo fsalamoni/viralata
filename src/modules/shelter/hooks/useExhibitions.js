@@ -28,8 +28,10 @@ const STALE_TIME_MS = 30_000;
 // ─── Exhibitions ───────────────────────────────────────────────────────
 
 export function useExhibitions(shelterClubId, options = {}) {
+  // D-REACT-QUERY-KEY-PRIMITIVES (2026-07-30): queryKey com primitivos.
+  const { status, maxResults } = options;
   return useQuery({
-    queryKey: ['exhibitions', shelterClubId, options],
+    queryKey: ['exhibitions', shelterClubId, status ?? null, maxResults ?? 200],
     queryFn: () => listExhibitions(shelterClubId, options),
     enabled: Boolean(shelterClubId),
     staleTime: STALE_TIME_MS,

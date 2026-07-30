@@ -16,8 +16,10 @@ import {
 const STALE_TIME_MS = 60_000;
 
 export function usePetPhotos(petId, shelterClubId, options = {}) {
+  // D-REACT-QUERY-KEY-PRIMITIVES (2026-07-30): queryKey com primitivos.
+  const { maxResults } = options;
   return useQuery({
-    queryKey: ['pet-photos', petId, shelterClubId, options],
+    queryKey: ['pet-photos', petId, shelterClubId, maxResults ?? 200],
     queryFn: () => listPetPhotos(petId, shelterClubId, options),
     enabled: Boolean(petId && shelterClubId),
     staleTime: STALE_TIME_MS,

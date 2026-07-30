@@ -19,8 +19,10 @@ import {
 const STALE_TIME_MS = 60_000;
 
 export function useMedications(petId, shelterClubId, options = {}) {
+  // D-REACT-QUERY-KEY-PRIMITIVES (2026-07-30): queryKey com primitivos.
+  const { status, maxResults } = options;
   return useQuery({
-    queryKey: ['medications', petId, shelterClubId, options],
+    queryKey: ['medications', petId, shelterClubId, status ?? null, maxResults ?? 200],
     queryFn: () => listMedications(petId, shelterClubId, options),
     enabled: Boolean(petId && shelterClubId),
     staleTime: STALE_TIME_MS,

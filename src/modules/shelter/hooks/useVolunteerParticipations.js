@@ -20,8 +20,10 @@ import {
 const STALE_TIME_MS = 30_000;
 
 export function useParticipations(shelterClubId, options = {}) {
+  // D-REACT-QUERY-KEY-PRIMITIVES (2026-07-30): queryKey com primitivos.
+  const { volunteerUid, eventType, startDate, endDate } = options;
   return useQuery({
-    queryKey: ['volunteer-participations', shelterClubId, options],
+    queryKey: ['volunteer-participations', shelterClubId, volunteerUid ?? null, eventType ?? null, startDate ?? null, endDate ?? null],
     queryFn: () => listParticipations(shelterClubId, options),
     enabled: Boolean(shelterClubId),
     staleTime: STALE_TIME_MS,

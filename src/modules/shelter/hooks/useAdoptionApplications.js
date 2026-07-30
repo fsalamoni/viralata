@@ -30,8 +30,10 @@ export function useMyApplications(applicantUid) {
 }
 
 export function useApplications(shelterClubId, options = {}) {
+  // D-REACT-QUERY-KEY-PRIMITIVES (2026-07-30): queryKey com primitivos.
+  const { status, maxResults } = options;
   return useQuery({
-    queryKey: ['applications', shelterClubId, options],
+    queryKey: ['applications', shelterClubId, status ?? null, maxResults ?? 200],
     queryFn: () => listApplications(shelterClubId, options),
     enabled: Boolean(shelterClubId),
     staleTime: STALE_TIME_MS,

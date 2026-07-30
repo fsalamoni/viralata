@@ -25,8 +25,10 @@ const STALE_TIME_MS = 30_000;
  * Cacheadas por shelterClubId.
  */
 export function useVolunteerAssignments(shelterClubId, options = {}) {
+  // D-REACT-QUERY-KEY-PRIMITIVES (2026-07-30): queryKey com primitivos.
+  const { status, volunteerUid, role } = options;
   return useQuery({
-    queryKey: ['volunteer-assignments', shelterClubId, options],
+    queryKey: ['volunteer-assignments', shelterClubId, status ?? null, volunteerUid ?? null, role ?? null],
     queryFn: () => listAssignments(shelterClubId, options),
     enabled: Boolean(shelterClubId),
     staleTime: STALE_TIME_MS,

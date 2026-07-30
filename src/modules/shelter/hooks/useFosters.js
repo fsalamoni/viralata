@@ -16,8 +16,10 @@ import {
 const STALE_TIME_MS = 30_000;
 
 export function useFosters(shelterClubId, options = {}) {
+  // D-REACT-QUERY-KEY-PRIMITIVES (2026-07-30): queryKey com primitivos.
+  const { status, maxResults } = options;
   return useQuery({
-    queryKey: ['fosters', shelterClubId, options],
+    queryKey: ['fosters', shelterClubId, status ?? null, maxResults ?? 200],
     queryFn: () => listFosterPlacements(shelterClubId, options),
     enabled: Boolean(shelterClubId),
     staleTime: STALE_TIME_MS,
