@@ -535,13 +535,9 @@ export default function OrganizationAdminPanelV3() {
   // D-DEBUG-PANEL-RENDER-COUNTER (2026-07-30): detectar loop infinito
   const panelRenderCountRef = useRef(0);
   panelRenderCountRef.current += 1;
-  if (panelRenderCountRef.current > 5 && panelRenderCountRef.current % 5 === 0) {
+  if (panelRenderCountRef.current > 3) {
     // eslint-disable-next-line no-console
-    console.warn('[TEMP-DIAG-PANEL] renderCount=', panelRenderCountRef.current, 'orgId=', orgId, 'isAuthenticated=', isAuthenticated);
-  }
-  if (panelRenderCountRef.current > 50) {
-    // eslint-disable-next-line no-console
-    throw new Error(`[TEMP-DIAG-PANEL] LOOP INFINITO: ${panelRenderCountRef.current} renders`);
+    throw new Error(`[TEMP-DIAG-PANEL] LOOP INFINITO NO PAINEL: ${panelRenderCountRef.current} renders`);
   }
   // toast via sonner (imported above)
   const { data: club, isLoading: loadingClub, error: clubError, refetch: refetchClub } = useClub(orgId);

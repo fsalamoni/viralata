@@ -67,13 +67,9 @@ export function VolunteersRoster({ shelterClubId, actor, canAbriho }) {
   // D-DEBUG-RENDER-COUNTER (2026-07-30): contar renders para detectar loop infinito
   const renderCountRef = useRef(0);
   renderCountRef.current += 1;
-  if (renderCountRef.current > 5 && renderCountRef.current % 5 === 0) {
+  if (renderCountRef.current > 3) {
     // eslint-disable-next-line no-console
-    console.warn('[TEMP-DIAG-ROSTER] renderCount=', renderCountRef.current, 'shelterClubId=', shelterClubId, 'statusFilter=', statusFilter, 'volunteers.length=', volunteers.length);
-  }
-  if (renderCountRef.current > 50) {
-    // eslint-disable-next-line no-console
-    throw new Error(`[TEMP-DIAG-ROSTER] LOOP INFINITO: ${renderCountRef.current} renders`);
+    throw new Error(`[TEMP-DIAG-ROSTER] LOOP INFINITO NO ROSTER: ${renderCountRef.current} renders`);
   }
   const updateMutation = useUpdateShelterVolunteer(shelterClubId, null); // sobrescrito por item
   const leaveMutation = useLeaveShelter(shelterClubId);
