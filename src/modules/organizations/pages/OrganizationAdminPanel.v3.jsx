@@ -928,7 +928,7 @@ export default function OrganizationAdminPanelV3() {
             <ClubTeamTab club={club} viewerMembership={membership} viewerUid={user?.uid} />
           </SafeTab>
         )}
-        {activeGroupKey === 'people' && activeSubKey === 'volunteers' && shelterFoundation && shelterVolunteers && shelterVolunteerProfileV1 && canViewVolunteers && (
+        {false && activeGroupKey === 'people' && activeSubKey === 'volunteers' && shelterFoundation && shelterVolunteers && shelterVolunteerProfileV1 && canViewVolunteers && (
           <SafeTab label="volunteers">
             <VolunteersAdminTab
               shelterClubId={orgId}
