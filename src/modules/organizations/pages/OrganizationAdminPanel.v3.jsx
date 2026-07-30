@@ -20,7 +20,7 @@
  *
  * @see docs/REGENCY_ORG_ADMIN_V3.md
  */
-import React, { useState, useMemo, useEffect, Suspense, lazy } from 'react';
+import React, { useState, useMemo, useEffect, useRef, Suspense, lazy } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
 import {
@@ -531,6 +531,18 @@ export default function OrganizationAdminPanelV3() {
   const { orgId } = useParams();
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuth();
+
+  // D-DEBUG-PANEL-RENDER-COUNTER (2026-07-30): detectar loop infinito
+  const panelRenderCountRef = useRef(0);
+  panelRenderCountRef.current += 1;
+  if (panelRenderCountRef.current > 5 && panelRenderCountRef.current % 5 === 0) {
+    // eslint-disable-next-line no-console
+    console.warn('[TEMP-DIAG-PANEL] renderCount=', panelRenderCountRef.current, 'orgId=', orgId, 'isAuthenticated=', isAuthenticated);
+  }
+  if (panelRenderCountRef.current > 50) {
+    // eslint-disable-next-line no-console
+    throw new Error(`[TEMP-DIAG-PANEL] LOOP INFINITO: ${panelRenderCountRef.current} renders`);
+  }
   // toast via sonner (imported above)
   const { data: club, isLoading: loadingClub, error: clubError, refetch: refetchClub } = useClub(orgId);
   const { data: membership, isLoading: loadingMembership, error: membershipError, refetch: refetchMembership } = useMyMembership(orgId);
