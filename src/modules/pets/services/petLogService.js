@@ -45,6 +45,9 @@ export const PET_LOG_ACTIONS = {
   ADOPTER_HISTORY_CREATED: 'adopter_history_created',
   ADOPTER_HISTORY_UPDATED: 'adopter_history_updated',
   ADOPTER_HISTORY_DELETED: 'adopter_history_deleted',
+  HEALTH_RECORD_CREATED: 'health_record_created',
+  HEALTH_RECORD_UPDATED: 'health_record_updated',
+  HEALTH_RECORD_DELETED: 'health_record_deleted',
   NOTE_CREATED: 'note_created',
   NOTE_DELETED: 'note_deleted',
 };

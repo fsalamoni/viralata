@@ -601,6 +601,11 @@ export const DEFAULT_FEATURE_FLAGS = Object.freeze({
   [SHELTER_FEATURE_FLAG.SHELTER_HEALTH_RECORDS]: true,
   [SHELTER_FEATURE_FLAG.SHELTER_MEDICATION]: true,
   [SHELTER_FEATURE_FLAG.SHELTER_PET_TIMELINE]: true,
+  // Tabelas operacionais agregadas (Medicações, Consultas, Tratamentos,
+  // Vacinas, Cuidados, Adoções, Devoluções). Substitui Prontuário/Timeline.
+  // ATIVADA após validação (build/lint/typecheck/2399 testes OK). Pode ser
+  // desligada a qualquer momento em /admin/flags sem regressão.
+  [SHELTER_FEATURE_FLAG.SHELTER_PET_OPS_TABLES_V1]: true,
   // TASK-796: SHELTER_FOSTER ativado.
   [SHELTER_FEATURE_FLAG.SHELTER_FOSTER]: true,
   // TASK-797: SHELTER_EXHIBITIONS + SHELTER_REPORTS + SHELTER_INDICATORS ativados.
