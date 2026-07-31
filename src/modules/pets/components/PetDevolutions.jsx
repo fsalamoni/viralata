@@ -7,6 +7,7 @@
  */
 import React from 'react';
 import { Undo2, User, Calendar, FileText, AlertCircle, Plus } from 'lucide-react';
+import { RecordStatusBadge } from './RecordStatusBadge';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Badge } from '@/components/ui/badge';
@@ -57,6 +58,7 @@ function DevolutionCard({ devolution }) {
         <div className="min-w-0 flex-1 space-y-1">
           <div className="flex flex-wrap items-center gap-2">
             <p className="text-sm font-semibold text-foreground">Devolução</p>
+            <RecordStatusBadge record={devolution} className="text-[10.5px]" />
             <Badge className={cn('border text-[10.5px]', reasonMeta.color)}>
               {reasonMeta.label}
             </Badge>

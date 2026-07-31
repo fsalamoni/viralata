@@ -58,7 +58,9 @@ export const PET_OPS_CONFIGS = {
       { name: 'notes', label: 'Observações', type: 'textarea' },
     ],
     columns: [
-      { key: 'name', label: 'Medicação', render: (r) => r.name || '—' },
+      // Tolerante aos dois schemas: petMedicalService usa `name`; o sistema
+      // de medicação contínua (medicationService) usa `medication`.
+      { key: 'name', label: 'Medicação', render: (r) => r.name || r.medication || '—', sortValue: (r) => String(r.name || r.medication || '').toLowerCase() },
       { key: 'dosage', label: 'Dose', render: (r) => r.dosage || '—' },
       { key: 'frequency', label: 'Frequência', render: (r) => r.frequency || '—' },
     ],

@@ -18,6 +18,8 @@ import {
 import { useToast } from '@/components/ui/use-toast';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { useCreateVetVisit, useUpdateVetVisit } from '../hooks/usePetMedical';
+import { SchedulingFields } from './SchedulingFields';
+import { initScheduled, applyScheduling } from '@/modules/shelter/domain/operational/petOpsScheduling';
 import { format, parseISO } from 'date-fns';
 
 const INITIAL = {
@@ -36,6 +38,7 @@ export default function PetVetVisitForm({ open, onOpenChange, petId, visit = nul
   const { toast } = useToast();
   const [data, setData] = useState(INITIAL);
   const [errors, setErrors] = useState({});
+  const [scheduled, setScheduled] = useState(false);
 
   const createMut = useCreateVetVisit(petId);
   const updateMut = useUpdateVetVisit(petId);
@@ -62,6 +65,7 @@ export default function PetVetVisitForm({ open, onOpenChange, petId, visit = nul
       } else {
         setData(INITIAL);
       }
+      setScheduled(initScheduled(visit));
       setErrors({});
     }
   }, [open, visit]);
@@ -83,11 +87,12 @@ export default function PetVetVisitForm({ open, onOpenChange, petId, visit = nul
   async function handleSubmit(e) {
     e?.preventDefault();
     if (!validate()) return;
-    const payload = {
+    const basePayload = {
       ...data,
       cost_cents: data.cost_cents ? Math.round(parseFloat(data.cost_cents) * 100) : null,
       visit_date: data.visit_date || null,
     };
+    const payload = applyScheduling(basePayload, scheduled, 'visit_date', isEdit);
     try {
       if (isEdit) {
         await updateMut.mutateAsync({ visitId: visit.id, updates: payload });
@@ -201,6 +206,7 @@ export default function PetVetVisitForm({ open, onOpenChange, petId, visit = nul
               rows={2}
             />
           </div>
+          <SchedulingFields scheduled={scheduled} onScheduledChange={setScheduled} dateLabel="data" disabled={loading} />
           <DialogFooter className="gap-2">
             <Button type="button" variant="ghost" onClick={() => onOpenChange(false)} disabled={loading}>
               Cancelar

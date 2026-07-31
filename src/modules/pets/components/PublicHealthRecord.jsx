@@ -44,6 +44,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { Badge } from '@/components/ui/badge';
 import { db } from '@/core/config/firebase';
 import { logger } from '@/core/lib/logger';
+import { isScheduled } from '@/modules/shelter/domain/operational/petOpsScheduling';
 
 // ─── Whitelist / blacklist LGPD ────────────────────────────────────────
 
@@ -202,6 +203,10 @@ export function PublicHealthRecord({ petId, shelterClubId, maxResults = 50 }) {
         // que possam ter escapado (ex: doc criado com schema antigo)
         const raw = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
         const filtered = raw
+          // Esconde agendamentos futuros (ainda NÃO aplicados) da visão
+          // pública — só aparece o que já foi realizado. isScheduled é
+          // avaliado ANTES do whitelist (que remove scheduled_for).
+          .filter((r) => !isScheduled(r))
           .map(filterPublicFields)
           .filter((r) => r && (r.category || r.type));
         setRecords(filtered);

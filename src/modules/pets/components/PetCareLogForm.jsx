@@ -20,6 +20,8 @@ import {
 import { useToast } from '@/components/ui/use-toast';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { useCreateCareLog } from '../hooks/usePetMedical';
+import { SchedulingFields } from './SchedulingFields';
+import { applyScheduling } from '@/modules/shelter/domain/operational/petOpsScheduling';
 import { format } from 'date-fns';
 
 const CARE_TYPES = [
@@ -46,6 +48,7 @@ export default function PetCareLogForm({ open, onOpenChange, petId, defaultType 
   const { toast } = useToast();
   const [data, setData] = useState(INITIAL);
   const [errors, setErrors] = useState({});
+  const [scheduled, setScheduled] = useState(false);
 
   const createMut = useCreateCareLog(petId);
   const loading = createMut.isPending;
@@ -53,6 +56,7 @@ export default function PetCareLogForm({ open, onOpenChange, petId, defaultType 
   useEffect(() => {
     if (open) {
       setData({ ...INITIAL, care_type: defaultType });
+      setScheduled(false);
       setErrors({});
     }
   }, [open, defaultType]);
@@ -74,11 +78,11 @@ export default function PetCareLogForm({ open, onOpenChange, petId, defaultType 
   async function handleSubmit(e) {
     e?.preventDefault();
     if (!validate()) return;
-    const payload = {
+    const payload = applyScheduling({
       ...data,
       frequency_days: data.frequency_days ? Number(data.frequency_days) : null,
       next_due_date: data.next_due_date || null,
-    };
+    }, scheduled, 'care_date', false);
     try {
       await createMut.mutateAsync({ data: payload });
       toast.success('Cuidado registrado');
@@ -167,6 +171,7 @@ export default function PetCareLogForm({ open, onOpenChange, petId, defaultType 
               rows={2}
             />
           </div>
+          <SchedulingFields scheduled={scheduled} onScheduledChange={setScheduled} dateLabel="data do cuidado" disabled={loading} />
           <DialogFooter className="gap-2">
             <Button type="button" variant="ghost" onClick={() => onOpenChange(false)} disabled={loading}>
               Cancelar

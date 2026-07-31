@@ -8,6 +8,7 @@
 import React from 'react';
 import { Stethoscope, Building2, User, FileText, Plus } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
+import { RecordStatusBadge } from './RecordStatusBadge';
 import { ptBR } from 'date-fns/locale';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -57,6 +58,7 @@ function VetVisitCard({ visit, canEdit, onEdit }) {
                 {formatDate(visit.visit_date)}
               </Badge>
             )}
+            <RecordStatusBadge record={visit} className="text-[10.5px]" />
           </div>
           {visit.diagnosis && (
             <p className="mt-1 text-xs text-foreground/80">

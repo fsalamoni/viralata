@@ -9,6 +9,8 @@ import {
   isUpcoming,
   summarizeAlerts,
   proximityLabel,
+  initScheduled,
+  applyScheduling,
   PET_OPS_RECORD_STATUS,
 } from './petOpsScheduling';
 
@@ -101,6 +103,32 @@ describe('petOpsScheduling', () => {
     });
     it('lista vazia', () => {
       expect(summarizeAlerts([], NOW)).toEqual({ upcoming: 0, overdue: 0 });
+    });
+  });
+
+  describe('initScheduled', () => {
+    it('true só com scheduled_for e sem completed_at', () => {
+      expect(initScheduled({ scheduled_for: iso(2026, 6, 20) })).toBe(true);
+      expect(initScheduled({ scheduled_for: iso(2026, 6, 20), completed_at: iso(2026, 6, 1) })).toBe(false);
+      expect(initScheduled({ visit_date: iso(2026, 6, 1) })).toBe(false);
+      expect(initScheduled(null)).toBe(false);
+    });
+  });
+
+  describe('applyScheduling', () => {
+    it('agendado: define scheduled_for = campo de data e limpa completed_at', () => {
+      const out = applyScheduling({ visit_date: '2026-06-20', reason: 'x' }, true, 'visit_date', false);
+      expect(out.scheduled_for).toBe('2026-06-20');
+      expect(out.completed_at).toBeNull();
+      expect(out.reason).toBe('x');
+    });
+    it('não agendado em CRIAÇÃO: não mexe em scheduled_for', () => {
+      const out = applyScheduling({ visit_date: '2026-06-20' }, false, 'visit_date', false);
+      expect('scheduled_for' in out).toBe(false);
+    });
+    it('não agendado em EDIÇÃO: zera scheduled_for (realiza)', () => {
+      const out = applyScheduling({ visit_date: '2026-06-20' }, false, 'visit_date', true);
+      expect(out.scheduled_for).toBeNull();
     });
   });
 
