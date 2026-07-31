@@ -47,6 +47,7 @@ import { CLUB_DIRECTORY_STATUS, CLUB_DIRECTORY_STATUS_LABELS } from '@/modules/c
 import { isClubOwner, hasClubPermission, hasAnyClubPermission, canViewVolunteersRoster } from '@/modules/organizations/domain/permissions';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
+import { PET_OPS_CONFIGS, PET_OPS_TAB_ORDER } from '@/modules/shelter/domain/operational/petOpsConfigs';
 import { FEATURE_FLAG } from '@/core/featureFlags';
 import { parseTimestamp } from '@/core/utils/timestamp';
 import { cn } from '@/core/lib/utils';
@@ -83,6 +84,7 @@ const VolunteersAdminTab = lazy(() => import('@/modules/shelter/components/Volun
 const MedicalRecordsList = lazy(() => import('@/modules/shelter/components/MedicalRecordsList'));
 const MedicationsList = lazy(() => import('@/modules/shelter/components/MedicationsList'));
 const TimelineList = lazy(() => import('@/modules/shelter/components/TimelineList'));
+const PetOpsTab = lazy(() => import('@/modules/shelter/components/PetOpsTab'));
 const FostersList = lazy(() => import('@/modules/shelter/components/FostersList'));
 const ShelterDonationsTab = lazy(() => import('@/modules/shelter/components/ShelterDonationsTab'));
 const ShelterFinanceTab = lazy(() => import('@/modules/shelter/components/ShelterFinanceTab'));
@@ -135,6 +137,12 @@ const TAB_TO_GROUP = {
   reports: { group: 'finance', label: 'Relatórios', icon: BarChart2 },
   indicators: { group: 'finance', label: 'Indicadores', icon: TrendingUp },
   settings: { group: 'settings', label: 'Configurações', icon: ShieldCheck },
+  // Tabelas operacionais V1 (SHELTER_PET_OPS_TABLES_V1) — Medicações,
+  // Consultas, Tratamentos, Vacinas, Cuidados, Adoções, Devoluções.
+  ...Object.fromEntries(PET_OPS_TAB_ORDER.map((v) => {
+    const c = PET_OPS_CONFIGS[v];
+    return [c.tabKey, { group: 'operational', label: c.title, icon: c.icon }];
+  })),
 };
 
 const TAB_GROUPS = [
@@ -550,6 +558,7 @@ export default function OrganizationAdminPanelV3() {
   const shelterHealthRecords = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_HEALTH_RECORDS);
   const shelterMedication = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_MEDICATION);
   const shelterPetTimeline = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_PET_TIMELINE);
+  const shelterPetOpsTables = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_PET_OPS_TABLES_V1);
   const shelterFoster = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_FOSTER);
   const shelterDonations = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_DONATIONS);
   const shelterFinance = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_FINANCE);
@@ -595,9 +604,18 @@ export default function OrganizationAdminPanelV3() {
     if (shelterFoundation && shelterVolunteers && shelterVolunteerProfileV1 && canViewVolunteers) {
       tabs.push({ key: 'volunteers', label: 'Voluntários', icon: TAB_ICONS.volunteers });
     }
-    if (shelterFoundation && shelterHealthRecords) tabs.push({ key: 'medical_records', label: 'Prontuário', icon: TAB_ICONS.medical_records });
-    if (shelterFoundation && shelterMedication) tabs.push({ key: 'medications', label: 'Medicação', icon: TAB_ICONS.medications });
-    if (shelterFoundation && shelterPetTimeline) tabs.push({ key: 'timeline', label: 'Timeline', icon: TAB_ICONS.timeline });
+    if (shelterFoundation && shelterPetOpsTables) {
+      // Tabelas operacionais V1: substitui Prontuário/Medicação/Timeline por
+      // Medicações, Consultas, Tratamentos, Vacinas, Cuidados, Adoções, Devoluções.
+      PET_OPS_TAB_ORDER.forEach((v) => {
+        const c = PET_OPS_CONFIGS[v];
+        tabs.push({ key: c.tabKey, label: c.title, icon: c.icon });
+      });
+    } else {
+      if (shelterFoundation && shelterHealthRecords) tabs.push({ key: 'medical_records', label: 'Prontuário', icon: TAB_ICONS.medical_records });
+      if (shelterFoundation && shelterMedication) tabs.push({ key: 'medications', label: 'Medicação', icon: TAB_ICONS.medications });
+      if (shelterFoundation && shelterPetTimeline) tabs.push({ key: 'timeline', label: 'Timeline', icon: TAB_ICONS.timeline });
+    }
     if (shelterFoundation && shelterFoster) tabs.push({ key: 'foster', label: 'Lares', icon: TAB_ICONS.foster });
     if (shelterFoundation && shelterDonations) tabs.push({ key: 'shelter_donations', label: 'Campanhas', icon: TAB_ICONS.donations });
     if (shelterFoundation && shelterFinance) tabs.push({ key: 'shelter_finance', label: 'Prestação', icon: TAB_ICONS.finance });
@@ -607,7 +625,7 @@ export default function OrganizationAdminPanelV3() {
   }, [
     shelterFoundation, shelterDashboard, shelterKanban, shelterExhibitions,
     shelterVolunteers, shelterVolunteerProfileV1, canViewVolunteers,
-    shelterHealthRecords, shelterMedication, shelterPetTimeline, shelterFoster,
+    shelterHealthRecords, shelterMedication, shelterPetTimeline, shelterPetOpsTables, shelterFoster,
     shelterDonations, shelterFinance, shelterReports, shelterIndicators,
   ]);
 
@@ -915,6 +933,22 @@ export default function OrganizationAdminPanelV3() {
         {activeGroupKey === 'operational' && activeSubKey === 'timeline' && shelterFoundation && shelterPetTimeline && (
           <SafeTab label="timeline"><TimelineList shelterClubId={orgId} /></SafeTab>
         )}
+
+        {/* Tabelas operacionais V1 (SHELTER_PET_OPS_TABLES_V1) */}
+        {shelterFoundation && shelterPetOpsTables && PET_OPS_TAB_ORDER.map((v) => {
+          const c = PET_OPS_CONFIGS[v];
+          if (activeGroupKey !== 'operational' || activeSubKey !== c.tabKey) return null;
+          return (
+            <SafeTab key={c.tabKey} label={c.tabKey}>
+              <PetOpsTab
+                variant={c.key}
+                shelterClubId={orgId}
+                canManage={canManageAnimals}
+                actor={{ uid: user?.uid, displayName: user?.displayName }}
+              />
+            </SafeTab>
+          );
+        })}
 
         {activeGroupKey === 'people' && activeSubKey === 'team' && (
           <SafeTab label="team">

@@ -108,6 +108,13 @@ export const SHELTER_FEATURE_FLAG = Object.freeze({
   // kanban_cards), applications (adoption_workflow), pets cadastrados e
   // devoluções do abrigo. Adicionado em V3-SHELTER_ADMIN.
   SHELTER_ADMIN_DASHBOARD_V1: 'shelter_admin_dashboard_v1',
+  // Tabelas operacionais agregadas do abrigo (Operacional): Medicações,
+  // Consultas veterinárias, Tratamentos, Vacinas e vermifugação, Cuidados,
+  // Adoções e Devoluções — cada uma com tabela (passado + agendados),
+  // filtros, ordenação, agendamento e alertas de proximidade. Agrega as
+  // subcoleções de cada pet do abrigo (pets/{petId}/...). Substitui as
+  // abas legadas "Prontuário" e "Timeline" quando ligada.
+  SHELTER_PET_OPS_TABLES_V1: 'shelter_pet_ops_tables_v1',
 });
 
 /**
@@ -375,6 +382,17 @@ export const SHELTER_FEATURE_FLAG_META = Object.freeze({
       + '(collectionGroup kanban_cards onde estou em assignees), '
       + 'applications recentes (adoption_workflow), pets cadastrados '
       + 'por mim e devoluções no abrigo. V3 do ShelterAdminDashboard.',
+  },
+  [SHELTER_FEATURE_FLAG.SHELTER_PET_OPS_TABLES_V1]: {
+    label: 'Abrigos · tabelas operacionais',
+    description:
+      'Substitui as abas "Prontuário" e "Timeline" (Operacional) por 7 '
+      + 'tabelas agregadas do abrigo: Medicações, Consultas veterinárias, '
+      + 'Tratamentos, Vacinas e vermifugação, Cuidados, Adoções e Devoluções. '
+      + 'Cada tabela agrega as subcoleções de cada pet do abrigo '
+      + '(pets/{petId}/...), com passado + agendados, filtros, ordenação, '
+      + 'agendamento no modal de registro e alertas de proximidade. '
+      + 'Default OFF — com a flag desligada o painel mantém as abas legadas.',
   },
 });
 
