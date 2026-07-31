@@ -91,9 +91,9 @@ export default function ClubForumsTab({ clubId, isAdmin, initialThreadId, onThre
           {threads.map((thread) => {
             const attachmentsCount = (thread.attachments || []).length;
             return (
-              <Card
+              <section
                 key={thread.id}
-                className="cursor-pointer rounded-xl transition-colors hover:border-primary/40"
+                className="cursor-pointer rounded-xl border transition-colors hover:border-primary/40"
                 onClick={() => select(thread.id)}
               >
                 <div className="arena-section-card-body p-4">

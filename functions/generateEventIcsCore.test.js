@@ -81,7 +81,7 @@ describe('generateEventIcsCore', () => {
 
     it('sets correct UID', () => {
       const { ics } = generateEventIcs(baseEvent);
-      expect(ics).toContain('UID:evt-123@viralata.app'));
+      expect(ics).toContain('UID:evt-123@viralata.app');
     });
 
     it('uses X-WR-CALNAME as event title', () => {

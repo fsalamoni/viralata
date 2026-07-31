@@ -127,14 +127,14 @@ export default function LegalFooter() {
   const autoHideActive = mode === FOOTER_MODES.AUTOHIDE;
   const visible = useAutoHideVisibility(autoHideActive);
 
-  // Se usuário escolheu 'hidden', oculta
-  if (mode === FOOTER_MODES.HIDDEN) return null;
-
   const isFixed = mode === FOOTER_MODES.FIXED;
   const isAutohide = mode === FOOTER_MODES.AUTOHIDE;
+  const isHidden = mode === FOOTER_MODES.HIDDEN;
 
   // V3 (TASK-V3-UI-6): mede a altura real do footer e expõe via CSS var
   // para que o <main> tenha padding-bottom dinâmico.
+  // NB: o hook precisa rodar em TODA renderização (rules-of-hooks); por isso
+  // o early-return de 'hidden' fica DEPOIS dele.
   useEffect(() => {
     const el = footerRef.current;
     if (!el) return undefined;
@@ -147,6 +147,9 @@ export default function LegalFooter() {
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
+
+  // Se usuário escolheu 'hidden', oculta (após os hooks acima).
+  if (isHidden) return null;
 
   return (
     <footer

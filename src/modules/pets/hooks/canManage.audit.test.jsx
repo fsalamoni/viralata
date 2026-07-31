@@ -15,7 +15,7 @@
  * 7. MyApplications - link leva para /pet/<id> (público)
  */
 import { describe, it, expect } from 'vitest';
-import { canCurrentUserEditPet } from '/workspace/viralata/src/modules/pets/hooks/usePetPermissions.js';
+import { canCurrentUserEditPet } from './usePetPermissions';
 
 describe('Auditoria: nenhuma página dá admin a user não-canManage', () => {
   it('PET PESSOAL: user comum (u2) NÃO pode administrar pet de u1', () => {

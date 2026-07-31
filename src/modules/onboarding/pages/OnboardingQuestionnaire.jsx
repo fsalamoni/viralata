@@ -19,7 +19,7 @@
  * @see src/modules/onboarding/domain/profileCompletion.js
  */
 import React, { useEffect, useMemo, useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -144,8 +144,11 @@ const OTHER_PET_OPTIONS = [
  * - User com upgrade: só steps com fields novos + consent
  * - User na versão atual: [] (vai redirecionar)
  */
-function pickStepsToShow(userProfile) {
+function pickStepsToShow(userProfile, editMode = false) {
   const state = getOnboardingState(userProfile);
+  // Modo edição (/onboarding?edit=1 a partir do perfil): mostra TODOS os
+  // steps para o usuário revisar/atualizar, mesmo com o perfil já completo.
+  if (editMode) return { steps: STEPS, isNew: false, state };
   if (!state.needsOnboarding) return { steps: [], isNew: false, state };
   if (state.isNew) {
     return { steps: STEPS, isNew: true, state };
@@ -171,13 +174,15 @@ function pickStepsToShow(userProfile) {
 export default function OnboardingQuestionnaire() {
   const { updateUserProfile, userProfile } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const isEditMode = searchParams.get('edit') === '1';
   const [step, setStep] = useState(0);
   const [saving, setSaving] = useState(false);
 
-  // Decide quais steps mostrar (1ª vez vs upgrade).
+  // Decide quais steps mostrar (1ª vez vs upgrade vs edição).
   const { steps: visibleSteps, isNew, state: onboardingState } = useMemo(
-    () => pickStepsToShow(userProfile),
-    [userProfile],
+    () => pickStepsToShow(userProfile, isEditMode),
+    [userProfile, isEditMode],
   );
 
   // Estado inicial das respostas — PRÉ-PREENCHIDO com dados existentes.

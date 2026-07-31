@@ -14,9 +14,6 @@ export function CrossRosterSection({ volunteerData, fosterData, shelterOptions =
   const isVolunteer = !!volunteerData?.shelterId;
   const isFoster = (fosterData?.activeFosters || []).length > 0;
 
-  // Só mostra se user tem QUALQUER um dos papéis
-  if (!isVolunteer && !isFoster) return null;
-
   // Contadores agregados
   const fosterCount = fosterData?.activeFosters?.length || 0;
   const shelterCount = useMemo(() => {
@@ -35,6 +32,9 @@ export function CrossRosterSection({ volunteerData, fosterData, shelterOptions =
     });
     return map;
   }, [fosterData?.activeFosters]);
+
+  // Só mostra se user tem QUALQUER um dos papéis (após os hooks acima).
+  if (!isVolunteer && !isFoster) return null;
 
   return (
     <section className="rounded-[24px] p-6 lg:p-7" data-testid="cross-roster-section">

@@ -193,7 +193,7 @@ export function InputCityAutocomplete({
           className="absolute left-0 right-0 z-50 mt-1.5 rounded-2xl border border-border bg-card p-4 text-center text-xs text-muted-foreground shadow-lg"
           role="status"
         >
-          Nenhuma cidade conhecida para "{query}". Limpe o filtro para ver todos os pets.
+          Nenhuma cidade conhecida para &quot;{query}&quot;. Limpe o filtro para ver todos os pets.
         </p>
       )}
     </div>

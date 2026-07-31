@@ -658,7 +658,7 @@ export default function SearchPageV3() {
             <p>
               <span className="font-semibold text-foreground">{filteredResults.length}</span>{' '}
               resultado{filteredResults.length !== 1 ? 's' : ''} para{' '}
-              <span className="font-semibold text-foreground">"{debouncedQuery}"</span>
+              <span className="font-semibold text-foreground">&quot;{debouncedQuery}&quot;</span>
             </p>
             {selectedEntity === 'all' && (
               <p>

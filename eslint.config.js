@@ -31,6 +31,26 @@ export default [
       'react/prop-types': 'off',
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
       'no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+      // Catches best-effort (telemetria/storage) usam bloco vazio de propósito.
+      'no-empty': ['error', { allowEmptyCatch: true }],
+    },
+  },
+  {
+    // Arquivos de teste (Vitest no app, Jest nas Cloud Functions) expõem
+    // globals de test-runner que não existem no browser/node padrão.
+    files: [
+      '**/*.{test,spec}.{js,jsx}',
+      '**/__tests__/**/*.{js,jsx}',
+      'vitest.setup.js',
+    ],
+    languageOptions: {
+      globals: {
+        ...globals.jest,
+        vi: 'readonly',
+        vitest: 'readonly',
+        suite: 'readonly',
+        bench: 'readonly',
+      },
     },
   },
 ];

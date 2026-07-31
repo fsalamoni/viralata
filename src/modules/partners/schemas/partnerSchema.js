@@ -33,7 +33,7 @@ const optionalPhone = z
   .string()
   .trim()
   .max(30, 'Telefone muito longo (max 30)')
-  .regex(/^[\d\s+()\-]*$/, 'Telefone inválido')
+  .regex(/^[\d\s+()-]*$/, 'Telefone inválido')
   .or(z.literal(''))
   .optional();
 

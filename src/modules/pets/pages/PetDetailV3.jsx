@@ -250,6 +250,15 @@ export default function PetDetailV3() {
     setHashTab(value);
   };
 
+  // NB: hook precisa rodar em TODA renderização (rules-of-hooks); por isso
+  // fica ANTES dos early returns de loading/not-found.
+  const wrapperClass = useArenaPageClasses(
+    cn(
+      'arena-page max-w-5xl mx-auto px-4 py-5 pb-24 sm:pb-12 space-y-6',
+      compact && 'py-3 space-y-4',
+    ),
+  );
+
   if (isLoading) return <PetDetailSkeleton />;
   if (!pet) return <PetNotFound petId={petId} />;
 
@@ -342,13 +351,6 @@ export default function PetDetailV3() {
       toast.error('Erro ao remover pet.');
     }
   }
-
-  const wrapperClass = useArenaPageClasses(
-    cn(
-      'arena-page max-w-5xl mx-auto px-4 py-5 pb-24 sm:pb-12 space-y-6',
-      compact && 'py-3 space-y-4',
-    ),
-  );
 
   return (
     <div className={wrapperClass} data-testid="pet-detail-v3">

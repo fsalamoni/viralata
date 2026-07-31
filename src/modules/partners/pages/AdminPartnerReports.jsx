@@ -291,7 +291,7 @@ export default function AdminPartnerReports() {
         <p className="font-semibold">ℹ Sobre os contadores</p>
         <p className="mt-1">
           Contadores `totalViews`/`totalClicks` são denormalizados e atualizados a cada evento.
-          Para detalhes por dia e por banner, abra o detalhe de cada parceiro e aba "Estatísticas".
+          Para detalhes por dia e por banner, abra o detalhe de cada parceiro e aba &quot;Estatísticas&quot;.
         </p>
       </div>
     </div>
