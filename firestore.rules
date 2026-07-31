@@ -76,6 +76,27 @@ service cloud.firestore {
       return isAuth() && exists(/databases/$(database)/documents/club_members/$(clubId + '_' + request.auth.uid))
         && get(/databases/$(database)/documents/club_members/$(clubId + '_' + request.auth.uid)).data.get('permissions', {}).get(key, false) == true;
     }
+    // Acesso a features operacionais do abrigo (kanban, etc). Espelha o
+    // padrão usado em medications/fosters/post_adoption. shelterCanAccess/
+    // shelterCanManage eram referenciadas nas regras de kanban mas NUNCA
+    // haviam sido definidas → o compilador tratava como "Invalid function
+    // name" e as regras negavam tudo. Definidas aqui para restaurar o acesso.
+    function shelterCanAccess(clubId) {
+      return isAuth() && (
+        isPlatformAdmin() ||
+        isClubOwnerOrAdmin(clubId) ||
+        canEditClubPets(clubId) ||
+        hasClubPermission(clubId, 'animals')
+      );
+    }
+    function shelterCanManage(clubId) {
+      return isAuth() && (
+        isPlatformAdmin() ||
+        isClubOwnerOrAdmin(clubId) ||
+        canEditClubPets(clubId) ||
+        hasClubPermission(clubId, 'animals')
+      );
+    }
     // Proprietário do clube (dono de todas as permissões, protegido contra
     // remoção/rebaixamento por outros admins — ver domain/permissions.js).
     function isClubOwnerUid(clubId, uid) {
@@ -542,6 +563,17 @@ service cloud.firestore {
     // pode ESCREVER. Não misturar com regras de outras subcoleções (que
     // são internas por LGPD).
 
+    // ─── BUGFIX: subcoleções de PET nested em pets/{petId} ──────────
+    // Estas subcoleções (health_records, vet_visits, treatments, care_log,
+    // devolutions, adopters_history) estavam órfãs no top-level: o bloco
+    // match /pets/{petId} fechava ANTES delas, então `petId` ficava fora
+    // de escopo (compilador: "Invalid variable name: petId") e o path
+    // /health_records/{id} NÃO casava com o path real
+    // pets/{petId}/health_records/{id} → todas as escritas/leituras
+    // negadas. Envolvidas em match /pets/{petId} para vincular petId e
+    // casar o path correto. (Firestore permite múltiplos match no mesmo
+    // path — ver club_members.)
+    match /pets/{petId} {
     // ─── health_records (PÚBLICO — paralel o a medical) ─────────────
     // Vacinas / vermifugação / antipulgas VISÍVEIS ao público (whitelist).
     // Diferente de `medical` (interno abrigo) e `medications` (privado abrigo).
@@ -595,6 +627,7 @@ service cloud.firestore {
       );
       allow delete: if isAuth() && isPlatformAdmin();
     }
+    } // fim do wrapper match /pets/{petId} (subcoleções nested — BUGFIX)
 
     // ─── Fase 10: Coleção `pet_photos` (Galeria multi-tenant) ─────────
     // Soft delete + purge 30d via Cloud Function galleryPurgeCron.
@@ -725,7 +758,7 @@ service cloud.firestore {
     allow create: if isAuth() && (
       isShelterAdmin(clubId) ||
       (
-        request.resource.data.adopter_uid == auth.uid &&
+        request.resource.data.adopter_uid == request.auth.uid &&
         request.resource.data.status == 'pending_shelter_signature' &&
         request.resource.data.document_hash.matches('^[a-f0-9]{64}$') &&
         request.resource.data.pdf_storage_path.matches('^clubs.*.pdf$')
@@ -747,7 +780,7 @@ service cloud.firestore {
         request.resource.data.status == 'cancelled' &&
         (
           isShelterAdmin(clubId) ||
-          resource.data.adopter_uid == auth.uid
+          resource.data.adopter_uid == request.auth.uid
         )
       )
     );
@@ -1572,14 +1605,14 @@ service cloud.firestore {
       //  - delete: admin OU o próprio user_id (sair da comunidade).
       allow create: if isAuth() && (
         request.resource.data.user_id == request.auth.uid ||
-        canManageCommunity(get(/databases/$(database)/documents/communities/$(communityId)).data)
+        canManageCommunity(get(/databases/$(database)/documents/communities/$(request.resource.data.community_id)).data)
       );
       allow update: if isAuth() && (
-        canManageCommunity(get(/databases/$(database)/documents/communities/$(communityId)).data) ||
+        canManageCommunity(get(/databases/$(database)/documents/communities/$(resource.data.community_id)).data) ||
         (resource.data.user_id == request.auth.uid && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['last_seen', 'updated_at']))
       );
       allow delete: if isAuth() && (
-        canManageCommunity(get(/databases/$(database)/documents/communities/$(communityId)).data) ||
+        canManageCommunity(get(/databases/$(database)/documents/communities/$(resource.data.community_id)).data) ||
         resource.data.user_id == request.auth.uid
       );
     }
@@ -1590,16 +1623,16 @@ service cloud.firestore {
       // em QUALQUER comunidade. Agora exige ser membro OU admin da
       // comunidade-alvo.
       allow create: if isAuth() && (
-        canManageCommunity(get(/databases/$(database)/documents/communities/$(communityId)).data) ||
-        isCommunityMember(communityId)
+        canManageCommunity(get(/databases/$(database)/documents/communities/$(request.resource.data.community_id)).data) ||
+        isCommunityMember(request.resource.data.community_id)
       );
       allow update: if isAuth() && (
         request.auth.uid == resource.data.author_id ||
-        canManageCommunity(get(/databases/$(database)/documents/communities/$(communityId)).data)
+        canManageCommunity(get(/databases/$(database)/documents/communities/$(resource.data.community_id)).data)
       );
       allow delete: if isAuth() && (
         request.auth.uid == resource.data.author_id ||
-        canManageCommunity(get(/databases/$(database)/documents/communities/$(communityId)).data) ||
+        canManageCommunity(get(/databases/$(database)/documents/communities/$(resource.data.community_id)).data) ||
         isPlatformAdmin()
       );
     }
@@ -1983,6 +2016,102 @@ service cloud.firestore {
         isPlatformAdmin() ||
         resource.data.applicant_uid == request.auth.uid
       );
+    }
+
+    // ════════════════════════════════════════════════════════════════
+    // COLLECTION GROUP QUERIES — regras {path=**} (recursive wildcard)
+    // ────────────────────────────────────────────────────────────────
+    // Queries collectionGroup só são autorizadas por regras {path=**}/<col>;
+    // regras aninhadas por caminho NÃO cobrem collectionGroup. Cada regra
+    // abaixo espelha a autorização da regra aninhada correspondente, usando
+    // resource.data.* no lugar das variáveis de path. O filtro do cliente é
+    // OBRIGATÓRIO: a query deve conter o `where` que satisfaz um dos ramos,
+    // senão a regra nega o resultado inteiro (mesmo padrão de medications).
+    // ════════════════════════════════════════════════════════════════
+
+    // contracts — /meus-contratos (adotante lê os próprios contratos).
+    match /{path=**}/contracts/{contractId} {
+      allow read: if isAuth() && (
+        isPlatformAdmin() ||
+        resource.data.adopter_uid == request.auth.uid
+      );
+    }
+
+    // volunteers (rostagem) — /perfil "Minhas voluntariadas" (o próprio
+    // voluntário) + gestão do abrigo dono do doc.
+    match /{path=**}/volunteers/{volunteerUid} {
+      allow read: if isAuth() && (
+        isPlatformAdmin() ||
+        resource.data.volunteer_uid == request.auth.uid ||
+        (resource.data.shelter_club_id != null && (
+          isClubOwnerOrAdmin(resource.data.shelter_club_id) ||
+          canEditClubPets(resource.data.shelter_club_id) ||
+          hasClubPermission(resource.data.shelter_club_id, 'volunteers')
+        ))
+      );
+    }
+
+    // volunteer_participations — o próprio voluntário + gestão do abrigo.
+    match /{path=**}/volunteer_participations/{participationId} {
+      allow read: if isAuth() && (
+        isPlatformAdmin() ||
+        resource.data.volunteer_uid == request.auth.uid ||
+        (resource.data.shelter_club_id != null && (
+          isClubOwnerOrAdmin(resource.data.shelter_club_id) ||
+          canEditClubPets(resource.data.shelter_club_id) ||
+          hasClubPermission(resource.data.shelter_club_id, 'volunteers')
+        ))
+      );
+    }
+
+    // post_adoption — dashboard do abrigo (por shelter_club_id) + o
+    // próprio adotante lê seu plano.
+    match /{path=**}/post_adoption/{postAdoptionId} {
+      allow read: if isAuth() && (
+        isPlatformAdmin() ||
+        resource.data.adopter_uid == request.auth.uid ||
+        (resource.data.shelter_club_id != null && (
+          isClubOwnerOrAdmin(resource.data.shelter_club_id) ||
+          canEditClubPets(resource.data.shelter_club_id) ||
+          hasClubPermission(resource.data.shelter_club_id, 'animals')
+        ))
+      );
+    }
+
+    // fosters — histórico de LT do próprio usuário + gestão do abrigo.
+    match /{path=**}/fosters/{fosterId} {
+      allow read: if isAuth() && (
+        isPlatformAdmin() ||
+        resource.data.foster_uid == request.auth.uid ||
+        (resource.data.shelter_club_id != null && (
+          isClubOwnerOrAdmin(resource.data.shelter_club_id) ||
+          canEditClubPets(resource.data.shelter_club_id) ||
+          hasClubPermission(resource.data.shelter_club_id, 'animals')
+        ))
+      );
+    }
+
+    // kanban_cards — "minhas pendências" (assignee/criador) cross-abrigo +
+    // acesso do abrigo dono do card.
+    match /{path=**}/kanban_cards/{cardId} {
+      allow read: if isAuth() && (
+        isPlatformAdmin() ||
+        (resource.data.assignees is list && request.auth.uid in resource.data.assignees) ||
+        resource.data.created_by == request.auth.uid ||
+        (resource.data.shelter_club_id != null && shelterCanAccess(resource.data.shelter_club_id))
+      );
+    }
+
+    // banners — vitrine pública de parceiros (leitura liberada, igual à
+    // regra aninhada partners/{id}/banners).
+    match /{path=**}/banners/{bannerId} {
+      allow read: if true;
+    }
+
+    // volunteer_profile — broadcast do admin master (leitura agregada).
+    // Cada usuário lê o próprio perfil pela rota aninhada, não por grupo.
+    match /{path=**}/volunteer_profile/{profileId} {
+      allow read: if isAuth() && isPlatformAdmin();
     }
 
     match /clubs/{clubId}/kanban_boards/{boardId} {
