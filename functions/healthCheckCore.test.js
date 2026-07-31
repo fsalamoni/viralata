@@ -22,7 +22,8 @@ describe('healthCheckCore', () => {
       };
       const result = await checkFirestore(mockDb);
       expect(result.ok).toBe(true);
-      expect(result.error).toBeUndefined();
+      // checkFirestore retorna { ok, latency, error: null } em sucesso.
+      expect(result.error).toBeNull();
     });
 
     it('returns ok=false when firestore throws', async () => {
