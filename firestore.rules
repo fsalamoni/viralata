@@ -2141,7 +2141,11 @@ service cloud.firestore {
     // Coleção: clubs/{clubId}/shelter_donations
     // Lógica: público para leitura (transparência), gravado apenas por
     // admin/owner do abrigo OU por membros com permissão `donations`.
-    match /shelter_donations/{donationId} {
+    // BUGFIX: match estava no top-level (/shelter_donations) → `clubId` fora
+    // de escopo (compilador: "Invalid variable name: clubId") e o path não
+    // casava com o real clubs/{clubId}/shelter_donations → create/update/delete
+    // negados. Path corrigido para vincular clubId.
+    match /clubs/{clubId}/shelter_donations/{donationId} {
       // Leitura pública — transparência das campanhas
       allow read: if true;
       // Create/update/delete: admin/owner do abrigo OU membros com permissão donations
@@ -2170,7 +2174,9 @@ service cloud.firestore {
     //   - Create: qualquer usuário autenticado (enviar comprovante)
     //   - Update: abrigo com permissão donations (status + admin_note)
     //   - Delete: abrigo com permissão donations + platform_admin
-    match /shelter_donation_receipts/{receiptId} {
+    // BUGFIX: idem — path corrigido de /shelter_donation_receipts para
+    // clubs/{clubId}/shelter_donation_receipts (clubId estava fora de escopo).
+    match /clubs/{clubId}/shelter_donation_receipts/{receiptId} {
       allow read: if isAuth() && (
         isClubOwnerOrAdmin(clubId) ||
         hasClubPermission(clubId, 'donations') ||
@@ -2200,7 +2206,9 @@ service cloud.firestore {
     // Coleção: clubs/{clubId}/shelter_ledger
     // Lógica: público para leitura (transparência LGPD Art. 18 V), gravação
     // apenas por membros com permissão `finance` (ou admin/owner do abrigo).
-    match /shelter_ledger/{entryId} {
+    // BUGFIX: idem — path corrigido de /shelter_ledger para
+    // clubs/{clubId}/shelter_ledger (clubId estava fora de escopo).
+    match /clubs/{clubId}/shelter_ledger/{entryId} {
       // Leitura pública — transparência das finanças do abrigo
       allow read: if true;
       // Create: abrigo com permissão finance/owner/admin
@@ -2226,7 +2234,9 @@ service cloud.firestore {
     // ─── TASK-791: shelter_ledger_categories (categorias customizadas) ─────────
     // Coleção: clubs/{clubId}/shelter_ledger_categories
     // Lógica: leitura pública (para dropdown), gravação por admin/owner/finance.
-    match /shelter_ledger_categories/{categoryId} {
+    // BUGFIX: idem — path corrigido de /shelter_ledger_categories para
+    // clubs/{clubId}/shelter_ledger_categories (clubId estava fora de escopo).
+    match /clubs/{clubId}/shelter_ledger_categories/{categoryId} {
       allow read: if true;
       allow create: if isAuth() && (
         isClubOwnerOrAdmin(clubId) ||
