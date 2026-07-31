@@ -296,31 +296,24 @@ export async function joinShelterAsVolunteer(input, actor) {
   }
 
   const ref = shelterVolunteerRef(parsed.shelter_club_id, parsed.volunteer_uid);
-  // TEMP-DIAG-VOL (2026-07-29): getDoc pode falhar com permission-denied
-  // se a rule de READ não permitir o user. Se falhar, ASSUMIMOS que o doc
-  // não existe (ou que não temos acesso) e tentamos o setDoc. O setDoc
-  // vai falhar com ALREADY_EXISTS se já existir (e o catch trata).
+  // O getDoc do "existing check" pode falhar com permission-denied em uma
+  // race condition (auth/role ainda não propagou). Nesse caso assumimos que
+  // o doc não existe e seguimos para o setDoc — que falha com ALREADY_EXISTS
+  // se já existir (tratado abaixo).
   let existing = null;
   try {
     const existingSnap = await getDoc(ref);
     existing = existingSnap.exists() ? existingSnap : null;
   } catch (readErr) {
-    // eslint-disable-next-line no-console
-    console.warn('[TEMP-DIAG-VOL] joinShelterAsVolunteer getDoc (existing check) failed, assuming doc does not exist', {
+    logger.warn('volunteerProfileService.joinShelterAsVolunteer', {
+      msg: 'getDoc (existing check) failed — assuming doc does not exist',
       errCode: readErr?.code,
-      errMessage: readErr?.message,
     });
     existing = null;
   }
-  // FIX DEFINITIVO (sw-v85): se o user JÁ ESTÁ na rostagem, isso é
-  // SUCESSO idempotente, não erro. O doc foi criado em uma tentativa
-  // anterior (race condition entre sw-v82/83/84). Devolvemos o doc
-  // existente e o UI navega para o sucesso normalmente.
+  // Join IDEMPOTENTE: se o voluntário JÁ ESTÁ na rostagem, isso é sucesso
+  // (não erro). Devolvemos o doc existente e o UI navega para o sucesso.
   if (existing) {
-    // eslint-disable-next-line no-console
-    console.log('[TEMP-DIAG-VOL] joinShelterAsVolunteer doc already exists, treating as idempotent success', {
-      existingData: existing.data(),
-    });
     return { id: existing.id, ...existing.data(), _alreadyExisted: true };
   }
 
@@ -342,52 +335,16 @@ export async function joinShelterAsVolunteer(input, actor) {
     updated_at: serverTimestamp(),
   };
 
-  // TEMP-DIAG-VOL (2026-07-29): log ANTES do setDoc para diagnosticar
-  // permission-denied. Vê o estado real do payload, do ref, e do user.
-  // eslint-disable-next-line no-console
-  console.log('[TEMP-DIAG-VOL] joinShelterAsVolunteer BEFORE setDoc', {
-    refPath: ref.path,
-    refId: ref.id,
-    actorUid: actor.uid,
-    actorEmail: actor.email,
-    payload: JSON.stringify({
-      shelter_club_id: doc_data.shelter_club_id,
-      volunteer_uid: doc_data.volunteer_uid,
-      volunteer_name: doc_data.volunteer_name,
-      volunteer_name_type: typeof doc_data.volunteer_name,
-      volunteer_name_size: doc_data.volunteer_name?.length,
-      terms_accepted_at: doc_data.terms_accepted_at,
-      terms_accepted_at_type: typeof doc_data.terms_accepted_at,
-      terms_version: doc_data.terms_version,
-      signature_text: doc_data.signature_text?.substring(0, 20) + '...',
-      signature_text_size: doc_data.signature_text?.length,
-      status: doc_data.status,
-      joined_at: doc_data.joined_at,
-      background_check_status: doc_data.background_check_status,
-    }, null, 2),
-    profileTermsAcceptedAt: profile.terms_accepted_at,
-    profileTermsVersion: profile.terms_version,
-  });
-
   try {
     await setDoc(ref, doc_data);
-    // eslint-disable-next-line no-console
-    console.log('[TEMP-DIAG-VOL] joinShelterAsVolunteer AFTER setDoc OK');
   } catch (setDocErr) {
-    // eslint-disable-next-line no-console
-    console.error('[TEMP-DIAG-VOL] joinShelterAsVolunteer setDoc FAILED', {
-      errMessage: setDocErr?.message,
+    logger.warn('volunteerProfileService.joinShelterAsVolunteer', {
+      msg: 'setDoc failed',
       errCode: setDocErr?.code,
-      errName: setDocErr?.name,
-      errStack: setDocErr?.stack?.substring(0, 500),
-      errCustomData: setDocErr?.customData,
       refPath: ref.path,
-      actorUid: actor.uid,
-      payloadKeys: Object.keys(doc_data),
     });
-    // TEMP-DIAG-VOL (2026-07-29): traduzir ALREADY_EXISTS em mensagem
-    // amigável quando o user já está na rostagem (race condition ou
-    // check de existing falhou por permissão).
+    // Traduz permission-denied em mensagem amigável (race condition de
+    // auth/role, ou check de existing falhou por permissão).
     if (setDocErr?.code === 'permission-denied') {
       throw new Error('Sem permissão para entrar na rostagem deste abrigo. Faça login novamente e tente de novo.');
     }

@@ -20,7 +20,7 @@
  *
  * @see docs/REGENCY_ORG_ADMIN_V3.md
  */
-import React, { useState, useMemo, useEffect, useRef, Suspense, lazy } from 'react';
+import React, { useState, useMemo, useEffect, Suspense, lazy } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
 import {
@@ -526,24 +526,12 @@ function OverviewTab({ club, pets, user, navigate }) {
 // MAIN COMPONENT
 // ============================================================================
 
-// D-DEBUG-PANEL-2026-07-30: feature flag para desabilitar a aba volunteers
-// (React #306 loop infinito em investigação). Default false.
-// Trocar para true quando o bug for corrigido.
-const SHOW_VOLUNTEERS_TAB = false;
-
 export default function OrganizationAdminPanelV3() {
   const reduce = useReducedMotion();
   const { orgId } = useParams();
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuth();
 
-  // D-DEBUG-PANEL-RENDER-COUNTER (2026-07-30): detectar loop infinito
-  const panelRenderCountRef = useRef(0);
-  panelRenderCountRef.current += 1;
-  if (panelRenderCountRef.current > 3) {
-    // eslint-disable-next-line no-console
-    throw new Error(`[TEMP-DIAG-PANEL] LOOP INFINITO NO PAINEL: ${panelRenderCountRef.current} renders`);
-  }
   // toast via sonner (imported above)
   const { data: club, isLoading: loadingClub, error: clubError, refetch: refetchClub } = useClub(orgId);
   const { data: membership, isLoading: loadingMembership, error: membershipError, refetch: refetchMembership } = useMyMembership(orgId);
@@ -933,7 +921,7 @@ export default function OrganizationAdminPanelV3() {
             <ClubTeamTab club={club} viewerMembership={membership} viewerUid={user?.uid} />
           </SafeTab>
         )}
-        {SHOW_VOLUNTEERS_TAB && activeGroupKey === 'people' && activeSubKey === 'volunteers' && shelterFoundation && shelterVolunteers && shelterVolunteerProfileV1 && canViewVolunteers && (
+        {activeGroupKey === 'people' && activeSubKey === 'volunteers' && shelterFoundation && shelterVolunteers && shelterVolunteerProfileV1 && canViewVolunteers && (
           <SafeTab label="volunteers">
             <VolunteersAdminTab
               shelterClubId={orgId}

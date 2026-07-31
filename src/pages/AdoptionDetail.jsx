@@ -200,6 +200,15 @@ export default function AdoptionDetail() {
     enabled: Boolean(clubId && applicationId),
   });
 
+  // Post-adoption record (only fetched when feature flag is on and app is completed).
+  // NB: deve ficar ANTES de qualquer early return para não violar as rules-of-hooks
+  // (React error "Rendered more hooks than during the previous render").
+  const { data: postAdoption } = useQuery({
+    queryKey: ['postAdoption', clubId, applicationId],
+    queryFn: () => getPostAdoption(clubId, applicationId),
+    enabled: Boolean(returnEnabled && clubId && applicationId && app?.status === 'adoption_completed'),
+  });
+
   if (isLoading) {
     return <LoadingSkeleton wrapperClass={wrapperClass} />;
   }
@@ -227,13 +236,6 @@ export default function AdoptionDetail() {
   }
 
   const phases = buildTimeline(app);
-
-  // Post-adoption record (only fetched when feature flag is on and app is completed)
-  const { data: postAdoption } = useQuery({
-    queryKey: ['postAdoption', clubId, applicationId],
-    queryFn: () => getPostAdoption(clubId, applicationId),
-    enabled: Boolean(returnEnabled && clubId && applicationId && app?.status === 'adoption_completed'),
-  });
 
   const showPostAdoptionActions =
     returnEnabled && app?.status === 'adoption_completed';

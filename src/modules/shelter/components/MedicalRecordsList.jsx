@@ -180,3 +180,6 @@ export function MedicalRecordsList({ petId, shelterClubId, canEdit = false, acto
     </section>
   );
 }
+
+// Default export para React.lazy() (mantém named export acima para imports diretos/testes).
+export default MedicalRecordsList;

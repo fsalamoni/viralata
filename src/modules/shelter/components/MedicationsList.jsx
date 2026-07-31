@@ -239,3 +239,6 @@ export function MedicationsList({ petId, shelterClubId, canEdit = false, actor }
     </section>
   );
 }
+
+// Default export para React.lazy() (mantém named export acima para imports diretos/testes).
+export default MedicationsList;

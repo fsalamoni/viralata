@@ -90,7 +90,7 @@ export function SmartSearchFilters({
           )}
         </h3>
       </div>
-      <div className="{cn('arena-section-card-body space-y-3', compact && 'p-3 pt-0')}}>
+      <div className={cn('arena-section-card-body space-y-3', compact && 'p-3 pt-0')}>
         {allowEntitySelector && (
           <div className="space-y-1.5">
             <Label htmlFor="filter-entity" className="text-xs">Entidade</Label>

@@ -47,6 +47,7 @@ import {
   useAddShelterDonationFunds,
   useDeleteShelterDonation,
   useAllShelterDonationReceipts,
+  useCreateShelterReceipt,
   useUpdateShelterReceiptStatus,
   useDeleteShelterDonationReceipt,
 } from '../hooks/useShelterDonations';
@@ -880,3 +881,6 @@ function ShelterReceiptStatusDialog({ receipt, onClose, onSave }) {
     </Dialog>
   );
 }
+
+// Default export para React.lazy() (mantém named export acima para imports diretos/testes).
+export default ShelterDonationsTab;
