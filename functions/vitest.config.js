@@ -33,5 +33,9 @@ export default defineConfig({
   test: {
     include: ['**/*.test.js'],
     environment: 'node',
+    // Alguns testes (validateCpf, sendPushNotification, generateEventIcsCore)
+    // usam describe/it/expect globais (e jest.*) sem importar de 'vitest'.
+    globals: true,
+    setupFiles: [path.join(__dirname, 'vitest.setup.js')],
   },
 });

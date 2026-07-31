@@ -221,3 +221,6 @@ export function ExhibitionsList({ shelterClubId, actor, onSelect, onCreate }) {
     </section>
   );
 }
+
+// Default export para React.lazy() (mantém named export acima para imports diretos/testes).
+export default ExhibitionsList;

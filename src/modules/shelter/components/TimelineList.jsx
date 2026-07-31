@@ -265,3 +265,6 @@ function _renderEventSummary(ev) {
       return <code className="text-xs">{JSON.stringify(d)}</code>;
   }
 }
+
+// Default export para React.lazy() (mantém named export acima para imports diretos/testes).
+export default TimelineList;

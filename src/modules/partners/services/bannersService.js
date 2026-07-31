@@ -4,7 +4,7 @@
  * @see docs/PARTNER_SPACES_PLAN.md §3.2
  */
 import {
-  doc, collection, getDoc, getDocs, setDoc, updateDoc, deleteDoc,
+  doc, collection, collectionGroup, getDoc, getDocs, setDoc, updateDoc, deleteDoc,
   query, where, orderBy, limit, serverTimestamp, increment,
 } from 'firebase/firestore';
 

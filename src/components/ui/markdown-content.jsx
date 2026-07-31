@@ -27,11 +27,13 @@ function slugify(text) {
 }
 
 function withId(Component) {
-  return ({ node, children, ...props }) => {
+  const WithHeadingId = ({ node, children, ...props }) => {
     const text = typeof children === 'string' ? children : '';
     const id = slugify(text);
     return <Component id={id || undefined} {...props}>{children}</Component>;
   };
+  WithHeadingId.displayName = `withId(${typeof Component === 'string' ? Component : (Component.displayName || Component.name || 'Component')})`;
+  return WithHeadingId;
 }
 
 const COMPONENTS = {

@@ -787,3 +787,6 @@ function ShelterCategoriesDialog({ clubId, customCategories, onClose }) {
     </Dialog>
   );
 }
+
+// Default export para React.lazy() (mantém named export acima para imports diretos/testes).
+export default ShelterFinanceTab;

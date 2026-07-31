@@ -325,7 +325,7 @@ export default function VolunteerSignup() {
       await acceptTermsMutation.mutateAsync({
         acceptance: {
           terms_version: VOLUNTEER_TERMS_VERSION,
-          signature_text: joinSignature,
+          signature_text: signatureText.trim(),
         },
         actor: { uid: user.uid, email: user.email },
       });

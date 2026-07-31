@@ -702,7 +702,7 @@ export default function AdoptionWizardV3() {
 
       {!isOrgPet && pet && (
         <div className="mt-4 rounded-lg border border-amber-300/40 bg-amber-50/40 p-3 text-sm text-amber-900 dark:bg-amber-900/10 dark:text-amber-200">
-          <p>Este pet é de um tutor individual. Para esse caso, use o botão "Tenho interesse" no perfil do pet, em vez deste wizard.</p>
+          <p>Este pet é de um tutor individual. Para esse caso, use o botão &quot;Tenho interesse&quot; no perfil do pet, em vez deste wizard.</p>
         </div>
       )}
 

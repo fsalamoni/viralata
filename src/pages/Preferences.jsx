@@ -353,7 +353,7 @@ export default function Preferences() {
                     <a className="text-primary underline underline-offset-2" href="mailto:dpo@viralata.org">
                       dpo@viralata.org
                     </a>{' '}
-                    com o assunto "Exclusão de conta". Seus dados serão removidos em até 30 dias (LGPD).
+                    com o assunto &quot;Exclusão de conta&quot;. Seus dados serão removidos em até 30 dias (LGPD).
                   </p>
                 </div>
               </div>

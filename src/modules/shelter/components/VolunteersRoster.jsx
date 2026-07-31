@@ -11,7 +11,7 @@ import { confirmDialog } from '@/components/ui/confirm-provider';
 import { Users } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
@@ -64,13 +64,6 @@ export function VolunteersRoster({ shelterClubId, actor, canAbriho }) {
   const [statusFilter, setStatusFilter] = useState(null);
   const { data: volunteers = [], isLoading, isError, refetch } = useShelterVolunteers(shelterClubId, { status: statusFilter });
 
-  // D-DEBUG-RENDER-COUNTER (2026-07-30): contar renders para detectar loop infinito
-  const renderCountRef = useRef(0);
-  renderCountRef.current += 1;
-  if (renderCountRef.current > 3) {
-    // eslint-disable-next-line no-console
-    throw new Error(`[TEMP-DIAG-ROSTER] LOOP INFINITO NO ROSTER: ${renderCountRef.current} renders`);
-  }
   const updateMutation = useUpdateShelterVolunteer(shelterClubId, null); // sobrescrito por item
   const leaveMutation = useLeaveShelter(shelterClubId);
   const deleteMutation = useDeleteShelterVolunteer(shelterClubId);

@@ -85,3 +85,6 @@ export function VolunteersAdminTab({ shelterClubId, club, membership, currentUse
     </div>
   );
 }
+
+// Default export para React.lazy() (mantém named export acima para imports diretos/testes).
+export default VolunteersAdminTab;

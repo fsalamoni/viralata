@@ -152,3 +152,6 @@ export function PostAdoptionDashboard() {
     </div>
   );
 }
+
+// Default export para React.lazy() (mantém named export acima para imports diretos/testes).
+export default PostAdoptionDashboard;
