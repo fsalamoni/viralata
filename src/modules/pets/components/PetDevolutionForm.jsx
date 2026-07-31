@@ -20,6 +20,8 @@ import {
 import { useToast } from '@/components/ui/use-toast';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { useCreateDevolution } from '../hooks/usePetHistory';
+import { SchedulingFields } from './SchedulingFields';
+import { applyScheduling } from '@/modules/shelter/domain/operational/petOpsScheduling';
 import { format } from 'date-fns';
 
 const REASONS = [
@@ -53,6 +55,7 @@ export default function PetDevolutionForm({ open, onOpenChange, petId, isAdopter
   const { toast } = useToast();
   const [data, setData] = useState(INITIAL);
   const [errors, setErrors] = useState({});
+  const [scheduled, setScheduled] = useState(false);
 
   const createMut = useCreateDevolution(petId);
   const loading = createMut.isPending;
@@ -63,6 +66,7 @@ export default function PetDevolutionForm({ open, onOpenChange, petId, isAdopter
         ...INITIAL,
         returned_by_name: userProfile?.name || user?.displayName || '',
       });
+      setScheduled(false);
       setErrors({});
     }
   }, [open, user, userProfile]);
@@ -87,10 +91,10 @@ export default function PetDevolutionForm({ open, onOpenChange, petId, isAdopter
   async function handleSubmit(e) {
     e?.preventDefault();
     if (!validate()) return;
-    const payload = {
+    const payload = applyScheduling({
       ...data,
       returned_by_uid: user?.uid || null,
-    };
+    }, scheduled && !isAdopter, 'devolution_date', false);
     try {
       await createMut.mutateAsync({ data: payload });
       toast.success('Devolução registrada. Obrigado pelo retorno.');
@@ -195,6 +199,9 @@ export default function PetDevolutionForm({ open, onOpenChange, petId, isAdopter
               rows={2}
             />
           </div>
+          {!isAdopter && (
+            <SchedulingFields scheduled={scheduled} onScheduledChange={setScheduled} dateLabel="data da devolução" disabled={loading} />
+          )}
           <DialogFooter className="gap-2">
             <Button type="button" variant="ghost" onClick={() => onOpenChange(false)} disabled={loading}>
               Cancelar

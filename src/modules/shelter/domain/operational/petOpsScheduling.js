@@ -161,6 +161,35 @@ export function summarizeAlerts(records = [], now = new Date(), windowDays = PRO
 }
 
 /**
+ * Estado inicial do toggle "Agendar" a partir de um registro existente
+ * (edição): agendado se tem scheduled_for e não foi realizado.
+ * @param {object} record
+ * @returns {boolean}
+ */
+export function initScheduled(record) {
+  return Boolean(record?.scheduled_for && !record?.completed_at);
+}
+
+/**
+ * Aplica o agendamento a um payload de create/update, de forma uniforme:
+ *  - agendado → scheduled_for = payload[dateField] (data prevista),
+ *    completed_at = null.
+ *  - não agendado, em EDIÇÃO → scheduled_for = null (realiza / remove
+ *    agendamento). Em CRIAÇÃO → não mexe (registro passado normal).
+ * @param {object} payload
+ * @param {boolean} scheduled
+ * @param {string} dateField
+ * @param {boolean} [isEdit=false]
+ * @returns {object} novo payload
+ */
+export function applyScheduling(payload, scheduled, dateField, isEdit = false) {
+  if (scheduled) {
+    return { ...payload, scheduled_for: payload?.[dateField] || null, completed_at: null };
+  }
+  return isEdit ? { ...payload, scheduled_for: null } : { ...payload };
+}
+
+/**
  * Rótulo humano de proximidade para um agendamento (PT-BR).
  * Ex.: "hoje", "amanhã", "em 3 dias", "atrasada há 2 dias".
  * Retorna '' para registros já realizados.

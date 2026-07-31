@@ -7,6 +7,7 @@
  */
 import React from 'react';
 import { Activity, Pill, Plus, Clock, CheckCircle2, Pause } from 'lucide-react';
+import { RecordStatusBadge } from './RecordStatusBadge';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Badge } from '@/components/ui/badge';
@@ -65,6 +66,7 @@ function TreatmentCard({ treatment, canEdit, onEdit }) {
             <Badge className={cn('border text-[10.5px]', typeMeta.color)}>
               {typeMeta.label}
             </Badge>
+            <RecordStatusBadge record={treatment} className="text-[10.5px]" />
             <Badge className={cn('border text-[10.5px]', statusMeta.color)}>
               <StatusIcon className="mr-1 h-3 w-3" aria-hidden="true" />
               {statusMeta.label}

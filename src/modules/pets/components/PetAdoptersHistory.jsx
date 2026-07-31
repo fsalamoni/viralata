@@ -8,6 +8,7 @@
  */
 import React from 'react';
 import { Users, CheckCircle2, X, ArrowLeftRight, Heart, Calendar } from 'lucide-react';
+import { RecordStatusBadge } from './RecordStatusBadge';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Badge } from '@/components/ui/badge';
@@ -50,6 +51,7 @@ function AdopterCard({ adopter }) {
             <p className="text-sm font-semibold text-foreground">
               {adopter.adopter_name || 'Adotante'}
             </p>
+            <RecordStatusBadge record={adopter} className="text-[10.5px]" />
             <Badge className={cn('border text-[10.5px]', meta.color)}>
               {meta.label}
             </Badge>

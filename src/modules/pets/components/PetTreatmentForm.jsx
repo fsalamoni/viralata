@@ -20,6 +20,8 @@ import {
 import { useToast } from '@/components/ui/use-toast';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { useCreateTreatment, useUpdateTreatment } from '../hooks/usePetMedical';
+import { SchedulingFields } from './SchedulingFields';
+import { initScheduled, applyScheduling } from '@/modules/shelter/domain/operational/petOpsScheduling';
 import { format } from 'date-fns';
 
 const TYPES = [
@@ -55,6 +57,7 @@ export default function PetTreatmentForm({ open, onOpenChange, petId, treatment 
   const { toast } = useToast();
   const [data, setData] = useState(INITIAL);
   const [errors, setErrors] = useState({});
+  const [scheduled, setScheduled] = useState(false);
 
   const createMut = useCreateTreatment(petId);
   const updateMut = useUpdateTreatment(petId);
@@ -86,6 +89,7 @@ export default function PetTreatmentForm({ open, onOpenChange, petId, treatment 
       } else {
         setData(INITIAL);
       }
+      setScheduled(initScheduled(treatment));
       setErrors({});
     }
   }, [open, treatment]);
@@ -107,10 +111,10 @@ export default function PetTreatmentForm({ open, onOpenChange, petId, treatment 
   async function handleSubmit(e) {
     e?.preventDefault();
     if (!validate()) return;
-    const payload = {
+    const payload = applyScheduling({
       ...data,
       end_date: data.end_date || null,
-    };
+    }, scheduled, 'start_date', isEdit);
     try {
       if (isEdit) {
         await updateMut.mutateAsync({ treatmentId: treatment.id, updates: payload });
@@ -237,6 +241,7 @@ export default function PetTreatmentForm({ open, onOpenChange, petId, treatment 
               rows={2}
             />
           </div>
+          <SchedulingFields scheduled={scheduled} onScheduledChange={setScheduled} dateLabel="data de início" disabled={loading} />
           <DialogFooter className="gap-2">
             <Button type="button" variant="ghost" onClick={() => onOpenChange(false)} disabled={loading}>
               Cancelar

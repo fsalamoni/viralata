@@ -83,6 +83,8 @@ import PetVetVisitForm from '../components/PetVetVisitForm';
 import PetTreatmentForm from '../components/PetTreatmentForm';
 import PetCareLogForm from '../components/PetCareLogForm';
 import PetDevolutionForm from '../components/PetDevolutionForm';
+import PetHealthRecords from '../components/PetHealthRecords';
+import PetHealthRecordForm from '../components/PetHealthRecordForm';
 
 // TASK-V3-PET-OPS-LOG (2026-07-22): novos componentes de Operacional
 import PetNotes from '../components/PetNotes';
@@ -185,6 +187,8 @@ export default function PetDetailV3() {
   const [careOpen, setCareOpen] = useState(false);
   const [careType, setCareType] = useState('bath');
   const [devolutionOpen, setDevolutionOpen] = useState(false);
+  const [healthRecordOpen, setHealthRecordOpen] = useState(false);
+  const [editingHealthRecord, setEditingHealthRecord] = useState(null);
 
   // Hooks NOVOS
   const { data: medications = [] } = useMedications(petId, pet?.owner_id);
@@ -675,7 +679,16 @@ export default function PetDetailV3() {
                 <HeartHandshake className="h-5 w-5 text-purple-600" aria-hidden="true" />
                 Vacinas e vermifugação
               </h2>
-              <PublicHealthRecord petId={petId} />
+              {canManage ? (
+                <PetHealthRecords
+                  petId={petId}
+                  canManage={canManage}
+                  onAdd={() => { setEditingHealthRecord(null); setHealthRecordOpen(true); }}
+                  onEdit={(r) => { setEditingHealthRecord(r); setHealthRecordOpen(true); }}
+                />
+              ) : (
+                <PublicHealthRecord petId={petId} />
+              )}
             </section>
           </div>
         </TabsContent>
@@ -904,6 +917,12 @@ export default function PetDetailV3() {
             onOpenChange={setDevolutionOpen}
             petId={petId}
             isAdopter={isAdopter}
+          />
+          <PetHealthRecordForm
+            open={healthRecordOpen}
+            onOpenChange={(o) => { setHealthRecordOpen(o); if (!o) setEditingHealthRecord(null); }}
+            petId={petId}
+            record={editingHealthRecord}
           />
         </>
       )}
