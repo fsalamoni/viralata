@@ -105,14 +105,46 @@ match /volunteers/{volunteerUid} {
 2. **SE falhar**: investigar cache de rules do Firebase Console, outro match, ou path mismatch.
 3. **Independente**: bumpar SW para v84 quando próximo fix for deployado.
 
-## Commits
-- sw-v75: c1468a6b
-- sw-v76: 4d523efe
-- sw-v77: 257cb873
-- sw-v78: d9bd9ac7
-- sw-v79: 96a79810
-- sw-v80: ea415856
-- sw-v81: 6bfb1688
-- sw-v82: 312cc6ea
+## Commits (todos os 17 deploys do ciclo)
+
+- sw-v75: c1468a6b (toast + signature_text)
+- sw-v76: 4d523efe (debug logs)
+- sw-v77: 257cb873 (try/catch)
+- sw-v78: d9bd9ac7 (FULL CONTEXT)
+- sw-v79: 96a79810 (VolunteerProfileForm)
+- sw-v80: ea415856 (zod null + restore rules)
+- sw-v81: 6bfb1688 (sessionStorage)
+- sw-v82: 312cc6ea (profile.signature_text)
 - sw-v82.5: e9a412bb (TEMP-DIAG-VOL firestore.rules)
 - sw-v83: 23690bb1 (rule ULTRA + logs)
+- sw-v84: 04dbb5a4 (READ rule + getDoc try/catch)
+- sw-v85: 2213e9dc (idempotente)
+- sw-v86: cb41a53a (rules restauradas)
+- sw-v87: f28aed4d (queryKey primitivos)
+- sw-v88: 380d8625 (render counter threshold 50)
+- sw-v89: d27f8d9d (render counter threshold 3)
+- sw-v90: 57883f32 (aba volunteers desabilitada)
+- sw-v91: 09ddef7d (constante módulo SHOW_VOLUNTEERS_TAB)
+
+## Status atual (2026-07-31)
+
+### O que ESTÁ funcionando
+- ✅ VolunteerSignup fluxo principal (termo, perfil, abrigo)
+- ✅ Permission denied corrigido (signature_text + zod null + undefined)
+- ✅ Idempotência (race condition resolvida)
+- ✅ Toast API (React #31 corrigido)
+- ✅ Defense-in-depth (3 camadas: service + try/catch + rules)
+- ✅ Regras Firestore restauradas e estritas
+
+### O que está EM DEBUG (sw-v91)
+- ⚠️ React #306 na aba volunteers do painel admin
+  - Aba DESABILITADA temporariamente com `SHOW_VOLUNTEERS_TAB = false`
+  - User vê "Não foi possível carregar esta aba (volunteers)"
+  - Resto do painel funciona normal
+  - Bundle: `index-Bv_OCvQE.js`
+
+### Próximo passo
+- [ ] Investigar `VolunteersRoster.jsx` e `VolunteersAdminTab.jsx` linha por linha
+- [ ] Re-habilitar aba após corrigir
+- [ ] Bumpar SW (sw-v92+) com a correção final
+- [ ] Adicionar runtime test que detecta o loop ANTES do React #306

@@ -1,6 +1,6 @@
 # 15-RECENT-FIXES.md — Últimos 30 Dias
 
-> **Atualizado em 2026-07-24**
+> **Atualizado em 2026-07-31** (sw-v75..v91)
 >
 > Documento vivo. **SEMPRE** verificar antes de fixar um bug — pode já
 > ter sido corrigido.
@@ -260,3 +260,104 @@ Quando um bug for corrigido:
 - `docs/AI_GUIDE/28-VOLUNTEER-SIGNUP-BUGFIX.md` (NEW, 8KB)
 
 sw-v75
+
+---
+
+## §8. VolunteerSignup Debug Cycle (sw-v75..v91, 2026-07-27..31)
+
+**Severidade**: ALTA (quebrava fluxo crítico de inscrição de voluntários)
+**Duração total**: 5 dias, 17 deploys
+**RCA completo**: `28-VOLUNTEER-SIGNUP-BUGFIX.md`
+
+### §8.1. Linha do tempo
+
+| Deploy | Data | Issue | Fix | D-* |
+|--------|------|-------|-----|-----|
+| **sw-v75** | 2026-07-27 | React #31 + Permission denied no `volunteer_profile` | toast API (sonner) + signature_text no setDoc | D-TOAST-SONNER-API, D-VOLUNTEER-SIGNATURE-FIELD, D-FIRESTORE-CREATE-VALIDATION |
+| sw-v76 | 2026-07-27 | Permission denied persistia | debug logging | (debug) |
+| sw-v77 | 2026-07-27 | Idem | try/catch detalhado | (debug) |
+| sw-v78 | 2026-07-27 | Idem | FULL CONTEXT log | (debug) |
+| TEMP-DIAG | 2026-07-27 | Rule create estrita | TEMP-DIAG relaxado (isAppCheckVerified) | (diag) |
+| sw-v79 | 2026-07-28 | Permission denied no perfil | 6 toasts + radius_km/notes null | (subset de D-TOAST-SONNER-API) |
+| **sw-v80** | 2026-07-28 | zod null + undefined | conditional spread + remove logs + restore rules | D-FIRESTORE-NO-UNDEFINED, D-ZOD-NO-NULL-OPTIONAL, D-VOLUNTEER-SIGN-MIN-3 |
+| sw-v81 | 2026-07-28 | signature vazio no join | sessionStorage persistence | D-VOLUNTEER-SIGN-PERSIST |
+| **sw-v82** | 2026-07-28 | signature vazio ainda | profile.signature_text fonte canônica | D-VOLUNTEER-SIGNATURE-SOURCE |
+| sw-v82.5 | 2026-07-29 | Permission denied em `clubs/.../volunteers` create | TEMP-DIAG-VOL (remove isAppCheckVerified) | (diag) |
+| **sw-v83** | 2026-07-29 | Idem | rule ULTRA relaxada + logs TEMP-DIAG-VOL | (debug profundo) |
+| **sw-v84** | 2026-07-29 | "Voluntário já está na rostagem" (genérico) | READ rule relaxada + getDoc try/catch | D-DEBUG-FIRESTORE-RULES-LEVEL-2 |
+| **sw-v85** | 2026-07-29 | Idem (race condition) | join idempotente (doc já existe = success) | D-IDEMPOTENT-JOIN |
+| **sw-v86** | 2026-07-29 | Idem | RESTAURAR rules completas (defense in depth) | D-VOLUNTEER-JOIN-RULE |
+| sw-v87 | 2026-07-30 | React #306 aba volunteers painel | queryKey com primitivos | D-REACT-QUERY-KEY-PRIMITIVES |
+| sw-v88 | 2026-07-30 | React #306 persiste | render counter threshold 50 | D-DEBUG-RENDER-COUNTER |
+| sw-v89 | 2026-07-30 | React #306 persiste | render counter threshold 3 | (D-DEBUG-RENDER-COUNTER) |
+| sw-v90 | 2026-07-30 | React #306 persiste | aba volunteers desabilitada (`false &&`) | (debug) |
+| **sw-v91** | 2026-07-30 | `false &&` removido por tree-shaking | `SHOW_VOLUNTEERS_TAB` constante de módulo | D-MODULE-LEVEL-CONSTANTS-NO-TREE-SHAKE |
+
+### §8.2. Lições aprendidas
+
+#### 1. **Múltiplas camadas de bugs podem mascarar a causa raiz**
+O sw-v75 começou com 2 bugs visíveis (toast + permission). sw-v80..v86
+revelaram mais 4 bugs (undefined, zod null, signature vazio, race
+condition). **Sempre auditar TODAS as camadas** (UI + Hook + Service +
+Rules + Zod) em bugs críticos.
+
+#### 2. **Defense-in-depth não é opcional**
+sw-v85 (idempotência) + sw-v86 (rules estritas) + sw-v84 (try/catch
+no getDoc) juntos formam **defesa em 3 camadas**:
+- Service: idempotente (chamar 2x = mesmo resultado)
+- Rules: estritas (defense final)
+- getDoc: try/catch defensivo (não bloqueia fluxo em race condition)
+
+#### 3. **Stack trace é rei**
+React #306 só foi identificado como queryKey object em **sw-v87**,
+depois de análise exaustiva da stack trace (`onSubscribe → subscribe
+→ setData → batch → setTimeout → render`). **Sempre ler a stack
+completa, não só o erro genérico.**
+
+#### 4. **Esbuild tree-shaking é agressivo**
+sw-v90 (`false &&` removido) → sw-v91 (constante de módulo). Esbuild
+remove código dead-code incluindo `false &&`. **Constantes de debug
+DEVEM ser módulo-level.**
+
+#### 5. **Render counters podem não capturar loops síncronos**
+sw-v88 (threshold 50) não disparou antes do React #306. sw-v89
+(threshold 3) também não. Loops síncronos disparam #306 antes do
+threshold. **Para loops muito rápidos, usar DESABILITAÇÃO de componente
+(feature flag local) como teste de isolamento.**
+
+### §8.3. Workflow recomendado para bugs críticos persistentes
+
+Quando um bug persiste por 3+ deploys sem solução:
+
+1. **Adicionar logs estruturados** no service (`[TEMP-DIAG-...]` com
+   payload completo + stack do erro)
+2. **Simplificar a rule gradualmente** (nível 1: remove isAppCheckVerified;
+   nível 2: remove isPlatformAdmin; nível 3: ULTRA relaxada)
+3. **Adicionar try/catch defensivo** em todos os getDoc/setDoc
+4. **Adicionar idempotência** se for mutation de create
+5. **Analisar stack trace completa** (não só mensagem genérico)
+6. **DESABILITAR o componente** (constante de módulo `SHOW_X = false`)
+   para isolar se é específico do componente
+7. **Se mesmo assim persiste**: bug é em **outro lugar** (provider, query
+   global, etc). Investigar fora do componente.
+
+### §8.4. Commits principais
+
+- `c1468a6b` — sw-v75 (toast + signature_text)
+- `ea415856` — sw-v80 (zod null + restore rules)
+- `6bfb1688` — sw-v81 (sessionStorage)
+- `312cc6ea` — sw-v82 (profile.signature_text)
+- `e9a412bb` — sw-v82.5 (TEMP-DIAG-VOL firestore.rules)
+- `2213e9dc` — sw-v85 (idempotente)
+- `cb41a53a` — sw-v86 (rules restauradas)
+- `f28aed4d` — sw-v87 (queryKey primitivos)
+- `09ddef7d` — sw-v91 (constante módulo)
+
+### §8.5. Métricas
+
+- **17 deploys** em 5 dias
+- **9 decisões D-*** criadas
+- **10 hooks** corrigidos (D-REACT-QUERY-KEY-PRIMITIVES)
+- **3 regras Firestore** ajustadas (read/create/volunteers)
+- **80+ tests** passando (volunteerProfileService + hooks)
+- **Bundle final**: `index-Bv_OCvQE.js` + `OrganizationAdminPanel-*.js`

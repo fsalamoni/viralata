@@ -1,6 +1,6 @@
 # 13-DECISIONS.md — Decisões Arquiteturais Importantes (D-*)
 
-> **Atualizado em 2026-07-24**
+> **Atualizado em 2026-07-31** (sw-v75..v91)
 >
 > Decisões D-* são **invioláveis** a menos que explicitamente revertidas
 > por uma nova decisão. Antes de mudar algo, verifique se há D-*
@@ -286,6 +286,268 @@ por feature.
 ### D-V2-SKIP-DEPRECATED (2026-05)
 
 V2 foi pulado. Apenas V1 e V3. Decidido para economizar tempo.
+
+## §10. Decisões de VolunteerSignup (sw-v75..v91, 2026-07-27..31)
+
+> 17 deploys em cadeia para corrigir o fluxo de inscrição de voluntários.
+> RCA completo em `28-VOLUNTEER-SIGNUP-BUGFIX.md`.
+
+### D-VOLUNTEER-SIGNATURE-FIELD (sw-v75, 2026-07-27)
+
+**Contexto**: `setDoc({merge: true})` no primeiro write é interpretado
+como `create` no Firestore. A rule `volunteer_profile` exigia
+`signature_text.size() >= 2` no `create`, mas `acceptVolunteerTerms`
+não estava enviando `signature_text`.
+
+**Decisão**: `acceptVolunteerTerms` DEVE incluir `signature_text` (e
+`signature_hash_input` para audit trail) no setDoc do primeiro write.
+Firestore trata primeiro write como `create` se doc não existe.
+
+**Aplicação**: Qualquer service que faz `setDoc({merge: true})` em
+`volunteer_profile/main` deve incluir os campos obrigatórios do
+create rule (signature_text >= 2 chars + ISO date).
+
+### D-FIRESTORE-CREATE-VALIDATION (sw-v75, 2026-07-27)
+
+**Contexto**: `setDoc({merge: true})` em doc que pode não existir é
+tratado como `create` no Firestore. Rules de `create` aplicam, não só
+`update`.
+
+**Decisão**: SEMPRE incluir TODOS os campos requeridos pela rule de
+`create` (não só os de `update`) em setDoc merge. O Firestore trata
+primeiro write como `create` se doc não existe.
+
+**Aplicação**: vale para qualquer doc que pode ser criado com merge=true.
+Ver `D-FIRESTORE-NO-UNDEFINED` para regra complementar.
+
+### D-FIRESTORE-NO-UNDEFINED (sw-v80, 2026-07-28)
+
+**Contexto**: Firestore rejeita `undefined` em setDoc com erro
+"setDoc called with invalid data. Unsupported field value: undefined".
+
+**Decisão**: NUNCA enviar `undefined` em setDoc. Usar:
+- `null` (se aceito pelo schema)
+- OU omitir via conditional spread: `...(value !== undefined ? { field: value } : {})`
+
+**Aplicação**: zod `.optional()` aceita `string|undefined` mas NÃO
+`null`. Omitir do objeto se vazio (ver `D-ZOD-NO-NULL-OPTIONAL`).
+
+### D-ZOD-NO-NULL-OPTIONAL (sw-v80, 2026-07-28)
+
+**Contexto**: zod `z.string().optional()` aceita `string|undefined` mas
+NÃO `null`. Enviar `null` em campo optional falha validation.
+
+**Decisão**: NUNCA enviar `null` em campo `z.optional()`. Usar conditional
+spread para OMITIR o campo do objeto se vazio:
+
+```js
+// ❌ Errado
+await setDoc(ref, { notes: null });
+
+// ✅ Correto
+await setDoc(ref, {
+  ...(notes.trim() ? { notes: notes.trim() } : {}),
+});
+```
+
+### D-VOLUNTEER-SIGN-MIN-3 (sw-v80, 2026-07-28)
+
+**Contexto**: schema zod `signatureTextSchema` tem `.min(3)`, mas o
+`handleAcceptTerms` validava `>= 2`. Inconsistência que causou
+"too_small" no join.
+
+**Decisão**: `handleAcceptTerms` deve validar `>= 3 chars` (consistente
+com `signatureTextSchema`). Single source of truth = schema.
+
+### D-VOLUNTEER-SIGN-PERSIST (sw-v81, 2026-07-28)
+
+**Contexto**: `useEffect` em VolunteerSignup auto-avança step quando
+`hasAcceptedTerms=true` (termo já aceito em sessão anterior via
+Firestore). User NUNCA digita no passo 1, então state local
+`signatureText` + sessionStorage vazios. join falhava com
+"too_small" no `signature_text`.
+
+**Decisão**: `signatureText` deve ser persistido em `sessionStorage`:
+- chave: `viralata:volunteer-signature-text`
+- Inicialização lazy do state (getter function)
+- Setter persiste em sessionStorage
+- Cleanup no sucesso (após submit)
+
+**Aplicação**: campos críticos de fluxo multi-step DEVEM ser persistidos
+em sessionStorage para sobreviver a reloads e auto-advance.
+
+### D-VOLUNTEER-SIGNATURE-SOURCE (sw-v82, 2026-07-28)
+
+**Contexto**: state local `signatureText` ficava vazio por causa do
+auto-advance (ver D-VOLUNTEER-SIGN-PERSIST). Solução de sessionStorage
+não funcionou porque o user não digitava.
+
+**Decisão**: usar `profile.signature_text` do `volunteer_profile/main`
+(Firestore) como FONTE CANÔNICA no `handleSubmitJoin`. Fallback para
+`signatureText` state se profile não tem.
+
+```js
+const joinSignature = (profile?.signature_text && profile.signature_text.length >= 3)
+  ? profile.signature_text
+  : signatureText.trim();
+```
+
+**Aplicação**: campos críticos em fluxos multi-step com auto-advance
+DEVEM ter Firestore como source of truth, não state local.
+
+### D-IDEMPOTENT-JOIN (sw-v85, 2026-07-28)
+
+**Contexto**: race condition entre sw-v82/83/84. setDoc foi feito com
+sucesso mas UI não navegou (por causa de outro erro). Em tentativa
+posterior, `existing.exists()` retornava `true` e throw genérico
+"Voluntário já está na rostagem deste abrigo" aparecia para o user.
+
+**Decisão**: `joinShelterAsVolunteer` é IDEMPOTENTE. Chamar 2x = mesmo
+resultado (success + return do doc existente). Se `existing.exists() =
+true`, retornar `{ id, ...doc, _alreadyExisted: true }` em vez de throw.
+
+```js
+if (existing) {
+  return { id: existing.id, ...existing.data(), _alreadyExisted: true };
+}
+```
+
+**Aplicação**: TODA mutation de create de subcoleções que pode ser
+re-tentada pelo user (UI desabilitada, click repetido, network retry)
+DEVE ser idempotente. UI trata `_alreadyExisted` com toast específico
+"Você já está na rostagem deste abrigo!".
+
+### D-REACT-QUERY-KEY-PRIMITIVES (sw-v87, 2026-07-30)
+
+**Contexto**: `useShelterVolunteers(shelterClubId, { status: statusFilter })`
+tinha `queryKey: ['shelter-volunteers', shelterClubId, options]`. `options`
+é OBJETO criado a cada render (mesmo com conteúdo igual). React Query
+compara queryKey por **referência** de objeto. Vê que mudou → refetch →
+re-render → loop infinito (React error #306).
+
+**Stack trace reveladora**:
+```
+onSubscribe @ React Query  ← chamada a cada render
+subscribe @ React Query     ← React Query se inscreve no Observable
+setData @ React Query       ← Firestore emite → setState do data
+batch @ React Query         ← batch de updates
+setTimeout                  ← React render
+...loop infinito
+```
+
+**Decisão**: SEMPRE extrair campos individuais de `options` e usar
+PRIMITIVOS no `queryKey` (?? null para nullables):
+
+```js
+// ❌ Errado (objeto = loop infinito)
+queryKey: ['shelter-volunteers', shelterClubId, options]
+
+// ✅ Correto (primitivos)
+const { status, maxResults } = options;
+queryKey: ['shelter-volunteers', shelterClubId, status ?? null, maxResults ?? 200]
+```
+
+**Aplicação**: TODOS os hooks useQuery com `options` object como segundo
+argumento. Aplicado em sw-v87 em 10 hooks:
+- useShelterVolunteers, useUserVolunteerRosters
+- useVolunteerAssignments, useParticipations
+- useApplications, useExhibitions, useFosters
+- useMedicalRecords, useMedications, usePetPhotos
+
+### D-DEBUG-FIRESTORE-RULES-LEVEL-2 (sw-v82..v84, 2026-07-29)
+
+**Contexto**: quando permission-denied persiste mesmo com rule de
+CREATE relaxada, a falha pode ser no **READ** (getDoc) e não no
+WRITE (setDoc). A stack mostra `getDoc` falhando com 403 ANTES do
+setDoc, throw genérico "Voluntário já está na rostagem" aparece.
+
+**Decisão**: 
+1. **Service**: try/catch defensivo no getDoc do existing check. Se
+   403, assumir que doc não existe e tentar setDoc. O setDoc vai
+   falhar com ALREADY_EXISTS se já existir.
+2. **Traduzir erros**: se setDoc falhar com `permission-denied`,
+   throw mensagem amigável "Sem permissão para entrar na rostagem deste
+   abrigo. Faça login novamente e tente de novo."
+
+```js
+let existing = null;
+try {
+  const snap = await getDoc(ref);
+  existing = snap.exists() ? snap : null;
+} catch (readErr) {
+  if (readErr?.code === 'permission-denied') {
+    existing = null;  // assume doc não existe
+  } else {
+    throw readErr;
+  }
+}
+```
+
+**Aplicação**: services que fazem read-then-write em docs multi-tenant
+DEVEM tratar permission-denied no read como "doc não existe" (defense
+in depth + idempotência).
+
+### D-VOLUNTEER-JOIN-RULE (sw-v86, 2026-07-28)
+
+**Contexto**: depois de sw-v85 (idempotência), o service não
+retornava erro, mas a rule de `create` em `clubs/.../volunteers/uid`
+continuava estrita (com verificações de role que falhavam por race
+condition). Por isso o doc não era criado (idempotência nunca atingia).
+
+**Decisão**: como o service é idempotente, a rule de CREATE pode ser
+RESTAURADA com todas as verificações de role (platform_admin OR
+abrigo owner/admin OR canEditClubPets OR hasClubPermission OR
+próprio user). Race condition em get() interno é tratada pelo
+try/catch do getDoc (D-DEBUG-FIRESTORE-RULES-LEVEL-2).
+
+**Aplicação**: rules podem ser estritas quando o service tem
+defense-in-depth (idempotência + try/catch).
+
+## §11. Decisões de Debug React (sw-v88..v91, 2026-07-30)
+
+### D-DEBUG-RENDER-COUNTER (sw-v88, 2026-07-30)
+
+**Contexto**: React error #306 "Maximum update depth exceeded" em
+componente sem useEffect problemático aparente. Análise estática
+insuficiente.
+
+**Decisão**: adicionar render counter em componentes suspeitos. Se
+contagem > threshold (3, depois 10), throw `[TEMP-DIAG-...]` com
+mensagem útil em vez do #306 genérico.
+
+```js
+const renderCountRef = useRef(0);
+renderCountRef.current += 1;
+if (renderCountRef.current > 3) {
+  throw new Error(`[TEMP-DIAG-ROSTER] LOOP INFINITO NO ROSTER: ${renderCountRef.current} renders`);
+}
+```
+
+**Limitação**: React #306 dispara ANTES do threshold se renders são
+síncronos. Para loops MUITO rápidos, usar threshold menor (3) ou
+outra técnica.
+
+### D-MODULE-LEVEL-CONSTANTS-NO-TREE-SHAKE (sw-v91, 2026-07-30)
+
+**Contexto**: para desabilitar uma aba, usei `false && condition`.
+Esbuild removeu via tree-shaking (a expressão é sempre false).
+Resultado: a aba continuou renderizando.
+
+**Decisão**: usar **constante no escopo do módulo** (não dentro do
+componente) que esbuild **NÃO remove** (porque pode ser reatribuída
+em runtime):
+
+```js
+// ❌ Errado (tree-shaking remove)
+{false && activeGroupKey === 'people' && ...}
+
+// ✅ Correto (preservado no bundle minified como 'const tr=!1')
+const SHOW_VOLUNTEERS_TAB = false;
+{SHOW_VOLUNTEERS_TAB && activeGroupKey === 'people' && ...}
+```
+
+**Aplicação**: feature flags locais (toggles de debug) DEVEM ser
+constantes de módulo, não expressões inline.
 
 ---
 

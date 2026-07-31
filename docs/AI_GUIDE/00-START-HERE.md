@@ -10,6 +10,8 @@
 > 4. **COMO** codificar, testar, commitar, mergear e deployar
 > 5. **O QUE** evitar (armadilhas comuns)
 > 6. **COMO** manter a documentação sempre atualizada
+>
+> **Última atualização**: 2026-07-31 (ciclo sw-v75..v91 VolunteerSignup)
 
 ---
 

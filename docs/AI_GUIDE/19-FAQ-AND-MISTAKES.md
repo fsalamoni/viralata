@@ -1,6 +1,6 @@
 # 19-FAQ-AND-MISTAKES.md — FAQ + Erros Comuns
 
-> **Atualizado em 2026-07-24**
+> **Atualizado em 2026-07-31** (sw-v75..v91)
 >
 > Respostas para perguntas frequentes + armadilhas comuns.
 
@@ -528,6 +528,172 @@ git push
 
 **Lição**: testes com prop renomeada quebram.
 **Prevenção**: atualizar tests ao renomear prop.
+
+### §3.6. sw-v75..v91 (VolunteerSignup — 17 deploys, 9 bugs)
+
+**Lição 1 — Toast API drift (D-TOAST-SONNER-API)**: ao migrar de shadcn
+para sonner, é fácil esquecer de atualizar os calls. Static analysis
+não pega. **Prevenção**: lint rule para detectar `toast({` em CI.
+Backlog: 123 outras ocorrências em outros arquivos.
+
+**Lição 2 — setDoc merge não é update puro (D-FIRESTORE-CREATE-VALIDATION)**:
+`setDoc({merge: true})` no primeiro write é `create`. Rules de create
+aplicam. **Prevenção**: SEMPRE incluir TODOS os campos obrigatórios
+do create rule.
+
+**Lição 3 — Firestore rejeita undefined (D-FIRESTORE-NO-UNDEFINED)**:
+enviar `undefined` em setDoc quebra com erro genérico.
+**Prevenção**: omitir via conditional spread `...(value ? { field: value } : {})`.
+
+**Lição 4 — zod .optional() não aceita null (D-ZOD-NO-NULL-OPTIONAL)**:
+`z.string().optional()` aceita `string|undefined` mas NÃO `null`.
+**Prevenção**: OMITIR campo do objeto (conditional spread) ao invés de
+enviar `null`.
+
+**Lição 5 — State local vs Firestore (D-VOLUNTEER-SIGNATURE-SOURCE)**:
+useEffect auto-avança step pode deixar state local vazio. **Prevenção**:
+Firestore é a fonte canônica para campos críticos em fluxos
+multi-step.
+
+**Lição 6 — Idempotência em mutations de create (D-IDEMPOTENT-JOIN)**:
+UI desabilitada, click repetido, network retry — mutation pode ser
+chamada 2x. **Prevenção**: SEMPRE tratar "doc já existe" como sucesso
+idempotente, não erro.
+
+**Lição 7 — React Query queryKey com objeto (D-REACT-QUERY-KEY-PRIMITIVES)**:
+React Query compara queryKey por REFERÊNCIA. Objeto criado a cada
+render = refetch = re-render = **LOOP INFINITO (React #306)**.
+**Prevenção**: SEMPRE extrair primitivos e usar `?? null` para nullables.
+
+**Lição 8 — Esbuild tree-shaking é agressivo (D-MODULE-LEVEL-CONSTANTS-NO-TREE-SHAKE)**:
+`false && condition` é removido pelo esbuild. **Prevenção**:
+constantes de debug DEVEM ser módulo-level (`const SHOW_X = false`).
+
+**Lição 9 — Stack trace é rei**: React #306 só foi identificado como
+queryKey object em **sw-v87**, depois de análise exaustiva da stack
+trace. **Sempre ler a stack completa, não só o erro genérico.**
+
+**Lição 10 — Workflow para bugs críticos persistentes**: quando bug
+persiste por 3+ deploys sem solução:
+1. Logs estruturados no service (`[TEMP-DIAG-...]`)
+2. Simplificar a rule gradualmente
+3. try/catch defensivo em getDoc/setDoc
+4. Idempotência em mutations de create
+5. Analisar stack trace completa
+6. Desabilitar componente (constante de módulo)
+7. Se persiste: bug é em OUTRO lugar
+
+---
+
+## §3B. Anti-Padrões de VolunteerSignup (Novos 2026-07-31)
+
+#### ❌ `toast({title, description, variant})` (shadcn API)
+
+```jsx
+// ❌ Errado (shadcn API, quebra com React #31)
+toast({ title: 'Erro', description: 'msg', variant: 'destructive' });
+
+// ✅ Correto (sonner API)
+toast.error('Erro', { description: 'msg' });
+```
+
+#### ❌ setDoc com merge + campos faltando (create)
+
+```js
+// ❌ Errado (signature_text faltando no primeiro write = create)
+await setDoc(ref, {
+  terms_accepted_at: now,
+  terms_version: v,
+  document_hash,
+}, { merge: true });
+
+// ✅ Correto
+await setDoc(ref, {
+  terms_accepted_at: now,
+  terms_version: v,
+  document_hash,
+  signature_text: parsed.signature_text,
+  signature_hash_input: `${s}|${v}|${now}`,
+}, { merge: true });
+```
+
+#### ❌ `setDoc` com `undefined` ou `null`
+
+```js
+// ❌ Errado (Firestore rejeita)
+await setDoc(ref, { radius_km: undefined, notes: null });
+
+// ✅ Correto (omitir campos vazios)
+await setDoc(ref, {
+  ...(radiusKm !== '' ? { radius_km: Number(radiusKm) } : {}),
+  ...(notes.trim() ? { notes: notes.trim() } : {}),
+});
+```
+
+#### ❌ React Query com objeto no queryKey (LOOP INFINITO)
+
+```js
+// ❌ Errado (LOOP INFINITO = React #306)
+const { data } = useQuery({
+  queryKey: ['volunteers', clubId, options],  // options é objeto
+  queryFn: () => listVolunteers(clubId, options),
+});
+
+// ✅ Correto (primitivos no queryKey)
+const { status, maxResults } = options;
+const { data } = useQuery({
+  queryKey: ['volunteers', clubId, status ?? null, maxResults ?? 200],
+  queryFn: () => listVolunteers(clubId, options),
+});
+```
+
+#### ❌ Mutation de create SEM idempotência
+
+```js
+// ❌ Errado (race condition causa "já está na rostagem")
+if (existing) {
+  throw new Error('Voluntário já está na rostagem deste abrigo.');
+}
+
+// ✅ Correto (idempotente)
+if (existing) {
+  return { id: existing.id, ...existing.data(), _alreadyExisted: true };
+}
+```
+
+#### ❌ getDoc SEM try/catch em multi-tenant
+
+```js
+// ❌ Errado (403 em race condition vira throw genérico)
+const existing = await getDoc(ref);
+if (existing.exists()) {
+  throw new Error('Já existe');
+}
+
+// ✅ Correto (defesa em 2 camadas)
+let existing = null;
+try {
+  const existingSnap = await getDoc(ref);
+  existing = existingSnap.exists() ? existingSnap : null;
+} catch (readErr) {
+  if (readErr?.code === 'permission-denied') {
+    existing = null;  // assume doc não existe
+  } else {
+    throw readErr;
+  }
+}
+```
+
+#### ❌ `false &&` para desabilitar (tree-shaking)
+
+```jsx
+// ❌ Errado (esbuild remove via tree-shaking)
+{false && activeGroupKey === 'people' && ...}
+
+// ✅ Correto (constante módulo-level preservada)
+const SHOW_VOLUNTEERS_TAB = false;
+{SHOW_VOLUNTEERS_TAB && activeGroupKey === 'people' && ...}
+```
 
 ---
 

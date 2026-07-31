@@ -1,7 +1,7 @@
 # 11-CORE-DIRECTIVES.md — Regras Invioláveis, Princípios, Engineering HOT
 
 > **⚠️ LEITURA OBRIGATÓRIA antes de QUALQUER mudança no código**
-> Atualizado em 2026-07-24 (revisão completa pós-varredura)
+> Atualizado em 2026-07-31 (sw-v75..v91: VolunteerSignup debug cycle)
 
 ---
 
@@ -584,4 +584,213 @@ grep NEW_NAME src/
 
 ---
 
-**Próxima leitura**: `12-CODING-STANDARDS.md` (padrões de código detalhados).
+## §13. Regras de Firestore (VolunteerSignup) — D-FIRESTORE-*
+
+### §13.1. SEMPRE incluir campos obrigatórios do create rule
+
+> **D-FIRESTORE-CREATE-VALIDATION (sw-v75)**: `setDoc({merge: true})` em
+> doc que pode não existir é tratado como `create` no Firestore. Rules
+> de `create` aplicam, não só `update`. SEMPRE incluir TODOS os campos
+> requeridos pela rule de `create` (não só os de `update`).
+
+```js
+// ❌ Errado (signature_text faltando no primeiro write = create)
+await setDoc(ref, {
+  terms_accepted_at: now,
+  terms_version: v,
+  document_hash,
+  updated_at: serverTimestamp(),
+}, { merge: true });
+
+// ✅ Correto
+await setDoc(ref, {
+  terms_accepted_at: now,
+  terms_version: v,
+  document_hash,
+  signature_text: parsed.signature_text,  // ★ obrigatório pela rule create
+  signature_hash_input: `${s}|${v}|${now}`,
+  updated_at: serverTimestamp(),
+}, { merge: true });
+```
+
+### §13.2. NUNCA enviar `undefined` em setDoc
+
+> **D-FIRESTORE-NO-UNDEFINED (sw-v80)**: Firestore rejeita `undefined`
+> com erro "setDoc called with invalid data. Unsupported field value:
+> undefined". Usar `null` ou omitir via conditional spread.
+
+```js
+// ❌ Errado
+await setDoc(ref, { radius_km: undefined, notes: undefined });
+
+// ✅ Correto (omitir)
+await setDoc(ref, {
+  ...(radiusKm !== '' ? { radius_km: Number(radiusKm) } : {}),
+  ...(notes.trim() ? { notes: notes.trim() } : {}),
+});
+```
+
+### §13.3. zod `.optional()` aceita undefined mas NÃO null
+
+> **D-ZOD-NO-NULL-OPTIONAL (sw-v80)**: `z.string().optional()` aceita
+> `string|undefined` mas NÃO `null`. Enviar `null` em campo optional
+> falha validation. Usar conditional spread para OMITIR o campo.
+
+```js
+// ❌ Errado
+await setDoc(ref, { notes: null });  // zod rejeita
+
+// ✅ Correto
+await setDoc(ref, {
+  ...(notes.trim() ? { notes: notes.trim() } : {}),
+});
+```
+
+### §13.4. SEMPRE try/catch defensivo em getDoc de multi-tenant
+
+> **D-DEBUG-FIRESTORE-RULES-LEVEL-2 (sw-v84)**: getDoc pode falhar com
+> 403 se rule de READ exigir isPlatformAdmin (com `get()` interno
+> falhando em race condition). Tratar permission-denied no read como
+> "doc não existe" (defense in depth + idempotência).
+
+```js
+let existing = null;
+try {
+  const existingSnap = await getDoc(ref);
+  existing = existingSnap.exists() ? existingSnap : null;
+} catch (readErr) {
+  if (readErr?.code === 'permission-denied') {
+    console.warn('getDoc failed, assuming doc does not exist');
+    existing = null;
+  } else {
+    throw readErr;
+  }
+}
+```
+
+---
+
+## §14. Regras de Idempotência (D-IDEMPOTENT-*)
+
+### §14.1. MUTATIONS DE CREATE DEVEM SER IDEMPOTENTES
+
+> **D-IDEMPOTENT-JOIN (sw-v85)**: UI desabilitada, click repetido,
+> network retry — mutation pode ser chamada 2x. SEMPRE tratar
+> "doc já existe" como SUCESSO idempotente, não erro.
+
+```js
+// ❌ Errado (throw quando doc já existe)
+if (existing) {
+  throw new Error('Voluntário já está na rostagem deste abrigo.');
+}
+
+// ✅ Correto (idempotente)
+if (existing) {
+  return { id: existing.id, ...existing.data(), _alreadyExisted: true };
+}
+```
+
+**UI trata `_alreadyExisted`**:
+```js
+if (joinResult?._alreadyExisted) {
+  toast.success('Você já está na rostagem deste abrigo!', { ... });
+} else {
+  toast.success('Inscrição confirmada!', { ... });
+}
+```
+
+**Aplicação**: TODA mutation de create de subcoleções que pode ser
+re-tentada pelo user.
+
+---
+
+## §15. Regras de React Query (D-REACT-QUERY-*)
+
+### §15.1. NUNCA usar objeto no queryKey
+
+> **D-REACT-QUERY-KEY-PRIMITIVES (sw-v87)**: React Query compara
+> queryKey por **REFERÊNCIA** de objeto. Objeto criado a cada render
+> (mesmo com conteúdo igual) faz queryKey mudar de ref → refetch →
+> re-render → **LOOP INFINITO (React #306)**.
+
+```js
+// ❌ Errado (LOOP INFINITO)
+const { data } = useQuery({
+  queryKey: ['volunteers', clubId, options],  // options é objeto
+  queryFn: () => listVolunteers(clubId, options),
+});
+
+// ✅ Correto (primitivos no queryKey)
+const { status, maxResults } = options;
+const { data } = useQuery({
+  queryKey: ['volunteers', clubId, status ?? null, maxResults ?? 200],
+  queryFn: () => listVolunteers(clubId, options),
+});
+```
+
+**Aplicado em 10 hooks** (sw-v87):
+- useShelterVolunteers, useUserVolunteerRosters
+- useVolunteerAssignments, useParticipations
+- useApplications, useExhibitions, useFosters
+- useMedicalRecords, useMedications, usePetPhotos
+
+**Verificação preventiva**:
+```bash
+grep -rn "queryKey:.*\boptions\b" src/ --include="*.jsx" --include="*.js"
+# Se aparecer: REFATORAR para primitivos
+```
+
+---
+
+## §16. Regras de Toast (D-TOAST-*)
+
+### §16.1. SEMPRE usar sonner API (NUNCA shadcn)
+
+> **D-TOAST-SONNER-API (sw-v75)**: O `useToast()` retorna
+> `sonnerToast` direto. A API shadcn (`{title, description, variant}`)
+> é INCOMPATÍVEL com sonner. Usar API errada causa **React error #31**
+> "object with keys {title, description, variant}".
+
+```jsx
+// ❌ Errado (shadcn API)
+toast({ title: 'Erro', description: 'msg', variant: 'destructive' });
+toast({ title: '✓ Sucesso.' });
+
+// ✅ Correto (sonner API)
+toast.error('Erro', { description: 'msg' });
+toast.success('Sucesso');
+```
+
+**Helpers disponíveis**:
+- `toast.success(msg)` / `toast.error(msg)` / `toast.warning(msg)` / `toast.info(msg)`
+- OU `toast(msg, { description: '...' })` para opções customizadas
+
+**Detecção automática**:
+```bash
+grep -rn "toast({" src/ --include="*.jsx" --include="*.js" | grep -v "use-toast" | grep -v ".test."
+```
+
+**Backlog conhecido**: 123 outras ocorrências de `toast({title,description,variant})` em outros arquivos (chat, communities, organizations, shelter components). Refatorar em lote quando possível.
+
+---
+
+## §17. Regras de Build (D-MODULE-LEVEL-*)
+
+### §17.1. Constantes de debug DEVEM ser módulo-level
+
+> **D-MODULE-LEVEL-CONSTANTS-NO-TREE-SHAKE (sw-v91)**: esbuild remove
+> expressões dead-code como `false && condition`. Constantes de debug
+> DEVEM ser no escopo do módulo, não inline.
+
+```js
+// ❌ Errado (esbuild remove via tree-shaking)
+{false && activeGroupKey === 'people' && ...}
+
+// ✅ Correto (preservado no bundle minified como 'const tr=!1')
+const SHOW_VOLUNTEERS_TAB = false;
+{SHOW_VOLUNTEERS_TAB && activeGroupKey === 'people' && ...}
+```
+
+---
+
+**Próxima leitura**: `12-CODING-STANDARDS.md` (padrões de código detalhados), `13-DECISIONS.md` §10-11 (D-VOLUNTEER-*, D-DEBUG-*).

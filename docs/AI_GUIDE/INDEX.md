@@ -103,17 +103,18 @@ docs/AI_GUIDE/
 
 - **Mavis** (AI agent, root session)
 - **fsalamoni** (human maintainer)
-- Última atualização: 2026-07-24
+- Última atualização: 2026-07-31 (sw-v75..v91 VolunteerSignup debug cycle)
 
 ## Estatísticas
 
-- **Total docs**: 25 (22 + 3 meta)
+- **Total docs**: 28 (25 + 3 meta) — 13-DECISIONS.md expandido com §10-11, 15-RECENT-FIXES.md com §8, 28-VOLUNTEER-SIGNUP-BUGFIX.md completo
 - **Total módulos**: 15 docs por feature
 - **Total diagramas**: 10 Mermaid
-- **Total linhas**: ~4500+
+- **Total linhas**: ~5800+ (cresceu 30% com ciclo sw-v75..v91)
 - **Cobre**: 100% do projeto (arquitetura, código, testes, deploy)
 - **Validações automatizadas**: 4 scripts (audit-docs combina 3)
-- **Tests passing**: ~1730+
+- **Tests passing**: ~1730+ + 80 novos (volunteerProfileService + hooks)
+- **Decisões D-***: 30+ (13-DECISIONS.md §1-11)
 
 ## Scripts Úteis
 

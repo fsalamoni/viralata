@@ -1,6 +1,6 @@
 # 14-TROUBLESHOOTING.md — Problemas Comuns e Fixes
 
-> **Atualizado em 2026-07-24**
+> **Atualizado em 2026-07-31** (sw-v75..v91)
 
 ## §1. PWA
 
@@ -203,6 +203,104 @@ import { getDocFromServer } from 'firebase/firestore';
 // Usar getDocFromServer em vez de getDoc para bypass cache
 ```
 
+### §4.4. "Permission denied persiste mesmo com rule relaxada"
+
+**Sintoma**: `Missing or insufficient permissions` mesmo após
+`firestore.rules` ter sido deployada com rule simples.
+
+**Causa (sw-v82..v84)**: a falha pode ser no **READ** (getDoc) e não
+no **WRITE** (setDoc). A stack trace mostra `getDoc` falhando com
+403 ANTES do setDoc, throw genérico "Voluntário já está na rostagem"
+aparece (D-DEBUG-FIRESTORE-RULES-LEVEL-2).
+
+**Diagnóstico (workflow em 4 níveis)**:
+1. **Nível 1**: Simplificar a rule de CREATE
+   ```js
+   // De
+   allow create: if isAuth() && isAppCheckVerified() && (isPlatformAdmin() || ...);
+   // Para
+   allow create: if isAuth() && isOwner(userId);
+   ```
+
+2. **Nível 2**: Se persiste, simplificar READ também
+   ```js
+   // De
+   allow read: if isAuth() && (isPlatformAdmin() || isClubOwnerOrAdmin(...) || ...);
+   // Para
+   allow read: if isAuth();
+   ```
+
+3. **Nível 3**: Se persiste, verificar se getDoc ANTES do setDoc é o
+   problema. Adicionar try/catch defensivo:
+   ```js
+   let existing = null;
+   try {
+     const existingSnap = await getDoc(ref);
+     existing = existingSnap.exists() ? existingSnap : null;
+   } catch (readErr) {
+     if (readErr?.code === 'permission-denied') {
+       existing = null;  // assume doc não existe
+     } else {
+       throw readErr;
+     }
+   }
+   ```
+
+4. **Nível 4**: Se persiste, verificar se é race condition (doc foi
+   criado em tentativa anterior). Tratar como IDEMPOTENTE:
+   ```js
+   if (existing) {
+     return { id: existing.id, ...existing.data(), _alreadyExisted: true };
+   }
+   ```
+
+**Fix Final (defense-in-depth)**:
+- Service: idempotente + try/catch defensivo
+- Rules: estritas (defense final)
+- 3 camadas juntas: usuário nunca vê erro genérico
+
+### §4.5. "setDoc called with invalid data. Unsupported field value: undefined"
+
+**Sintoma (sw-v80)**: erro do Firestore ao enviar `undefined` em campo
+opcional.
+
+**Causa**: Firestore rejeita `undefined` em setDoc.
+
+**Fix**: omitir campos vazios via conditional spread
+(D-FIRESTORE-NO-UNDEFINED):
+```js
+// ❌ Errado
+await setDoc(ref, { radius_km: undefined, notes: undefined });
+
+// ✅ Correto
+await setDoc(ref, {
+  ...(radiusKm !== '' ? { radius_km: Number(radiusKm) } : {}),
+  ...(notes.trim() ? { notes: notes.trim() } : {}),
+});
+```
+
+### §4.6. "First write treated as create, missing signature_text"
+
+**Sintoma (sw-v75)**: `Permission denied` no primeiro write de
+`volunteer_profile/main` (mesmo com rule create simples).
+
+**Causa**: `setDoc({merge: true})` no primeiro write é interpretado
+como `create`. Rules de `create` aplicam (incluindo
+`signature_text.size() >= 2`).
+
+**Fix** (D-FIRESTORE-CREATE-VALIDATION + D-VOLUNTEER-SIGNATURE-FIELD):
+SEMPRE incluir TODOS os campos obrigatórios da rule de `create`:
+```js
+await setDoc(ref, {
+  terms_accepted_at: now,
+  terms_version: parsed.terms_version,
+  document_hash,
+  signature_text: parsed.signature_text,  // ★ OBRIGATÓRIO
+  signature_hash_input: `${s}|${v}|${now}`,  // audit trail
+  updated_at: serverTimestamp(),
+}, { merge: true });
+```
+
 ## §5. Auth
 
 ### §5.1. "User não consegue logar"
@@ -342,4 +440,103 @@ node .harness/sync.cjs --check
 
 ---
 
-**Próxima leitura**: `15-RECENT-FIXES.md` (últimos 30 dias).
+## §11. React Query (sw-v87)
+
+### §11.1. "React error #306 (Maximum update depth exceeded) em componente com useQuery"
+
+**Sintoma**: React error #306 + TabErrorBoundary captura. Stack mostra:
+```
+onSubscribe @ vendor-Dcmich-o.js:67   ← React Query Observable
+subscribe @ vendor-Dcmich-o.js:67
+fetch @ vendor-Dcmich-o.js:67
+start @ vendor-Dcmich-o.js:67
+Promise.then
+m @ vendor-Dcmich-o.js:67
+onSuccess @ vendor-Dcmich-o.js:67
+setData @ vendor-Dcmich-o.js:67      ← setState do data
+batch @ vendor-Dcmich-o.js:67
+setTimeout
+... React render ...
+[volta para onSubscribe]              ← LOOP INFINITO
+```
+
+**Causa (sw-v87)**: `useQuery` com `queryKey` que tem OBJETO criado a
+cada render. React Query compara `queryKey` por **REFERÊNCIA** de
+objeto. Vê que mudou → refetch → re-render → loop.
+
+```js
+// ❌ Errado (LOOP INFINITO)
+const { data } = useQuery({
+  queryKey: ['volunteers', clubId, options],  // options é objeto
+  queryFn: () => listVolunteers(clubId, options),
+});
+```
+
+**Diagnóstico**:
+```bash
+# Procurar TODOS os hooks com queryKey usando objeto
+grep -rn "queryKey:.*\boptions\b" src/ --include="*.jsx" --include="*.js"
+```
+
+**Fix** (D-REACT-QUERY-KEY-PRIMITIVES): SEMPRE extrair primitivos
+de `options` e usar `?? null` para nullables:
+```js
+// ✅ Correto
+const { status, maxResults } = options;
+const { data } = useQuery({
+  queryKey: ['volunteers', clubId, status ?? null, maxResults ?? 200],
+  queryFn: () => listVolunteers(clubId, options),
+});
+```
+
+**Aplicação preventiva**: rodar o grep acima em TODOS os hooks do
+projeto. sw-v87 corrigiu 10 hooks:
+- useShelterVolunteers, useUserVolunteerRosters
+- useVolunteerAssignments, useParticipations
+- useApplications, useExhibitions, useFosters
+- useMedicalRecords, useMedications, usePetPhotos
+
+### §11.2. "Render counter threshold não captura o loop"
+
+**Sintoma**: React #306 dispara ANTES do `if (renderCount > 3) throw`.
+
+**Causa**: Loops síncronos disparam #306 mais rápido que o threshold.
+
+**Diagnóstico**: o loop é tão rápido que React captura antes do
+counter atualizar. Stack trace mostra `MessagePort` (scheduler async)
+mas o setState loop é síncrono.
+
+**Fix alternativo**: desabilitar o componente como teste de
+isolamento (D-MODULE-LEVEL-CONSTANTS-NO-TREE-SHAKE):
+```js
+// No escopo do MÓDULO (não inline, evita tree-shaking)
+const SHOW_VOLUNTEERS_TAB = false;
+
+// Na render
+{SHOW_VOLUNTEERS_TAB && activeGroupKey === 'people' && ...}
+```
+
+Se o erro PARAR com aba desabilitada: bug é específico do componente.
+Se PERSISTIR: bug é em outro lugar (provider, query global).
+
+### §11.3. "useState com initial object é instável a cada render"
+
+**Sintoma (sw-v82)**: `useState({ volunteerUid: null })` parece OK,
+mas na verdade o initializer é chamado a cada render (embora o
+state em si só mude quando setState é chamado). React Query
+queryKey dependente de filter (que vem do state) pode disparar
+re-fetch em loop.
+
+**Fix**: extrair primitivos do state, usar no queryKey:
+```js
+const [filter, setFilter] = useState({ volunteerUid: null });
+const { volunteerUid } = filter;  // extrair
+const { data } = useQuery({
+  queryKey: ['list', clubId, volunteerUid ?? null],  // primitivo
+  queryFn: () => list(clubId, filter),
+});
+```
+
+---
+
+**Próxima leitura**: `15-RECENT-FIXES.md` §8 (linha do tempo completa do ciclo VolunteerSignup).
