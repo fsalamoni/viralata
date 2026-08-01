@@ -58,7 +58,7 @@ function VetVisitCard({ visit, canEdit, onEdit }) {
                 {formatDate(visit.visit_date)}
               </Badge>
             )}
-            <RecordStatusBadge record={visit} className="text-[10.5px]" />
+            <RecordStatusBadge record={visit} dateField="visit_date" className="text-[10.5px]" />
           </div>
           {visit.diagnosis && (
             <p className="mt-1 text-xs text-foreground/80">

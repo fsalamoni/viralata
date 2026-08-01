@@ -70,6 +70,24 @@ describe('petOpsScheduling', () => {
     it('overdue: scheduled_for no passado, sem completed_at', () => {
       expect(recordStatus({ scheduled_for: iso(2026, 6, 10) }, NOW)).toBe(PET_OPS_RECORD_STATUS.OVERDUE);
     });
+    it('scheduled: sem scheduled_for, campo nativo no FUTURO (via dateField)', () => {
+      // Consulta marcada para o futuro só pelo campo nativo → agendada, não realizada.
+      expect(recordStatus({ visit_date: iso(2026, 8, 3) }, NOW, 'visit_date'))
+        .toBe(PET_OPS_RECORD_STATUS.SCHEDULED);
+    });
+    it('done: sem scheduled_for, campo nativo no passado (via dateField)', () => {
+      expect(recordStatus({ visit_date: iso(2026, 6, 1) }, NOW, 'visit_date'))
+        .toBe(PET_OPS_RECORD_STATUS.DONE);
+    });
+    it('done: sem scheduled_for, campo nativo hoje (via dateField)', () => {
+      expect(recordStatus({ visit_date: iso(2026, 6, 15) }, NOW, 'visit_date'))
+        .toBe(PET_OPS_RECORD_STATUS.DONE);
+    });
+    it('scheduled_for tem precedência sobre campo nativo futuro', () => {
+      // completed_at marca como realizado mesmo com nativo no futuro.
+      expect(recordStatus({ visit_date: iso(2026, 8, 3), completed_at: iso(2026, 6, 14) }, NOW, 'visit_date'))
+        .toBe(PET_OPS_RECORD_STATUS.DONE);
+    });
   });
 
   describe('isScheduled', () => {
@@ -140,6 +158,10 @@ describe('petOpsScheduling', () => {
       expect(proximityLabel({ scheduled_for: iso(2026, 6, 14) }, NOW)).toBe('atrasada há 1 dia');
       expect(proximityLabel({ scheduled_for: iso(2026, 6, 12) }, NOW)).toBe('atrasada há 3 dias');
       expect(proximityLabel({ visit_date: iso(2026, 6, 1) }, NOW)).toBe('');
+    });
+    it('usa campo nativo futuro quando dateField é passado', () => {
+      expect(proximityLabel({ visit_date: iso(2026, 6, 18) }, NOW, 'visit_date')).toBe('em 3 dias');
+      expect(proximityLabel({ visit_date: iso(2026, 6, 1) }, NOW, 'visit_date')).toBe(''); // passado → realizado
     });
   });
 });

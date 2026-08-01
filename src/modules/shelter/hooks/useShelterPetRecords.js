@@ -21,6 +21,18 @@ import { logger } from '@/core/lib/logger';
 
 const STALE_TIME_MS = 30_000;
 
+/**
+ * Rótulo do ID imutável do pet (#000001), com o mesmo padrão do painel
+ * admin (PetsOpsTable). Fallback: pet_code (VLT-000123) ou docId curto.
+ */
+function petSeqLabel(pet) {
+  const seq = pet?.pet_seq;
+  if (typeof seq === 'number' && Number.isFinite(seq) && seq > 0) {
+    return `#${String(seq).padStart(6, '0')}`;
+  }
+  return pet?.pet_code || `#${(pet?.id || '').slice(0, 6)}`;
+}
+
 export function useShelterPetRecords(orgId, config) {
   const {
     data: pets = [],
@@ -48,7 +60,8 @@ export function useShelterPetRecords(orgId, config) {
             return (rows || []).map((r) => ({
               ...r,
               _petId: pet.id,
-              _petName: pet.name || pet.title || 'Pet sem nome',
+              _petName: pet.name || pet.title || 'Sem nome',
+              _petSeqLabel: petSeqLabel(pet),
               _petSpecies: pet.species || null,
               _petStatus: pet.status || null,
               _petPhoto: Array.isArray(pet.photos) ? pet.photos[0] : (pet.photo_url || null),

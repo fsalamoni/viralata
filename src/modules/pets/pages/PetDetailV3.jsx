@@ -892,7 +892,6 @@ export default function PetDetailV3() {
             open={medOpen}
             onOpenChange={setMedOpen}
             petId={petId}
-            shelterClubId={pet?.owner_id}
           />
           <PetVetVisitForm
             open={vetOpen}

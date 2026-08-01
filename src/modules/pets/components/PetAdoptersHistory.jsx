@@ -51,7 +51,7 @@ function AdopterCard({ adopter }) {
             <p className="text-sm font-semibold text-foreground">
               {adopter.adopter_name || 'Adotante'}
             </p>
-            <RecordStatusBadge record={adopter} className="text-[10.5px]" />
+            <RecordStatusBadge record={adopter} dateField="start_date" className="text-[10.5px]" />
             <Badge className={cn('border text-[10.5px]', meta.color)}>
               {meta.label}
             </Badge>

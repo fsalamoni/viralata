@@ -14,6 +14,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { cn } from '@/core/lib/utils';
 import { format, isAfter, isBefore, addDays, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { RecordStatusBadge } from './RecordStatusBadge';
 
 function formatDate(iso) {
   if (!iso) return '—';
@@ -55,7 +56,10 @@ function MedicationCard({ med }) {
               <Pill className="h-4 w-4" aria-hidden="true" />
             </div>
             <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-foreground">{med.name}</p>
+              <div className="flex flex-wrap items-center gap-2">
+                <p className="truncate text-sm font-semibold text-foreground">{med.name}</p>
+                <RecordStatusBadge record={med} dateField="start_date" className="text-[10px]" />
+              </div>
               {med.dosage && (
                 <p className="text-xs text-muted-foreground">{med.dosage}</p>
               )}
