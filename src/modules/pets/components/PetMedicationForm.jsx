@@ -2,7 +2,8 @@
  * @fileoverview PetMedicationForm — dialog de criação de medicação contínua.
  *
  * TASK-V3-PET-DETAIL-FULL-FORMS: form para canManage.
- * Reusa o hook useCreateMedication do módulo shelter.
+ * Usa o serviço petMedicalService (pets/{petId}/medications), o mesmo lido
+ * pelas planilhas operacionais do abrigo, com suporte a agendamento.
  */
 import React, { useState, useEffect } from 'react';
 import { Pill, Loader2 } from 'lucide-react';
@@ -14,7 +15,9 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
 } from '@/components/ui/dialog';
 import { useToast } from '@/components/ui/use-toast';
-import { useCreateMedication } from '@/modules/shelter/hooks/useMedications';
+import { useCreateMedication } from '../hooks/usePetMedical';
+import { SchedulingFields } from './SchedulingFields';
+import { applyScheduling } from '@/modules/shelter/domain/operational/petOpsScheduling';
 import { format } from 'date-fns';
 
 const INITIAL = {
@@ -26,17 +29,19 @@ const INITIAL = {
   notes: '',
 };
 
-export default function PetMedicationForm({ open, onOpenChange, petId, shelterClubId }) {
+export default function PetMedicationForm({ open, onOpenChange, petId }) {
   const { toast } = useToast();
   const [data, setData] = useState(INITIAL);
   const [errors, setErrors] = useState({});
+  const [scheduled, setScheduled] = useState(false);
 
-  const createMut = useCreateMedication(petId, shelterClubId);
+  const createMut = useCreateMedication(petId);
   const loading = createMut.isPending;
 
   useEffect(() => {
     if (open) {
       setData(INITIAL);
+      setScheduled(false);
       setErrors({});
     }
   }, [open]);
@@ -61,18 +66,18 @@ export default function PetMedicationForm({ open, onOpenChange, petId, shelterCl
   async function handleSubmit(e) {
     e?.preventDefault();
     if (!validate()) return;
+    const basePayload = {
+      name: data.name,
+      dosage: data.dosage,
+      frequency: data.frequency,
+      start_date: data.start_date || null,
+      end_date: data.end_date || null,
+      notes: data.notes,
+      status: 'active',
+    };
+    const payload = applyScheduling(basePayload, scheduled, 'start_date', false);
     try {
-      await createMut.mutateAsync({
-        input: {
-          name: data.name,
-          dosage: data.dosage,
-          frequency: data.frequency,
-          start_date: data.start_date,
-          end_date: data.end_date || null,
-          notes: data.notes,
-          status: 'active',
-        },
-      });
+      await createMut.mutateAsync({ data: payload });
       toast.success('Medicação registrada');
       onOpenChange(false);
     } catch (err) {
@@ -157,6 +162,7 @@ export default function PetMedicationForm({ open, onOpenChange, petId, shelterCl
               rows={2}
             />
           </div>
+          <SchedulingFields scheduled={scheduled} onScheduledChange={setScheduled} dateLabel="início" disabled={loading} />
           <DialogFooter className="gap-2">
             <Button type="button" variant="ghost" onClick={() => onOpenChange(false)} disabled={loading}>
               Cancelar

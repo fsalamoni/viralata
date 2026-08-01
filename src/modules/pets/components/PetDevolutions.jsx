@@ -58,7 +58,7 @@ function DevolutionCard({ devolution }) {
         <div className="min-w-0 flex-1 space-y-1">
           <div className="flex flex-wrap items-center gap-2">
             <p className="text-sm font-semibold text-foreground">Devolução</p>
-            <RecordStatusBadge record={devolution} className="text-[10.5px]" />
+            <RecordStatusBadge record={devolution} dateField="devolution_date" className="text-[10.5px]" />
             <Badge className={cn('border text-[10.5px]', reasonMeta.color)}>
               {reasonMeta.label}
             </Badge>

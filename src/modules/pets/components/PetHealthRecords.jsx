@@ -63,7 +63,7 @@ export default function PetHealthRecords({ petId, canManage = false, onAdd, onEd
                     <p className="text-sm font-semibold text-foreground">{r.name || 'Registro'}</p>
                     <Badge variant="outline" className="text-[10.5px]">{HEALTH_RECORD_TYPE_LABELS[r.type] || r.type}</Badge>
                     {r.application_date && <Badge variant="outline" className="text-[10.5px]">{fmt(r.application_date)}</Badge>}
-                    <RecordStatusBadge record={r} className="text-[10.5px]" />
+                    <RecordStatusBadge record={r} dateField="application_date" className="text-[10.5px]" />
                   </div>
                   {(r.dose || r.vet_name) && (
                     <p className="mt-1 text-xs text-muted-foreground">

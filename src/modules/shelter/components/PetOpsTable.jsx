@@ -76,18 +76,18 @@ export function PetOpsTable({
   const [sortKey, setSortKey] = useState('_date');
   const [sortDir, setSortDir] = useState('desc');
 
-  const alerts = useMemo(() => summarizeAlerts(records), [records]);
+  const alerts = useMemo(() => summarizeAlerts(records, new Date(), undefined, dateField), [records, dateField]);
 
   const rows = useMemo(() => {
     const q = search.trim().toLowerCase();
     let list = records.map((r) => ({
       ...r,
       _effDate: effectiveDate(r, dateField),
-      _status: recordStatus(r),
-      _proximity: proximityLabel(r),
+      _status: recordStatus(r, new Date(), dateField),
+      _proximity: proximityLabel(r, new Date(), dateField),
     }));
     if (q) {
-      list = list.filter((r) => String(r._petName || '').toLowerCase().includes(q));
+      list = list.filter((r) => `${r._petName || ''} ${r._petSeqLabel || ''}`.toLowerCase().includes(q));
     }
     if (statusFilter !== 'all') {
       list = list.filter((r) => r._status === statusFilter);
@@ -234,10 +234,15 @@ export function PetOpsTable({
             </TableHeader>
             <TableBody>
               {rows.map((r) => {
-                const upcoming = isUpcoming(r);
+                const upcoming = isUpcoming(r, new Date(), undefined, dateField);
                 return (
                   <TableRow key={`${r._petId}:${r.id}`} className="transition-colors hover:bg-secondary/40">
-                    <TableCell className="px-3 py-2.5 font-medium">{r._petName}</TableCell>
+                    <TableCell className="px-3 py-2.5">
+                      <span className="font-medium">{r._petName}</span>
+                      {r._petSeqLabel && (
+                        <span className="ml-1.5 text-xs font-normal text-muted-foreground">{r._petSeqLabel}</span>
+                      )}
+                    </TableCell>
                     <TableCell className="px-3 py-2.5 whitespace-nowrap">
                       <span>{fmtDate(r._effDate)}</span>
                       {r._proximity && (

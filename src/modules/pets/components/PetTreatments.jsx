@@ -66,7 +66,7 @@ function TreatmentCard({ treatment, canEdit, onEdit }) {
             <Badge className={cn('border text-[10.5px]', typeMeta.color)}>
               {typeMeta.label}
             </Badge>
-            <RecordStatusBadge record={treatment} className="text-[10.5px]" />
+            <RecordStatusBadge record={treatment} dateField="start_date" className="text-[10.5px]" />
             <Badge className={cn('border text-[10.5px]', statusMeta.color)}>
               <StatusIcon className="mr-1 h-3 w-3" aria-hidden="true" />
               {statusMeta.label}

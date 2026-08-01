@@ -23,11 +23,11 @@ const TONE = {
   overdue: 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300',
 };
 
-export function RecordStatusBadge({ record, className }) {
-  const status = recordStatus(record);
+export function RecordStatusBadge({ record, dateField, className }) {
+  const status = recordStatus(record, new Date(), dateField);
   // Registros já realizados (sem agendamento) não recebem badge.
   if (status === PET_OPS_RECORD_STATUS.DONE) return null;
-  const prox = proximityLabel(record);
+  const prox = proximityLabel(record, new Date(), dateField);
   const Icon = status === PET_OPS_RECORD_STATUS.OVERDUE ? AlertTriangle : CalendarClock;
   return (
     <Badge className={cn('inline-flex items-center gap-1', TONE[status], className)}>

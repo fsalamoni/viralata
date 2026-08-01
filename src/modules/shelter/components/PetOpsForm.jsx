@@ -30,6 +30,18 @@ function toDateInput(value) {
   return Number.isNaN(d.getTime()) ? '' : d.toISOString().slice(0, 10);
 }
 
+/**
+ * Rótulo do ID imutável do pet (#000001), com o mesmo padrão da tabela
+ * operacional e do painel admin. Fallback: pet_code ou docId curto.
+ */
+function petSeqLabel(pet) {
+  const seq = pet?.pet_seq;
+  if (typeof seq === 'number' && Number.isFinite(seq) && seq > 0) {
+    return `#${String(seq).padStart(6, '0')}`;
+  }
+  return pet?.pet_code || `#${String(pet?.id || '').slice(0, 6)}`;
+}
+
 function buildInitial(config, record) {
   const values = {};
   for (const f of config.fields) {
@@ -103,7 +115,8 @@ export function PetOpsForm({ config, pets = [], record = null, defaultPetId = ''
           <SelectContent>
             {sortedPets.map((p) => (
               <SelectItem key={p.id} value={p.id}>
-                {p.name || p.title || 'Pet sem nome'}
+                {p.name || p.title || 'Sem nome'}
+                <span className="ml-1.5 text-xs text-muted-foreground">{petSeqLabel(p)}</span>
               </SelectItem>
             ))}
           </SelectContent>

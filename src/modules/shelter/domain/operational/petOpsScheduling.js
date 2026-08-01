@@ -15,9 +15,16 @@
  * A "data efetiva" de um registro é `scheduled_for ?? <campo nativo>`.
  *
  * Status derivado (sem persistir — calculado em runtime):
- *  - `done`      : realizado (sem scheduled_for, OU com completed_at).
- *  - `scheduled` : agendado para hoje ou futuro, ainda não realizado.
- *  - `overdue`   : agendado para o passado e ainda não realizado.
+ *  - `done`      : realizado — com `completed_at`, ou sem agendamento e com
+ *                  data efetiva hoje/no passado.
+ *  - `scheduled` : agendado para o futuro (via `scheduled_for` OU apenas com
+ *                  o campo de data nativo no futuro), ainda não realizado.
+ *  - `overdue`   : agendado via `scheduled_for` no passado, não realizado.
+ *
+ * Observação: um registro com `scheduled_for` no passado é "atrasado"
+ * (foi explicitamente agendado e não cumprido). Já um registro SEM
+ * `scheduled_for`, só com o campo nativo, no passado é "realizado" — não
+ * há como saber que foi "perdido"; no futuro é "agendado".
  *
  * Nada aqui toca Firestore nem React — é lógica pura e testável.
  */
@@ -112,17 +119,34 @@ export function isScheduled(record) {
 
 /**
  * Status derivado do registro (done | scheduled | overdue).
+ *
+ * Ordem de decisão:
+ *  1. `completed_at` → done (agendamento cumprido).
+ *  2. `scheduled_for` presente → overdue se no passado, senão scheduled.
+ *  3. Só o campo nativo (`dateField`) → scheduled se no futuro, senão done.
+ *
+ * O `dateField` é opcional para retrocompatibilidade; sem ele, registros
+ * sem `scheduled_for` são sempre tratados como realizados.
+ *
  * @param {object} record
  * @param {Date} [now=new Date()]
+ * @param {string} [dateField] campo de data nativo do registro
  * @returns {'done'|'scheduled'|'overdue'}
  */
-export function recordStatus(record, now = new Date()) {
-  if (!isScheduled(record)) return PET_OPS_RECORD_STATUS.DONE;
-  const when = toDate(record.scheduled_for);
-  if (!when) return PET_OPS_RECORD_STATUS.SCHEDULED;
-  return daysUntil(when, now) < 0
-    ? PET_OPS_RECORD_STATUS.OVERDUE
-    : PET_OPS_RECORD_STATUS.SCHEDULED;
+export function recordStatus(record, now = new Date(), dateField) {
+  if (record?.completed_at) return PET_OPS_RECORD_STATUS.DONE;
+  if (record?.scheduled_for) {
+    const when = toDate(record.scheduled_for);
+    if (!when) return PET_OPS_RECORD_STATUS.SCHEDULED;
+    return daysUntil(when, now) < 0
+      ? PET_OPS_RECORD_STATUS.OVERDUE
+      : PET_OPS_RECORD_STATUS.SCHEDULED;
+  }
+  const native = dateField ? toDate(record?.[dateField]) : null;
+  if (!native) return PET_OPS_RECORD_STATUS.DONE;
+  return daysUntil(native, now) > 0
+    ? PET_OPS_RECORD_STATUS.SCHEDULED
+    : PET_OPS_RECORD_STATUS.DONE;
 }
 
 /**
@@ -131,11 +155,12 @@ export function recordStatus(record, now = new Date()) {
  * @param {object} record
  * @param {Date} [now=new Date()]
  * @param {number} [windowDays=PROXIMITY_WINDOW_DAYS]
+ * @param {string} [dateField]
  * @returns {boolean}
  */
-export function isUpcoming(record, now = new Date(), windowDays = PROXIMITY_WINDOW_DAYS) {
-  if (recordStatus(record, now) !== PET_OPS_RECORD_STATUS.SCHEDULED) return false;
-  const when = toDate(record.scheduled_for);
+export function isUpcoming(record, now = new Date(), windowDays = PROXIMITY_WINDOW_DAYS, dateField) {
+  if (recordStatus(record, now, dateField) !== PET_OPS_RECORD_STATUS.SCHEDULED) return false;
+  const when = effectiveDate(record, dateField);
   if (!when) return false;
   const d = daysUntil(when, now);
   return d >= 0 && d <= windowDays;
@@ -147,15 +172,16 @@ export function isUpcoming(record, now = new Date(), windowDays = PROXIMITY_WIND
  * @param {object[]} records
  * @param {Date} [now=new Date()]
  * @param {number} [windowDays=PROXIMITY_WINDOW_DAYS]
+ * @param {string} [dateField]
  * @returns {{upcoming: number, overdue: number}}
  */
-export function summarizeAlerts(records = [], now = new Date(), windowDays = PROXIMITY_WINDOW_DAYS) {
+export function summarizeAlerts(records = [], now = new Date(), windowDays = PROXIMITY_WINDOW_DAYS, dateField) {
   let upcoming = 0;
   let overdue = 0;
   for (const r of records) {
-    const st = recordStatus(r, now);
+    const st = recordStatus(r, now, dateField);
     if (st === PET_OPS_RECORD_STATUS.OVERDUE) overdue += 1;
-    else if (st === PET_OPS_RECORD_STATUS.SCHEDULED && isUpcoming(r, now, windowDays)) upcoming += 1;
+    else if (st === PET_OPS_RECORD_STATUS.SCHEDULED && isUpcoming(r, now, windowDays, dateField)) upcoming += 1;
   }
   return { upcoming, overdue };
 }
@@ -195,12 +221,13 @@ export function applyScheduling(payload, scheduled, dateField, isEdit = false) {
  * Retorna '' para registros já realizados.
  * @param {object} record
  * @param {Date} [now=new Date()]
+ * @param {string} [dateField]
  * @returns {string}
  */
-export function proximityLabel(record, now = new Date()) {
-  const st = recordStatus(record, now);
+export function proximityLabel(record, now = new Date(), dateField) {
+  const st = recordStatus(record, now, dateField);
   if (st === PET_OPS_RECORD_STATUS.DONE) return '';
-  const when = toDate(record.scheduled_for);
+  const when = effectiveDate(record, dateField);
   if (!when) return '';
   const d = daysUntil(when, now);
   if (d === 0) return 'hoje';
