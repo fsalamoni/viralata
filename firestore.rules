@@ -1578,7 +1578,13 @@ service cloud.firestore {
       allow update: if isAuth() && (
         resource.data.author_id == request.auth.uid ||
         isClubOwnerOrAdmin(resource.data.club_id) ||
-        isPlatformAdmin()
+        isPlatformAdmin() ||
+        // Comentar em um tópico: qualquer membro do clube pode atualizar
+        // SOMENTE os campos cosméticos de atividade (contador, última
+        // atividade, participantes) — a verdade é a subcoleção de comments.
+        (isClubMember(resource.data.club_id) &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(
+            ['comment_count', 'last_activity_ms', 'participant_ids', 'updated_at']))
       );
       allow delete: if isAuth() && (
         resource.data.author_id == request.auth.uid ||
@@ -1661,7 +1667,11 @@ service cloud.firestore {
       );
       allow update: if isAuth() && (
         request.auth.uid == resource.data.author_id ||
-        canManageCommunity(get(/databases/$(database)/documents/communities/$(resource.data.community_id)).data)
+        canManageCommunity(get(/databases/$(database)/documents/communities/$(resource.data.community_id)).data) ||
+        // Curtir/comentar: qualquer usuário logado pode atualizar SOMENTE os
+        // contadores denormalizados (a transação de like/comment incrementa
+        // likes_count/comments_count no post). O doc de like é gated à parte.
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likes_count', 'comments_count', 'updated_at'])
       );
       allow delete: if isAuth() && (
         request.auth.uid == resource.data.author_id ||
@@ -1669,7 +1679,7 @@ service cloud.firestore {
         isPlatformAdmin()
       );
     }
-    
+
     match /community_post_likes/{likeId} {
       allow read: if true;
       allow create: if isAuth() && request.resource.data.user_id == request.auth.uid;
@@ -1819,6 +1829,10 @@ service cloud.firestore {
         || isClubOwnerOrAdmin(resource.data.club_id)
         || hasClubPermission(resource.data.club_id, 'feed')
         || isPlatformAdmin()
+        // Curtir/comentar: qualquer usuário logado pode atualizar SOMENTE os
+        // contadores denormalizados (transação de like/comment incrementa
+        // likes_count/comments_count). O doc de like é gated à parte.
+        || request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likes_count', 'comments_count', 'updated_at'])
       );
       allow delete: if isAuth() && (
         resource.data.author_id == request.auth.uid
