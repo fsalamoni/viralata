@@ -99,12 +99,13 @@ export function JoinVolunteerModal({
   const { user } = useAuth();
   const { toast } = useToast();
   const { data: profile, isLoading: profileLoading } = useVolunteerProfile();
-  const acceptTerms = useAcceptVolunteerTerms();
+  const acceptTerms = useAcceptVolunteerTerms(user?.uid);
   const joinShelter = useJoinShelterAsVolunteer();
 
   const [step, setStep] = useState('terms');
   const [termsRead, setTermsRead] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [signature, setSignature] = useState('');
   const [skills, setSkills] = useState([]);
   const [availability, setAvailability] = useState('');
   const [experience, setExperience] = useState('');
@@ -125,6 +126,7 @@ export function JoinVolunteerModal({
       setStep('terms');
       setTermsRead(false);
       setTermsAccepted(false);
+      setSignature('');
       setError(null);
     }
   }, [open]);
@@ -146,28 +148,42 @@ export function JoinVolunteerModal({
       setError('Você precisa estar logado');
       return;
     }
+    const sig = signature.trim();
+    if (sig.length < 2) {
+      setError('Digite seu nome completo como assinatura eletrônica.');
+      return;
+    }
     setError(null);
+    const volunteerName = user.displayName || user.email?.split('@')[0] || 'Voluntário';
+    const actor = {
+      uid: user.uid,
+      displayName: volunteerName,
+      name: volunteerName,
+      email: user.email || null,
+    };
     try {
-      // 1. Aceitar termo (se ainda não aceito nesta versão)
-      if (!profile?.terms_accepted_version || profile.terms_accepted_version !== VOLUNTEER_TERMS_VERSION) {
-        await acceptTerms.mutateAsync({
-          version: VOLUNTEER_TERMS_VERSION,
-          skills,
-          availability,
-          experience,
-        });
-      }
-      // 2. Entrar no abrigo
-      await joinShelter.mutateAsync({
-        club_id: clubId,
-        user: {
-          uid: user.uid,
-          displayName: user.displayName || user.email?.split('@')[0] || 'Voluntário',
-          email: user.email,
+      // 1. Aceita o termo globalmente (idempotente — grava assinatura +
+      //    terms_accepted_at em users/{uid}/volunteer_profile/main e o aceite
+      //    imutável em terms_acceptances). Necessário ANTES do join, pois o
+      //    service da rostagem valida que o perfil já aceitou o termo.
+      await acceptTerms.mutateAsync({
+        acceptance: {
+          terms_version: VOLUNTEER_TERMS_VERSION,
+          signature_text: sig,
         },
-        skills,
-        availability,
-        experience,
+        actor,
+      });
+      // 2. Entra na rostagem do abrigo (snapshot do aceite por-abrigo).
+      await joinShelter.mutateAsync({
+        input: {
+          shelter_club_id: clubId,
+          volunteer_uid: user.uid,
+          volunteer_name: volunteerName,
+          ...(user.email ? { volunteer_email: user.email } : {}),
+          terms_version: VOLUNTEER_TERMS_VERSION,
+          signature_text: sig,
+        },
+        actor,
       });
       setStep('done');
       toast({
@@ -183,7 +199,7 @@ export function JoinVolunteerModal({
 
   const loading = profileLoading || acceptTerms.isPending || joinShelter.isPending;
   const canAdvance = {
-    terms: termsRead && termsAccepted,
+    terms: termsRead && termsAccepted && signature.trim().length >= 2,
     profile: skills.length > 0,
     confirm: true,
   }[step];
@@ -240,6 +256,23 @@ export function JoinVolunteerModal({
                   Li e aceito o termo de voluntariado (v{VOLUNTEER_TERMS_VERSION})
                 </span>
               </label>
+              <div className="space-y-1.5">
+                <Label htmlFor="volunteer-signature" className="text-sm">
+                  Assinatura eletrônica (digite seu nome completo) <span className="text-destructive">*</span>
+                </Label>
+                <Input
+                  id="volunteer-signature"
+                  value={signature}
+                  onChange={(e) => setSignature(e.target.value)}
+                  placeholder="Seu nome completo"
+                  disabled={!termsAccepted}
+                  maxLength={120}
+                  data-testid="volunteer-signature"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Sua assinatura fica vinculada ao hash do documento (Lei 14.063/2020).
+                </p>
+              </div>
             </div>
           )}
 
