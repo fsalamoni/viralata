@@ -45,6 +45,9 @@ const PersonaSelection = lazy(() => import('@/pages/PersonaSelection'));
 const ShelterEntry = lazy(() => import('@/pages/onboarding/ShelterEntry'));
 const CommunityEntry = lazy(() => import('@/pages/onboarding/CommunityEntry'));
 const DonorOnboarding = lazy(() => import('@/pages/onboarding/DonorOnboarding'));
+const AdopterOnboarding = lazy(() => import('@/pages/onboarding/AdopterOnboarding'));
+const DonorDashboard = lazy(() => import('@/pages/DonorDashboard'));
+const VolunteerPool = lazy(() => import('@/pages/VolunteerPool'));
 const ShelterPublic = lazy(() => import('@/pages/ShelterPublic'));
 const BannedNotice = lazy(() => import('@/pages/BannedNotice'));
 const AdminDebugPage = lazy(() => import('@/pages/AdminDebugPage'));
@@ -660,6 +663,27 @@ export default function App() {
                   path="/onboarding/doador"
                   element={
                     <ProtectedRoute>{withLayout('DonorOnboarding', DonorOnboarding)}</ProtectedRoute>
+                  }
+                />
+                {/* AdopterOnboarding: alias do questionário existente (Q23) */}
+                <Route
+                  path="/onboarding/adotante"
+                  element={
+                    <ProtectedRoute>{withLayout('AdopterOnboarding', AdopterOnboarding)}</ProtectedRoute>
+                  }
+                />
+                {/* DonorDashboard: home do doador */}
+                <Route
+                  path="/dashboard/doador"
+                  element={
+                    <ProtectedRoute>{withLayout('DonorDashboard', DonorDashboard)}</ProtectedRoute>
+                  }
+                />
+                {/* VolunteerPool: pool de voluntários (Q26) */}
+                <Route
+                  path="/voluntarios/pool"
+                  element={
+                    <ProtectedRoute>{withLayout('VolunteerPool', VolunteerPool)}</ProtectedRoute>
                   }
                 />
 

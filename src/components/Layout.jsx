@@ -14,6 +14,8 @@ import LegalFooter, { useLegalFooterHeight } from '@/components/LegalFooter';
 import BottomTabBar, { useBottomTabBarHeight } from '@/components/BottomTabBar';
 import PersonaBottomTabBar, { useBottomTabBarHeight as usePersonaBottomTabBarHeight } from '@/components/PersonaBottomTabBar';
 import PersonaSwitcher from '@/components/PersonaSwitcher';
+import ShelterPicker from '@/components/ShelterPicker';
+import VolunteerShelterPicker from '@/components/VolunteerShelterPicker';
 import { useUiPreferences, BOTTOM_TAB_MODES, TOPBAR_MODES, FOOTER_MODES } from '@/core/hooks/useUiPreferences';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import ThemeMenu from '@/components/ThemeMenu';
@@ -217,6 +219,10 @@ export default function Layout({ children, currentPageName }) {
               }}
               onAddPersona={() => navigate('/acesso')}
             />
+            {/* V4: ShelterPicker — seletor de abrigo (multi-club Q17) */}
+            <ShelterPicker />
+            {/* V4: VolunteerShelterPicker — seletor de abrigo (multi-roster Q18) */}
+            <VolunteerShelterPicker />
             {/* Dark mode toggle — sempre visível */}
             <ThemeMenu />
             {isAuthenticated ? (
