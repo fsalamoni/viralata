@@ -1060,3 +1060,208 @@ allow update: if isAuth() && (
 
 **Aplicação**: 3 collectionGroup/posts seguem o mesmo padrão.
 Helper compartilhado em `firestore.rules`.
+
+---
+
+## §16. Decisões de Personas V4 (PLAN_PERSONAS_V4.md, 2026-08-03)
+
+> **STATUS**: 30/30 decisões validadas pelo owner. Aguardando
+> início da implementação. Ver `docs/PLAN_PERSONAS_V4.md` para
+> o documento completo. Quando a V4 iniciar, estas decisões
+> devem ser marcadas como `ATIVA` e aplicadas.
+
+### D-PERSONA-MULTI (Q1, Q3, Q5, Q6)
+
+User pode ter **múltiplas personas** mas apenas **uma ativa por
+vez**. Personas são ortogonais (Adotante + Doador + Voluntário +
+etc. são combinações válidas). Troca via switch, sem confirmação,
+instantânea.
+
+### D-PERSONA-DONOR-EXPLICIT-CONFIRM (Q2)
+
+Se o user já é **membro/equipe/voluntário de abrigo X** e tenta
+cadastrar pet para doação, mostrar modal:
+> "Você é membro/equipe/voluntário no abrigo X. Deseja cadastrar
+> este pet no referido abrigo ou deseja adicionar o acesso
+> 'Doador' à sua conta?"
+
+- "Cadastrar no abrigo X" → `owner_type: 'organization'`
+- "Adicionar acesso Doador" → `owner_type: 'user'` + ativa persona `donor`
+
+### D-PERSONA-FEED-EXCLUSIVE-ADOPTER (Q4)
+
+**Feed de pets só aparece no acesso "Adotante"**. Outras
+personas **NÃO** têm feed (nem read-only). Para adotar, o user
+troca para a persona "Adotante" via switcher.
+
+### D-PERSONA-ADMIN-OVERRIDE (Q7, Q9)
+
+- Admin master é **persona separada + override**.
+- Aparece no switcher **SÓ** para `role: 'platform_admin'`.
+- Em **outras personas** (não "admin master"): **NÃO** tem
+  poderes de admin — apenas as permissões normais daquela
+  persona. Permite testar UX como usuário comum.
+- Em **"admin master"**: **override total** — vê tudo, sem
+  precisar ser membro. Atalho `/admin` para visão agregada.
+- O user com `role: 'platform_admin'` **possui todas as
+  personas disponíveis** (lista sempre completa no switcher).
+
+### D-PERSONA-ADMIN-OWNER-ONLY (Q8)
+
+Apenas o owner (`fsalamoni@gmail.com`) pode atribuir o role
+`platform_admin`. Outros admins **NÃO** podem promover. Mais
+seguro contra escalonamento de privilégios.
+
+### D-PERSONA-NAMES-UX (Q10)
+
+Nomes UX canônicos:
+- Adotante → "Adotar / Ajudar"
+- Doador → "Doar um pet"
+- Membro de Abrigo → "Meu abrigo"
+- Membro de Comunidade → "Minha comunidade"
+- Voluntário → "Ser voluntário"
+- Admin Master → (oculto)
+
+### D-PERSONA-ONE-AT-A-TIME (Q11)
+
+**Uma persona por vez no primeiro acesso**. Pode adicionar
+outras via switcher → "Adicionar outro acesso" (também
+acessível via landing page). **Sempre que reentrar, entra no
+último acesso ativo** (persistido em `active_persona` no
+Firestore).
+
+### D-PERSONA-ONBOARDING-ONCE (Q12)
+
+Onboarding de cada persona é executado **UMA vez**. Campos
+preenchidos persistem. Trocar de persona **NÃO** pede
+onboarding de novo.
+
+### D-PERSONA-SWITCH-NO-CONFIRM (Q14)
+
+Troca de persona é **instantânea, sem confirmação**. Estilo
+Google Account switcher. Sem fricção.
+
+### D-PERSONA-SWITCHER-VISIBILITY (Q15)
+
+Switcher visível **só quando há 2+ personas**. Se só tem 1,
+**NÃO** polui o TopBar. Mas **DEVE** haver link "Adicionar
+outro acesso" no TopBar/Perfil para criar novas personas.
+
+### D-PERSONA-FIRST-ACCESS-FORCED (Q16)
+
+No primeiro acesso (sem persona definida), user é **direcionado
+para `/acesso`** após login. Landing pública continua acessível
+via botão "Voltar" ou URL direta.
+
+### D-PERSONA-MULTI-CLUB (Q17)
+
+Membro de múltiplos abrigos: **switcher no TopBar (dropdown)**
+com badge numérica indicando o abrigo ativo. Persistido em
+`active_shelter_id`.
+
+### D-PERSONA-MULTI-ROSTER-ISOLATED (Q18)
+
+Voluntário em múltiplos abrigos: **dados isolados por abrigo**
+(escalas, tarefas, audit trail). Switcher de abrigo no TopBar.
+
+### D-PERSONA-MEMBERSHIP-INDEPENDENT (Q19)
+
+Sair do voluntariado **NÃO** remove membership de abrigo. São
+papéis independentes.
+
+### D-PERSONA-PET-TRANSFER (Q20)
+
+Pet pessoal pode ser transferido para abrigo via "Transferir
+para abrigo" no detalhe do pet. Atualiza `owner_type` para
+`organization`. Audit log obrigatório. **Não tem como
+desfazer** (decisão irreversível, com confirmação forte).
+
+### D-PERSONA-ORPHAN-PETS (Q21)
+
+Pets órfãos (user desativado):
+- Mantidos com `owner_type: 'user'`, `owner_id: <uid-desativado>`.
+- **OCULTOS no feed** (não aparecem para adotantes).
+- **Cadastro é único** (deduplicado por fingerprint nome+
+  espécie+porte+idade). Re-cadastro do mesmo pet puxa info
+  anterior.
+- Listados como "Pets sem responsável" no admin master.
+- Adotantes contactados **apenas** pelo admin master.
+
+### D-PERSONA-ADMIN-CANNOT-DEMOTE (Q22)
+
+Platform admin **NÃO** pode se rebaixar. Apenas o owner pode
+rebaixar. Proteção contra auto-rebaixamento.
+
+### D-PERSONA-ADOPTER-ONBOARDING (Q23)
+
+`AdopterOnboarding` é o `OnboardingQuestionnaire` renomeado.
+Libera feed após `profile_completed = true`.
+
+### D-PERSONA-DONOR-ONBOARDING (Q24)
+
+`DonorOnboarding` (novo) com campos:
+- `donor_motivation` (texto)
+- `has_donated_before` (boolean)
+- `pets_count` (número)
+- `experience_with_species` (array: dogs, cats, rabbits, birds,
+  other)
+- `experience_years` (número)
+- `donor_accepts_home_check` (boolean)
+- `donor_accepts_post_adoption_followup` (boolean)
+- `donor_preferred_contact_method` (whatsapp/email/chat)
+- `donor_bio` (texto curto)
+
+Compartilhado com `users/{uid}` global: cidade, estado, telefone,
+LGPD consent.
+
+### D-PERSONA-SHELTER-ENTRY (Q25)
+
+Onboarding de Membro de Abrigo sem abrigo: 2 caminhos.
+- **Código**: `joinClubByCode` → painel
+- **Criar novo**: `CreateOrganization` → `ShelterOnboardingWizard`
+  (5 steps) → painel
+
+### D-PERSONA-VOLUNTEER-POOL (Q26)
+
+Voluntário sem vínculo com abrigo entra em um **POOL DE
+VOLUNTÁRIOS DA PLATAFORMA** (não fica apenas "inativo").
+- Filtros: região, tempo disponível, tarefas preferidas, raio
+  de atuação, espécies preferidas.
+- Abrigos podem **buscar/browse** o pool para convidar.
+- Voluntário recebe notificação quando convidado.
+- Páginas:
+  - `/voluntarios/pool` (pública para voluntários)
+  - `/organizacoes/:id/admin?tab=volunteers-pool` (admin do abrigo
+    com permissão)
+
+### D-PERSONA-SWITCHER-INCOMPLETE-BADGE (Q27)
+
+Switcher mostra **todas** as personas disponíveis, mas as
+incompletas têm badge "Incompleto". Ao clicar, redireciona para
+continuar o onboarding.
+
+### D-PERSONA-NO-EXPIRATION (Q28)
+
+Personas **NÃO** expiram automaticamente. Membro/voluntário
+fica disponível indefinidamente. Admin do abrigo pode
+pausar/bloquear manualmente.
+
+### D-PERSONA-MIGRATION-AUTO (Q29)
+
+Pets cadastrados antes da V4: migração automática no primeiro
+login pós-V4. User com `owner_type: 'user'` recebe persona
+`donor` automaticamente.
+
+### D-PERSONA-FLAG-GRADUAL (Q30)
+
+Flag `V4_PERSONA_ENABLED` (default OFF). Plano de ativação:
+1. Staging (testes E2E)
+2. Migração de dados em produção (script)
+3. Owner liga no próprio user
+4. Validação manual
+5. Liberação gradual (10% → 50% → 100%)
+
+---
+
+**Próxima leitura**: `docs/PLAN_PERSONAS_V4.md` (documento-guia
+completo da V4).
