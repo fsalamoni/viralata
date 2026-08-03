@@ -29,13 +29,7 @@ export function ShelterPicker() {
   const containerRef = useRef(null);
 
   // Só renderiza se persona ativa é shelter_staff e tem 2+ memberships
-  if (!v4Enabled) return null;
-  if (!user) return null;
-  if (active && active.type !== PERSONA_TYPE.SHELTER_STAFF) return null;
-  if (isLoading) return null;
-  if (memberships.length < 1) return null;
-
-  // Click-outside
+  // Click-outside — SEMPRE ANTES de early return (D-HOOKS-ORDER-PRESERVE)
   useEffect(() => {
     if (!open) return undefined;
     const handler = (e) => {
@@ -46,6 +40,12 @@ export function ShelterPicker() {
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, [open]);
+
+  if (!v4Enabled) return null;
+  if (!user) return null;
+  if (active && active.type !== PERSONA_TYPE.SHELTER_STAFF) return null;
+  if (isLoading) return null;
+  if (memberships.length < 1) return null;
 
   const activeClub = memberships.find((m) => m.club?.id === active?.scopeId)?.club;
 

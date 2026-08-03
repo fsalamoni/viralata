@@ -12,7 +12,6 @@
  */
 
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Heart, ChevronDown, Check } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { useActivePersona } from '@/core/hooks/useActivePersona';
@@ -24,20 +23,13 @@ import { cn } from '@/core/lib/utils';
 
 export function VolunteerShelterPicker() {
   const v4Enabled = useFeatureFlag(FEATURE_FLAG.V4_PERSONA_VOLUNTEER);
-  const navigate = useNavigate();
   const { user } = useAuth();
   const { active, setActive } = useActivePersona();
   const { data: rosters = [], isLoading } = useUserVolunteerRosters(user?.uid, { status: 'active' });
   const [open, setOpen] = useState(false);
   const containerRef = useRef(null);
 
-  if (!v4Enabled) return null;
-  if (!user) return null;
-  if (active && active.type !== PERSONA_TYPE.VOLUNTEER) return null;
-  if (isLoading) return null;
-  if (rosters.length < 1) return null;
-
-  // Click-outside
+  // Click-outside — SEMPRE ANTES de early return (D-HOOKS-ORDER-PRESERVE)
   useEffect(() => {
     if (!open) return undefined;
     const handler = (e) => {
@@ -48,6 +40,12 @@ export function VolunteerShelterPicker() {
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, [open]);
+
+  if (!v4Enabled) return null;
+  if (!user) return null;
+  if (active && active.type !== PERSONA_TYPE.VOLUNTEER) return null;
+  if (isLoading) return null;
+  if (rosters.length < 1) return null;
 
   const activeRoster = rosters.find((r) => r.club_id === active?.scopeId || r.id === active?.scopeId);
 

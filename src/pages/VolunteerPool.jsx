@@ -16,7 +16,7 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Heart, MapPin, Building2, Search, Filter, Sparkles, Loader2, AlertCircle } from 'lucide-react';
+import { Heart, MapPin, Building2, Search, Sparkles, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -67,7 +67,7 @@ export function VolunteerPool() {
     return (
       <div className="mx-auto max-w-2xl px-5 py-12 text-center">
         <p className="text-muted-foreground">
-          O pool de voluntários é exclusivo da persona "Voluntário".
+          O pool de voluntários é exclusivo da persona &ldquo;Voluntário&rdquo;.
         </p>
         <Button onClick={() => navigate('/acesso')} className="mt-4">
           Trocar de persona

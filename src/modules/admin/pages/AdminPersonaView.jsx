@@ -16,7 +16,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { collection, getDocs, query, where, serverTimestamp } from 'firebase/firestore';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 import { Users, Heart, AlertCircle, Search, Loader2 } from 'lucide-react';
 import { db } from '@/core/config/firebase';
 import PageHero from '@/components/PageHero';

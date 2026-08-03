@@ -53,7 +53,7 @@ export function DonorDashboard() {
     return (
       <div className="mx-auto max-w-2xl px-5 py-12 text-center">
         <p className="text-muted-foreground">
-          Esta página é exclusiva da persona "Doador".
+          Esta página é exclusiva da persona &ldquo;Doador&rdquo;.
         </p>
         <Button onClick={() => navigate('/acesso')} className="mt-4">
           Trocar de persona

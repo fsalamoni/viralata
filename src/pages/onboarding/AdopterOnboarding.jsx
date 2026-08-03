@@ -12,13 +12,11 @@
  * @see docs/AI_GUIDE/13-DECISIONS.md §16
  */
 
-import React from 'react';
+import { useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import OnboardingQuestionnaire from '@/modules/onboarding/pages/OnboardingQuestionnaire';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { useActivePersona } from '@/core/hooks/useActivePersona';
-import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
-import { FEATURE_FLAG } from '@/core/featureFlags';
 import { PERSONA_TYPE } from '@/core/domain/personas';
 import { enablePersona } from '@/core/services/personaService';
 
@@ -28,20 +26,16 @@ import { enablePersona } from '@/core/services/personaService';
  * Adiciona:
  *  - Habilita persona 'adopter' no Firestore
  *  - Define persona ativa como 'adopter' (se ainda não tiver)
- *  - Gating por feature flag V4_PERSONA_ADOPTER (fallback legacy)
+ *
+ * IMPORTANTE (D-HOOKS-ORDER-PRESERVE): TODOS os hooks ANTES de early return.
  */
 export function AdopterOnboarding() {
-  const v4Enabled = useFeatureFlag(FEATURE_FLAG.V4_PERSONA_ADOPTER);
   const { user, userProfile } = useAuth();
   const { active, setActive } = useActivePersona();
 
-  // Se persona ativa já tem outra (não adopter), redireciona para /acesso
-  if (userProfile && active && active.type !== PERSONA_TYPE.ADOPTER) {
-    return <Navigate to="/acesso" replace state={{ from: '/onboarding' }} />;
-  }
-
-  // Em paralelo, garante que a persona adopter está habilitada
-  React.useEffect(() => {
+  // Efeito: habilita persona adopter se necessário
+  // SEMPRE ANTES de early return (D-HOOKS-ORDER-PRESERVE)
+  useEffect(() => {
     if (!user?.uid) return;
     if (active && active.type === PERSONA_TYPE.ADOPTER) return;
     enablePersona(user.uid, PERSONA_TYPE.ADOPTER)
@@ -49,10 +43,9 @@ export function AdopterOnboarding() {
       .catch(() => {});
   }, [user?.uid, active, setActive]);
 
-  // Se V4 desabilitado, deixa o componente legacy cuidar
-  // (será o comportamento padrão)
-  if (!v4Enabled) {
-    return <OnboardingQuestionnaire />;
+  // Early return APÓS todos os hooks
+  if (userProfile && active && active.type !== PERSONA_TYPE.ADOPTER) {
+    return <Navigate to="/acesso" replace state={{ from: '/onboarding' }} />;
   }
 
   return <OnboardingQuestionnaire />;
