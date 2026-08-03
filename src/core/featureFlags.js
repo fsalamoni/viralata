@@ -260,6 +260,22 @@ export const FEATURE_FLAG = Object.freeze({
   V3_PAGE_ADMIN: 'v3_page_admin',
   ADMIN_PARTNER_SPACES_V1: 'admin_partner_spaces_v1',
   PUBLIC_PARTNER_BANNERS_V1: 'public_partner_banners_v1',
+
+  // ─── V4 · PERSONAS (separa plataforma em 6 acessos dedicados) ─────────
+  // D-PERSONA-FLAG-GRADUAL (2026-08-03): cada flag = 1 sub-fase.
+  // Default OFF em todas — owner liga quando estiver pronto.
+  // Ver docs/PLAN_PERSONAS_V4.md v1.1 e docs/AI_GUIDE/13-DECISIONS.md §16.
+  V4_PERSONA_ENABLED: 'v4_persona_enabled',                 // Master switch
+  V4_PERSONA_ADOPTER: 'v4_persona_adopter',                 // Persona 1
+  V4_PERSONA_DONOR: 'v4_persona_donor',                     // Persona 2
+  V4_PERSONA_SHELTER_STAFF: 'v4_persona_shelter_staff',     // Persona 3
+  V4_PERSONA_COMMUNITY_STAFF: 'v4_persona_community_staff', // Persona 4
+  V4_PERSONA_VOLUNTEER: 'v4_persona_volunteer',             // Persona 5
+  V4_PERSONA_PLATFORM_ADMIN: 'v4_persona_platform_admin',   // Persona 6
+  V4_PERSONA_SWITCHER: 'v4_persona_switcher',               // Botão switch TopBar
+  V4_PERSONA_SELECTION: 'v4_persona_selection',             // Tela /acesso primeiro acesso
+  V4_PERSONA_VOLUNTEER_POOL: 'v4_persona_volunteer_pool',   // Pool de voluntários Q26
+  V4_PERSONA_PET_TRANSFER: 'v4_persona_pet_transfer',       // Transfer pet p/ abrigo Q20
 });
 
 /** Metadados de exibição para o painel de flags (admin master). */
