@@ -13,9 +13,9 @@
 
 | Fase | Descrição | Status | Commit |
 |---|---|---|---|
-| **0** | Preparação (validação + feature flags) | 🟡 EM ANDAMENTO | — |
-| 1 | Schema de dados (campos novos + subcoleções) | ⏸ Pendente | — |
-| 2 | PersonaSwitcher + PersonaGate + useActivePersona | ⏸ Pendente | — |
+| **0** | Preparação (validação + feature flags) | ✅ DONE | (initial) |
+| **1** | Schema de dados (personaService + useActivePersona) | ✅ DONE | (a705ccc6) |
+| 2 | PersonaSwitcher + PersonaGate + PersonaBottomTabBar | 🟡 EM ANDAMENTO | — |
 | 3 | PersonaSelection (tela /acesso) | ⏸ Pendente | — |
 | 4 | Persona Adotante (refator + features) | ⏸ Pendente | — |
 | 5 | Persona Doador (novo) | ⏸ Pendente | — |
