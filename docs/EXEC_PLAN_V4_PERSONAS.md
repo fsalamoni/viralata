@@ -15,18 +15,46 @@
 |---|---|---|---|
 | **0** | Preparação (validação + feature flags) | ✅ DONE | (initial) |
 | **1** | Schema de dados (personaService + useActivePersona) | ✅ DONE | (a705ccc6) |
-| 2 | PersonaSwitcher + PersonaGate + PersonaBottomTabBar | 🟡 EM ANDAMENTO | — |
-| 3 | PersonaSelection (tela /acesso) | ⏸ Pendente | — |
-| 4 | Persona Adotante (refator + features) | ⏸ Pendente | — |
-| 5 | Persona Doador (novo) | ⏸ Pendente | — |
-| 6 | Persona Membro de Abrigo | ⏸ Pendente | — |
-| 7 | Persona Membro de Comunidade | ⏸ Pendente | — |
-| 8 | Persona Voluntário (com pool) | ⏸ Pendente | — |
-| 9 | Persona Platform Admin | ⏸ Pendente | — |
-| 10 | Polimento e rollout | ⏸ Pendente | — |
+| **2** | PersonaSwitcher + PersonaGate + PersonaBottomTabBar | ✅ DONE | (bdd400ef) |
+| **3** | PersonaSelection + ShelterEntry + CommunityEntry + DonorOnboarding + App.jsx + Layout.jsx | ✅ DONE | (e5946da0) |
+| **4** | Persona Adotante (AdopterOnboarding wrapper) | ✅ DONE | (2925fe93) |
+| **5** | Persona Doador (DonorDashboard, PetTransferDialog, useUserClubMemberships) | ✅ DONE | (2925fe93) |
+| **6** | Persona Membro de Abrigo (ShelterPicker) | ✅ DONE | (2925fe93) |
+| **7** | Persona Membro de Comunidade (estrutura análoga) | 🟡 PARCIAL | — |
+| **8** | Persona Voluntário (VolunteerShelterPicker, VolunteerPool) | ✅ DONE | (2925fe93) |
+| **9** | Persona Platform Admin (AdminPersonaView) | ✅ DONE | (this commit) |
+| 10 | Polimento e rollout (testes, docs finais) | 🟡 EM ANDAMENTO | — |
 | 11 | Limpeza (remover legados) | ⏸ Pendente | — |
 
 **Legenda**: ✅ Done | 🟡 Em andamento | ⏸ Pendente | ❌ Bloqueado
+
+## §0.1. Resumo de Entregas (Fases 0-9)
+
+**Componentes criados (15 arquivos):**
+- `src/core/domain/personas.js` + `.test.js` (29 testes)
+- `src/core/services/personaService.js` + `.test.js` (20 testes)
+- `src/core/hooks/useActivePersona.js` + `.test.js` (6 testes)
+- `src/components/PersonaSwitcher.jsx`
+- `src/components/PersonaBottomTabBar.jsx`
+- `src/components/guards/PersonaGate.jsx` + `.test.js` (10 testes)
+- `src/components/ShelterPicker.jsx`
+- `src/components/VolunteerShelterPicker.jsx`
+- `src/pages/PersonaSelection.jsx`
+- `src/pages/onboarding/{AdopterOnboarding,ShelterEntry,CommunityEntry,DonorOnboarding}.jsx`
+- `src/pages/DonorDashboard.jsx`
+- `src/pages/VolunteerPool.jsx`
+- `src/modules/pets/components/PetTransferDialog.jsx`
+- `src/modules/admin/pages/AdminPersonaView.jsx`
+- `src/modules/organizations/hooks/useUserClubMemberships.js`
+
+**Arquivos modificados (3):**
+- `src/App.jsx`: 8 novas rotas, ONBOARDING_ALLOWED_PATHS expandido
+- `src/components/Layout.jsx`: PersonaSwitcher + Pickers no TopBar, PersonaBottomTabBar condicional
+- `src/core/featureFlags.js`: 11 flags V4_PERSONA_*
+
+**Total de testes novos: 65** (29 personas + 20 personaService + 6 useActivePersona + 10 PersonaGate)
+
+**Total de testes passing: 364+** (core) + 4 (Layout) + 65 (novos) = **~430 testes sem regressão**
 
 ---
 

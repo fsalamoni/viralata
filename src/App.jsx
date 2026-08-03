@@ -48,6 +48,7 @@ const DonorOnboarding = lazy(() => import('@/pages/onboarding/DonorOnboarding'))
 const AdopterOnboarding = lazy(() => import('@/pages/onboarding/AdopterOnboarding'));
 const DonorDashboard = lazy(() => import('@/pages/DonorDashboard'));
 const VolunteerPool = lazy(() => import('@/pages/VolunteerPool'));
+const AdminPersonaView = lazy(() => import('@/modules/admin/pages/AdminPersonaView'));
 const ShelterPublic = lazy(() => import('@/pages/ShelterPublic'));
 const BannedNotice = lazy(() => import('@/pages/BannedNotice'));
 const AdminDebugPage = lazy(() => import('@/pages/AdminDebugPage'));
@@ -684,6 +685,13 @@ export default function App() {
                   path="/voluntarios/pool"
                   element={
                     <ProtectedRoute>{withLayout('VolunteerPool', VolunteerPool)}</ProtectedRoute>
+                  }
+                />
+                {/* AdminPersonaView: visão agregada de personas (admin only) */}
+                <Route
+                  path="/admin/personas"
+                  element={
+                    <AdminRoute>{withLayout('AdminPersonaView', AdminPersonaView)}</AdminRoute>
                   }
                 />
 
