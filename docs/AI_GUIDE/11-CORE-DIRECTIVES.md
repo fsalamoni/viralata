@@ -956,4 +956,120 @@ function PetDetailV3() {
 
 ---
 
-**Próxima leitura**: `12-CODING-STANDARDS.md` (padrões de código detalhados), `13-DECISIONS.md` §10-13 (D-VOLUNTEER-*, D-DEBUG-*, D-FIRESTORE-*, D-LAZY-DEFAULT-EXPORT).
+## §21. Regras de Batch Operations (D-FIRESTORE-BATCH-AFTER, PR #207)
+
+**REGRA INViolável**: Em `writeBatch` que cria doc E referencia
+ele na mesma operação, a rule DEVE usar `getAfter` / `existsAfter`
+para enxergar o estado pós-commit. Caso contrário, o doc ainda
+não existe no momento da avaliação da rule → "permission denied".
+
+```js
+// ❌ Errado (em batch, get() vê o doc ANTES do commit)
+function isClubOwnerUid(clubId, uid) {
+  return exists(/databases/$(database)/documents/clubs/$(clubId))
+    && get(/databases/$(database)/documents/clubs/$(clubId)).data.created_by == uid;
+}
+
+// ✅ Correto (em batch, getAfter() vê o doc APÓS o commit)
+function isClubOwnerUidAfter(clubId, uid) {
+  return existsAfter(/databases/$(database)/documents/clubs/$(clubId))
+    && getAfter(/databases/$(database)/documents/clubs/$(clubId)).data.created_by == uid;
+}
+```
+
+**Aplicação típica**:
+- `createClub` (cria doc do clube + membership admin no mesmo batch)
+- `joinClubByCode` (cria membership + incrementa `member_count` no mesmo batch)
+- Qualquer batch que **cria** um doc e em paralelo **atualiza**
+  outro que referencia o primeiro
+
+**Sem impacto de segurança**: o doc é criado pelo próprio user
+que está sendo avaliado, então ele se autoautoriza.
+
+**Quando usar**:
+- `exists()` / `get()`: para updates normais (doc já existe)
+- `existsAfter()` / `getAfter()`: para batch/transaction que cria o doc
+- `request.resource.data`: para validações de **campos do update**
+  (sempre disponível, independente de batch)
+
+---
+
+## §22. Regras de Counter Patterns (D-FIRESTORE-COUNTER-OPEN-TO-MEMBERS, PR #208)
+
+**REGRA INViolável**: Quando o **doc-pai tem um campo denormalizado**
+(contador, last_activity, etc) que é atualizado por **outros
+atores** ao criar subdocs, a rule de update do doc-pai DEVE ter
+um ramo que libera atualizar **SOMENTE esses campos** para os
+atores relevantes.
+
+**Padrão recomendado** (reutilizável):
+```js
+allow update: if isAuth() && (
+  // 1. Autor/admin com regras específicas
+  isAuthorOrAdmin() ||
+  // 2. Qualquer ator pode atualizar SOMENTE contadores
+  isOnlyCountersUpdate(['counter1', 'counter2', 'updated_at'])
+);
+
+function isOnlyCountersUpdate(allowedFields) {
+  return request.resource.data.diff(resource.data).affectedKeys()
+    .hasOnly(allowedFields);
+}
+```
+
+**Aplicação típica**:
+- `club_posts.likes_count` / `comments_count`
+- `community_posts.likes_count` / `comments_count`
+- `club_forum_threads.comment_count` / `last_activity_ms` /
+  `participant_ids`
+
+**O doc de like/comentário continua gated à parte**; **contadores
+são cosméticos** (a verdade é a subcoleção).
+
+**Helper compartilhado**: `isOnlyCountersUpdate(allowedFields)` em
+`firestore.rules`, reutilizado entre mural ONG, mural comunidade
+e fórum.
+
+**Padrão de campos atualizáveis por ator**:
+- Autor: pode editar o post (até receber curtidas)
+- Admin: pode editar tudo
+- Membro: pode atualizar SOMENTE contadores
+
+---
+
+## §23. Regras de Pet Operations (D-PET-OPS-*, PR #204..#206)
+
+**REGRA INViolável**: Todas as subcoleções operacionais do pet
+seguem o **mesmo modelo de dados unificado**:
+- Campo de data nativo (ex.: `visit_date`, `start_date`, `care_date`)
+- `scheduled_for` (opcional, ISO date) — agendamento para o futuro
+- `completed_at` (opcional, ISO) — marca agendamento como realizado
+
+**Status derivado em runtime** (D-PET-OPS-STATUS-DERIVED):
+```js
+recordStatus(record, dateField) // retorna 'done' | 'scheduled' | 'overdue'
+```
+
+**Data efetiva** (D-PET-OPS-DATE-EFFECTIVE):
+```js
+const effectiveDate = record.scheduled_for ?? record[dateField];
+```
+
+**Regras de uso**:
+- **Tabelas operacionais** (`SHELTER_PET_OPS_TABLES_V1`): mostram
+  contadores, status, proximidade
+- **Página do pet** (PetDetailV3): CRUD só para `canManage=true`;
+  visitantes veem `PublicHealthRecord` (read-only, só `done`)
+- **Toda tabela/seletor de pet**: mostra nome + ID imutável
+  `#000001` / `pet_code` (D-PET-ID-DISPLAY)
+- **Medicação** (D-PET-MEDICATION-VIA-MEDICAL-SERVICE): DEVE usar
+  `petMedicalService` (NÃO service legado)
+
+**Configuração declarativa** (D-PET-OPS-DECLARATIVE-CONFIGS):
+- Sub-abas definidas em `PET_OPS_CONFIGS` em `petOpsConfigs.jsx`
+- Adicionar nova sub-aba = adicionar entrada no config (zero
+  código duplicado)
+
+---
+
+**Próxima leitura**: `12-CODING-STANDARDS.md` (padrões de código detalhados), `13-DECISIONS.md` §10-15 (D-VOLUNTEER-*, D-DEBUG-*, D-FIRESTORE-*, D-LAZY-DEFAULT-EXPORT, D-PET-OPS-*).

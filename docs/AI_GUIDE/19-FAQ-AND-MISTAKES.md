@@ -1,6 +1,6 @@
 # 19-FAQ-AND-MISTAKES.md — FAQ + Erros Comuns
 
-> **Atualizado em 2026-08-03** (sw-v75..v97)
+> **Atualizado em 2026-08-03** (sw-v75..v97 + PR #204..#208)
 >
 > Respostas para perguntas frequentes + armadilhas comuns.
 
@@ -876,4 +876,133 @@ npm ls | grep <X>
 Aplicação em sw-v94: `pdfkit` faltando em `functions/package.json`
 foi adicionado. Ver `D-FUNCTIONS-DEPS-CHECK` em
 `13-DECISIONS.md` §13.
+
+### Q: Usuário não-admin tenta criar organização e recebe "permission-denied", mas platform_admin consegue. O que está errado?
+
+**R**: O `createClub` provavelmente grava o doc do clube E o
+membership admin do criador no MESMO `writeBatch`. A regra de
+create de `club_members` está usando `isClubOwnerUid` (get do
+clube), mas em um batch o clube **ainda não foi commitado** → negado.
+
+**Fix (D-FIRESTORE-BATCH-AFTER)**: usar `getAfter` / `existsAfter`:
+
+```js
+// ❌ Errado (em batch, get() vê o doc ANTES do commit)
+function isClubOwnerUid(clubId, uid) {
+  return exists(/databases/$(database)/documents/clubs/$(clubId))
+    && get(/databases/$(database)/documents/clubs/$(clubId)).data.created_by == uid;
+}
+
+// ✅ Correto
+function isClubOwnerUidAfter(clubId, uid) {
+  return existsAfter(/databases/$(database)/documents/clubs/$(clubId))
+    && getAfter(/databases/$(database)/documents/clubs/$(clubId)).data.created_by == uid;
+}
+```
+
+**Aplicação em PR #207**:
+- `createClub` (criação de organização/abrigo)
+- `joinClubByCode` (entrar por convite/código)
+
+**Sem impacto de segurança**: o criador só vira admin do clube
+que ele mesmo cria.
+
+Ver `D-FIRESTORE-BATCH-AFTER` em `13-DECISIONS.md` §15 e
+`14-TROUBLESHOOTING.md` §15.1.
+
+### Q: pet_seq duplica para usuários não-admin ao cadastrar pets. Por quê?
+
+**R**: O `getNextPetSeq` usa `runTransaction` em
+`pet_seq_counter/global`, mas a regra restringia a `platform_admin`.
+A transação de outros usuários **falhava silenciosamente**, caindo
+no fallback por timestamp, que **quebra a unicidade**.
+
+**Fix (D-FIRESTORE-COUNTER-OPEN-AUTH)**: liberar `pet_seq_counter`
+para qualquer auth:
+
+```js
+match /pet_seq_counter/{counterId} {
+  allow read, write: if isAuth();
+}
+```
+
+**Doc só guarda value** (sem PII ou dados sensíveis), então é
+seguro abrir.
+
+Ver `D-FIRESTORE-COUNTER-OPEN-AUTH` em `13-DECISIONS.md` §15.
+
+### Q: Membro comum não consegue curtir/comentar em post do mural. O que está errado?
+
+**R**: A transação que cria o doc de like/comment E incrementa
+`likes_count` / `comments_count` no post-pai via `updateDoc` é
+barrada pela regra de update do post-pai (que só permite
+autor/admin/permission).
+
+**Fix (D-FIRESTORE-COUNTER-OPEN-TO-MEMBERS)**: adicionar ramo
+que libera atualizar **SOMENTE contadores** para membros:
+
+```js
+function isOnlyCountersUpdate(allowedFields) {
+  return request.resource.data.diff(resource.data).affectedKeys()
+    .hasOnly(allowedFields);
+}
+
+allow update: if isAuth() && (
+  isAuthorOrAdmin() ||
+  (isClubMember(clubId) && isOnlyCountersUpdate(['likes_count', 'comments_count', 'updated_at']))
+);
+```
+
+**Aplicação em PR #208**:
+- `club_posts` (mural da ONG)
+- `community_posts` (mural da comunidade)
+- `club_forum_threads` (fórum da ONG)
+
+Ver `D-FIRESTORE-COUNTER-OPEN-TO-MEMBERS` em `13-DECISIONS.md` §15
+e `14-TROUBLESHOOTING.md` §16.1.
+
+### Q: Como criar uma nova sub-aba operacional do abrigo (ex.: nova coleção em pets/{petId})?
+
+**R**: Use o **modelo declarativo** (D-PET-OPS-DECLARATIVE-CONFIGS):
+
+1. **Service**: criar CRUD em `petMedicalService.js` (ou similar)
+   ```js
+   export const listNewCollection = async (petId) => { ... };
+   export const createNewCollection = async (petId, data, actor) => { ... };
+   // ... update, delete
+   ```
+
+2. **Config**: adicionar entrada em `PET_OPS_CONFIGS` em
+   `petOpsConfigs.jsx`:
+   ```js
+   new_collection: {
+     key: 'new_collection',
+     tabKey: 'ops_new_collection',
+     title: 'Nova Coleção',
+     icon: IconName,
+     dateField: 'native_date_field',
+     dateLabel: 'Data',
+     emptyHint: 'Nenhuma nova coleção registrada.',
+     listFn: listNewCollection,
+     createFn: createNewCollection,
+     updateFn: updateNewCollection,
+     deleteFn: deleteNewCollection,
+     fields: [
+       { name: 'name', label: 'Nome', type: 'text', required: true },
+       { name: 'native_date_field', label: 'Data', type: 'date', required: true },
+     ],
+     columns: [
+       { key: 'name', label: 'Nome' },
+     ],
+   },
+   ```
+
+3. **Ativar flag**: `SHELTER_PET_OPS_TABLES_V1 = true` em
+   `core/featureFlags.js`.
+
+**Vantagem**: zero código duplicado. Container `PetOpsTab` e form
+genérico `PetOpsForm` consomem o config automaticamente.
+
+Ver `D-PET-OPS-DECLARATIVE-CONFIGS` em `13-DECISIONS.md` §14 e
+`REGENCY_PET_OPS_V3.md` §14.
 

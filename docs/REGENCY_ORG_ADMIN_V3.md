@@ -1,6 +1,6 @@
 # Documento de Regência — ORG_ADMIN V3
 
-> **Status**: ✅ DEPLOYED (TASK-V3-ORG_ADMIN) + ciclo de correções sw-v92 (React #306 fix)
+> **Status**: ✅ DEPLOYED (TASK-V3-ORG_ADMIN) + ciclo de correções sw-v92 (React #306) + PR #206/#207/#208 (permissions)
 > **Diretriz ETERNA**: `docs/PAGE_REGENCY_TEMPLATE.md`
 > **Atualizado em**: 2026-08-03
 
@@ -467,3 +467,165 @@ named export only.
 
 `AdoptionDetail.jsx`: `useQuery` (postAdoption) chamado após early return,
 violando rules-of-hooks → movido para antes dos returns.
+
+---
+
+## §17. CRITICAL FIX — Permissions para Usuários Não-Admin (PR #207, 2026-08-03)
+
+Vários fluxos davam "Missing or insufficient permissions" para
+qualquer usuário que não fosse o `platform_admin`. Causas e
+correções em `firestore.rules`:
+
+### 1. Criar organização/abrigo (`createClub`)
+
+**Causa**: `createClub` grava o doc do clube E o membership admin
+do criador no MESMO `writeBatch`. A regra de create de
+`club_members` exigia `isClubOwnerUid` (get do clube), mas em um
+batch o clube **ainda não foi commitado** → negado.
+
+**Fix**: Adiciona `isClubOwnerUidAfter` (getAfter/existsAfter) e
+permite o criador autocriar sua associação admin quando o clube
+está sendo criado no mesmo batch.
+
+### 2. Entrar no abrigo por convite/código (`joinClubByCode`)
+
+**Causa**: `joinClubByCode` grava o membership E incrementa
+`member_count` no mesmo batch. A regra de update do clube exigia
+`isClubMember`, mas o membership é criado no mesmo batch → negado.
+
+**Fix**: Adiciona `isClubMemberAfter` (existsAfter) ao ramo de
+`member_count`.
+
+### 3. Cadastrar pets (`getNextPetSeq`)
+
+**Causa**: `getNextPetSeq` usa `runTransaction` em
+`pet_seq_counter/global`, mas a regra restringia a `platform_admin`.
+A transação de todos os outros usuários falhava (caindo no fallback
+por timestamp, que quebra a **unicidade do pet_seq**).
+
+**Fix**: Libera leitura/escrita do contador para qualquer usuário
+autenticado (doc só guarda value).
+
+### 4. Inscrever-se como voluntário (`JoinVolunteerModal`)
+
+**Causa**: Hook chamado com shape errado (`useAcceptVolunteerTerms`
+sem uid; payloads sem `acceptance/actor/input`; sem
+`signature_text`; lia `terms_accepted_version` inexistente).
+
+**Fix**: Reescreve `handleSubmit` para o contrato correto, coleta
+a assinatura eletrônica no passo do termo, e relaxa a regra de
+create de `volunteer_profile` (valida os campos de assinatura só
+quando presentes; o aceite continua imutável em
+`terms_acceptances` e reforçado na rostagem).
+
+### Mecanismo `getAfter` / `existsAfter`
+
+```js
+// isClubOwnerUid (antes do commit) — usado em updates normais
+function isClubOwnerUid(clubId, uid) {
+  return exists(/databases/$(database)/documents/clubs/$(clubId))
+    && get(/databases/$(database)/documents/clubs/$(clubId)).data.created_by == uid;
+}
+
+// isClubOwnerUidAfter (depois do commit) — usado em batches onde o clube é criado junto
+function isClubOwnerUidAfter(clubId, uid) {
+  return existsAfter(/databases/$(database)/documents/clubs/$(clubId))
+    && getAfter(/databases/$(database)/documents/clubs/$(clubId)).data.created_by == uid;
+}
+```
+
+### D-* decisões
+
+| ID | Decisão |
+|---|---|
+| **D-FIRESTORE-BATCH-AFTER** | Em `writeBatch` que cria doc E referencia ele (ex.: createClub), usar `getAfter`/`existsAfter` na rule para enxergar estado pós-commit |
+| **D-FIRESTORE-COUNTER-OPEN-AUTH** | `pet_seq_counter/global` é liberado para qualquer auth (doc só guarda value, sem dados sensíveis) |
+| **D-VOLUNTEER-SIGN-AT-TERM-STEP** | `signature_text` é coletado no passo do termo (NÃO no submit final) |
+
+---
+
+## §18. CRITICAL FIX — Curtir/Comentar no Mural e Fórum (PR #208, 2026-08-03)
+
+Várias ações sociais comuns davam permission-denied para quem não
+era autor/admin, porque a transação/updateDoc que incrementa o
+contador no doc-pai era barrada pela regra de update.
+
+### 1. Mural da ONG (`club_posts`)
+
+**Causa**: Curtir/comentar incrementa `likes_count` /
+`comments_count` no post via transação. A regra de update só
+permitia autor (com 0 curtidas), admin ou permissão `feed` →
+membro comum não conseguia curtir nem comentar.
+
+**Fix**: Adiciona ramo que libera atualizar **SOMENTE os
+contadores** (sem alterar outros campos).
+
+### 2. Mural da comunidade (`community_posts`)
+
+Mesmo caso: curtir/comentar incrementa `likes_count` /
+`comments_count`, mas a regra só permitia autor ou admin da
+comunidade.
+
+**Fix**: Adiciona o mesmo ramo de contadores.
+
+### 3. Fórum da ONG (`club_forum_threads`)
+
+**Causa**: Ao comentar num tópico, o serviço atualiza
+`comment_count` / `last_activity_ms` / `participant_ids` do
+tópico. A regra só permitia autor/admin → para não-autores a
+atualização era negada (silenciosa, mas o tópico não subia nem
+contava direito).
+
+**Fix**: Libera membros do clube a atualizar **SOMENTE esses
+campos de atividade**.
+
+### Padrão usado (D-FIRESTORE-IS-ONLY-COUNTERS-UPDATE)
+
+Padrão idêntico ao já existente em `club_forum_threads(likes)` /
+`community_forum_threads` / `community_forum_messages` (hasOnly de
+contadores). O **doc de like/comentário continua gated** à parte;
+**contadores são cosméticos** (a verdade é a subcoleção). Sem
+ampliação de acesso relevante.
+
+```js
+// Helper compartilhado
+function isOnlyCountersUpdate(allowedFields) {
+  return request.resource.data.diff(resource.data).affectedKeys()
+    .hasOnly(allowedFields);
+}
+
+// Regra de update de club_posts
+allow update: if isAuth() && (
+  // 1. Autor com 0 curtidas
+  (resource.data.author_uid == request.auth.uid && resource.data.likes_count == 0) ||
+  // 2. Admin
+  isClubAdmin(clubId) ||
+  // 3. Permissão 'feed'
+  hasClubPermission(clubId, 'feed') ||
+  // 4. NOVO: qualquer membro pode atualizar SOMENTE contadores
+  (isClubMember(clubId) && isOnlyCountersUpdate(['likes_count', 'comments_count', 'updated_at']))
+);
+```
+
+### D-* decisões
+
+| ID | Decisão |
+|---|---|
+| **D-FIRESTORE-COUNTER-OPEN-TO-MEMBERS** | Qualquer membro do clube pode atualizar SOMENTE contadores denormalizados. O doc de like/comentário continua gated. |
+| **D-FIRESTORE-IS-ONLY-COUNTERS-UPDATE** | Helper `isOnlyCountersUpdate(fields)` valida que `affectedKeys().hasOnly(fields)` antes de permitir o update |
+
+---
+
+## §19. Histórico Consolidado (Atualizado 2026-08-03)
+
+| Data | Evento |
+|---|---|
+| 2026-07-19 23:50 | V3 implementada (45KB, 8 sub-componentes) |
+| 2026-07-19 23:50 | Regência preenchida (15 seções) |
+| 2026-07-19 23:50 | Deploy + SCRUM update |
+| 2026-07-30 04:00 | sw-v91: `SHOW_VOLUNTEERS_TAB = false` (aba volunteers desabilitada) |
+| 2026-07-31 00:20 | sw-v92: 9 abas do painel corrigidas (React.lazy + export default) — Painel volunteers REABILITADO |
+| 2026-07-31 04:10 | sw-v93: AdoptionDetail useQuery após early return corrigido |
+| 2026-08-01 18:00 | **PR #206**: Fix medicação + pet ID display + status por data efetiva |
+| 2026-08-03 14:34 | **PR #207**: Fix permissions (criar abrigos, entrar, pets, voluntários) — `getAfter`/`existsAfter` em batches |
+| 2026-08-03 14:53 | **PR #208**: Fix permissions (curtir/comentar em mural e fórum) — `isOnlyCountersUpdate` |

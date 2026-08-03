@@ -603,3 +603,187 @@ O workflow de §8.3 (para bugs persistentes) foi REVISADO e expandido:
 - **Cloud Function `generateVolunteerCertificate`** corrigida
 - **~190 falsos positivos** de lint eliminados
 - **1378 testes passando**
+
+---
+
+## §10. Features + Permissions (PR #204..#208, 2026-07-31..08-03)
+
+### §10.1. Contexto
+
+5 PRs importantes entregues em 3 dias (2026-07-31 a 2026-08-03):
+
+| PR | Data | Descrição |
+|---|---|---|
+| #204 | 2026-07-31 | Tabelas operacionais agregadas (SHELTER_PET_OPS_TABLES_V1) |
+| #205 | 2026-07-31 | Agendamento + status na página do pet + CRUD de vacinas/vermifugação |
+| #206 | 2026-08-01 | Fix medicação + ID do pet + status por data |
+| #207 | 2026-08-03 | Fix permissions: criar abrigos, entrar, pets, voluntários |
+| #208 | 2026-08-03 | Fix permissions: curtir/comentar em mural e fórum |
+
+### §10.2. PR #204 — Tabelas Operacionais Agregadas (SHELTER_PET_OPS_TABLES_V1)
+
+**Commit**: `20127d3c` (2026-07-31 15:30)
+
+**Feature flag**: `SHELTER_PET_OPS_TABLES_V1` (default OFF, ativada
+em `73a70be7`).
+
+**Implementação**: 7 tabelas operacionais agregadas na aba
+"Operacional" do painel admin da ONG:
+1. Medicações (`ops_medications`)
+2. Consultas veterinárias (`ops_vet_visits`)
+3. Tratamentos (`ops_treatments`)
+4. Vacinas/Vermifugação (`ops_health_records`)
+5. Cuidados (`ops_care_log`)
+6. Devoluções (`ops_devolutions`)
+7. Histórico de adotantes (`ops_adopters_history`)
+
+**Arquitetura declarativa**:
+- `PET_OPS_CONFIGS` em `petOpsConfigs.jsx` (7 configs)
+- `PetOpsTab` (container genérico) + `PetOpsTable` (lista) + `PetOpsForm` (formulário)
+- `petOpsScheduling.js` (lógica pura, testada)
+- `petHealthRecordsService.js` (novo service para health_records)
+
+**Modelo unificado** (D-PET-OPS-UNIFIED-MODEL):
+- Campo de data nativo + `scheduled_for` (opcional) + `completed_at` (opcional)
+- Status derivado em runtime: `done` / `scheduled` / `overdue`
+
+**Total**: 11 arquivos modificados, ~1100 linhas adicionadas.
+
+### §10.3. PR #205 — Agendamento + Status na Página do Pet
+
+**Commit**: `08e8b183` (2026-07-31 15:52, merge de `ac9a10f1`)
+
+Leva o **modelo de agendamento** das tabelas operacionais para
+DENTRO da página do pet (PetDetailV3) e no banco de dados do pet
+— tudo vinculado à mesma subcoleção `pets/{petId}/...`, **sem
+duplicar dados**.
+
+**Peças compartilhadas**:
+- `SchedulingFields.jsx` — toggle "Agendar para data futura"
+- `RecordStatusBadge.jsx` — badge Agendada/Atrasada + proximidade
+- `initScheduled()` / `applyScheduling()` — helpers puros
+
+**Formulários com agendamento** (gravam `scheduled_for`):
+- `PetVetVisitForm`, `PetTreatmentForm`, `PetCareLogForm`,
+  `PetDevolutionForm`
+
+**Listas com badge de status/proximidade**:
+- `PetVetVisits`, `PetTreatments`, `PetDevolutions`,
+  `PetAdoptersHistory`
+
+**Vacinas e vermifugação (CRUD novo na página do pet)**:
+- `usePetHealthRecords.js` — hook CRUD
+- `PetHealthRecordForm.jsx` — form com agendamento (154 linhas)
+- `PetHealthRecords.jsx` — lista de gestão (92 linhas)
+- Visão pública: `PublicHealthRecord` (read-only, só `done`)
+
+**Total**: 18 arquivos modificados, ~500 linhas adicionadas.
+
+### §10.4. PR #206 — Fix Tabelas Operacionais (Medicação, ID, Status)
+
+**Commit**: `52e95658` (2026-08-01 01:24)
+
+4 ajustes nas tabelas operacionais do abrigo e na página de saúde
+do pet:
+
+1. **Medicação na saúde do pet** — `PetMedicationForm` agora usa
+   `petMedicalService` (injeta `actor.uid`); adiciona opção de
+   agendar para data futura.
+
+2. **Coluna PET das planilhas** — mostra nome (ou "Sem nome") E
+   ID imutável `#000001` / `pet_code` no mesmo padrão do painel
+   admin. Também no seletor de pet do modal de registro.
+
+3. **Datas corretamente classificadas** — `recordStatus()` considera
+   data efetiva (`scheduled_for ?? dateField`). Registro sem
+   `scheduled_for` mas com data nativa no futuro → "Agendada"
+   (antes: "Realizada"). `proximityLabel`, `isUpcoming`,
+   `summarizeAlerts` e `RecordStatusBadge` recebem `dateField`.
+
+4. **Seletor "Novo registro"** — lista todos os pets do abrigo
+   (`useMyPets`). Com o ID visível, pets sem nome são distinguíveis.
+
+### §10.5. PR #207 — Fix Permissions (Criar Abrigos, Entrar, Pets, Voluntários)
+
+**Commit**: `921ff92e` (2026-08-03 14:34)
+
+Vários fluxos davam "Missing or insufficient permissions" para
+qualquer usuário que não fosse o `platform_admin`. 4 correções
+em `firestore.rules`:
+
+1. **Criar organização/abrigo** (`createClub`):
+   - Causa: doc do clube + membership admin no mesmo `writeBatch`
+   - Fix: `isClubOwnerUidAfter` (getAfter/existsAfter)
+
+2. **Entrar no abrigo por convite/código** (`joinClubByCode`):
+   - Causa: membership + `member_count++` no mesmo batch
+   - Fix: `isClubMemberAfter` (existsAfter) no ramo de `member_count`
+
+3. **Cadastrar pets** (`getNextPetSeq`):
+   - Causa: `pet_seq_counter/global` restrito a `platform_admin`
+   - Fix: libera leitura/escrita do contador para qualquer auth
+
+4. **Inscrever-se como voluntário** (`JoinVolunteerModal`):
+   - Causa: hook chamado com shape errado; payloads sem
+     `acceptance/actor/input`; sem `signature_text`; lia
+     `terms_accepted_version` inexistente
+   - Fix: reescreve `handleSubmit` para o contrato correto;
+     coleta assinatura no passo do termo; relaxa rule de
+     `volunteer_profile` create
+
+**Mecanismo `getAfter`/`existsAfter`**: próprio do Firestore para
+writes em batch/transação. Sem impacto de segurança: o criador
+só vira admin do clube que ele mesmo cria.
+
+### §10.6. PR #208 — Fix Permissions (Curtir/Comentar Mural e Fórum)
+
+**Commit**: `f707062b` (2026-08-03 14:53)
+
+Auditoria completa das regras de contadores denormalizados:
+várias ações sociais comuns davam permission-denied para quem
+não era autor/admin, porque a transação que incrementa o
+contador no doc-pai era barrada pela regra de update.
+
+3 correções em `firestore.rules`:
+
+1. **Mural da ONG** (`club_posts`) — curtir/comentar:
+   - Fix: ramo que libera atualizar **SOMENTE** `likes_count` /
+     `comments_count`
+
+2. **Mural da comunidade** (`community_posts`) — mesmo caso:
+   - Fix: mesmo ramo de contadores
+
+3. **Fórum da ONG** (`club_forum_threads`) — comentar:
+   - Fix: libera membros do clube a atualizar **SOMENTE** esses
+     campos de atividade
+
+**Padrão usado** (D-FIRESTORE-IS-ONLY-COUNTERS-UPDATE):
+```js
+allow update: if isAuth() && (
+  isAuthorOrAdmin() ||
+  (isMember() && isOnlyCountersUpdate(['likes_count', 'comments_count', 'updated_at']))
+);
+
+function isOnlyCountersUpdate(allowedFields) {
+  return request.resource.data.diff(resource.data).affectedKeys()
+    .hasOnly(allowedFields);
+}
+```
+
+Padrão idêntico ao já existente em `club_forum_threads(likes)` /
+`community_forum_threads` / `community_forum_messages` (hasOnly
+de contadores). O **doc de like/comentário continua gated**;
+**contadores são cosméticos** (a verdade é a subcoleção).
+
+### §10.7. Métricas (PR #204..#208)
+
+| Métrica | Valor |
+|---|---|
+| Total de PRs | 5 |
+| Total de arquivos modificados | ~30 |
+| Total de linhas adicionadas | ~2000+ |
+| Total de D-* decisões | 10 (D-PET-OPS-*, D-FIRESTORE-*) |
+| Sub-abas operacionais adicionadas | 7 (SHELTER_PET_OPS_TABLES_V1) |
+| Componentes compartilhados criados | 3 (SchedulingFields, RecordStatusBadge, helpers) |
+| Services criados | 1 (petHealthRecordsService) |
+| Regras Firestore corrigidas | 4 (criar abrigo, entrar, pets, voluntários) + 3 (contadores) |

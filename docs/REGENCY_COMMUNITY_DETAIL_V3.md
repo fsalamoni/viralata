@@ -1,8 +1,8 @@
 # Documento de Regência — COMMUNITY_DETAIL V3
 
-> **Status**: ✅ DEPLOYED (TASK-V3-COMMUNITY-DETAIL)
+> **Status**: ✅ DEPLOYED (TASK-V3-COMMUNITY-DETAIL) + fix permissions PR #208
 > **Diretriz ETERNA**: `docs/PAGE_REGENCY_TEMPLATE.md`
-> **Atualizado em**: 2026-07-19
+> **Atualizado em**: 2026-08-03
 
 ---
 
@@ -384,3 +384,76 @@
 | 2026-07-19 21:30 | V3 implementada (40KB, 5 sub-componentes) |
 | 2026-07-19 21:30 | Regência preenchida (15 seções) |
 | 2026-07-19 21:30 | Deploy + SCRUM update |
+| 2026-08-03 14:53 | **PR #208**: Fix permissions — mural da comunidade (curtir/comentar) agora funciona para qualquer membro |
+
+---
+
+## 16. CRITICAL FIX — Curtir/Comentar no Mural da Comunidade (PR #208, 2026-08-03)
+
+### Sintoma
+
+Membros comuns da comunidade (não-admin) não conseguiam curtir
+nem comentar em posts do mural (`community_posts`).
+
+Console error:
+```
+Error: Missing or insufficient permissions.
+```
+
+### Causa
+
+Curtir/comentar incrementa `likes_count` / `comments_count` no
+post via transação. A regra de update de `community_posts` só
+permitia autor ou admin da comunidade → membro comum era
+bloqueado silenciosamente.
+
+### Fix
+
+Adiciona ramo na regra de update de `community_posts` que libera
+atualizar **SOMENTE os contadores** (sem alterar outros campos).
+O doc de like/comentário continua gated à parte; **contadores são
+cosméticos** (a verdade é a subcoleção).
+
+```js
+// Helper compartilhado (adicionado em firestore.rules)
+function isOnlyCountersUpdate(allowedFields) {
+  return request.resource.data.diff(resource.data).affectedKeys()
+    .hasOnly(allowedFields);
+}
+
+// Regra de update de community_posts
+allow update: if isAuth() && (
+  isPostAuthor() ||
+  isCommunityAdmin(communityId) ||
+  // NOVO: qualquer membro pode atualizar SOMENTE contadores
+  (isCommunityMember(communityId) && isOnlyCountersUpdate(['likes_count', 'comments_count', 'updated_at']))
+);
+```
+
+### D-* decisões
+
+| ID | Decisão |
+|---|---|
+| **D-FIRESTORE-COUNTER-OPEN-TO-COMMUNITY-MEMBERS** | Qualquer membro da comunidade pode atualizar SOMENTE contadores denormalizados em `community_posts` |
+| **D-FIRESTORE-IS-ONLY-COUNTERS-UPDATE** | Helper `isOnlyCountersUpdate(fields)` reutilizado entre mural da ONG e mural da comunidade (e fórum) |
+
+### Lição
+
+Quando o **doc-pai tem um campo denormalizado** que é atualizado
+por outros (contadores, last_activity, etc), a regra de update do
+doc-pai DEVE ter um ramo que libera atualizar **SOMENTE esses
+campos** para os atores que criam os subdocs.
+
+**Padrão recomendado** (reutilizável):
+
+```js
+allow update: if isAuth() && (
+  // 1. Autor/admin com regras específicas
+  isAuthorOrAdmin() ||
+  // 2. Qualquer ator pode atualizar SOMENTE contadores
+  isOnlyCountersUpdate(['counter1', 'counter2', 'updated_at'])
+);
+```
+
+**Aplicação em PR #208**: 3 caminhos (mural ONG, mural comunidade,
+fórum ONG) seguem o mesmo padrão.

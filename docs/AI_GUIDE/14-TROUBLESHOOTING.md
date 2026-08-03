@@ -738,4 +738,182 @@ corrigidos.
 
 ---
 
-**Próxima leitura**: `15-RECENT-FIXES.md` §8-9 (linha do tempo completa do ciclo sw-v75..v97).
+## §15. Permission Denied em Batch Operations (PR #207, 2026-08-03)
+
+### §15.1. "Permission denied ao criar organização/abrigo (não-admin)"
+
+**Sintoma (PR #207)**: Usuário tenta criar organização via
+`createClub`. Recebe `Missing or insufficient permissions`. O
+`platform_admin` consegue criar normalmente.
+
+**Causa raiz**: `createClub` grava o doc do clube E o membership
+admin do criador no MESMO `writeBatch`. A regra de create de
+`club_members` exigia `isClubOwnerUid` (get do clube), mas em um
+batch o clube **ainda não foi commitado** → negado.
+
+**Diagnóstico**:
+```bash
+# No log do deploy ou emulators:start, procure:
+# "Invalid function name" — pode ser helper que não existe
+# "Missing or insufficient permissions" — geralmente permissão
+
+# Identifique se é batch/transaction
+grep -B 2 -A 10 "writeBatch" src/.../createClubService.js
+```
+
+**Fix (D-FIRESTORE-BATCH-AFTER)**: usar `getAfter` / `existsAfter`
+na rule:
+
+```js
+// ❌ Errado (em batch, get() vê o doc ANTES do commit)
+function isClubOwnerUid(clubId, uid) {
+  return exists(/databases/$(database)/documents/clubs/$(clubId))
+    && get(/databases/$(database)/documents/clubs/$(clubId)).data.created_by == uid;
+}
+
+// ✅ Correto
+function isClubOwnerUidAfter(clubId, uid) {
+  return existsAfter(/databases/$(database)/documents/clubs/$(clubId))
+    && getAfter(/databases/$(database)/documents/clubs/$(clubId)).data.created_by == uid;
+}
+```
+
+**Aplicação em PR #207**:
+- `createClub` (criação de organização/abrigo)
+- `joinClubByCode` (entrar por convite/código)
+
+**Sem impacto de segurança**: o criador só vira admin do clube
+que ele mesmo cria.
+
+### §15.2. "Pet_seq duplicado para usuários não-admin"
+
+**Sintoma (PR #207)**: Usuário cadastra pet. Às vezes o `pet_seq`
+duplica (em vez de incrementar no contador global). O `pet_seq`
+fica "1, 2, 3, 4, 5, 5" (com duplicata).
+
+**Causa**: `getNextPetSeq` usa `runTransaction` em
+`pet_seq_counter/global`, mas a regra restringia a
+`platform_admin`. A transação de todos os outros usuários
+**falhava silenciosamente**, caindo no fallback por timestamp,
+que **quebra a unicidade** do `pet_seq`.
+
+**Fix (D-FIRESTORE-COUNTER-OPEN-AUTH)**: liberar `pet_seq_counter`
+para qualquer auth:
+
+```js
+// firestore.rules
+match /pet_seq_counter/{counterId} {
+  allow read, write: if isAuth();  // qualquer usuário autenticado
+}
+```
+
+**Doc só guarda value** (sem PII ou dados sensíveis), então é
+seguro abrir.
+
+### §15.3. "Voluntário não consegue se inscrever (volunteer_profile)"
+
+**Sintoma (PR #207)**: Usuário tenta se inscrever como voluntário.
+Recebe `Missing or insufficient permissions` no create de
+`volunteer_profile`.
+
+**Causa**: `JoinVolunteerModal` chamava os hooks com shape errado:
+- `useAcceptVolunteerTerms` sem `uid`
+- Payloads sem `acceptance` / `actor` / `input`
+- Sem `signature_text`
+- Lia `terms_accepted_version` inexistente
+
+**Diagnóstico**:
+```bash
+# Verifique se a mutation chama o service corretamente
+grep -A 30 "handleSubmit" src/.../JoinVolunteerModal.jsx | head -40
+
+# Verifique o shape do payload
+grep -A 20 "acceptVolunteerTerms" src/.../volunteerProfileService.js
+```
+
+**Fix (D-VOLUNTEER-SIGN-AT-TERM-STEP)**: reescrever
+`handleSubmit` para o contrato correto, coletar `signature_text`
+no passo do termo, e relaxar a regra de create de
+`volunteer_profile` (valida os campos de assinatura só quando
+presentes).
+
+---
+
+## §16. Permission Denied em Contadores Denormalizados (PR #208, 2026-08-03)
+
+### §16.1. "Membro comum não consegue curtir/comentar em post"
+
+**Sintoma (PR #208)**: Membro comum do clube (não-admin, não-autor)
+clica em "curtir" num post do mural. Toast de erro aparece.
+
+Console:
+```
+Error: Missing or insufficient permissions.
+```
+
+**Causa raiz**: A transação que cria o doc de like/comment E
+incrementa `likes_count` / `comments_count` no post-pai via
+`updateDoc` é barrada pela regra de update do post-pai (que só
+permite autor/admin/permission).
+
+**Diagnóstico**:
+```bash
+# Verifique a rule de update do post-pai
+grep -A 20 "match /club_posts/{postId}" firestore.rules | grep -A 10 "allow update"
+
+# Verifique se a transação incrementa o contador
+grep -A 5 "transaction" src/.../likeService.js
+```
+
+**Fix (D-FIRESTORE-COUNTER-OPEN-TO-MEMBERS)**: adicionar ramo
+que libera atualizar **SOMENTE contadores** para membros:
+
+```js
+function isOnlyCountersUpdate(allowedFields) {
+  return request.resource.data.diff(resource.data).affectedKeys()
+    .hasOnly(allowedFields);
+}
+
+allow update: if isAuth() && (
+  isAuthorOrAdmin() ||
+  (isClubMember(clubId) && isOnlyCountersUpdate(['likes_count', 'comments_count', 'updated_at']))
+);
+```
+
+**Aplicação em PR #208**:
+- `club_posts` (mural da ONG)
+- `community_posts` (mural da comunidade)
+- `club_forum_threads` (fórum da ONG)
+
+**Sem impacto de segurança**: o **doc de like/comentário
+continua gated** à parte; **contadores são cosméticos** (a
+verdade é a subcoleção).
+
+### §16.2. "Tópico do fórum não sobe após comentário"
+
+**Sintoma (PR #208)**: Usuário comenta num tópico do fórum. O
+comentário aparece, mas o `comment_count` não incrementa, e o
+tópico não sobe na lista de "última atividade".
+
+**Causa**: O serviço atualiza `comment_count` / `last_activity_ms`
+/ `participant_ids` do tópico-pai via `updateDoc`. A regra de
+update do tópico-pai só permitia autor/admin → para não-autores,
+a atualização era negada silenciosamente (transação ainda
+commitava o doc de comentário, mas o pai não atualizava).
+
+**Fix (D-FIRESTORE-IS-ONLY-COUNTERS-UPDATE)**: liberar membros
+do clube a atualizar **SOMENTE** esses campos de atividade:
+
+```js
+allow update: if isAuth() && (
+  isThreadAuthor() ||
+  isClubAdmin(clubId) ||
+  (isClubMember(clubId) && isOnlyCountersUpdate([
+    'comment_count', 'last_activity_ms', 'participant_ids', 'updated_at'
+  ]))
+);
+```
+
+---
+
+**Próxima leitura**: `15-RECENT-FIXES.md` §8-10 (linha do tempo completa do ciclo sw-v75..v97 + PR #204..#208).

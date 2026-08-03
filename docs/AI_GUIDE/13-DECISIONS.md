@@ -1,6 +1,6 @@
 # 13-DECISIONS.md — Decisões Arquiteturais Importantes (D-*)
 
-> **Atualizado em 2026-07-31** (sw-v75..v91)
+> **Atualizado em 2026-08-03** (sw-v75..v97 + PR #204..#208)
 >
 > Decisões D-* são **invioláveis** a menos que explicitamente revertidas
 > por uma nova decisão. Antes de mudar algo, verifique se há D-*
@@ -813,3 +813,250 @@ Cloud Functions estão em `functions/package.json` (não nas deps
 do app principal).
 
 **Prevenção**: `npm ls` em CI para Cloud Functions.
+
+---
+
+## §14. Decisões de Pet Operations (PR #204+#205, 2026-07-31)
+
+### D-PET-OPS-UNIFIED-MODEL (PR #204, 2026-07-31)
+
+**Contexto**: 7 subcoleções operacionais do pet (medications,
+vet_visits, treatments, health_records, care_log, devolutions,
+adopters_history) têm schemas ligeiramente diferentes. O
+SHELTER_PET_OPS_TABLES_V1 agrega todas em uma única view.
+
+**Decisão**: Todas as 7 subcoleções seguem o **mesmo modelo**:
+- Campo de data nativo (ex.: `visit_date`, `start_date`, `care_date`)
+- `scheduled_for` (opcional, ISO date) — agendamento para o futuro
+- `completed_at` (opcional, ISO) — marca agendamento como realizado
+
+**Status derivado** (calculado em runtime, sem persistir):
+- `done` — realizado
+- `scheduled` — agendado para o futuro
+- `overdue` — agendado no passado, não realizado
+
+**Data efetiva** = `scheduled_for ?? <campo nativo>`
+
+**Aplicação**: definido em `src/modules/shelter/domain/operational/petOpsScheduling.js`.
+
+### D-PET-OPS-DECLARATIVE-CONFIGS (PR #204, 2026-07-31)
+
+**Contexto**: Cada sub-aba operacional (medicações, consultas, etc)
+precisa de config de colunas, formulário, listagem, CRUD. Código
+duplicado seria inviável.
+
+**Decisão**: Sub-abas definidas declarativamente em `PET_OPS_CONFIGS`
+(zero código duplicado). Cada config descreve:
+- `key`, `tabKey`, `title`, `icon`
+- `dateField`, `dateLabel`, `emptyHint`
+- `listFn`, `createFn`, `updateFn`, `deleteFn` (importados dos services)
+- `fields` (config do formulário)
+- `columns` (config da tabela)
+
+**Aplicação**: 7 entradas em `petOpsConfigs.jsx`. Container
+`PetOpsTab` e form genérico `PetOpsForm` consomem esses configs.
+
+**Vantagem**: adicionar nova sub-aba = adicionar entrada no config.
+
+### D-PET-OPS-STATUS-DERIVED (PR #204, 2026-07-31)
+
+**Contexto**: Status (done/scheduled/overdue) precisa estar visível
+na UI, mas persistir tem risco de dessincronização (campo
+desatualizado, migração, etc).
+
+**Decisão**: Status é **calculado em runtime** via `recordStatus()`,
+**NÃO persistido**. Single source of truth = campos do documento.
+
+**Aplicação**: `recordStatus(record, dateField)` em
+`petOpsScheduling.js`. Usado por `RecordStatusBadge`, tabelas
+operacionais, listas da página do pet.
+
+### D-PET-OPS-SCHEDULING-REUSE (PR #205, 2026-07-31)
+
+**Contexto**: Modelo de agendamento das tabelas operacionais do
+abrigo (SHELTER_PET_OPS_TABLES_V1) precisa estar também dentro da
+página do pet (PetDetailV3). Duplicar seria ruim.
+
+**Decisão**: Mesmo modelo de agendamento **reutilizado** entre
+tabelas do abrigo e página do pet. **Zero duplicação**:
+- `SchedulingFields` (toggle genérico)
+- `RecordStatusBadge` (badge genérico)
+- Helpers puros `initScheduled` / `applyScheduling` em
+  `petOpsScheduling.js` (testados)
+
+**Aplicação**: 4 formulários da página do pet usam
+`SchedulingFields` (PetVetVisitForm, PetTreatmentForm,
+PetCareLogForm, PetDevolutionForm). 4 listas usam
+`RecordStatusBadge`.
+
+### D-PET-OPS-MANAGE-ONLY-CRUD (PR #205, 2026-07-31)
+
+**Contexto**: Página do pet (PetDetailV3) tem 2 visões: admin do
+abrigo e visitante público. CRUD de saúde não deve aparecer para
+visitantes.
+
+**Decisão**: CRUD de saúde (vacinas, vermifugação, etc) **só
+aparece para quem `canManage=true`**. Visitantes veem
+`PublicHealthRecord` (read-only).
+
+**Aplicação**: `PetHealthRecordForm` + `PetHealthRecords` renderizados
+apenas se `canManage(pet, user)`. Visitantes veem
+`PublicHealthRecord` em `/pets/:id`.
+
+### D-PET-OPS-PUBLIC-ONLY-DONE (PR #205, 2026-07-31)
+
+**Contexto**: Visitantes públicos não devem ver agendamentos
+futuros (ainda NÃO aplicados). Só o que já foi realizado.
+
+**Decisão**: Visão pública do pet só mostra registros `done`.
+Agendamentos futuros ocultos.
+
+**Aplicação**: `PublicHealthRecord.jsx` filtra por `status === 'done'`.
+
+### D-PET-ID-DISPLAY (PR #206, 2026-08-01)
+
+**Contexto**: Pets sem nome eram indistinguíveis em tabelas
+operacionais e no seletor de pet do modal de registro.
+
+**Decisão**: Toda tabela/seletor de pet mostra nome (ou "Sem
+nome") + ID imutável `#000001` / `pet_code` no **mesmo padrão do
+painel admin**.
+
+**Aplicação em PR #206**:
+- Coluna PET das planilhas do abrigo
+- Seletor de pet do modal "Novo registro"
+- PetMedicationForm (saúde do pet)
+
+### D-PET-OPS-RECORD-STATUS-BY-DATE (PR #206, 2026-08-01)
+
+**Contexto**: `recordStatus()` considerava apenas `scheduled_for`.
+Um registro **sem** `scheduled_for` mas com campo de data nativo
+no futuro vinha como "Realizada" (errado).
+
+**Decisão**: `recordStatus()` considera **data efetiva**
+(`scheduled_for ?? dateField`) para classificar done/scheduled/overdue.
+
+**Aplicação em PR #206**:
+- `recordStatus()` em `petOpsScheduling.js`
+- `proximityLabel`, `isUpcoming`, `summarizeAlerts` e
+  `RecordStatusBadge` recebem `dateField` para o cálculo por
+  data efetiva.
+
+### D-PET-MEDICATION-VIA-MEDICAL-SERVICE (PR #206, 2026-08-01)
+
+**Contexto**: `PetMedicationForm` usava service legado que não
+injetava `actor.uid`, gerando erro "actor.uid é obrigatório".
+
+**Decisão**: `PetMedicationForm` DEVE usar `petMedicalService`
+(`usePetMedical`), que injeta o ator autenticado e grava em
+`pets/{petId}/medications` — a mesma coleção lida pelas
+planilhas do abrigo.
+
+---
+
+## §15. Decisões de Firestore Permissions (PR #207+#208, 2026-08-03)
+
+### D-FIRESTORE-BATCH-AFTER (PR #207, 2026-08-03)
+
+**Contexto**: `createClub` grava o doc do clube E o membership
+admin do criador no MESMO `writeBatch`. A regra de create de
+`club_members` exigia `isClubOwnerUid` (get do clube), mas em um
+batch o clube **ainda não foi commitado** → negado para qualquer
+usuário não-admin.
+
+**Decisão**: Em `writeBatch` que cria doc E referencia ele, usar
+`getAfter` / `existsAfter` na rule para enxergar estado pós-commit.
+
+```js
+// isClubOwnerUid (antes do commit) — usado em updates normais
+function isClubOwnerUid(clubId, uid) {
+  return exists(/databases/$(database)/documents/clubs/$(clubId))
+    && get(/databases/$(database)/documents/clubs/$(clubId)).data.created_by == uid;
+}
+
+// isClubOwnerUidAfter (depois do commit) — usado em batches onde o clube é criado junto
+function isClubOwnerUidAfter(clubId, uid) {
+  return existsAfter(/databases/$(database)/documents/clubs/$(clubId))
+    && getAfter(/databases/$(database)/documents/clubs/$(clubId)).data.created_by == uid;
+}
+```
+
+**Aplicação em PR #207**:
+- `createClub` (criação de organização/abrigo)
+- `joinClubByCode` (entrar por convite/código)
+
+**Sem impacto de segurança**: o criador só vira admin do clube
+que ele mesmo cria; o auto-ingresso já era gated.
+
+### D-FIRESTORE-COUNTER-OPEN-AUTH (PR #207, 2026-08-03)
+
+**Contexto**: `getNextPetSeq` usa `runTransaction` em
+`pet_seq_counter/global`, mas a regra restringia a `platform_admin`.
+A transação de todos os outros usuários falhava (caindo no
+fallback por timestamp, que quebra a **unicidade do pet_seq**).
+
+**Decisão**: `pet_seq_counter/global` é **liberado para qualquer
+auth** (doc só guarda value, sem dados sensíveis).
+
+**Aplicação**: `pet_seq_counter/global` agora permite `read` e
+`write` para qualquer usuário autenticado. Sem PII ou dados
+sensíveis no doc.
+
+### D-VOLUNTEER-SIGN-AT-TERM-STEP (PR #207, 2026-08-03)
+
+**Contexto**: `JoinVolunteerModal` coletava `signature_text` no
+submit final, mas o aceite do termo já acontecia antes. O fluxo
+queria assinatura eletrônica no passo do termo.
+
+**Decisão**: `signature_text` é coletado **no passo do termo**
+(NÃO no submit final). Garante fonte canônica no momento do
+aceite.
+
+**Aplicação**: `JoinVolunteerModal.handleSubmit` reescrito. Regra
+de create de `volunteer_profile` valida os campos de assinatura
+**só quando presentes**; o aceite continua imutável em
+`terms_acceptances` e reforçado na rostagem.
+
+### D-FIRESTORE-COUNTER-OPEN-TO-MEMBERS (PR #208, 2026-08-03)
+
+**Contexto**: Membros comuns do clube/comunidade não conseguiam
+curtir nem comentar em posts porque a transação que incrementa
+`likes_count` / `comments_count` no post era barrada pela regra
+de update do post.
+
+**Decisão**: Qualquer membro do clube/comunidade pode atualizar
+**SOMENTE contadores denormalizados** (`likes_count`,
+`comments_count`, `comment_count`, `last_activity_ms`,
+`participant_ids`). O **doc de like/comentário continua gated** à
+parte; **contadores são cosméticos** (a verdade é a subcoleção).
+
+**Aplicação em PR #208**:
+- `club_posts` (mural da ONG)
+- `community_posts` (mural da comunidade)
+- `club_forum_threads` (fórum da ONG)
+
+### D-FIRESTORE-IS-ONLY-COUNTERS-UPDATE (PR #208, 2026-08-03)
+
+**Contexto**: O ramo "qualquer membro pode atualizar contadores"
+precisa de uma forma de validar que **só** os campos de contador
+foram alterados (não outros campos sensíveis).
+
+**Decisão**: Helper `isOnlyCountersUpdate(allowedFields)` valida
+que `affectedKeys().hasOnly(allowedFields)` antes de permitir o
+update.
+
+```js
+function isOnlyCountersUpdate(allowedFields) {
+  return request.resource.data.diff(resource.data).affectedKeys()
+    .hasOnly(allowedFields);
+}
+
+// Uso
+allow update: if isAuth() && (
+  isAuthorOrAdmin() ||
+  (isClubMember(clubId) && isOnlyCountersUpdate(['likes_count', 'comments_count', 'updated_at']))
+);
+```
+
+**Aplicação**: 3 collectionGroup/posts seguem o mesmo padrão.
+Helper compartilhado em `firestore.rules`.
