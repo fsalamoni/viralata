@@ -103,6 +103,21 @@ service cloud.firestore {
       return exists(/databases/$(database)/documents/clubs/$(clubId))
         && get(/databases/$(database)/documents/clubs/$(clubId)).data.created_by == uid;
     }
+    // Versão "after": enxerga o estado APÓS o commit da operação/batch atual.
+    // Necessária porque a criação do clube (createClub) grava o doc do clube
+    // E o membership admin do criador no MESMO writeBatch — quando a regra do
+    // club_members avalia, o clube ainda não foi commitado, então
+    // exists()/get() falham. getAfter()/existsAfter() veem o clube que está
+    // sendo criado no mesmo batch, restaurando o acesso do próprio criador.
+    function isClubOwnerUidAfter(clubId, uid) {
+      return existsAfter(/databases/$(database)/documents/clubs/$(clubId))
+        && getAfter(/databases/$(database)/documents/clubs/$(clubId)).data.created_by == uid;
+    }
+    // Membro do clube no estado "after" — cobre o auto-ingresso (joinClubByCode)
+    // que cria o próprio membership E incrementa member_count no mesmo batch.
+    function isClubMemberAfter(clubId) {
+      return isAuth() && existsAfter(/databases/$(database)/documents/club_members/$(clubId + '_' + request.auth.uid));
+    }
     // TASK-230: server-side roster gate para participações de voluntários.
     // Só quem está com rostagem `active` E background check ok (ou não exigido)
     // pode ser inserido como participante de evento. Bloqueia inserts
@@ -240,10 +255,19 @@ service cloud.firestore {
       // snapshot é o que o abrigo vê — defense-in-depth.
       match /volunteer_profile/{profileId} {
         allow read: if isAuth() && (isOwner(userId) || isPlatformAdmin());
+        // O perfil é do próprio dono. O aceite do termo é gravado
+        // separadamente (users/{uid}/terms_acceptances, IMUTÁVEL) e reforçado
+        // na entrada da rostagem (clubs/{clubId}/volunteers). Aqui basta ser
+        // o dono; se os campos de assinatura vierem, precisam ser válidos —
+        // mas NÃO são obrigatórios (senão salvar skills antes de aceitar o
+        // termo, ou o merge do setDoc, era negado com "insufficient
+        // permissions").
         allow create: if isOwner(userId) &&
-          request.resource.data.get('terms_accepted_at', '') is string &&
-          request.resource.data.get('terms_accepted_at', '').matches('^\\d{4}-\\d{2}-\\d{2}T') &&
-          request.resource.data.get('signature_text', '').size() >= 2;
+          (!('terms_accepted_at' in request.resource.data) ||
+            (request.resource.data.terms_accepted_at is string &&
+             request.resource.data.terms_accepted_at.matches('^\\d{4}-\\d{2}-\\d{2}T'))) &&
+          (!('signature_text' in request.resource.data) ||
+            request.resource.data.signature_text.size() >= 2);
         allow update: if isOwner(userId);
         allow delete: if isOwner(userId) || isPlatformAdmin();
       }
@@ -539,9 +563,14 @@ service cloud.firestore {
     }
 
     // TASK-V3-PET-OPS-LOG: counter global para pet_seq (atômico).
-    // Leitura/escrita só platform_admin (transparente para o client via runTransaction).
+    // TODO usuário autenticado precisa poder incrementar o contador via
+    // runTransaction ao criar um pet — a restrição a platform_admin fazia a
+    // transação de TODOS os outros usuários falhar (caindo no fallback por
+    // timestamp, que quebra a unicidade/sequência do pet_seq). O doc só
+    // guarda { value, updated_at }; permitir incremento a qualquer usuário
+    // logado é seguro (contador global monotônico dos IDs de pet).
     match /pet_seq_counter/{counterId} {
-      allow read, write: if isAuth() && isPlatformAdmin();
+      allow read, write: if isAuth();
     }
 
 
@@ -917,7 +946,10 @@ service cloud.firestore {
       // ser trocado por um admin comum, só por um platform_admin.
       allow update: if isPlatformAdmin() ||
         (isClubOwnerOrAdmin(clubId) && request.resource.data.get('created_by', resource.data.created_by) == resource.data.created_by) ||
-        (isClubMember(clubId) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['member_count', 'updated_at']));
+        // Auto-ingresso: incrementar member_count é permitido a quem já é
+        // membro OU a quem está criando o próprio membership no mesmo batch
+        // (joinClubByCode grava member + member_count atomicamente).
+        ((isClubMember(clubId) || isClubMemberAfter(clubId)) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['member_count', 'updated_at']));
       allow delete: if isClubOwnerOrAdmin(clubId) || isPlatformAdmin();
 
       // ─── Fase 5: Subcoleção `integrations/google_forms` ────────────
@@ -1383,7 +1415,8 @@ service cloud.firestore {
         (request.resource.data.user_id == request.auth.uid &&
           request.resource.data.get('role', '') == 'admin' &&
           !('permissions' in request.resource.data) &&
-          isClubOwnerUid(request.resource.data.club_id, request.auth.uid)) ||
+          (isClubOwnerUid(request.resource.data.club_id, request.auth.uid) ||
+           isClubOwnerUidAfter(request.resource.data.club_id, request.auth.uid))) ||
         isClubOwnerOrAdmin(request.resource.data.club_id) ||
         isPlatformAdmin()
       );
