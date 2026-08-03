@@ -12,6 +12,8 @@ import { Button } from '@/components/ui/button';
 import SwUpdateBanner from '@/components/SwUpdateBanner';
 import LegalFooter, { useLegalFooterHeight } from '@/components/LegalFooter';
 import BottomTabBar, { useBottomTabBarHeight } from '@/components/BottomTabBar';
+import PersonaBottomTabBar, { useBottomTabBarHeight as usePersonaBottomTabBarHeight } from '@/components/PersonaBottomTabBar';
+import PersonaSwitcher from '@/components/PersonaSwitcher';
 import { useUiPreferences, BOTTOM_TAB_MODES, TOPBAR_MODES, FOOTER_MODES } from '@/core/hooks/useUiPreferences';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import ThemeMenu from '@/components/ThemeMenu';
@@ -20,7 +22,8 @@ import {
   DropdownMenuTrigger, DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/core/lib/utils';
-import { usePlatformSettings } from '@/core/lib/FeatureFlagsContext';
+import { usePlatformSettings, useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
+import { FEATURE_FLAG } from '@/core/featureFlags';
 import { useColorMode } from '@/core/hooks/useColorMode';
 
 const STANDALONE_PAGES = ['Home', 'Login', 'OnboardingQuestionnaire'];
@@ -70,6 +73,8 @@ export default function Layout({ children, currentPageName }) {
   const location = useLocation();
   const { user, userProfile, isAuthenticated, isPlatformAdmin, signOut } = useAuth();
   const { settings } = usePlatformSettings();
+  // V4 (2026-08-03): flag global V4 personas
+  const v4PersonaEnabled = useFeatureFlag(FEATURE_FLAG.V4_PERSONA_ENABLED);
   const [uiPrefs] = useUiPreferences();
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -202,6 +207,16 @@ export default function Layout({ children, currentPageName }) {
 
           {/* Ações direita */}
           <div className="flex items-center gap-2">
+            {/* V4 (2026-08-03): PersonaSwitcher — botão para trocar
+                persona ativa (D-PERSONA-SWITCHER-VISIBILITY). Aparece
+                SÓ se user tem 2+ personas visíveis. */}
+            <PersonaSwitcher
+              onSelectPersona={(p) => {
+                // Re-renderiza Layout para refletir nova persona
+                logger.info('[Layout] persona switched:', p.type);
+              }}
+              onAddPersona={() => navigate('/acesso')}
+            />
             {/* Dark mode toggle — sempre visível */}
             <ThemeMenu />
             {isAuthenticated ? (
@@ -355,8 +370,11 @@ export default function Layout({ children, currentPageName }) {
           Componente dedicado com 3 modos (FIXED/AUTOHIDE/HIDDEN) que
           respeita a preferência visual do usuário em todos os viewports
           (TASK-V3-UI-5-FIX: removido md:hidden para que FIXED apareça
-          também em desktop). */}
-      <BottomTabBar />
+          também em desktop).
+          V4 (2026-08-03): PersonaBottomTabBar é o contextual por persona.
+          Se a flag V4_PERSONA_ENABLED estiver OFF, renderiza o BottomTabBar
+          legacy. */}
+      {v4PersonaEnabled ? <PersonaBottomTabBar /> : <BottomTabBar />}
 
       {/* Rodapé com links legais. TASK-051: links exigidos pelo Guia
           de Implementação Legal v2 (10/07/2026) §5. TASK-401: agora

@@ -38,6 +38,13 @@ const PublicFosterPrograms = lazy(() => import('@/pages/PublicFosterPrograms'));
 const PublicFosterHistory = lazy(() => import('@/pages/PublicFosterHistory'));
 const PublicMuralFeed = lazy(() => import('@/pages/PublicMuralFeed'));
 const PageNotFound = lazy(() => import('@/pages/PageNotFound'));
+
+// V4 (2026-08-03): Persona system — 6 acessos dedicados
+// Ver docs/PLAN_PERSONAS_V4.md v1.1 e docs/AI_GUIDE/13-DECISIONS.md §16.
+const PersonaSelection = lazy(() => import('@/pages/PersonaSelection'));
+const ShelterEntry = lazy(() => import('@/pages/onboarding/ShelterEntry'));
+const CommunityEntry = lazy(() => import('@/pages/onboarding/CommunityEntry'));
+const DonorOnboarding = lazy(() => import('@/pages/onboarding/DonorOnboarding'));
 const ShelterPublic = lazy(() => import('@/pages/ShelterPublic'));
 const BannedNotice = lazy(() => import('@/pages/BannedNotice'));
 const AdminDebugPage = lazy(() => import('@/pages/AdminDebugPage'));
@@ -177,6 +184,13 @@ const ONBOARDING_ALLOWED_PATHS = [
   '/politica-privacidade',
   '/termos',
   '/legislacao',
+  // V4 (2026-08-03): rotas de persona e onboarding por persona
+  // são permitidas mesmo sem perfil completo, pois o user pode
+  // estar justamente preenchendo seu primeiro acesso.
+  '/acesso',
+  '/entrar/abrigo',
+  '/entrar/comunidade',
+  '/onboarding/doador',
   '/legal/',
 ];
 
@@ -617,6 +631,36 @@ export default function App() {
                 <Route
                   path="/admin/parceiros/:partnerId"
                   element={<AdminRoute>{withLayout('AdminPartnerDetail', AdminPartnerDetail)}</AdminRoute>}
+                />
+
+                {/* ── V4 · Person system (2026-08-03) ─────────────────── */}
+                {/* PersonaSelection: primeira escolha / troca explícita */}
+                <Route
+                  path="/acesso"
+                  element={
+                    <ProtectedRoute>{withLayout('PersonaSelection', PersonaSelection)}</ProtectedRoute>
+                  }
+                />
+                {/* ShelterEntry: entrar em abrigo via código OU criar */}
+                <Route
+                  path="/entrar/abrigo"
+                  element={
+                    <ProtectedRoute>{withLayout('ShelterEntry', ShelterEntry)}</ProtectedRoute>
+                  }
+                />
+                {/* CommunityEntry: entrar em comunidade via código OU criar */}
+                <Route
+                  path="/entrar/comunidade"
+                  element={
+                    <ProtectedRoute>{withLayout('CommunityEntry', CommunityEntry)}</ProtectedRoute>
+                  }
+                />
+                {/* DonorOnboarding: questionário do doador */}
+                <Route
+                  path="/onboarding/doador"
+                  element={
+                    <ProtectedRoute>{withLayout('DonorOnboarding', DonorOnboarding)}</ProtectedRoute>
+                  }
                 />
 
                 {/* ── Redirects legados ─────────────────────────────────── */}
