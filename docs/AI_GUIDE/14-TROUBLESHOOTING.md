@@ -539,4 +539,203 @@ const { data } = useQuery({
 
 ---
 
-**Próxima leitura**: `15-RECENT-FIXES.md` §8 (linha do tempo completa do ciclo VolunteerSignup).
+## §12. React #306 — Maximum update depth exceeded (sw-v92, 2026-07-31)
+
+### §12.1. "Element type is invalid... Lazy element type must resolve to a class or function"
+
+**Sintoma (sw-v92)**: React #306 ao acessar uma aba do painel admin
+(`/organizacoes/:orgId/admin?tab=...`) OU uma rota lazy. ErrorBoundary
+captura como "Não foi possível carregar esta aba".
+
+**Causa raiz REAL (sw-v92)**: Componentes carregados via
+`React.lazy()` que tinham apenas **named export** (sem
+`export default`). Ao resolver, `module.default` era `undefined`
+→ React #306.
+
+**Causas alternativas (que NÃO eram)**:
+- ~~queryKey com objeto em useQuery~~ (React Query 5 faz hash,
+  não causa loop)
+- ~~Loop infinito de state update~~
+- ~~Re-render de componente pai passando props diferentes~~
+
+**Diagnóstico (workflow)**:
+1. **Verificar se a aba/rota é carregada via `React.lazy()`**:
+   ```bash
+   grep -rn "lazy(() => import" src/ --include="*.jsx"
+   ```
+2. **Verificar se o componente tem `export default`**:
+   ```bash
+   grep -E "^export (default|function) " src/path/to/Component.jsx
+   ```
+3. **Se tem apenas `export function`** (sem `export default`):
+   componente NÃO é compatível com `React.lazy()`.
+
+**Fix (D-LAZY-DEFAULT-EXPORT)**:
+```jsx
+// Antes (NAMED export only — quebra)
+export function MyContracts() {
+  return <div>...</div>;
+}
+
+// Depois (BOTH)
+export function MyContracts() {
+  return <div>...</div>;
+}
+
+// Default export para React.lazy() (mantém named export acima para imports diretos/testes).
+export default MyContracts;
+```
+
+**Aplicação em sw-v92**: 13 componentes corrigidos (9 abas + 4 rotas).
+Build OK, 1378 testes passando.
+
+**Prevenção**:
+1. Lint rule custom: detectar `lazy(() => import(...))` que aponta
+   para arquivo sem `export default`.
+2. E2E test que valida cada rota lazy carrega sem erros.
+
+---
+
+## §13. Regras Firestore Quebradas (sw-v95..v97, 2026-07-31)
+
+### §13.1. "Permission denied mas a rule parece correta"
+
+**Sintoma**: `Missing or insufficient permissions` mesmo com rule
+de CREATE/READ que parece autorizada.
+
+**Causa raiz (sw-v95)**: 5 tipos de bugs nas rules:
+
+1. **Funções NUNCA definidas**: `shelterCanAccess` / `shelterCanManage`
+   eram usadas mas não existiam no escopo. Compilador trata como
+   `false` → sempre nega.
+
+2. **Subcoleções órfãs**: `match /health_records/{recordId}` no
+   top-level em vez de `match /pets/{petId} { match /health_records/... }`.
+   Logo, `petId` está fora de escopo.
+
+3. **`auth.uid` em vez de `request.auth.uid`**: variável inexistente
+   em contracts. Compilador trata como `false`.
+
+4. **Communities sem `communityId`**: `community_members` /
+   `community_posts` top-level sem `communityId` no escopo.
+
+5. **CollectionGroup queries sem regra `{path=**}`**: regras
+   aninhadas por path NÃO cobrem `collectionGroup`.
+
+**Diagnóstico (workflow)**:
+```bash
+# 1. Rodar emulador e verificar warnings
+firebase emulators:start --only firestore
+# Olhar console para "Invalid function/variable name"
+
+# 2. Para cada permission denied, ver o log de compilação
+firebase deploy --only firestore:rules --debug
+
+# 3. Verificar se funções referenciadas existem
+grep "function shelterCan" firestore.rules
+
+# 4. Verificar se subcoleções estão aninhadas
+grep -A 3 "match /pets/{petId}" firestore.rules
+
+# 5. Verificar collectionGroup rules
+grep -B 1 -A 5 "{path=\*\*}" firestore.rules
+```
+
+**Fix**:
+- **Funções indefinidas**: definir as funções no escopo correto
+  (D-FIRESTORE-RULES-DEFINITION).
+- **Subcoleções órfãs**: aninhar sob o match correto
+  (D-FIRESTORE-MATCH-SCOPE).
+- **`auth.uid`**: substituir por `request.auth.uid`
+  (D-FIRESTORE-REQUEST-AUTH-UID).
+- **Communities**: usar `resource.data.community_id` no create.
+- **CollectionGroup**: adicionar regra `{path=**}` para cada
+  collectionGroup (D-COLLECTION-GROUP-RULES).
+
+### §13.2. "CollectionGroup query falha com FAILED_PRECONDITION (não permission-denied)"
+
+**Sintoma (sw-v97)**: Query com `collectionGroup()` falha com
+`FAILED_PRECONDITION` em vez de `permission-denied`.
+
+**Causa raiz**: A query composta precisa de índice com
+`queryScope: COLLECTION_GROUP` (as single-field são auto-criadas).
+
+**Diagnóstico**:
+```bash
+# Erro vai mencionar o índice exato necessário
+"requires an index. You can create it here: https://console.firebase.google.com/..."
+```
+
+**Fix (D-COLLECTION-GROUP-INDEX)**: Adicionar índice em
+`firestore.indexes.json`:
+```json
+{
+  "collectionGroup": "volunteers",
+  "queryScope": "COLLECTION_GROUP",
+  "fields": [
+    { "fieldPath": "volunteer_uid", "order": "ASCENDING" },
+    { "fieldPath": "volunteer_name", "order": "ASCENDING" }
+  ]
+}
+```
+
+**Aplicação em sw-v97**: 4 índices adicionados (volunteers, fosters,
+post_adoption, banners). Total: 68 índices.
+
+---
+
+## §14. Regras de Hooks Violadas (sw-v93, 2026-07-31)
+
+### §14.1. "Invalid hook call" ou "Rendered fewer hooks than expected"
+
+**Sintoma (sw-v93)**: React warning de hook call inválido, ou
+estado inconsistente após early return.
+
+**Causa raiz**: Hooks chamados DEPOIS de early return, violando
+**Rule of Hooks**. React espera que os hooks sejam chamados sempre
+na mesma ordem.
+
+**Causas comuns**:
+- `useArenaPageClasses` (PetDetailV3) chamado depois de
+  `if (isLoading) return <Loading />`
+- `useEffect` (LegalFooter) depois de `return null` (mode hidden)
+- `useMemo` (CrossRosterSection) depois de `return null`
+
+**Diagnóstico**:
+```bash
+# Procurar early return antes de hook
+grep -B 5 "useState\|useEffect\|useMemo\|useQuery" src/path/to/Component.jsx | head -40
+```
+
+**Fix (D-HOOKS-ORDER-PRESERVE)**: SEMPRE chamar hooks no TOPO do
+componente, ANTES de qualquer early return:
+
+```jsx
+// ❌ Errado (hook depois de early return)
+function PetDetailV3() {
+  if (isLoading) return <Loading />;
+  const classes = useArenaPageClasses();  // ← violação
+  if (!pet) return <NotFound />;
+  return <div className={classes}>...</div>;
+}
+
+// ✅ Correto (hooks ANTES de early return)
+function PetDetailV3() {
+  const classes = useArenaPageClasses();
+  if (isLoading) return <Loading />;
+  if (!pet) return <NotFound />;
+  return <div className={classes}>...</div>;
+}
+```
+
+**Prevenção**: ESLint plugin `eslint-plugin-react-hooks` (já
+configurado). **MAS** atenção: ele NÃO detecta quando o hook é
+chamado DEPOIS de early return em mesmo escopo (não é regra
+condicional, é regra de ORDEM). **Code review manual necessário.**
+
+**Aplicação em sw-v93**: PetDetailV3, LegalFooter, CrossRosterSection
+corrigidos.
+
+---
+
+**Próxima leitura**: `15-RECENT-FIXES.md` §8-9 (linha do tempo completa do ciclo sw-v75..v97).

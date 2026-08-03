@@ -1,12 +1,13 @@
 # 28-VOLUNTEER-SIGNUP-BUGFIX.md — Bugfix: VolunteerSignup Não Funciona
 
-> **Data**: 2026-07-27..31 (sw-v75..v91)
+> **Data**: 2026-07-27..31 (sw-v75..v97)
 > **Sintoma**: User clica "Aceitar e continuar" → erro "Missing or insufficient permissions" + React error #31 → página em branco
-> **Status**: VOLUNTEER SIGNUP FIXED (sw-v86) · REACT #306 EM DEBUG (sw-v91, aba volunteers desabilitada temporariamente)
+> **Status**: ✅ **FIX COMPLETO** (sw-v92, 2026-07-31)
 >
-> Este documento explica TODO o ciclo de 17 deploys em 5 dias, os 9 bugs
-> encontrados, as 9 decisões D-* criadas, e o workflow recomendado
-> para bugs críticos persistentes.
+> Este documento explica TODO o ciclo de 23 deploys em 6 dias, os 9 bugs
+> do VolunteerSignup + o React #306 nas abas do painel admin, as 9
+> decisões D-* criadas, e o workflow recomendado para bugs críticos
+> persistentes.
 
 ## §1. Sintomas Reportados (camada por camada)
 
@@ -517,41 +518,150 @@ Ver `13-DECISIONS.md` §10 para detalhes completos. Resumo:
 - ✅ **Toast API** (React #31 corrigido)
 - ✅ **Defense-in-depth** (3 camadas)
 - ✅ **Regras Firestore** restauradas e estritas
+- ✅ **React #306 RESOLVIDO** (sw-v92, 2026-07-31)
+- ✅ **Painel volunteers REABILITADO** (removeu `SHOW_VOLUNTEERS_TAB`)
 
-### O que está EM DEBUG (sw-v91)
+### O que está RESOLVIDO (sw-v92, 2026-07-31)
 
-- ⚠️ **React #306 na aba volunteers do painel admin**
-  (`/organizacoes/<id>/admin?tab=people:volunteers`)
-  - Aba DESABILITADA temporariamente com `SHOW_VOLUNTEERS_TAB = false`
-  - User vê "Não foi possível carregar esta aba (volunteers)"
-  - Resto do painel funciona normal
-  - Bundle: `index-Bv_OCvQE.js`
+- ✅ **React #306 na aba volunteers do painel admin** — CAUSA RAIZ
+  ENCONTRADA: 9 abas do painel carregadas via `React.lazy()` tinham
+  apenas **named export**, sem `export default`. Adicionado
+  `export default` em todas. **Ver §11 abaixo**.
+- ✅ 4 outras rotas com o mesmo bug corrigidas (`MyContracts`,
+  `ShelterContractsList`, `ShelterInterviewsList`,
+  `PostAdoptionDashboard`)
+- ✅ `VolunteerSignup.jsx`: `joinSignature` indefinido em
+  `handleAcceptTerms` → usa `signatureText.trim()`
+- ✅ `AdoptionDetail.jsx`: `useQuery` (postAdoption) movido para
+  ANTES dos early returns (rules-of-hooks)
 
-### O que precisa ser feito
+### Próximos passos
 
-- [ ] **Investigar `VolunteersRoster.jsx`** e `VolunteersAdminTab.jsx`
-      linha por linha. Comparar com versões anteriores que
-      funcionavam (via `git diff`).
-- [ ] **Re-habilitar a aba** após identificar e corrigir a causa raiz.
-- [ ] **Bumpar SW** (sw-v92 ou sw-v93) com a correção final.
-- [ ] **Documentar decisão D-*** sobre a causa raiz do React #306.
-- [ ] **Adicionar runtime test** que detecta o loop ANTES do React #306.
-
-### Próximo deploy (sw-v92+)
-
-```bash
-# 1. Identificar root cause via git diff + análise manual
-git log --all --oneline src/modules/shelter/components/VolunteersRoster.jsx | head -10
-git log --all --oneline src/modules/shelter/components/VolunteersAdminTab.jsx | head -10
-
-# 2. Aplicar fix
-# 3. Re-habilitar aba: SHOW_VOLUNTEERS_TAB = true
-# 4. Build + tests + bump SW
-# 5. Commit + push
-git commit -m "fix(react): sw-v92 - [root cause do React #306]"
-git push origin main
-```
+- [x] ~~Investigar `VolunteersRoster.jsx` e `VolunteersAdminTab.jsx`~~
+      **FEITO em sw-v92**
+- [x] ~~Re-habilitar a aba~~ **FEITO em sw-v92**
+- [x] ~~Bumpar SW com a correção final~~ **FEITO em sw-v92**
+- [x] ~~Documentar decisão D-* sobre a causa raiz~~ **FEITO: D-LAZY-DEFAULT-EXPORT**
+- [ ] **Adicionar lint rule** para detectar `lazy(` que importa named export only
+- [ ] **Adicionar E2E test** que valida cada rota lazy carrega sem erros
 
 ---
 
-**Próxima leitura**: `13-DECISIONS.md` §10 (D-VOLUNTEER-*), `15-RECENT-FIXES.md` §8 (linha do tempo completa), `.harness/_volunteer-signup-debug-2026-07-29.md` (notas de debug)
+## §11. CAUSA RAIZ REAL DO REACT #306 (sw-v92, 2026-07-31)
+
+### Diagnóstico incorreto (sw-v87..v91, 5 deploys)
+
+> "React Query 5 queryKey com objeto → loop infinito (React #306)"
+
+**ERRADO!** O React Query 5 faz **hash determinístico** do queryKey via
+`hashKey`. Objetos com mesmo conteúdo (mesmo recriados) têm o mesmo
+hash. Portanto, `queryKey: [..., options]` **NÃO causa loop**.
+
+### Causa raiz correta (sw-v92)
+
+**13 componentes carregados via `React.lazy()`** tinham apenas
+**named export**, sem `export default**. Ao resolver o lazy, o
+`module.default` era `undefined` → React #306 "Element type is
+invalid... Lazy element type must resolve to a class or function"
+— capturado pelo ErrorBoundary como "Não foi possível carregar
+esta aba".
+
+### Componentes corrigidos (13)
+
+**Abas do painel do abrigo (9):**
+- `KanbanPage`, `ExhibitionsList`, `VolunteersAdminTab`,
+  `MedicalRecordsList`, `MedicationsList`, `TimelineList`,
+  `FostersList`, `ShelterDonationsTab`, `ShelterFinanceTab`
+
+**Rotas (4):**
+- `MyContracts`, `ShelterContractsList`, `ShelterInterviewsList`,
+  `PostAdoptionDashboard`
+
+### Padrão aplicado (D-LAZY-DEFAULT-EXPORT)
+
+```jsx
+// ❌ Errado (NAMED export only — quebra com React.lazy)
+export function MyContracts() {
+  return <div>...</div>;
+}
+
+// ✅ Correto (BOTH named AND default)
+export function MyContracts() {
+  return <div>...</div>;
+}
+
+// Default export para React.lazy() (mantém named export acima para imports diretos/testes).
+export default MyContracts;
+```
+
+### Por que passou despercebido em 5 deploys (sw-v87..v91)
+
+1. **A "stack trace" do React #306 não mostrava a stack completa do
+   lazy** — apenas o erro genérico `Element type is invalid`. O
+   ErrorBoundary capturava como "Não foi possível carregar esta aba"
+   sem mais detalhes.
+2. **Os render-counters (sw-v88, sw-v89) mascaravam o problema**:
+   quando o componente crashava no lazy, o ErrorBoundary re-renderizava,
+   o counter incrementava, e o threshold disparava — parecendo um
+   loop de render.
+3. **Testes unitários passavam** porque eles importavam via named
+   export direto (`import { MyContracts } from '...'`), que sempre
+   funcionou.
+4. **Apenas sw-v91 com `SHOW_VOLUNTEERS_TAB = false`** deu um sinal
+   claro de que a aba estava desabilitada, mas a stack trace
+   completa só veio com a investigação em sw-v92.
+5. **9 abas estavam afetadas, não apenas volunteers**: kanban,
+   exhibitions, medical, medications, timeline, fosters,
+   donations, finance. Mas o user só percebeu volunteers porque
+   era a aba que ele usava regularmente.
+
+### Lição (D-LAZY-DEFAULT-EXPORT, 2026-07-31)
+
+**REGRA**: Componentes carregados via `React.lazy()` DEVEM ter
+`export default`. Para manter compatibilidade com testes, manter
+AMBOS:
+- `export function Name()` — para imports nomeados
+- `export default Name` — para `React.lazy()`
+
+**Prevenção**: lint rule custom para detectar `lazy(` que importa
+named export only.
+
+**Aplicação retroativa**: 13 componentes corrigidos em sw-v92.
+Build OK, 1378 testes passando, painel volunteers REABILITADO.
+
+### Workflow recomendado (REVISADO, 2026-07-31)
+
+O workflow de §3.5 foi **expandido** com base nas descobertas
+de sw-v92..v97:
+
+1. **Logs estruturados** no service (`[TEMP-DIAG-...]`)
+2. **Simplificar a rule gradualmente** (se permission-denied)
+3. **try/catch defensivo** em getDoc/setDoc
+4. **Idempotência** se for mutation de create
+5. **Analisar stack trace COMPLETA** (NÃO só mensagem genérica)
+6. **Verificar imports** (tree-shaking remove unused, mas não avisa)
+7. **Verificar hooks order** (rules-of-hooks: ANTES dos early returns)
+8. **Verificar se `React.lazy()` tem `export default`** ← **NOVA**
+9. **Verificar se funções referenciadas estão definidas** ← **NOVA**
+10. **Verificar se subcoleções estão aninhadas corretamente** ← **NOVA**
+11. **Verificar se collectionGroup tem regra + índice** ← **NOVA**
+12. **Verificar se Cloud Functions deps estão em package.json** ← **NOVA**
+
+---
+
+## §12. Métricas Finais (sw-v75..v97, 6 dias)
+
+| Métrica | Valor |
+|---|---|
+| Total de deploys | 23 |
+| Total de bugs resolvidos | 14 (9 VolunteerSignup + 1 React #306 + 4 outros) |
+| Total de decisões D-* | 17 (11 VolunteerSignup + 1 Lazy + 5 Firestore) |
+| Total de componentes corrigidos | 13 (default export) |
+| Total de regras Firestore corrigidas | 10+ (5 sw-v95 + 4 sw-v96 + 1+ sw-v97) |
+| Total de testes passando | 1378 |
+| Bundle final | `index-*.js` (sw-v97) |
+| Cloud Functions corrigidas | 1 (`generateVolunteerCertificate`) |
+
+---
+
+**Próxima leitura**: `13-DECISIONS.md` §10-12 (D-VOLUNTEER-*, D-LAZY-DEFAULT-EXPORT, D-FIRESTORE-*), `15-RECENT-FIXES.md` §8-9 (linha do tempo completa), `.harness/_volunteer-signup-debug-2026-07-29.md` (notas de debug)

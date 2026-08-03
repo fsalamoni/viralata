@@ -1,7 +1,7 @@
 # 11-CORE-DIRECTIVES.md — Regras Invioláveis, Princípios, Engineering HOT
 
 > **⚠️ LEITURA OBRIGATÓRIA antes de QUALQUER mudança no código**
-> Atualizado em 2026-07-31 (sw-v75..v91: VolunteerSignup debug cycle)
+> Atualizado em 2026-08-03 (sw-v75..v97: VolunteerSignup + React #306 + Firestore Rules)
 
 ---
 
@@ -793,4 +793,167 @@ const SHOW_VOLUNTEERS_TAB = false;
 
 ---
 
-**Próxima leitura**: `12-CODING-STANDARDS.md` (padrões de código detalhados), `13-DECISIONS.md` §10-11 (D-VOLUNTEER-*, D-DEBUG-*).
+## §18. Regras de Componentes Lazy (D-LAZY-DEFAULT-EXPORT, sw-v92, 2026-07-31)
+
+**REGRA INViolável**: Componentes carregados via `React.lazy()`
+DEVEM ter `export default`. Para manter compatibilidade com testes,
+manter AMBOS:
+- `export function Name()` — para imports nomeados
+- `export default Name` — para `React.lazy()`
+
+```js
+// ❌ Errado (NAMED export only — QUEBRA com React.lazy)
+export function MyContracts() {
+  return <div>...</div>;
+}
+
+// ✅ Correto (BOTH named AND default)
+export function MyContracts() {
+  return <div>...</div>;
+}
+
+// Default export para React.lazy() (mantém named export acima para imports diretos/testes).
+export default MyContracts;
+```
+
+**Por quê**: `React.lazy(() => import('./MyContracts'))` resolve
+para `module.default`. Se o módulo só tem named export,
+`module.default` é `undefined` → React #306 "Element type is
+invalid... Lazy element type must resolve to a class or function".
+
+**Causa raiz do React #306 (sw-v92)**: 13 componentes do painel
+admin tinham apenas named export → React #306 ao acessar 9 abas
++ 4 rotas. **Build OK, mas runtime crashava** ao lazy resolver.
+
+**Prevenção**:
+1. **Lint rule** custom: detectar `lazy(() => import(...))` que
+   aponta para arquivo sem `export default`.
+2. **E2E test** que valida cada rota lazy carrega sem erros.
+
+**Aplicação preventiva**: ao criar novo componente lazy, SEMPRE
+começar com o template acima (BOTH exports).
+
+---
+
+## §19. Regras de Firestore Rules (D-FIRESTORE-RULES-DEFINITION, sw-v95)
+
+**REGRA INViolável**: Toda função referenciada em uma rule DEVE
+estar **definida** no escopo do `match` que a usa. Caso contrário,
+o compilador trata como `false` e a regra sempre nega.
+
+**REGRA INViolável**: Subcoleções DEVEM ser aninhadas sob o path
+correto. Variáveis de escopo (`{petId}`, `{clubId}`,
+`{communityId}`) só estão disponíveis dentro do `match` que as
+declara.
+
+**REGRA INViolável**: SEMPRE usar `request.auth.uid` (NUNCA
+`auth.uid`).
+
+**REGRA INViolável**: CollectionGroup queries precisam de regra
+própria `{path=**}` (regras aninhadas por path NÃO cobrem).
+
+**REGRA INViolável**: CollectionGroup queries COMPOSTAS precisam
+de índice `COLLECTION_GROUP` explícito em
+`firestore.indexes.json`.
+
+```js
+// ❌ Errado (função nunca definida)
+match /clubs/{clubId}/kanban_cards/{cardId} {
+  allow read: if isAuth() && shelterCanAccess(clubId);  // ← função não existe
+}
+
+// ❌ Errado (subcoleção órfã — petId fora de escopo)
+match /health_records/{recordId} {
+  allow read: if isAuth() && isOwnerOfPet(petId);  // ← petId não está em escopo
+}
+
+// ❌ Errado (auth.uid em vez de request.auth.uid)
+match /contracts/{contractId} {
+  allow create: if auth.uid != null;  // ← variável inexistente
+}
+
+// ❌ Errado (collectionGroup sem regra {path=**})
+match /volunteers/{volunteerId} {  // ← não cobre collectionGroup
+  allow read: if isAuth() && isOwner(resource.data.volunteer_uid);
+}
+
+// ✅ Correto (todos combinados)
+match /clubs/{clubId} {
+  // 1. Função definida no escopo correto
+  function shelterCanAccess(clubId) {
+    return isAuth() && exists(/databases/$(database)/documents/club_members/$(clubId + '_' + request.auth.uid));
+  }
+  match /kanban_cards/{cardId} {
+    allow read: if isAuth() && shelterCanAccess(clubId);
+  }
+}
+
+match /pets/{petId} {
+  // 2. Subcoleção aninhada (petId em escopo)
+  match /health_records/{recordId} {
+    allow read: if isAuth() && isOwnerOfPet(petId);
+  }
+}
+
+match /contracts/{contractId} {
+  // 3. request.auth.uid correto
+  allow create: if request.auth.uid != null;
+}
+
+match /{path=**}/volunteers/{volunteerId} {
+  // 4. collectionGroup coberto
+  allow read: if isAuth() && isOwner(resource.data.volunteer_uid);
+}
+```
+
+**Prevenção**:
+1. CI deve rodar `firebase firestore:rules:get --emulator` e
+   falhar se houver warning "Invalid function/variable name".
+2. CI deve verificar que cada `collectionGroup()` no código tem
+   regra `{path=**}` correspondente.
+3. CI deve verificar que cada `collectionGroup()` composta tem
+   índice `COLLECTION_GROUP` em `firestore.indexes.json`.
+
+**Aplicação retroativa em sw-v95..v97**: 10+ paths corrigidos,
+4 índices adicionados.
+
+---
+
+## §20. Regras de Hooks Order (D-HOOKS-ORDER-PRESERVE, sw-v93)
+
+**REGRA INViolável**: SEMPRE chamar hooks no TOPO do componente,
+ANTES de qualquer early return. Caso contrário, o React perde o
+tracking e emite warning "Rendered fewer hooks than expected".
+
+```jsx
+// ❌ Errado (hook depois de early return — viola Rule of Hooks)
+function PetDetailV3() {
+  if (isLoading) return <Loading />;  // ← early return ANTES do hook
+  const classes = useArenaPageClasses();  // ← violação
+  if (!pet) return <NotFound />;
+  return <div className={classes}>...</div>;
+}
+
+// ✅ Correto (hooks ANTES de early return)
+function PetDetailV3() {
+  const classes = useArenaPageClasses();  // ← hook primeiro
+  if (isLoading) return <Loading />;
+  if (!pet) return <NotFound />;
+  return <div className={classes}>...</div>;
+}
+```
+
+**Causas comuns** (sw-v93):
+- `useArenaPageClasses` (PetDetailV3) depois de `if (isLoading)`
+- `useEffect` (LegalFooter) depois de `return null` (mode hidden)
+- `useMemo` (CrossRosterSection) depois de `return null`
+
+**Prevenção**:
+1. ESLint plugin `eslint-plugin-react-hooks` (já configurado).
+2. **MAS atenção**: ele NÃO detecta quando o hook é chamado
+   DEPOIS de early return em mesmo escopo (não é regra condicional,
+   é regra de ORDEM). **Code review manual necessário.**
+
+---
+
+**Próxima leitura**: `12-CODING-STANDARDS.md` (padrões de código detalhados), `13-DECISIONS.md` §10-13 (D-VOLUNTEER-*, D-DEBUG-*, D-FIRESTORE-*, D-LAZY-DEFAULT-EXPORT).

@@ -417,42 +417,87 @@ re-tentada pelo user (UI desabilitada, click repetido, network retry)
 DEVE ser idempotente. UI trata `_alreadyExisted` com toast específico
 "Você já está na rostagem deste abrigo!".
 
-### D-REACT-QUERY-KEY-PRIMITIVES (sw-v87, 2026-07-30)
+### D-REACT-QUERY-KEY-PRIMITIVES (sw-v87, 2026-07-30) — ⚠️ DIAGNÓSTICO INCORRETO
 
-**Contexto**: `useShelterVolunteers(shelterClubId, { status: statusFilter })`
-tinha `queryKey: ['shelter-volunteers', shelterClubId, options]`. `options`
-é OBJETO criado a cada render (mesmo com conteúdo igual). React Query
-compara queryKey por **referência** de objeto. Vê que mudou → refetch →
-re-render → loop infinito (React error #306).
+**Contexto (CORRIGIDO)**: `useShelterVolunteers(shelterClubId, { status: statusFilter })`
+tinha `queryKey: ['shelter-volunteers', shelterClubId, options]`. Em
+sw-v87, acreditou-se que `options` (OBJETO criado a cada render)
+causava loop infinito (React error #306) porque React Query compararia
+queryKey por **referência** de objeto.
 
-**Stack trace reveladora**:
-```
-onSubscribe @ React Query  ← chamada a cada render
-subscribe @ React Query     ← React Query se inscreve no Observable
-setData @ React Query       ← Firestore emite → setState do data
-batch @ React Query         ← batch de updates
-setTimeout                  ← React render
-...loop infinito
-```
+**STATUS**: **DIAGNÓSTICO INCORRETO**. Descartado em sw-v92 (commit 0ced567e).
 
-**Decisão**: SEMPRE extrair campos individuais de `options` e usar
-PRIMITIVOS no `queryKey` (?? null para nullables):
+**Verdade**: React Query 5 faz **hash determinístico** do queryKey
+via `hashKey`. Objetos com mesmo conteúdo (mesmo recriados) têm o mesmo
+hash. Portanto, `queryKey: [..., options]` NÃO causa loop.
+
+**Causa raiz real do React #306 (sw-v92)**: 13 componentes carregados
+via `React.lazy()` tinham apenas **named export** (sem `export default`).
+O `module.default` era `undefined` → React #306 "Element type is invalid...
+Lazy element type must resolve to a class or function". Ver
+**D-LAZY-DEFAULT-EXPORT** abaixo.
+
+**Por que passou despercebido em 5 deploys (sw-v87..v91)**:
+1. O "render counter" com threshold 3 (sw-v89) mascarava o problema.
+2. Testes unitários passavam (named import direto).
+3. Stack trace do React #306 não mostrava lazy stack.
+4. sw-v91 só deu pista clara ao desabilitar a aba.
+5. A stack completa só veio com a investigação do Claude em sw-v92.
+
+**Aplicação preventiva mantida**: apesar de o diagnóstico estar errado,
+o **padrão de primitivos no queryKey** continua sendo uma boa prática
+(legibilidade + evita warnings de React Query DevTools). Manter o
+padrão, mas **não atribuir o React #306 a isso**.
+
+### D-LAZY-DEFAULT-EXPORT (sw-v92, 2026-07-31) — CAUSA RAIZ REAL DO REACT #306
+
+**Contexto**: 13 componentes carregados via `React.lazy()` no painel
+admin (`OrganizationAdminPanel.v3.jsx`) tinham apenas **named export**
+(sem `export default`). Ao resolver, o `module.default` era `undefined`
+→ React #306 "Element type is invalid... Lazy element type must resolve
+to a class or function" — capturado pelo ErrorBoundary como "Não foi
+possível carregar esta aba".
+
+**Componentes corrigidos (13)**:
+
+**Abas do painel do abrigo (9):**
+- `KanbanPage`, `ExhibitionsList`, `VolunteersAdminTab`,
+  `MedicalRecordsList`, `MedicationsList`, `TimelineList`,
+  `FostersList`, `ShelterDonationsTab`, `ShelterFinanceTab`
+
+**Rotas (4):**
+- `MyContracts`, `ShelterContractsList`, `ShelterInterviewsList`,
+  `PostAdoptionDashboard`
+
+**Decisão**: Componentes carregados via `React.lazy()` DEVEM ter
+`export default`. Para manter compatibilidade com testes, manter
+AMBOS:
+- `export function Name()` — para imports nomeados
+- `export default Name` — para `React.lazy()`
 
 ```js
-// ❌ Errado (objeto = loop infinito)
-queryKey: ['shelter-volunteers', shelterClubId, options]
+// ❌ Errado (NAMED export only — quebra com React.lazy)
+export function MyContracts() {
+  return <div>...</div>;
+}
 
-// ✅ Correto (primitivos)
-const { status, maxResults } = options;
-queryKey: ['shelter-volunteers', shelterClubId, status ?? null, maxResults ?? 200]
+// ✅ Correto (BOTH named AND default)
+export function MyContracts() {
+  return <div>...</div>;
+}
+
+// Default export para React.lazy() (mantém named export acima para imports diretos/testes).
+export default MyContracts;
 ```
 
-**Aplicação**: TODOS os hooks useQuery com `options` object como segundo
-argumento. Aplicado em sw-v87 em 10 hooks:
-- useShelterVolunteers, useUserVolunteerRosters
-- useVolunteerAssignments, useParticipations
-- useApplications, useExhibitions, useFosters
-- useMedicalRecords, useMedications, usePetPhotos
+**Aplicação**: TODOS os componentes usados em `lazy(() => import('...'))`.
+
+**Prevenção**:
+1. Lint rule custom para detectar `lazy(` que importa named export only.
+2. Test E2E que valida que cada rota lazy carrega sem erros.
+
+**Aplicação em sw-v93 (correlato)**: `AdoptionDetail.jsx` teve `useQuery`
+(postAdoption) movido para ANTES dos early returns (rules-of-hooks).
 
 ### D-DEBUG-FIRESTORE-RULES-LEVEL-2 (sw-v82..v84, 2026-07-29)
 
@@ -583,3 +628,188 @@ errada causa React error #31 em runtime.
 
 **Prevenção**: Adicionar lint rule ou grep em CI para detectar
 `toast({` em código novo.
+
+---
+
+## §12. Decisões de Firestore Rules (sw-v95..v97, 2026-07-31)
+
+### D-FIRESTORE-RULES-DEFINITION (sw-v95, 2026-07-31)
+
+**Contexto**: Regras de kanban (boards/columns/cards) usavam
+`shelterCanAccess` e `shelterCanManage`, mas essas funções **NUNCA
+foram definidas** no bloco `match /clubs/{clubId}`. O compilador
+emitia warning "Invalid function name" e tratava como `false` →
+**kanban SEMPRE negava acesso**.
+
+**Decisão**: TODA função referenciada em uma rule DEVE estar
+**definida** no escopo do `match` que a usa. Caso contrário, o
+compilador trata como `false` e a regra sempre nega.
+
+**Prevenção**: CI deve rodar `firebase firestore:rules:get --emulator`
+e falhar se houver warning "Invalid function/variable name".
+
+**Aplicação em sw-v95**: `shelterCanAccess` e `shelterCanManage`
+foram definidas espelhando o padrão de acesso do abrigo
+(medications/fosters).
+
+### D-FIRESTORE-MATCH-SCOPE (sw-v95, sw-v96, 2026-07-31)
+
+**Contexto**: 4 + 6 = 10 subcoleções estavam com `match` no TOP-LEVEL
+em vez de aninhadas sob o path correto:
+- `health_records`, `vet_visits`, `treatments`, `care_log`,
+  `devolutions`, `adopters_history` (Pets)
+- `shelter_donations`, `shelter_donation_receipts`, `shelter_ledger`,
+  `shelter_ledger_categories` (Shelter)
+
+Logo, `{petId}` / `{clubId}` estavam fora de escopo e o path da
+regra não casava com o real. **Create/update/delete SEMPRE negados**.
+
+**Decisão**: Subcoleções DEVEM ser aninhadas sob o path correto.
+Variáveis de escopo (`{petId}`, `{clubId}`, `{communityId}`) só
+estão disponíveis dentro do `match` que as declara.
+
+```js
+// ❌ Errado (match no top-level → petId fora de escopo)
+match /health_records/{recordId} {
+  allow read: if isAuth() && isOwnerOfPet(petId);
+}
+
+// ✅ Correto (match aninhado)
+match /pets/{petId} {
+  match /health_records/{recordId} {
+    allow read: if isAuth() && isOwnerOfPet(petId);
+  }
+}
+```
+
+**Prevenção**: Mesma da D-FIRESTORE-RULES-DEFINITION.
+
+### D-FIRESTORE-REQUEST-AUTH-UID (sw-v95, 2026-07-31)
+
+**Contexto**: Regras de contratos usavam `auth.uid` (variável
+inexistente) em vez de `request.auth.uid` no create/cancelamento.
+O compilador trata como `false` → adotante **não conseguia
+criar/cancelar seu contrato**.
+
+**Decisão**: SEMPRE usar `request.auth.uid` (NUNCA `auth.uid`).
+
+**Prevenção**: grep em CI para `allow.*auth\.uid` (sem `request.`).
+
+**Aplicação em sw-v95**: corrigido em todas as ocorrências de
+contratos.
+
+### D-COLLECTION-GROUP-RULES (sw-v95, 2026-07-31)
+
+**Contexto**: 8 collectionGroup queries estavam sem regra
+`{path=**}`:
+- `contracts` (Meus Contratos)
+- `volunteers` (Minhas Voluntariadas)
+- `volunteer_participations`
+- `post_adoption` (Devolvidos)
+- `fosters` (Histórico público)
+- `kanban_cards`
+- `banners`
+- `volunteer_profile`
+
+**Regras aninhadas por path NÃO cobrem `collectionGroup`**.
+
+**Decisão**: CollectionGroup queries precisam de regra própria
+`{path=**}` (regras recursivas), espelhando a autorização vetada
+(padrão medications), preservando isolamento multi-tenant.
+
+```js
+// Exemplo para /volunteers (collectionGroup)
+match /{path=**}/volunteers/{volunteerId} {
+  allow read: if isAuth() && (
+    isPlatformAdmin() ||
+    isOwnerOfResource(resource.data.volunteer_uid) ||
+    isClubMember(resource.data.shelter_club_id)
+  );
+}
+```
+
+**Prevenção**: CI deve verificar que cada `collectionGroup()` no
+código tem regra `{path=**}` correspondente em `firestore.rules`.
+
+### D-COLLECTION-GROUP-INDEX (sw-v97, 2026-07-31)
+
+**Contexto**: Agora que as collectionGroup queries estão autorizadas
+(sw-v95), as compostas precisam de índice com
+`queryScope: COLLECTION_GROUP` (as single-field são auto-criadas).
+Sem eles, a query falha com `FAILED_PRECONDITION` (distinto de
+`permission-denied`).
+
+**Decisão**: CollectionGroup queries compostas precisam de índice
+COLLECTION_GROUP explícito em `firestore.indexes.json`.
+
+**Aplicação em sw-v97**: adicionados 4 índices:
+- `volunteers` (volunteer_uid ASC, volunteer_name ASC)
+- `fosters` (foster_uid ASC, status ASC, ended_at DESC)
+- `post_adoption` (shelter_club_id ASC, status ASC, returned_at DESC)
+- `banners` (status ASC, position ASC)
+
+Total: 68 índices.
+
+**Prevenção**: grep em CI para `collectionGroup(` que não tenha
+índice correspondente.
+
+---
+
+## §13. Decisões de Debug Sistemático (sw-v92..v93, 2026-07-31)
+
+### D-HOOKS-ORDER-PRESERVE (sw-v93, 2026-07-31)
+
+**Contexto**: `useArenaPageClasses` em `PetDetailV3` era chamado
+**DEPOIS** dos early returns (`if (isLoading) return ...`).
+`useEffect` em `LegalFooter` também. `useMemo` em `CrossRosterSection`
+também. Viola a **Rule of Hooks** (hooks devem ser chamados sempre
+na mesma ordem, sem condicionais).
+
+**Decisão**: SEMPRE chamar hooks no TOPO do componente, ANTES de
+qualquer early return. Caso contrário, o React perde o tracking e
+emite warning "Rendered fewer hooks than expected".
+
+**Aplicação em sw-v93**:
+- `PetDetailV3`: `useArenaPageClasses` movido para antes dos returns
+- `LegalFooter`: `useEffect` movido para depois de `mode hidden`
+- `CrossRosterSection`: 2 `useMemo` movidos para depois do return
+
+**Prevenção**: ESLint plugin `eslint-plugin-react-hooks` (já
+configurado). Mas atenção: ele NÃO detecta quando o hook é chamado
+DEPOIS de early return em mesmo escopo (não é regra condicional,
+é regra de ORDEM). Code review manual necessário.
+
+### D-IMPORT-CHECK (sw-v93, 2026-07-31)
+
+**Contexto**: Vários ícones/componentes referenciados mas não
+importados:
+- `Layout`: ícones `Sun`/`Moon` do theme-toggle não importados
+  → crash ao renderizar
+- `OnboardingQuestionnaire`: `isEditMode` referenciado mas nunca
+  definido
+- `bannersService`: `collectionGroup` não importado do
+  firebase/firestore
+- `ShelterDonationsTab`: `useCreateShelterReceipt` não importado
+
+**Decisão**: SEMPRE verificar imports ao adicionar referência
+simbólica. Tree-shaking remove unused imports, mas o **Vite não
+emite warning** se a referência for usada (mesmo se for em código
+condicional/removido por dead code elimination).
+
+**Prevenção**:
+1. ESLint `no-undef` (já configurado).
+2. `tsc --noEmit` em CI (ainda não configurado para o projeto).
+3. Code review em PRs.
+
+### D-FUNCTIONS-DEPS-CHECK (sw-v94, 2026-07-31)
+
+**Contexto**: `generateVolunteerCertificateCore.cjs` faz
+`require('pdfkit')`, mas `pdfkit` não estava em `functions/package.json`
+(só `pdf-lib`). A Cloud Function quebraria em runtime com
+"Cannot find module 'pdfkit'".
+
+**Decisão**: SEMPRE verificar que TODAS as dependências usadas em
+Cloud Functions estão em `functions/package.json` (não nas deps
+do app principal).
+
+**Prevenção**: `npm ls` em CI para Cloud Functions.

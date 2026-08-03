@@ -1,7 +1,7 @@
 # REGENCY: Pet Ops V3 (TASK-V3-PET-OPS-LOG) — Documento de Implementação
 
-> **Status:** DEPLOYED em `sw-v72.4` (PR #198)
-> **Data:** 2026-07-22
+> **Status:** DEPLOYED em `sw-v72.4` (PR #198) + correções sw-v93..v95
+> **Data:** 2026-07-22 (atualizado 2026-08-03)
 > **Bundle:** `PetDetailV3-DyhpBi3o.js` (123692 bytes)
 
 ## Visão geral
@@ -420,9 +420,91 @@ match /pet_seq_counter/{counterId} {
 | D-HASH-ROUTER-PET-TABS | tabs navegáveis por hash URL |
 | D-PET-NOTES-AUTHOR-DELETE | notas só autor/platform_admin podem deletar |
 | D-PET-LOG-TIMELINE-AGGREGATION | Timeline combina 9 fontes em 1 view |
+| **D-HOOKS-ORDER-PRESERVE** (sw-v93) | `useArenaPageClasses` em `PetDetailV3` foi movido para ANTES dos early returns (rules-of-hooks) |
+| **D-FIRESTORE-MATCH-SCOPE** (sw-v95) | Subcoleções de pet (`health_records`, `vet_visits`, `treatments`, `care_log`, `devolutions`, `adopters_history`) DEVEM ser aninhadas sob `match /pets/{petId}` correto (eram órfãs no top-level) |
+| **D-FIRESTORE-RULES-DEFINITION** (sw-v95) | `shelterCanAccess` / `shelterCanManage` foram definidas (não existiam → kanban sempre negava) |
 
 ---
 
-**Última atualização**: 2026-07-22
-**Versão**: sw-v72.4
+## 12. CRITICAL FIX — Subcoleções Pet órfãs (sw-v95, 2026-07-31)
+
+### Sintoma
+
+Em qualquer pet (`/pets/:petId`), prontuário/vacinas/cuidados/histórico
+negavam acesso. Usuário via "permission-denied" em:
+- `health_records` (prontuário)
+- `vet_visits` (vacinas)
+- `treatments` (tratamentos)
+- `care_log` (cuidados)
+- `devolutions` (devoluções)
+- `adopters_history` (histórico de adotantes)
+
+### Causa raiz
+
+As 6 subcoleções estavam com `match` no **top-level** (fora do bloco
+`match /pets/{petId}` que declarava `petId`). Logo:
+1. `petId` estava fora de escopo nas condições
+2. O path da regra não casava com o real `pets/{petId}/...`
+3. O compilador emitia warning "Invalid variable name: petId"
+4. As regras SEMPRE negavam
+
+### Fix
+
+Envolvidas em `match /pets/{petId}` corretamente:
+
+```js
+match /pets/{petId} {
+  match /health_records/{recordId} { ... }
+  match /vet_visits/{visitId} { ... }
+  match /treatments/{treatmentId} { ... }
+  match /care_log/{logId} { ... }
+  match /devolutions/{devolutionId} { ... }
+  match /adopters_history/{historyId} { ... }
+}
+```
+
+### Lição (D-FIRESTORE-MATCH-SCOPE)
+
+**REGRA**: Subcoleções DEVEM ser aninhadas sob o path correto.
+Variáveis de escopo (`{petId}`, `{clubId}`, `{communityId}`) só estão
+disponíveis dentro do `match` que as declara.
+
+**Prevenção**: CI deve rodar `firebase firestore:rules:get --emulator`
+e falhar se houver warning "Invalid function/variable name".
+
+---
+
+## 13. CRITICAL FIX — PetDetailV3 rules-of-hooks (sw-v93, 2026-07-31)
+
+### Sintoma
+
+`PetDetailV3` crashava intermitentemente com "Invalid hook call" ou
+render state inconsistente.
+
+### Causa raiz
+
+`useArenaPageClasses` (hook customizado) era chamado **DEPOIS** dos
+early returns (`if (isLoading) return <Loading />` e `if (!pet) return
+<NotFound />`). Isso viola a **Rule of Hooks** (hooks devem ser
+chamados sempre na mesma ordem, sem condicionais).
+
+### Fix
+
+Hook movido para ANTES dos early returns.
+
+### Lição (D-HOOKS-ORDER-PRESERVE)
+
+**REGRA**: SEMPRE chamar hooks no TOPO do componente, ANTES de qualquer
+early return. Caso contrário, o React perde o tracking e emite warning
+"Rendered fewer hooks than expected".
+
+**Prevenção**: ESLint plugin `eslint-plugin-react-hooks` (já configurado).
+Mas atenção: ele NÃO detecta quando o hook é chamado DEPOIS de early
+return em MESMO escopo condicional (não é regra condicional, é regra
+de ORDEM).
+
+---
+
+**Última atualização**: 2026-08-03
+**Versão**: sw-v72.4 + sw-v93..v95
 **Mantido por**: Mavis

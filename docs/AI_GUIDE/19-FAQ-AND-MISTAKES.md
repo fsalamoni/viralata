@@ -1,6 +1,6 @@
 # 19-FAQ-AND-MISTAKES.md — FAQ + Erros Comuns
 
-> **Atualizado em 2026-07-31** (sw-v75..v91)
+> **Atualizado em 2026-08-03** (sw-v75..v97)
 >
 > Respostas para perguntas frequentes + armadilhas comuns.
 
@@ -746,4 +746,134 @@ Mesmo em setDoc com merge, é create no primeiro write. Daí o erro
 Solução: incluir `signature_text` (e qualquer outro campo exigido pela
 rule de create) no `setDoc`. Veja `D-VOLUNTEER-SIGNATURE` em
 `13-DECISIONS.md` e `28-VOLUNTEER-SIGNUP-BUGFIX.md`.
+
+### Q: Estou usando React Query com `queryKey: [..., options]` mas está dando React #306. O que fazer?
+
+**R**: **NÃO é isso!** O React Query 5 faz **hash determinístico** do
+queryKey via `hashKey`. Objetos com mesmo conteúdo (mesmo recriados)
+têm o mesmo hash. Portanto, `queryKey: [..., options]` **NÃO causa loop**.
+
+A causa raiz do React #306 (sw-v92, 2026-07-31) é: **componentes
+carregados via `React.lazy()` que têm apenas named export, sem
+`export default`**. Ao resolver, `module.default` é `undefined` →
+React #306 "Element type is invalid... Lazy element type must resolve
+to a class or function".
+
+**Diagnóstico**:
+```bash
+# Procurar todos os componentes usados em lazy()
+grep -rn "lazy(() => import" src/ --include="*.jsx"
+
+# Verificar se cada um tem export default
+for f in $(grep -rl "lazy(() => import" src/ --include="*.jsx"); do
+  echo "=== $f ==="
+  grep "^export" "$f"
+done
+```
+
+**Fix (D-LAZY-DEFAULT-EXPORT)**: adicionar `export default` ao
+componente, mantendo o named export:
+
+```jsx
+// ❌ Errado (NAMED export only — QUEBRA com React.lazy)
+export function MyComponent() { return <div>...</div>; }
+
+// ✅ Correto
+export function MyComponent() { return <div>...</div>; }
+export default MyComponent;  // para React.lazy()
+```
+
+Ver `14-TROUBLESHOOTING.md` §12 para mais detalhes.
+
+### Q: Permission denied em uma collection que eu tenho acesso, mas a rule parece correta. O que está errado?
+
+**R**: 5 causas comuns (sw-v95, 2026-07-31):
+
+1. **Função NUNCA definida** na rule. Compilador trata como `false`:
+   ```js
+   // ❌ Errado (shelterCanAccess não existe)
+   allow read: if isAuth() && shelterCanAccess(clubId);
+
+   // ✅ Correto (definida no escopo do match)
+   match /clubs/{clubId} {
+     function shelterCanAccess(clubId) { return ...; }
+     match /kanban_cards/{cardId} {
+       allow read: if isAuth() && shelterCanAccess(clubId);
+     }
+   }
+   ```
+
+2. **Subcoleção órfã** (no top-level em vez de aninhada):
+   ```js
+   // ❌ Errado (petId fora de escopo)
+   match /health_records/{recordId} {
+     allow read: if isAuth() && isOwnerOfPet(petId);
+   }
+
+   // ✅ Correto
+   match /pets/{petId} {
+     match /health_records/{recordId} {
+       allow read: if isAuth() && isOwnerOfPet(petId);
+     }
+   }
+   ```
+
+3. **`auth.uid` em vez de `request.auth.uid`** (variável inexistente).
+
+4. **CollectionGroup sem regra `{path=**}`** (regras aninhadas NÃO cobrem).
+
+5. **CollectionGroup composta sem índice `COLLECTION_GROUP`** em
+   `firestore.indexes.json`.
+
+Ver `14-TROUBLESHOOTING.md` §13 e `D-FIRESTORE-RULES-DEFINITION` em
+`13-DECISIONS.md` §12.
+
+### Q: React warning "Rendered fewer hooks than expected" — como corrigir?
+
+**R**: Você provavelmente está chamando um hook DEPOIS de um early
+return. Hooks DEVEM ser chamados no TOPO do componente, ANTES de
+qualquer `if (...) return ...`.
+
+```jsx
+// ❌ Errado (hook depois de early return — viola Rule of Hooks)
+function PetDetailV3() {
+  if (isLoading) return <Loading />;
+  const classes = useArenaPageClasses();  // ← violação
+  if (!pet) return <NotFound />;
+  return <div className={classes}>...</div>;
+}
+
+// ✅ Correto
+function PetDetailV3() {
+  const classes = useArenaPageClasses();  // ← hook primeiro
+  if (isLoading) return <Loading />;
+  if (!pet) return <NotFound />;
+  return <div className={classes}>...</div>;
+}
+```
+
+**MAS**: ESLint `react-hooks/rules-of-hooks` **NÃO detecta** quando
+o hook é chamado depois de early return em mesmo escopo. **Code
+review manual necessário**. Ver `D-HOOKS-ORDER-PRESERVE` em
+`13-DECISIONS.md` §13.
+
+### Q: Cloud Function quebra em runtime com "Cannot find module 'X'" mesmo eu tendo `require('X')`?
+
+**R**: Você provavelmente está em `functions/` e a dependência
+`X` está em `package.json` do app principal, mas não em
+`functions/package.json`. Cloud Functions tem dependências isoladas.
+
+**Fix (D-FUNCTIONS-DEPS-CHECK)**:
+```bash
+cd functions/
+# Adicionar a dependência
+npm install <X> --save
+
+# Verificar
+npm ls | grep <X>
+```
+
+Aplicação em sw-v94: `pdfkit` faltando em `functions/package.json`
+foi adicionado. Ver `D-FUNCTIONS-DEPS-CHECK` em
+`13-DECISIONS.md` §13.
 

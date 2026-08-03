@@ -1,8 +1,8 @@
 # Documento de Regência — ORG_ADMIN V3
 
-> **Status**: ✅ DEPLOYED (TASK-V3-ORG_ADMIN)
+> **Status**: ✅ DEPLOYED (TASK-V3-ORG_ADMIN) + ciclo de correções sw-v92 (React #306 fix)
 > **Diretriz ETERNA**: `docs/PAGE_REGENCY_TEMPLATE.md`
-> **Atualizado em**: 2026-07-19
+> **Atualizado em**: 2026-08-03
 
 ---
 
@@ -393,3 +393,77 @@ V3 (45KB) redesenhado do zero:
 | 2026-07-19 23:50 | V3 implementada (45KB, 8 sub-componentes) |
 | 2026-07-19 23:50 | Regência preenchida (15 seções) |
 | 2026-07-19 23:50 | Deploy + SCRUM update |
+| 2026-07-30 00:00 | **sw-v87..v91** — Investigação React #306 na aba volunteers (diagnóstico incorreto: queryKey object loop) |
+| 2026-07-30 04:00 | **sw-v91** — `SHOW_VOLUNTEERS_TAB = false` (aba volunteers temporariamente desabilitada) |
+| 2026-07-31 00:20 | **sw-v92 (commit 0ced567e)** — **CAUSA RAIZ ENCONTRADA**: 9 abas carregadas via `React.lazy()` sem `export default` (`KanbanPage`, `ExhibitionsList`, `VolunteersAdminTab`, `MedicalRecordsList`, `MedicationsList`, `TimelineList`, `FostersList`, `ShelterDonationsTab`, `ShelterFinanceTab`). Adicionado `export default` em todas. Painel volunteers REABILITADO. `SHOW_VOLUNTEERS_TAB` removido. |
+| 2026-07-31 04:10 | **sw-v93 (commit 030691b7)** — `AdoptionDetail`: useQuery após early return (rules-of-hooks) → corrigido |
+
+---
+
+## 16. CRITICAL FIX — React #306 nas abas (sw-v92, 2026-07-31)
+
+### Sintoma
+
+Ao acessar `/organizacoes/:orgId/admin?tab=...` com qualquer uma
+das 9 abas de shelter (kanban, exhibitions, volunteers, etc), o
+ErrorBoundary capturava "Não foi possível carregar esta aba".
+
+### Causa raiz (sw-v92)
+
+9 componentes carregados via `React.lazy()` no painel admin tinham
+apenas **named export** (sem `export default`). Ao resolver, o
+`module.default` era `undefined` → React #306 "Element type is
+invalid... Lazy element type must resolve to a class or function"
+— capturado pelo ErrorBoundary como "Não foi possível carregar esta aba".
+
+### Componentes corrigidos (9)
+
+| Componente | Caminho |
+|---|---|
+| `KanbanPage` | `src/modules/shelter/components/KanbanPage.jsx` |
+| `ExhibitionsList` | `src/modules/shelter/components/ExhibitionsList.jsx` |
+| `VolunteersAdminTab` | `src/modules/shelter/components/VolunteersAdminTab.jsx` |
+| `MedicalRecordsList` | `src/modules/shelter/components/MedicalRecordsList.jsx` |
+| `MedicationsList` | `src/modules/shelter/components/MedicationsList.jsx` |
+| `TimelineList` | `src/modules/shelter/components/TimelineList.jsx` |
+| `FostersList` | `src/modules/shelter/components/FostersList.jsx` |
+| `ShelterDonationsTab` | `src/modules/shelter/components/ShelterDonationsTab.jsx` |
+| `ShelterFinanceTab` | `src/modules/shelter/components/ShelterFinanceTab.jsx` |
+
+### Padrão aplicado (D-LAZY-DEFAULT-EXPORT)
+
+```jsx
+// Antes (NAMED export only — quebra com React.lazy)
+export function KanbanPage() {
+  return <div>...</div>;
+}
+
+// Depois (BOTH named AND default)
+export function KanbanPage() {
+  return <div>...</div>;
+}
+
+// Default export para React.lazy() (mantém named export acima para imports diretos/testes).
+export default KanbanPage;
+```
+
+### Por que passou despercebido (5 deploys sw-v87..v91)
+
+1. O "render counter" com threshold 3 (sw-v89) mascarava o problema.
+2. Testes unitários passavam (named import direto).
+3. Stack trace do React #306 não mostrava lazy stack.
+4. sw-v91 só deu pista clara ao desabilitar a aba.
+5. A stack completa só veio com a investigação do Claude em sw-v92.
+
+### Lição
+
+**REGRA**: Componentes carregados via `React.lazy()` DEVEM ter `export default`.
+Para manter compatibilidade com testes, manter AMBOS.
+
+**Prevenção**: lint rule custom para detectar `lazy(` que importa
+named export only.
+
+### Correção secundária (sw-v93)
+
+`AdoptionDetail.jsx`: `useQuery` (postAdoption) chamado após early return,
+violando rules-of-hooks → movido para antes dos returns.

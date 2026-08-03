@@ -1,6 +1,6 @@
 # 15-RECENT-FIXES.md — Últimos 30 Dias
 
-> **Atualizado em 2026-07-31** (sw-v75..v91)
+> **Atualizado em 2026-08-03** (sw-v75..v97)
 >
 > Documento vivo. **SEMPRE** verificar antes de fixar um bug — pode já
 > ter sido corrigido.
@@ -357,7 +357,249 @@ Quando um bug persiste por 3+ deploys sem solução:
 
 - **17 deploys** em 5 dias
 - **9 decisões D-*** criadas
-- **10 hooks** corrigidos (D-REACT-QUERY-KEY-PRIMITIVES)
+- **10 hooks** corrigidos (D-REACT-QUERY-KEY-PRIMITIVES — **DIAGNÓSTICO INCORRETO, ver §9**)
 - **3 regras Firestore** ajustadas (read/create/volunteers)
 - **80+ tests** passando (volunteerProfileService + hooks)
 - **Bundle final**: `index-Bv_OCvQE.js` + `OrganizationAdminPanel-*.js`
+
+### §8.6. ⚠️ CORREÇÃO POSTERIOR (sw-v92, 2026-07-31)
+
+O diagnóstico de sw-v87 (D-REACT-QUERY-KEY-PRIMITIVES) estava
+**INCORRETO**. A causa raiz REAL do React #306 foi descoberta em
+sw-v92 (commit 0ced567e): **13 componentes carregados via `React.lazy()`
+tinham apenas named export, sem `export default`**. Ver **§9** abaixo.
+
+---
+
+## §9. Correções Definitivas (sw-v92..v97, 2026-07-31)
+
+### §9.1. Contexto
+
+Após o ciclo de fixes sw-v75..v91 (VolunteerSignup), 5 problemas
+persistiam:
+
+1. **React #306 na aba volunteers do painel admin** (ciclos
+   sw-v87..v91 não resolveram)
+2. **"Não foi possível carregar esta aba"** em outras abas do painel
+3. **Permission-denied** em prontuário/vacinas/cuidados/histórico de pets
+4. **Permission-denied** em contratos, forum, donations
+5. **Cloud Function `generateVolunteerCertificate` quebrando** em runtime
+
+O Claude (sw-v92..v97) fez uma varredura completa e corrigiu 5
+problemas sistêmicos de uma vez.
+
+### §9.2. sw-v92 — React #306 + 9 abas do painel
+
+**Commit**: `0ced567e` (2026-07-31 00:20)
+
+**Causa raiz REAL**: 13 componentes carregados via `React.lazy()` no
+painel admin tinham apenas **named export**, sem `export default`.
+Ao resolver, o `module.default` era `undefined` → React #306 "Element
+type is invalid... Lazy element type must resolve to a class or
+function" — capturado pelo ErrorBoundary como "Não foi possível
+carregar esta aba".
+
+**O diagnóstico anterior (sw-v87, D-REACT-QUERY-KEY-PRIMITIVES) estava
+ERRADO**: React Query 5 faz hash determinístico do queryKey via
+`hashKey`. Objetos com mesmo conteúdo (mesmo recriados) têm o mesmo
+hash. Portanto, `queryKey: [..., options]` NÃO causa loop.
+
+**Componentes corrigidos (13)**: ver **D-LAZY-DEFAULT-EXPORT** em
+`13-DECISIONS.md` §11.
+
+**Resultado**:
+- ✅ Painel volunteers REABILITADO (removeu `SHOW_VOLUNTEERS_TAB = false`)
+- ✅ 9 abas do abrigo funcionando (kanban, exhibitions, volunteers,
+  medical, medications, timeline, fosters, donations, finance)
+- ✅ 4 rotas funcionando (MyContracts, ShelterContractsList,
+  ShelterInterviewsList, PostAdoptionDashboard)
+- ✅ Render counters removidos (TEMP-DIAG-ROSTER/TEMP-DIAG-PANEL)
+- ✅ Logs TEMP-DIAG-VOL do `joinShelterAsVolunteer` removidos
+
+**Outros crashes corrigidos**:
+- `VolunteerSignup.jsx`: `joinSignature` indefinido em `handleAcceptTerms`
+  → usa `signatureText.trim()`
+- `ShelterDonationsTab.jsx`: `useCreateShelterReceipt` não importado
+  → adicionado
+- `AdoptionDetail.jsx`: `useQuery` (postAdoption) chamado após early
+  return → movido para antes
+- `SmartSearchFilters.jsx`: className como string literal `"{cn(...)}}"`
+  → corrigido para `{cn(...)}`
+
+**Build OK; 1378 testes passando.**
+
+### §9.3. sw-v93 — Varredura de Reparos (runtime + hooks + sintaxe)
+
+**Commit**: `030691b7` (2026-07-31 04:10)
+
+**Crashes de runtime corrigidos**:
+- `Layout`: ícones `Sun`/`Moon` do theme-toggle não importados
+- `OnboardingQuestionnaire`: `isEditMode` referenciado mas nunca
+  definido (em `/onboarding?edit=1` vindo do perfil) → derivado do
+  query param
+- `bannersService`: `collectionGroup` não importado
+
+**Violações de rules-of-hooks**:
+- `PetDetailV3`: `useArenaPageClasses` chamado depois dos early returns
+  → movido para antes
+- `LegalFooter`: `useEffect` depois de `return null` (mode hidden) →
+  early-return movido para depois do hook
+- `CrossRosterSection`: dois `useMemo` depois de `return null` →
+  early-return movido para depois dos hooks
+
+**Erros de sintaxe**:
+- `ClubForumsTab`: `<Card>` (nem importado) fechado com `</section>` →
+  troca a abertura para `<section>`
+- `generateEventIcsCore.test`: parêntese extra em `toContain(...))`
+
+**Config / correção de testes desatualizados**:
+- `tailwind.config`: chave `fontSize` duplicada removida
+- `eslint.config`: globals de test-runner (Vitest/Jest) +
+  `allowEmptyCatch` → elimina ~190 falsos-positivos
+- `registerPwa.test`: referências atualizadas de sw-v82 → sw-v91
+- `canManage.audit.test`: import com path absoluto → relativo
+
+**Cosméticos**: aspas em texto JSX → `&quot;` em 4 arquivos.
+
+### §9.4. sw-v94 — Cloud Functions (pdfkit + infra de testes)
+
+**Commit**: `5e64a7ee` (2026-07-31 04:36)
+
+**Bug de produção corrigido**:
+- `generateVolunteerCertificateCore.cjs` faz `require('pdfkit')`, mas
+  `pdfkit` não estava em `functions/package.json` (só `pdf-lib`).
+  Cloud Function quebrava em runtime com "Cannot find module 'pdfkit'".
+  Adicionado `pdfkit` às dependências.
+
+**Infra de testes (functions/)**:
+- `vitest.config`: `globals: true` + setupFiles
+- `vitest.setup.js` (novo): expõe `globalThis.jest = vi` para os testes
+  escritos no estilo Jest
+- `healthCheckCore.test`: `checkFirestore` retorna `error: null` em
+  sucesso; assert corrigido
+
+**Resultado**: arquivos de teste com falha 7 → 4; testes com falha 22 → 12.
+
+### §9.5. sw-v95 — Regras Firestore Quebradas (5 correções)
+
+**Commit**: `3cb12127` (2026-07-31 05:36)
+
+**Causa raiz**: Regras que referenciam nomes indefinidos SEMPRE
+negam. O log de compilação do deploy emitia warnings "Invalid
+function/variable name", que eram IGNORADOS.
+
+**Correções**:
+
+1. **`shelterCanAccess` / `shelterCanManage` NUNCA foram definidas**,
+   mas eram usadas nas regras de kanban (boards/columns/cards) →
+   kanban sempre negava. Definidas espelhando o padrão de acesso
+   do abrigo (medications/fosters).
+
+2. **Subcoleções de PET órfãs**: `health_records`, `vet_visits`,
+   `treatments`, `care_log`, `devolutions`, `adopters_history`
+   estavam no top-level (o bloco `match /pets/{petId}` fechava antes)
+   → `petId` fora de escopo. Envolvidas em `match /pets/{petId}`.
+
+3. **Contratos**: `auth.uid` (variável inexistente) em vez de
+   `request.auth.uid` no create/cancelamento → adotante não
+   conseguia criar/cancelar.
+
+4. **Comunidades**: `community_members` e `community_posts` (coleções
+   top-level) referenciavam `communityId` não vinculado → forum
+   posting negava. Trocado por `resource.data.community_id`.
+
+5. **CollectionGroup queries sem regra `{path=**}`**: 8 collectionGroups
+   (contracts, volunteers, volunteer_participations, post_adoption,
+   fosters, kanban_cards, banners, volunteer_profile). Regras
+   aninhadas por path NÃO cobrem `collectionGroup` — adicionadas
+   regras recursivas.
+
+**Validação**: firestore.rules compila sem erro no emulador;
+braces balanceados.
+
+### §9.6. sw-v96 — shelter_donations/ledger órfãs
+
+**Commit**: `2472640b` (2026-07-31 05:43)
+
+**Continuação da auditoria de regras** (log de compilação ainda
+emitia "Invalid variable name: clubId" nas linhas 2149-2242).
+
+4 coleções do abrigo tinham o match no TOP-LEVEL em vez de aninhado
+sob `clubs/{clubId}/`:
+- `shelter_donations` (Campanhas de doação)
+- `shelter_donation_receipts` (Comprovantes)
+- `shelter_ledger` (Prestação de contas / finance)
+- `shelter_ledger_categories` (Categorias do ledger)
+
+Logo, `clubId` estava fora de escopo → create/update/delete
+**SEMPRE negados**.
+
+**Fix**: path corrigido de `/<coleção>/{id}` para
+`/clubs/{clubId}/<coleção>/{id}`. Confirmado que o app grava nesses
+caminhos aninhados (`shelterDonationService: collection(db, 'clubs',
+clubId, 'shelter_donations')`).
+
+**Validação**: compila sem erro no emulador; braces balanceados (319/319).
+Após este fix, o log de compilação do deploy não emite mais nenhum
+warning "Invalid function/variable name".
+
+### §9.7. sw-v97 — Índices COLLECTION_GROUP
+
+**Commit**: `4dd8ed43` (2026-07-31 06:07)
+
+Agora que as collectionGroup queries estão autorizadas (sw-v95), as
+compostas precisam de índice com `queryScope: COLLECTION_GROUP` (as
+single-field são auto-criadas). Sem eles, a query falha com
+`FAILED_PRECONDITION` (distinto de `permission-denied`).
+
+**Índices adicionados (4)**:
+- `volunteers` (volunteer_uid ASC, volunteer_name ASC)
+  → /perfil "Minhas voluntariadas" (listUserVolunteerRosters)
+- `fosters` (foster_uid ASC, status ASC, ended_at DESC)
+  → histórico público de lar temporário (fosterHistoryPublicService)
+- `post_adoption` (shelter_club_id ASC, status ASC, returned_at DESC)
+  → lista de devolvidos no painel (PostAdoptionReturnedList)
+- `banners` (status ASC, position ASC)
+  → vitrine de banners de parceiros (bannersService)
+
+As demais collectionGroup queries habilitadas (contracts, volunteer_
+participations, kanban_cards) usam filtro single-field → índice
+auto-criado, sem entrada explícita necessária.
+
+**JSON validado (68 índices).**
+
+### §9.8. Workflow Recomendado (revisado)
+
+O workflow de §8.3 (para bugs persistentes) foi REVISADO e expandido:
+
+1. **Adicionar logs estruturados** no service
+2. **Simplificar a rule gradualmente** (se for permission-denied)
+3. **try/catch defensivo** em getDoc/setDoc
+4. **Idempotência** se for mutation de create
+5. **Analisar stack trace completa** (NÃO só mensagem genérica)
+6. **Verificar imports** (tree-shaking remove unused, mas não avisa)
+7. **Verificar hooks order** (rules-of-hooks: ANTES dos early returns)
+8. **Verificar se `React.lazy()` tem `export default`** (CAUSA RAIZ
+   do React #306 em 13 componentes)
+9. **Verificar se funções referenciadas estão definidas** (CAUSA
+   RAIZ de permission-denied em kanban e pets)
+10. **Verificar se subcoleções estão aninhadas corretamente**
+    (CAUSA RAIZ de permission-denied em pets/shelter)
+11. **Verificar se collectionGroup tem regra `{path=**}`** +
+    **índice COLLECTION_GROUP**
+
+### §9.9. Métricas sw-v92..v97
+
+- **6 deploys** em 1 dia (2026-07-31)
+- **8 decisões D-*** novas
+- **13 componentes** corrigidos (default export)
+- **6 crashes de runtime** corrigidos
+- **3 violações de rules-of-hooks** corrigidas
+- **2 erros de sintaxe** corrigidos
+- **7+ regras Firestore** corrigidas (5 em sw-v95 + 4 em sw-v96 + 1
+  em sw-v97 = 10 paths)
+- **4 índices COLLECTION_GROUP** adicionados
+- **68 índices totais** em firestore.indexes.json
+- **Cloud Function `generateVolunteerCertificate`** corrigida
+- **~190 falsos positivos** de lint eliminados
+- **1378 testes passando**

@@ -128,23 +128,62 @@ match /volunteers/{volunteerUid} {
 
 ## Status atual (2026-07-31)
 
-### O que ESTÁ funcionando
+### O que ESTÁ funcionando (sw-v97, 2026-07-31)
 - ✅ VolunteerSignup fluxo principal (termo, perfil, abrigo)
 - ✅ Permission denied corrigido (signature_text + zod null + undefined)
 - ✅ Idempotência (race condition resolvida)
 - ✅ Toast API (React #31 corrigido)
 - ✅ Defense-in-depth (3 camadas: service + try/catch + rules)
 - ✅ Regras Firestore restauradas e estritas
+- ✅ **React #306 RESOLVIDO** (sw-v92, 2026-07-31)
+- ✅ **Painel volunteers REABILITADO** (removeu `SHOW_VOLUNTEERS_TAB`)
+- ✅ 9 abas + 4 rotas do painel admin funcionando
 
-### O que está EM DEBUG (sw-v91)
-- ⚠️ React #306 na aba volunteers do painel admin
-  - Aba DESABILITADA temporariamente com `SHOW_VOLUNTEERS_TAB = false`
-  - User vê "Não foi possível carregar esta aba (volunteers)"
-  - Resto do painel funciona normal
-  - Bundle: `index-Bv_OCvQE.js`
+### O que foi RESOLVIDO em sw-v92..v97 (Claude, 2026-07-31)
+- ✅ **sw-v92 (commit 0ced567e)**: 13 componentes com `React.lazy()`
+  tinham apenas named export → adicionado `export default` em todos.
+  9 abas + 4 rotas do painel admin corrigidas.
+- ✅ **sw-v93 (commit 030691b7)**: 6 crashes de runtime (Sun/Moon
+  icons, isEditMode, collectionGroup), 3 rules-of-hooks
+  (PetDetailV3, LegalFooter, CrossRosterSection), 2 erros de sintaxe
+  (ClubForumsTab, generateEventIcsCore.test), tailwind config
+  duplicado, eslint config melhorado (~190 falsos positivos
+  eliminados).
+- ✅ **sw-v94 (commit 5e64a7ee)**: `pdfkit` faltando em
+  `functions/package.json` → adicionado (Cloud Function
+  `generateVolunteerCertificate` quebraria em runtime).
+- ✅ **sw-v95 (commit 3cb12127)**: 5 correções em `firestore.rules`:
+  `shelterCanAccess`/`shelterCanManage` NUNCA definidas, subcoleções
+  PET órfãs (6), `auth.uid` (variável inexistente), communities sem
+  `communityId`, 8 collectionGroups sem regra `{path=**}`.
+- ✅ **sw-v96 (commit 2472640b)**: 4 subcoleções de shelter órfãs
+  (`shelter_donations`, `shelter_donation_receipts`, `shelter_ledger`,
+  `shelter_ledger_categories`).
+- ✅ **sw-v97 (commit 4dd8ed43)**: 4 índices `COLLECTION_GROUP`
+  adicionados (volunteers, fosters, post_adoption, banners). Total
+  68 índices.
 
-### Próximo passo
-- [ ] Investigar `VolunteersRoster.jsx` e `VolunteersAdminTab.jsx` linha por linha
-- [ ] Re-habilitar aba após corrigir
-- [ ] Bumpar SW (sw-v92+) com a correção final
-- [ ] Adicionar runtime test que detecta o loop ANTES do React #306
+### CAUSA RAIZ DO REACT #306 (DEFINITIVA, sw-v92)
+
+O diagnóstico de sw-v87 (D-REACT-QUERY-KEY-PRIMITIVES) estava
+**INCORRETO**. O React Query 5 faz hash determinístico do queryKey
+via `hashKey`. Objetos com mesmo conteúdo (mesmo recriados) têm o
+mesmo hash. Portanto, `queryKey: [..., options]` NÃO causa loop.
+
+**Causa raiz real**: 13 componentes carregados via `React.lazy()`
+tinham apenas **named export**, sem `export default`. Ao resolver,
+`module.default` era `undefined` → React #306 "Element type is
+invalid... Lazy element type must resolve to a class or function".
+
+Ver **D-LAZY-DEFAULT-EXPORT** em `13-DECISIONS.md` §11.
+
+### Próximos passos (2026-08-03)
+- [ ] Adicionar lint rule custom para detectar `lazy()` que
+      importa named export only
+- [ ] Adicionar E2E test que valida cada rota lazy carrega sem
+      erros
+- [ ] Adicionar CI que roda `firebase firestore:rules:get
+      --emulator` e falha se houver warning "Invalid
+      function/variable name"
+- [ ] Adicionar CI que verifica `collectionGroup()` tem regra
+      `{path=**}` e índice `COLLECTION_GROUP`
