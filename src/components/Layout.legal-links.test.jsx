@@ -36,6 +36,16 @@ vi.mock('@/core/lib/FeatureFlagsContext', () => ({
   useFeatureFlag: () => false,
 }));
 
+// V4 (2026-08-03): ShelterPicker e VolunteerShelterPicker usam React Query
+// (useUserClubMemberships / useUserVolunteerRosters) — mock para evitar
+// "No QueryClient set" no smoke test.
+vi.mock('@/components/ShelterPicker', () => ({
+  default: () => null,
+}));
+vi.mock('@/components/VolunteerShelterPicker', () => ({
+  default: () => null,
+}));
+
 vi.mock('@/components/LegalFooter', () => ({
   default: () => React.createElement('footer', { 'data-testid': 'legal-footer' }),
   useLegalFooterHeight: () => 0,
