@@ -32,9 +32,9 @@ describe('PWA gating (zero impacto quando desligado)', () => {
     expect(() => registerPwa()).not.toThrow();
   });
 
-  // D-PWA-STALE-UNREGISTER (sw-v91): Mesmo com a flag off, qualquer
-  // SW stale (não-sw-v91) deve ser desregistrado.
-  it('com a flag off, desregistra SW stale (scriptURL !== sw-v91.js)', async () => {
+  // D-PWA-STALE-UNREGISTER (sw-v92): Mesmo com a flag off, qualquer
+  // SW stale (não-sw-v92) deve ser desregistrado.
+  it('com a flag off, desregistra SW stale (scriptURL !== sw-v92.js)', async () => {
     const unregister = vi.fn().mockResolvedValue(true);
     const getRegistrations = vi.fn().mockResolvedValue([
       { active: { scriptURL: 'https://viralata.web.app/sw-v73.js' }, unregister },
@@ -49,10 +49,10 @@ describe('PWA gating (zero impacto quando desligado)', () => {
     expect(unregister).toHaveBeenCalled();
   });
 
-  it('com a flag off, NÃO desregistra o SW atual (sw-v91.js)', async () => {
+  it('com a flag off, NÃO desregistra o SW atual (sw-v92.js)', async () => {
     const unregister = vi.fn().mockResolvedValue(true);
     const getRegistrations = vi.fn().mockResolvedValue([
-      { active: { scriptURL: 'https://viralata.web.app/sw-v91.js' }, unregister },
+      { active: { scriptURL: 'https://viralata.web.app/sw-v92.js' }, unregister },
     ]);
     vi.stubGlobal('navigator', { serviceWorker: { getRegistrations, register: vi.fn() } });
     vi.stubGlobal('window', { addEventListener: vi.fn() });
@@ -64,7 +64,7 @@ describe('PWA gating (zero impacto quando desligado)', () => {
     expect(unregister).not.toHaveBeenCalled();
   });
 
-  // D-PWA-STALE-UNREGISTER-DEFER (sw-v91): se o user está interagindo
+  // D-PWA-STALE-UNREGISTER-DEFER (sw-v92): se o user está interagindo
   // com a página (rolando, digitando, clicando), NÃO fazer reload
   // imediato. Esperar 5s para o user terminar OU reload manual.
   it('com a flag off, DEFERS reload se user está interagindo (< 5s)', async () => {

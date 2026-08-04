@@ -28,6 +28,7 @@ import { FEATURE_FLAG } from '@/core/featureFlags';
 import { PERSONA_TYPE, PERSONA_LABEL, PERSONA_TAGLINE } from '@/core/domain/personas';
 import { canUsePlatformAdminPersona, detectAvailablePersonas, enablePersona, setActivePersona } from '@/core/services/personaService';
 import { cn } from '@/core/lib/utils';
+import { logger } from '@/core/lib/logger';
 
 const PERSONA_ICON = {
   [PERSONA_TYPE.ADOPTER]: Heart,
