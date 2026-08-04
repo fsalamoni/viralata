@@ -17,6 +17,7 @@ import PersonaSwitcher from '@/components/PersonaSwitcher';
 import ShelterPicker from '@/components/ShelterPicker';
 import VolunteerShelterPicker from '@/components/VolunteerShelterPicker';
 import { useUiPreferences, BOTTOM_TAB_MODES, TOPBAR_MODES, FOOTER_MODES } from '@/core/hooks/useUiPreferences';
+import { logger } from '@/core/lib/logger';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import ThemeMenu from '@/components/ThemeMenu';
 import {
@@ -209,20 +210,26 @@ export default function Layout({ children, currentPageName }) {
 
           {/* Ações direita */}
           <div className="flex items-center gap-2">
-            {/* V4 (2026-08-03): PersonaSwitcher — botão para trocar
-                persona ativa (D-PERSONA-SWITCHER-VISIBILITY). Aparece
-                SÓ se user tem 2+ personas visíveis. */}
-            <PersonaSwitcher
-              onSelectPersona={(p) => {
-                // Re-renderiza Layout para refletir nova persona
-                logger.info('[Layout] persona switched:', p.type);
-              }}
-              onAddPersona={() => navigate('/acesso')}
-            />
-            {/* V4: ShelterPicker — seletor de abrigo (multi-club Q17) */}
-            <ShelterPicker />
-            {/* V4: VolunteerShelterPicker — seletor de abrigo (multi-roster Q18) */}
-            <VolunteerShelterPicker />
+            {/* V4 (2026-08-03): controles de persona no TopBar. Montados
+                SÓ com a flag mestre V4_PERSONA_ENABLED ligada — assim, com
+                a V4 desligada (default), nenhum hook/query de persona roda
+                (ex.: useUserVolunteerRosters não dispara para todo usuário).
+                Cada componente ainda self-gate na sua própria sub-flag. */}
+            {v4PersonaEnabled && (
+              <>
+                {/* PersonaSwitcher — aparece só se user tem 2+ personas. */}
+                <PersonaSwitcher
+                  onSelectPersona={(p) => {
+                    logger.info('[Layout] persona switched:', p.type);
+                  }}
+                  onAddPersona={() => navigate('/acesso')}
+                />
+                {/* ShelterPicker — seletor de abrigo (multi-club Q17) */}
+                <ShelterPicker />
+                {/* VolunteerShelterPicker — seletor de abrigo (multi-roster Q18) */}
+                <VolunteerShelterPicker />
+              </>
+            )}
             {/* Dark mode toggle — sempre visível */}
             <ThemeMenu />
             {isAuthenticated ? (
