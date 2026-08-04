@@ -20,6 +20,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { logger } from '@/core/lib/logger';
+import { usePersonaSignals } from '@/core/hooks/usePersonaSignals';
 import {
   DEFAULT_PERSONA,
   PERSONA_TYPE,
@@ -79,8 +80,13 @@ function writeLocalActivePersona(uid, key) {
  * }}
  */
 export function useActivePersona(options = {}) {
-  const { signals = {} } = options;
   const { user, userProfile } = useAuth();
+  // Sinais reais do usuário (abrigos, comunidades, pets, voluntário). Antes
+  // ninguém passava `signals`, então só `adopter` era detectado. Agora o
+  // hook busca sozinho (via usePersonaSignals), a menos que o caller passe
+  // sinais explícitos (ex.: testes). Ver docs/PLAN_PERSONAS_V4.md §18.
+  const autoSignals = usePersonaSignals();
+  const signals = options.signals ?? autoSignals;
 
   const [active, setActiveState] = useState(() => ({
     key: DEFAULT_PERSONA,
@@ -182,7 +188,16 @@ export function useActivePersona(options = {}) {
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.uid, userProfile?.role, userProfile?.profile_completed, userProfile?.donor_profile, signals?.petCount, signals?.hasVolunteerProfile]);
+  }, [
+    user?.uid,
+    userProfile?.role,
+    userProfile?.profile_completed,
+    userProfile?.donor_profile,
+    signals?.petCount,
+    signals?.hasVolunteerProfile,
+    signals?.shelterMemberships?.length,
+    signals?.communityMemberships?.length,
+  ]);
 
   /**
    * Define a persona ativa (D-PERSONA-SWITCH-NO-CONFIRM: instantânea).

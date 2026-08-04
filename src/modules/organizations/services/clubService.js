@@ -166,14 +166,29 @@ export async function listClubs() {
 
 export async function listMyClubs(userId) {
   if (!db || !userId) return [];
-  const memberSnap = await getDocs(query(collection(db, COL.members), where('user_id', '==', userId)));
-  const memberships = memberSnap.docs.map((d) => d.data());
-  const results = [];
-  for (const membership of memberships) {
-    const club = await getClub(membership.club_id);
-    if (club) results.push({ ...club, my_role: membership.role });
+  // Une DUAS fontes (dedup por id):
+  //  1. Clubes onde o user é DONO (clubs.created_by) — cobre o proprietário
+  //     que ainda não tem doc em club_members (legado/race pós-criação).
+  //  2. Clubes onde o user tem membership (club_members).
+  // Sem (1), o dono do abrigo não aparecia na própria lista → a detecção de
+  // persona shelter_staff falhava para proprietários (V4).
+  const [ownedSnap, memberSnap] = await Promise.all([
+    getDocs(query(collection(db, COL.clubs), where('created_by', '==', userId))),
+    getDocs(query(collection(db, COL.members), where('user_id', '==', userId))),
+  ]);
+  const byId = new Map();
+  for (const d of ownedSnap.docs) {
+    byId.set(d.id, { id: d.id, ...d.data(), my_role: CLUB_ROLE.ADMIN });
   }
-  return results;
+  const memberships = memberSnap.docs.map((d) => d.data());
+  await Promise.all(
+    memberships.map(async (membership) => {
+      if (byId.has(membership.club_id)) return; // dono já incluído
+      const club = await getClub(membership.club_id);
+      if (club) byId.set(membership.club_id, { ...club, my_role: membership.role });
+    }),
+  );
+  return Array.from(byId.values());
 }
 
 export async function updateClub(id, updates, actor) {

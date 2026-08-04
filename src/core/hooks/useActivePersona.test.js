@@ -16,6 +16,17 @@ vi.mock('@/core/lib/FirebaseAuthContext', () => ({
   }),
 }));
 
+// Mock usePersonaSignals (evita puxar React Query + FeatureFlags context).
+// Sem sinais → só a persona adopter é detectada (comportamento default).
+vi.mock('@/core/hooks/usePersonaSignals', () => ({
+  usePersonaSignals: () => ({
+    petCount: 0,
+    shelterMemberships: [],
+    communityMemberships: [],
+    hasVolunteerProfile: false,
+  }),
+}));
+
 // Mock personaService
 vi.mock('@/core/services/personaService', async () => {
   const actual = await vi.importActual('@/core/services/personaService');

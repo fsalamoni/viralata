@@ -20,6 +20,7 @@ import {
   getPersonaType,
   isScopedPersona,
   isPersonaOnboardingComplete,
+  personaHome,
 } from './personas.js';
 
 describe('personas (V4)', () => {
@@ -184,6 +185,30 @@ describe('personas (V4)', () => {
 
     it('false se hasOnboarding = undefined', () => {
       expect(isPersonaOnboardingComplete('adopter', undefined)).toBe(false);
+    });
+  });
+
+  describe('personaHome', () => {
+    it('rota-home por tipo de persona', () => {
+      expect(personaHome({ type: PERSONA_TYPE.ADOPTER })).toBe('/feed');
+      expect(personaHome({ type: PERSONA_TYPE.DONOR })).toBe('/meus-pets');
+      expect(personaHome({ type: PERSONA_TYPE.VOLUNTEER })).toBe('/perfil/voluntario');
+      expect(personaHome({ type: PERSONA_TYPE.PLATFORM_ADMIN })).toBe('/admin');
+    });
+
+    it('personas com escopo usam o scopeId na rota', () => {
+      expect(personaHome({ type: PERSONA_TYPE.SHELTER_STAFF, scopeId: 'club1' }))
+        .toBe('/organizacoes/club1/admin');
+      expect(personaHome({ type: PERSONA_TYPE.COMMUNITY_STAFF, scopeId: 'com1' }))
+        .toBe('/comunidade/com1/admin');
+    });
+
+    it('aceita PersonaKey string e faz fallback seguro', () => {
+      expect(personaHome('shelter_staff:abc')).toBe('/organizacoes/abc/admin');
+      expect(personaHome('adopter')).toBe('/feed');
+      expect(personaHome(null)).toBe('/feed');
+      // escopo ausente → diretório
+      expect(personaHome({ type: PERSONA_TYPE.SHELTER_STAFF })).toBe('/organizacoes');
     });
   });
 });
