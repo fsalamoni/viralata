@@ -19,7 +19,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Heart, User, Home, Users, MessageSquare, ArrowRight, AlertCircle, Loader2 } from 'lucide-react';
+import { Heart, User, Home, Users, MessageSquare, ArrowRight, AlertCircle, Loader2, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { useActivePersona } from '@/core/hooks/useActivePersona';
@@ -67,6 +67,52 @@ const COLOR_CLASSES = {
   emerald: 'from-emerald-500 to-emerald-600 text-white',
   sky: 'from-sky-500 to-sky-600 text-white',
   violet: 'from-violet-500 to-violet-600 text-white',
+};
+
+// Conteúdo adequado a CADA persona (item 3): o que o acesso oferece + a
+// próxima etapa ao entrar. Cada tipo de acesso tem sua própria apresentação
+// — não é mais um texto genérico do adotante.
+const PERSONA_CONTENT = {
+  [PERSONA_TYPE.ADOPTER]: {
+    highlights: [
+      'Feed de pets com match por compatibilidade',
+      'Converse com abrigos e tutores pelo chat',
+      'Favoritos, interesses e histórico de adoção',
+    ],
+    next: 'Você entra direto no feed de adoção.',
+  },
+  [PERSONA_TYPE.DONOR]: {
+    highlights: [
+      'Cadastre o pet que você cuida para adoção',
+      'Gerencie fotos, saúde e status de cada pet',
+      'Receba e responda interesses de adotantes',
+    ],
+    next: 'Você vai para o cadastro/gestão dos seus pets.',
+  },
+  [PERSONA_TYPE.SHELTER_STAFF]: {
+    highlights: [
+      'Painel do abrigo: pets, equipe, mural e vitrines',
+      'Doações, finanças e relatórios do abrigo',
+      'Entre por código de convite ou crie um novo abrigo',
+    ],
+    next: 'Você entra direto no painel do abrigo.',
+  },
+  [PERSONA_TYPE.COMMUNITY_STAFF]: {
+    highlights: [
+      'Painel da comunidade: mural, fórum e eventos',
+      'Modere posts e gerencie a equipe',
+      'Entre por convite ou crie uma nova comunidade',
+    ],
+    next: 'Você entra direto no painel da comunidade.',
+  },
+  [PERSONA_TYPE.VOLUNTEER]: {
+    highlights: [
+      'Ofereça seu tempo e suas habilidades a abrigos',
+      'Monte seu perfil de voluntário e disponibilidade',
+      'Seja encontrado por abrigos que precisam de ajuda',
+    ],
+    next: 'Você vai para a inscrição do voluntariado.',
+  },
 };
 
 export function PersonaSelection() {
@@ -155,6 +201,7 @@ export function PersonaSelection() {
           const Icon = PERSONA_ICON[p.type];
           const label = PERSONA_LABEL[p.type];
           const tagline = PERSONA_TAGLINE[p.type];
+          const content = PERSONA_CONTENT[p.type];
           const isSelected = selected === p.type;
           return (
             <button
@@ -165,7 +212,7 @@ export function PersonaSelection() {
               aria-pressed={isSelected}
               aria-label={`Selecionar persona ${label}`}
               className={cn(
-                'group relative flex flex-col items-start gap-3 rounded-2xl border-2 bg-card p-5 text-left transition',
+                'group relative flex h-full flex-col items-start gap-3 rounded-2xl border-2 bg-card p-5 text-left transition',
                 isSelected
                   ? 'border-primary shadow-lg'
                   : 'border-border hover:border-primary/50',
@@ -186,6 +233,21 @@ export function PersonaSelection() {
                 <h2 className="text-lg font-bold text-foreground">{label}</h2>
                 <p className="mt-1 text-sm text-muted-foreground">{tagline}</p>
               </div>
+              {content?.highlights && (
+                <ul className="mt-1 space-y-1.5">
+                  {content.highlights.map((h) => (
+                    <li key={h} className="flex items-start gap-2 text-[13px] leading-snug text-foreground/80">
+                      <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" aria-hidden="true" />
+                      <span>{h}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {content?.next && (
+                <p className="mt-auto pt-1 text-xs font-medium text-muted-foreground/90">
+                  {content.next}
+                </p>
+              )}
               {isSelected && (
                 <ArrowRight
                   className="absolute right-4 top-4 h-5 w-5 text-primary transition-transform group-hover:translate-x-1"
