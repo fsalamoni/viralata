@@ -15,86 +15,15 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import {
-  PawPrint,
-  User,
-  Plus,
-  MessageCircle,
-  Building2,
-  Users,
-  Home,
-  ClipboardList,
-  Calendar,
-  Shield,
-  Stethoscope,
-} from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { useActivePersona } from '@/core/hooks/useActivePersona';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { useUiPreferences, BOTTOM_TAB_MODES } from '@/core/hooks/useUiPreferences';
 import { FEATURE_FLAG } from '@/core/featureFlags';
-import { PERSONA_TYPE } from '@/core/domain/personas';
+import { getPersonaCapabilities } from '@/core/domain/personaCapabilities';
 import { cn } from '@/core/lib/utils';
 
 const BOTTOM_TAB_HEIGHT_VAR = '--bottom-tab-bar-height';
-
-/**
- * Itens da BottomTabBar por persona.
- * D-PERSONA-FEED-EXCLUSIVE-ADOPTER: feed SÓ para adopter.
- */
-const BOTTOM_TABS_BY_PERSONA = {
-  [PERSONA_TYPE.ADOPTER]: [
-    { label: 'Feed', icon: PawPrint, to: '/feed' },
-    { label: 'ONGs', icon: Building2, to: '/organizacoes' },
-    { label: 'Comunidade', icon: Users, to: '/comunidade' },
-    { label: 'Adotar', icon: Plus, to: '/feed', center: true },
-    { label: 'Chat', icon: MessageCircle, to: '/chat' },
-    { label: 'Perfil', icon: User, to: '/perfil' },
-  ],
-  [PERSONA_TYPE.DONOR]: [
-    { label: 'Meus pets', icon: PawPrint, to: '/meus-pets' },
-    { label: 'Cadastrar', icon: Plus, to: '/pets/new', center: true },
-    { label: 'Chat', icon: MessageCircle, to: '/chat' },
-    { label: 'Perfil', icon: User, to: '/perfil' },
-  ],
-  [PERSONA_TYPE.SHELTER_STAFF]: (persona) => {
-    const clubId = persona.scopeId;
-    return [
-      { label: 'Painel', icon: Home, to: `/organizacoes/${clubId}/admin` },
-      { label: 'Mural', icon: MessageCircle, to: `/organizacoes/${clubId}?tab=feed` },
-      { label: 'Pets', icon: PawPrint, to: `/organizacoes/${clubId}/admin?tab=pets` },
-      { label: 'Candidatos', icon: ClipboardList, to: `/organizacoes/${clubId}/admin?tab=applications` },
-      { label: 'Perfil', icon: User, to: '/perfil' },
-    ];
-  },
-  [PERSONA_TYPE.COMMUNITY_STAFF]: (persona) => {
-    const communityId = persona.scopeId;
-    return [
-      { label: 'Painel', icon: Home, to: `/comunidade/${communityId}/admin` },
-      { label: 'Mural', icon: MessageCircle, to: `/comunidade/${communityId}?tab=feed` },
-      { label: 'Eventos', icon: Calendar, to: `/comunidade/${communityId}?tab=events` },
-      { label: 'Perfil', icon: User, to: '/perfil' },
-    ];
-  },
-  [PERSONA_TYPE.VOLUNTEER]: (persona) => {
-    const clubId = persona.scopeId;
-    return [
-      { label: 'Início', icon: Home, to: '/perfil/voluntario' },
-      { label: 'Escalas', icon: Calendar, to: '/perfil/voluntario#shifts' },
-      { label: 'Tarefas', icon: ClipboardList, to: '/perfil/voluntario#tasks' },
-      { label: 'Mural', icon: MessageCircle, to: clubId ? `/organizacoes/${clubId}?tab=feed` : '/feed' },
-      { label: 'Perfil', icon: User, to: '/perfil' },
-    ];
-  },
-  [PERSONA_TYPE.PLATFORM_ADMIN]: [
-    { label: 'Admin', icon: Shield, to: '/admin' },
-    { label: 'Feed', icon: PawPrint, to: '/feed' },
-    { label: 'ONGs', icon: Building2, to: '/organizacoes' },
-    { label: 'Comunidades', icon: Users, to: '/comunidade' },
-    { label: 'Saúde', icon: Stethoscope, to: '/admin/saude', center: true },
-    { label: 'Perfil', icon: User, to: '/perfil' },
-  ],
-};
 
 /**
  * Hook utilitário: retorna a altura atual da barra inferior em pixels.
@@ -137,12 +66,11 @@ export function PersonaBottomTabBar() {
 
   const mode = uiPrefs?.bottomTabBarMode || BOTTOM_TAB_MODES.FIXED;
 
-  // Items por persona
-  const items = React.useMemo(() => {
-    const config = BOTTOM_TABS_BY_PERSONA[active.type];
-    if (typeof config === 'function') return config(active);
-    return config || [];
-  }, [active]);
+  // Items por persona — da fonte única personaCapabilities.
+  const items = React.useMemo(
+    () => getPersonaCapabilities(active).bottomNav || [],
+    [active],
+  );
 
   // Mede altura
   useEffect(() => {
