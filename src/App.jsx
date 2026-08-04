@@ -15,9 +15,6 @@ import {
   ShelterAdminGate, CommunityAdminGate,
   AdopterGate, DonorGate, PetManageGate, VolunteerGate,
 } from '@/components/guards/PersonaRouteGates';
-import { FEATURE_FLAG } from '@/core/featureFlags';
-import { useActivePersona } from '@/core/hooks/useActivePersona';
-import { personaHome } from '@/core/domain/personas';
 
 // ─── Páginas Públicas ─────────────────────────────────────────────────────────
 const Home = lazy(() => import('@/pages/Home'));
@@ -263,22 +260,11 @@ function withLayout(pageName, Component) {
   );
 }
 
-// Fatia 5 — Home dinâmica: com a V4 ligada e usuário autenticado, a rota `/`
-// leva à home da persona ativa (em vez da landing). Anon/V4-off → landing.
-// O useActivePersona só monta quando enabled+auth (evita custo com V4 off).
-function PersonaHomeRedirect({ fallback }) {
-  const { active, isLoading } = useActivePersona();
-  if (isLoading || !active?.type) return fallback;
-  return <Navigate to={personaHome(active)} replace />;
-}
-function HomeLanding() {
-  const enabled = useFeatureFlag(FEATURE_FLAG.V4_PERSONA_ENABLED);
-  const { isAuthenticated } = useAuth();
-  const fallback = withLayout('Home', Home);
-  if (enabled && isAuthenticated) return <PersonaHomeRedirect fallback={fallback} />;
-  return fallback;
-}
-
+// A landing (`/`) é SEMPRE renderizada — inclusive para usuários já logados.
+// Não há redirecionamento automático para o feed/persona: o usuário pode
+// voltar à landing mantendo o login e, a partir dela, entrar em outro acesso
+// (D-PERSONA-LANDING-NO-FORCED-REDIRECT). A escolha de persona acontece via
+// os cards de acesso da landing e pelo switcher no topbar.
 function RouteTelemetry() {
   const location = useLocation();
   useEffect(() => {
@@ -370,7 +356,7 @@ export default function App() {
               <OnboardingGate>
               <Routes>
                 {/* ── Públicas ─────────────────────────────────────────── */}
-                <Route path="/" element={<HomeLanding />} />
+                <Route path="/" element={withLayout('Home', Home)} />
                 <Route path="/login" element={withLayout('Login', Login)} />
                 <Route path="/politica-privacidade" element={withLayout('PrivacyPolicy', PrivacyPolicy)} />
                 <Route path="/termos" element={withLayout('Terms', Terms)} />

@@ -45,17 +45,22 @@ export function usePersonaSignals() {
   const communityKey = communities.map((c) => c.id).sort().join(',');
   const hasVolunteer = Boolean(volunteerProfile?.terms_accepted_at);
 
+  // Só conta pets PESSOAIS (owner_type='user') para a persona Doador —
+  // evita falso-positivo de doador por pets de organização.
+  const personalPetCount = pets.filter((p) => (p?.owner_type || 'user') === 'user').length;
+
   return useMemo(
     () => ({
-      petCount: pets.length,
-      shelterMemberships: clubKey ? clubKey.split(',').map((clubId) => ({ clubId })) : [],
-      communityMemberships: communityKey
-        ? communityKey.split(',').map((communityId) => ({ communityId }))
-        : [],
+      petCount: personalPetCount,
+      // Inclui o NOME da entidade para o switcher distinguir cada acesso
+      // (ex.: "Meu abrigo — Cão do Bem") — resolve o item de "vários acessos
+      // iguais" no switch.
+      shelterMemberships: clubs.map((c) => ({ clubId: c.id, name: c.name || c.title || '' })),
+      communityMemberships: communities.map((c) => ({ communityId: c.id, name: c.name || '' })),
       hasVolunteerProfile: hasVolunteer,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [pets.length, clubKey, communityKey, hasVolunteer],
+    [personalPetCount, clubKey, communityKey, hasVolunteer],
   );
 }
 
