@@ -893,6 +893,48 @@ V4_PERSONA_PET_TRANSFER = true  // transfer pet p/ abrigo
 
 Rollout gradual Q30: 1% → 5% → 25% → 50% → 100% dos usuários.
 
+### §11.7. Ativação via Painel Admin Flags
+
+D-FEATURE-FLAGS-OBRIGATORIAS: Toda feature nova DEVE aparecer no
+painel admin flags. V4 tem seção dedicada em
+`/admin/flags` (acesso restrito a `platform_admin`):
+
+- **Seção V4 Personas** com banner roxo de rollout gradual Q30
+- **11 flags agrupadas**: master + 6 personas + 4 features
+- **Counter de progresso** (X/11 ativas)
+- **Validação de dependência**: sub-flags só ligam se master ON
+- **Toast informativo** ao ligar master: "Rollout gradual Q30: 1% → 5% → 25% → 50% → 100%"
+- **Toast de erro** se tentar ligar sub-flag sem master
+- **Audit log** (TASK-167): quem ligou, quando, de→para, motivo
+- **Histórico** completo de mudanças (últimas 20)
+
+**Como adicionar uma flag V4 nova**:
+```js
+// 1. src/core/featureFlags.js — adicionar no enum FEATURE_FLAG
+V4_PERSONA_NOVO: 'v4_persona_novo',
+
+// 2. src/core/featureFlags.js — adicionar em FEATURE_FLAG_META
+[FEATURE_FLAG.V4_PERSONA_NOVO]: {
+  label: 'V4 Personas · Novo (D-PERSONA-NOVO)',
+  description: 'Descrição completa...',
+},
+
+// 3. src/core/featureFlags.js — adicionar em DEFAULT_FEATURE_FLAGS
+[FEATURE_FLAG.V4_PERSONA_NOVO]: false,
+
+// 4. (Se for sub-flag) src/modules/admin/pages/AdminFlags.jsx
+//    adicionar no array v4FlagKeys
+const v4FlagKeys = [
+  ...,
+  FEATURE_FLAG.V4_PERSONA_NOVO,
+];
+```
+
+A flag aparece **automaticamente** no painel admin, desligada.
+
+**Bundle size**: AdminFlags.jsx 216 → ~280 linhas (renderFlagRow
+reutilizável). Build OK, sem impacto de performance.
+
 ### §11.6. Métricas finais
 
 | Métrica | Valor |

@@ -390,6 +390,119 @@ export const FEATURE_FLAG_META = Object.freeze({
     ? Object.fromEntries(Object.entries(SHELTER_META).map(([k, v]) => [k, v]))
     : {}),
 
+  // ─── V4 PERSONAS (D-PERSONA-FLAG-GRADUAL, Q30) ─────────────────────────
+  // Sistema de personas dedicado (Adotante, Doador, Membro Abrigo,
+  // Membro Comunidade, Voluntário, Platform Admin). Ver
+  // docs/PLAN_PERSONAS_V4.md v1.1, docs/AI_GUIDE/19-V4-PERSONAS-INDEX.md
+  // e docs/AI_GUIDE/13-DECISIONS.md §16-17.
+  //
+  // Ativação: master V4_PERSONA_ENABLED + personas individuais
+  // (V4_PERSONA_ADOPTER, V4_PERSONA_DONOR, etc) + features
+  // (V4_PERSONA_SWITCHER, V4_PERSONA_SELECTION, etc).
+  //
+  // Rollout gradual (Q30): 1% → 5% → 25% → 50% → 100% dos usuários.
+  [FEATURE_FLAG.V4_PERSONA_ENABLED]: {
+    label: 'V4 Personas · Master switch (D-PERSONA-FLAG-GRADUAL, Q30)',
+    description:
+      'Liga o sistema de personas V4 (6 personas dedicadas: Adotante, '
+      + 'Doador, Membro de Abrigo, Membro de Comunidade, Voluntário, '
+      + 'Platform Admin). Default OFF. Quando OFF, todas as 6 personas '
+      + 'comportam-se como V3 legacy (user = adotante). Para ativar, '
+      + 'ligue este master + ao menos uma persona individual. Rollout '
+      + 'gradual: 1% → 5% → 25% → 50% → 100% dos usuários (1-2 dias '
+      + 'entre cada etapa, monitorar erros via Sentry).',
+  },
+  [FEATURE_FLAG.V4_PERSONA_ADOPTER]: {
+    label: 'V4 Personas · Adotante (D-PERSONA-MULTI, D-PERSONA-FEED-EXCLUSIVE-ADOPTER)',
+    description:
+      'Persona 1 — Adotante (legacy). Pode ver o feed de pets para '
+      + 'adoção. Já é default para qualquer user com profile_completed. '
+      + 'Esta flag existe para consistência com as outras 5 personas '
+      + 'e para permitir rollback individual. SÓ funciona se '
+      + 'V4_PERSONA_ENABLED = true.',
+  },
+  [FEATURE_FLAG.V4_PERSONA_DONOR]: {
+    label: 'V4 Personas · Doador (D-PERSONA-DONOR-ONBOARDING, Q24)',
+    description:
+      'Persona 2 — Doador. Pode cadastrar pets para doação e gerenciá-'
+      + 'los via /dashboard/doador. Onboarding dedicado com 9 campos '
+      + '(Q24): donor_motivation, has_donated_before, pets_count, '
+      + 'experience_with_species[], experience_years, '
+      + 'donor_accepts_home_check, donor_accepts_post_adoption_followup, '
+      + 'donor_preferred_contact_method, donor_bio. Pets pessoais '
+      + 'existente migram automaticamente (D-PERSONA-MIGRATION-AUTO, '
+      + 'Q29).',
+  },
+  [FEATURE_FLAG.V4_PERSONA_SHELTER_STAFF]: {
+    label: 'V4 Personas · Membro de Abrigo (D-PERSONA-MULTI-CLUB, Q17)',
+    description:
+      'Persona 3 — Membro de abrigo. Pode gerenciar 1+ abrigos (multi-'
+      + 'club Q17) via ShelterPicker no TopBar. Entrada por '
+      + 'código de convite OU criar novo abrigo (D-PERSONA-SHELTER-'
+      + 'ENTRY, Q25). Multi-club: dados isolados por abrigo, troca '
+      + 'instantânea entre abrigos no switcher do TopBar.',
+  },
+  [FEATURE_FLAG.V4_PERSONA_COMMUNITY_STAFF]: {
+    label: 'V4 Personas · Membro de Comunidade',
+    description:
+      'Persona 4 — Membro de comunidade. Pode gerenciar 1+ comunidades. '
+      + 'Estrutura análoga a shelter_staff (multi-community). Entrada por '
+      + 'CommunityEntry.',
+  },
+  [FEATURE_FLAG.V4_PERSONA_VOLUNTEER]: {
+    label: 'V4 Personas · Voluntário (D-PERSONA-MULTI-ROSTER-ISOLATED, Q18)',
+    description:
+      'Persona 5 — Voluntário. Pode ser voluntário em 1+ abrigos '
+      + '(multi-roster Q18) com dados isolados por abrigo via '
+      + 'VolunteerShelterPicker no TopBar. Se não estiver vinculado a '
+      + 'nenhum abrigo, entra no POOL encontrável (D-PERSONA-VOLUNTEER-'
+      + 'POOL, Q26).',
+  },
+  [FEATURE_FLAG.V4_PERSONA_PLATFORM_ADMIN]: {
+    label: 'V4 Personas · Platform Admin (D-PERSONA-ADMIN-OVERRIDE, Q7, Q9)',
+    description:
+      'Persona 6 — Platform Admin (admin master). Visível SÓ para user '
+      + 'com role=platform_admin. Override total: vê tudo de todas as '
+      + 'personas. SÓ pode ser atribuído pelo owner fixo '
+      + '(fsalamoni@gmail.com) — D-PERSONA-ADMIN-OWNER-ONLY (Q8). '
+      + 'NÃO pode se auto-rebaixar (D-PERSONA-ADMIN-CANNOT-DEMOTE, Q22).',
+  },
+  [FEATURE_FLAG.V4_PERSONA_SWITCHER]: {
+    label: 'V4 Personas · Botão switch no TopBar (D-PERSONA-SWITCHER-VISIBILITY, Q15)',
+    description:
+      'Mostra o PersonaSwitcher no TopBar (botão dropdown com persona '
+      + 'ativa + lista de personas disponíveis). SÓ aparece se user tem '
+      + '2+ personas habilitadas (D-PERSONA-SWITCHER-VISIBILITY, Q15). '
+      + 'Troca é instantânea, sem confirmação (D-PERSONA-SWITCH-NO-'
+      + 'CONFIRM, Q14). Personas incompletas têm badge "Incompleto" '
+      + '(D-PERSONA-SWITCHER-INCOMPLETE-BADGE, Q27).',
+  },
+  [FEATURE_FLAG.V4_PERSONA_SELECTION]: {
+    label: 'V4 Personas · Tela /acesso primeiro acesso (D-PERSONA-FIRST-ACCESS-FORCED, Q16)',
+    description:
+      'Tela PersonaSelection (/acesso) onde o user escolhe a persona '
+      + 'inicial. Aparece no primeiro acesso (Q16) e quando user '
+      + 'quer adicionar nova persona via switcher. SÓ funciona se '
+      + 'V4_PERSONA_ENABLED = true.',
+  },
+  [FEATURE_FLAG.V4_PERSONA_VOLUNTEER_POOL]: {
+    label: 'V4 Personas · Pool de Voluntários (D-PERSONA-VOLUNTEER-POOL, Q26)',
+    description:
+      'Permite que voluntários sem abrigo vinculado entrem no POOL '
+      + 'encontrável (D-PERSONA-VOLUNTEER-POOL, Q26). Abrigos podem '
+      + 'buscar/browse para convidar. Filtros: cidade, estado, raio '
+      + '(km), espécies. Rota: /voluntarios/pool. Por enquanto, busca '
+      + '"Em breve" — integração real pendente.',
+  },
+  [FEATURE_FLAG.V4_PERSONA_PET_TRANSFER]: {
+    label: 'V4 Personas · Transfer pet pessoal → abrigo (D-PERSONA-PET-TRANSFER, Q20)',
+    description:
+      'Habilita o PetTransferDialog: doador pode transferir pet pessoal '
+      + 'para um abrigo. IRREVERSÍVEL (Q20) — audit log obrigatório. '
+      + 'Atualiza owner_type para "organization". Use com cautela: '
+      + 'uma vez transferido, o pet é do abrigo.',
+  },
+
   [FEATURE_FLAG.MOCK_DATA_PANEL]: {
     label: 'Painel de dados demo (mock data)',
     description:

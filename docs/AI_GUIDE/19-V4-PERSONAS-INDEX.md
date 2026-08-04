@@ -132,8 +132,23 @@ const { active, available, setActive, enablePersona, isLoading } = useActivePers
 
 V4 está **default OFF** — zero impacto em produção.
 
+### §5.1. Via Painel Admin Flags (`/admin/flags`)
+
+A V4 tem **seção dedicada** no painel admin flags
+(restrito a `platform_admin`):
+
+- **Banner roxo** de aviso de rollout gradual Q30
+- **11 flags agrupadas**: master + 6 personas + 4 features
+- **Counter** (X/11 ativas)
+- **Validação**: sub-flags só ligam se master ON
+- **Toast** informativo ao ligar master
+
+**Rota**: `/admin/flags` (acesso via `/admin`)
+
+### §5.2. Via Firebase Remote Config
+
 ```js
-// Admin > Remote Config > adicionar:
+// Firebase Console > Remote Config > adicionar:
 V4_PERSONA_ENABLED = true
 V4_PERSONA_ADOPTER = true
 V4_PERSONA_DONOR = true
@@ -147,14 +162,16 @@ V4_PERSONA_VOLUNTEER_POOL = true
 V4_PERSONA_PET_TRANSFER = true
 ```
 
-**Rollout gradual (D-PERSONA-FLAG-GRADUAL, Q30)**:
-1. **1%** dos usuários (canary)
+### §5.3. Rollout gradual (Q30)
+
+1. **1%** dos usuários (canary) — monitorar 1-2 dias
 2. **5%** (validação)
 3. **25%** (early adopters)
 4. **50%** (maioria)
 5. **100%** (todos)
 
-Cada etapa: monitorar 1-2 dias antes de subir.
+Use **Rollout Conditions** no Firebase Remote Config para limitar
+por email/UID durante as etapas.
 
 ## §6. Métricas Finais
 
