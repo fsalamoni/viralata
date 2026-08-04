@@ -11,7 +11,13 @@ import { Toaster } from '@/components/ui/sonner';
 import { recordPageView } from '@/core/services/observabilityService';
 import ErrorBoundary from '@/components/ErrorBoundary.jsx';
 import PetAdminRoute from '@/components/guards/PetAdminRoute';
-import { ShelterAdminGate, CommunityAdminGate } from '@/components/guards/PersonaRouteGates';
+import {
+  ShelterAdminGate, CommunityAdminGate,
+  AdopterGate, DonorGate, PetManageGate, VolunteerGate,
+} from '@/components/guards/PersonaRouteGates';
+import { FEATURE_FLAG } from '@/core/featureFlags';
+import { useActivePersona } from '@/core/hooks/useActivePersona';
+import { personaHome } from '@/core/domain/personas';
 
 // ─── Páginas Públicas ─────────────────────────────────────────────────────────
 const Home = lazy(() => import('@/pages/Home'));
@@ -257,6 +263,22 @@ function withLayout(pageName, Component) {
   );
 }
 
+// Fatia 5 — Home dinâmica: com a V4 ligada e usuário autenticado, a rota `/`
+// leva à home da persona ativa (em vez da landing). Anon/V4-off → landing.
+// O useActivePersona só monta quando enabled+auth (evita custo com V4 off).
+function PersonaHomeRedirect({ fallback }) {
+  const { active, isLoading } = useActivePersona();
+  if (isLoading || !active?.type) return fallback;
+  return <Navigate to={personaHome(active)} replace />;
+}
+function HomeLanding() {
+  const enabled = useFeatureFlag(FEATURE_FLAG.V4_PERSONA_ENABLED);
+  const { isAuthenticated } = useAuth();
+  const fallback = withLayout('Home', Home);
+  if (enabled && isAuthenticated) return <PersonaHomeRedirect fallback={fallback} />;
+  return fallback;
+}
+
 function RouteTelemetry() {
   const location = useLocation();
   useEffect(() => {
@@ -348,7 +370,7 @@ export default function App() {
               <OnboardingGate>
               <Routes>
                 {/* ── Públicas ─────────────────────────────────────────── */}
-                <Route path="/" element={withLayout('Home', Home)} />
+                <Route path="/" element={<HomeLanding />} />
                 <Route path="/login" element={withLayout('Login', Login)} />
                 <Route path="/politica-privacidade" element={withLayout('PrivacyPolicy', PrivacyPolicy)} />
                 <Route path="/termos" element={withLayout('Terms', Terms)} />
@@ -371,7 +393,7 @@ export default function App() {
                     Flag-gated — se OFF, o viewer redireciona para a rota
                     legada correspondente. */}
                 <Route path="/legal/:slug/*" element={withLayout('LegalPageViewer', LegalPageViewer)} />
-                <Route path="/busca" element={withLayout('SearchPage', SearchPage)} />
+                <Route path="/busca" element={<AdopterGate>{withLayout('SearchPage', SearchPage)}</AdopterGate>} />
                 <Route path="/vitrines" element={withLayout('PublicExhibitions', PublicExhibitions)} />
                 <Route path="/eventos" element={withLayout('EventsUnified', EventsUnified)} />
                 {/* BUG CRÍTICO-3 (2026-07-20): rota foster dashboard agora exige auth */}
@@ -405,7 +427,7 @@ export default function App() {
                 />
 
                 {/* ── Feed público de pets (auth opcional) ─────────────── */}
-                <Route path="/feed" element={withLayout('PetFeed', PetFeed)} />
+                <Route path="/feed" element={<AdopterGate>{withLayout('PetFeed', PetFeed)}</AdopterGate>} />
                 {/* TASK-V3-PET-DETAIL-VIEW: /pet/:petId (singular, PÚBLICO) usa
                     nova página V3 (PetDetailView) com flag PET_DETAIL_VIEW_V1.
                     Sem tabs, sem botões de editar/excluir. */}
@@ -426,27 +448,27 @@ export default function App() {
                 {/* ── Pets autenticados ─────────────────────────────────── */}
                 <Route
                   path="/pets/new"
-                  element={<ProtectedRoute>{withLayout('CreatePet', CreatePet)}</ProtectedRoute>}
+                  element={<ProtectedRoute><PetManageGate>{withLayout('CreatePet', CreatePet)}</PetManageGate></ProtectedRoute>}
                 />
                 <Route
                   path="/pets/:petId/edit"
                   element={
                     <PetAdminRoute>
-                      {withLayout('CreatePet', CreatePet)}
+                      <PetManageGate>{withLayout('CreatePet', CreatePet)}</PetManageGate>
                     </PetAdminRoute>
                   }
                 />
                 <Route
                   path="/meus-pets"
-                  element={<ProtectedRoute>{withLayout('MyPets', MyPets)}</ProtectedRoute>}
+                  element={<ProtectedRoute><DonorGate>{withLayout('MyPets', MyPets)}</DonorGate></ProtectedRoute>}
                 />
                 <Route
                   path="/meus-interesses"
-                  element={<ProtectedRoute>{withLayout('MyInterests', MyInterests)}</ProtectedRoute>}
+                  element={<ProtectedRoute><AdopterGate>{withLayout('MyInterests', MyInterests)}</AdopterGate></ProtectedRoute>}
                 />
                 <Route
                   path="/radar"
-                  element={<ProtectedRoute>{withLayout('RadarSettings', RadarSettings)}</ProtectedRoute>}
+                  element={<ProtectedRoute><AdopterGate>{withLayout('RadarSettings', RadarSettings)}</AdopterGate></ProtectedRoute>}
                 />
 
                 {/* ── Comunidade (grupos de usuários, fóruns) ─────────────── */}
@@ -533,7 +555,7 @@ export default function App() {
                 />
                 <Route
                   path="/perfil/voluntario"
-                  element={<ProtectedRoute>{withLayout('VolunteerProfile', VolunteerProfile)}</ProtectedRoute>}
+                  element={<ProtectedRoute><VolunteerGate>{withLayout('VolunteerProfile', VolunteerProfile)}</VolunteerGate></ProtectedRoute>}
                 />
                 {/* TASK-288: contratos do adotante — apenas os próprios */}
                 <Route
@@ -678,14 +700,14 @@ export default function App() {
                 <Route
                   path="/dashboard/doador"
                   element={
-                    <ProtectedRoute>{withLayout('DonorDashboard', DonorDashboard)}</ProtectedRoute>
+                    <ProtectedRoute><DonorGate>{withLayout('DonorDashboard', DonorDashboard)}</DonorGate></ProtectedRoute>
                   }
                 />
                 {/* VolunteerPool: pool de voluntários (Q26) */}
                 <Route
                   path="/voluntarios/pool"
                   element={
-                    <ProtectedRoute>{withLayout('VolunteerPool', VolunteerPool)}</ProtectedRoute>
+                    <ProtectedRoute><VolunteerGate>{withLayout('VolunteerPool', VolunteerPool)}</VolunteerGate></ProtectedRoute>
                   }
                 />
                 {/* AdminPersonaView: visão agregada de personas (admin only) */}

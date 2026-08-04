@@ -39,4 +39,32 @@ export function CommunityAdminGate({ children }) {
   );
 }
 
-export default { ShelterAdminGate, CommunityAdminGate };
+// ── Gates por TIPO de persona (rotas exclusivas, sem escopo) — Fatia 4 ──
+// Bloqueiam por URL as ferramentas que não pertencem à persona ativa.
+// Conteúdo público NÃO é gated (continua acessível por link). Com a flag
+// V4 OFF, todos são passthrough; platform_admin tem override.
+
+/** Ferramentas exclusivas do Adotante (feed, radar, busca, interesses). */
+export function AdopterGate({ children }) {
+  return <PersonaGate require={[PERSONA_TYPE.ADOPTER]}>{children}</PersonaGate>;
+}
+
+/** Ferramentas exclusivas do Doador (meus pets, dashboard do doador). */
+export function DonorGate({ children }) {
+  return <PersonaGate require={[PERSONA_TYPE.DONOR]}>{children}</PersonaGate>;
+}
+
+/** Cadastrar/editar pet: Doador (pet pessoal) OU membro de Abrigo. */
+export function PetManageGate({ children }) {
+  return <PersonaGate require={[PERSONA_TYPE.DONOR, PERSONA_TYPE.SHELTER_STAFF]}>{children}</PersonaGate>;
+}
+
+/** Ferramentas exclusivas do Voluntário. */
+export function VolunteerGate({ children }) {
+  return <PersonaGate require={[PERSONA_TYPE.VOLUNTEER]}>{children}</PersonaGate>;
+}
+
+export default {
+  ShelterAdminGate, CommunityAdminGate,
+  AdopterGate, DonorGate, PetManageGate, VolunteerGate,
+};

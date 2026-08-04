@@ -318,9 +318,17 @@ ligar; o solicitante (que já ligou) valida cada fatia.
   clássico (inalterado).
 - **Fatia 3 — FEITO**: `PersonaBottomTabBar` passou a consumir a mesma fonte
   (removida a tabela duplicada).
-- **Fatias 4–6 — PENDENTES**: gating das rotas exclusivas por persona (além
-  dos painéis admin, já gated na Fatia C do §18), home dinâmica em `/`, e
-  redirects de rotas legadas.
+- **Fatia 4 — FEITO**: gating das rotas exclusivas por persona
+  (`PersonaRouteGates`: AdopterGate p/ `/feed`,`/busca`,`/radar`,
+  `/meus-interesses`; DonorGate p/ `/meus-pets`,`/dashboard/doador`;
+  PetManageGate p/ `/pets/new`,`/pets/:id/edit` (doador OU abrigo);
+  VolunteerGate p/ `/perfil/voluntario`,`/voluntarios/pool`). Conteúdo
+  público segue sem gate; admin master tem override; passthrough com V4 OFF.
+- **Fatia 5 — FEITO**: home dinâmica — `/` leva à home da persona ativa
+  quando a V4 está ligada e o usuário está autenticado (`HomeLanding` +
+  `PersonaHomeRedirect`); anon/V4-off → landing.
+- **Fatia 6 — JÁ EXISTIA**: `/inicio`→`/feed`, `/clubes`→`/comunidade`,
+  `/atletas`→`/feed` já eram redirects no App.jsx.
 
 ---
 
