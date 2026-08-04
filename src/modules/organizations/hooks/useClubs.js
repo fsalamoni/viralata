@@ -75,12 +75,13 @@ export function useClubs() {
   return useQuery({ queryKey: ['clubs'], queryFn: listClubs });
 }
 
-export function useMyClubs() {
+export function useMyClubs(options = {}) {
   const { user } = useAuth();
+  const { enabled = true } = options;
   return useQuery({
     queryKey: ['my-clubs', user?.uid],
     queryFn: () => (user?.uid ? listMyClubs(user.uid) : Promise.resolve([])),
-    enabled: !!user?.uid,
+    enabled: enabled && !!user?.uid,
   });
 }
 

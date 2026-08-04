@@ -87,6 +87,36 @@ export async function getCommunity(id) {
   return snap.exists() ? { id: snap.id, ...snap.data() } : null;
 }
 
+/**
+ * Lista as comunidades do usuário (dedup por id), unindo:
+ *  1. Comunidades onde é DONO (`communities.owner_id`).
+ *  2. Comunidades onde tem membership (`community_members.user_id`).
+ * Necessário para a V4 detectar a persona `community_staff` — antes não
+ * havia nenhum serviço que enumerasse as comunidades de um usuário.
+ * @param {string} userId
+ * @returns {Promise<Array<object & { my_role: string }>>}
+ */
+export async function listMyCommunities(userId) {
+  if (!db || !userId) return [];
+  const [ownedSnap, memberSnap] = await Promise.all([
+    getDocs(query(collection(db, COMMUNITY_COLLECTION), where('owner_id', '==', userId))),
+    getDocs(query(collection(db, 'community_members'), where('user_id', '==', userId))),
+  ]);
+  const byId = new Map();
+  for (const d of ownedSnap.docs) {
+    byId.set(d.id, { id: d.id, ...d.data(), my_role: 'admin' });
+  }
+  const memberships = memberSnap.docs.map((d) => d.data());
+  await Promise.all(
+    memberships.map(async (m) => {
+      if (byId.has(m.community_id)) return;
+      const community = await getCommunity(m.community_id);
+      if (community) byId.set(m.community_id, { ...community, my_role: m.role || 'member' });
+    }),
+  );
+  return Array.from(byId.values());
+}
+
 export async function createCommunity(data, actor) {
   if (!db) throw new Error('Banco indisponível.');
   const payload = sanitizeCommunity(data);

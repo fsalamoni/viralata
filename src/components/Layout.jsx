@@ -18,6 +18,7 @@ import ShelterPicker from '@/components/ShelterPicker';
 import VolunteerShelterPicker from '@/components/VolunteerShelterPicker';
 import { useUiPreferences, BOTTOM_TAB_MODES, TOPBAR_MODES, FOOTER_MODES } from '@/core/hooks/useUiPreferences';
 import { logger } from '@/core/lib/logger';
+import { personaHome } from '@/core/domain/personas';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import ThemeMenu from '@/components/ThemeMenu';
 import {
@@ -220,7 +221,12 @@ export default function Layout({ children, currentPageName }) {
                 {/* PersonaSwitcher — aparece só se user tem 2+ personas. */}
                 <PersonaSwitcher
                   onSelectPersona={(p) => {
+                    // Trocar de persona MUDA a experiência: navega para a
+                    // home daquela persona (D-PERSONA-HOME). O setActive já
+                    // foi feito pelo PersonaSwitcher antes deste callback.
                     logger.info('[Layout] persona switched:', p.type);
+                    const dest = personaHome(p);
+                    if (dest) navigate(dest);
                   }}
                   onAddPersona={() => navigate('/acesso')}
                 />

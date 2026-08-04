@@ -5,11 +5,26 @@ import {
   deleteCommunity,
   getCommunity,
   listCommunities,
+  listMyCommunities,
   updateCommunity,
 } from '@/modules/communities/services/communityService';
 
 export function useCommunities() {
   return useQuery({ queryKey: ['communities'], queryFn: () => listCommunities() });
+}
+
+/**
+ * Comunidades do usuário logado (dono + membro). Base para a detecção da
+ * persona `community_staff` na V4.
+ */
+export function useMyCommunities(options = {}) {
+  const { user } = useAuth();
+  const { enabled = true } = options;
+  return useQuery({
+    queryKey: ['my-communities', user?.uid],
+    queryFn: () => (user?.uid ? listMyCommunities(user.uid) : Promise.resolve([])),
+    enabled: enabled && !!user?.uid,
+  });
 }
 
 export function useAdminCommunities() {

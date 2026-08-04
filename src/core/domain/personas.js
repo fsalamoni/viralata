@@ -143,6 +143,35 @@ export function getPersonaType(key) {
 }
 
 /**
+ * Rota "home" de cada persona — para onde a plataforma navega ao ativar
+ * aquele acesso (D-PERSONA-HOME). Faz a troca de persona MUDAR a
+ * experiência, não só a barra inferior.
+ *
+ * @param {{ type: string, scopeId?: string|null }|string} persona
+ *   objeto de persona OU uma PersonaKey ('shelter_staff:clubId').
+ * @returns {string} caminho de rota
+ */
+export function personaHome(persona) {
+  const p = typeof persona === 'string' ? parsePersonaKey(persona) : (persona || {});
+  const { type, scopeId } = p;
+  switch (type) {
+    case PERSONA_TYPE.DONOR:
+      return '/meus-pets';
+    case PERSONA_TYPE.SHELTER_STAFF:
+      return scopeId ? `/organizacoes/${scopeId}/admin` : '/organizacoes';
+    case PERSONA_TYPE.COMMUNITY_STAFF:
+      return scopeId ? `/comunidade/${scopeId}/admin` : '/comunidade';
+    case PERSONA_TYPE.VOLUNTEER:
+      return '/perfil/voluntario';
+    case PERSONA_TYPE.PLATFORM_ADMIN:
+      return '/admin';
+    case PERSONA_TYPE.ADOPTER:
+    default:
+      return '/feed';
+  }
+}
+
+/**
  * Verifica se uma persona tem escopo (precisa de ID adicional).
  * @param {string} type
  * @returns {boolean}
