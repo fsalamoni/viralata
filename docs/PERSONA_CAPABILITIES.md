@@ -307,4 +307,21 @@ ligar; o solicitante (que já ligou) valida cada fatia.
 
 ---
 
-**FIM — blueprint de segmentação por persona (v1, 2026-08-04)**
+## §7. Status de implementação (2026-08-04)
+
+- **Fatia 1 — FEITO**: `src/core/domain/personaCapabilities.js` (fonte única:
+  topbarNav, headerCTAs, bottomNav por persona) + testes.
+- **Fatia 2 — FEITO**: topbar adaptativo — `Layout` renderiza
+  `PersonaTopbarNav` / `PersonaHeaderCTAs` / `PersonaMobileNav` quando a V4
+  está ligada (Feed só do adotante; "Cadastrar pet" só do doador; nav do
+  abrigo/comunidade/voluntário por escopo). Com a flag OFF → `NAV_ITEMS`
+  clássico (inalterado).
+- **Fatia 3 — FEITO**: `PersonaBottomTabBar` passou a consumir a mesma fonte
+  (removida a tabela duplicada).
+- **Fatias 4–6 — PENDENTES**: gating das rotas exclusivas por persona (além
+  dos painéis admin, já gated na Fatia C do §18), home dinâmica em `/`, e
+  redirects de rotas legadas.
+
+---
+
+**FIM — blueprint de segmentação por persona (v1.1, 2026-08-04)**

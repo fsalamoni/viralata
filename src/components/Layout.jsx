@@ -19,6 +19,7 @@ import VolunteerShelterPicker from '@/components/VolunteerShelterPicker';
 import { useUiPreferences, BOTTOM_TAB_MODES, TOPBAR_MODES, FOOTER_MODES } from '@/core/hooks/useUiPreferences';
 import { logger } from '@/core/lib/logger';
 import { personaEntryRoute } from '@/core/domain/personas';
+import { PersonaTopbarNav, PersonaHeaderCTAs, PersonaMobileNav } from '@/components/nav/PersonaTopbar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import ThemeMenu from '@/components/ThemeMenu';
 import {
@@ -190,24 +191,29 @@ export default function Layout({ children, currentPageName }) {
             <span className="hidden sm:inline arena-heading text-lg font-bold">Viralata</span>
           </Link>
 
-          {/* Nav Desktop */}
-          <nav className="hidden md:flex items-center gap-1">
-            {NAV_ITEMS.filter((item) => !item.auth || isAuthenticated).map(({ label, icon: Icon, to }) => (
-              <Link
-                key={to}
-                to={to}
-                className={cn(
-                  'flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-medium transition-all',
-                  location.pathname.startsWith(to)
-                    ? 'bg-primary text-primary-foreground shadow-[0_10px_20px_-12px_rgba(64,34,18,0.55)]'
-                    : 'text-foreground/70 hover:bg-secondary/70'
-                )}
-              >
-                <Icon className="w-4 h-4" />
-                {label}
-              </Link>
-            ))}
-          </nav>
+          {/* Nav Desktop — adaptada à persona quando a V4 está ligada;
+              caso contrário, o NAV_ITEMS clássico (mesmo p/ todos). */}
+          {v4PersonaEnabled ? (
+            <PersonaTopbarNav />
+          ) : (
+            <nav className="hidden md:flex items-center gap-1">
+              {NAV_ITEMS.filter((item) => !item.auth || isAuthenticated).map(({ label, icon: Icon, to }) => (
+                <Link
+                  key={to}
+                  to={to}
+                  className={cn(
+                    'flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-medium transition-all',
+                    location.pathname.startsWith(to)
+                      ? 'bg-primary text-primary-foreground shadow-[0_10px_20px_-12px_rgba(64,34,18,0.55)]'
+                      : 'text-foreground/70 hover:bg-secondary/70'
+                  )}
+                >
+                  <Icon className="w-4 h-4" />
+                  {label}
+                </Link>
+              ))}
+            </nav>
+          )}
 
           {/* Ações direita */}
           <div className="flex items-center gap-2">
@@ -241,10 +247,15 @@ export default function Layout({ children, currentPageName }) {
             <ThemeMenu />
             {isAuthenticated ? (
               <>
-                {/* Cadastrar Pet — presente no cabeçalho em todas as páginas (item 2) */}
-                <Button asChild size="sm">
-                  <Link to="/pets/new">{settings.ui_labels.header_create_pet_cta}</Link>
-                </Button>
+                {/* CTA do header: adaptado à persona quando a V4 está ligada
+                    (ex.: "Cadastrar pet" só para Doador); clássico caso off. */}
+                {v4PersonaEnabled ? (
+                  <PersonaHeaderCTAs />
+                ) : (
+                  <Button asChild size="sm">
+                    <Link to="/pets/new">{settings.ui_labels.header_create_pet_cta}</Link>
+                  </Button>
+                )}
 
                 {/* Notificações */}
                 <NotificationsMenu />
@@ -334,23 +345,27 @@ export default function Layout({ children, currentPageName }) {
             aria-label="Menu principal (mobile)"
             className="md:hidden border-t border-border/70 bg-background/95 backdrop-blur-xl px-4 py-3 space-y-1 safe-px"
           >
-            {[...NAV_ITEMS, ...MOBILE_MENU_EXTRA_ITEMS].filter((item) => !item.auth || isAuthenticated).map(({ label, icon: Icon, to }) => (
-              <Link
-                key={to}
-                to={to}
-                onClick={() => setMobileOpen(false)}
-                aria-current={location.pathname.startsWith(to) ? 'page' : undefined}
-                className={cn(
-                  'flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-                  location.pathname.startsWith(to)
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-foreground/80 hover:bg-secondary/70'
-                )}
-              >
-                <Icon className="w-4 h-4" />
-                {label}
-              </Link>
-            ))}
+            {v4PersonaEnabled ? (
+              <PersonaMobileNav onNavigate={() => setMobileOpen(false)} />
+            ) : (
+              [...NAV_ITEMS, ...MOBILE_MENU_EXTRA_ITEMS].filter((item) => !item.auth || isAuthenticated).map(({ label, icon: Icon, to }) => (
+                <Link
+                  key={to}
+                  to={to}
+                  onClick={() => setMobileOpen(false)}
+                  aria-current={location.pathname.startsWith(to) ? 'page' : undefined}
+                  className={cn(
+                    'flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+                    location.pathname.startsWith(to)
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-foreground/80 hover:bg-secondary/70'
+                  )}
+                >
+                  <Icon className="w-4 h-4" />
+                  {label}
+                </Link>
+              ))
+            )}
           </div>
         )}
       </header>
