@@ -11,6 +11,7 @@ import { Toaster } from '@/components/ui/sonner';
 import { recordPageView } from '@/core/services/observabilityService';
 import ErrorBoundary from '@/components/ErrorBoundary.jsx';
 import PetAdminRoute from '@/components/guards/PetAdminRoute';
+import { ShelterAdminGate, CommunityAdminGate } from '@/components/guards/PersonaRouteGates';
 
 // ─── Páginas Públicas ─────────────────────────────────────────────────────────
 const Home = lazy(() => import('@/pages/Home'));
@@ -463,7 +464,7 @@ export default function App() {
                   path="/comunidade/:communityId/eventos/:eventId"
                   element={<ProtectedRoute>{withLayout('CommunityEventDetail', CommunityEventDetail)}</ProtectedRoute>}
                 />
-                <Route path="/comunidade/:communityId/admin" element={<ProtectedRoute>{withLayout('CommunityAdminPanel', CommunityAdminPanel)}</ProtectedRoute>} />
+                <Route path="/comunidade/:communityId/admin" element={<ProtectedRoute><CommunityAdminGate>{withLayout('CommunityAdminPanel', CommunityAdminPanel)}</CommunityAdminGate></ProtectedRoute>} />
                 {/* TASK-156: página pública de comunidade com mural read-only.
                     Sem auth — anon consegue ver o mural, mas não postar. */}
                 <Route path="/comunidades/:slug" element={withLayout('CommunityPublic', CommunityPublic)} />
@@ -483,7 +484,7 @@ export default function App() {
                 />
                 <Route
                   path="/organizacoes/:orgId/admin"
-                  element={<ProtectedRoute>{withLayout('OrganizationAdminPanel', OrganizationAdminPanel)}</ProtectedRoute>}
+                  element={<ProtectedRoute><ShelterAdminGate>{withLayout('OrganizationAdminPanel', OrganizationAdminPanel)}</ShelterAdminGate></ProtectedRoute>}
                 />
                 <Route path="/organizacoes/:orgId" element={<ProtectedRoute>{withLayout('OrganizationDetail', OrganizationDetail)}</ProtectedRoute>} />
                 <Route path="/abrigos/:shelterId" element={withLayout('ShelterPublic', ShelterPublic)} />

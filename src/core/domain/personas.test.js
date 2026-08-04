@@ -21,6 +21,7 @@ import {
   isScopedPersona,
   isPersonaOnboardingComplete,
   personaHome,
+  personaEntryRoute,
 } from './personas.js';
 
 describe('personas (V4)', () => {
@@ -209,6 +210,22 @@ describe('personas (V4)', () => {
       expect(personaHome(null)).toBe('/feed');
       // escopo ausente → diretório
       expect(personaHome({ type: PERSONA_TYPE.SHELTER_STAFF })).toBe('/organizacoes');
+    });
+  });
+
+  describe('personaEntryRoute', () => {
+    it('persona com onboarding completo → home', () => {
+      expect(personaEntryRoute({ type: PERSONA_TYPE.DONOR, hasOnboarding: true })).toBe('/meus-pets');
+      expect(personaEntryRoute({ type: PERSONA_TYPE.SHELTER_STAFF, scopeId: 'c1', hasOnboarding: true }))
+        .toBe('/organizacoes/c1/admin');
+    });
+
+    it('persona sem onboarding → tela de cadastro da persona', () => {
+      expect(personaEntryRoute({ type: PERSONA_TYPE.ADOPTER, hasOnboarding: false })).toBe('/onboarding/adotante');
+      expect(personaEntryRoute({ type: PERSONA_TYPE.DONOR, hasOnboarding: false })).toBe('/onboarding/doador');
+      expect(personaEntryRoute({ type: PERSONA_TYPE.SHELTER_STAFF, hasOnboarding: false })).toBe('/entrar/abrigo');
+      expect(personaEntryRoute({ type: PERSONA_TYPE.COMMUNITY_STAFF, hasOnboarding: false })).toBe('/entrar/comunidade');
+      expect(personaEntryRoute({ type: PERSONA_TYPE.VOLUNTEER, hasOnboarding: false })).toBe('/voluntarios/seja');
     });
   });
 });

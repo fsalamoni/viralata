@@ -1736,6 +1736,26 @@ onboarding por persona. Tudo atrás das flags (default OFF).
 > objetivo ("visão e acesso distintos por persona"): falta a camada de
 > integração A–D acima. Este §18 é o caminho para concluí-la.
 
+### §18.5. Status de conclusão (2026-08-04)
+
+- **Fatia A — FEITO** (PR #210): `listMyClubs` inclui clubes do dono;
+  `listMyCommunities` + `useMyCommunities`; `usePersonaSignals` alimenta a
+  detecção; `useActivePersona` usa os sinais reais.
+- **Fatia B — FEITO** (PR #210): `personaHome` + navegação na troca.
+- **Fatia C — FEITO**: `PersonaGate` com override de `platform_admin`;
+  `PersonaRouteGates` (ShelterAdminGate/CommunityAdminGate) isolando
+  `/organizacoes/:orgId/admin` e `/comunidade/:communityId/admin` por
+  persona+escopo (não-admin precisa estar na persona daquele abrigo/
+  comunidade). Passthrough com a flag OFF.
+- **Fatia D — FEITO (switcher)**: `personaEntryRoute` roteia para o
+  onboarding da persona quando incompleto; o switcher no Layout usa isso.
+  A `PersonaSelection` (1ª escolha) já roteava para onboarding.
+
+**Refinamentos pendentes (não bloqueiam o objetivo):** home dinâmica (`/`
+→ home da persona ativa com V4 on); fallback do gate poderia auto-ativar a
+persona disponível em vez de mandar para `/acesso`; gating opcional de
+rotas pessoais (`/meus-pets` doador, `/perfil/voluntario`).
+
 ---
 
 **FIM do guia de estruturação e planejamento da V4 — v1.2 (DIAGNÓSTICO PÓS-USO + ARQUITETURA DE CONCLUSÃO 2026-08-04)**
