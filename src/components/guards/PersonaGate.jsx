@@ -21,6 +21,7 @@ import { useActivePersona } from '@/core/hooks/useActivePersona';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
+import { isPlatformAdminFromProfile } from '@/core/services/personaService';
 // (parsePersonaKey é usado internamente em checkPersonaRequirement)
 import '@/core/domain/personas';
 import { logger } from '@/core/lib/logger';
@@ -67,7 +68,7 @@ export function PersonaGate({
   requireOnboarding = false,
 }) {
   const enabled = useFeatureFlag(FEATURE_FLAG.V4_PERSONA_ENABLED);
-  const { user, isLoadingAuth } = useAuth();
+  const { user, userProfile, isLoadingAuth } = useAuth();
   const { active, isLoading: isLoadingPersona } = useActivePersona();
   const location = useLocation();
 
@@ -81,6 +82,10 @@ export function PersonaGate({
 
   // Não autenticado → não bloqueia aqui (ProtectedRoute cuida)
   if (!user) return children;
+
+  // Admin override (D-PERSONA-ADMIN-OVERRIDE): o platform_admin vê TUDO,
+  // independentemente da persona ativa. Nunca é bloqueado por um gate de UX.
+  if (isPlatformAdminFromProfile(userProfile)) return children;
 
   // Verifica requisito
   const passes = checkPersonaRequirement(active, require, requireScope);

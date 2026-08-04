@@ -172,6 +172,38 @@ export function personaHome(persona) {
 }
 
 /**
+ * Rota de ENTRADA de uma persona ao ativá-la (Fatia D do §18): se a persona
+ * ainda não completou o onboarding dela, vai para a tela de cadastro
+ * correspondente; caso contrário, vai para a home (`personaHome`).
+ *
+ * Personas com escopo (abrigo/comunidade) detectadas por vínculo já vêm com
+ * `hasOnboarding = true` (o user é dono/membro), então caem direto no painel.
+ *
+ * @param {{ type: string, scopeId?: string|null, hasOnboarding?: boolean }|string} persona
+ * @returns {string} caminho de rota
+ */
+export function personaEntryRoute(persona) {
+  const p = typeof persona === 'string' ? parsePersonaKey(persona) : (persona || {});
+  if (!p.hasOnboarding) {
+    switch (p.type) {
+      case PERSONA_TYPE.ADOPTER:
+        return '/onboarding/adotante';
+      case PERSONA_TYPE.DONOR:
+        return '/onboarding/doador';
+      case PERSONA_TYPE.SHELTER_STAFF:
+        return '/entrar/abrigo';
+      case PERSONA_TYPE.COMMUNITY_STAFF:
+        return '/entrar/comunidade';
+      case PERSONA_TYPE.VOLUNTEER:
+        return '/voluntarios/seja';
+      default:
+        break;
+    }
+  }
+  return personaHome(p);
+}
+
+/**
  * Verifica se uma persona tem escopo (precisa de ID adicional).
  * @param {string} type
  * @returns {boolean}
