@@ -21,7 +21,8 @@ import { useActivePersona } from '@/core/hooks/useActivePersona';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
-import { PERSONA_TYPE, parsePersonaKey, buildPersonaKey } from '@/core/domain/personas';
+// (parsePersonaKey é usado internamente em checkPersonaRequirement)
+import '@/core/domain/personas';
 import { logger } from '@/core/lib/logger';
 
 /**

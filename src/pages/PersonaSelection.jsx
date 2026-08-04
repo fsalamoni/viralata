@@ -26,7 +26,7 @@ import { useActivePersona } from '@/core/hooks/useActivePersona';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
 import { PERSONA_TYPE, PERSONA_LABEL, PERSONA_TAGLINE } from '@/core/domain/personas';
-import { canUsePlatformAdminPersona, detectAvailablePersonas, enablePersona, setActivePersona } from '@/core/services/personaService';
+import { canUsePlatformAdminPersona, enablePersona } from '@/core/services/personaService';
 import { cn } from '@/core/lib/utils';
 import { logger } from '@/core/lib/logger';
 
@@ -162,6 +162,8 @@ export function PersonaSelection() {
               type="button"
               onClick={() => setSelected(p.type)}
               disabled={isSubmitting}
+              aria-pressed={isSelected}
+              aria-label={`Selecionar persona ${label}`}
               className={cn(
                 'group relative flex flex-col items-start gap-3 rounded-2xl border-2 bg-card p-5 text-left transition',
                 isSelected

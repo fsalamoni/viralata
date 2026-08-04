@@ -39,7 +39,6 @@ export function useUserClubMemberships(uid) {
         // 2. Para cada membership, busca o clube (em paralelo)
         const clubs = await Promise.all(
           memberships.map(async (m) => {
-            const clubId = m.club_id || m.id.split('_')[0];
             try {
               const clubDoc = await getDoc(
                 // Tenta primeiro como subcoleção, depois como doc top-level

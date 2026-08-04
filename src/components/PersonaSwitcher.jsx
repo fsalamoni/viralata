@@ -31,7 +31,7 @@ const PERSONA_ICON = {
 
 export function PersonaSwitcher({ onSelectPersona, onAddPersona }) {
   const enabled = useFeatureFlag(FEATURE_FLAG.V4_PERSONA_SWITCHER);
-  const { user, userProfile } = useAuth();
+  const { user } = useAuth();
   const {
     active,
     visibleForSwitcher,
@@ -62,7 +62,6 @@ export function PersonaSwitcher({ onSelectPersona, onAddPersona }) {
 
   const ActiveIcon = PERSONA_ICON[active.type] || User;
   const activeLabel = PERSONA_LABEL[active.type] || 'Acesso';
-  const activeScopeSuffix = active.scopeId ? ' · Selecionado' : '';
 
   return (
     <div className="relative" ref={containerRef}>

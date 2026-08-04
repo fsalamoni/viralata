@@ -24,7 +24,6 @@ import {
   DEFAULT_PERSONA,
   PERSONA_TYPE,
   PUBLIC_PERSONAS,
-  buildPersonaKey,
   parsePersonaKey,
 } from '@/core/domain/personas';
 import {
@@ -110,9 +109,8 @@ export function useActivePersona(options = {}) {
   const canSwitch = visibleForSwitcher.length > 1;
 
   // Sincroniza persona ativa na inicialização e quando user muda
-  // IMPORTANTE: dependências mínimas para evitar loop infinito.
-  // available NÃO é dependência direta (é recalculada via useMemo).
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // IMPORTANTE: dependências explícitas dos CAMPOS (não objetos) para
+  // evitar loops quando refs mudam de identidade sem mudar valor.
   useEffect(() => {
     if (!user?.uid) {
       setActiveState({
@@ -125,7 +123,9 @@ export function useActivePersona(options = {}) {
       return;
     }
     if (!userProfile) {
-      // Perfil ainda carregando
+      // Perfil ainda carregando. Mantém isLoading=true para que consumers
+      // (PersonaSwitcher, PersonaSelection) saibam que ainda não terminou.
+      // O effect vai re-rodar quando userProfile mudar (dep na lista).
       return;
     }
 
@@ -181,6 +181,7 @@ export function useActivePersona(options = {}) {
     return () => {
       cancelled = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.uid, userProfile?.role, userProfile?.profile_completed, userProfile?.donor_profile, signals?.petCount, signals?.hasVolunteerProfile]);
 
   /**

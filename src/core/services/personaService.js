@@ -22,7 +22,6 @@
 
 import {
   collection,
-  collectionGroup,
   doc,
   getDoc,
   getDocs,
@@ -31,7 +30,6 @@ import {
   setDoc,
   updateDoc,
   where,
-  writeBatch,
 } from 'firebase/firestore';
 import { db } from '@/core/config/firebase';
 import { logger } from '@/core/lib/logger';
@@ -250,6 +248,15 @@ export async function setActivePersona(uid, personaKey) {
 export async function enablePersona(uid, personaKey) {
   if (!uid) throw new Error('uid é obrigatório');
   if (!personaKey) throw new Error('personaKey é obrigatório');
+
+  // Validação defensiva: personaKey deve ser tipo válido (D-PERSONA-MULTI)
+  const { type, scopeId } = parsePersonaKey(personaKey);
+  if (!ALL_PERSONAS.includes(type)) {
+    throw new Error(`Tipo de persona inválido: ${type}`);
+  }
+  if (isScopedPersona(type) && !scopeId) {
+    throw new Error(`Persona ${type} requer scopeId`);
+  }
 
   try {
     const userDoc = await getDoc(doc(db, 'users', uid));

@@ -91,4 +91,41 @@ describe('firestore.rules — TASK-212 (multi-tenant volunteer)', () => {
     const block = RULES.substring(idx, idx + 4000);
     expect(block).toContain('isAppCheckVerified');
   });
+
+  // ─── V4 PERSONAS (D-PERSONA-MULTI) ──────────────────────────────────────
+  describe('V4 PERSONAS — users/{userId} campos active_persona e personas_enabled', () => {
+    it('regra users/{userId} update valida active_persona (string)', () => {
+      const idx = RULES.indexOf('match /users/{userId}');
+      const block = RULES.substring(idx, idx + 4000);
+      expect(block).toContain('active_persona');
+      expect(block).toContain("is string");
+    });
+
+    it('regra users/{userId} update valida personas_enabled (array)', () => {
+      const idx = RULES.indexOf('match /users/{userId}');
+      const block = RULES.substring(idx, idx + 4000);
+      expect(block).toContain('personas_enabled');
+      expect(block).toContain('is list');
+    });
+
+    it('personaKey format regex (D-PERSONA-MULTI): tipo:scopeId ou só tipo', () => {
+      const idx = RULES.indexOf('match /users/{userId}');
+      const block = RULES.substring(idx, idx + 4000);
+      // Regex: ^([a-z_]+)(:[A-Za-z0-9_-]+)?$
+      expect(block).toMatch(/matches\('\^\[a-z_\]\+\(:\[A-Za-z0-9_-\]\{1,128\}\)\?\$'\)/);
+    });
+
+    it('personas_enabled limitado a 16 personas max', () => {
+      const idx = RULES.indexOf('match /users/{userId}');
+      const block = RULES.substring(idx, idx + 4000);
+      expect(block).toContain('.size() <= 16');
+    });
+
+    it('user NÃO pode setar role=platform_admin (exceto owner fixo)', () => {
+      const idx = RULES.indexOf('match /users/{userId}');
+      const block = RULES.substring(idx, idx + 4000);
+      // role precisa ser igual ou platform_owner_auth
+      expect(block).toContain('isPlatformOwnerAuth()');
+    });
+  });
 });

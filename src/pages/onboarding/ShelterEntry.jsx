@@ -23,13 +23,13 @@ import { useActivePersona } from '@/core/hooks/useActivePersona';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
 import { PERSONA_TYPE } from '@/core/domain/personas';
-import { enablePersona, setActivePersona as setActivePersonaFirestore } from '@/core/services/personaService';
+import { enablePersona } from '@/core/services/personaService';
 import { logger } from '@/core/lib/logger';
 
 export function ShelterEntry() {
   const enabled = useFeatureFlag(FEATURE_FLAG.V4_PERSONA_SHELTER_STAFF);
   const navigate = useNavigate();
-  const { user, userProfile } = useAuth();
+  const { user } = useAuth();
   const { setActive: setActiveHook } = useActivePersona();
   const [mode, setMode] = useState(null); // null | 'code' | 'create'
   const [code, setCode] = useState('');

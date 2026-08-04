@@ -218,13 +218,32 @@ service cloud.firestore {
       // O próprio usuário só edita seu perfil; role/banimento são imutáveis
       // por ele mesmo (exceto o bootstrap do dono fixo), só um platform_admin
       // pode banir/desbanir ou alterar papéis.
+      //
+      // V4 PERSONAS (D-PERSONA-MULTI): o próprio user pode atualizar
+      // `active_persona` (string) e `personas_enabled` (array de strings).
+      // Validação: personaKey deve ser uma das 6 personas V4 válidas ou scoped
+      // (formato "type" ou "type:scopeId" onde type é uma das personas).
       allow update: if isPlatformAdmin() || (
         isOwner(userId) &&
         (request.resource.data.get('role', 'user') == resource.data.get('role', 'user') ||
           (request.resource.data.role == 'platform_admin' && isPlatformOwnerAuth())) &&
         request.resource.data.get('banned', false) == resource.data.get('banned', false) &&
         request.resource.data.get('banned_at', null) == resource.data.get('banned_at', null) &&
-        request.resource.data.get('banned_reason', null) == resource.data.get('banned_reason', null)
+        request.resource.data.get('banned_reason', null) == resource.data.get('banned_reason', null) &&
+        // V4 PERSONAS: valid active_persona (string) — se presente
+        (!('active_persona' in request.resource.data) ||
+          request.resource.data.active_persona == null ||
+          (request.resource.data.active_persona is string &&
+           request.resource.data.active_persona.size() > 0 &&
+           request.resource.data.active_persona.size() <= 128 &&
+           request.resource.data.active_persona.matches('^[a-z_]+(:[A-Za-z0-9_-]{1,128})?$'))) &&
+        // V4 PERSONAS: valid personas_enabled (array of strings)
+        (!('personas_enabled' in request.resource.data) ||
+          request.resource.data.personas_enabled == null ||
+          (request.resource.data.personas_enabled is list &&
+           request.resource.data.personas_enabled.size() <= 16 &&
+           request.resource.data.personas_enabled.hasOnly([].concat(request.resource.data.personas_enabled).mapValues(v,
+             v is string && v.size() > 0 && v.size() <= 128 && v.matches('^[a-z_]+(:[A-Za-z0-9_-]{1,128})?$')))))
       );
       allow delete: if isPlatformAdmin();
 

@@ -17,7 +17,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   PawPrint,
-  Heart,
   User,
   Plus,
   MessageCircle,
@@ -27,8 +26,6 @@ import {
   ClipboardList,
   Calendar,
   Shield,
-  Search,
-  Bell,
   Stethoscope,
 } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';

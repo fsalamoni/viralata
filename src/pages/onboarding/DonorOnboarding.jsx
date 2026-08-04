@@ -64,7 +64,7 @@ const STEPS = [
 export function DonorOnboarding() {
   const enabled = useFeatureFlag(FEATURE_FLAG.V4_PERSONA_DONOR);
   const navigate = useNavigate();
-  const { user, userProfile, updateUserProfile } = useAuth();
+  const { user } = useAuth();
   const { setActive: setActiveHook } = useActivePersona();
   const [step, setStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
