@@ -237,13 +237,17 @@ service cloud.firestore {
            request.resource.data.active_persona.size() > 0 &&
            request.resource.data.active_persona.size() <= 128 &&
            request.resource.data.active_persona.matches('^[a-z_]+(:[A-Za-z0-9_-]{1,128})?$'))) &&
-        // V4 PERSONAS: valid personas_enabled (array of strings)
+        // V4 PERSONAS: valid personas_enabled (lista de strings, tamanho
+        // limitado). NOTA: a linguagem de regras do Firestore NÃO permite
+        // iterar a lista para validar o formato de CADA elemento (não há
+        // map/forEach/quantificador). O formato de cada persona é validado
+        // no client/serviço; aqui basta garantir que é uma lista pequena.
+        // (A versão anterior usava `.mapValues(...)`, método inexistente na
+        // linguagem de regras — o que quebrava a compilação/avaliação.)
         (!('personas_enabled' in request.resource.data) ||
           request.resource.data.personas_enabled == null ||
           (request.resource.data.personas_enabled is list &&
-           request.resource.data.personas_enabled.size() <= 16 &&
-           request.resource.data.personas_enabled.hasOnly([].concat(request.resource.data.personas_enabled).mapValues(v,
-             v is string && v.size() > 0 && v.size() <= 128 && v.matches('^[a-z_]+(:[A-Za-z0-9_-]{1,128})?$')))))
+           request.resource.data.personas_enabled.size() <= 16))
       );
       allow delete: if isPlatformAdmin();
 
@@ -261,6 +265,17 @@ service cloud.firestore {
         allow read: if isAuth() && (isOwner(userId) || isPlatformAdmin());
         allow create: if isOwner(userId) && request.resource.data.user_uid == userId;
         allow update: if isOwner(userId) && request.resource.data.user_uid == userId;
+        allow delete: if isOwner(userId) || isPlatformAdmin();
+      }
+
+      // ─── V4 PERSONAS: Subcoleção `donor_profile` (perfil do doador) ──
+      // Perfil específico da persona Doador, gravado no onboarding
+      // (DonorOnboarding). É do próprio dono; sem esta regra o Firestore
+      // negava por padrão (deny-by-default) e o onboarding do doador
+      // falhava com "Missing or insufficient permissions".
+      match /donor_profile/{profileId} {
+        allow read: if isAuth() && (isOwner(userId) || isPlatformAdmin());
+        allow create, update: if isOwner(userId);
         allow delete: if isOwner(userId) || isPlatformAdmin();
       }
 
