@@ -1572,14 +1572,70 @@ Flag `V4_PERSONA_ENABLED` (default OFF). Plano de ativação:
 | Edge cases | ✅ Q17-22 (multi-club, multi-roster, pet transfer, orphan pets) |
 | Migração de dados | ✅ D-PERSONA-MIGRATION-AUTO |
 | Plano de ativação | ✅ D-PERSONA-FLAG-GRADUAL |
-| Próximo passo | **Aguardar aprovação do owner para iniciar Fase 0 do roadmap §9** |
 
 ---
 
-**FIM do guia de estruturação e planejamento da V4 — v1.1 (DEFINIÇÕES APROVADAS)**
+## §17. Status de Implementação (2026-08-04)
 
-> Este documento é um **PLANO**, não uma especificação pronta
-> para executar. Mudanças durante a implementação são esperadas
-> e devem ser refletidas de volta aqui. As 22 decisões D-PERSONA-*
-> (em §15) devem ser copiadas para `docs/AI_GUIDE/13-DECISIONS.md`
-> quando a V4 iniciar.
+> **ATUALIZAÇÃO**: A V4 foi **implementada completamente** e
+> está **em produção** (deploy #1480, #1481) com feature flag
+> `V4_PERSONA_ENABLED` default OFF. Veja `docs/EXEC_PLAN_V4_PERSONAS.md`
+> para o log completo de execução.
+
+### §17.1. Entregue
+
+| Item | Status | Detalhes |
+|---|---|---|
+| **Fases 0-11** | ✅ DONE | 14 commits em `feature/v4-personas` |
+| **Merge no main** | ✅ DONE | commit `71907a0b` |
+| **Deploy #1480** | ✅ DONE | 3m 20s, sw-v91→v92 |
+| **Hardening** | ✅ DONE | 11 correções pós-varredura, deploy #1481 |
+| **Tests** | ✅ 2487/2487 passing | 65 V4 + 14 integration + 5 firestore |
+| **Lint V4** | ✅ 0 errors | Apenas 2 warnings (fast refresh) |
+| **Bundle** | ✅ sw-v92.js (216 entries) | Zero impacto (flag OFF) |
+
+### §17.2. Decisões aplicadas (25 D-PERSONA-* + 5 hardening)
+
+Todas em `docs/AI_GUIDE/13-DECISIONS.md §16` (originais) e §17 (hardening):
+
+Originais V4 (25):
+- D-PERSONA-MULTI, D-PERSONA-ONE-AT-A-TIME, D-PERSONA-ONBOARDING-ONCE
+- D-PERSONA-SWITCH-NO-CONFIRM, D-PERSONA-SWITCHER-VISIBILITY
+- D-PERSONA-FIRST-ACCESS-FORCED, D-PERSONA-NO-EXPIRATION
+- D-PERSONA-MULTI-CLUB, D-PERSONA-MULTI-ROSTER-ISOLATED
+- D-PERSONA-MEMBERSHIP-INDEPENDENT, D-PERSONA-PET-TRANSFER
+- D-PERSONA-ORPHAN-PETS, D-PERSONA-ADMIN-CANNOT-DEMOTE
+- D-PERSONA-DONOR-EXPLICIT-CONFIRM, D-PERSONA-FEED-EXCLUSIVE-ADOPTER
+- D-PERSONA-NAMES-UX, D-PERSONA-SWITCHER-INCOMPLETE-BADGE
+- D-PERSONA-MIGRATION-AUTO, D-PERSONA-FLAG-GRADUAL
+- D-PERSONA-DONOR-ONBOARDING, D-PERSONA-SHELTER-ENTRY
+- D-PERSONA-VOLUNTEER-POOL, D-PERSONA-ADOPTER-ONBOARDING
+- D-PERSONA-ADMIN-OVERRIDE, D-PERSONA-ADMIN-OWNER-ONLY
+
+Hardening pós-varredura (5):
+- D-V4-FIRESTORE-VALIDATION-ACTIVE-PERSONA
+- D-V4-FIRESTORE-VALIDATION-PERSONAS-ENABLED
+- D-V4-ENABLE-PERSONA-VALIDATION
+- D-V4-PERSONA-SELECTION-ARIA
+- D-V4-CHECKLIST-POS-MERGE
+
+### §17.3. Ativação (Rollout Q30)
+
+V4 está **default OFF** — zero impacto em produção. Owner ativa
+gradualmente em 5 etapas: 1% → 5% → 25% → 50% → 100% dos
+usuários, com 1-2 dias de monitoramento entre cada.
+
+Ver §5 de `docs/AI_GUIDE/19-V4-PERSONAS-INDEX.md` para ativar
+via Firebase Remote Config.
+
+### §17.4. Próximos passos (pós-merge)
+
+- **Owner**: ativar `V4_PERSONA_ENABLED` em staging primeiro
+- **Owner**: rollout gradual conforme D-PERSONA-FLAG-GRADUAL (Q30)
+- **DevOps**: monitorar erros via Sentry/errorTracker
+- **Backlog**: 123 ocorrências de `toast({title,description,variant})`
+  (D-TOAST-SONNER-API) em chat/communities/organizations
+
+---
+
+**FIM do guia de estruturação e planejamento da V4 — v1.1 (DEFINIÇÕES APROVADAS + IMPLEMENTAÇÃO CONCLUÍDA 2026-08-04)**

@@ -328,3 +328,95 @@ Ela os **COMPLEMENTA** e os **ORGANIZA**. Documentos importantes
 Regra: **novos documentos** vão em `docs/AI_GUIDE/`. Documentos
 **legados** podem ser consultados, mas o conteúdo canônico está
 no AI_GUIDE.
+
+## 13. ★ V4 PERSONAS — Sistema completo (2026-08-04)
+
+> **Status**: ✅ **IMPLEMENTADO + DEPLOYED** (commits #1480, #1481)
+> **Feature flag**: `V4_PERSONA_ENABLED` (default OFF)
+> **25 decisões D-PERSONA-*** aplicadas (ver §16 de `13-DECISIONS.md`)
+
+### O que é
+
+Sistema que substitui a abordagem monolítica "user = adotante" por
+**6 personas dedicadas**:
+
+1. **Adotante** (legacy) — encontrar pets para adoção
+2. **Doador** — cadastrar pets para doação
+3. **Membro de Abrigo** (multi-club, Q17) — gerenciar abrigo(s)
+4. **Membro de Comunidade** — gerenciar comunidade(s)
+5. **Voluntário** (multi-roster, Q18) — ser voluntário em abrigo(s)
+6. **Platform Admin** (override, Q7/Q9) — admin master
+
+**Multi-persona simultânea** (D-PERSONA-MULTI): user pode ter 1+
+personas habilitadas em `users/{uid}.personas_enabled[]`, 1 ativa
+em `users/{uid}.active_persona`, troca instantânea
+(D-PERSONA-SWITCH-NO-CONFIRM), 0 expiração
+(D-PERSONA-NO-EXPIRATION).
+
+### Onde está
+
+| Componente | Caminho |
+|---|---|
+| Domain (6 personas) | `src/core/domain/personas.js` |
+| Service (10 funções) | `src/core/services/personaService.js` |
+| Hook principal | `src/core/hooks/useActivePersona.js` |
+| Switcher TopBar | `src/components/PersonaSwitcher.jsx` |
+| BottomTabBar contextual | `src/components/PersonaBottomTabBar.jsx` |
+| ShelterPicker (multi-club) | `src/components/ShelterPicker.jsx` |
+| VolunteerShelterPicker (multi-roster) | `src/components/VolunteerShelterPicker.jsx` |
+| Route guard | `src/components/guards/PersonaGate.jsx` |
+| Tela /acesso | `src/pages/PersonaSelection.jsx` |
+| Dashboards | `src/pages/{DonorDashboard,VolunteerPool}.jsx` |
+| Onboarding flows | `src/pages/onboarding/*.jsx` |
+| Admin view | `src/modules/admin/pages/AdminPersonaView.jsx` |
+| Pet transfer (Q20) | `src/modules/pets/components/PetTransferDialog.jsx` |
+| Hook multi-club | `src/modules/organizations/hooks/useUserClubMemberships.js` |
+
+### Schema Firestore (users/{uid})
+
+```js
+{
+  // V3 legacy (mantido)
+  profile_completed: bool,
+  role: 'user' | 'platform_admin',
+
+  // V4 PERSONAS
+  active_persona: 'adopter' | 'donor' | 'shelter_staff:clubId' | ...,
+  personas_enabled: ['adopter', 'donor', ...],  // max 16
+
+  // Donor profile (D-PERSONA-DONOR-ONBOARDING, Q24)
+  donor_profile: { ... 9 campos ... },
+}
+```
+
+### Ativação (Rollout Q30)
+
+V4 está **default OFF** — zero impacto em produção. Owner ativa
+gradualmente em 5 etapas: 1% → 5% → 25% → 50% → 100% dos
+usuários.
+
+```js
+// Firebase Console > Remote Config:
+V4_PERSONA_ENABLED = true
+// + 10 sub-flags por persona/feature
+```
+
+### Documentos V4
+
+- **Planejamento**: `docs/PLAN_PERSONAS_V4.md` (v1.1, 1585 linhas)
+- **Execução**: `docs/EXEC_PLAN_V4_PERSONAS.md`
+- **Índice V4**: `docs/AI_GUIDE/19-V4-PERSONAS-INDEX.md`
+- **Decisões**: `docs/AI_GUIDE/13-DECISIONS.md §16` (originais) + §17 (hardening)
+- **Diretrizes**: `docs/AI_GUIDE/11-CORE-DIRECTIVES.md §24`
+- **Hardening**: `docs/AI_GUIDE/15-RECENT-FIXES.md §12` (11 correções)
+
+### Lição V4 (varredura 12 etapas)
+
+Implementar V4 + **varredura completa pós-merge** encontrou 11 bugs
+que escaparam dos testes:
+- 1 SEGURANÇA (firestore rules sem validação de V4)
+- 1 VALIDAÇÃO (enablePersona sem checagem)
+- 8 LINT (imports não usados, diretivas órfãs)
+- 1 A11Y (botões sem aria)
+
+**SEMPRE** fazer varredura pós-merge (ver D-V4-CHECKLIST-POS-MERGE).

@@ -1072,4 +1072,135 @@ const effectiveDate = record.scheduled_for ?? record[dateField];
 
 ---
 
-**Próxima leitura**: `12-CODING-STANDARDS.md` (padrões de código detalhados), `13-DECISIONS.md` §10-15 (D-VOLUNTEER-*, D-DEBUG-*, D-FIRESTORE-*, D-LAZY-DEFAULT-EXPORT, D-PET-OPS-*).
+## §24. Sistema de Personas V4 (D-PERSONA-*)
+
+### §24.1. Princípios V4 (D-PERSONA-MULTI, D-PERSONA-ONE-AT-A-TIME)
+
+- **Multi-persona simultânea**: user pode ter 1+ personas
+  habilitadas em `personas_enabled[]`, 1 ativa por vez em
+  `active_persona`
+- **Troca instantânea** (D-PERSONA-SWITCH-NO-CONFIRM): sem
+  confirmação, UX imediata
+- **0 expiração** (D-PERSONA-NO-EXPIRATION): personas NUNCA
+  expiram, persistem enquanto o user quiser
+- **Scoped personas** (D-PERSONA-MULTI-CLUB, D-PERSONA-MULTI-ROSTER-ISOLATED):
+  formato `tipo:scopeId` (ex: `shelter_staff:club_abc`)
+
+### §24.2. Schema de Personas no Firestore
+
+**`users/{uid}`** (D-PERSONA-MULTI):
+```js
+{
+  // V3 legacy (mantido para compat)
+  profile_completed: bool,
+  role: 'user' | 'platform_admin',
+  // ... outros campos legacy
+
+  // V4 PERSONAS
+  active_persona: 'adopter' | 'donor' | 'shelter_staff:clubId' | ...,
+  personas_enabled: ['adopter', 'donor', ...],  // max 16
+}
+```
+
+**Validação no firestore.rules** (D-PERSONA-MULTI + hardening):
+- `active_persona` é string formato `^[a-z_]+(:[A-Za-z0-9_-]+)?$`
+- `personas_enabled` é list com max 16 items
+- Cada item mesmo formato
+- Role `platform_admin` SÓ pode ser setado pelo owner
+  (D-PERSONA-ADMIN-OWNER-ONLY)
+
+### §24.3. Onboarding por persona (D-PERSONA-ONBOARDING-ONCE)
+
+Cada persona tem onboarding **1x por persona**:
+- **Adotante**: questionário (moradia, rotina, filhos) — wrapper
+  `AdopterOnboarding`
+- **Doador**: 9 campos (Q24):
+  `donor_motivation`, `has_donated_before`, `pets_count`,
+  `experience_with_species[]`, `experience_years`,
+  `donor_accepts_home_check`,
+  `donor_accepts_post_adoption_followup`,
+  `donor_preferred_contact_method`, `donor_bio`
+- **Membro de Abrigo**: código OU criar (Q25)
+- **Membro de Comunidade**: idem
+- **Voluntário**: termo + skills
+- **Platform Admin**: N/A (owner atribui role)
+
+### §24.4. Migração automática (D-PERSONA-MIGRATION-AUTO, Q29)
+
+`migrateLegacyUserToV4(uid, userProfile)` é chamado no primeiro
+acesso V4:
+- User com 1+ pets pessoais → adiciona `donor` à personas_enabled
+- User com role `platform_admin` → adiciona `platform_admin`
+- User com `volunteer_profile` → adiciona `volunteer`
+- Define `active_persona` se ainda null
+
+**Idempotente**: pode ser chamado várias vezes sem efeito colateral.
+
+### §24.5. Rollout gradual (D-PERSONA-FLAG-GRADUAL, Q30)
+
+V4 está **default OFF** — 11 feature flags:
+- 1 master: `V4_PERSONA_ENABLED`
+- 6 personas: `V4_PERSONA_ADOPTER`, `V4_PERSONA_DONOR`, etc
+- 4 features: `V4_PERSONA_SWITCHER`, `V4_PERSONA_SELECTION`,
+  `V4_PERSONA_VOLUNTEER_POOL`, `V4_PERSONA_PET_TRANSFER`
+
+**Rollout em 5 etapas**: 1% → 5% → 25% → 50% → 100%
+(cada etapa: monitorar 1-2 dias).
+
+### §24.6. Hooks V4 (D-HOOKS-ORDER-PRESERVE)
+
+**OBRIGATÓRIO**: TODOS os hooks ANTES de early return.
+
+```js
+export function MyComponent() {
+  // 1. Hooks primeiro
+  const enabled = useFeatureFlag(FLAG);
+  const { user } = useAuth();
+  const { active } = useActivePersona();
+  const ref = useRef(null);
+
+  // 2. useEffect (se houver click-outside, etc)
+  useEffect(() => { /* ... */ }, [open]);
+
+  // 3. Early return SÓ DEPOIS de TODOS os hooks
+  if (!enabled) return null;
+  if (!user) return null;
+  if (isLoading) return null;
+  // ... resto
+}
+```
+
+**Erros comuns encontrados**:
+- `useEffect` DEPOIS de early return → "Rules of Hooks"
+- `useRef` + `useEffect` com early return intermediário
+- `useFeatureFlag` que não é declarado
+
+### §24.7. Hardening PÓS-VARREDURA (11 bugs)
+
+Lição aprendida: **SEMPRE** fazer varredura completa após merge de
+feature grande. V4 encontrou 11 bugs que escaparam dos testes:
+
+1. **Firestore rules SEM validação de V4** — user podia escrever
+   qualquer string em `active_persona`. Fix: regex + size check.
+2. **`enablePersona` sem validação** — qualquer string era
+   persistida. Fix: validar tipo + scopeId.
+3. **8 bugs de lint** — imports não usados, diretivas órfãs.
+4. **1 bug de a11y** — botões sem `aria-pressed`/`aria-label`.
+
+**Checklist pós-merge** (12 etapas):
+1. Bundle deployed (curl+grep)
+2. Tests (core + components + pages + modules)
+3. Lint (todos arquivos novos)
+4. Imports/exports (sem undefined)
+5. Firestore rules (regras de novos campos)
+6. Edge cases (null, undefined, empty)
+7. Feature flags (default OFF?)
+8. Hooks order (D-HOOKS-ORDER-PRESERVE)
+9. a11y (aria-* em todos botões)
+10. Legacy compat (não regrediu)
+11. Regressões (curl nas rotas antigas)
+12. Build (vite OK?)
+
+---
+
+**Próxima leitura**: `12-CODING-STANDARDS.md` (padrões de código detalhados), `13-DECISIONS.md §16` (D-PERSONA-* completo), `19-V4-PERSONAS-INDEX.md` (índice V4).

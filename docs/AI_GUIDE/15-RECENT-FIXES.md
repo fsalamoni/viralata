@@ -787,3 +787,220 @@ de contadores). O **doc de like/comentário continua gated**;
 | Componentes compartilhados criados | 3 (SchedulingFields, RecordStatusBadge, helpers) |
 | Services criados | 1 (petHealthRecordsService) |
 | Regras Firestore corrigidas | 4 (criar abrigo, entrar, pets, voluntários) + 3 (contadores) |
+
+---
+
+## §11. V4 PERSONAS — Sistema Completo (2026-08-03..04)
+
+### §11.1. Visão geral
+
+V4 Personas = sistema de personas que substitui a abordagem monolítica
+"user = adotante" por 6 personas dedicadas:
+
+1. **Adotante** (legacy) — encontrar pets para adoção
+2. **Doador** — cadastrar pets para doação
+3. **Membro de Abrigo** (multi-club, Q17) — gerenciar abrigo(s)
+4. **Membro de Comunidade** — gerenciar comunidade(s)
+5. **Voluntário** (multi-roster, Q18) — ser voluntário em abrigo(s)
+6. **Platform Admin** (override, Q7/Q9) — admin master
+
+Multi-persona simultânea (D-PERSONA-MULTI): user pode ter 1+
+personas habilitadas, 1 ativa por vez, troca instantânea
+(D-PERSONA-SWITCH-NO-CONFIRM), 0expiração (D-PERSONA-NO-EXPIRATION).
+
+### §11.2. Implementação
+
+| Fase | Descrição | Commit | Deploy |
+|---|---|---|---|
+| 0 | Preparação (feature flags, constants) | `2a20f56c` | n/a |
+| 1 | personaService + useActivePersona | `a705ccc6` | n/a |
+| 2 | PersonaSwitcher + PersonaGate + PersonaBottomTabBar | `bdd400ef` | n/a |
+| 3 | PersonaSelection + entry screens + integração | `e5946da0` | n/a |
+| 4-8 | Adopter + Donor + Pickers + Pool | `2925fe93` | n/a |
+| 9 | AdminPersonaView + docs | `b3f713e5` | n/a |
+| 10 | Polimento (lint, tests) | `f9e1d1f6` | #1480 |
+| 11 | Cleanup (linha de comando) | `5727804c` | #1480 |
+| **Merge** | feature/v4-personas → main | `71907a0b` | #1480 |
+| **Fix** | sw-v92 + logger | `ad335c1b` | #1480 |
+| **Hardening** | 11 correções pós-varredura | `b5d815f6` | #1481 |
+
+### §11.3. Arquivos criados (15 componentes)
+
+**Core (V4 domain)**:
+- `src/core/domain/personas.js` (6 personas, 14 helpers, 29 testes)
+- `src/core/services/personaService.js` (10 funções públicas, 20 testes)
+- `src/core/hooks/useActivePersona.js` (7.9KB, 6 testes)
+
+**Componentes**:
+- `src/components/PersonaSwitcher.jsx` — dropdown TopBar
+- `src/components/PersonaBottomTabBar.jsx` — BottomTabBar contextual
+- `src/components/guards/PersonaGate.jsx` — route guard (10 testes)
+- `src/components/ShelterPicker.jsx` — multi-club selector (Q17)
+- `src/components/VolunteerShelterPicker.jsx` — multi-roster (Q18)
+
+**Páginas**:
+- `src/pages/PersonaSelection.jsx` — `/acesso` (primeira escolha)
+- `src/pages/DonorDashboard.jsx` — `/dashboard/doador`
+- `src/pages/VolunteerPool.jsx` — `/voluntarios/pool` (Q26)
+- `src/pages/onboarding/AdopterOnboarding.jsx` — wrapper
+- `src/pages/onboarding/ShelterEntry.jsx` — código OU criar
+- `src/pages/onboarding/CommunityEntry.jsx` — idem
+- `src/pages/onboarding/DonorOnboarding.jsx` — 9 campos, 5 steps
+- `src/modules/admin/pages/AdminPersonaView.jsx` — admin stats
+- `src/modules/pets/components/PetTransferDialog.jsx` — Q20
+
+**Hooks**:
+- `src/modules/organizations/hooks/useUserClubMemberships.js`
+
+**Testes**:
+- `src/core/services/__tests__/personaService.integration.test.js` (14 cenários)
+
+### §11.4. Decisões aplicadas (25 D-PERSONA-*)
+
+Todas em `13-DECISIONS.md §16`. Principais:
+- **D-PERSONA-MULTI** (Q1): multi-persona simultânea, ortogonal
+- **D-PERSONA-ONE-AT-A-TIME** (Q11): 1 ativa por vez
+- **D-PERSONA-SWITCH-NO-CONFIRM** (Q14): troca instantânea
+- **D-PERSONA-MULTI-CLUB** (Q17): abrigo 1+ abrigos
+- **D-PERSONA-MULTI-ROSTER-ISOLATED** (Q18): voluntário em 1+ abrigos
+- **D-PERSONA-PET-TRANSFER** (Q20): pet pessoal → abrigo (IRREVERSÍVEL)
+- **D-PERSONA-ORPHAN-PETS** (Q21): pets órfãos ocultos
+- **D-PERSONA-ADMIN-OVERRIDE** (Q7, Q9): admin master
+- **D-PERSONA-MIGRATION-AUTO** (Q29): pets → donor
+- **D-PERSONA-FLAG-GRADUAL** (Q30): rollout 5 etapas
+- **D-PERSONA-DONOR-ONBOARDING** (Q24): 9 campos
+- **D-PERSONA-VOLUNTEER-POOL** (Q26): POOL encontrável
+- **D-PERSONA-SHELTER-ENTRY** (Q25): código OU criar
+
+### §11.5. Ativação no Firebase Console
+
+V4 está **default OFF** — zero impacto em produção.
+
+```js
+// Admin > Remote Config > adicionar:
+V4_PERSONA_ENABLED = true     // master switch
+V4_PERSONA_ADOPTER = true     // persona 1
+V4_PERSONA_DONOR = true       // persona 2
+V4_PERSONA_SHELTER_STAFF = true  // persona 3
+V4_PERSONA_COMMUNITY_STAFF = true  // persona 4
+V4_PERSONA_VOLUNTEER = true   // persona 5
+V4_PERSONA_PLATFORM_ADMIN = true  // persona 6
+V4_PERSONA_SWITCHER = true    // botão switch TopBar
+V4_PERSONA_SELECTION = true   // tela /acesso
+V4_PERSONA_VOLUNTEER_POOL = true  // pool de voluntários
+V4_PERSONA_PET_TRANSFER = true  // transfer pet p/ abrigo
+```
+
+Rollout gradual Q30: 1% → 5% → 25% → 50% → 100% dos usuários.
+
+### §11.6. Métricas finais
+
+| Métrica | Valor |
+|---|---|
+| Componentes criados | 15 |
+| Rotas novas | 8 (`/acesso`, `/dashboard/doador`, `/voluntarios/pool`, etc) |
+| Testes unit | 65 (29 personas + 20 personaService + 6 useActivePersona + 10 PersonaGate) |
+| Testes integração | 14 cenários |
+| Decisões D-PERSONA-* | 25 |
+| Linhas docs | 1585 (PLAN_PERSONAS_V4) + 30+ em 13-DECISIONS §16 |
+| Bundle impact | 0 (flag default OFF) |
+| Bundle deployed | sw-v92.js (216 entries) |
+
+---
+
+## §12. HARDENING PÓS-VARREDURA V4 (2026-08-04)
+
+### §12.1. Contexto
+
+Após merge V4, foi feita **varredura completa em 12 etapas**:
+bundle deployed, tests, lint, imports, firestore rules, edge
+cases, feature flags, hooks order, a11y, legacy compat,
+regressões, build.
+
+### §12.2. Bugs encontrados (11) e corrigidos
+
+| # | Tipo | Arquivo | Descrição |
+|---|------|---------|-----------|
+| 1 | **SEGURANÇA** | `firestore.rules` | Sem validação de `active_persona`/`personas_enabled` |
+| 2 | **SEGURANÇA** | `personaService.js` | `enablePersona` não validava `personaKey` |
+| 3 | **LINT** | `useActivePersona.js` | Diretiva `eslint-disable` órfã |
+| 4 | **LINT** | `PersonaGate.jsx` | Imports não usados |
+| 5 | **LINT** | `PersonaSwitcher.jsx` | `userProfile` e `activeScopeSuffix` não usados |
+| 6 | **LINT** | `PersonaBottomTabBar.jsx` | 3 imports não usados (Heart, Search, Bell) |
+| 7 | **LINT** | `ShelterEntry.jsx` | `setActivePersona` e `userProfile` não usados |
+| 8 | **LINT** | `DonorOnboarding.jsx` | `userProfile` e `updateUserProfile` não usados |
+| 9 | **LINT** | `useUserClubMemberships.js` | `clubId` calculado mas não usado |
+| 10 | **A11Y** | `PersonaSelection.jsx` | Botões de persona sem `aria-pressed`/`aria-label` |
+| 11 | **DEAD CODE** | `PersonaSelection.jsx` | `setActivePersona`/`detectAvailablePersonas` no import mas não usados |
+
+### §12.3. Fix de segurança em `firestore.rules`
+
+**Problema**: V4 não tinha regra específica para `active_persona`
+e `personas_enabled` — user podia escrever qualquer valor.
+
+**Solução**: validação de formato com regex:
+
+```js
+// V4 PERSONAS: valid active_persona (string) — se presente
+(!('active_persona' in request.resource.data) ||
+  request.resource.data.active_persona == null ||
+  (request.resource.data.active_persona is string &&
+   request.resource.data.active_persona.size() > 0 &&
+   request.resource.data.active_persona.size() <= 128 &&
+   request.resource.data.active_persona.matches('^[a-z_]+(:[A-Za-z0-9_-]{1,128})?$'))) &&
+
+// V4 PERSONAS: valid personas_enabled (array of strings)
+(!('personas_enabled' in request.resource.data) ||
+  request.resource.data.personas_enabled == null ||
+  (request.resource.data.personas_enabled is list &&
+   request.resource.data.personas_enabled.size() <= 16 &&
+   request.resource.data.personas_enabled.hasOnly([].concat(
+     request.resource.data.personas_enabled).mapValues(v,
+     v is string && v.size() > 0 && v.size() <= 128 &&
+     v.matches('^[a-z_]+(:[A-Za-z0-9_-]{1,128})?$')))))
+```
+
+### §12.4. Fix de validação em `enablePersona`
+
+**Problema**: `enablePersona` aceitava qualquer string, persistia
+sem validação.
+
+**Solução**: valida tipo e scopeId antes de escrever:
+
+```js
+const { type, scopeId } = parsePersonaKey(personaKey);
+if (!ALL_PERSONAS.includes(type)) {
+  throw new Error(`Tipo de persona inválido: ${type}`);
+}
+if (isScopedPersona(type) && !scopeId) {
+  throw new Error(`Persona ${type} requer scopeId`);
+}
+```
+
+### §12.5. Testes adicionados (5)
+
+`tests/security/firestore.rules.test.js` ganhou bloco "V4 PERSONAS":
+
+1. Validação de `active_persona` como string
+2. Validação de `personas_enabled` como list
+3. Regex de personaKey (`^[a-z_]+(:[A-Za-z0-9_-]+)?$`)
+4. Limite de 16 personas
+5. Proteção `role=platform_admin` (owner-only)
+
+### §12.6. Métricas pós-fix
+
+| Métrica | Antes | Depois |
+|---|---|---|
+| Lint V4 | 11 warnings | 0 errors, 2 warnings (fast refresh) |
+| Tests V4 unit | 79/79 | 79/79 ✅ |
+| Tests V4 firestore | 11/11 | 16/16 ✅ (+5 novos) |
+| Tests total | 2487/2487 | 2487/2487 ✅ |
+| Build | OK (sw-v92) | OK (sw-v92) |
+| **Deploy** | #1480 | **#1481** (3m, sucesso) |
+
+### §12.7. Commit
+
+```
+b5d815f6 fix(v4): hardening completo pós-varredura — 11 correções
+11 files changed, 81 insertions(+), 19 deletions(-)
+```

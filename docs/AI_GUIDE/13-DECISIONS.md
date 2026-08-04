@@ -1263,5 +1263,71 @@ Flag `V4_PERSONA_ENABLED` (default OFF). Plano de ativação:
 
 ---
 
+## §17. Decisões PÓS-VARREDURA V4 (Hardening, 2026-08-04)
+
+### D-V4-FIRESTORE-VALIDATION-ACTIVE-PERSONA
+
+Adicionado em `firestore.rules` no update de `users/{userId}`:
+validação de formato do campo `active_persona`:
+- Se presente e não-null: deve ser string
+- Tamanho: 1 a 128 chars
+- Match regex: `^[a-z_]+(:[A-Za-z0-9_-]{1,128})?$`
+- Pode ser scoped (`shelter_staff:club_abc`) ou simples (`adopter`)
+
+**Aplicação**: D-PERSONA-MULTI — garante que user não escreve
+personaKey malicioso.
+
+### D-V4-FIRESTORE-VALIDATION-PERSONAS-ENABLED
+
+Adicionado em `firestore.rules`: validação de `personas_enabled`:
+- Se presente e não-null: deve ser list
+- Tamanho: max 16 items
+- Cada item: string 1-128 chars
+- Cada item match regex `^[a-z_]+(:[A-Za-z0-9_-]{1,128})?$`
+
+**Aplicação**: D-PERSONA-MULTI — limita personas por user.
+
+### D-V4-ENABLE-PERSONA-VALIDATION
+
+`enablePersona(uid, personaKey)` no `personaService.js` agora
+valida `personaKey` antes de persistir:
+- Tipo deve estar em `ALL_PERSONAS`
+- Scoped personas (shelter_staff, community_staff, volunteer)
+  DEVEM ter scopeId
+
+**Aplicação**: D-PERSONA-MULTI — defense-in-depth (UI + service
++ rules).
+
+### D-V4-PERSONA-SELECTION-ARIA
+
+Botões de persona em `PersonaSelection.jsx` agora têm:
+- `aria-pressed={isSelected}` — indica estado de seleção
+- `aria-label="Selecionar persona {label}"` — descrição completa
+
+**Aplicação**: WCAG 2.1 Level AA — screen readers anunciam
+corretamente o estado.
+
+### D-V4-CHECKLIST-POS-MERGE
+
+Toda feature grande DEVE fazer **varredura completa pós-merge**
+(12 etapas):
+1. Bundle deployed (curl+grep)
+2. Tests (core + components + pages + modules)
+3. Lint (todos arquivos novos)
+4. Imports/exports (sem undefined)
+5. Firestore rules (regras de novos campos)
+6. Edge cases (null, undefined, empty)
+7. Feature flags (default OFF?)
+8. Hooks order (D-HOOKS-ORDER-PRESERVE)
+9. a11y (aria-* em todos botões/interativos)
+10. Legacy compat (não regrediu)
+11. Regressões (curl nas rotas antigas)
+12. Build (vite OK?)
+
+**Aplicação**: V4 encontrou 11 bugs em 12 etapas — 1 de segurança
+(firestore rules), 1 de validação (service), 8 de lint, 1 de a11y.
+
+---
+
 **Próxima leitura**: `docs/PLAN_PERSONAS_V4.md` (documento-guia
 completo da V4).

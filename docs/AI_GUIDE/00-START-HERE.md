@@ -11,7 +11,7 @@
 > 5. **O QUE** evitar (armadilhas comuns)
 > 6. **COMO** manter a documentação sempre atualizada
 >
-> **Última atualização**: 2026-07-31 (ciclo sw-v75..v91 VolunteerSignup)
+> **Última atualização**: 2026-08-04 (V4 PERSONAS implementado + hardening)
 
 ---
 
@@ -24,8 +24,9 @@
 | # | Documento | O que tem | Quando ler |
 |---|-----------|-----------|-----------|
 | 1 | `00-START-HERE.md` (este) | Meta-guia, índice, fluxo de trabalho | **SEMPRE** |
-| 2 | `11-CORE-DIRECTIVES.md` | Regras invioláveis, princípios, engineering HOT | **ANTES de qualquer mudança** |
+| 2 | `11-CORE-DIRECTIVES.md` | Regras invioláveis, princípios, engineering HOT, §24 V4 PERSONAS | **ANTES de qualquer mudança** |
 | 3 | `10-SCRUM.md` | Regra A (sync), Regra B (varredura), comandos | **SEMPRE após task concluída** |
+| 4 | `19-V4-PERSONAS-INDEX.md` | Índice V4 (Personas) — se for mexer no sistema de personas | **Se for V4** |
 
 ---
 
