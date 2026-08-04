@@ -35,6 +35,8 @@ import ClubThemedScope from '@/modules/organizations/components/ClubThemedScope'
 import { ShelterPetScopedTab } from '@/modules/organizations/components/ShelterPetScopedTab';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
+import { PERSONA_TYPE } from '@/core/domain/personas';
+import { useIsStaffPersonaActive } from '@/core/hooks/useStaffPersonaView';
 import ReportsTab from '@/modules/shelter/components/ReportsTab';
 import IndicatorsTab from '@/modules/shelter/components/IndicatorsTab';
 import { DashboardPage } from '@/modules/shelter/components/DashboardPage';
@@ -147,6 +149,9 @@ export default function OrganizationAdminPanel() {
   const { data: club, isLoading: loadingClub, error: clubError } = useClub(orgId);
   const { data: membership, isLoading: loadingMembership, error: membershipError } = useMyMembership(orgId);
   const [searchParams, setSearchParams] = useSearchParams();
+  // Item 7: no acesso de abrigo (persona shelter_staff) esconde os "escapes"
+  // para a visão pública — o usuário está no painel privado do abrigo.
+  const inShelterPersona = useIsStaffPersonaActive(PERSONA_TYPE.SHELTER_STAFF);
 
   // Shelter feature flags — `useFeatureFlag` retorna um booleano, NÃO um
   // tuple. Versões anteriores faziam `const [x] = useFeatureFlag(...)` e
@@ -390,11 +395,13 @@ export default function OrganizationAdminPanel() {
   return (
     <ClubThemedScope club={club} className={successClass}>
       <div className="flex flex-col gap-2">
-        <Button asChild variant="ghost" size="sm" className="self-start">
-          <Link to={`/organizacoes/${orgId}`}>
-            <ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para a ONG
-          </Link>
-        </Button>
+        {!inShelterPersona && (
+          <Button asChild variant="ghost" size="sm" className="self-start">
+            <Link to={`/organizacoes/${orgId}`}>
+              <ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para a ONG
+            </Link>
+          </Button>
+        )}
         <Breadcrumb
           items={[
             { label: 'Início', href: '/', icon: Home },
@@ -597,6 +604,8 @@ export default function OrganizationAdminPanel() {
 function OverviewTab({ club }) {
   const founded = parseTimestamp(club.created_at)?.getFullYear() ?? null;
   const { data: pets = [], isLoading: loadingPets } = useMyPets(club.id);
+  // Item 7: no acesso de abrigo, sem "escape" para a visão pública.
+  const inShelterPersona = useIsStaffPersonaActive(PERSONA_TYPE.SHELTER_STAFF);
   return (
     <div className="space-y-6">
       <div className="arena-stats-grid">
@@ -628,11 +637,13 @@ function OverviewTab({ club }) {
             <h3 className="arena-section-card-title">Sobre a organização</h3>
             <p className="arena-section-card-description">Descrição pública visível no diretório.</p>
           </div>
-          <Button asChild variant="ghost" size="sm">
-            <Link to={`/organizacoes/${club.id}`}>
-              Ver página pública <ChevronRight className="ml-1 h-3.5 w-3.5" />
-            </Link>
-          </Button>
+          {!inShelterPersona && (
+            <Button asChild variant="ghost" size="sm">
+              <Link to={`/organizacoes/${club.id}`}>
+                Ver página pública <ChevronRight className="ml-1 h-3.5 w-3.5" />
+              </Link>
+            </Button>
+          )}
         </div>
         <div className="arena-section-card-body">
           {club.description ? (

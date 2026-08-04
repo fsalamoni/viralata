@@ -42,6 +42,8 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import Seo from '@/components/Seo';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
+import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
+import { FEATURE_FLAG } from '@/core/featureFlags';
 import { useToast } from '@/components/ui/use-toast';
 import { cn } from '@/core/lib/utils';
 import { parseTimestamp } from '@/core/utils/timestamp';
@@ -404,6 +406,11 @@ export default function ClubDetailV3() {
   const isMember = Boolean(
     membership || (club?.created_by && user?.uid && club.created_by === user?.uid),
   );
+  // Item 4: esta é a visão PÚBLICA do abrigo. Com a V4 ligada, o usuário é
+  // tratado como adotante comum aqui — não entra no painel admin a partir
+  // desta página. A gestão passa pelo acesso de abrigo (persona shelter_staff,
+  // que já cai direto no painel). Com V4 off, mantém o atalho legacy.
+  const v4Enabled = useFeatureFlag(FEATURE_FLAG.V4_PERSONA_ENABLED);
   const isAdmin = Boolean(
     club && (isClubOwner(club, membership, user?.uid)
       || hasClubPermission(club, membership, CLUB_PERMISSION.TEAM, user?.uid)),
@@ -651,7 +658,7 @@ export default function ClubDetailV3() {
                 Voltar
               </Link>
             </Button>
-            {isMember && (
+            {isMember && !v4Enabled && (
               <Button
                 asChild
                 variant="ghost"

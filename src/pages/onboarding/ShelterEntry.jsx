@@ -22,8 +22,9 @@ import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { useActivePersona } from '@/core/hooks/useActivePersona';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
-import { PERSONA_TYPE } from '@/core/domain/personas';
+import { PERSONA_TYPE, buildPersonaKey } from '@/core/domain/personas';
 import { enablePersona } from '@/core/services/personaService';
+import { useJoinClub } from '@/modules/organizations/hooks/useClubs';
 import { logger } from '@/core/lib/logger';
 
 export function ShelterEntry() {
@@ -31,6 +32,7 @@ export function ShelterEntry() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { setActive: setActiveHook } = useActivePersona();
+  const joinClub = useJoinClub();
   const [mode, setMode] = useState(null); // null | 'code' | 'create'
   const [code, setCode] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -55,17 +57,17 @@ export function ShelterEntry() {
     setIsSubmitting(true);
     setError(null);
     try {
-      // TODO: chamar clubService.joinClubByCode(code)
-      // Por enquanto, mock — em produção real:
-      // const clubId = await joinClubByCode(code, user);
-      // await enablePersona(user.uid, `${PERSONA_TYPE.SHELTER_STAFF}:${clubId}`);
-      // await setActivePersonaFirestore(user.uid, `${PERSONA_TYPE.SHELTER_STAFF}:${clubId}`);
-      // navigate(`/organizacoes/${clubId}/admin`);
-      logger.warn('[ShelterEntry] joinClubByCode not yet implemented in V4', { code });
-      setError('Funcionalidade de ingressar por código será implementada em fase posterior.');
+      // Vincula o usuário à equipe do abrigo pelo código de convite e, em
+      // seguida, ativa a persona escopada ao abrigo — caindo direto no painel
+      // admin daquele abrigo (item 7: acesso de abrigo → painel privado).
+      const club = await joinClub.mutateAsync(code.trim());
+      const personaKey = buildPersonaKey(PERSONA_TYPE.SHELTER_STAFF, club.id);
+      await enablePersona(user.uid, personaKey);
+      await setActiveHook(personaKey);
+      navigate(`/organizacoes/${club.id}/admin`, { replace: true });
     } catch (err) {
       logger.error('[ShelterEntry] joinByCode failed:', err);
-      setError('Código inválido ou expirado. Verifique com o admin do abrigo.');
+      setError(err?.message || 'Código inválido ou expirado. Verifique com o admin do abrigo.');
     } finally {
       setIsSubmitting(false);
     }

@@ -15,6 +15,8 @@ import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
+import { PERSONA_TYPE } from '@/core/domain/personas';
+import { useIsStaffPersonaActive } from '@/core/hooks/useStaffPersonaView';
 import { useCommunity, useMyCommunityMembership, useDeleteCommunity } from '@/modules/communities/hooks/useCommunities';
 import { COMMUNITY_ROLE, COMMUNITY_PERMISSION } from '@/modules/communities/domain/constants';
 import { isCommunityOwner, hasCommunityPermission, hasAnyCommunityPermission } from '@/modules/communities/domain/permissions';
@@ -60,6 +62,9 @@ export default function CommunityAdminPanel() {
   const { data: membership, isLoading: loadingMembership } = useMyCommunityMembership(communityId);
   const [searchParams, setSearchParams] = useSearchParams();
   const deleteCommunity = useDeleteCommunity();
+  // Item 7: no acesso de comunidade esconde o "voltar à comunidade" — o
+  // usuário está no painel privado.
+  const inCommunityPersona = useIsStaffPersonaActive(PERSONA_TYPE.COMMUNITY_STAFF);
 
   // Flag de paridade ONG: liga o novo layout (4 abas no padrão ONG,
   // header com mais respiro, stat cards padronizados, danger zone
@@ -180,11 +185,13 @@ export default function CommunityAdminPanel() {
 
   return (
     <div className={successClass}>
-      <Button asChild variant="ghost" size="sm">
-        <Link to={`/comunidade/${communityId}`}>
-          <ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar à comunidade
-        </Link>
-      </Button>
+      {!inCommunityPersona && (
+        <Button asChild variant="ghost" size="sm">
+          <Link to={`/comunidade/${communityId}`}>
+            <ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar à comunidade
+          </Link>
+        </Button>
+      )}
 
       {/* Header do painel admin — `arena-panel-strong` (mesmo gradiente
           da plataforma) com padding generoso (`p-6 sm:p-10`). Espelha

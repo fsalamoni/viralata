@@ -12,9 +12,15 @@ import PageHero from '@/components/PageHero';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
+import { cn } from '@/core/lib/utils';
 
 export default function CommunitiesDirectory() {
   const pageHeroEnabled = useFeatureFlag(FEATURE_FLAG.PAGE_HERO_ENABLED);
+  // Item 5: o card "ingressar com código" pertence SOMENTE ao acesso de
+  // comunidade (persona community_staff, via /entrar/comunidade). Aqui é a
+  // visão PÚBLICA — com a V4 ligada, o usuário apenas VÊ e filtra comunidades.
+  const v4Enabled = useFeatureFlag(FEATURE_FLAG.V4_PERSONA_ENABLED);
+  const showJoinCode = !v4Enabled;
   const [communities, setCommunities] = useState([]);
   const [search, setSearch] = useState('');
   const [code, setCode] = useState('');
@@ -54,33 +60,35 @@ export default function CommunitiesDirectory() {
             }
           />
 
-          <section className="arena-section-card rounded-[2rem] border-white/80 bg-white/82">
-            <div className="arena-section-card-body p-6 sm:p-7">
-              <span className="arena-chip">Ingressar com código</span>
-              <h3 className="mt-4 text-2xl font-semibold text-foreground">Tem um convite?</h3>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                Digite o código compartilhado por um administrador para entrar em uma comunidade privada.
-              </p>
-              <form onSubmit={handleJoin} className="mt-5 flex flex-col gap-3 sm:flex-row">
-                <div className="relative flex-1">
-                  <Hash className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/70" />
-                  <Input
-                    value={code}
-                    onChange={(e) => setCode(e.target.value.toUpperCase())}
-                    placeholder="CÓDIGO"
-                    maxLength={12}
-                    className="pl-9 uppercase tracking-[0.2em]"
-                  />
-                </div>
-                <Button type="submit" disabled={!code.trim()}>
-                  Ingressar
-                </Button>
-              </form>
-            </div>
-          </section>
+          {showJoinCode && (
+            <section className="arena-section-card rounded-[2rem] border-white/80 bg-white/82">
+              <div className="arena-section-card-body p-6 sm:p-7">
+                <span className="arena-chip">Ingressar com código</span>
+                <h3 className="mt-4 text-2xl font-semibold text-foreground">Tem um convite?</h3>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                  Digite o código compartilhado por um administrador para entrar em uma comunidade privada.
+                </p>
+                <form onSubmit={handleJoin} className="mt-5 flex flex-col gap-3 sm:flex-row">
+                  <div className="relative flex-1">
+                    <Hash className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/70" />
+                    <Input
+                      value={code}
+                      onChange={(e) => setCode(e.target.value.toUpperCase())}
+                      placeholder="CÓDIGO"
+                      maxLength={12}
+                      className="pl-9 uppercase tracking-[0.2em]"
+                    />
+                  </div>
+                  <Button type="submit" disabled={!code.trim()}>
+                    Ingressar
+                  </Button>
+                </form>
+              </div>
+            </section>
+          )}
         </>
       ) : (
-        <section className="grid grid-cols-1 gap-6 xl:grid-cols-[1.08fr,0.92fr]">
+        <section className={cn('grid grid-cols-1 gap-6', showJoinCode && 'xl:grid-cols-[1.08fr,0.92fr]')}>
           <section className="arena-section-card arena-panel-strong overflow-hidden rounded-[1.25rem] border-0 sm:rounded-[2rem]">
             <div className="arena-section-card-body relative p-5 sm:p-8 lg:p-10">
               <div className="relative max-w-2xl">
@@ -102,30 +110,32 @@ export default function CommunitiesDirectory() {
             </div>
           </section>
 
-          <section className="arena-section-card rounded-[2rem] border-white/80 bg-white/82">
-            <div className="arena-section-card-body p-6 sm:p-7">
-              <span className="arena-chip">Ingressar com código</span>
-              <h3 className="mt-4 text-2xl font-semibold text-foreground">Tem um convite?</h3>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                Digite o código compartilhado por um administrador para entrar em uma comunidade privada.
-              </p>
-              <form onSubmit={handleJoin} className="mt-5 flex flex-col gap-3 sm:flex-row">
-                <div className="relative flex-1">
-                  <Hash className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/70" />
-                  <Input
-                    value={code}
-                    onChange={(e) => setCode(e.target.value.toUpperCase())}
-                    placeholder="CÓDIGO"
-                    maxLength={12}
-                    className="pl-9 uppercase tracking-[0.2em]"
-                  />
-                </div>
-                <Button type="submit" disabled={!code.trim()}>
-                  Ingressar
-                </Button>
-              </form>
-            </div>
-          </section>
+          {showJoinCode && (
+            <section className="arena-section-card rounded-[2rem] border-white/80 bg-white/82">
+              <div className="arena-section-card-body p-6 sm:p-7">
+                <span className="arena-chip">Ingressar com código</span>
+                <h3 className="mt-4 text-2xl font-semibold text-foreground">Tem um convite?</h3>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                  Digite o código compartilhado por um administrador para entrar em uma comunidade privada.
+                </p>
+                <form onSubmit={handleJoin} className="mt-5 flex flex-col gap-3 sm:flex-row">
+                  <div className="relative flex-1">
+                    <Hash className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/70" />
+                    <Input
+                      value={code}
+                      onChange={(e) => setCode(e.target.value.toUpperCase())}
+                      placeholder="CÓDIGO"
+                      maxLength={12}
+                      className="pl-9 uppercase tracking-[0.2em]"
+                    />
+                  </div>
+                  <Button type="submit" disabled={!code.trim()}>
+                    Ingressar
+                  </Button>
+                </form>
+              </div>
+            </section>
+          )}
         </section>
       )}
 

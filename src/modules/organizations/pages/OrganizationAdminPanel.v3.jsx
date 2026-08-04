@@ -40,6 +40,8 @@ import { Breadcrumb } from '@/components/ui/breadcrumb';
 import Seo from '@/components/Seo';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { toast } from 'sonner';
+import { PERSONA_TYPE } from '@/core/domain/personas';
+import { useIsStaffPersonaActive } from '@/core/hooks/useStaffPersonaView';
 import { useClub, useMyMembership } from '@/modules/organizations/hooks/useClubs';
 import { useMyPets } from '@/modules/pets/hooks/usePets';
 import { CLUB_PERMISSION } from '@/modules/organizations/domain/constants';
@@ -309,6 +311,9 @@ function OverviewTab({ club, pets, user, navigate }) {
   const founded = parseTimestamp(club?.created_at)?.getFullYear() ?? null;
   const [search, setSearch] = useState('');
   const [activeFilter, setActiveFilter] = useState('all');
+  // Item 7: no acesso de abrigo (persona shelter_staff), o usuário está no
+  // painel privado — sem "escape" para a visão pública.
+  const inShelterPersona = useIsStaffPersonaActive(PERSONA_TYPE.SHELTER_STAFF);
 
   const QUICK_ACTIONS = [
     { id: 'animals', icon: PawPrint, title: 'Pets', desc: 'Cadastrar ou gerenciar animais', color: 'amber', group: 'operational' },
@@ -518,12 +523,14 @@ function OverviewTab({ club, pets, user, navigate }) {
               para que visitantes conheçam o abrigo.
             </p>
           )}
-          <Button asChild variant="ghost" className="mt-3 w-full">
-            <Link to={`/organizacoes/${club?.id}`}>
-              Ver página pública
-              <ChevronRight className="ml-1 h-4 w-4" aria-hidden="true" />
-            </Link>
-          </Button>
+          {!inShelterPersona && (
+            <Button asChild variant="ghost" className="mt-3 w-full">
+              <Link to={`/organizacoes/${club?.id}`}>
+                Ver página pública
+                <ChevronRight className="ml-1 h-4 w-4" aria-hidden="true" />
+              </Link>
+            </Button>
+          )}
         </div>
       </motion.div>
     </div>
@@ -562,6 +569,10 @@ export default function OrganizationAdminPanelV3() {
   const shelterFoster = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_FOSTER);
   const shelterDonations = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_DONATIONS);
   const shelterFinance = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_FINANCE);
+
+  // Item 7: no acesso de abrigo (persona shelter_staff), esconde os "escapes"
+  // para a visão pública — o usuário está no painel privado do abrigo.
+  const inShelterPersona = useIsStaffPersonaActive(PERSONA_TYPE.SHELTER_STAFF);
 
   const isLoading = loadingClub || loadingMembership;
   const owner = isClubOwner(club, membership, user?.uid);
@@ -761,21 +772,30 @@ export default function OrganizationAdminPanelV3() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      {/* Breadcrumb + back */}
+      {/* Breadcrumb + back. No acesso de abrigo (item 7) não há "voltar para a
+          ONG" nem breadcrumb de visão pública — o usuário já está no painel. */}
       <div className="flex flex-col gap-2">
-        <Button asChild variant="ghost" size="sm" className="self-start">
-          <Link to={`/organizacoes/${orgId}`}>
-            <ArrowLeft className="mr-1.5 h-4 w-4" aria-hidden="true" />
-            Voltar para a ONG
-          </Link>
-        </Button>
+        {!inShelterPersona && (
+          <Button asChild variant="ghost" size="sm" className="self-start">
+            <Link to={`/organizacoes/${orgId}`}>
+              <ArrowLeft className="mr-1.5 h-4 w-4" aria-hidden="true" />
+              Voltar para a ONG
+            </Link>
+          </Button>
+        )}
         <Breadcrumb
-          items={[
-            { label: 'Início', href: '/', icon: Home },
-            { label: 'Organizações', href: '/organizacoes' },
-            { label: club.name || 'Organização', href: `/organizacoes/${orgId}` },
-            { label: 'Administração' },
-          ]}
+          items={inShelterPersona
+            ? [
+              { label: 'Meu abrigo', icon: Home },
+              { label: club.name || 'Organização' },
+              { label: 'Administração' },
+            ]
+            : [
+              { label: 'Início', href: '/', icon: Home },
+              { label: 'Organizações', href: '/organizacoes' },
+              { label: club.name || 'Organização', href: `/organizacoes/${orgId}` },
+              { label: 'Administração' },
+            ]}
         />
       </div>
 

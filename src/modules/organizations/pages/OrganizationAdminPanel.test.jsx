@@ -75,6 +75,13 @@ vi.mock('@/core/lib/useArenaPageClasses', () => ({
   useArenaPageClasses: (cls) => cls,
 }));
 
+// Item 7: o painel usa useIsStaffPersonaActive para esconder os "escapes"
+// para a visão pública. Este teste cobre a renderização legacy (V4 off),
+// então o hook retorna false — isola o painel do subsistema de personas.
+vi.mock('@/core/hooks/useStaffPersonaView', () => ({
+  useIsStaffPersonaActive: () => false,
+}));
+
 vi.mock('@/core/featureFlags', () => ({
   FEATURE_FLAG: new Proxy({}, { get: (_, k) => k }),
   FEATURE_FLAG_META: {},
