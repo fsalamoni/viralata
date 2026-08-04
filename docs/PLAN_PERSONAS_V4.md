@@ -1638,4 +1638,104 @@ via Firebase Remote Config.
 
 ---
 
-**FIM do guia de estruturação e planejamento da V4 — v1.1 (DEFINIÇÕES APROVADAS + IMPLEMENTAÇÃO CONCLUÍDA 2026-08-04)**
+## §18. Diagnóstico Pós-Uso e Arquitetura de Conclusão (Claude, 2026-08-04)
+
+> O §17 diz "IMPLEMENTAÇÃO CONCLUÍDA", mas ao usar a plataforma o
+> solicitante relatou: (a) o switch existe mas **todas as visões/
+> funcionalidades continuam iguais**; (b) sendo **proprietário de abrigo e
+> de comunidade, esses acessos NÃO apareceram** no switch. Investigação do
+> código confirma: **o scaffolding foi construído mas nunca foi integrado à
+> detecção real de personas, à navegação e ao isolamento de visão.** O que
+> existe hoje muda (no máximo) a barra inferior — não a experiência.
+
+### §18.1. Causa-raiz (com evidência)
+
+1. **Sinais nunca alimentados.** `PersonaSwitcher.jsx:41` (e todos os
+   consumidores) chamam `useActivePersona()` **sem `signals`**. Com
+   `signals = {}`, `detectAvailablePersonas` (`personaService.js:89`) só
+   retorna `adopter` (+ `donor` se `userProfile.donor_profile`, +
+   `platform_admin` se role). **shelter_staff / community_staff / volunteer
+   NUNCA são detectados** → o switch não mostra os acessos de abrigo/
+   comunidade/voluntário. Explica o sintoma (b).
+
+2. **Camada de dados incompleta.**
+   - `listMyClubs(uid)` (`clubService.js`) só lê `club_members where
+     user_id==uid` — **NÃO inclui clubes onde o user é DONO** (`created_by`)
+     sem doc de membership (caso do proprietário). O dono de um abrigo não
+     aparece na própria lista.
+   - **NÃO existe** serviço que liste as comunidades do user (só
+     `useMyCommunityMembership(id)`, single). Logo, `community_staff` é
+     estruturalmente indetectável.
+
+3. **Trocar de persona não muda nada.** `Layout.jsx` — o
+   `onSelectPersona` do `PersonaSwitcher` só faz `logger.info(...)`; **não
+   navega**. `PersonaGate` existe mas **não envolve nenhuma rota em
+   `App.jsx`** (0 rotas protegidas). O `PersonaBottomTabBar` até tem tabs
+   distintas por persona (isso está feito), mas aponta para rotas que
+   renderizam igual para todos. Explica o sintoma (a).
+
+4. **Flags.** `V4_PERSONA_ENABLED` default = **false**. Para usuários
+   comuns a V4 está desligada (experiência clássica). O switch aparece para
+   o solicitante porque ele ligou as flags via AdminFlags (override). Ou
+   seja: nada disso está ativo para o público — e mesmo ligado, é hollow.
+
+### §18.2. Camada de integração que falta (o "como atingir o resultado")
+
+Ordem sugerida — cada fatia é testável isoladamente e fica atrás das flags
+`V4_PERSONA_*` (default OFF), então zero impacto até ligar.
+
+**Fatia A — Detecção real das personas (data layer).**
+- Estender `listMyClubs(uid)` para unir `club_members` **+ clubes com
+  `created_by == uid`** (dedup). (mesma lógica de dono do
+  `firestore.rules::isClubOwnerUid`.)
+- Criar `listMyCommunities(uid)`: `community_members where user_id==uid`
+  **+ communities where created_by==uid** (dedup) + hook `useMyCommunities`.
+- `useActivePersona` passa a **buscar os sinais internamente** (via
+  `useMyClubs`, `useMyCommunities`, `useVolunteerProfile`,
+  contagem de pets) em vez de depender de `options.signals`. Assim TODO
+  consumidor recebe as personas reais sem cada caller precisar montar
+  sinais. (Guardar as queries por `enabled: v4Enabled` para não custar nada
+  com a V4 off.)
+
+**Fatia B — A troca de persona muda a experiência.**
+- `personaHome(persona)` → rota-home: `adopter`→`/feed`; `donor`→`/meus-pets`
+  (ou `/pets/new` se 0 pets); `shelter_staff:clubId`→`/organizacoes/{clubId}/admin`;
+  `community_staff:communityId`→`/comunidade/{communityId}/admin`;
+  `volunteer`→`/perfil/voluntario`; `platform_admin`→`/admin`.
+- `onSelectPersona` (Layout) e a `PersonaSelection` passam a **navegar** para
+  `personaHome(p)` após `setActive`. O `PersonaBottomTabBar` já lê o
+  `scopeId` da persona ativa — confirmar que recebe o clubId/communityId.
+
+**Fatia C — Isolamento de visão (gradual, atrás de flag).**
+- Envolver as rotas admin com `PersonaGate` em `App.jsx`:
+  `/organizacoes/:orgId/admin` exige `shelter_staff` (scope = orgId) OU
+  `platform_admin`; `/comunidade/:id/admin` exige `community_staff`;
+  `/meus-pets` e `/pets/new` (contexto doador) exige `donor`; etc. Como
+  `PersonaGate` é passthrough com a flag OFF (`PersonaGate.jsx:75`), não
+  quebra nada até ligar.
+- Home dinâmica: com a V4 ligada, `/` redireciona para `personaHome(ativa)`.
+
+**Fatia D — Onboarding automático por persona (1º acesso de cada).**
+- Ao ativar uma persona sem dados, rotear para o onboarding dela (telas já
+  existem): `donor` sem `donor_profile` → `DonorOnboarding`; escolher
+  "abrigo" sem vínculo → `ShelterEntry` (código OU criar); idem comunidade.
+- **Proprietário** de abrigo/comunidade: a persona já entra "com
+  onboarding" (é dono) → vai direto ao painel.
+
+### §18.3. Recomendação
+
+Concluir por fatias verificáveis, começando por **A + B** — que sozinhas já
+entregam o núcleo observável que o solicitante pediu: o switch mostra as
+personas REAIS do user (incl. o abrigo e a comunidade que ele possui) e
+trocar de persona leva à home daquela persona, com a barra inferior
+correspondente. **C** e **D** adicionam o isolamento de visão e o
+onboarding por persona. Tudo atrás das flags (default OFF).
+
+> **Correção de registro**: o §17 ("IMPLEMENTAÇÃO CONCLUÍDA") descreve os
+> COMPONENTES criados, mas a feature **não está funcional** no sentido do
+> objetivo ("visão e acesso distintos por persona"): falta a camada de
+> integração A–D acima. Este §18 é o caminho para concluí-la.
+
+---
+
+**FIM do guia de estruturação e planejamento da V4 — v1.2 (DIAGNÓSTICO PÓS-USO + ARQUITETURA DE CONCLUSÃO 2026-08-04)**
