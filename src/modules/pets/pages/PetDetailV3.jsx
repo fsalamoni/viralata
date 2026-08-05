@@ -326,7 +326,7 @@ export default function PetDetailV3() {
       };
       const conversationId = await getOrCreateDirectConversation(user, userProfile, other, {
         pet_id: petId,
-        pet_title: pet.title || pet.name,
+        pet_title: pet.name || pet.title,
       });
       navigate(`/chat?c=${conversationId}`);
     } catch (e) {
@@ -339,9 +339,9 @@ export default function PetDetailV3() {
   async function handleShare() {
     const shareUrl = `${window.location.origin}/pet/${petId}`;
     await shareFromNode(shareCardRef.current, {
-      fileName: `${(pet.name || pet.title || 'pet').toLowerCase().replace(/\s+/g, '-')}.png`,
-      title: pet.title || pet.name,
-      text: `Conheça ${pet.name || pet.title} no Viralata! ${shareUrl}`,
+      fileName: `${(pet.name || 'pet').toLowerCase().replace(/\s+/g, '-')}.png`,
+      title: pet.name || 'Pet para adoção',
+      text: `Conheça ${pet.name || 'este pet'} no Viralata! ${shareUrl}`,
     });
   }
 
@@ -382,12 +382,11 @@ export default function PetDetailV3() {
       >
         <div className="flex flex-wrap items-start justify-between gap-2">
           <div className="min-w-0 flex-1">
+            {/* Nome é público; Título é interno do abrigo (não aparece aqui).
+                Fallback para pets legados sem nome. */}
             <h1 className="text-[26px] font-extrabold tracking-[-0.01em] text-foreground">
-              {pet.title || pet.name}
+              {pet.name || pet.title || 'Pet para adoção'}
             </h1>
-            {pet.name && pet.title && pet.name !== pet.title && (
-              <p className="text-[13px] text-muted-foreground">Nome: {pet.name}</p>
-            )}
             <div className="mt-2">
               <PetIDStrip pet={pet} />
             </div>
@@ -404,12 +403,15 @@ export default function PetDetailV3() {
           {pet.species && <Badge variant="secondary" className="text-[11.5px]">{SPECIES_LABEL[pet.species]}</Badge>}
           {pet.size && <Badge variant="secondary" className="text-[11.5px]">{SIZE_LABEL[pet.size]}</Badge>}
           {pet.age_group && <Badge variant="secondary" className="text-[11.5px]">{AGE_LABEL[pet.age_group]}</Badge>}
+          {pet.apparent_age_years != null && pet.apparent_age_years !== '' && (
+            <Badge variant="secondary" className="text-[11.5px]">≈ {pet.apparent_age_years} ano(s)</Badge>
+          )}
           {pet.gender && (
             <Badge variant="secondary" className="text-[11.5px]">
               {pet.gender === 'male' ? 'Macho' : 'Fêmea'}
             </Badge>
           )}
-          {pet.breed && <Badge variant="secondary" className="text-[11.5px]">{pet.breed}</Badge>}
+          {/* Raça é interno do abrigo (privado) — não exibida publicamente. */}
           {pet.energy_level && (
             <Badge variant="outline" className="text-[11.5px]">
               <Activity className="mr-1 h-3 w-3" /> Energia: {ENERGY_LABEL[pet.energy_level]}

@@ -50,7 +50,7 @@ export default function PetCard({ pet }) {
           <div className="relative aspect-[1.3] overflow-hidden bg-secondary">
             <img
               src={photo}
-              alt={pet.title || pet.name || 'Pet para adoção'}
+              alt={pet.name || pet.title || 'Pet para adoção'}
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               loading="lazy"
             />
@@ -68,7 +68,7 @@ export default function PetCard({ pet }) {
 
           <CardHeader size="pet" className="space-y-1.5">
             <CardTitle size="pet" asChild>
-              <h3>{pet.title || pet.name || 'Pet para adoção'}</h3>
+              <h3>{pet.name || pet.title || 'Pet para adoção'}</h3>
             </CardTitle>
             <div className="flex flex-wrap gap-1">
               {pet.size && (
