@@ -120,7 +120,7 @@ export default function Home() {
       </section>
 
       {/* Portas de entrada por acesso/persona (V4). Gated por
-          V4_PERSONA_SELECTION — some com a flag OFF. Permite entrar
+          V4_PERSONA_ENABLED — some com a V4 desligada. Permite entrar
           direto no acesso desejado sem passar como adotante. */}
       <PersonaEntryGrid />
 
