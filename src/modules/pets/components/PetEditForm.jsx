@@ -24,6 +24,11 @@ import {
 import { useToast } from '@/components/ui/use-toast';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { useUpdatePet } from '../hooks/usePets';
+import {
+  CURRENT_LOCATIONS, CURRENT_LOCATION_LABELS, daysInShelter,
+} from '@/modules/shelter/domain/core/animal';
+import { assignRescueNumber } from '@/modules/shelter/services/shelterAnimalService';
+import { logger } from '@/core/lib/logger';
 
 const SPECIES = [
   { value: 'dog', label: 'Cachorro' },
@@ -79,6 +84,20 @@ const INITIAL = {
   national_pet_id: '',
   microchip: '',
   adoption_requirements: '',
+  // ── Resgate / operacional INTERNO do abrigo (não vão para a página pública) ──
+  rescue_name: '',
+  rescue_date: '',
+  rescue_responsible_name: '',
+  rescue_address: '',
+  rescue_city: '',
+  rescue_state: '',
+  rescue_lat: '',
+  rescue_lng: '',
+  birth_date: '',
+  current_location: '',
+  current_location_notes: '',
+  legal_process_number: '',
+  observations: '',
 };
 
 export default function PetEditForm({ open, onOpenChange, pet }) {
@@ -116,6 +135,19 @@ export default function PetEditForm({ open, onOpenChange, pet }) {
         national_pet_id: pet.national_pet_id || '',
         microchip: pet.microchip || '',
         adoption_requirements: pet.adoption_requirements || '',
+        rescue_name: pet.rescue_name || '',
+        rescue_date: (pet.rescue_date || '').slice(0, 10),
+        rescue_responsible_name: pet.rescue_responsible_name || '',
+        rescue_address: pet.rescue_address || '',
+        rescue_city: pet.rescue_city || '',
+        rescue_state: pet.rescue_state || '',
+        rescue_lat: pet.rescue_lat ?? '',
+        rescue_lng: pet.rescue_lng ?? '',
+        birth_date: (pet.birth_date || '').slice(0, 10),
+        current_location: pet.current_location || '',
+        current_location_notes: pet.current_location_notes || '',
+        legal_process_number: pet.legal_process_number || '',
+        observations: pet.observations || '',
       });
       setErrors({});
     }
@@ -141,18 +173,45 @@ export default function PetEditForm({ open, onOpenChange, pet }) {
   async function handleSubmit(e) {
     e?.preventDefault();
     if (!validate()) return;
+    const toNum = (v) => {
+      if (v === '' || v === null || v === undefined) return null;
+      const n = Number(v);
+      return Number.isFinite(n) ? n : null;
+    };
     const updates = {
       ...data,
       age_months: data.age_months ? Number(data.age_months) : null,
+      rescue_lat: toNum(data.rescue_lat),
+      rescue_lng: toNum(data.rescue_lng),
+      rescue_date: data.rescue_date || null,
+      birth_date: data.birth_date || null,
     };
+    // Data do status (interno): registra quando o status mudou.
+    if (data.status !== pet?.status) {
+      updates.status_changed_at = new Date().toISOString();
+    }
     // Remover pet_code do updates se o user não mudou (write-once pode ser)
     if (updates.pet_code === pet?.pet_code) delete updates.pet_code;
     try {
       await updateMut.mutateAsync({ petId: pet.id, updates });
+      // Backfill do número de resgate: pets de abrigo sem número recebem um
+      // (sequencial por abrigo/espécie/ano). Não bloqueia o sucesso.
+      if (pet?.owner_type === 'organization' && pet?.owner_id && !pet?.rescue_number) {
+        try {
+          await assignRescueNumber(pet.id, {
+            clubId: pet.owner_id,
+            species: data.species,
+            actor: { uid: user?.uid, email: user?.email },
+            date: updates.rescue_date || undefined,
+          });
+        } catch (err) {
+          logger.warn('[PetEditForm] assignRescueNumber falhou (não bloqueante):', err);
+        }
+      }
       toast.success('Pet atualizado');
       onOpenChange(false);
     } catch (err) {
-      console.error(err);
+      logger.error('[PetEditForm] update failed:', err);
       toast.error(err?.message || 'Erro ao atualizar pet');
     }
   }
@@ -299,6 +358,105 @@ export default function PetEditForm({ open, onOpenChange, pet }) {
                 <Label htmlFor="state">UF</Label>
                 <Input id="state" value={data.state} onChange={(e) => setField('state', e.target.value.toUpperCase().substring(0, 2))} maxLength={2} placeholder="RS" />
               </div>
+            </div>
+          </fieldset>
+
+          {/* Resgate / Operacional (interno do abrigo) */}
+          <fieldset className="space-y-3 rounded-xl border border-border p-4">
+            <legend className="px-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">Resgate / Operacional (interno)</legend>
+            <p className="rounded-md bg-muted/40 px-3 py-2 text-[11px] text-muted-foreground">
+              Dados internos do abrigo — não aparecem na página pública do pet.
+            </p>
+            {/* Número de resgate + dias no abrigo (read-only) */}
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Número do resgate</Label>
+                <div className="flex h-10 items-center rounded-md border border-input bg-muted/40 px-3 text-sm font-semibold tracking-wide">
+                  {pet?.rescue_number || '— (gerado ao salvar)'}
+                </div>
+              </div>
+              <div>
+                <Label>Dias no abrigo</Label>
+                <div className="flex h-10 items-center rounded-md border border-input bg-muted/40 px-3 text-sm">
+                  {daysInShelter(pet) ?? '—'}
+                </div>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label htmlFor="rescue_name">Nome do resgate</Label>
+                <Input id="rescue_name" value={data.rescue_name} onChange={(e) => setField('rescue_name', e.target.value)} placeholder="Título do resgate" maxLength={200} />
+              </div>
+              <div>
+                <Label htmlFor="rescue_date">Data do resgate</Label>
+                <Input id="rescue_date" type="date" value={data.rescue_date} onChange={(e) => setField('rescue_date', e.target.value)} max={new Date().toISOString().split('T')[0]} />
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="rescue_responsible_name">Responsável pelo resgate</Label>
+              <Input id="rescue_responsible_name" value={data.rescue_responsible_name} onChange={(e) => setField('rescue_responsible_name', e.target.value)} placeholder="Nome de quem resgatou" maxLength={120} />
+            </div>
+            <div>
+              <Label htmlFor="rescue_address">Local do resgate</Label>
+              <Input id="rescue_address" value={data.rescue_address} onChange={(e) => setField('rescue_address', e.target.value)} placeholder="Rua, bairro, ponto de referência" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label htmlFor="rescue_city">Cidade do resgate</Label>
+                <Input id="rescue_city" value={data.rescue_city} onChange={(e) => setField('rescue_city', e.target.value)} />
+              </div>
+              <div>
+                <Label htmlFor="rescue_state">UF do resgate</Label>
+                <Input id="rescue_state" value={data.rescue_state} onChange={(e) => setField('rescue_state', e.target.value.toUpperCase().substring(0, 2))} maxLength={2} placeholder="RS" />
+              </div>
+            </div>
+            <div className="grid grid-cols-[1fr_1fr_auto] items-end gap-3">
+              <div>
+                <Label htmlFor="rescue_lat">Latitude (GPS)</Label>
+                <Input id="rescue_lat" type="number" step="any" value={data.rescue_lat} onChange={(e) => setField('rescue_lat', e.target.value)} placeholder="-30.0346" />
+              </div>
+              <div>
+                <Label htmlFor="rescue_lng">Longitude (GPS)</Label>
+                <Input id="rescue_lng" type="number" step="any" value={data.rescue_lng} onChange={(e) => setField('rescue_lng', e.target.value)} placeholder="-51.2177" />
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  if (!navigator.geolocation) { toast.error('GPS indisponível neste dispositivo.'); return; }
+                  navigator.geolocation.getCurrentPosition(
+                    (pos) => { setField('rescue_lat', String(pos.coords.latitude)); setField('rescue_lng', String(pos.coords.longitude)); },
+                    () => toast.error('Não foi possível obter a localização.'),
+                  );
+                }}
+              >
+                Minha localização
+              </Button>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label htmlFor="birth_date">Data de nascimento (se conhecida)</Label>
+                <Input id="birth_date" type="date" value={data.birth_date} onChange={(e) => setField('birth_date', e.target.value)} max={new Date().toISOString().split('T')[0]} />
+              </div>
+              <div>
+                <Label htmlFor="current_location">Localização atual</Label>
+                <Select value={data.current_location || undefined} onValueChange={(v) => setField('current_location', v)}>
+                  <SelectTrigger id="current_location"><SelectValue placeholder="Onde o animal está" /></SelectTrigger>
+                  <SelectContent>{CURRENT_LOCATIONS.map((loc) => <SelectItem key={loc} value={loc}>{CURRENT_LOCATION_LABELS[loc] || loc}</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="current_location_notes">Detalhe da localização atual</Label>
+              <Input id="current_location_notes" value={data.current_location_notes} onChange={(e) => setField('current_location_notes', e.target.value)} placeholder="Ex: lar temporário da Maria; clínica VetX" maxLength={280} />
+            </div>
+            <div>
+              <Label htmlFor="legal_process_number">Processo judicial (se houver)</Label>
+              <Input id="legal_process_number" value={data.legal_process_number} onChange={(e) => setField('legal_process_number', e.target.value)} placeholder="Número do processo" maxLength={60} />
+            </div>
+            <div>
+              <Label htmlFor="observations">Observações internas</Label>
+              <Textarea id="observations" value={data.observations} onChange={(e) => setField('observations', e.target.value)} rows={3} placeholder="Observações internas sobre o animal" />
             </div>
           </fieldset>
 
