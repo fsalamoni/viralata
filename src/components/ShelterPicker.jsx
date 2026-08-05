@@ -9,7 +9,7 @@
  */
 
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Building2, ChevronDown, Check, Plus } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { useActivePersona } from '@/core/hooks/useActivePersona';
@@ -17,11 +17,13 @@ import { useUserClubMemberships } from '@/modules/organizations/hooks/useUserClu
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
 import { PERSONA_TYPE, buildPersonaKey } from '@/core/domain/personas';
+import { isPersonaGatewayPath } from '@/core/domain/personaGatewayRoutes';
 import { cn } from '@/core/lib/utils';
 
 export function ShelterPicker() {
   const v4Enabled = useFeatureFlag(FEATURE_FLAG.V4_PERSONA_SHELTER_STAFF);
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
   const { active, setActive } = useActivePersona();
   const { data: memberships = [], isLoading } = useUserClubMemberships(user?.uid);
@@ -46,6 +48,9 @@ export function ShelterPicker() {
   if (active && active.type !== PERSONA_TYPE.SHELTER_STAFF) return null;
   if (isLoading) return null;
   if (memberships.length < 1) return null;
+  // Em rotas gateway (ex.: /entrar/abrigo) o usuário ainda não entrou em um
+  // abrigo — não exibe a indicação do abrigo ativo ao lado do switch.
+  if (isPersonaGatewayPath(location.pathname)) return null;
 
   const activeClub = memberships.find((m) => m.club?.id === active?.scopeId)?.club;
 

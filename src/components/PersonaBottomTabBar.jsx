@@ -21,6 +21,7 @@ import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { useUiPreferences, BOTTOM_TAB_MODES } from '@/core/hooks/useUiPreferences';
 import { FEATURE_FLAG } from '@/core/featureFlags';
 import { getPersonaCapabilities } from '@/core/domain/personaCapabilities';
+import { isPersonaGatewayPath } from '@/core/domain/personaGatewayRoutes';
 import { cn } from '@/core/lib/utils';
 
 const BOTTOM_TAB_HEIGHT_VAR = '--bottom-tab-bar-height';
@@ -66,10 +67,13 @@ export function PersonaBottomTabBar() {
 
   const mode = uiPrefs?.bottomTabBarMode || BOTTOM_TAB_MODES.FIXED;
 
-  // Items por persona — da fonte única personaCapabilities.
+  // Items por persona — da fonte única personaCapabilities. Em rotas gateway
+  // (ex.: /entrar/abrigo) o usuário ainda não entrou em um escopo: sem
+  // navegação escopada na barra inferior (mantém a paridade com a topbar).
+  const isGateway = isPersonaGatewayPath(location.pathname);
   const items = React.useMemo(
-    () => getPersonaCapabilities(active).bottomNav || [],
-    [active],
+    () => (isGateway ? [] : getPersonaCapabilities(active).bottomNav || []),
+    [active, isGateway],
   );
 
   // Mede altura

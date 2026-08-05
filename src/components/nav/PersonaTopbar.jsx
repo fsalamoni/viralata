@@ -15,6 +15,7 @@ import { User, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useActivePersona } from '@/core/hooks/useActivePersona';
 import { getPersonaCapabilities } from '@/core/domain/personaCapabilities';
+import { isPersonaGatewayPath } from '@/core/domain/personaGatewayRoutes';
 import { cn } from '@/core/lib/utils';
 
 // Atalhos universais (toda persona precisa) — acrescentados ao menu mobile.
@@ -27,7 +28,11 @@ const UNIVERSAL_MOBILE_ITEMS = [
 export function PersonaTopbarNav() {
   const { active } = useActivePersona();
   const location = useLocation();
-  const items = getPersonaCapabilities(active).topbarNav || [];
+  // Em rotas gateway (ex.: /entrar/abrigo) o usuário ainda não entrou em um
+  // escopo — não mostra a navegação escopada (Painel/Pets/Mural).
+  const items = isPersonaGatewayPath(location.pathname)
+    ? []
+    : getPersonaCapabilities(active).topbarNav || [];
 
   return (
     <nav className="hidden md:flex items-center gap-1" aria-label="Navegação principal">
@@ -74,7 +79,11 @@ export function PersonaHeaderCTAs() {
 export function PersonaMobileNav({ onNavigate }) {
   const { active } = useActivePersona();
   const location = useLocation();
-  const items = [...(getPersonaCapabilities(active).topbarNav || []), ...UNIVERSAL_MOBILE_ITEMS];
+  // Em rotas gateway, só os atalhos universais (sem navegação escopada).
+  const scopedItems = isPersonaGatewayPath(location.pathname)
+    ? []
+    : (getPersonaCapabilities(active).topbarNav || []);
+  const items = [...scopedItems, ...UNIVERSAL_MOBILE_ITEMS];
   return (
     <>
       {items.map(({ label, to, icon: Icon }) => {
