@@ -98,20 +98,14 @@ export function ShelterEntry() {
     }
   };
 
-  const handleCreate = async () => {
-    setIsSubmitting(true);
+  const handleCreate = () => {
+    // Abre o formulário de criação de abrigo. NÃO habilitamos a persona
+    // shelter_staff aqui: ela é escopada (clubId) e o abrigo ainda não existe
+    // — enablePersona rejeitaria persona escopada sem scopeId. A persona é
+    // ativada após a criação, quando já existe o clubId (o criador vira admin
+    // e o abrigo passa a aparecer em "Seus abrigos").
     setError(null);
-    try {
-      // Garante que a persona está habilitada antes de criar
-      await enablePersona(user.uid, PERSONA_TYPE.SHELTER_STAFF);
-      await setActiveHook(PERSONA_TYPE.SHELTER_STAFF);
-      navigate('/organizacoes/criar', { state: { from: 'v4-persona' } });
-    } catch (err) {
-      logger.error('[ShelterEntry] create flow failed:', err);
-      setError('Não foi possível iniciar o fluxo de criação.');
-    } finally {
-      setIsSubmitting(false);
-    }
+    navigate('/organizacoes/criar', { state: { from: 'v4-persona' } });
   };
 
   return (
