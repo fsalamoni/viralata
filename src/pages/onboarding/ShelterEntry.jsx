@@ -1,12 +1,14 @@
 /**
  * @fileoverview ShelterEntry — entrada de Membro de Abrigo (V4).
  *
- * D-PERSONA-SHELTER-ENTRY (Q25): 2 caminhos
- *  - **Código**: `joinClubByCode` → painel
- *  - **Criar novo**: `CreateOrganization` → `ShelterOnboardingWizard` (5 steps)
+ * Página gateway do acesso de abrigo (`/entrar/abrigo`). Três caminhos:
+ *  - **Seus abrigos**: se o usuário já é membro/equipe de abrigos, eles
+ *    aparecem como PRIMEIRAS opções de ingresso → entra direto no painel.
+ *  - **Código**: `joinClubByCode` → vincula à equipe → painel.
+ *  - **Criar novo**: `CreateOrganization` → `ShelterOnboardingWizard`.
  *
- * Aparece quando o user escolhe persona 'shelter_staff' e não tem
- * abrigo vinculado.
+ * Nesta página o usuário ainda NÃO entrou em um abrigo: a topbar não mostra
+ * Painel/Pets/Mural nem a indicação de abrigo (ver personaGatewayRoutes).
  *
  * @see docs/PLAN_PERSONAS_V4.md v1.1
  * @see docs/AI_GUIDE/13-DECISIONS.md §16
@@ -14,17 +16,18 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Key, Building2, ArrowRight, Loader2, AlertCircle } from 'lucide-react';
+import { Key, Building2, ArrowRight, Loader2, AlertCircle, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { useActivePersona } from '@/core/hooks/useActivePersona';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
 import { PERSONA_TYPE, buildPersonaKey } from '@/core/domain/personas';
 import { enablePersona } from '@/core/services/personaService';
-import { useJoinClub } from '@/modules/organizations/hooks/useClubs';
+import { useJoinClub, useMyClubs } from '@/modules/organizations/hooks/useClubs';
 import { logger } from '@/core/lib/logger';
 
 export function ShelterEntry() {
@@ -33,6 +36,10 @@ export function ShelterEntry() {
   const { user } = useAuth();
   const { setActive: setActiveHook } = useActivePersona();
   const joinClub = useJoinClub();
+  // Abrigos em que o usuário já é membro/equipe — primeiras opções de ingresso.
+  const { data: myClubs = [], isLoading: loadingClubs } = useMyClubs({
+    enabled: Boolean(enabled && user?.uid),
+  });
   const [mode, setMode] = useState(null); // null | 'code' | 'create'
   const [code, setCode] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -47,6 +54,24 @@ export function ShelterEntry() {
     navigate('/login', { replace: true, state: { from: '/entrar/abrigo' } });
     return null;
   }
+
+  const handleEnterShelter = async (club) => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    setError(null);
+    try {
+      // Entra direto no painel do abrigo escolhido, ativando a persona
+      // escopada àquele abrigo (item 7).
+      const personaKey = buildPersonaKey(PERSONA_TYPE.SHELTER_STAFF, club.id);
+      await enablePersona(user.uid, personaKey);
+      await setActiveHook(personaKey);
+      navigate(`/organizacoes/${club.id}/admin`, { replace: true });
+    } catch (err) {
+      logger.error('[ShelterEntry] enter shelter failed:', err);
+      setError('Não foi possível abrir o painel deste abrigo. Tente novamente.');
+      setIsSubmitting(false);
+    }
+  };
 
   const handleJoinByCode = async (e) => {
     e.preventDefault();
@@ -96,7 +121,9 @@ export function ShelterEntry() {
           Entrar no abrigo
         </h1>
         <p className="mt-3 text-base text-muted-foreground sm:text-lg">
-          Você já faz parte de um abrigo? Informe o código de convite. Ou crie um novo.
+          {myClubs.length > 0
+            ? 'Escolha um dos seus abrigos para abrir o painel — ou vincule-se a outro por código, ou crie um novo.'
+            : 'Você já faz parte de um abrigo? Informe o código de convite. Ou crie um novo.'}
         </p>
       </header>
 
@@ -104,6 +131,61 @@ export function ShelterEntry() {
         <div className="mb-6 flex items-start gap-2 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-800">
           <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" aria-hidden="true" />
           <span>{error}</span>
+        </div>
+      )}
+
+      {/* Seus abrigos — primeiras opções de ingresso (item 1). */}
+      {!mode && myClubs.length > 0 && (
+        <section className="mb-8" data-testid="shelter-entry-my-clubs">
+          <h2 className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            Seus abrigos
+          </h2>
+          <ul className="space-y-3">
+            {myClubs.map((club) => (
+              <li key={club.id}>
+                <button
+                  type="button"
+                  onClick={() => handleEnterShelter(club)}
+                  disabled={isSubmitting}
+                  className="flex w-full items-center gap-3 rounded-2xl border-2 border-border bg-card p-4 text-left transition hover:border-primary disabled:opacity-50"
+                  data-testid={`shelter-entry-club-${club.id}`}
+                >
+                  {club.logo_url ? (
+                    <img src={club.logo_url} alt="" className="h-11 w-11 shrink-0 rounded-xl border border-primary/10 object-cover" />
+                  ) : (
+                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 text-white" aria-hidden="true">
+                      <Building2 className="h-5 w-5" />
+                    </span>
+                  )}
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-base font-bold text-foreground">
+                      {club.name || club.title || 'Abrigo'}
+                    </span>
+                    <span className="mt-0.5 flex items-center gap-2 text-sm text-muted-foreground">
+                      {[club.city, club.state].filter(Boolean).join(' / ') || 'Abrir painel'}
+                      {club.my_role && (
+                        <Badge variant={club.my_role === 'admin' ? 'warning' : 'success'} className="rounded-full uppercase tracking-[0.1em]">
+                          {club.my_role === 'admin' ? 'Admin' : 'Membro'}
+                        </Badge>
+                      )}
+                    </span>
+                  </span>
+                  <ChevronRight className="h-5 w-5 shrink-0 text-primary" aria-hidden="true" />
+                </button>
+              </li>
+            ))}
+          </ul>
+          <div className="mt-6 flex items-center gap-3">
+            <span className="h-px flex-1 bg-border" />
+            <span className="text-xs font-medium text-muted-foreground">ou vincule-se a outro abrigo</span>
+            <span className="h-px flex-1 bg-border" />
+          </div>
+        </section>
+      )}
+
+      {!mode && loadingClubs && myClubs.length === 0 && (
+        <div className="mb-8 flex justify-center" data-testid="shelter-entry-loading">
+          <Loader2 className="h-6 w-6 animate-spin text-primary" aria-hidden="true" />
         </div>
       )}
 

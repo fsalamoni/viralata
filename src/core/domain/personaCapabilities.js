@@ -20,6 +20,10 @@ import {
 } from 'lucide-react';
 import { PERSONA_TYPE, parsePersonaKey } from '@/core/domain/personas';
 
+// Capacidades vazias — usadas por personas escopadas SEM escopo definido
+// (ex.: shelter_staff antes de o usuário entrar em um abrigo).
+const EMPTY_CAPS = { topbarNav: [], headerCTAs: [], bottomNav: [] };
+
 const CAPABILITIES = {
   // ── Adotante: o Feed é EXCLUSIVO desta persona (D-PERSONA-FEED-EXCLUSIVE) ──
   [PERSONA_TYPE.ADOPTER]: {
@@ -56,7 +60,9 @@ const CAPABILITIES = {
   },
 
   // ── Abrigo (escopo = clubId): visão administrativa. ──
-  [PERSONA_TYPE.SHELTER_STAFF]: (scopeId) => ({
+  // Sem scopeId (usuário ainda não entrou em um abrigo — ex.: /entrar/abrigo),
+  // não há navegação escopada: evita links quebrados (/organizacoes/undefined).
+  [PERSONA_TYPE.SHELTER_STAFF]: (scopeId) => (!scopeId ? EMPTY_CAPS : {
     topbarNav: [
       { label: 'Painel', to: `/organizacoes/${scopeId}/admin`, icon: Home },
       { label: 'Pets', to: `/organizacoes/${scopeId}/admin?tab=pets`, icon: PawPrint },
@@ -73,7 +79,8 @@ const CAPABILITIES = {
   }),
 
   // ── Comunidade (escopo = communityId): sem pets/doações/finanças. ──
-  [PERSONA_TYPE.COMMUNITY_STAFF]: (scopeId) => ({
+  // Sem scopeId (ainda não entrou em uma comunidade), sem navegação escopada.
+  [PERSONA_TYPE.COMMUNITY_STAFF]: (scopeId) => (!scopeId ? EMPTY_CAPS : {
     topbarNav: [
       { label: 'Painel', to: `/comunidade/${scopeId}/admin`, icon: Home },
       { label: 'Mural', to: `/comunidade/${scopeId}?tab=feed`, icon: MessageCircle },
