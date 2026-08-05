@@ -139,10 +139,12 @@ export function PersonaEntryGrid() {
   const isAdmin = canUsePlatformAdminPersona(userProfile);
 
   return (
+    // Anima na MONTAGEM (animate), não via whileInView: como fica logo abaixo
+    // do hero, o gatilho por viewport podia não disparar em alguns cenários e
+    // deixar a seção invisível (opacity:0). Com `animate` a entrada é garantida.
     <motion.section
       initial="hidden"
-      whileInView="show"
-      viewport={{ once: true, margin: '-80px' }}
+      animate="show"
       variants={stagger}
       className="px-4 sm:px-6 py-[38px]"
       data-testid="persona-entry-grid"
