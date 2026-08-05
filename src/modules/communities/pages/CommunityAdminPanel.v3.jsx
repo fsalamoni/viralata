@@ -39,6 +39,8 @@ import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import Seo from '@/components/Seo';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
+import { PERSONA_TYPE } from '@/core/domain/personas';
+import { useIsStaffPersonaActive } from '@/core/hooks/useStaffPersonaView';
 // toast via sonner (imported below)
 import {
   useCommunity, useMyCommunityMembership, useDeleteCommunity,
@@ -245,12 +247,18 @@ function OverviewTab({ community, navigate, onDelete }) {
   const founded = parseTimestamp(community?.created_at)?.getFullYear() ?? null;
   const [search, setSearch] = useState('');
   const [activeFilter, setActiveFilter] = useState('all');
+  // Item 7: no acesso de comunidade (persona community_staff) o usuário está no
+  // painel privado — sem "escape" para a visão pública.
+  const inCommunityPersona = useIsStaffPersonaActive(PERSONA_TYPE.COMMUNITY_STAFF);
 
   const QUICK_ACTIONS = [
     { id: 'feed', icon: MessageSquare, title: 'Mural', desc: 'Publicar, fixar, moderar posts', color: 'primary', tab: 'feed' },
     { id: 'team', icon: Users, title: 'Equipe', desc: 'Adicionar/remover membros e papéis', color: 'sky', tab: 'team' },
     { id: 'settings', icon: ShieldCheck, title: 'Configurações', desc: 'Editar dados e regras', color: 'rose', tab: 'settings' },
-    { id: 'public', icon: Eye, title: 'Ver página pública', desc: 'Como visitantes veem a comunidade', color: 'emerald', tab: null, external: `/comunidade/${community?.id}` },
+    // "Ver página pública" só fora do acesso de comunidade (item 7).
+    ...(inCommunityPersona
+      ? []
+      : [{ id: 'public', icon: Eye, title: 'Ver página pública', desc: 'Como visitantes veem a comunidade', color: 'emerald', tab: null, external: `/comunidade/${community?.id}` }]),
   ];
 
   const filteredActions = useMemo(() => {
@@ -454,12 +462,14 @@ function OverviewTab({ community, navigate, onDelete }) {
               para que visitantes conheçam a comunidade.
             </p>
           )}
-          <Button asChild variant="ghost" className="mt-3 w-full">
-            <Link to={`/comunidade/${community?.id}`}>
-              Ver página pública
-              <ArrowUpRight className="ml-1 h-4 w-4" aria-hidden="true" />
-            </Link>
-          </Button>
+          {!inCommunityPersona && (
+            <Button asChild variant="ghost" className="mt-3 w-full">
+              <Link to={`/comunidade/${community?.id}`}>
+                Ver página pública
+                <ArrowUpRight className="ml-1 h-4 w-4" aria-hidden="true" />
+              </Link>
+            </Button>
+          )}
         </div>
       </motion.div>
 
@@ -505,6 +515,8 @@ export default function CommunityAdminPanelV3() {
   const isLoading = loadingCommunity || loadingMembership;
   const isAdmin = membership?.role === COMMUNITY_ROLE.ADMIN;
   const owner = isCommunityOwner(community, membership, user?.uid);
+  // Item 7: no acesso de comunidade esconde os "escapes" para a visão pública.
+  const inCommunityPersona = useIsStaffPersonaActive(PERSONA_TYPE.COMMUNITY_STAFF);
   const canAccess = hasAnyCommunityPermission(community, membership, user?.uid);
 
   const canManageFeed = hasCommunityPermission(community, membership, COMMUNITY_PERMISSION.FEED, user?.uid);
@@ -624,21 +636,30 @@ export default function CommunityAdminPanelV3() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      {/* Breadcrumb + back */}
+      {/* Breadcrumb + back. No acesso de comunidade (item 7) não há "voltar à
+          comunidade" nem breadcrumb público — o usuário já está no painel. */}
       <div className="flex flex-col gap-2">
-        <Button asChild variant="ghost" size="sm" className="self-start">
-          <Link to={`/comunidade/${communityId}`}>
-            <ArrowLeft className="mr-1.5 h-4 w-4" aria-hidden="true" />
-            Voltar à comunidade
-          </Link>
-        </Button>
+        {!inCommunityPersona && (
+          <Button asChild variant="ghost" size="sm" className="self-start">
+            <Link to={`/comunidade/${communityId}`}>
+              <ArrowLeft className="mr-1.5 h-4 w-4" aria-hidden="true" />
+              Voltar à comunidade
+            </Link>
+          </Button>
+        )}
         <Breadcrumb
-          items={[
-            { label: 'Início', href: '/' },
-            { label: 'Comunidades', href: '/comunidade' },
-            { label: community.name || 'Comunidade', href: `/comunidade/${communityId}` },
-            { label: 'Administração' },
-          ]}
+          items={inCommunityPersona
+            ? [
+              { label: 'Minha comunidade' },
+              { label: community.name || 'Comunidade' },
+              { label: 'Administração' },
+            ]
+            : [
+              { label: 'Início', href: '/' },
+              { label: 'Comunidades', href: '/comunidade' },
+              { label: community.name || 'Comunidade', href: `/comunidade/${communityId}` },
+              { label: 'Administração' },
+            ]}
         />
       </div>
 

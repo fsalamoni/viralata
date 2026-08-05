@@ -95,7 +95,10 @@ export function PersonaSwitcher({ onSelectPersona, onAddPersona }) {
           <ul className="space-y-0.5">
             {visibleForSwitcher.map((p) => {
               const Icon = PERSONA_ICON[p.type] || User;
-              const label = PERSONA_LABEL[p.type] || p.type;
+              const baseLabel = PERSONA_LABEL[p.type] || p.type;
+              // Distingue acessos escopados pelo nome da entidade
+              // (ex.: "Meu abrigo — Cão do Bem").
+              const label = p.scopeName ? `${baseLabel} — ${p.scopeName}` : baseLabel;
               const isActive = p.key === active.key;
               return (
                 <li key={p.key}>

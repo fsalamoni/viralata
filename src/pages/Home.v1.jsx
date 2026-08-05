@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { usePlatformSettings } from '@/core/lib/FeatureFlagsContext';
 import UpcomingExhibitionsFeed from '@/modules/shelter/components/UpcomingExhibitionsFeed';
+import PersonaEntryGrid from '@/components/PersonaEntryGrid';
 
 const IMPACT_STATS = [
   { value: '500+', label: 'Adoções realizadas' },
@@ -117,6 +118,11 @@ export default function Home() {
           ))}
         </div>
       </section>
+
+      {/* Portas de entrada por acesso/persona (V4). Gated por
+          V4_PERSONA_SELECTION — some com a flag OFF. Permite entrar
+          direto no acesso desejado sem passar como adotante. */}
+      <PersonaEntryGrid />
 
       {/* Como funciona */}
       <motion.section

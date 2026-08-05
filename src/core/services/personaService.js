@@ -120,12 +120,13 @@ export function detectAvailablePersonas(userProfile, signals = {}) {
     });
   }
 
-  // 3. Shelter staff (1+ memberships)
+  // 3. Shelter staff (1+ memberships) — scopeName p/ distinguir no switcher
   for (const m of shelterMemberships) {
     personas.push({
       key: buildPersonaKey(PERSONA_TYPE.SHELTER_STAFF, m.clubId),
       type: PERSONA_TYPE.SHELTER_STAFF,
       scopeId: m.clubId,
+      scopeName: m.name || '',
       hasOnboarding: true, // membership = onboarding (já está vinculado)
       isPlatformAdmin: isAdmin,
     });
@@ -137,6 +138,7 @@ export function detectAvailablePersonas(userProfile, signals = {}) {
       key: buildPersonaKey(PERSONA_TYPE.COMMUNITY_STAFF, m.communityId),
       type: PERSONA_TYPE.COMMUNITY_STAFF,
       scopeId: m.communityId,
+      scopeName: m.name || '',
       hasOnboarding: true,
       isPlatformAdmin: isAdmin,
     });
