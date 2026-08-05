@@ -24,6 +24,13 @@ import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import AdoptionFormBuilder from '../components/AdoptionFormBuilder';
 import { normalizeForm } from '../domain/adoptionForm';
 
+// Número opcional que aceita string vazia do input (type=number) → undefined,
+// evitando salvar 0/'' quando o campo (ex.: lat/lng do GPS) fica em branco.
+const _optionalNumber = z.preprocess(
+  (v) => (v === '' || v === null || v === undefined ? undefined : Number(v)),
+  z.number().finite().optional(),
+);
+
 const schema = z.object({
   title: z.string().min(5, 'Título muito curto').max(100),
   name: z.string().optional(),
@@ -45,6 +52,31 @@ const schema = z.object({
   adoption_form_url: z.string().trim().url('Informe um link válido (começando com http).').optional().or(z.literal('')),
   city: z.string().min(2, 'Informe a cidade'),
   state: z.string().min(2, 'Informe o estado'),
+
+  // ── Cadastro de resgate / operacional INTERNO do abrigo ──────────────────
+  // Estes campos são persistidos no doc do pet (banco, planilhas, métricas) e
+  // NÃO aparecem na página pública. Precisam constar no schema porque o
+  // zodResolver descarta (`.strip()`) qualquer campo fora dele — sem isto os
+  // dados do RescueStep nunca eram salvos.
+  rescue_name: z.string().max(200).optional(),
+  rescue_date: z.string().optional(),
+  rescue_by_uid: z.string().optional(),
+  rescue_responsible_name: z.string().max(120).optional(),
+  rescue_address: z.string().optional(),
+  rescue_city: z.string().optional(),
+  rescue_state: z.string().max(2).optional(),
+  rescue_zip: z.string().optional(),
+  rescue_lat: _optionalNumber,
+  rescue_lng: _optionalNumber,
+  intake_type: z.string().optional(),
+  asilomar_status: z.string().optional(),
+  microchip_id: z.string().max(20).optional(),
+  rescue_notes: z.string().max(2000).optional(),
+  birth_date: z.string().optional(),
+  current_location: z.string().optional(),
+  current_location_notes: z.string().max(280).optional(),
+  legal_process_number: z.string().max(60).optional(),
+  observations: z.string().max(2000).optional(),
 });
 
 const STEPS = ['Fotos', 'Sobre', 'Saúde', 'Revisão'];
@@ -159,6 +191,26 @@ export default function CreatePet() {
       adoption_form_url: existingPet.adoption_form_url || '',
       city: existingPet.city || '',
       state: existingPet.state || '',
+      // Cadastro de resgate / operacional interno (carrega para edição).
+      rescue_name: existingPet.rescue_name || '',
+      rescue_date: existingPet.rescue_date || '',
+      rescue_by_uid: existingPet.rescue_by_uid || '',
+      rescue_responsible_name: existingPet.rescue_responsible_name || '',
+      rescue_address: existingPet.rescue_address || '',
+      rescue_city: existingPet.rescue_city || '',
+      rescue_state: existingPet.rescue_state || '',
+      rescue_zip: existingPet.rescue_zip || '',
+      rescue_lat: existingPet.rescue_lat ?? '',
+      rescue_lng: existingPet.rescue_lng ?? '',
+      intake_type: existingPet.intake_type || '',
+      asilomar_status: existingPet.asilomar_status || '',
+      microchip_id: existingPet.microchip_id || '',
+      rescue_notes: existingPet.rescue_notes || '',
+      birth_date: existingPet.birth_date || '',
+      current_location: existingPet.current_location || '',
+      current_location_notes: existingPet.current_location_notes || '',
+      legal_process_number: existingPet.legal_process_number || '',
+      observations: existingPet.observations || '',
     });
     setPhotos(existingPet.photos || []);
     setAdoptionForm(normalizeForm(existingPet.adoption_form));
@@ -199,8 +251,14 @@ export default function CreatePet() {
     setStep((s) => Math.max(s - 1, 0));
   }
 
-  async function onSubmit(data) {
+  async function onSubmit(rawData) {
     if (photos.length === 0) { toast.error('Adicione pelo menos uma foto.'); return; }
+    // O Firestore desta app não ignora `undefined` (getFirestore sem
+    // ignoreUndefinedProperties) — remover chaves undefined evita erro no
+    // create e evita apagar campos no update.
+    const data = Object.fromEntries(
+      Object.entries(rawData).filter(([, v]) => v !== undefined),
+    );
     const cleanForm = normalizeForm(adoptionForm);
     try {
       if (isEditing) {

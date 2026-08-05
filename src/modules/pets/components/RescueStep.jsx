@@ -17,7 +17,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Heart, MapPin, Calendar, User, AlertCircle } from 'lucide-react';
+import { Heart, MapPin, Calendar, User, AlertCircle, ClipboardList } from 'lucide-react';
+import { CURRENT_LOCATIONS, CURRENT_LOCATION_LABELS } from '@/modules/shelter/domain/core/animal';
 
 /** Tipos de intake (origem do pet). */
 export const INTAKE_TYPES = [
@@ -65,15 +66,27 @@ export function RescueStep({ form, setValue }) {
           </h3>
         </div>
         <div className="arena-section-card-body space-y-3">
-          <div>
-            <Label htmlFor="rescue_name">Nome do resgatador / tutor original</Label>
-            <Input
-              id="rescue_name"
-              value={form.rescue_name || ''}
-              onChange={(e) => update('rescue_name', e.target.value)}
-              placeholder="Ex: Maria Silva (tutora) ou [Anônimo]"
-              maxLength={200}
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <Label htmlFor="rescue_name">Nome do resgate</Label>
+              <Input
+                id="rescue_name"
+                value={form.rescue_name || ''}
+                onChange={(e) => update('rescue_name', e.target.value)}
+                placeholder="Título do resgate (ex: Resgate da Ipiranga)"
+                maxLength={200}
+              />
+            </div>
+            <div>
+              <Label htmlFor="rescue_responsible_name">Responsável pelo resgate</Label>
+              <Input
+                id="rescue_responsible_name"
+                value={form.rescue_responsible_name || ''}
+                onChange={(e) => update('rescue_responsible_name', e.target.value)}
+                placeholder="Nome de quem resgatou"
+                maxLength={120}
+              />
+            </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
@@ -239,6 +252,78 @@ export function RescueStep({ form, setValue }) {
               value={form.rescue_notes || ''}
               onChange={(e) => update('rescue_notes', e.target.value)}
               placeholder="Estado do animal ao chegar, condições, história…"
+              rows={3}
+              maxLength={2000}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Situação operacional interna do abrigo */}
+      <section className="arena-section-card">
+        <div className="arena-section-card-header">
+          <h3 className="arena-section-card-title text-base flex items-center gap-2">
+            <ClipboardList className="h-4 w-4" /> Situação operacional (interno)
+          </h3>
+          <p className="arena-section-card-description">
+            Dados internos do abrigo — não aparecem na página pública do pet.
+          </p>
+        </div>
+        <div className="arena-section-card-body space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <Label htmlFor="birth_date">Data de nascimento (se conhecida)</Label>
+              <Input
+                id="birth_date"
+                type="date"
+                value={(form.birth_date || '').slice(0, 10)}
+                onChange={(e) => update('birth_date', e.target.value)}
+                max={new Date().toISOString().split('T')[0]}
+              />
+            </div>
+            <div>
+              <Label htmlFor="current_location">Localização atual</Label>
+              <Select value={form.current_location || ''} onValueChange={(v) => update('current_location', v)}>
+                <SelectTrigger id="current_location">
+                  <SelectValue placeholder="Onde o animal está agora" />
+                </SelectTrigger>
+                <SelectContent>
+                  {CURRENT_LOCATIONS.map((loc) => (
+                    <SelectItem key={loc} value={loc}>
+                      {CURRENT_LOCATION_LABELS[loc] || loc}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div>
+            <Label htmlFor="current_location_notes">Detalhe da localização atual</Label>
+            <Input
+              id="current_location_notes"
+              value={form.current_location_notes || ''}
+              onChange={(e) => update('current_location_notes', e.target.value)}
+              placeholder="Ex: lar temporário da Maria; clínica VetX"
+              maxLength={280}
+            />
+          </div>
+          <div>
+            <Label htmlFor="legal_process_number">Processo judicial (se houver)</Label>
+            <Input
+              id="legal_process_number"
+              value={form.legal_process_number || ''}
+              onChange={(e) => update('legal_process_number', e.target.value)}
+              placeholder="Número do processo (deixe vazio se não houver)"
+              maxLength={60}
+            />
+          </div>
+          <div>
+            <Label htmlFor="observations">Observações internas</Label>
+            <Textarea
+              id="observations"
+              value={form.observations || ''}
+              onChange={(e) => update('observations', e.target.value)}
+              placeholder="Observações internas sobre o animal"
               rows={3}
               maxLength={2000}
             />
