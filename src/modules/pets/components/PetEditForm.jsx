@@ -35,6 +35,7 @@ import {
 } from '@/modules/shelter/domain/core/animal';
 import { assignRescueNumber } from '@/modules/shelter/services/shelterAnimalService';
 import { logger } from '@/core/lib/logger';
+import RescuePhotosField from './RescuePhotosField';
 
 const SPECIES = [
   { value: 'dog', label: 'Cachorro' },
@@ -102,6 +103,7 @@ const INITIAL = {
   current_location_notes: '',
   legal_process_number: '',
   observations: '',
+  rescue_photos: [],
   // Outras
   description: '',
   special_needs: '',
@@ -178,6 +180,7 @@ export default function PetEditForm({ open, onOpenChange, pet }) {
         current_location_notes: pet.current_location_notes || '',
         legal_process_number: pet.legal_process_number || '',
         observations: pet.observations || '',
+        rescue_photos: Array.isArray(pet.rescue_photos) ? pet.rescue_photos : [],
         description: pet.description || '',
         special_needs: pet.special_needs || '',
         adoption_requirements: pet.adoption_requirements || '',
@@ -501,6 +504,22 @@ export default function PetEditForm({ open, onOpenChange, pet }) {
             <div>
               <Label htmlFor="observations">Observações * <Vis /></Label>
               <Textarea id="observations" value={data.observations} onChange={(e) => setField('observations', e.target.value)} rows={3} placeholder="Observações internas sobre o animal" />
+            </div>
+            {/* Fotos do resgate — comprimidas; cada uma pode ser pública ou interna. */}
+            <div>
+              <Label>Fotos do resgate</Label>
+              <p className="mb-2 text-[11px] text-muted-foreground">
+                As fotos são comprimidas ao enviar. Marque cada foto como
+                <strong> pública</strong> (aparece na página do pet) ou
+                <strong> interna</strong> (só a equipe do abrigo vê). Clique para
+                abrir em tamanho grande.
+              </p>
+              <RescuePhotosField
+                value={data.rescue_photos}
+                onChange={(v) => setField('rescue_photos', v)}
+                uid={user?.uid}
+                canManage
+              />
             </div>
           </fieldset>
 
