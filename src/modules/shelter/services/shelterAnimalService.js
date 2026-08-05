@@ -13,7 +13,7 @@
  */
 
 import { db } from '@/core/config/firebase';
-import { doc, getDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, serverTimestamp, updateDoc, runTransaction } from 'firebase/firestore';
 import { logger } from '@/core/lib/logger';
 import { createAuditLog } from '@/core/services/auditService';
 // BUG-31 (2026-07-20): updateShelterAnimalProfile muta diretamente o doc
@@ -24,9 +24,12 @@ import {
   shelterAnimalProfileUpdateSchema,
   diffShelterProfile,
   hasShelterProfile as _hasShelterProfile,
+  speciesRescueCode,
+  formatRescueNumber,
 } from '@/modules/shelter/domain/core/animal';
 
 const PETS_COLLECTION = 'pets';
+const CLUBS_COLLECTION = 'clubs';
 
 /**
  * Lê o perfil de abrigo de um pet. Retorna {} se o pet não tem nenhum campo
@@ -146,14 +149,89 @@ export async function backfillShelterProfileFields(petId) {
   return { id: petId, added: Object.keys(delta) };
 }
 
+/**
+ * Atribui um número de resgate sequencial ao pet, se ainda não tiver.
+ * Sequência POR abrigo + espécie + ano (ex.: C-00001/26). Atômico: usa uma
+ * transação que incrementa o contador `clubs/{clubId}/counters/{code}-{yy}`
+ * e grava `rescue_number` no pet no mesmo commit — sem corrida.
+ *
+ * Idempotente: se o pet já tem `rescue_number`, retorna o existente sem
+ * consumir a sequência.
+ *
+ * @param {string} petId
+ * @param {object} opts
+ * @param {string} opts.clubId  abrigo dono do animal (escopo da sequência)
+ * @param {string} opts.species espécie do pet (define a letra: cão=C, gato=G…)
+ * @param {object} opts.actor   {uid, displayName?}
+ * @param {string} [opts.date]  data do resgate ISO (define o ano; default hoje)
+ * @returns {Promise<{ rescue_number: string, created: boolean }>}
+ */
+export async function assignRescueNumber(petId, { clubId, species, actor, date } = {}) {
+  if (!db) throw new Error('Firebase não disponível');
+  if (!petId) throw new Error('petId é obrigatório');
+  if (!clubId) throw new Error('clubId é obrigatório');
+  if (!actor?.uid) throw new Error('actor.uid é obrigatório');
+
+  // Defense-in-depth: valida permissão de mutar o pet antes de escrever.
+  await ensureCanMutatePet(petId, actor);
+
+  const code = speciesRescueCode(species);
+  const year = date ? new Date(date) : new Date();
+  const yy = String(year.getFullYear() % 100).padStart(2, '0');
+  const counterId = `rescue-${code}-${yy}`;
+  const counterRef = doc(db, CLUBS_COLLECTION, clubId, 'counters', counterId);
+  const petRef = doc(db, PETS_COLLECTION, petId);
+
+  const result = await runTransaction(db, async (tx) => {
+    const petSnap = await tx.get(petRef);
+    if (!petSnap.exists()) throw new Error('Pet não encontrado.');
+    const existing = petSnap.data()?.rescue_number;
+    if (existing) return { rescue_number: existing, created: false };
+
+    const counterSnap = await tx.get(counterRef);
+    const currentSeq = Number(counterSnap.data()?.seq || 0);
+    const nextSeq = currentSeq + 1;
+    const rescueNumber = formatRescueNumber(code, nextSeq, year);
+
+    tx.set(
+      counterRef,
+      { seq: nextSeq, code, year_yy: yy, updated_at: serverTimestamp() },
+      { merge: true },
+    );
+    tx.update(petRef, {
+      rescue_number: rescueNumber,
+      shelter_owner_club_id: petSnap.data()?.shelter_owner_club_id || clubId,
+      updated_at: serverTimestamp(),
+    });
+    return { rescue_number: rescueNumber, created: true };
+  });
+
+  if (result.created) {
+    await createAuditLog({
+      action: 'shelter_animal_rescue_number_assigned',
+      actor,
+      details: { pet_id: petId, club_id: clubId, rescue_number: result.rescue_number },
+    }).catch((err) => {
+      logger.warn('shelterAnimalService.assignRescueNumber', {
+        msg: 'audit log failed (non-blocking)', err: String(err),
+      });
+    });
+  }
+  return result;
+}
+
 // ─── Helpers internos ───────────────────────────────────────────────────
 
 function _pickShelterFields(petData) {
   const fields = [
-    'rescue_name', 'rescue_date', 'rescue_by_uid', 'rescue_by_name',
-    'rescue_location', 'microchip_id', 'intake_type', 'intake_subtype',
+    'rescue_number', 'rescue_name', 'rescue_date', 'rescue_by_uid', 'rescue_by_name',
+    'rescue_responsible_name', 'rescue_location', 'rescue_photos', 'birth_date',
+    'microchip_id', 'intake_type', 'intake_subtype',
     'intake_notes', 'asilomar_status', 'asilomar_evaluated_at',
-    'asilomar_evaluated_by_uid', 'shelter_owner_club_id', 'cross_posting',
+    'asilomar_evaluated_by_uid',
+    'status_changed_at', 'current_location', 'current_location_notes',
+    'legal_process_number', 'observations',
+    'shelter_owner_club_id', 'cross_posting',
     'deceased_at', 'death_cause',
     'shelter_profile_updated_at', 'shelter_profile_updated_by_uid',
   ];

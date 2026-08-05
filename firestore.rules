@@ -2195,6 +2195,14 @@ service cloud.firestore {
       allow read: if isAuth() && isPlatformAdmin();
     }
 
+    // Contadores sequenciais do abrigo (ex.: número de resgate por
+    // espécie/ano). Leitura para quem acessa o abrigo; escrita para quem
+    // gerencia animais (transação de incremento em assignRescueNumber).
+    match /clubs/{clubId}/counters/{counterId} {
+      allow read: if shelterCanAccess(clubId);
+      allow write: if shelterCanManage(clubId);
+    }
+
     match /clubs/{clubId}/kanban_boards/{boardId} {
       allow read: if shelterCanAccess(clubId);
       allow write: if shelterCanManage(clubId);
