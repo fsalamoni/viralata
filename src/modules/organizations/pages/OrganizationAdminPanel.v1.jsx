@@ -394,23 +394,24 @@ export default function OrganizationAdminPanel() {
 
   return (
     <ClubThemedScope club={club} className={successClass}>
-      <div className="flex flex-col gap-2">
-        {!inShelterPersona && (
+      {/* Breadcrumb + back — SOMENTE fora do acesso de abrigo (item 7). */}
+      {!inShelterPersona && (
+        <div className="flex flex-col gap-2">
           <Button asChild variant="ghost" size="sm" className="self-start">
             <Link to={`/organizacoes/${orgId}`}>
               <ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar para a ONG
             </Link>
           </Button>
-        )}
-        <Breadcrumb
-          items={[
-            { label: 'Início', href: '/', icon: Home },
-            { label: 'Organizações', href: '/organizacoes' },
-            { label: club.name || 'Organização', href: `/organizacoes/${orgId}` },
-            { label: 'Administração' },
-          ]}
-        />
-      </div>
+          <Breadcrumb
+            items={[
+              { label: 'Início', href: '/', icon: Home },
+              { label: 'Organizações', href: '/organizacoes' },
+              { label: club.name || 'Organização', href: `/organizacoes/${orgId}` },
+              { label: 'Administração' },
+            ]}
+          />
+        </div>
+      )}
 
       {/* Header do painel admin — padding generoso (p-6 sm:p-10) e
           gap-5 sm:gap-6 entre o avatar e o bloco de texto. Mais respiro
