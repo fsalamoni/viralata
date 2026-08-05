@@ -29,9 +29,24 @@ import { cn } from '@/core/lib/utils';
 import {
   Table, TableHeader, TableBody, TableRow, TableHead, TableCell,
 } from '@/components/ui/table';
+import { daysInShelter, CURRENT_LOCATION_LABELS } from '@/modules/shelter/domain/core/animal';
 
 const SPECIES_LABEL = { dog: 'Cachorro', cat: 'Gato', rabbit: 'Coelho', bird: 'Pássaro', other: 'Outro' };
 const SIZE_LABEL = { mini: 'Mini', small: 'Pequeno', medium: 'Médio', large: 'Grande', giant: 'Gigante' };
+const GENDER_LABEL = { male: 'Macho', female: 'Fêmea' };
+const AGE_LABEL = { puppy: 'Filhote', adult: 'Adulto', senior: 'Idoso' };
+
+/** Formata uma data (ISO ou 'YYYY-MM-DD' ou Firestore Timestamp) em pt-BR curto. */
+function formatShortDate(value) {
+  if (!value) return null;
+  try {
+    const d = value?.seconds ? new Date(value.seconds * 1000) : new Date(value);
+    if (Number.isNaN(d.getTime())) return null;
+    return d.toLocaleDateString('pt-BR');
+  } catch {
+    return null;
+  }
+}
 
 const STATUS_BADGE = {
   available: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400',
@@ -141,21 +156,15 @@ export default function PetsOpsTable({ pets = [], isLoading = false, canManage =
         <Table>
           <TableHeader>
             <TableRow className="bg-secondary/60">
-              <TableHead className="w-28 px-3 py-3">ID</TableHead>
-              <TableHead className="px-3 py-3">Nome</TableHead>
-              <TableHead className="px-3 py-3">Espécie</TableHead>
-              <TableHead className="px-3 py-3">Status</TableHead>
-              <TableHead className="px-3 py-3 text-center">Histórico</TableHead>
-              <TableHead className="px-3 py-3 text-center">Cuidados</TableHead>
-              <TableHead className="px-3 py-3 text-center">Saúde</TableHead>
-              <TableHead className="px-3 py-3 text-center">Timeline</TableHead>
-              <TableHead className="px-3 py-3 text-center">Anotações</TableHead>
+              {['ID', 'Nome', 'Espécie', 'Porte', 'Sexo', 'Idade', 'Castrado', 'Resgate', 'Dias', 'Localização', 'Status', 'Histórico', 'Cuidados', 'Saúde', 'Timeline', 'Anotações'].map((h) => (
+                <TableHead key={h} className="px-3 py-3">{h}</TableHead>
+              ))}
             </TableRow>
           </TableHeader>
           <TableBody>
             {Array.from({ length: 4 }).map((_, i) => (
               <TableRow key={i}>
-                {Array.from({ length: 9 }).map((__, j) => (
+                {Array.from({ length: 16 }).map((__, j) => (
                   <TableCell key={j} className="px-3 py-2.5">
                     <Skeleton className="h-6 w-full" />
                   </TableCell>
@@ -191,6 +200,12 @@ export default function PetsOpsTable({ pets = [], isLoading = false, canManage =
             </TableHead>
             <TableHead className="px-3 py-3">Espécie</TableHead>
             <TableHead className="px-3 py-3">Porte</TableHead>
+            <TableHead className="px-3 py-3">Sexo</TableHead>
+            <TableHead className="px-3 py-3">Idade</TableHead>
+            <TableHead className="px-3 py-3">Castrado</TableHead>
+            <TableHead className="px-3 py-3">Resgate</TableHead>
+            <TableHead className="px-3 py-3 text-center">Dias</TableHead>
+            <TableHead className="px-3 py-3">Localização</TableHead>
             <TableHead className="px-3 py-3">Status</TableHead>
             <TableHead className="px-3 py-3 text-center text-xs font-bold uppercase tracking-wider text-muted-foreground">
               Histórico
@@ -252,7 +267,43 @@ export default function PetsOpsTable({ pets = [], isLoading = false, canManage =
                 <TableCell className="px-3 py-2.5 text-sm text-muted-foreground">
                   {SIZE_LABEL[pet.size] || pet.size || '—'}
                 </TableCell>
-                {/* Status */}
+                {/* Sexo */}
+                <TableCell className="px-3 py-2.5 text-sm text-muted-foreground">
+                  {GENDER_LABEL[pet.gender] || '—'}
+                </TableCell>
+                {/* Idade */}
+                <TableCell className="px-3 py-2.5 text-sm text-muted-foreground">
+                  {AGE_LABEL[pet.age_group] || '—'}
+                </TableCell>
+                {/* Castrado */}
+                <TableCell className="px-3 py-2.5 text-sm text-muted-foreground">
+                  {pet.neutered ? 'Sim' : 'Não'}
+                </TableCell>
+                {/* Resgate: número + data */}
+                <TableCell className="px-3 py-2.5 text-sm">
+                  {pet.rescue_number ? (
+                    <span className="font-mono font-semibold text-foreground">{pet.rescue_number}</span>
+                  ) : (
+                    <span className="text-muted-foreground">—</span>
+                  )}
+                  {formatShortDate(pet.rescue_date) && (
+                    <span className="block text-xs text-muted-foreground">{formatShortDate(pet.rescue_date)}</span>
+                  )}
+                </TableCell>
+                {/* Dias no abrigo */}
+                <TableCell className="px-3 py-2.5 text-center text-sm text-muted-foreground">
+                  {daysInShelter(pet) ?? '—'}
+                </TableCell>
+                {/* Localização atual */}
+                <TableCell className="px-3 py-2.5 text-sm text-muted-foreground">
+                  {CURRENT_LOCATION_LABELS[pet.current_location] || '—'}
+                  {pet.current_location_notes && (
+                    <span className="block text-xs text-muted-foreground/80 truncate max-w-[160px]">
+                      {pet.current_location_notes}
+                    </span>
+                  )}
+                </TableCell>
+                {/* Status + data do status */}
                 <TableCell className="px-3 py-2.5">
                   <span className={cn(
                     'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold',
@@ -260,6 +311,9 @@ export default function PetsOpsTable({ pets = [], isLoading = false, canManage =
                   )}>
                     {STATUS_LABEL[pet.status] || '—'}
                   </span>
+                  {formatShortDate(pet.status_changed_at) && (
+                    <span className="block text-xs text-muted-foreground mt-0.5">{formatShortDate(pet.status_changed_at)}</span>
+                  )}
                 </TableCell>
                 {/* Colunas funcionais: cada uma leva a uma seção do painel admin */}
                 <TableCell className="px-3 py-2.5 text-center">
