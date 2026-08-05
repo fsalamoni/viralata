@@ -193,19 +193,29 @@ export default function PetEditForm({ open, onOpenChange, pet }) {
 
   function validate() {
     const errs = {};
-    // Nome e Título são bloqueantes (identidade). Os demais campos obrigatórios
-    // são apresentados/marcados, mas podem ficar vazios em pets legados (ex.:
-    // processo judicial "vazio ou número"). Peça se quiser torná-los bloqueantes.
-    if (!data.name || data.name.trim().length < 2) {
-      errs.name = 'Nome do pet é obrigatório (≥ 2 caracteres)';
-    }
-    if (!data.title || data.title.trim().length < 1) {
-      errs.title = 'Título do pet no abrigo é obrigatório';
-    }
-    if (data.apparent_age_years && Number.isNaN(Number(data.apparent_age_years))) {
-      errs.apparent_age_years = 'Idade aparente deve ser um número (anos)';
-    }
+    const req = (k, label) => { if (!String(data[k] ?? '').trim()) errs[k] = `${label} é obrigatório`; };
+    // Campos de preenchimento obrigatório (spec do abrigo). Exceção:
+    // "Processo judicial" é obrigatório existir mas pode ficar VAZIO
+    // ("vazio ou número"), então não bloqueia.
+    if (!data.name || data.name.trim().length < 2) errs.name = 'Nome no abrigo é obrigatório (≥ 2 caracteres)';
+    req('title', 'Título no abrigo');
+    req('national_pet_id', 'RG (nacional)');
+    req('microchip', 'Microchip');
+    if (!String(data.apparent_age_years ?? '').trim()) errs.apparent_age_years = 'Idade aparente é obrigatória';
+    else if (Number.isNaN(Number(data.apparent_age_years))) errs.apparent_age_years = 'Idade aparente deve ser um número (anos)';
+    req('health_notes', 'Observações de saúde');
+    req('rescue_responsible_name', 'Responsável pelo resgate');
+    const hasGps = String(data.rescue_lat).trim() && String(data.rescue_lng).trim();
+    if (!String(data.rescue_address ?? '').trim() && !hasGps) errs.rescue_address = 'Local do resgate é obrigatório (texto ou GPS)';
+    req('current_location', 'Localização atual');
+    req('observations', 'Observações');
+    req('description', 'Descrição');
+    req('special_needs', 'Necessidades especiais');
+    req('adoption_requirements', 'Requisitos para adoção');
     setErrors(errs);
+    if (Object.keys(errs).length > 0) {
+      toast.error('Preencha todos os campos obrigatórios destacados.');
+    }
     return Object.keys(errs).length === 0;
   }
 
@@ -270,6 +280,14 @@ export default function PetEditForm({ open, onOpenChange, pet }) {
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
+          {Object.keys(errors).length > 0 && (
+            <div className="rounded-xl border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive" data-testid="pet-form-errors">
+              <p className="font-semibold">Preencha os campos obrigatórios:</p>
+              <ul className="mt-1 list-inside list-disc text-xs">
+                {Object.values(errors).map((msg) => <li key={msg}>{msg}</li>)}
+              </ul>
+            </div>
+          )}
           {/* ── IDENTIDADE ─────────────────────────────────────────────── */}
           <fieldset className="space-y-3 rounded-xl border border-border p-4">
             <legend className="px-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">Identidade</legend>
