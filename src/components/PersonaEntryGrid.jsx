@@ -11,8 +11,11 @@
  * realmente tem o papel de admin master (via `canUsePlatformAdminPersona`).
  * Nenhum outro usuário a vê (D-PERSONA-ADMIN-ENTRY-ADMIN-ONLY).
  *
- * Gated por `V4_PERSONA_SELECTION` — com a flag desligada (default), a landing
- * segue exatamente como antes (zero mudança de comportamento).
+ * Gated pelo master `V4_PERSONA_ENABLED` — com a V4 desligada (default), a
+ * landing segue exatamente como antes (zero mudança de comportamento). Usa o
+ * master (e não V4_PERSONA_SELECTION) porque a porta de entrada por acesso é o
+ * ponto de partida de TODAS as personas — precisa aparecer sempre que a V4
+ * estiver ligada.
  *
  * Design segue o sistema "arena" da landing (docs/REGENCY_HOME_V3.md e
  * docs/DESIGN_SYSTEM.md): painéis arredondados, tiles de ícone com gradiente.
@@ -128,7 +131,7 @@ function EntryCard({ entry, variants }) {
 }
 
 export function PersonaEntryGrid() {
-  const enabled = useFeatureFlag(FEATURE_FLAG.V4_PERSONA_SELECTION);
+  const enabled = useFeatureFlag(FEATURE_FLAG.V4_PERSONA_ENABLED);
   const { userProfile } = useAuth();
 
   if (!enabled) return null;

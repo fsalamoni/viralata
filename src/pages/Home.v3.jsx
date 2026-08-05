@@ -36,6 +36,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import Seo from '@/components/Seo';
 import { cn } from '@/core/lib/utils';
+import PersonaEntryGrid from '@/components/PersonaEntryGrid';
 import { listPublicExhibitions } from '@/modules/shelter/services/exhibitionPublicService';
 
 const ANIM = {
@@ -546,6 +547,12 @@ export default function HomeV3() {
           </motion.div>
         </div>
       </motion.section>
+
+      {/* Portas de entrada por acesso/persona (V4). Gated por
+          V4_PERSONA_ENABLED — some com a V4 desligada. Logo abaixo do hero
+          para o usuário escolher direto o acesso desejado (abrigo, comunidade,
+          voluntário, doador) sem precisar entrar como adotante. */}
+      <PersonaEntryGrid />
 
       {/* STATS mobile */}
       <motion.section
