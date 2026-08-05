@@ -66,6 +66,15 @@ export function RescueStep({ form, setValue }) {
           </h3>
         </div>
         <div className="arena-section-card-body space-y-3">
+          {/* Número de resgate — sequencial automático do abrigo (read-only) */}
+          {form.rescue_number && (
+            <div>
+              <Label>Número do resgate</Label>
+              <div className="flex h-10 items-center rounded-md border border-input bg-muted/40 px-3 text-sm font-semibold tracking-wide">
+                {form.rescue_number}
+              </div>
+            </div>
+          )}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
               <Label htmlFor="rescue_name">Nome do resgate</Label>
