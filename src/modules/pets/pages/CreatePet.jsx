@@ -23,6 +23,8 @@ import { RescueStep } from '../components/RescueStep';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import AdoptionFormBuilder from '../components/AdoptionFormBuilder';
 import { normalizeForm } from '../domain/adoptionForm';
+import { assignRescueNumber } from '@/modules/shelter/services/shelterAnimalService';
+import { logger } from '@/core/lib/logger';
 
 // Número opcional que aceita string vazia do input (type=number) → undefined,
 // evitando salvar 0/'' quando o campo (ex.: lat/lng do GPS) fica em branco.
@@ -192,6 +194,9 @@ export default function CreatePet() {
       city: existingPet.city || '',
       state: existingPet.state || '',
       // Cadastro de resgate / operacional interno (carrega para edição).
+      // rescue_number é read-only (atribuído automaticamente); carregado só
+      // para exibição — não está no schema, então não é reenviado no update.
+      rescue_number: existingPet.rescue_number || '',
       rescue_name: existingPet.rescue_name || '',
       rescue_date: existingPet.rescue_date || '',
       rescue_by_uid: existingPet.rescue_by_uid || '',
@@ -275,6 +280,20 @@ export default function CreatePet() {
         owner_id: isOrg ? ownerId : user.uid,
         owner_type: isOrg ? 'organization' : 'user',
       });
+      // Pet de abrigo: atribui o número de resgate sequencial (C-00001/26),
+      // atômico por abrigo/espécie/ano. Não bloqueia o sucesso do cadastro.
+      if (isOrg) {
+        try {
+          await assignRescueNumber(newPetId, {
+            clubId: ownerId,
+            species: data.species,
+            actor: { uid: user.uid, email: user.email, isPlatformAdmin: userProfile?.role === 'platform_admin' },
+            date: data.rescue_date || undefined,
+          });
+        } catch (err) {
+          logger.warn('[CreatePet] assignRescueNumber falhou (não bloqueante):', err);
+        }
+      }
       toast.success('Pet cadastrado com sucesso!');
       navigate(`/pets/${newPetId}`);
     } catch {
