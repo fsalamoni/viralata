@@ -20,6 +20,8 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from '@/components/ui/dialog';
 import PetsOpsTable from './PetsOpsTable';
+import { assignRescueNumber } from '@/modules/shelter/services/shelterAnimalService';
+import { logger } from '@/core/lib/logger';
 import {
   PET_IMPORT_HEADERS, buildPetImportWorkbook, readImportFile, validateAndMapRows,
 } from '@/modules/organizations/domain/petImport';
@@ -140,10 +142,22 @@ export default function ClubPetsDataGrid({ clubId, canManage = true }) {
   async function handleAddRow() {
     setAddingRow(true);
     try {
-      await createPet.mutateAsync({
+      const newPetId = await createPet.mutateAsync({
         title: '', name: '', species: 'dog', size: 'mini', city: '', status: 'available', photos: [],
         owner_id: clubId, owner_type: 'organization',
       });
+      // Atribui o número de resgate sequencial ao novo animal (não bloqueia).
+      if (newPetId) {
+        try {
+          await assignRescueNumber(newPetId, {
+            clubId,
+            species: 'dog',
+            actor: { uid: user?.uid, email: user?.email },
+          });
+        } catch (err) {
+          logger.warn('[ClubPetsDataGrid] assignRescueNumber falhou (não bloqueante):', err);
+        }
+      }
     } catch {
       toast.error('Não foi possível criar a linha.');
     } finally {
