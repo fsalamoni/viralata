@@ -449,7 +449,16 @@ export default function PetDetailV3() {
         <TabsContent value="about" className="mt-4 space-y-6">
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8">
             <div className="space-y-3 md:sticky md:top-32 md:self-start">
-              <PetGallery photos={pet.photos || []} petName={petName} />
+              <PetGallery
+                photos={[
+                  ...(pet.photos || []),
+                  // Fotos do resgate marcadas como públicas entram na galeria.
+                  ...(Array.isArray(pet.rescue_photos)
+                    ? pet.rescue_photos.filter((p) => p?.visibility === 'public' && p?.url).map((p) => p.url)
+                    : []),
+                ]}
+                petName={petName}
+              />
               {Array.isArray(pet.temperament) && pet.temperament.length > 0 && (
                 <div className="rounded-2xl border border-border bg-card p-3">
                   <h3 className="mb-2 text-[11.5px] font-bold uppercase tracking-wider text-muted-foreground">Temperamento</h3>

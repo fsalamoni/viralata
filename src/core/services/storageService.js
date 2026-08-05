@@ -33,6 +33,49 @@ function sanitizeName(name) {
   return (base || 'imagem').slice(-80);
 }
 
+/**
+ * Comprime uma imagem no cliente (redimensiona + reencoda JPEG) antes do
+ * upload. Usado nas fotos do resgate (muitas fotos por pet → economia de
+ * banda/armazenamento). Mantém a proporção; devolve um `File` .jpg pronto
+ * para `uploadImage`. Se algo falhar, devolve o arquivo original.
+ *
+ * @param {File} file
+ * @param {{ maxDim?: number, quality?: number }} [opts]
+ * @returns {Promise<{ file: File, width: number|null, height: number|null, size: number }>}
+ */
+export async function compressImageFile(file, { maxDim = 1600, quality = 0.72 } = {}) {
+  if (!file || !String(file.type || '').startsWith('image/')) {
+    return { file, width: null, height: null, size: file?.size || 0 };
+  }
+  // GIF/SVG: não reprocessa (perderia animação/vetor).
+  if (/image\/(gif|svg)/.test(file.type)) {
+    return { file, width: null, height: null, size: file.size };
+  }
+  try {
+    const bitmap = await createImageBitmap(file);
+    const scale = Math.min(1, maxDim / Math.max(bitmap.width, bitmap.height));
+    const width = Math.max(1, Math.round(bitmap.width * scale));
+    const height = Math.max(1, Math.round(bitmap.height * scale));
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(bitmap, 0, 0, width, height);
+    bitmap.close?.();
+    const blob = await new Promise((res) => canvas.toBlob(res, 'image/jpeg', quality));
+    // Só usa o comprimido se realmente ficou menor.
+    if (blob && blob.size < file.size) {
+      const baseName = String(file.name || 'foto').replace(/\.\w+$/, '') || 'foto';
+      const out = new File([blob], `${baseName}.jpg`, { type: 'image/jpeg' });
+      return { file: out, width, height, size: out.size };
+    }
+    return { file, width, height, size: file.size };
+  } catch (err) {
+    logger.warn('compressImageFile falhou; usando original:', err);
+    return { file, width: null, height: null, size: file.size };
+  }
+}
+
 /** Valida um arquivo de imagem. Retorna mensagem de erro ou null. */
 export function validateImageFile(file) {
   if (!file) return 'Selecione um arquivo.';
