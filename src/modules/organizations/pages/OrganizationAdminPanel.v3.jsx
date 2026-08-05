@@ -761,7 +761,7 @@ export default function OrganizationAdminPanelV3() {
   const location = [club.city, club.state].filter(Boolean).join(', ');
 
   return (
-    <ClubThemedScope club={club} className="arena-page mx-auto max-w-6xl space-y-6 px-4 py-6 pb-24 sm:px-6" data-testid="org-admin-page">
+    <ClubThemedScope club={club} className={cn('arena-page mx-auto max-w-6xl space-y-6 px-4 pb-24 sm:px-6', inShelterPersona ? 'pt-3' : 'pt-6')} data-testid="org-admin-page">
       <Seo
         title={`Admin ${club.name || 'ONG'} — Viralata`}
         description={`Painel administrativo de ${club.name || 'organização'}.`}
@@ -772,32 +772,27 @@ export default function OrganizationAdminPanelV3() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      {/* Breadcrumb + back. No acesso de abrigo (item 7) não há "voltar para a
-          ONG" nem breadcrumb de visão pública — o usuário já está no painel. */}
-      <div className="flex flex-col gap-2">
-        {!inShelterPersona && (
+      {/* Breadcrumb + back — SOMENTE fora do acesso de abrigo. No acesso de
+          abrigo (item 7) o usuário já está no painel: sem "voltar para a ONG"
+          e sem breadcrumb (redundante, o hero já identifica o abrigo). */}
+      {!inShelterPersona && (
+        <div className="flex flex-col gap-2">
           <Button asChild variant="ghost" size="sm" className="self-start">
             <Link to={`/organizacoes/${orgId}`}>
               <ArrowLeft className="mr-1.5 h-4 w-4" aria-hidden="true" />
               Voltar para a ONG
             </Link>
           </Button>
-        )}
-        <Breadcrumb
-          items={inShelterPersona
-            ? [
-              { label: 'Meu abrigo', icon: Home },
-              { label: club.name || 'Organização' },
-              { label: 'Administração' },
-            ]
-            : [
+          <Breadcrumb
+            items={[
               { label: 'Início', href: '/', icon: Home },
               { label: 'Organizações', href: '/organizacoes' },
               { label: club.name || 'Organização', href: `/organizacoes/${orgId}` },
               { label: 'Administração' },
             ]}
-        />
-      </div>
+          />
+        </div>
+      )}
 
       {/* HERO */}
       <motion.section

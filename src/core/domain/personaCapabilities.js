@@ -63,11 +63,10 @@ const CAPABILITIES = {
   // Sem scopeId (usuário ainda não entrou em um abrigo — ex.: /entrar/abrigo),
   // não há navegação escopada: evita links quebrados (/organizacoes/undefined).
   [PERSONA_TYPE.SHELTER_STAFF]: (scopeId) => (!scopeId ? EMPTY_CAPS : {
-    topbarNav: [
-      { label: 'Painel', to: `/organizacoes/${scopeId}/admin`, icon: Home },
-      { label: 'Pets', to: `/organizacoes/${scopeId}/admin?tab=pets`, icon: PawPrint },
-      { label: 'Mural', to: `/organizacoes/${scopeId}?tab=feed`, icon: MessageCircle },
-    ],
+    // Topbar SEM navegação escopada: dentro do abrigo o usuário navega pelas
+    // abas do próprio painel — Painel/Pets/Mural na topbar são redundantes.
+    // A navegação primária no mobile fica na barra inferior (bottomNav).
+    topbarNav: [],
     headerCTAs: [],
     bottomNav: [
       { label: 'Painel', icon: Home, to: `/organizacoes/${scopeId}/admin` },

@@ -13,7 +13,7 @@ personas V4 (ver `docs/PLAN_PERSONAS_V4.md` e `docs/PERSONA_CAPABILITIES.md`).
 | Página | Rota | Arquivo | Status | Observações |
 |---|---|---|---|---|
 | Entrada do abrigo | `/entrar/abrigo` | `src/pages/onboarding/ShelterEntry.jsx` | ✅ | Lista os abrigos do usuário como primeiras opções de ingresso; abaixo, "inserir código" e "criar novo abrigo"; ambos funcionais. Topbar sem Painel/Pets/Mural e sem indicação de abrigo (só o switch) nesta página de gateway. |
-| Painel do abrigo | `/organizacoes/:orgId/admin` | `OrganizationAdminPanel.{v1,v3}.jsx` | 🔄 | Item 7 aplicado (sem "voltar para a ONG"/"ver página pública" no acesso de abrigo). Falta revisão detalhada de abas/ferramentas por permissão. |
+| Painel do abrigo | `/organizacoes/:orgId/admin` | `OrganizationAdminPanel.{v1,v3}.jsx` | ✅ | No acesso de abrigo: topbar sem Painel/Pets/Mural (navega pelas abas do painel), sem breadcrumb acima do hero, sem "voltar para a ONG"/"ver página pública"; espaço topbar→hero reduzido. Revisão fina de abas/ferramentas por permissão segue conforme uso. |
 | Página pública do abrigo | `/organizacoes/:orgId` | `ClubDetail.{v1,v3}.jsx` | 🔄 | Item 4 aplicado (sem atalho "Painel" com V4 on). Revisão pública ainda pendente. |
 | Diretório de abrigos | `/organizacoes` | `ClubsDirectory.jsx` | 🔄 | Item 4/6 aplicados (código só no acesso de abrigo; filtro cidade/raio). Revisão fina pendente. |
 
