@@ -10,7 +10,7 @@
  */
 
 import { useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { ChevronLeft, Heart, BookOpen, Calendar, MapPin, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -93,6 +93,7 @@ export default function VolunteerProfile() {
   const { user, isLoading: authLoading } = useAuth();
   const enabled = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_VOLUNTEER_PROFILE_V1);
   const navigate = useNavigate();
+  const location = useLocation();
   const classes = useArenaPageClasses('voluntario');
 
   const { data: profile, isLoading: profileLoading } = useVolunteerProfile();
@@ -103,6 +104,17 @@ export default function VolunteerProfile() {
       navigate('/login?from=/perfil/voluntario', { replace: true });
     }
   }, [user, authLoading, navigate]);
+
+  // Rola até a âncora (#shifts / #tasks) quando a navegação da persona
+  // voluntário aponta para uma seção — só depois de o conteúdo carregar,
+  // pois as seções são renderizadas condicionalmente.
+  const dataReady = !profileLoading && !rostersLoading;
+  useEffect(() => {
+    const hash = location.hash?.replace('#', '');
+    if (!hash || !dataReady) return;
+    const el = document.getElementById(hash);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [location.hash, dataReady]);
 
   if (authLoading || !user) {
     return (
@@ -197,7 +209,7 @@ export default function VolunteerProfile() {
         )}
         {/* Minhas tarefas pendentes */}
         {profile && (
-          <section aria-label="Tarefas pendentes">
+          <section id="tasks" className="scroll-mt-24" aria-label="Tarefas pendentes">
             <h2 className="text-base font-semibold mb-2">Minhas tarefas</h2>
             <MyTasksSection userUid={user.uid} />
           </section>
@@ -248,7 +260,7 @@ export default function VolunteerProfile() {
 
         {/* Escalas abertas */}
         {profile && (
-          <section aria-label="Escalas abertas">
+          <section id="shifts" className="scroll-mt-24" aria-label="Escalas abertas">
             <h2 className="text-base font-semibold mb-2">Oportunidades de escalas</h2>
             <VolunteerShiftsBrowse
               actor={{ uid: user.uid, displayName: user.displayName, email: user.email }}

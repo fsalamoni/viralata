@@ -47,8 +47,8 @@ personas V4 (ver `docs/PLAN_PERSONAS_V4.md` e `docs/PERSONA_CAPABILITIES.md`).
 
 | Página | Rota | Arquivo | Status | Observações |
 |---|---|---|---|---|
-| Inscrição de voluntário | `/voluntarios/seja` | `VolunteerSignup.jsx` | ⬜ | |
-| Painel do voluntário | `/perfil/voluntario` | — | ⬜ | |
+| Inscrição de voluntário | `/voluntarios/seja` | `VolunteerSignup.jsx` | ✅ | Fluxo de inscrição em passos, auth obrigatória (anônimo → `/login` com `from`). Funcional. |
+| Painel do voluntário | `/perfil/voluntario` | `VolunteerProfile.jsx` | ✅ | Hub do voluntário (perfil, métricas, tarefas, escalas, abrigos, auditoria). Corrigida a navegação da persona: os itens "Escalas"/"Tarefas" (âncoras `#shifts`/`#tasks`) agora rolam até a seção — antes não havia `id` nem tratamento de hash. |
 
 ## Transversais
 
