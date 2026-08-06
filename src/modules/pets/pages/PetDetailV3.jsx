@@ -78,6 +78,7 @@ import PublicHealthRecord from '../components/PublicHealthRecord';
 
 // Forms (TASK-V3-PET-DETAIL-FULL-EDIT)
 import PetEditForm from '../components/PetEditForm';
+import PhotoFocusEditor from '../components/PhotoFocusEditor';
 import PetMedicationForm from '../components/PetMedicationForm';
 import PetVetVisitForm from '../components/PetVetVisitForm';
 import PetTreatmentForm from '../components/PetTreatmentForm';
@@ -113,7 +114,7 @@ import {
   ArrowLeft, Heart, MapPin, Trash2, Share2, MessageCircle, MessageSquare,
   FileText, Eye, Calendar, Activity, Pill, Stethoscope,
   Bath, History, HeartHandshake, AlertCircle, Users, Edit, Plus,
-  Clock, ListChecks, Sparkles,
+  Clock, ListChecks, Sparkles, Crop,
 } from 'lucide-react';
 
 // ============================================================================
@@ -179,6 +180,7 @@ export default function PetDetailV3() {
 
   // Dialogs de edição/inserção (canManage only)
   const [editOpen, setEditOpen] = useState(false);
+  const [focusOpen, setFocusOpen] = useState(false);
   const [medOpen, setMedOpen] = useState(false);
   const [vetOpen, setVetOpen] = useState(false);
   const [editingVet, setEditingVet] = useState(null);
@@ -466,7 +468,19 @@ export default function PetDetailV3() {
                     : []),
                 ]}
                 petName={petName}
+                focusMap={pet.photo_focus || {}}
               />
+              {canManage && (pet.photos || []).length > 0 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full"
+                  onClick={() => setFocusOpen(true)}
+                >
+                  <Crop className="mr-2 h-4 w-4" aria-hidden="true" />
+                  Ajustar enquadramento das fotos
+                </Button>
+              )}
               {Array.isArray(pet.temperament) && pet.temperament.length > 0 && (
                 <div className="rounded-2xl border border-border bg-card p-3">
                   <h3 className="mb-2 text-[11.5px] font-bold uppercase tracking-wider text-muted-foreground">Temperamento</h3>
@@ -907,6 +921,7 @@ export default function PetDetailV3() {
       {canEditHistory && (
         <>
           <PetEditForm open={editOpen} onOpenChange={setEditOpen} pet={pet} />
+          <PhotoFocusEditor open={focusOpen} onOpenChange={setFocusOpen} pet={pet} />
           <PetMedicationForm
             open={medOpen}
             onOpenChange={setMedOpen}

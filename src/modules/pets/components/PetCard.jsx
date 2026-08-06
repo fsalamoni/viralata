@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Icon } from '@/components/ui/icon';
 import { getPriorityLabel } from '../domain/priority';
+import { photoFocusPosition } from '../domain/photoFocus';
 
 const SPECIES_ICON = { dog: Dog, cat: Cat, rabbit: Rabbit, bird: Bird, other: PawPrint };
 const SPECIES_MATERIAL = { dog: 'pets', cat: 'pets', rabbit: 'cruelty_free', bird: 'flutter_dash', other: 'pets' };
@@ -52,6 +53,7 @@ export default function PetCard({ pet }) {
               src={photo}
               alt={pet.name || pet.title || 'Pet para adoção'}
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              style={{ objectPosition: photoFocusPosition(pet.photo_focus, photo) }}
               loading="lazy"
             />
             {priorityLabel && (

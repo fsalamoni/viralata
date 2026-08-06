@@ -20,6 +20,7 @@ import { ChevronLeft, ChevronRight, ZoomIn, X } from 'lucide-react';
 import { cn } from '@/core/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
+import { photoFocusPosition } from '../domain/photoFocus';
 
 const SWIPE_THRESHOLD = 50; // px
 
@@ -34,7 +35,7 @@ function ViralataPlaceholder() {
   );
 }
 
-export function PetGallery({ photos = [], petName = 'Pet', className }) {
+export function PetGallery({ photos = [], petName = 'Pet', className, focusMap = {} }) {
   const [activeIdx, setActiveIdx] = useState(0);
   const [zoomOpen, setZoomOpen] = useState(false);
   const [imageLoaded, setImageLoaded] = useState({});
@@ -148,6 +149,7 @@ export function PetGallery({ photos = [], petName = 'Pet', className }) {
             'h-full w-full object-cover transition-opacity duration-300',
             imageLoaded[activeIdx] ? 'opacity-100' : 'opacity-0',
           )}
+          style={{ objectPosition: photoFocusPosition(focusMap, photos[activeIdx]) }}
           onLoad={() => setImageLoaded((s) => ({ ...s, [activeIdx]: true }))}
           loading={activeIdx === 0 ? 'eager' : 'lazy'}
           fetchPriority={activeIdx === 0 ? 'high' : 'auto'}
@@ -211,7 +213,7 @@ export function PetGallery({ photos = [], petName = 'Pet', className }) {
                   : 'border-transparent opacity-70 hover:opacity-100',
               )}
             >
-              <img src={url} alt="" className="h-full w-full object-cover" loading="lazy" />
+              <img src={url} alt="" className="h-full w-full object-cover" style={{ objectPosition: photoFocusPosition(focusMap, url) }} loading="lazy" />
             </button>
           ))}
         </div>
