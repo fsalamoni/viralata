@@ -16,9 +16,9 @@ personas V4 (ver `docs/PLAN_PERSONAS_V4.md` e `docs/PERSONA_CAPABILITIES.md`).
 | Painel do abrigo | `/organizacoes/:orgId/admin` | `OrganizationAdminPanel.{v1,v3}.jsx` | ✅ | No acesso de abrigo: topbar sem Painel/Pets/Mural (navega pelas abas do painel), sem breadcrumb acima do hero, sem "voltar para a ONG"/"ver página pública"; espaço topbar→hero reduzido. Revisão fina de abas/ferramentas por permissão segue conforme uso. |
 | Página pública do abrigo | `/organizacoes/:orgId` | `ClubDetail.{v1,v3}.jsx` | 🔄 | Item 4 aplicado (sem atalho "Painel" com V4 on). Revisão pública ainda pendente. |
 | Diretório de abrigos | `/organizacoes` | `ClubsDirectory.jsx` | 🔄 | Item 4/6 aplicados (código só no acesso de abrigo; filtro cidade/raio). Revisão fina pendente. |
-| Cadastro/edição do pet | `/pets/:id` (drawer) | `PetEditForm.jsx` + `RescuePhotosField.jsx` | ✅ | 30 campos em 5 seções (público/privado), obrigatoriedade real, número de resgate sequencial, fotos do resgate (upload comprimido, público/interno, lightbox). |
-| Página pública do pet | `/pets/:id` | `PetDetailV3.jsx` | ✅ | Respeita visibilidade por campo (Título/Raça privados; RG/Microchip/ID/Status/Idade aparente/data do status públicos); fotos de resgate públicas entram na galeria. |
-| Tabela operacional de pets | `/organizacoes/:id/admin` (Operacional) | `PetsOpsTable.jsx` | ✅ | Colunas: sexo, idade, castrado, resgate (nº+data), dias no abrigo, localização atual, status+data. |
+| Cadastro/edição do pet | `/pets/:id` (drawer) | `PetEditForm.jsx` + `RescuePhotosField.jsx` | ✅ | 30 campos em 5 seções (público/privado), obrigatoriedade real, número de resgate sequencial, fotos do resgate (upload comprimido, público/interno, lightbox). **Modal redesenhado** (mais largo, seções em cards, cabeçalho/rodapé fixos) para leitura mais clara e espaçada. |
+| Página pública do pet | `/pets/:id` | `PetDetailV3.jsx` + `PhotoFocusEditor.jsx` | ✅ | Respeita visibilidade por campo (Título/Raça privados; RG/Microchip/ID/Status/Idade aparente/data do status públicos); fotos de resgate públicas entram na galeria. **Enquadramento (ponto focal) ajustável** pelo abrigo — `pet.photo_focus` vira `object-position` na galeria e nos cards. |
+| Tabela operacional de pets | `/organizacoes/:id/admin` (Operacional) | `PetsOpsTable.jsx` | ✅ | Colunas: sexo, idade, castrado, resgate (nº+data), dias no abrigo, localização atual, status+data. **Ordenação por qualquer coluna, filtros por coluna e busca global** por qualquer informação. |
 
 ## Acesso: Comunidade (persona `community_staff`)
 
