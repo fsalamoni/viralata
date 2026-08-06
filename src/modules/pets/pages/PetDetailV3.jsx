@@ -395,6 +395,14 @@ export default function PetDetailV3() {
             {pet.status === 'adopted' && <Badge variant="success">Adotado ✓</Badge>}
             {pet.status === 'in_process' && <Badge className="bg-highlight text-highlight-foreground">Em processo</Badge>}
             {pet.status === 'available' && <Badge variant="default" className="bg-emerald-600">Disponível</Badge>}
+            {pet.status === 'unavailable' && <Badge variant="secondary">Indisponível</Badge>}
+            {/* Data da última alteração do status (público). */}
+            {(() => {
+              const d = pet.status_changed_at ? new Date(pet.status_changed_at) : null;
+              return d && !Number.isNaN(d.getTime()) ? (
+                <span className="text-[11px] text-muted-foreground">desde {d.toLocaleDateString('pt-BR')}</span>
+              ) : null;
+            })()}
           </div>
         </div>
 
