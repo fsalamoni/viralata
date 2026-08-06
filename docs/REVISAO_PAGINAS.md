@@ -58,4 +58,4 @@ personas V4 (ver `docs/PLAN_PERSONAS_V4.md` e `docs/PERSONA_CAPABILITIES.md`).
 |---|---|---|---|---|
 | Landing | `/` | `Home.{v1,v3}.jsx` + `PersonaEntryGrid.jsx` | ✅ | Portas de entrada por acesso (item 1); admin master só para o admin. |
 | Seleção de acesso | `/acesso` | `PersonaSelection.jsx` | 🔄 | Conteúdo por persona (item 3). Topbar de gateway a revisar. |
-| Switcher (topbar) | — | `PersonaSwitcher.jsx` | ✅ | Só mostra os acessos do próprio usuário (item 8). |
+| Switcher (topbar) | — | `PersonaSwitcher.jsx` + `ShelterPicker.jsx` | ✅ | Só mostra os acessos do próprio usuário (item 8). **No acesso de abrigo, o switch de acessos e a indicação/seleção de abrigo aparecem SOMENTE para o admin master**; os demais usuários (mesmo membros de abrigo) não veem — para trocar de abrigo, reingressam pela landing. |
