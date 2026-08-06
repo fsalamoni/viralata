@@ -18,6 +18,7 @@ import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
 import { PERSONA_TYPE, PERSONA_LABEL } from '@/core/domain/personas';
+import { canUsePlatformAdminPersona } from '@/core/services/personaService';
 import { cn } from '@/core/lib/utils';
 
 const PERSONA_ICON = {
@@ -31,7 +32,7 @@ const PERSONA_ICON = {
 
 export function PersonaSwitcher({ onSelectPersona, onAddPersona }) {
   const enabled = useFeatureFlag(FEATURE_FLAG.V4_PERSONA_SWITCHER);
-  const { user } = useAuth();
+  const { user, userProfile } = useAuth();
   const {
     active,
     visibleForSwitcher,
@@ -59,6 +60,12 @@ export function PersonaSwitcher({ onSelectPersona, onAddPersona }) {
   if (!user) return null;
   if (!canSwitch) return null;
   if (isLoading) return null;
+  // D-SHELTER-SWITCH-ADMIN-ONLY: dentro do acesso de abrigo, o switch de
+  // acessos fica disponível APENAS para o admin master. Os demais usuários
+  // não trocam de acesso pelo topbar aqui — reingressam pela landing page.
+  if (active?.type === PERSONA_TYPE.SHELTER_STAFF && !canUsePlatformAdminPersona(userProfile)) {
+    return null;
+  }
 
   const ActiveIcon = PERSONA_ICON[active.type] || User;
   const activeLabel = PERSONA_LABEL[active.type] || 'Acesso';

@@ -18,13 +18,14 @@ import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
 import { PERSONA_TYPE, buildPersonaKey } from '@/core/domain/personas';
 import { isPersonaGatewayPath } from '@/core/domain/personaGatewayRoutes';
+import { canUsePlatformAdminPersona } from '@/core/services/personaService';
 import { cn } from '@/core/lib/utils';
 
 export function ShelterPicker() {
   const v4Enabled = useFeatureFlag(FEATURE_FLAG.V4_PERSONA_SHELTER_STAFF);
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = useAuth();
+  const { user, userProfile } = useAuth();
   const { active, setActive } = useActivePersona();
   const { data: memberships = [], isLoading } = useUserClubMemberships(user?.uid);
   const [open, setOpen] = useState(false);
@@ -45,6 +46,11 @@ export function ShelterPicker() {
 
   if (!v4Enabled) return null;
   if (!user) return null;
+  // D-SHELTER-SWITCH-ADMIN-ONLY: no acesso de abrigo, tanto a indicação do
+  // abrigo ativo quanto a troca entre abrigos ficam disponíveis SOMENTE para
+  // o admin master. Os demais usuários — mesmo membros de abrigo — não veem
+  // esta indicação/seletor; para trocar de abrigo, reingressam pela landing.
+  if (!canUsePlatformAdminPersona(userProfile)) return null;
   if (active && active.type !== PERSONA_TYPE.SHELTER_STAFF) return null;
   if (isLoading) return null;
   if (memberships.length < 1) return null;
