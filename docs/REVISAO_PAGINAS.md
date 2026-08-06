@@ -33,15 +33,15 @@ personas V4 (ver `docs/PLAN_PERSONAS_V4.md` e `docs/PERSONA_CAPABILITIES.md`).
 
 | Página | Rota | Arquivo | Status | Observações |
 |---|---|---|---|---|
-| Feed | `/feed` | — | ⬜ | |
-| Busca | `/busca` | `SearchPage.jsx` | ⬜ | |
+| Feed | `/feed` | `PetFeed.jsx` (→ V3) | ✅ | Feed do adotante (exclusivo da persona). Cards via `PetCard` (nome-primeiro, sem campos privados — Título/Raça não vazam). `AdopterGate`. |
+| Busca | `/busca` | `SearchPage.jsx` (→ V3) | ✅ | Busca inteligente multi-entidade. `AdopterGate`; o acesso a dados por entidade é garantido pelas Firestore rules (persona é UX, não segurança). Resultados de pet mostram nome/espécie/cidade. |
 
 ## Acesso: Doador (persona `donor`)
 
 | Página | Rota | Arquivo | Status | Observações |
 |---|---|---|---|---|
-| Meus pets | `/meus-pets` | — | ⬜ | |
-| Cadastro de pet | `/pets/new` | — | ⬜ | |
+| Meus pets | `/meus-pets` | `MyPets.jsx` | ✅ | Lista os pets do doador (nome-primeiro), editar/remover, contagem de interessados, atalho para interesses. `DonorGate`. Corrigido: o status `unavailable` mostrava "Disponível" (faltava no mapa de estilos) — agora exibe "Indisponível". |
+| Cadastro de pet | `/pets/new` | `CreatePet.jsx` | ✅ | Cadastro do doador. Campos de resgate/operacional para pets de abrigo (nº de resgate sequencial, etc.); obrigatoriedade real; strip de undefined antes de persistir. |
 
 ## Acesso: Voluntário (persona `volunteer`)
 
