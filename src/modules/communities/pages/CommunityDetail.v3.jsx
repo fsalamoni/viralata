@@ -29,13 +29,12 @@ import { motion, useReducedMotion } from 'framer-motion';
 import {
   Users, Calendar, MessageSquare, MessageCircle, Info, Settings,
   ArrowLeft, MapPin, Sparkles, AlertCircle, RefreshCw, Hash,
-  Heart, ArrowRight, ChevronRight, TrendingUp, FileText, PartyPopper,
-  Clock, Pin, Check, UserPlus, Crown,
+  ArrowRight, TrendingUp, PartyPopper,
+  Check, UserPlus, Crown,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { EmptyState } from '@/components/ui/empty-state';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import Seo from '@/components/Seo';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
@@ -46,6 +45,10 @@ import { getCommunity, joinCommunity } from '../services/communityService';
 import { listCommunityEvents, getCommunityPosts } from '../services/communityService';
 import { deriveCommunityMembershipState } from '../domain/permissions';
 import { useMyCommunityMembership } from '../hooks/useCommunities';
+import MuralTab from '../components/MuralTab';
+import ForumTab from '../components/ForumTab';
+import EventsTab from '../components/EventsTab';
+import CommunityTeamTab from '../components/CommunityTeamTab';
 
 const ANIM = {
   hidden: { opacity: 0, y: 12 },
@@ -73,40 +76,9 @@ const TABS_ADMIN = [
 // UTILS
 // ============================================================================
 
-function formatRelative(iso) {
-  const d = parseTimestamp(iso);
-  if (!d) return '';
-  const now = new Date();
-  const diff = Math.floor((now - d) / 1000);
-  if (diff < 60) return 'agora';
-  if (diff < 3600) return `há ${Math.floor(diff / 60)} min`;
-  if (diff < 86400) return `há ${Math.floor(diff / 3600)} h`;
-  if (diff < 604800) return `há ${Math.floor(diff / 86400)} dia${Math.floor(diff / 86400) > 1 ? 's' : ''}`;
-  return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
-}
-
-function formatEventDate(iso) {
-  const d = parseTimestamp(iso);
-  if (!d) return '—';
-  return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
-}
-
-function formatEventLong(iso) {
-  const d = parseTimestamp(iso);
-  if (!d) return '';
-  return d.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' });
-}
-
 function isFuture(iso) {
   const d = parseTimestamp(iso);
   return d && d >= new Date();
-}
-
-function daysFromNow(iso) {
-  const d = parseTimestamp(iso);
-  if (!d) return Infinity;
-  const ms = d.getTime() - new Date().setHours(0, 0, 0, 0);
-  return Math.floor(ms / (1000 * 60 * 60 * 24));
 }
 
 function pickGradient(seed) {
@@ -122,12 +94,6 @@ function pickGradient(seed) {
   let h = 0;
   for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) | 0;
   return palette[Math.abs(h) % palette.length];
-}
-
-function extractHashtags(text) {
-  if (!text) return [];
-  const matches = text.match(/#[\wÀ-ÿ]+/g);
-  return matches ? matches.slice(0, 4) : [];
 }
 
 // ============================================================================
@@ -170,94 +136,6 @@ function StatCard({ icon: Icon, value, label, accent }) {
         </div>
       </div>
     </motion.div>
-  );
-}
-
-function PostPreviewCard({ post, communityId }) {
-  const tags = useMemo(() => extractHashtags(post.text), [post.text]);
-  return (
-    <Link
-      to={`/comunidades/${communityId}?tab=content:mural`}
-      className="group block rounded-2xl border border-border bg-card p-4 transition-all hover:border-primary/50 hover:shadow-md"
-    >
-      <div className="flex items-start gap-3">
-        <UserAvatar
-          photoUrl={post.author_photo}
-          name={post.author_name}
-          size="md"
-        />
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <p className="truncate text-sm font-semibold text-foreground">
-              {post.author_name || 'Membro'}
-            </p>
-            <span className="text-xs text-muted-foreground">·</span>
-            <p className="text-xs text-muted-foreground">
-              {formatRelative(post.created_at)}
-            </p>
-          </div>
-          {post.text && (
-            <p className="mt-1 line-clamp-2 text-xs text-foreground/80">
-              {post.text}
-            </p>
-          )}
-          {tags.length > 0 && (
-            <div className="mt-1.5 flex flex-wrap gap-1">
-              {tags.map((tag, i) => (
-                <span
-                  key={i}
-                  className="inline-flex items-center rounded-full bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
-        {post.is_pinned && (
-          <Pin className="h-3.5 w-3.5 shrink-0 text-amber-500" aria-hidden="true" />
-        )}
-      </div>
-    </Link>
-  );
-}
-
-function EventCard({ event, communityId }) {
-  const today = isFuture(event.event_date) && daysFromNow(event.event_date) === 0;
-  const days = daysFromNow(event.event_date);
-
-  return (
-    <Link
-      to={`/comunidades/${communityId}?tab=content:eventos`}
-      className="group block overflow-hidden rounded-2xl border border-border bg-card transition-all hover:border-primary/50 hover:shadow-md"
-    >
-      <div className="bg-gradient-to-r from-violet-400 to-fuchsia-500 p-3 text-white">
-        <div className="flex items-center gap-2">
-          <Calendar className="h-4 w-4" aria-hidden="true" />
-          <p className="text-[10.5px] font-bold uppercase tracking-wider opacity-90">
-            Próximo evento
-          </p>
-        </div>
-        <h3 className="mt-1.5 line-clamp-1 text-sm font-bold">
-          {event.title || 'Evento'}
-        </h3>
-      </div>
-      <div className="space-y-1.5 p-3 text-xs text-muted-foreground">
-        <div className="flex items-center gap-1.5">
-          <Clock className="h-3 w-3 shrink-0" aria-hidden="true" />
-          <span className="truncate">{formatEventLong(event.event_date)}</span>
-        </div>
-        {event.location && (
-          <div className="flex items-center gap-1.5">
-            <MapPin className="h-3 w-3 shrink-0" aria-hidden="true" />
-            <span className="truncate">{event.location}</span>
-          </div>
-        )}
-      </div>
-      <div className="border-t border-border/50 px-3 py-2 text-[10.5px] font-semibold text-primary">
-        {today ? '🎉 É hoje!' : days === 1 ? 'Amanhã' : `Em ${days} dias`}
-      </div>
-    </Link>
   );
 }
 
@@ -382,31 +260,6 @@ export default function CommunityDetailV3() {
       events: upcomingEvents.length,
     };
   }, [community, posts, events]);
-
-  // Top posts (pinned primeiro, depois recentes)
-  const topPosts = useMemo(() => {
-    return [...(posts || [])]
-      .sort((a, b) => {
-        if (a.is_pinned && !b.is_pinned) return -1;
-        if (!a.is_pinned && b.is_pinned) return 1;
-        const da = parseTimestamp(a.created_at) || 0;
-        const db = parseTimestamp(b.created_at) || 0;
-        return db - da;
-      })
-      .slice(0, 3);
-  }, [posts]);
-
-  // Próximo evento
-  const nextEvent = useMemo(() => {
-    const upcoming = (events || [])
-      .filter((e) => isFuture(e.event_date))
-      .sort((a, b) => {
-        const da = parseTimestamp(a.event_date) || 0;
-        const db = parseTimestamp(b.event_date) || 0;
-        return da - db;
-      });
-    return upcoming[0] || null;
-  }, [events]);
 
   // Equipe
   const team = useMemo(() => {
@@ -633,26 +486,22 @@ export default function CommunityDetailV3() {
                 )}
                 {isMember && (
                   <Button
-                    asChild
+                    onClick={() => setActiveSub('mural')}
                     size="lg"
                     className="border-0 bg-white text-rose-700 hover:bg-white/90"
                   >
-                    <Link to={`/comunidades/${communityId}?tab=content:mural`}>
-                      <MessageSquare className="mr-1.5 h-4 w-4" aria-hidden="true" />
-                      Acessar mural
-                    </Link>
+                    <MessageSquare className="mr-1.5 h-4 w-4" aria-hidden="true" />
+                    Acessar mural
                   </Button>
                 )}
                 <Button
-                  asChild
+                  onClick={() => setActiveSub('forum')}
                   size="lg"
                   variant="ghost"
                   className="text-white hover:bg-white/15"
                 >
-                  <Link to={`/comunidades/${communityId}?tab=content:forum`}>
-                    <MessageCircle className="mr-1.5 h-4 w-4" aria-hidden="true" />
-                    Fórum
-                  </Link>
+                  <MessageCircle className="mr-1.5 h-4 w-4" aria-hidden="true" />
+                  Fórum
                 </Button>
               </motion.div>
             </div>
@@ -796,103 +645,30 @@ export default function CommunityDetailV3() {
         transition={{ duration: 0.3 }}
         className="space-y-4"
       >
-        {/* MURAL */}
+        {/* MURAL — componente interativo real (post, curtir, comentar) */}
         {activeGroup === 'content' && activeSubKey === 'mural' && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between gap-2">
-              <h2 className="text-lg font-bold text-foreground sm:text-xl">
-                <MessageSquare className="mr-1.5 inline h-5 w-5 text-primary" aria-hidden="true" />
-                Mural da comunidade
-              </h2>
-              {isMember && (
-                <Button asChild size="sm" variant="outline">
-                  <Link to={`/comunidades/${communityId}?tab=content:mural&new=1`}>
-                    <Sparkles className="mr-1 h-3.5 w-3.5" aria-hidden="true" />
-                    Postar
-                  </Link>
-                </Button>
-              )}
-            </div>
-            {topPosts.length === 0 ? (
-              <EmptyState
-                icon={MessageSquare}
-                title="Mural vazio"
-                description={isMember
-                  ? 'Seja o primeiro a postar! Compartilhe algo com a comunidade.'
-                  : 'Entre na comunidade para ver e criar posts.'}
-                action={!isMember && !canAdmin && (
-                  <Button onClick={handleJoin} disabled={joining}>
-                    <UserPlus className="mr-2 h-4 w-4" aria-hidden="true" />
-                    {joining ? 'Entrando...' : 'Participar'}
-                  </Button>
-                )}
-              />
-            ) : (
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {topPosts.map((p) => (
-                  <PostPreviewCard key={p.id} post={p} communityId={communityId} />
-                ))}
-              </div>
-            )}
-            {topPosts.length > 0 && (
-              <div className="text-center">
-                <Button asChild variant="outline">
-                  <Link to={`/comunidades/${communityId}?tab=content:mural`}>
-                    Ver mural completo
-                    <ArrowRight className="ml-1.5 h-4 w-4" aria-hidden="true" />
-                  </Link>
-                </Button>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* FÓRUM */}
-        {activeGroup === 'content' && activeSubKey === 'forum' && (
-          <EmptyState
-            icon={MessageCircle}
-            title="Fórum da comunidade"
-            description="Discussões, perguntas e tópicos. Acesse o fórum completo para participar."
-            action={
-              <Button asChild>
-                <Link to={`/comunidades/${communityId}?tab=content:forum`}>
-                  Acessar fórum
-                  <ArrowRight className="ml-1.5 h-4 w-4" aria-hidden="true" />
-                </Link>
-              </Button>
-            }
+          <MuralTab
+            communityId={communityId}
+            isMember={isMember}
+            isAdmin={canAdmin}
+            membership={membership}
+            community={community}
           />
         )}
 
-        {/* EVENTOS */}
+        {/* FÓRUM — tópicos e discussões */}
+        {activeGroup === 'content' && activeSubKey === 'forum' && (
+          <ForumTab communityId={communityId} />
+        )}
+
+        {/* EVENTOS — agenda com RSVP */}
         {activeGroup === 'content' && activeSubKey === 'eventos' && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between gap-2">
-              <h2 className="text-lg font-bold text-foreground sm:text-xl">
-                <Calendar className="mr-1.5 inline h-5 w-5 text-primary" aria-hidden="true" />
-                Próximos eventos
-              </h2>
-            </div>
-            {nextEvent ? (
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                <EventCard event={nextEvent} communityId={communityId} />
-              </div>
-            ) : (
-              <EmptyState
-                icon={PartyPopper}
-                title="Nenhum evento próximo"
-                description="A comunidade ainda não agendou eventos. Volte mais tarde!"
-              />
-            )}
-            <div className="text-center">
-              <Button asChild variant="outline">
-                <Link to={`/comunidades/${communityId}?tab=content:eventos`}>
-                  Ver todos os eventos
-                  <ArrowRight className="ml-1.5 h-4 w-4" aria-hidden="true" />
-                </Link>
-              </Button>
-            </div>
-          </div>
+          <EventsTab
+            communityId={communityId}
+            isAdmin={canAdmin}
+            membership={membership}
+            community={community}
+          />
         )}
 
         {/* SOBRE */}
@@ -971,21 +747,9 @@ export default function CommunityDetailV3() {
           </div>
         )}
 
-        {/* EQUIPE (admin only) */}
+        {/* EQUIPE (admin only) — gestão real de membros e papéis */}
         {activeGroup === 'management' && activeSubKey === 'equipe' && canAdmin && (
-          <EmptyState
-            icon={Users}
-            title="Gestão da equipe"
-            description="Gerencie membros, papéis e permissões da comunidade."
-            action={
-              <Button asChild>
-                <Link to={`/comunidade/${communityId}/admin`}>
-                  Acessar painel
-                  <ArrowRight className="ml-1.5 h-4 w-4" aria-hidden="true" />
-                </Link>
-              </Button>
-            }
-          />
+          <CommunityTeamTab community={community} membership={membership} />
         )}
       </motion.section>
 

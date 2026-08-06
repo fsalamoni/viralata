@@ -26,7 +26,7 @@ personas V4 (ver `docs/PLAN_PERSONAS_V4.md` e `docs/PERSONA_CAPABILITIES.md`).
 |---|---|---|---|---|
 | Entrada da comunidade | `/entrar/comunidade` | `src/pages/onboarding/CommunityEntry.jsx` | ✅ | Lista as comunidades do usuário + código + criar; topbar de gateway. Sistema de código de convite (com backfill para legadas). |
 | Painel da comunidade | `/comunidade/:id/admin` | `CommunityAdminPanel.{v1,v3}.jsx` | 🔄 | Item 7 + card de código de convite. Revisão detalhada pendente. |
-| Página pública da comunidade | `/comunidade/:id` | `CommunityDetail.{v1,v3}.jsx` | ⬜ | |
+| Página pública da comunidade | `/comunidade/:id` | `CommunityDetail.{v1,v3}.jsx` | ✅ | V3 passou a renderizar os componentes interativos reais (MuralTab/ForumTab/EventsTab/CommunityTeamTab) nas abas, como o V1 — antes só mostrava prévias e links quebrados para `/comunidades/:slug` (página read-only). Botões do hero trocam de aba na própria página. |
 | Diretório de comunidades | `/comunidade` | `CommunitiesDirectory.jsx` | 🔄 | Item 5/6 aplicados. Revisão fina pendente. |
 
 ## Acesso: Adotante (persona `adopter`)
