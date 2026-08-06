@@ -127,6 +127,7 @@ export async function createCommunity(data, actor) {
     id,
     ...payload,
     owner_id: actor?.uid || null,
+    invite_code: communityInviteCode(),
     member_count: 1,
     created_at: serverTimestamp(),
     updated_at: serverTimestamp(),
@@ -173,6 +174,50 @@ export async function joinCommunity(communityId, userId) {
     role: 'member',
     joined_at: serverTimestamp()
   });
+}
+
+/** Gera um código de convite curto para a comunidade (ex.: COM-AB12CD). */
+export function communityInviteCode() {
+  return `COM-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+}
+
+/** Busca uma comunidade pelo código de convite. Retorna null se não achar. */
+export async function getCommunityByInviteCode(code) {
+  if (!db) return null;
+  const trimmed = String(code || '').trim().toUpperCase();
+  if (!trimmed) return null;
+  const snap = await getDocs(query(collection(db, COMMUNITY_COLLECTION), where('invite_code', '==', trimmed)));
+  if (snap.empty) return null;
+  const d = snap.docs[0];
+  return { id: d.id, ...d.data() };
+}
+
+/**
+ * Vincula o usuário à equipe de uma comunidade pelo código de convite.
+ * Atômico (membership + member_count no mesmo commit). Idempotente: se já é
+ * membro, apenas retorna a comunidade. Retorna a comunidade vinculada.
+ */
+export async function joinCommunityByCode(code, user) {
+  if (!user?.uid) throw new Error('Usuário não autenticado.');
+  const community = await getCommunityByInviteCode(code);
+  if (!community) throw new Error('Código de convite inválido.');
+
+  const memberRef = doc(db, 'community_members', `${community.id}_${user.uid}`);
+  const existing = await getDoc(memberRef);
+  if (existing.exists()) return community;
+
+  const communityRef = doc(db, COMMUNITY_COLLECTION, community.id);
+  const batch = writeBatch(db);
+  batch.set(memberRef, {
+    community_id: community.id,
+    user_id: user.uid,
+    role: 'member',
+    joined_at: serverTimestamp(),
+  });
+  batch.update(communityRef, { member_count: increment(1), updated_at: serverTimestamp() });
+  await batch.commit();
+  await createAuditLog({ action: 'community_member_joined', actor: user, details: { community_id: community.id } });
+  return community;
 }
 
 /**

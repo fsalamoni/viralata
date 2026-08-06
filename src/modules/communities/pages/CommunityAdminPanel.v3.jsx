@@ -27,7 +27,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import {
   ArrowLeft, LayoutGrid, MessageSquare, Users, ShieldCheck, Building2,
   Search, X, Sparkles, ArrowUpRight, Activity, Clock, Trash2,
-  AlertCircle, RefreshCw, Heart, Eye, MessageCircle,
+  AlertCircle, RefreshCw, Heart, Eye, MessageCircle, KeyRound, Copy,
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -471,6 +471,36 @@ function OverviewTab({ community, navigate, onDelete }) {
             </Button>
           )}
         </div>
+
+        {/* Código de convite — para vincular novos membros à equipe. */}
+        {community?.invite_code && (
+          <div className="rounded-2xl border border-border bg-card p-5">
+            <h2 className="mb-3 flex items-center gap-2 text-base font-bold text-foreground">
+              <KeyRound className="h-4 w-4 text-sky-600" aria-hidden="true" />
+              Código de convite
+            </h2>
+            <p className="mb-3 text-[13px] text-muted-foreground">
+              Compartilhe este código para que novos membros se vinculem à
+              equipe (acesso de comunidade → &ldquo;Inserir código&rdquo;).
+            </p>
+            <div className="flex items-center gap-2">
+              <code className="flex-1 rounded-lg border border-input bg-muted/40 px-3 py-2 text-sm font-bold tracking-[0.2em]">
+                {community.invite_code}
+              </code>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  navigator.clipboard?.writeText(community.invite_code);
+                  sonnerToast.success('Código copiado!');
+                }}
+              >
+                <Copy className="mr-1.5 h-4 w-4" /> Copiar
+              </Button>
+            </div>
+          </div>
+        )}
       </motion.div>
 
       {/* Danger zone */}
