@@ -14,6 +14,7 @@ const STATUS_STYLE = {
   available: { label: 'Disponível', className: 'bg-secondary text-secondary-foreground' },
   in_process: { label: 'Em processo', className: 'bg-highlight/20 text-highlight-foreground' },
   adopted: { label: 'Adotado', className: 'bg-[hsl(150,38%,36%,0.12)] text-[hsl(150,38%,26%)]' },
+  unavailable: { label: 'Indisponível', className: 'bg-muted text-muted-foreground' },
 };
 
 function PetRow({ pet, onDelete, deleting }) {
