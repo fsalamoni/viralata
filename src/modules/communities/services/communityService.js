@@ -181,6 +181,23 @@ export function communityInviteCode() {
   return `COM-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
 }
 
+/**
+ * Garante que a comunidade tenha um código de convite (backfill de legadas).
+ * Se já tiver, retorna o existente; senão gera, persiste e retorna. Idempotente.
+ */
+export async function ensureCommunityInviteCode(communityId, actor) {
+  if (!db || !communityId) return null;
+  const ref = doc(db, COMMUNITY_COLLECTION, communityId);
+  const snap = await getDoc(ref);
+  if (!snap.exists()) return null;
+  const existing = snap.data()?.invite_code;
+  if (existing) return existing;
+  const code = communityInviteCode();
+  await updateDoc(ref, { invite_code: code, updated_at: serverTimestamp() });
+  await createAuditLog({ action: 'community_invite_code_generated', actor, details: { community_id: communityId } }).catch(() => {});
+  return code;
+}
+
 /** Busca uma comunidade pelo código de convite. Retorna null se não achar. */
 export async function getCommunityByInviteCode(code) {
   if (!db) return null;
