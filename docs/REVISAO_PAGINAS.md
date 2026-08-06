@@ -6,6 +6,8 @@ personas V4 (ver `docs/PLAN_PERSONAS_V4.md` e `docs/PERSONA_CAPABILITIES.md`).
 
 **Legenda de status:** ⬜ pendente · 🔄 em andamento · ✅ revisada
 
+> Nota: redeploy disparado após instabilidade do GitHub Actions (2026-08-06).
+
 ---
 
 ## Acesso: Abrigo (persona `shelter_staff`)
