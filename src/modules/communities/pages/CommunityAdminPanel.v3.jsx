@@ -45,6 +45,7 @@ import { useIsStaffPersonaActive } from '@/core/hooks/useStaffPersonaView';
 import {
   useCommunity, useMyCommunityMembership, useDeleteCommunity,
 } from '@/modules/communities/hooks/useCommunities';
+import { ensureCommunityInviteCode } from '@/modules/communities/services/communityService';
 import {
   COMMUNITY_ROLE, COMMUNITY_PERMISSION,
 } from '@/modules/communities/domain/constants';
@@ -551,6 +552,18 @@ export default function CommunityAdminPanelV3() {
 
   const canManageFeed = hasCommunityPermission(community, membership, COMMUNITY_PERMISSION.FEED, user?.uid);
   const canManageTeam = hasCommunityPermission(community, membership, COMMUNITY_PERMISSION.TEAM, user?.uid);
+
+  // Backfill do código de convite para comunidades legadas: quando o
+  // owner/admin abre uma comunidade sem invite_code, gera um e recarrega.
+  useEffect(() => {
+    if (!community?.id || community.invite_code) return undefined;
+    if (!(owner || isAdmin)) return undefined;
+    let cancelled = false;
+    ensureCommunityInviteCode(community.id, { uid: user?.uid, email: user?.email })
+      .then((code) => { if (code && !cancelled) refetchCommunity?.(); })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [community?.id, community?.invite_code, owner, isAdmin, user?.uid, user?.email, refetchCommunity]);
 
   // Active tab
   const requestedTab = searchParams.get('tab') || 'overview';
