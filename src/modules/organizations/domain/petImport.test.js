@@ -81,5 +81,55 @@ describe('organizations/petImport domain', () => {
       expect(errors).toHaveLength(1);
       expect(errors[0].row).toBe(4);
     });
+
+    describe('campos internos do abrigo', () => {
+      it('mapeia os campos internos preenchidos para o schema do pet', () => {
+        const row = {
+          ...validRow,
+          RG: 'RG-123',
+          Microchip: '981000012345678',
+          'ID abrigo': 'A-42',
+          'Idade aparente (anos)': '3',
+          Castrado: 'Sim',
+          Vermifugado: 'Não',
+          Energia: 'Alta',
+          'Localização atual': 'Em lar temporário',
+          'Responsável resgate': 'Maria',
+          'Local resgate': 'Rua X, 100',
+          Observações: 'observação livre',
+        };
+        const { toInsert, errors } = validateAndMapRows([row], []);
+        expect(errors).toHaveLength(0);
+        expect(toInsert[0].petData).toMatchObject({
+          national_pet_id: 'RG-123',
+          microchip: '981000012345678',
+          shelter_internal_id: 'A-42',
+          apparent_age_years: 3,
+          neutered: true,
+          dewormed: false,
+          energy_level: 'high',
+          current_location: 'foster',
+          rescue_responsible_name: 'Maria',
+          rescue_address: 'Rua X, 100',
+          observations: 'observação livre',
+        });
+      });
+
+      it('preserva o booleano false em Castrado/Vermifugado (não vira null nem some)', () => {
+        const row = { ...validRow, Castrado: 'Não', Vermifugado: 'Não' };
+        const { toInsert } = validateAndMapRows([row], []);
+        expect(toInsert[0].petData.neutered).toBe(false);
+        expect(toInsert[0].petData.dewormed).toBe(false);
+      });
+
+      it('não inclui campos internos quando as colunas estão vazias', () => {
+        const { toInsert } = validateAndMapRows([validRow], []);
+        const petData = toInsert[0].petData;
+        expect(petData).not.toHaveProperty('national_pet_id');
+        expect(petData).not.toHaveProperty('neutered');
+        expect(petData).not.toHaveProperty('current_location');
+        expect(petData).not.toHaveProperty('observations');
+      });
+    });
   });
 });

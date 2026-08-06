@@ -15,6 +15,10 @@
 
 export const PET_IMPORT_HEADERS = [
   'ID', 'Título', 'Nome', 'Espécie', 'Porte', 'Idade', 'Sexo', 'Raça', 'Vacinação', 'Cidade', 'Estado', 'Status',
+  // Campos internos do abrigo (exportados sempre; importáveis quando preenchidos).
+  'RG', 'Microchip', 'ID abrigo', 'Idade aparente (anos)', 'Castrado', 'Vermifugado', 'Energia', 'Nascimento',
+  'Nº resgate', 'Data resgate', 'Responsável resgate', 'Local resgate', 'Localização atual',
+  'Processo judicial', 'Observações', 'Descrição', 'Necessidades especiais', 'Requisitos adoção', 'Data status',
 ];
 
 const SPECIES_MAP = {
@@ -54,6 +58,27 @@ const STATUS_MAP = {
   available: 'available', 'disponível': 'available', disponivel: 'available',
   in_process: 'in_process', 'em processo': 'in_process',
   adopted: 'adopted', adotado: 'adopted', adotada: 'adopted',
+  unavailable: 'unavailable', 'indisponível': 'unavailable', indisponivel: 'unavailable',
+};
+
+const ENERGY_MAP = {
+  low: 'low', baixa: 'low', baixo: 'low',
+  medium: 'medium', media: 'medium', 'média': 'medium',
+  high: 'high', alta: 'high', alto: 'high',
+};
+
+const YESNO_MAP = {
+  sim: true, yes: true, true: true, '1': true, verdadeiro: true,
+  'não': false, nao: false, no: false, false: false, '0': false,
+};
+
+const CURRENT_LOCATION_MAP = {
+  shelter: 'shelter', 'em abrigo': 'shelter', abrigo: 'shelter',
+  foster: 'foster', 'em lar temporario': 'foster', 'lar temporario': 'foster', 'lar temporário': 'foster',
+  clinic: 'clinic', 'em clinica': 'clinic', clinica: 'clinic', 'clínica': 'clinic',
+  transport: 'transport', 'em transporte': 'transport', transporte: 'transport',
+  unknown: 'unknown', 'paradeiro desconhecido': 'unknown', desconhecido: 'unknown',
+  other: 'other', outros: 'other', outro: 'other',
 };
 
 function normalize(value) {
@@ -66,7 +91,9 @@ function normalize(value) {
 
 function mapEnum(value, table) {
   if (!value) return null;
-  return table[normalize(value)] || null;
+  const key = normalize(value);
+  // `in` (não `||`) para não transformar valores `false` (ex.: YESNO) em null.
+  return key in table ? table[key] : null;
 }
 
 /** Lê o valor de uma linha tolerando variações de cabeçalho (PT/EN, com/sem acento). */
@@ -89,10 +116,20 @@ function readField(row, ...aliases) {
  * validação de dados, então a referência serve como guia para quem preenche).
  */
 export function buildPetImportWorkbook(XLSX, existingPets = []) {
+  const yesno = (v) => (v === true ? 'Sim' : v === false ? 'Não' : '');
   const dataRows = existingPets.map((pet) => ([
     pet.id, pet.title || '', pet.name || '', pet.species || '', pet.size || '',
     pet.age_group || '', pet.gender || '', pet.breed || '', pet.vaccinated || '',
     pet.city || '', pet.state || '', pet.status || '',
+    // Campos internos do abrigo:
+    pet.national_pet_id || '', pet.microchip || '', pet.shelter_internal_id || '',
+    pet.apparent_age_years ?? '', yesno(pet.neutered), yesno(pet.dewormed), pet.energy_level || '',
+    (pet.birth_date || '').slice(0, 10),
+    pet.rescue_number || '', (pet.rescue_date || '').slice(0, 10), pet.rescue_responsible_name || '',
+    pet.rescue_address || '', pet.current_location || '',
+    pet.legal_process_number || '', pet.observations || '', pet.description || '',
+    pet.special_needs || '', pet.adoption_requirements || '',
+    pet.status_changed_at ? new Date(pet.status_changed_at).toLocaleDateString('pt-BR') : '',
   ]));
   const sheet = XLSX.utils.aoa_to_sheet([PET_IMPORT_HEADERS, ...dataRows]);
   sheet['!cols'] = PET_IMPORT_HEADERS.map(() => ({ wch: 16 }));
@@ -104,10 +141,15 @@ export function buildPetImportWorkbook(XLSX, existingPets = []) {
     ['Idade', 'Filhote, Adulto, Idoso'],
     ['Sexo', 'Macho, Fêmea'],
     ['Vacinação', 'Sim, Parcial, Não'],
-    ['Status', 'Disponível, Em processo, Adotado'],
+    ['Status', 'Disponível, Em processo, Adotado, Indisponível'],
+    ['Castrado', 'Sim, Não'],
+    ['Vermifugado', 'Sim, Não'],
+    ['Energia', 'Baixa, Média, Alta'],
+    ['Localização atual', 'Em abrigo, Em lar temporário, Em clínica, Em transporte, Paradeiro desconhecido, Outros'],
+    ['Nº resgate / Data status', 'Gerados pelo sistema — exportados como referência, não são importados.'],
     ['ID', 'Deixe em branco para cadastrar um animal novo. Preencha com o ID de um animal já cadastrado para atualizá-lo.'],
   ]);
-  reference['!cols'] = [{ wch: 14 }, { wch: 60 }];
+  reference['!cols'] = [{ wch: 20 }, { wch: 62 }];
 
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, sheet, 'Animais');
@@ -256,6 +298,31 @@ export function validateAndMapRows(rawRows, existingPets = []) {
       title, name, species, size, age_group: ageGroup, gender, breed,
       vaccinated, city, state, status: status || 'available',
     };
+
+    // Campos internos do abrigo — opcionais: só entram no petData quando
+    // preenchidos, para não sobrescrever dados existentes com vazio.
+    const setIf = (key, val) => { if (val !== '' && val != null) petData[key] = val; };
+    setIf('national_pet_id', readField(raw, 'RG', 'national_pet_id'));
+    setIf('microchip', readField(raw, 'Microchip', 'microchip'));
+    setIf('shelter_internal_id', readField(raw, 'ID abrigo', 'shelter_internal_id'));
+    const apparent = readField(raw, 'Idade aparente (anos)', 'Idade aparente', 'apparent_age_years');
+    if (apparent && !Number.isNaN(Number(apparent))) petData.apparent_age_years = Number(apparent);
+    const neut = mapEnum(readField(raw, 'Castrado', 'neutered'), YESNO_MAP);
+    if (neut != null) petData.neutered = neut;
+    const dew = mapEnum(readField(raw, 'Vermifugado', 'dewormed'), YESNO_MAP);
+    if (dew != null) petData.dewormed = dew;
+    setIf('energy_level', mapEnum(readField(raw, 'Energia', 'energy_level'), ENERGY_MAP));
+    setIf('birth_date', readField(raw, 'Nascimento', 'birth_date'));
+    setIf('rescue_date', readField(raw, 'Data resgate', 'rescue_date'));
+    setIf('rescue_responsible_name', readField(raw, 'Responsável resgate', 'Responsavel resgate', 'rescue_responsible_name'));
+    setIf('rescue_address', readField(raw, 'Local resgate', 'rescue_address'));
+    setIf('current_location', mapEnum(readField(raw, 'Localização atual', 'Localizacao atual', 'current_location'), CURRENT_LOCATION_MAP));
+    setIf('legal_process_number', readField(raw, 'Processo judicial', 'legal_process_number'));
+    setIf('observations', readField(raw, 'Observações', 'Observacoes', 'observations'));
+    setIf('description', readField(raw, 'Descrição', 'Descricao', 'description'));
+    setIf('special_needs', readField(raw, 'Necessidades especiais', 'special_needs'));
+    setIf('adoption_requirements', readField(raw, 'Requisitos adoção', 'Requisitos adocao', 'adoption_requirements'));
+    // Nº de resgate e Data do status são gerenciados pelo sistema — não importados.
 
     const existing = id ? existingById.get(id) : null;
     if (existing) {
