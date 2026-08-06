@@ -18,10 +18,11 @@
 import React, { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
-  ChevronUp, ChevronDown, History, Bath, Stethoscope, Clock, MessageSquare,
-  ExternalLink, Hash, PawPrint,
+  ChevronUp, ChevronDown, ChevronsUpDown, History, Bath, Stethoscope, Clock, MessageSquare,
+  Hash, PawPrint, Search, SlidersHorizontal, X,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Badge } from '@/components/ui/badge';
@@ -62,11 +63,12 @@ const STATUS_LABEL = {
   unavailable: 'Indisponível',
 };
 
-const SORT_OPTIONS = [
-  { key: 'pet_seq', label: 'ID' },
-  { key: 'name', label: 'Nome' },
-  { key: 'created_at', label: 'Data de cadastro' },
-];
+const NEUTERED_LABEL = { true: 'Sim', false: 'Não' };
+
+/** Converte um mapa {valor: rótulo} em [{value, label}] para os <select>. */
+function toOptions(map) {
+  return Object.entries(map).map(([value, label]) => ({ value, label }));
+}
 
 /**
  * Formata pet_seq como #000001 (com zeros à esquerda, 6 dígitos).
@@ -81,40 +83,131 @@ function formatPetSeq(pet) {
   return pet?.pet_code || `#${(pet?.id || '').slice(0, 6)}`;
 }
 
+/**
+ * Coleta recursivamente TODOS os valores primitivos de um objeto pet num
+ * array de strings, para a busca global "por qualquer informação". Trata
+ * Timestamps do Firestore como data formatada e limita a profundidade para
+ * evitar estruturas cíclicas/pesadas.
+ */
+function collectValues(value, acc, depth = 0) {
+  if (value == null || depth > 5) return;
+  const t = typeof value;
+  if (t === 'string' || t === 'number' || t === 'boolean') {
+    acc.push(String(value));
+    return;
+  }
+  if (t !== 'object') return;
+  if (typeof value.seconds === 'number') {
+    const d = formatShortDate(value);
+    if (d) acc.push(d);
+    return;
+  }
+  if (Array.isArray(value)) {
+    value.forEach((v) => collectValues(v, acc, depth + 1));
+    return;
+  }
+  Object.values(value).forEach((v) => collectValues(v, acc, depth + 1));
+}
+
+/**
+ * Monta o "palheiro" de busca de um pet: os valores brutos (deep) MAIS os
+ * rótulos legíveis (Cachorro, Disponível, Castrado…) e datas, para que a
+ * busca funcione tanto pelo valor quanto pelo texto que o usuário vê.
+ */
+function petHaystack(pet) {
+  const acc = [];
+  collectValues(pet, acc);
+  acc.push(
+    SPECIES_LABEL[pet.species] || '',
+    SIZE_LABEL[pet.size] || '',
+    GENDER_LABEL[pet.gender] || '',
+    AGE_LABEL[pet.age_group] || '',
+    STATUS_LABEL[pet.status] || '',
+    CURRENT_LOCATION_LABELS[pet.current_location] || '',
+    pet.neutered ? 'castrado sim' : 'não castrado',
+    formatPetSeq(pet),
+  );
+  return acc.join(' ').toLowerCase();
+}
+
+/** Valor de ordenação por coluna (número para colunas numéricas; texto senão). */
+function sortValue(pet, key) {
+  switch (key) {
+    case 'pet_seq': return pet.pet_seq || 0;
+    case 'name': return (pet.name || pet.title || '').toLowerCase();
+    case 'species': return (SPECIES_LABEL[pet.species] || pet.species || '').toLowerCase();
+    case 'size': return (SIZE_LABEL[pet.size] || pet.size || '').toLowerCase();
+    case 'gender': return (GENDER_LABEL[pet.gender] || '').toLowerCase();
+    case 'age_group': return (AGE_LABEL[pet.age_group] || '').toLowerCase();
+    case 'neutered': return pet.neutered ? 1 : 0;
+    case 'rescue': return (pet.rescue_number || '').toLowerCase();
+    case 'days': {
+      const d = daysInShelter(pet);
+      return typeof d === 'number' ? d : -1;
+    }
+    case 'current_location': return (CURRENT_LOCATION_LABELS[pet.current_location] || '').toLowerCase();
+    case 'status': return (STATUS_LABEL[pet.status] || '').toLowerCase();
+    case 'created_at': return pet.created_at?.seconds || 0;
+    default: return '';
+  }
+}
+
+/** Aplica os filtros por coluna a um pet. Retorna true se passa em todos. */
+function matchesFilters(pet, filters) {
+  for (const [key, raw] of Object.entries(filters)) {
+    if (!raw) continue;
+    const val = String(raw);
+    if (key === 'neutered') {
+      if (String(!!pet.neutered) !== val) return false;
+    } else if (key === 'pet_seq') {
+      const seq = `${formatPetSeq(pet)} ${pet.pet_seq || ''} ${pet.pet_code || ''}`.toLowerCase();
+      if (!seq.includes(val.toLowerCase())) return false;
+    } else if (key === 'name') {
+      if (!(pet.name || pet.title || '').toLowerCase().includes(val.toLowerCase())) return false;
+    } else if (key === 'rescue') {
+      if (!(pet.rescue_number || '').toLowerCase().includes(val.toLowerCase())) return false;
+    } else if ((pet[key] || '') !== val) {
+      // Colunas enum: match exato do valor bruto.
+      return false;
+    }
+  }
+  return true;
+}
+
 export default function PetsOpsTable({ pets = [], isLoading = false, canManage = true, search = '' }) {
   const navigate = useNavigate();
   const [sortKey, setSortKey] = useState('pet_seq');
   const [sortDir, setSortDir] = useState('desc');
+  const [query, setQuery] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState({});
 
-  // Filtra por busca (nome, raça, cidade, ID)
+  // Busca global "por qualquer informação": termo do prop (externo) + o
+  // digitado na própria tabela; casa em qualquer valor dos dados do pet.
+  const searchTerm = `${search || ''} ${query || ''}`.toLowerCase().trim();
+
+  const activeFilterCount = useMemo(
+    () => Object.values(filters).filter(Boolean).length,
+    [filters],
+  );
+
+  // Filtra por busca global + filtros por coluna.
   const filtered = useMemo(() => {
-    const q = (search || '').toLowerCase().trim();
-    if (!q) return pets;
+    const terms = searchTerm.split(/\s+/).filter(Boolean);
     return pets.filter((p) => {
-      const hay = [
-        p.name, p.title, p.breed, p.city, p.pet_code,
-        String(p.pet_seq || ''), formatPetSeq(p),
-      ].filter(Boolean).join(' ').toLowerCase();
-      return hay.includes(q);
+      if (activeFilterCount > 0 && !matchesFilters(p, filters)) return false;
+      if (terms.length === 0) return true;
+      const hay = petHaystack(p);
+      return terms.every((t) => hay.includes(t));
     });
-  }, [pets, search]);
+  }, [pets, searchTerm, filters, activeFilterCount]);
 
-  // Ordena
+  // Ordena por qualquer coluna de dados.
   const sorted = useMemo(() => {
     const arr = [...filtered];
     arr.sort((a, b) => {
-      let av = a[sortKey];
-      let bv = b[sortKey];
-      if (sortKey === 'pet_seq') {
-        av = a.pet_seq || 0;
-        bv = b.pet_seq || 0;
-      } else if (sortKey === 'created_at') {
-        av = (a.created_at?.seconds || 0);
-        bv = (b.created_at?.seconds || 0);
-      } else {
-        av = String(av || '').toLowerCase();
-        bv = String(bv || '').toLowerCase();
-      }
+      const av = sortValue(a, sortKey);
+      const bv = sortValue(b, sortKey);
       if (av < bv) return sortDir === 'asc' ? -1 : 1;
       if (av > bv) return sortDir === 'asc' ? 1 : -1;
       return 0;
@@ -131,7 +224,16 @@ export default function PetsOpsTable({ pets = [], isLoading = false, canManage =
     }
   }
 
-  function SortHeader({ k, children }) {
+  function setColFilter(key, value) {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+  }
+
+  function clearAll() {
+    setQuery('');
+    setFilters({});
+  }
+
+  function SortHeader({ k, children, className }) {
     const active = sortKey === k;
     return (
       <button
@@ -140,12 +242,14 @@ export default function PetsOpsTable({ pets = [], isLoading = false, canManage =
         className={cn(
           'inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider transition-colors',
           active ? 'text-foreground' : 'text-muted-foreground hover:text-foreground',
+          className,
         )}
+        title="Ordenar por esta coluna"
       >
         {children}
-        {active ? (
-          sortDir === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />
-        ) : null}
+        {active
+          ? (sortDir === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)
+          : <ChevronsUpDown className="h-3 w-3 opacity-40" />}
       </button>
     );
   }
@@ -177,53 +281,151 @@ export default function PetsOpsTable({ pets = [], isLoading = false, canManage =
     );
   }
 
+  const hasQueryOrFilters = Boolean(searchTerm) || activeFilterCount > 0;
+
+  // Barra de ferramentas: busca global + toggle de filtros + contagem.
+  const toolbar = (
+    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-1 flex-wrap items-center gap-2">
+        <div className="relative min-w-[220px] flex-1 sm:max-w-md">
+          <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Buscar por qualquer informação…"
+            className="h-9 pl-8"
+            aria-label="Buscar animais por qualquer informação"
+          />
+          {query && (
+            <button
+              type="button"
+              onClick={() => setQuery('')}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              aria-label="Limpar busca"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+        <Button
+          type="button"
+          variant={showFilters || activeFilterCount > 0 ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setShowFilters((s) => !s)}
+          className="h-9"
+        >
+          <SlidersHorizontal className="mr-1.5 h-4 w-4" />
+          Filtros
+          {activeFilterCount > 0 && (
+            <Badge variant="secondary" className="ml-1.5 h-5 min-w-5 justify-center rounded-full px-1 text-[11px]">
+              {activeFilterCount}
+            </Badge>
+          )}
+        </Button>
+        {hasQueryOrFilters && (
+          <Button type="button" variant="ghost" size="sm" onClick={clearAll} className="h-9">
+            <X className="mr-1 h-4 w-4" /> Limpar
+          </Button>
+        )}
+      </div>
+      <p className="shrink-0 text-xs text-muted-foreground">
+        {hasQueryOrFilters
+          ? `${sorted.length} de ${pets.length}`
+          : `${pets.length} ${pets.length === 1 ? 'animal' : 'animais'}`}
+      </p>
+    </div>
+  );
+
   if (sorted.length === 0) {
     return (
-      <EmptyState
-        icon={PawPrint}
-        title={search ? 'Nenhum resultado' : 'Nenhum animal cadastrado'}
-        description={search ? `Nenhum pet encontrado para "${search}".` : 'Adicione uma linha ou importe uma planilha.'}
-      />
+      <div className="space-y-3">
+        {toolbar}
+        <EmptyState
+          icon={PawPrint}
+          title={hasQueryOrFilters ? 'Nenhum resultado' : 'Nenhum animal cadastrado'}
+          description={hasQueryOrFilters
+            ? 'Nenhum pet corresponde à busca/filtros atuais. Ajuste os critérios ou limpe.'
+            : 'Adicione uma linha ou importe uma planilha.'}
+        />
+      </div>
     );
   }
 
   return (
-    <div className="overflow-x-auto rounded-2xl border border-white bg-card shadow-sm">
-      <Table>
-        <TableHeader>
-          <TableRow className="bg-secondary/60">
-            <TableHead className="w-28 px-3 py-3">
-              <SortHeader k="pet_seq">ID</SortHeader>
-            </TableHead>
-            <TableHead className="px-3 py-3">
-              <SortHeader k="name">Nome</SortHeader>
-            </TableHead>
-            <TableHead className="px-3 py-3">Espécie</TableHead>
-            <TableHead className="px-3 py-3">Porte</TableHead>
-            <TableHead className="px-3 py-3">Sexo</TableHead>
-            <TableHead className="px-3 py-3">Idade</TableHead>
-            <TableHead className="px-3 py-3">Castrado</TableHead>
-            <TableHead className="px-3 py-3">Resgate</TableHead>
-            <TableHead className="px-3 py-3 text-center">Dias</TableHead>
-            <TableHead className="px-3 py-3">Localização</TableHead>
-            <TableHead className="px-3 py-3">Status</TableHead>
-            <TableHead className="px-3 py-3 text-center text-xs font-bold uppercase tracking-wider text-muted-foreground">
-              Histórico
-            </TableHead>
-            <TableHead className="px-3 py-3 text-center text-xs font-bold uppercase tracking-wider text-muted-foreground">
-              Cuidados
-            </TableHead>
-            <TableHead className="px-3 py-3 text-center text-xs font-bold uppercase tracking-wider text-muted-foreground">
-              Saúde
-            </TableHead>
-            <TableHead className="px-3 py-3 text-center text-xs font-bold uppercase tracking-wider text-muted-foreground">
-              Timeline
-            </TableHead>
-            <TableHead className="px-3 py-3 text-center text-xs font-bold uppercase tracking-wider text-muted-foreground">
-              Anotações
-            </TableHead>
-          </TableRow>
-        </TableHeader>
+    <div className="space-y-3">
+      {toolbar}
+      <div className="overflow-x-auto rounded-2xl border border-white bg-card shadow-sm">
+        <Table>
+          <TableHeader>
+            <TableRow className="bg-secondary/60">
+              <TableHead className="w-28 px-3 py-3">
+                <SortHeader k="pet_seq">ID</SortHeader>
+              </TableHead>
+              <TableHead className="px-3 py-3">
+                <SortHeader k="name">Nome</SortHeader>
+              </TableHead>
+              <TableHead className="px-3 py-3"><SortHeader k="species">Espécie</SortHeader></TableHead>
+              <TableHead className="px-3 py-3"><SortHeader k="size">Porte</SortHeader></TableHead>
+              <TableHead className="px-3 py-3"><SortHeader k="gender">Sexo</SortHeader></TableHead>
+              <TableHead className="px-3 py-3"><SortHeader k="age_group">Idade</SortHeader></TableHead>
+              <TableHead className="px-3 py-3"><SortHeader k="neutered">Castrado</SortHeader></TableHead>
+              <TableHead className="px-3 py-3"><SortHeader k="rescue">Resgate</SortHeader></TableHead>
+              <TableHead className="px-3 py-3 text-center"><SortHeader k="days">Dias</SortHeader></TableHead>
+              <TableHead className="px-3 py-3"><SortHeader k="current_location">Localização</SortHeader></TableHead>
+              <TableHead className="px-3 py-3"><SortHeader k="status">Status</SortHeader></TableHead>
+              <TableHead className="px-3 py-3 text-center text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                Histórico
+              </TableHead>
+              <TableHead className="px-3 py-3 text-center text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                Cuidados
+              </TableHead>
+              <TableHead className="px-3 py-3 text-center text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                Saúde
+              </TableHead>
+              <TableHead className="px-3 py-3 text-center text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                Timeline
+              </TableHead>
+              <TableHead className="px-3 py-3 text-center text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                Anotações
+              </TableHead>
+            </TableRow>
+            {showFilters && (
+              <TableRow className="bg-secondary/30 hover:bg-secondary/30">
+                <TableHead className="px-2 py-2">
+                  <ColTextFilter value={filters.pet_seq} onChange={(v) => setColFilter('pet_seq', v)} placeholder="ID" />
+                </TableHead>
+                <TableHead className="px-2 py-2">
+                  <ColTextFilter value={filters.name} onChange={(v) => setColFilter('name', v)} placeholder="Nome" />
+                </TableHead>
+                <TableHead className="px-2 py-2">
+                  <ColSelectFilter value={filters.species} onChange={(v) => setColFilter('species', v)} options={toOptions(SPECIES_LABEL)} />
+                </TableHead>
+                <TableHead className="px-2 py-2">
+                  <ColSelectFilter value={filters.size} onChange={(v) => setColFilter('size', v)} options={toOptions(SIZE_LABEL)} />
+                </TableHead>
+                <TableHead className="px-2 py-2">
+                  <ColSelectFilter value={filters.gender} onChange={(v) => setColFilter('gender', v)} options={toOptions(GENDER_LABEL)} />
+                </TableHead>
+                <TableHead className="px-2 py-2">
+                  <ColSelectFilter value={filters.age_group} onChange={(v) => setColFilter('age_group', v)} options={toOptions(AGE_LABEL)} />
+                </TableHead>
+                <TableHead className="px-2 py-2">
+                  <ColSelectFilter value={filters.neutered} onChange={(v) => setColFilter('neutered', v)} options={toOptions(NEUTERED_LABEL)} />
+                </TableHead>
+                <TableHead className="px-2 py-2">
+                  <ColTextFilter value={filters.rescue} onChange={(v) => setColFilter('rescue', v)} placeholder="Nº" />
+                </TableHead>
+                <TableHead className="px-2 py-2" />
+                <TableHead className="px-2 py-2">
+                  <ColSelectFilter value={filters.current_location} onChange={(v) => setColFilter('current_location', v)} options={toOptions(CURRENT_LOCATION_LABELS)} />
+                </TableHead>
+                <TableHead className="px-2 py-2">
+                  <ColSelectFilter value={filters.status} onChange={(v) => setColFilter('status', v)} options={toOptions(STATUS_LABEL)} />
+                </TableHead>
+                <TableHead className="px-2 py-2" colSpan={5} />
+              </TableRow>
+            )}
+          </TableHeader>
         <TableBody>
           {sorted.map((pet) => {
             const seqLabel = formatPetSeq(pet);
@@ -335,8 +537,39 @@ export default function PetsOpsTable({ pets = [], isLoading = false, canManage =
             );
           })}
         </TableBody>
-      </Table>
+        </Table>
+      </div>
     </div>
+  );
+}
+
+/** Filtro de coluna: campo de texto compacto. */
+function ColTextFilter({ value = '', onChange, placeholder }) {
+  return (
+    <Input
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
+      className="h-8 text-xs"
+      onClick={(e) => e.stopPropagation()}
+    />
+  );
+}
+
+/** Filtro de coluna: seletor de valores (enum) com opção "Todos". */
+function ColSelectFilter({ value = '', onChange, options }) {
+  return (
+    <select
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      className="h-8 w-full rounded-md border border-input bg-background px-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+      aria-label="Filtrar coluna"
+    >
+      <option value="">Todos</option>
+      {options.map((o) => (
+        <option key={o.value} value={o.value}>{o.label}</option>
+      ))}
+    </select>
   );
 }
 

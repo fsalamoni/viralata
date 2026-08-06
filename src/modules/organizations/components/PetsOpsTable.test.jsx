@@ -5,7 +5,7 @@
  * (pet_seq, IMUTÁVEL) clicável, mais atalhos para as seções do painel.
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
@@ -32,6 +32,8 @@ const PETS_FIXTURE = [
     species: 'dog',
     size: 'medium',
     status: 'available',
+    microchip: '981000111222333',
+    observations: 'muito dócil',
   },
   {
     id: 'p2',
@@ -136,5 +138,48 @@ describe('PetsOpsTable — TASK-V3-PET-OPS-LOG (sw-v72.4)', () => {
   it('renderiza EmptyState quando pets = []', () => {
     renderTable({ pets: [] });
     expect(screen.getByText(/Nenhum animal cadastrado/i)).toBeInTheDocument();
+  });
+
+  it('D-PET-OPS-SEARCH-DEEP: busca global casa qualquer campo (microchip)', () => {
+    renderTable({ search: '981000111222333' });
+    // Só o Buddy (p1) tem esse microchip.
+    expect(screen.getByTestId('pets-ops-id-p1')).toBeInTheDocument();
+    expect(screen.queryByTestId('pets-ops-id-p2')).toBeNull();
+    expect(screen.queryByTestId('pets-ops-id-p3')).toBeNull();
+  });
+
+  it('D-PET-OPS-SEARCH-DEEP: casa por texto de observações', () => {
+    renderTable({ search: 'dócil' });
+    expect(screen.getByTestId('pets-ops-id-p1')).toBeInTheDocument();
+    expect(screen.queryByTestId('pets-ops-id-p2')).toBeNull();
+  });
+
+  it('tem campo de busca própria e botão de Filtros', () => {
+    renderTable();
+    expect(screen.getByLabelText(/Buscar animais por qualquer informação/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Filtros/i })).toBeInTheDocument();
+  });
+
+  it('D-PET-OPS-COL-FILTER: filtro por coluna isola por espécie', () => {
+    renderTable();
+    // Abre a linha de filtros.
+    fireEvent.click(screen.getByRole('button', { name: /Filtros/i }));
+    // Seletores de coluna (comboboxes) aparecem.
+    const selects = screen.getAllByLabelText('Filtrar coluna');
+    expect(selects.length).toBeGreaterThan(0);
+    // O 1º select enum é Espécie — filtra por gato.
+    fireEvent.change(selects[0], { target: { value: 'cat' } });
+    expect(screen.getByTestId('pets-ops-id-p2')).toBeInTheDocument(); // Luna (cat)
+    expect(screen.queryByTestId('pets-ops-id-p1')).toBeNull(); // Buddy (dog)
+    expect(screen.queryByTestId('pets-ops-id-p3')).toBeNull(); // Rex (dog)
+  });
+
+  it('D-PET-OPS-SORT: cabeçalho de coluna é ordenável (clicável)', () => {
+    renderTable();
+    const speciesSort = screen.getByRole('button', { name: /Espécie/i });
+    expect(speciesSort).toBeInTheDocument();
+    // Clicar não deve lançar e mantém as linhas renderizadas.
+    fireEvent.click(speciesSort);
+    expect(screen.getAllByRole('row').length).toBeGreaterThanOrEqual(4);
   });
 });
