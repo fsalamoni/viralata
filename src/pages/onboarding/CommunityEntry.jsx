@@ -1,25 +1,34 @@
 /**
- * @fileoverview CommunityEntry — entrada de Membro de Comunidade (V4).
+ * @fileoverview CommunityEntry — entrada do acesso de Comunidade (V4).
  *
- * Análogo ao ShelterEntry, mas para comunidades.
- *  - **Código**: ingressar via invite_code
- *  - **Criar nova**: `CreateCommunity`
+ * Página gateway (`/entrar/comunidade`). Três caminhos, análogos ao abrigo:
+ *  - **Suas comunidades**: se o usuário já é membro/equipe, elas aparecem
+ *    como primeiras opções → entra direto no painel da comunidade.
+ *  - **Código**: `joinCommunityByCode` → vincula à equipe → painel.
+ *  - **Criar nova**: `CreateCommunity`.
+ *
+ * Nesta página o usuário ainda NÃO entrou em uma comunidade: a topbar não
+ * mostra a navegação escopada nem a indicação da comunidade (ver
+ * personaGatewayRoutes).
  *
  * @see docs/PLAN_PERSONAS_V4.md v1.1
  */
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Key, Users, ArrowRight, Loader2, AlertCircle } from 'lucide-react';
+import { Key, Users, ArrowRight, Loader2, AlertCircle, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { useActivePersona } from '@/core/hooks/useActivePersona';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
-import { PERSONA_TYPE } from '@/core/domain/personas';
+import { PERSONA_TYPE, buildPersonaKey } from '@/core/domain/personas';
 import { enablePersona } from '@/core/services/personaService';
+import { useMyCommunities } from '@/modules/communities/hooks/useCommunities';
+import { joinCommunityByCode } from '@/modules/communities/services/communityService';
 import { logger } from '@/core/lib/logger';
 
 export function CommunityEntry() {
@@ -27,7 +36,11 @@ export function CommunityEntry() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { setActive: setActiveHook } = useActivePersona();
-  const [mode, setMode] = useState(null);
+  // Comunidades em que o usuário já é membro/equipe — primeiras opções.
+  const { data: myCommunities = [], isLoading: loadingCommunities } = useMyCommunities({
+    enabled: Boolean(enabled && user?.uid),
+  });
+  const [mode, setMode] = useState(null); // null | 'code'
   const [code, setCode] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
@@ -42,6 +55,26 @@ export function CommunityEntry() {
     return null;
   }
 
+  const enterCommunity = async (communityId) => {
+    const personaKey = buildPersonaKey(PERSONA_TYPE.COMMUNITY_STAFF, communityId);
+    await enablePersona(user.uid, personaKey);
+    await setActiveHook(personaKey);
+    navigate(`/comunidade/${communityId}/admin`, { replace: true });
+  };
+
+  const handleEnterCommunity = async (community) => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    setError(null);
+    try {
+      await enterCommunity(community.id);
+    } catch (err) {
+      logger.error('[CommunityEntry] enter community failed:', err);
+      setError('Não foi possível abrir o painel desta comunidade. Tente novamente.');
+      setIsSubmitting(false);
+    }
+  };
+
   const handleJoinByCode = async (e) => {
     e.preventDefault();
     if (!code.trim()) {
@@ -51,29 +84,20 @@ export function CommunityEntry() {
     setIsSubmitting(true);
     setError(null);
     try {
-      logger.warn('[CommunityEntry] joinByCode not yet implemented in V4', { code });
-      setError('Funcionalidade de ingressar por código será implementada em fase posterior.');
+      const community = await joinCommunityByCode(code.trim(), user);
+      await enterCommunity(community.id);
     } catch (err) {
       logger.error('[CommunityEntry] joinByCode failed:', err);
-      setError('Código inválido ou expirado. Verifique com o admin da comunidade.');
-    } finally {
+      setError(err?.message || 'Código inválido ou expirado. Verifique com o admin da comunidade.');
       setIsSubmitting(false);
     }
   };
 
-  const handleCreate = async () => {
-    setIsSubmitting(true);
+  const handleCreate = () => {
+    // Abre o formulário de criação. A persona escopada (community_staff:id) é
+    // ativada após a criação, quando já existe o communityId.
     setError(null);
-    try {
-      await enablePersona(user.uid, PERSONA_TYPE.COMMUNITY_STAFF);
-      await setActiveHook(PERSONA_TYPE.COMMUNITY_STAFF);
-      navigate('/comunidade/criar', { state: { from: 'v4-persona' } });
-    } catch (err) {
-      logger.error('[CommunityEntry] create flow failed:', err);
-      setError('Não foi possível iniciar o fluxo de criação.');
-    } finally {
-      setIsSubmitting(false);
-    }
+    navigate('/comunidade/criar', { state: { from: 'v4-persona' } });
   };
 
   return (
@@ -83,7 +107,9 @@ export function CommunityEntry() {
           Entrar na comunidade
         </h1>
         <p className="mt-3 text-base text-muted-foreground sm:text-lg">
-          Já faz parte de uma comunidade? Informe o código. Ou crie uma nova.
+          {myCommunities.length > 0
+            ? 'Escolha uma das suas comunidades para abrir o painel — ou vincule-se a outra por código, ou crie uma nova.'
+            : 'Já faz parte de uma comunidade? Informe o código. Ou crie uma nova.'}
         </p>
       </header>
 
@@ -91,6 +117,61 @@ export function CommunityEntry() {
         <div className="mb-6 flex items-start gap-2 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-800">
           <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" aria-hidden="true" />
           <span>{error}</span>
+        </div>
+      )}
+
+      {/* Suas comunidades — primeiras opções de ingresso. */}
+      {!mode && myCommunities.length > 0 && (
+        <section className="mb-8" data-testid="community-entry-my-communities">
+          <h2 className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            Suas comunidades
+          </h2>
+          <ul className="space-y-3">
+            {myCommunities.map((community) => (
+              <li key={community.id}>
+                <button
+                  type="button"
+                  onClick={() => handleEnterCommunity(community)}
+                  disabled={isSubmitting}
+                  className="flex w-full items-center gap-3 rounded-2xl border-2 border-border bg-card p-4 text-left transition hover:border-primary disabled:opacity-50"
+                  data-testid={`community-entry-item-${community.id}`}
+                >
+                  {community.cover_url ? (
+                    <img src={community.cover_url} alt="" className="h-11 w-11 shrink-0 rounded-xl border border-primary/10 object-cover" />
+                  ) : (
+                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-sky-500 to-sky-600 text-white" aria-hidden="true">
+                      <Users className="h-5 w-5" />
+                    </span>
+                  )}
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-base font-bold text-foreground">
+                      {community.name || 'Comunidade'}
+                    </span>
+                    <span className="mt-0.5 flex items-center gap-2 text-sm text-muted-foreground">
+                      {[community.city, community.state].filter(Boolean).join(' / ') || 'Abrir painel'}
+                      {community.my_role && (
+                        <Badge variant={community.my_role === 'admin' ? 'warning' : 'success'} className="rounded-full uppercase tracking-[0.1em]">
+                          {community.my_role === 'admin' ? 'Admin' : 'Membro'}
+                        </Badge>
+                      )}
+                    </span>
+                  </span>
+                  <ChevronRight className="h-5 w-5 shrink-0 text-primary" aria-hidden="true" />
+                </button>
+              </li>
+            ))}
+          </ul>
+          <div className="mt-6 flex items-center gap-3">
+            <span className="h-px flex-1 bg-border" />
+            <span className="text-xs font-medium text-muted-foreground">ou vincule-se a outra comunidade</span>
+            <span className="h-px flex-1 bg-border" />
+          </div>
+        </section>
+      )}
+
+      {!mode && loadingCommunities && myCommunities.length === 0 && (
+        <div className="mb-8 flex justify-center" data-testid="community-entry-loading">
+          <Loader2 className="h-6 w-6 animate-spin text-primary" aria-hidden="true" />
         </div>
       )}
 
