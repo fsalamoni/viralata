@@ -16,13 +16,16 @@ personas V4 (ver `docs/PLAN_PERSONAS_V4.md` e `docs/PERSONA_CAPABILITIES.md`).
 | Painel do abrigo | `/organizacoes/:orgId/admin` | `OrganizationAdminPanel.{v1,v3}.jsx` | ✅ | No acesso de abrigo: topbar sem Painel/Pets/Mural (navega pelas abas do painel), sem breadcrumb acima do hero, sem "voltar para a ONG"/"ver página pública"; espaço topbar→hero reduzido. Revisão fina de abas/ferramentas por permissão segue conforme uso. |
 | Página pública do abrigo | `/organizacoes/:orgId` | `ClubDetail.{v1,v3}.jsx` | 🔄 | Item 4 aplicado (sem atalho "Painel" com V4 on). Revisão pública ainda pendente. |
 | Diretório de abrigos | `/organizacoes` | `ClubsDirectory.jsx` | 🔄 | Item 4/6 aplicados (código só no acesso de abrigo; filtro cidade/raio). Revisão fina pendente. |
+| Cadastro/edição do pet | `/pets/:id` (drawer) | `PetEditForm.jsx` + `RescuePhotosField.jsx` | ✅ | 30 campos em 5 seções (público/privado), obrigatoriedade real, número de resgate sequencial, fotos do resgate (upload comprimido, público/interno, lightbox). |
+| Página pública do pet | `/pets/:id` | `PetDetailV3.jsx` | ✅ | Respeita visibilidade por campo (Título/Raça privados; RG/Microchip/ID/Status/Idade aparente/data do status públicos); fotos de resgate públicas entram na galeria. |
+| Tabela operacional de pets | `/organizacoes/:id/admin` (Operacional) | `PetsOpsTable.jsx` | ✅ | Colunas: sexo, idade, castrado, resgate (nº+data), dias no abrigo, localização atual, status+data. |
 
 ## Acesso: Comunidade (persona `community_staff`)
 
 | Página | Rota | Arquivo | Status | Observações |
 |---|---|---|---|---|
-| Entrada da comunidade | `/entrar/comunidade` | `src/pages/onboarding/CommunityEntry.jsx` | ⬜ | Aplicar os mesmos ajustes do abrigo (lista de comunidades do usuário + código + criar; topbar de gateway). |
-| Painel da comunidade | `/comunidade/:id/admin` | `CommunityAdminPanel.{v1,v3}.jsx` | 🔄 | Item 7 aplicado. Revisão detalhada pendente. |
+| Entrada da comunidade | `/entrar/comunidade` | `src/pages/onboarding/CommunityEntry.jsx` | ✅ | Lista as comunidades do usuário + código + criar; topbar de gateway. Sistema de código de convite (com backfill para legadas). |
+| Painel da comunidade | `/comunidade/:id/admin` | `CommunityAdminPanel.{v1,v3}.jsx` | 🔄 | Item 7 + card de código de convite. Revisão detalhada pendente. |
 | Página pública da comunidade | `/comunidade/:id` | `CommunityDetail.{v1,v3}.jsx` | ⬜ | |
 | Diretório de comunidades | `/comunidade` | `CommunitiesDirectory.jsx` | 🔄 | Item 5/6 aplicados. Revisão fina pendente. |
 
