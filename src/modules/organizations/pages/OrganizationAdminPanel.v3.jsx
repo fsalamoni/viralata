@@ -20,14 +20,14 @@
  *
  * @see docs/REGENCY_ORG_ADMIN_V3.md
  */
-import React, { useState, useMemo, useEffect, Suspense, lazy } from 'react';
+import React, { useMemo, useEffect, Suspense, lazy } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
 import {
   ArrowLeft, Building2, LayoutGrid, PawPrint, MessageSquare, HandCoins, Wallet, Users, ShieldCheck, Info, MessageCircle, BarChart2, TrendingUp,
   LayoutDashboard, Kanban, Eye, Heart, Stethoscope, Pill, Clock, Home,
-  Compass, Users2, Megaphone, Receipt, Settings as SettingsIcon, ChevronRight,
-  Search, X, AlertCircle, RefreshCw, Sparkles, ArrowUpRight,
+  Compass, Users2, Megaphone, Receipt, Settings as SettingsIcon,
+  AlertCircle, RefreshCw, Sparkles,
   Activity, Server, Database, ServerCog,
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -35,7 +35,6 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ErrorState';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import Seo from '@/components/Seo';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
@@ -52,6 +51,8 @@ import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
 import { PET_OPS_CONFIGS, PET_OPS_TAB_ORDER } from '@/modules/shelter/domain/operational/petOpsConfigs';
 import { FEATURE_FLAG } from '@/core/featureFlags';
 import { parseTimestamp } from '@/core/utils/timestamp';
+import { computeShelterStats } from '@/modules/organizations/domain/shelterOverviewStats';
+import { CURRENT_LOCATION_LABELS } from '@/modules/shelter/domain/core/animal';
 import { cn } from '@/core/lib/utils';
 import { captureError } from '@/core/services/errorTracker';
 import { recordClientError } from '@/core/services/observabilityService';
@@ -163,13 +164,6 @@ const STAT_CARDS = [
   { id: 'events', icon: Activity, label: 'Eventos', color: 'emerald' },
 ];
 
-const RECENT_ACTIVITY = [
-  { id: 1, type: 'pet_added', action: 'Novo pet cadastrado', target: 'Luna (gata)', time: '2h atrás', icon: PawPrint },
-  { id: 2, type: 'donation', action: 'Doação recebida', target: 'R$ 150,00', time: '5h atrás', icon: HandCoins },
-  { id: 3, type: 'volunteer', action: 'Voluntário ingressou', target: 'Maria Silva', time: '1d atrás', icon: Heart },
-  { id: 4, type: 'post', action: 'Publicação no mural', target: 'Feira de adoção sábado', time: '2d atrás', icon: MessageSquare },
-];
-
 // ============================================================================
 // ERROR BOUNDARY para tabs (defense in depth - V3 também tem)
 // ============================================================================
@@ -240,51 +234,72 @@ function StatCard({ icon: Icon, value, label, color, reduce }) {
   );
 }
 
-function QuickActionCard({ icon: Icon, title, desc, color, onClick, reduce }) {
-  const colorMap = {
+/** Card de KPI do dashboard da Visão Geral (clicável quando `onClick`). */
+function DashKpi({ icon: Icon, label, value, hint, accent = 'primary', onClick }) {
+  const accentMap = {
     primary: 'bg-primary/10 text-primary',
-    amber: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300',
-    sky: 'bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300',
-    rose: 'bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-300',
-    emerald: 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300',
-    violet: 'bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300',
+    amber: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300',
+    sky: 'bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300',
+    rose: 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300',
+    emerald: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300',
+    violet: 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300',
   };
+  const Comp = onClick ? motion.button : motion.div;
   return (
-    <motion.button
-      type="button"
+    <Comp
+      type={onClick ? 'button' : undefined}
       variants={ANIM}
       onClick={onClick}
-      className="group flex w-full items-start gap-3 rounded-2xl border border-border bg-card p-4 text-left transition-all hover:border-primary/50 hover:shadow-md"
-      data-testid={`quick-action-${title.toLowerCase().replace(/\s/g, '-')}`}
+      className={cn(
+        'flex items-center gap-3 rounded-2xl border border-border bg-card p-4 text-left',
+        onClick && 'transition-all hover:border-primary/50 hover:shadow-md',
+      )}
     >
-      <div className={cn('flex h-10 w-10 shrink-0 items-center justify-center rounded-xl', colorMap[color])}>
+      <span className={cn('flex h-10 w-10 shrink-0 items-center justify-center rounded-xl', accentMap[accent])}>
         <Icon className="h-5 w-5" aria-hidden="true" />
+      </span>
+      <div className="min-w-0">
+        <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{label}</p>
+        <p className="text-2xl font-extrabold leading-tight text-foreground">{value}</p>
+        {hint && <p className="text-[10.5px] text-muted-foreground">{hint}</p>}
       </div>
-      <div className="min-w-0 flex-1">
-        <h3 className="text-sm font-bold text-foreground">{title}</h3>
-        <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">{desc}</p>
-      </div>
-      <ArrowUpRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden="true" />
-    </motion.button>
+    </Comp>
   );
 }
 
-function RecentActivityItem({ activity }) {
-  const Icon = activity.icon;
+/** Bloco de distribuição com barras horizontais proporcionais. */
+function DashBreakdown({ icon: Icon, title, rows, total, emptyLabel = 'Sem dados' }) {
+  const max = Math.max(1, ...rows.map((r) => r.value));
   return (
-    <div className="flex items-start gap-3 rounded-xl border border-border bg-card/50 p-3">
-      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-        <Icon className="h-4 w-4" aria-hidden="true" />
-      </div>
-      <div className="min-w-0 flex-1">
-        <p className="text-sm font-semibold text-foreground">{activity.action}</p>
-        <p className="text-xs text-muted-foreground">{activity.target}</p>
-      </div>
-      <p className="shrink-0 text-[10.5px] text-muted-foreground">
-        <Clock className="mr-0.5 inline h-3 w-3" aria-hidden="true" />
-        {activity.time}
-      </p>
-    </div>
+    <section className="rounded-2xl border border-border bg-card p-5">
+      <h3 className="mb-3 flex items-center gap-2 text-sm font-bold text-foreground">
+        <Icon className="h-4 w-4 text-primary" aria-hidden="true" />
+        {title}
+      </h3>
+      {rows.length === 0 || total === 0 ? (
+        <p className="text-sm text-muted-foreground">{emptyLabel}</p>
+      ) : (
+        <ul className="space-y-2.5">
+          {rows.map((r) => (
+            <li key={r.key}>
+              <div className="mb-1 flex items-center justify-between text-xs">
+                <span className="font-medium text-foreground">{r.label}</span>
+                <span className="tabular-nums text-muted-foreground">
+                  {r.value}
+                  {total ? <span className="ml-1 text-[10.5px]">({Math.round((r.value / total) * 100)}%)</span> : null}
+                </span>
+              </div>
+              <div className="h-2 overflow-hidden rounded-full bg-muted">
+                <div
+                  className={cn('h-full rounded-full', r.color || 'bg-primary')}
+                  style={{ width: `${Math.max(4, Math.round((r.value / max) * 100))}%` }}
+                />
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
   );
 }
 
@@ -307,232 +322,89 @@ function OrgAdminSkeleton() {
   );
 }
 
-function OverviewTab({ club, pets, user, navigate }) {
+function OverviewTab({ club, pets = [], loadingPets = false, navigate }) {
   const founded = parseTimestamp(club?.created_at)?.getFullYear() ?? null;
-  const [search, setSearch] = useState('');
-  const [activeFilter, setActiveFilter] = useState('all');
-  // Item 7: no acesso de abrigo (persona shelter_staff), o usuário está no
-  // painel privado — sem "escape" para a visão pública.
-  const inShelterPersona = useIsStaffPersonaActive(PERSONA_TYPE.SHELTER_STAFF);
+  const yearsActive = founded != null ? Math.max(0, new Date().getFullYear() - founded) : null;
+  const stats = useMemo(() => computeShelterStats(pets), [pets]);
 
-  const QUICK_ACTIONS = [
-    { id: 'animals', icon: PawPrint, title: 'Pets', desc: 'Cadastrar ou gerenciar animais', color: 'amber', group: 'operational' },
-    { id: 'team', icon: Users, title: 'Equipe', desc: 'Membros, papéis e permissões', color: 'sky', group: 'people' },
-    { id: 'volunteers', icon: Heart, title: 'Voluntários', desc: 'Escalas e atribuições', color: 'rose', group: 'people' },
-    { id: 'feed', icon: MessageSquare, title: 'Mural', desc: 'Publicações e avisos', color: 'primary', group: 'engagement' },
-    { id: 'kanban', icon: Kanban, title: 'Pendências', desc: 'Organizar tarefas do abrigo', color: 'emerald', group: 'engagement' },
-    { id: 'donations', icon: HandCoins, title: 'Doações', desc: 'Campanhas e arrecadação', color: 'emerald', group: 'finance' },
-    { id: 'finance', icon: Wallet, title: 'Financeiro', desc: 'Prestação de contas', color: 'violet', group: 'finance' },
-    { id: 'chat', icon: MessageCircle, title: 'Conversas', desc: 'Mensagens da comunidade', color: 'sky', group: 'engagement' },
-    { id: 'settings', icon: ShieldCheck, title: 'Configurações', desc: 'Dados do abrigo', color: 'primary', group: 'settings' },
-  ];
+  const goTo = (group, sub) => navigate(`/organizacoes/${club?.id}/admin?tab=${group}:${sub}`);
 
-  const filteredActions = useMemo(() => {
-    let list = QUICK_ACTIONS;
-    if (activeFilter !== 'all') {
-      list = list.filter((a) => a.group === activeFilter);
-    }
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      list = list.filter((a) =>
-        a.title.toLowerCase().includes(q) ||
-        a.desc.toLowerCase().includes(q),
-      );
-    }
-    return list;
-  }, [search, activeFilter]);
+  const STATUS_LABEL = { available: 'Disponível', in_process: 'Em processo', adopted: 'Adotado', unavailable: 'Indisponível' };
+  const STATUS_COLOR = { available: 'bg-emerald-500', in_process: 'bg-amber-500', adopted: 'bg-slate-400', unavailable: 'bg-rose-500' };
+  const SPECIES_LABEL = { dog: 'Cachorros', cat: 'Gatos', rabbit: 'Coelhos', bird: 'Pássaros', other: 'Outros' };
 
-  const handleAction = (actionId, group) => {
-    navigate(`/organizacoes/${club.id}/admin?tab=${group}:${actionId}`);
-  };
+  const statusRows = ['available', 'in_process', 'adopted', 'unavailable'].map((k) => ({
+    key: k, label: STATUS_LABEL[k], value: stats.byStatus[k] || 0, color: STATUS_COLOR[k],
+  }));
+  const speciesRows = Object.entries(stats.bySpecies)
+    .sort((a, b) => b[1] - a[1])
+    .map(([k, v]) => ({ key: k, label: SPECIES_LABEL[k] || k, value: v, color: 'bg-primary' }));
+  const locationRows = Object.entries(stats.byLocation)
+    .sort((a, b) => b[1] - a[1])
+    .map(([k, v]) => ({
+      key: k,
+      label: CURRENT_LOCATION_LABELS[k] || (k === 'unknown' ? 'Não informado' : k),
+      value: v,
+      color: 'bg-sky-500',
+    }));
+
+  const adoptions = club?.adoption_count ?? stats.adopted;
 
   return (
-    <div className="space-y-6">
-      {/* Stats grid */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <div className="rounded-2xl border border-border bg-card p-4">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Animais</p>
-          <p className="mt-1 text-2xl font-extrabold text-foreground">{pets?.length || 0}</p>
-        </div>
-        <div className="rounded-2xl border border-border bg-card p-4">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Membros</p>
-          <p className="mt-1 text-2xl font-extrabold text-foreground">{club?.member_count || 0}</p>
-        </div>
-        <div className="rounded-2xl border border-border bg-card p-4">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Fundação</p>
-          <p className="mt-1 text-2xl font-extrabold text-foreground">{founded || '—'}</p>
-        </div>
-        <div className="rounded-2xl border border-border bg-card p-4">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Adoções</p>
-          <p className="mt-1 text-2xl font-extrabold text-foreground">{club?.adoption_count ?? '—'}</p>
-        </div>
-      </div>
-
-      {/* Search + filters */}
-      <div className="space-y-3">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
-          <Input
-            type="search"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Buscar funcionalidade por nome..."
-            className="h-10 pl-9 pr-9"
-            aria-label="Buscar funcionalidade"
-            data-testid="org-admin-search"
-          />
-          {search && (
-            <button
-              type="button"
-              onClick={() => setSearch('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-              aria-label="Limpar busca"
-            >
-              <X className="h-4 w-4" aria-hidden="true" />
-            </button>
-          )}
-        </div>
-
-        <div className="flex flex-wrap items-center gap-1.5">
-          <button
-            type="button"
-            onClick={() => setActiveFilter('all')}
-            aria-pressed={activeFilter === 'all'}
-            className={cn(
-              'inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
-              activeFilter === 'all'
-                ? 'border-primary bg-primary text-primary-foreground shadow'
-                : 'border-border bg-card text-muted-foreground hover:border-primary/50',
-            )}
-          >
-            <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
-            Todas
-            <span className={cn(
-              'rounded-full px-1.5 text-[10px]',
-              activeFilter === 'all' ? 'bg-white/20' : 'bg-muted',
-            )}>
-              {QUICK_ACTIONS.length}
-            </span>
-          </button>
-          {TAB_GROUPS.filter((g) => g.key !== 'overview').map((g) => {
-            const Icon = g.icon;
-            const count = QUICK_ACTIONS.filter((a) => a.group === g.key).length;
-            const active = activeFilter === g.key;
-            return (
-              <button
-                key={g.key}
-                type="button"
-                onClick={() => setActiveFilter(g.key)}
-                aria-pressed={active}
-                className={cn(
-                  'inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
-                  active
-                    ? 'border-primary bg-primary text-primary-foreground shadow'
-                    : 'border-border bg-card text-muted-foreground hover:border-primary/50',
-                )}
-              >
-                <Icon className="h-3.5 w-3.5" aria-hidden="true" />
-                {g.label}
-                <span className={cn(
-                  'rounded-full px-1.5 text-[10px]',
-                  active ? 'bg-white/20' : 'bg-muted',
-                )}>
-                  {count}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Quick actions grid */}
-      {filteredActions.length === 0 ? (
-        <div className="rounded-2xl border border-border bg-card p-6 text-center">
-          <Search className="mx-auto h-10 w-10 text-muted-foreground" aria-hidden="true" />
-          <h3 className="mt-3 text-base font-semibold text-foreground">
-            Nenhuma funcionalidade encontrada
-          </h3>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Tente outra busca ou categoria.
-          </p>
-          <Button
-            onClick={() => {
-              setSearch('');
-              setActiveFilter('all');
-            }}
-            variant="outline"
-            className="mt-3"
-          >
-            <X className="mr-2 h-4 w-4" aria-hidden="true" />
-            Limpar filtros
-          </Button>
-        </div>
-      ) : (
-        <motion.div
-          initial="hidden"
-          animate="show"
-          variants={stagger}
-          className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"
-          data-testid="quick-actions-grid"
-        >
-          {filteredActions.map((a) => (
-            <QuickActionCard
-              key={a.id}
-              icon={a.icon}
-              title={a.title}
-              desc={a.desc}
-              color={a.color}
-              onClick={() => handleAction(a.id, a.group)}
-            />
-          ))}
-        </motion.div>
-      )}
-
-      {/* Recent activity + about */}
+    <div className="space-y-6" data-testid="org-admin-overview">
+      {/* KPIs principais */}
       <motion.div
-        initial={false}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: '-50px' }}
-        transition={{ duration: 0.4 }}
-        className="grid grid-cols-1 gap-4 lg:grid-cols-2"
+        initial="hidden"
+        animate="show"
+        variants={stagger}
+        className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6"
       >
-        <div className="rounded-2xl border border-border bg-card p-5">
-          <h2 className="mb-3 flex items-center gap-2 text-base font-bold text-foreground">
-            <Activity className="h-4 w-4 text-primary" aria-hidden="true" />
-            Atividade recente
-          </h2>
-          <div className="space-y-2">
-            {RECENT_ACTIVITY.map((a) => (
-              <RecentActivityItem key={a.id} activity={a} />
-            ))}
-          </div>
-        </div>
-
-        <div className="rounded-2xl border border-border bg-card p-5">
-          <h2 className="mb-3 flex items-center gap-2 text-base font-bold text-foreground">
-            <Info className="h-4 w-4 text-sky-600" aria-hidden="true" />
-            Sobre a organização
-          </h2>
-          {club?.description ? (
-            <p className="whitespace-pre-wrap text-[13.5px] leading-relaxed text-foreground/85">
-              {club.description}
-            </p>
-          ) : (
-            <p className="text-sm text-muted-foreground">
-              Nenhuma descrição cadastrada. Adicione uma descrição pública
-              para que visitantes conheçam o abrigo.
-            </p>
-          )}
-          {!inShelterPersona && (
-            <Button asChild variant="ghost" className="mt-3 w-full">
-              <Link to={`/organizacoes/${club?.id}`}>
-                Ver página pública
-                <ChevronRight className="ml-1 h-4 w-4" aria-hidden="true" />
-              </Link>
-            </Button>
-          )}
-        </div>
+        <DashKpi icon={PawPrint} label="Animais" value={loadingPets ? '…' : stats.total} accent="amber" onClick={() => goTo('operational', 'animals')} />
+        <DashKpi icon={Heart} label="Disponíveis" value={loadingPets ? '…' : stats.available} accent="emerald" onClick={() => goTo('operational', 'animals')} />
+        <DashKpi icon={Clock} label="Em processo" value={loadingPets ? '…' : stats.inProcess} accent="violet" />
+        <DashKpi icon={Sparkles} label="Adoções" value={adoptions} accent="rose" />
+        <DashKpi icon={Users2} label="Membros" value={club?.member_count || 0} accent="sky" onClick={() => goTo('people', 'team')} />
+        <DashKpi
+          icon={Building2}
+          label="Fundação"
+          value={founded || '—'}
+          hint={yearsActive != null ? `${yearsActive} ano(s) de atuação` : undefined}
+          accent="primary"
+        />
       </motion.div>
+
+      {/* Destaques rápidos */}
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <DashKpi icon={Activity} label="Novos (30 dias)" value={loadingPets ? '…' : stats.newLast30} hint="Cadastrados no último mês" accent="emerald" />
+        <DashKpi icon={Clock} label="Permanência média" value={stats.avgStayDays != null ? `${stats.avgStayDays} d` : '—'} hint="Tempo médio no abrigo" accent="sky" />
+        <DashKpi icon={ShieldCheck} label="Castrados" value={`${stats.neuteredPct}%`} hint={`${stats.neutered} de ${stats.total} animais`} accent="violet" />
+      </div>
+
+      {/* Distribuições */}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+        <DashBreakdown icon={Heart} title="Por situação" rows={statusRows} total={stats.total} emptyLabel="Nenhum animal cadastrado ainda." />
+        <DashBreakdown icon={PawPrint} title="Por espécie" rows={speciesRows} total={stats.total} emptyLabel="Nenhum animal cadastrado ainda." />
+        <DashBreakdown icon={Home} title="Por localização atual" rows={locationRows} total={stats.total} emptyLabel="Sem localização registrada." />
+      </div>
+
+      {/* Animal há mais tempo no abrigo */}
+      {stats.longest && (
+        <button
+          type="button"
+          onClick={() => stats.longest.id && navigate(`/pets/${stats.longest.id}`)}
+          className="flex w-full items-center gap-3 rounded-2xl border border-border bg-card p-4 text-left transition-colors hover:border-primary/50"
+          data-testid="overview-longest-stay"
+        >
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
+            <Clock className="h-5 w-5" aria-hidden="true" />
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Há mais tempo no abrigo</p>
+            <p className="truncate text-sm font-bold text-foreground">{stats.longest.name || 'Animal'}</p>
+          </div>
+          <span className="shrink-0 rounded-full bg-muted px-2.5 py-1 text-xs font-semibold text-foreground">{stats.longest.days} dias</span>
+        </button>
+      )}
     </div>
   );
 }
@@ -931,7 +803,7 @@ export default function OrganizationAdminPanelV3() {
       {/* CONTENT */}
       <Suspense fallback={<OrgAdminSkeleton />}>
         {activeGroupKey === 'overview' && (
-          <OverviewTab club={club} pets={pets} user={user} navigate={navigate} />
+          <OverviewTab club={club} pets={pets} loadingPets={loadingPets} navigate={navigate} />
         )}
 
         {activeGroupKey === 'operational' && activeSubKey === 'animals' && (
