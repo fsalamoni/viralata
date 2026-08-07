@@ -134,6 +134,54 @@ export function uploadImage(file, { uid, folder = 'misc', onProgress } = {}) {
   });
 }
 
+export const MAX_ATTACHMENT_BYTES = 20 * 1024 * 1024; // 20 MB
+const ACCEPTED_ATTACHMENT_RE = /^(image\/|application\/pdf)/;
+
+/**
+ * Faz upload de um anexo (imagem OU PDF) para `uploads/{uid}/{folder}/...`.
+ * Usado nos anexos de tarefas do abrigo (documentos/imagens). Retorna
+ * `{ url, path, name, size, content_type }`.
+ */
+export function uploadFile(file, { uid, folder = 'attachments', onProgress } = {}) {
+  return new Promise((resolve, reject) => {
+    if (!storage) { reject(new Error('Armazenamento indisponível neste ambiente.')); return; }
+    if (!uid) { reject(new Error('Usuário não autenticado.')); return; }
+    if (!file) { reject(new Error('Nenhum arquivo selecionado.')); return; }
+    if (!ACCEPTED_ATTACHMENT_RE.test(file.type || '')) {
+      reject(new Error('Envie uma imagem ou um PDF.'));
+      return;
+    }
+    if (file.size > MAX_ATTACHMENT_BYTES) {
+      reject(new Error(`Arquivo muito grande (máx. ${Math.round(MAX_ATTACHMENT_BYTES / (1024 * 1024))} MB).`));
+      return;
+    }
+    const path = `uploads/${uid}/${folder}/${Date.now()}-${sanitizeName(file.name)}`;
+    const task = uploadBytesResumable(ref(storage, path), file, {
+      contentType: file.type,
+      cacheControl: 'public, max-age=31536000, immutable',
+    });
+    task.on(
+      'state_changed',
+      (snap) => {
+        if (onProgress && snap.totalBytes) onProgress(Math.round((snap.bytesTransferred / snap.totalBytes) * 100));
+      },
+      (error) => {
+        logger.error('Falha no upload de anexo:', error);
+        reject(new Error('Não foi possível enviar o arquivo. Tente novamente.'));
+      },
+      async () => {
+        try {
+          const url = await getDownloadURL(task.snapshot.ref);
+          resolve({ url, path, name: file.name, size: file.size, content_type: file.type });
+        } catch (error) {
+          logger.error('Falha ao obter URL do anexo:', error);
+          reject(new Error('Arquivo enviado, mas não foi possível obter o link.'));
+        }
+      },
+    );
+  });
+}
+
 /** Remove uma imagem do Storage (best-effort). */
 export async function deleteImage(path) {
   if (!storage || !path) return;

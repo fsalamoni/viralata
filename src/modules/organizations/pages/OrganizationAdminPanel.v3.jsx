@@ -27,7 +27,7 @@ import {
   ArrowLeft, Building2, LayoutGrid, PawPrint, MessageSquare, HandCoins, Wallet, Users, ShieldCheck, Info, MessageCircle, BarChart2, TrendingUp,
   LayoutDashboard, Kanban, Eye, Heart, Stethoscope, Pill, Clock, Home,
   Compass, Users2, Megaphone, Receipt, Settings as SettingsIcon,
-  AlertCircle, RefreshCw, Sparkles,
+  AlertCircle, RefreshCw, Sparkles, ListTodo,
   Activity, Server, Database, ServerCog,
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -72,6 +72,7 @@ const stagger = { show: { transition: { staggerChildren: 0.08 } } };
 const ClubAdminTab = lazy(() => import('@/modules/organizations/components/ClubAdminTab'));
 const ClubTeamTab = lazy(() => import('@/modules/organizations/components/ClubTeamTab'));
 const ClubPetsDataGrid = lazy(() => import('@/modules/organizations/components/ClubPetsDataGrid'));
+const TasksBoard = lazy(() => import('@/modules/shelter/components/tasks/TasksBoard'));
 const ClubFeedTab = lazy(() => import('@/modules/organizations/components/ClubFeedTab'));
 const ClubDonationsTab = lazy(() => import('@/modules/organizations/components/ClubDonationsTab'));
 const ClubFinanceTab = lazy(() => import('@/modules/organizations/components/ClubFinanceTab'));
@@ -99,6 +100,7 @@ const ShelterFinanceTab = lazy(() => import('@/modules/shelter/components/Shelte
 const TAB_ICONS = {
   overview: LayoutGrid,
   general: Info,
+  tasks: ListTodo,
   animals: PawPrint,
   feed: MessageSquare,
   donations: HandCoins,
@@ -121,6 +123,7 @@ const TAB_ICONS = {
 const TAB_TO_GROUP = {
   overview: { group: 'overview', label: 'Visão Geral', icon: LayoutGrid },
   general: { group: 'settings', label: 'Dados gerais', icon: Info },
+  tasks: { group: 'operational', label: 'Tarefas', icon: ListTodo },
   animals: { group: 'operational', label: 'Pets', icon: PawPrint },
   medical_records: { group: 'operational', label: 'Prontuário', icon: Stethoscope },
   medications: { group: 'operational', label: 'Medicação', icon: Pill },
@@ -481,6 +484,8 @@ export default function OrganizationAdminPanelV3() {
   // Shelter tabs
   const shelterTabs = useMemo(() => {
     const tabs = [];
+    // Tarefas: aba operacional (antes de Pets — reordenada em subsByGroup).
+    if (shelterFoundation) tabs.push({ key: 'tasks', label: 'Tarefas', icon: TAB_ICONS.tasks });
     if (shelterFoundation && shelterDashboard) tabs.push({ key: 'dashboard', label: 'Dashboard', icon: TAB_ICONS.dashboard });
     if (shelterFoundation && shelterKanban) tabs.push({ key: 'kanban', label: 'Pendências', icon: TAB_ICONS.kanban });
     if (shelterFoundation && shelterExhibitions) tabs.push({ key: 'exhibitions', label: 'Vitrines', icon: TAB_ICONS.exhibitions });
@@ -527,6 +532,12 @@ export default function OrganizationAdminPanelV3() {
           icon: groupInfo.icon,
         });
       }
+    }
+    // Tarefas deve aparecer como PRIMEIRA aba de Operacional (antes de Pets).
+    const tIdx = map.operational.findIndex((s) => s.key === 'tasks');
+    if (tIdx > 0) {
+      const [t] = map.operational.splice(tIdx, 1);
+      map.operational.unshift(t);
     }
     return map;
   }, [allVisibleTabs]);
@@ -806,6 +817,15 @@ export default function OrganizationAdminPanelV3() {
           <OverviewTab club={club} pets={pets} loadingPets={loadingPets} navigate={navigate} />
         )}
 
+        {activeGroupKey === 'operational' && activeSubKey === 'tasks' && shelterFoundation && (
+          <SafeTab label="tasks">
+            <TasksBoard
+              clubId={orgId}
+              actor={{ uid: user?.uid, name: user?.displayName || membership?.display_name }}
+              canManage={isAdmin || canManageAnimals}
+            />
+          </SafeTab>
+        )}
         {activeGroupKey === 'operational' && activeSubKey === 'animals' && (
           <SafeTab label="animals">
             <ClubPetsDataGrid clubId={orgId} canManage={canManageAnimals} />
