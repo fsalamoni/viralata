@@ -36,7 +36,7 @@ function needsTransitionData(phase) {
 function Column({ phase, tasks, onOpenTask, onAddNew }) {
   const { setNodeRef, isOver } = useDroppable({ id: phase });
   return (
-    <div className="flex h-full w-[19rem] shrink-0 flex-col sm:w-80">
+    <div className="flex h-full w-60 shrink-0 flex-col">
       <div className={cn('flex shrink-0 items-center justify-between rounded-t-xl border-t-4 bg-card px-3 py-2.5', COLUMN_ACCENT[phase])}>
         <div className="flex items-center gap-2">
           <span className="text-sm font-bold text-foreground">{TASK_PHASE_LABEL[phase]}</span>
@@ -142,16 +142,14 @@ export default function TasksBoard({ clubId, actor, canManage = false }) {
 
   if (isLoading) {
     return (
-      <div className="relative left-1/2 w-[94vw] max-w-[1700px] -translate-x-1/2 px-1">
-        <div className="flex h-[calc(100vh-13rem)] min-h-[540px] gap-3 overflow-x-auto">
-          {TASK_PHASE_ORDER.map((p) => <Skeleton key={p} className="h-full w-80 shrink-0 rounded-xl" />)}
-        </div>
+      <div className="flex h-[calc(100vh-13rem)] min-h-[540px] gap-3 overflow-x-auto">
+        {TASK_PHASE_ORDER.map((p) => <Skeleton key={p} className="h-full w-60 shrink-0 rounded-xl" />)}
       </div>
     );
   }
 
   return (
-    <div className="relative left-1/2 w-[94vw] max-w-[1700px] -translate-x-1/2 space-y-3 px-1">
+    <div className="space-y-3">
       <div className="flex items-center justify-between gap-3">
         <p className="flex items-center gap-2 text-sm text-muted-foreground">
           <ListTodo className="h-4 w-4 text-primary" />
