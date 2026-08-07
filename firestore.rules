@@ -2226,6 +2226,25 @@ service cloud.firestore {
           .hasOnly(['status', 'log']);
     }
 
+    // ─── Tarefas do abrigo (painel Kanban operacional) ──────────────────
+    // Coleção dedicada e exclusiva clubs/{clubId}/tasks. Qualquer membro do
+    // abrigo pode ver/criar/mover tarefas; excluir exige gerência
+    // (admin/owner ou atribuição de animais). Persistência permanente.
+    match /clubs/{clubId}/tasks/{taskId} {
+      allow read: if isClubMember(clubId) || shelterCanAccess(clubId);
+      allow create, update: if isClubMember(clubId) || shelterCanAccess(clubId);
+      allow delete: if isClubOwnerOrAdmin(clubId) || shelterCanManage(clubId);
+
+      // Log de auditoria completo por tarefa. Leitura restrita a atribuição
+      // maior (admin/owner ou gestão); criação por qualquer membro (as ações
+      // geram log); imutável (sem update/delete).
+      match /task_logs/{logId} {
+        allow read: if isClubOwnerOrAdmin(clubId) || shelterCanManage(clubId);
+        allow create: if isClubMember(clubId) || shelterCanAccess(clubId);
+        allow update, delete: if false;
+      }
+    }
+
     // ─── TASK-790: shelter_donations (campanhas de doação do abrigo) ────────
     // Coleção: clubs/{clubId}/shelter_donations
     // Lógica: público para leitura (transparência), gravado apenas por
