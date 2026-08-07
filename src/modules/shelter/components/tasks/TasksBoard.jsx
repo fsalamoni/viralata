@@ -36,8 +36,8 @@ function needsTransitionData(phase) {
 function Column({ phase, tasks, onOpenTask, onAddNew }) {
   const { setNodeRef, isOver } = useDroppable({ id: phase });
   return (
-    <div className="flex w-72 shrink-0 flex-col">
-      <div className={cn('mb-2 flex items-center justify-between rounded-t-lg border-t-4 bg-card px-3 py-2', COLUMN_ACCENT[phase])}>
+    <div className="flex h-full w-[19rem] shrink-0 flex-col sm:w-80">
+      <div className={cn('flex shrink-0 items-center justify-between rounded-t-xl border-t-4 bg-card px-3 py-2.5', COLUMN_ACCENT[phase])}>
         <div className="flex items-center gap-2">
           <span className="text-sm font-bold text-foreground">{TASK_PHASE_LABEL[phase]}</span>
           <span className="rounded-full bg-muted px-1.5 text-[11px] font-semibold text-muted-foreground">{tasks.length}</span>
@@ -52,12 +52,12 @@ function Column({ phase, tasks, onOpenTask, onAddNew }) {
         ref={setNodeRef}
         data-testid={`task-col-${phase}`}
         className={cn(
-          'flex min-h-[140px] flex-1 flex-col gap-2 rounded-b-lg border border-dashed border-transparent bg-muted/30 p-2 transition-colors',
+          'flex flex-1 flex-col gap-2 overflow-y-auto rounded-b-xl border border-dashed border-transparent bg-muted/30 p-2 transition-colors',
           isOver && 'border-primary/60 bg-primary/5',
         )}
       >
         {tasks.length === 0 ? (
-          <p className="px-1 py-6 text-center text-[11px] text-muted-foreground">Arraste tarefas para cá</p>
+          <p className="px-1 py-10 text-center text-[11px] text-muted-foreground">Arraste tarefas para cá</p>
         ) : (
           tasks.map((t) => <TaskCard key={t.id} task={t} onOpen={onOpenTask} />)
         )}
@@ -142,14 +142,16 @@ export default function TasksBoard({ clubId, actor, canManage = false }) {
 
   if (isLoading) {
     return (
-      <div className="flex gap-3 overflow-x-auto">
-        {TASK_PHASE_ORDER.map((p) => <Skeleton key={p} className="h-64 w-72 shrink-0 rounded-lg" />)}
+      <div className="relative left-1/2 w-[94vw] max-w-[1700px] -translate-x-1/2 px-1">
+        <div className="flex h-[calc(100vh-13rem)] min-h-[540px] gap-3 overflow-x-auto">
+          {TASK_PHASE_ORDER.map((p) => <Skeleton key={p} className="h-full w-80 shrink-0 rounded-xl" />)}
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-3">
+    <div className="relative left-1/2 w-[94vw] max-w-[1700px] -translate-x-1/2 space-y-3 px-1">
       <div className="flex items-center justify-between gap-3">
         <p className="flex items-center gap-2 text-sm text-muted-foreground">
           <ListTodo className="h-4 w-4 text-primary" />
@@ -168,7 +170,7 @@ export default function TasksBoard({ clubId, actor, canManage = false }) {
         onDragEnd={handleDragEnd}
         onDragCancel={() => setActiveId(null)}
       >
-        <div className="flex gap-3 overflow-x-auto pb-2">
+        <div className="flex h-[calc(100vh-13rem)] min-h-[540px] gap-4 overflow-x-auto pb-3">
           {TASK_PHASE_ORDER.map((phase) => (
             <Column
               key={phase}
