@@ -2245,6 +2245,60 @@ service cloud.firestore {
       }
     }
 
+    // ─── Loja do Abrigo (SHELTER_STORE_V1) ─────────────────────────────────
+    // Configurações da loja (1 doc). Leitura pública (a vitrine e o comprador
+    // precisam ver formas de pagamento/políticas); escrita só gestão.
+    match /clubs/{clubId}/store_settings/{docId} {
+      allow read: if true;
+      allow write: if shelterCanManage(clubId);
+    }
+
+    // Produtos (dados PÚBLICOS). Leitura: qualquer um vê os ATIVOS (vitrine +
+    // marketplace via collectionGroup); gestores veem todos (rascunho/pausado).
+    // Escrita: só gestão do abrigo.
+    match /clubs/{clubId}/store_products/{productId} {
+      allow read: if resource.data.status == 'active'
+                  || isClubMember(clubId) || shelterCanManage(clubId);
+      allow create, update, delete: if shelterCanManage(clubId);
+
+      // Dados privados do produto (custo, fornecedores, notas). SÓ gestão.
+      match /private/{privId} {
+        allow read, write: if shelterCanManage(clubId);
+      }
+
+      // Avaliações — leitura pública; cria autenticado (autor = próprio uid);
+      // apaga: autor ou gestão.
+      match /reviews/{reviewId} {
+        allow read: if true;
+        allow create: if isAuth() && request.resource.data.author_uid == request.auth.uid;
+        allow update: if false;
+        allow delete: if shelterCanManage(clubId)
+                      || (isAuth() && resource.data.author_uid == request.auth.uid);
+      }
+
+      // Perguntas e respostas — leitura pública; cria autenticado (autor =
+      // próprio uid); responde/edita: gestão; apaga: gestão ou autor.
+      match /questions/{questionId} {
+        allow read: if true;
+        allow create: if isAuth() && request.resource.data.author_uid == request.auth.uid;
+        allow update: if shelterCanManage(clubId);
+        allow delete: if shelterCanManage(clubId)
+                      || (isAuth() && resource.data.author_uid == request.auth.uid);
+      }
+    }
+
+    // Pedidos (intenção de compra — pagamento off-platform). Leitura: comprador
+    // (o próprio) ou gestão. Cria: autenticado, comprador = próprio uid.
+    // Atualiza/apaga: gestão.
+    match /clubs/{clubId}/store_orders/{orderId} {
+      allow read: if shelterCanManage(clubId)
+                  || (isAuth() && resource.data.buyer_uid == request.auth.uid);
+      allow create: if isAuth()
+                    && request.resource.data.buyer_uid == request.auth.uid
+                    && request.resource.data.shelter_club_id == clubId;
+      allow update, delete: if shelterCanManage(clubId);
+    }
+
     // ─── TASK-790: shelter_donations (campanhas de doação do abrigo) ────────
     // Coleção: clubs/{clubId}/shelter_donations
     // Lógica: público para leitura (transparência), gravado apenas por
