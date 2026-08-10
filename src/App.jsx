@@ -86,6 +86,7 @@ const OrganizationsDirectory = lazy(() => import('@/modules/organizations/pages/
 const OrganizationsHub = lazy(() => import('@/modules/organizations/pages/OrganizationsHub'));
 const CreateOrganization = lazy(() => import('@/modules/organizations/pages/CreateClub'));
 const OrganizationDetail = lazy(() => import('@/modules/organizations/pages/ClubDetail'));
+const MarketplacePage = lazy(() => import('@/modules/shelter/pages/MarketplacePage'));
 const OrganizationAdminPanel = lazy(() => import('@/modules/organizations/pages/OrganizationAdminPanel'));
 const EventDetail = lazy(() => import('@/modules/organizations/pages/EventDetail'));
 
@@ -495,6 +496,10 @@ export default function App() {
                   element={<ProtectedRoute><ShelterAdminGate>{withLayout('OrganizationAdminPanel', OrganizationAdminPanel)}</ShelterAdminGate></ProtectedRoute>}
                 />
                 <Route path="/organizacoes/:orgId" element={<ProtectedRoute>{withLayout('OrganizationDetail', OrganizationDetail)}</ProtectedRoute>} />
+                {/* Marketplace da plataforma (PLATFORM_MARKETPLACE_V1). A página
+                    self-gate (retorna null com a flag OFF). Nav só em personas
+                    não-abrigo. */}
+                <Route path="/mercado" element={<ProtectedRoute>{withLayout('Marketplace', MarketplacePage)}</ProtectedRoute>} />
                 <Route path="/abrigos/:shelterId" element={withLayout('ShelterPublic', ShelterPublic)} />
                 {/* TASK-288: contratos do abrigo (Lei 14.063/2020) — visível para
                     admins do abrigo (gate via contractsService). */}

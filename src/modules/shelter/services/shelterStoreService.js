@@ -22,6 +22,7 @@ import {
 import { db } from '@/core/config/firebase';
 import { logger } from '@/core/lib/logger';
 import { createAuditLog } from '@/core/services/auditService';
+import { getClub } from '@/modules/organizations/services/clubService';
 import {
   PRODUCT_STATUS, ORDER_STATUS,
   productCreateSchema, productEditSchema, storeSettingsSchema,
@@ -362,4 +363,47 @@ export async function listMarketplaceProducts({ max = 200 } = {}) {
     club_id: d.ref.parent.parent?.id || d.data().shelter_club_id || null,
     ...d.data(),
   }));
+}
+
+/**
+ * Marketplace enriquecido: agrega os produtos ativos, junta nome/cidade/UF do
+ * abrigo e a config da loja, e mantém APENAS os produtos de lojas ativas +
+ * públicas. Retorna `{ products, shelters }` onde `products[i]` traz
+ * `shelter_name/shelter_city/shelter_state` e `shelters` é o mapa clubId→config.
+ */
+export async function listMarketplaceEnriched({ max = 200 } = {}) {
+  const products = await listMarketplaceProducts({ max });
+  const clubIds = Array.from(new Set(products.map((p) => p.club_id).filter(Boolean)));
+  const [clubs, settingsList] = await Promise.all([
+    Promise.all(clubIds.map((id) => getClub(id).catch(() => null))),
+    Promise.all(clubIds.map((id) => getStoreSettings(id).catch(() => null))),
+  ]);
+  const meta = {};
+  clubIds.forEach((id, i) => {
+    meta[id] = { club: clubs[i] || null, settings: settingsList[i] || null };
+  });
+  const enriched = products
+    .filter((p) => {
+      const s = meta[p.club_id]?.settings;
+      return s && s.enabled && s.public_visible;
+    })
+    .map((p) => ({
+      ...p,
+      shelter_name: meta[p.club_id]?.club?.name || 'Abrigo',
+      shelter_city: meta[p.club_id]?.club?.city || p.ship_from_city || '',
+      shelter_state: meta[p.club_id]?.club?.state || p.ship_from_state || '',
+    }));
+  const shelters = {};
+  clubIds.forEach((id) => {
+    if (meta[id]?.settings?.enabled && meta[id]?.settings?.public_visible) {
+      shelters[id] = {
+        id,
+        name: meta[id]?.club?.name || 'Abrigo',
+        city: meta[id]?.club?.city || '',
+        state: meta[id]?.club?.state || '',
+        settings: meta[id]?.settings || null,
+      };
+    }
+  });
+  return { products: enriched, shelters };
 }
