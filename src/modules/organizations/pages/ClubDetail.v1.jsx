@@ -4,8 +4,12 @@ import FosterCtaCard from '@/modules/shelter/components/FosterCtaCard';
 import PublicGallerySection from '@/modules/shelter/components/PublicGallerySection';
 import { useParams, useSearchParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { ArrowLeft, Building2, PawPrint, MessageSquare, HandCoins, Wallet, Users, Info, HeartHandshake } from 'lucide-react';
+import { ArrowLeft, Building2, PawPrint, MessageSquare, HandCoins, Wallet, Users, Info, HeartHandshake, Store } from 'lucide-react';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
+import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
+import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
+import { useStoreSettings } from '@/modules/shelter/hooks/useShelterStore';
+import ShelterStorePublicTab from '@/modules/shelter/components/store/ShelterStorePublicTab';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TabsContentStack, BalancedTabsContent } from '@/components/ui/BalancedTabs';
@@ -79,6 +83,16 @@ export default function ClubDetail() {
   const { data: myInvites = [] } = useMyClubInvites();
   const requestToJoin = useRequestToJoinClub();
   const { data: pets = [] } = useMyPets(orgId);
+
+  // Loja do abrigo (SHELTER_STORE_V1): a aba "Loja" só aparece quando a flag
+  // está ligada E o abrigo ativou a loja com visibilidade pública.
+  const storeFlag = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_STORE_V1);
+  const { data: storeSettings } = useStoreSettings(storeFlag ? orgId : null);
+  const storePublic = Boolean(storeFlag && storeSettings?.enabled && storeSettings?.public_visible);
+  const visibleTabs = React.useMemo(() => {
+    if (!storePublic) return TABS;
+    return [...TABS, { key: 'store', label: 'Loja', icon: Store, badgeKey: null }];
+  }, [storePublic]);
 
   // Stats para a capa e a aba Geral — derivado aqui para ficar consistente
   // entre header e conteúdo.
@@ -184,7 +198,7 @@ export default function ClubDetail() {
           <div className="mt-2 flex flex-nowrap items-end justify-between gap-3 overflow-x-auto border-b border-border/60 pb-1 sm:mt-3">
             <div className="w-full sm:w-auto">
               <TabsList className="arena-admin-tabs">
-                {TABS.map((tab) => {
+                {visibleTabs.map((tab) => {
                   const badge = tab.badgeKey === 'pets' ? stats.animals
                     : tab.badgeKey === 'donations' ? null // doações: badge dinâmico poderia ser adicionado depois
                     : null;
@@ -265,7 +279,13 @@ export default function ClubDetail() {
           <BalancedTabsContent value="team" className="mt-6 outline-none sm:mt-8">
             <ClubTeamPublicTab clubId={orgId} club={club} viewerMembership={membership} />
           </BalancedTabsContent>
-        
+
+          {storePublic && (
+            <BalancedTabsContent value="store" className="mt-6 outline-none sm:mt-8">
+              <ShelterStorePublicTab clubId={orgId} clubName={club?.name} />
+            </BalancedTabsContent>
+          )}
+
         </TabsContentStack></Tabs>
       </div>
     </ClubThemedScope>

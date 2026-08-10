@@ -33,7 +33,7 @@ import {
   ArrowLeft, MapPin, Sparkles, AlertCircle, RefreshCw, Hash,
   Heart, ArrowRight, Phone, Mail, Globe, Instagram, Facebook, Twitter,
   ChevronRight, TrendingUp, PawPrint, HandCoins, PartyPopper, Settings,
-  Check, Crown, UserPlus,
+  Check, Crown, UserPlus, Store,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -44,6 +44,9 @@ import Seo from '@/components/Seo';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
+import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
+import { useStoreSettings } from '@/modules/shelter/hooks/useShelterStore';
+import ShelterStorePublicTab from '@/modules/shelter/components/store/ShelterStorePublicTab';
 import { useToast } from '@/components/ui/use-toast';
 import { cn } from '@/core/lib/utils';
 import { parseTimestamp } from '@/core/utils/timestamp';
@@ -415,6 +418,15 @@ export default function ClubDetailV3() {
     club && (isClubOwner(club, membership, user?.uid)
       || hasClubPermission(club, membership, CLUB_PERMISSION.TEAM, user?.uid)),
   );
+
+  // Loja do abrigo (SHELTER_STORE_V1): aba "Loja" pública só quando a flag está
+  // ligada E o abrigo ativou loja + visibilidade pública.
+  const storeFlag = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_STORE_V1);
+  const { data: storeSettings } = useStoreSettings(storeFlag ? orgId : null);
+  const storePublic = Boolean(storeFlag && storeSettings?.enabled && storeSettings?.public_visible);
+  const publicTabs = useMemo(() => (
+    storePublic ? [...TABS_PUBLIC, { key: 'store', label: 'Loja', icon: Store }] : TABS_PUBLIC
+  ), [storePublic]);
 
   // Load
   const load = useCallback(async () => {
@@ -818,7 +830,7 @@ export default function ClubDetailV3() {
             Conteúdo
           </button>
           <div className="flex flex-wrap items-center gap-1">
-            {TABS_PUBLIC.map((tab) => {
+            {publicTabs.map((tab) => {
               const Icon = tab.icon;
               const active = activeGroup === 'content' && activeSubKey === tab.key;
               return (
@@ -1102,6 +1114,17 @@ export default function ClubDetailV3() {
                 description="A ONG não expôs a equipe publicamente."
               />
             )}
+          </div>
+        )}
+
+        {/* LOJA (pública) */}
+        {activeGroup === 'content' && activeSubKey === 'store' && storePublic && (
+          <div className="space-y-4">
+            <h2 className="text-lg font-bold text-foreground sm:text-xl">
+              <Store className="mr-1.5 inline h-5 w-5 text-primary" aria-hidden="true" />
+              Loja
+            </h2>
+            <ShelterStorePublicTab clubId={orgId} clubName={club?.name} />
           </div>
         )}
 
