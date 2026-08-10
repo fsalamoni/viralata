@@ -80,6 +80,16 @@ export function useMarketplaceProducts(enabled = true, { max = 200 } = {}) {
   });
 }
 
+/** Marketplace enriquecido (produtos + metadados dos abrigos, só lojas públicas). */
+export function useMarketplaceEnriched(enabled = true, { max = 200 } = {}) {
+  return useQuery({
+    queryKey: ['marketplace-enriched', max],
+    queryFn: () => svc.listMarketplaceEnriched({ max }),
+    enabled: Boolean(enabled),
+    staleTime: 60_000,
+  });
+}
+
 // ─── Mutations ──────────────────────────────────────────────────────────
 export function useStoreMutations(clubId) {
   const qc = useQueryClient();

@@ -11,12 +11,26 @@
  */
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { User, ShieldCheck } from 'lucide-react';
+import { User, ShieldCheck, ShoppingBag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useActivePersona } from '@/core/hooks/useActivePersona';
 import { getPersonaCapabilities } from '@/core/domain/personaCapabilities';
 import { isPersonaGatewayPath } from '@/core/domain/personaGatewayRoutes';
+import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
+import { FEATURE_FLAG } from '@/core/featureFlags';
+import { PERSONA_TYPE } from '@/core/domain/personas';
 import { cn } from '@/core/lib/utils';
+
+const MARKETPLACE_ITEM = { label: 'Mercado', to: '/mercado', icon: ShoppingBag };
+
+/**
+ * O marketplace da plataforma aparece para TODAS as personas menos o acesso de
+ * abrigo (shelter_staff), quando a flag PLATFORM_MARKETPLACE_V1 está ligada.
+ */
+function useMarketplaceNavItem(activeType) {
+  const flag = useFeatureFlag(FEATURE_FLAG.PLATFORM_MARKETPLACE_V1);
+  return flag && activeType !== PERSONA_TYPE.SHELTER_STAFF ? MARKETPLACE_ITEM : null;
+}
 
 // Atalhos universais (toda persona precisa) — acrescentados ao menu mobile.
 const UNIVERSAL_MOBILE_ITEMS = [
@@ -28,11 +42,15 @@ const UNIVERSAL_MOBILE_ITEMS = [
 export function PersonaTopbarNav() {
   const { active } = useActivePersona();
   const location = useLocation();
+  const marketItem = useMarketplaceNavItem(active?.type);
   // Em rotas gateway (ex.: /entrar/abrigo) o usuário ainda não entrou em um
   // escopo — não mostra a navegação escopada (Painel/Pets/Mural).
-  const items = isPersonaGatewayPath(location.pathname)
+  const baseItems = isPersonaGatewayPath(location.pathname)
     ? []
     : getPersonaCapabilities(active).topbarNav || [];
+  const items = marketItem && !isPersonaGatewayPath(location.pathname)
+    ? [...baseItems, marketItem]
+    : baseItems;
 
   return (
     <nav className="hidden md:flex items-center gap-1" aria-label="Navegação principal">
@@ -79,11 +97,16 @@ export function PersonaHeaderCTAs() {
 export function PersonaMobileNav({ onNavigate }) {
   const { active } = useActivePersona();
   const location = useLocation();
+  const marketItem = useMarketplaceNavItem(active?.type);
   // Em rotas gateway, só os atalhos universais (sem navegação escopada).
   const scopedItems = isPersonaGatewayPath(location.pathname)
     ? []
     : (getPersonaCapabilities(active).topbarNav || []);
-  const items = [...scopedItems, ...UNIVERSAL_MOBILE_ITEMS];
+  const items = [
+    ...scopedItems,
+    ...(marketItem && !isPersonaGatewayPath(location.pathname) ? [marketItem] : []),
+    ...UNIVERSAL_MOBILE_ITEMS,
+  ];
   return (
     <>
       {items.map(({ label, to, icon: Icon }) => {
