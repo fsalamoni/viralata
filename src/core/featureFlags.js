@@ -261,6 +261,17 @@ export const FEATURE_FLAG = Object.freeze({
   ADMIN_PARTNER_SPACES_V1: 'admin_partner_spaces_v1',
   PUBLIC_PARTNER_BANNERS_V1: 'public_partner_banners_v1',
 
+  /**
+   * Marketplace geral da plataforma: rota `/mercado` que compila os produtos
+   * públicos de TODAS as lojas dos abrigos num só lugar, com filtros e
+   * ordenação (por abrigo, cidade, estado, categoria, preço). Aparece na
+   * navegação de TODAS as personas MENOS o acesso de abrigo (shelter_staff).
+   * Depende, na prática, da flag `shelter_store_v1` (é ela que produz os
+   * produtos que o marketplace agrega). Aditivo — desligada, a rota e o item
+   * de navegação somem. Default OFF.
+   */
+  PLATFORM_MARKETPLACE_V1: 'platform_marketplace_v1',
+
   // ─── V4 · PERSONAS (separa plataforma em 6 acessos dedicados) ─────────
   // D-PERSONA-FLAG-GRADUAL (2026-08-03): cada flag = 1 sub-fase.
   // Default OFF em todas — owner liga quando estiver pronto.
@@ -693,6 +704,16 @@ export const FEATURE_FLAG_META = Object.freeze({
     label: 'Público · Banners de Parceiros',
     description: 'Liga o componente AdSlotBanner para rotação client-side de banners em posições do app (Feed, Home, Search, Detalhes). Requer parceiros ativos com banners para renderizar.',
   },
+  [FEATURE_FLAG.PLATFORM_MARKETPLACE_V1]: {
+    label: 'Plataforma · Marketplace geral (/mercado)',
+    description:
+      'Compila os produtos públicos de todas as lojas dos abrigos numa '
+      + 'vitrine única em /mercado, com filtros e ordenação (abrigo, cidade, '
+      + 'estado, categoria, preço). Aparece na navegação de todas as personas '
+      + 'exceto o acesso de abrigo. Requer `shelter_store_v1` para haver '
+      + 'produtos a agregar. Aditivo — desligada, a rota e o item de menu '
+      + 'somem. Default OFF.',
+  },
 });
 
 /**
@@ -795,6 +816,11 @@ export const DEFAULT_FEATURE_FLAGS = Object.freeze({
   [FEATURE_FLAG.V3_PAGE_ADMIN]: false,
   [FEATURE_FLAG.ADMIN_PARTNER_SPACES_V1]: true,
   [FEATURE_FLAG.PUBLIC_PARTNER_BANNERS_V1]: true,
+
+  // Loja do Abrigo + Marketplace da plataforma — ambos default OFF (feature
+  // nova, puramente aditiva). O abrigo ainda precisa ligar a própria loja
+  // nas Configurações da loja para expô-la.
+  [FEATURE_FLAG.PLATFORM_MARKETPLACE_V1]: false,
 
   // ─── V4 PERSONAS — TODAS default OFF (D-PERSONA-FLAG-GRADUAL) ────────
   [FEATURE_FLAG.V4_PERSONA_ENABLED]: false,

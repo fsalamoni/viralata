@@ -182,6 +182,56 @@ export function uploadFile(file, { uid, folder = 'attachments', onProgress } = {
   });
 }
 
+export const MAX_MEDIA_BYTES = 25 * 1024 * 1024; // 25 MB (limite da storage.rules)
+const ACCEPTED_MEDIA_RE = /^(image\/|video\/)/;
+
+/**
+ * Faz upload de mídia de produto (imagem OU vídeo) para
+ * `uploads/{uid}/{folder}/...`. Usado na Loja do Abrigo (fotos e vídeos dos
+ * produtos). Retorna `{ url, path, name, size, content_type, type }` onde
+ * `type` é 'image' | 'video'.
+ */
+export function uploadMedia(file, { uid, folder = 'store', onProgress } = {}) {
+  return new Promise((resolve, reject) => {
+    if (!storage) { reject(new Error('Armazenamento indisponível neste ambiente.')); return; }
+    if (!uid) { reject(new Error('Usuário não autenticado.')); return; }
+    if (!file) { reject(new Error('Nenhum arquivo selecionado.')); return; }
+    if (!ACCEPTED_MEDIA_RE.test(file.type || '')) {
+      reject(new Error('Envie uma imagem ou um vídeo.'));
+      return;
+    }
+    if (file.size > MAX_MEDIA_BYTES) {
+      reject(new Error(`Arquivo muito grande (máx. ${Math.round(MAX_MEDIA_BYTES / (1024 * 1024))} MB).`));
+      return;
+    }
+    const kind = String(file.type || '').startsWith('video/') ? 'video' : 'image';
+    const path = `uploads/${uid}/${folder}/${Date.now()}-${sanitizeName(file.name)}`;
+    const task = uploadBytesResumable(ref(storage, path), file, {
+      contentType: file.type,
+      cacheControl: 'public, max-age=31536000, immutable',
+    });
+    task.on(
+      'state_changed',
+      (snap) => {
+        if (onProgress && snap.totalBytes) onProgress(Math.round((snap.bytesTransferred / snap.totalBytes) * 100));
+      },
+      (error) => {
+        logger.error('Falha no upload de mídia:', error);
+        reject(new Error('Não foi possível enviar o arquivo. Tente novamente.'));
+      },
+      async () => {
+        try {
+          const url = await getDownloadURL(task.snapshot.ref);
+          resolve({ url, path, name: file.name, size: file.size, content_type: file.type, type: kind });
+        } catch (error) {
+          logger.error('Falha ao obter URL da mídia:', error);
+          reject(new Error('Arquivo enviado, mas não foi possível obter o link.'));
+        }
+      },
+    );
+  });
+}
+
 /** Remove uma imagem do Storage (best-effort). */
 export async function deleteImage(path) {
   if (!storage || !path) return;

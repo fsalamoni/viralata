@@ -115,6 +115,14 @@ export const SHELTER_FEATURE_FLAG = Object.freeze({
   // subcoleções de cada pet do abrigo (pets/{petId}/...). Substitui as
   // abas legadas "Prontuário" e "Timeline" quando ligada.
   SHELTER_PET_OPS_TABLES_V1: 'shelter_pet_ops_tables_v1',
+  // Loja do Abrigo v1 — marketplace próprio de cada abrigo. Habilita a aba
+  // principal "Loja" no painel admin (produtos, estoque, custos/lucros,
+  // fornecedores, entrega/frete, fotos e vídeos, pedidos, perguntas e
+  // avaliações) e a vitrine pública na página do abrigo (quando o abrigo
+  // liga a loja + visibilidade pública nas configurações da loja). Cada
+  // abrigo pode ter (ou não) a sua loja. Default OFF. Ver
+  // `src/modules/shelter/domain/store/products.js`.
+  SHELTER_STORE_V1: 'shelter_store_v1',
 });
 
 /**
@@ -393,6 +401,20 @@ export const SHELTER_FEATURE_FLAG_META = Object.freeze({
       + '(pets/{petId}/...), com passado + agendados, filtros, ordenação, '
       + 'agendamento no modal de registro e alertas de proximidade. '
       + 'Default OFF — com a flag desligada o painel mantém as abas legadas.',
+  },
+  [SHELTER_FEATURE_FLAG.SHELTER_STORE_V1]: {
+    label: 'Abrigos · Loja do Abrigo (marketplace próprio)',
+    description:
+      'Habilita a aba principal "Loja" no painel do abrigo: cadastro de '
+      + 'produtos com todas as informações (fornecedores, custos, lucro, '
+      + 'estoque, prazo/forma de entrega, frete, descrição, material, fotos '
+      + 'e vídeos), gestão de pedidos, perguntas e avaliações. Cada abrigo '
+      + 'liga (ou não) a sua loja e a visibilidade pública nas Configurações '
+      + 'da loja; quando pública, a vitrine aparece na página do abrigo para '
+      + 'os demais usuários comprarem, perguntarem e avaliarem — sem nenhum '
+      + 'controle administrativo. Coleções: `clubs/{clubId}/store_settings`, '
+      + '`store_products` (+`reviews`/`questions`) e `store_orders`. '
+      + 'Default OFF.',
   },
 });
 
