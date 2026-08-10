@@ -27,7 +27,7 @@ import {
   ArrowLeft, Building2, LayoutGrid, PawPrint, MessageSquare, HandCoins, Wallet, Users, ShieldCheck, Info, MessageCircle, BarChart2, TrendingUp,
   LayoutDashboard, Kanban, Eye, Heart, Stethoscope, Pill, Clock, Home,
   Compass, Users2, Megaphone, Receipt, Settings as SettingsIcon,
-  AlertCircle, RefreshCw, Sparkles, ListTodo,
+  AlertCircle, RefreshCw, Sparkles, ListTodo, Store,
   Activity, Server, Database, ServerCog,
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -89,6 +89,7 @@ const MedicalRecordsList = lazy(() => import('@/modules/shelter/components/Medic
 const MedicationsList = lazy(() => import('@/modules/shelter/components/MedicationsList'));
 const TimelineList = lazy(() => import('@/modules/shelter/components/TimelineList'));
 const PetOpsTab = lazy(() => import('@/modules/shelter/components/PetOpsTab'));
+const StoreAdmin = lazy(() => import('@/modules/shelter/components/store/StoreAdmin'));
 const FostersList = lazy(() => import('@/modules/shelter/components/FostersList'));
 const ShelterDonationsTab = lazy(() => import('@/modules/shelter/components/ShelterDonationsTab'));
 const ShelterFinanceTab = lazy(() => import('@/modules/shelter/components/ShelterFinanceTab'));
@@ -118,6 +119,7 @@ const TAB_ICONS = {
   medications: Pill,
   timeline: Clock,
   foster: Home,
+  store: Store,
 };
 
 const TAB_TO_GROUP = {
@@ -156,6 +158,7 @@ const TAB_GROUPS = [
   { key: 'operational', label: 'Operacional', icon: Compass, shortLabel: 'Operacional' },
   { key: 'people', label: 'Pessoas', icon: Users2, shortLabel: 'Pessoas' },
   { key: 'engagement', label: 'Engajamento', icon: Megaphone, shortLabel: 'Engajamento' },
+  { key: 'store', label: 'Loja', icon: Store, shortLabel: 'Loja' },
   { key: 'finance', label: 'Financeiro', icon: Receipt, shortLabel: 'Financeiro' },
   { key: 'settings', label: 'Configurações', icon: SettingsIcon, shortLabel: 'Ajustes' },
 ];
@@ -444,6 +447,7 @@ export default function OrganizationAdminPanelV3() {
   const shelterFoster = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_FOSTER);
   const shelterDonations = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_DONATIONS);
   const shelterFinance = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_FINANCE);
+  const shelterStore = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_STORE_V1);
 
   // Item 7: no acesso de abrigo (persona shelter_staff), esconde os "escapes"
   // para a visão pública — o usuário está no painel privado do abrigo.
@@ -542,10 +546,15 @@ export default function OrganizationAdminPanelV3() {
     return map;
   }, [allVisibleTabs]);
 
-  // Visible groups
+  // Visible groups. 'store' é um grupo primário SEM sub-abas (o próprio
+  // StoreAdmin tem sub-abas internas), gated pela flag SHELTER_STORE_V1.
   const visibleGroups = useMemo(() => {
-    return TAB_GROUPS.filter((g) => g.key === 'overview' || (subsByGroup[g.key] && subsByGroup[g.key].length > 0));
-  }, [subsByGroup]);
+    return TAB_GROUPS.filter((g) => {
+      if (g.key === 'overview') return true;
+      if (g.key === 'store') return shelterFoundation && shelterStore;
+      return subsByGroup[g.key] && subsByGroup[g.key].length > 0;
+    });
+  }, [subsByGroup, shelterFoundation, shelterStore]);
 
   // Active tab from URL
   const requestedTab = searchParams.get('tab') || 'overview:overview';
@@ -815,6 +824,15 @@ export default function OrganizationAdminPanelV3() {
       <Suspense fallback={<OrgAdminSkeleton />}>
         {activeGroupKey === 'overview' && (
           <OverviewTab club={club} pets={pets} loadingPets={loadingPets} navigate={navigate} />
+        )}
+
+        {activeGroupKey === 'store' && shelterFoundation && shelterStore && (
+          <SafeTab label="store">
+            <StoreAdmin
+              clubId={orgId}
+              actor={{ uid: user?.uid, name: user?.displayName || membership?.display_name }}
+            />
+          </SafeTab>
         )}
 
         {activeGroupKey === 'operational' && activeSubKey === 'tasks' && shelterFoundation && (
