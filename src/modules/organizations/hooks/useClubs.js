@@ -367,6 +367,37 @@ export function useDeclineClubInvite(clubId) {
   });
 }
 
+/**
+ * Fase 0 — responde a um convite de membro a partir da notificação acionável.
+ * Recebe apenas o `clubId` (extraído de `notification.action_ref`), busca o
+ * convite pendente do próprio usuário e aceita/recusa. Retorna o resultado
+ * para a UI decidir o feedback e o novo estado da notificação.
+ * @param {'accept'|'decline'} decision
+ */
+export function useRespondClubInviteFromNotification() {
+  const { user, userProfile } = useAuth();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ clubId, decision }) => {
+      if (!user?.uid) throw new Error('Usuário não autenticado.');
+      if (!clubId) throw new Error('Convite inválido.');
+      const invite = await getMyClubInvite(clubId, user.uid);
+      // Convite já respondido/cancelado: não é erro — a UI marca como resolvido.
+      if (!invite) return { resolved: false, decision };
+      if (decision === 'accept') await acceptClubInvite(invite, user, userProfile);
+      else await declineClubInvite(invite, user);
+      return { resolved: true, decision };
+    },
+    onSuccess: (_res, { clubId }) => {
+      qc.invalidateQueries({ queryKey: ['club-invite', clubId] });
+      qc.invalidateQueries({ queryKey: ['my-club-invites'] });
+      qc.invalidateQueries({ queryKey: ['club-membership', clubId] });
+      qc.invalidateQueries({ queryKey: ['my-clubs'] });
+      qc.invalidateQueries({ queryKey: ['club-members', clubId] });
+    },
+  });
+}
+
 /* -------------------------------- Events -------------------------------- */
 
 export function useClubEvents(clubId) {

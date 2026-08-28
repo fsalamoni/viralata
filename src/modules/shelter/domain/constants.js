@@ -123,6 +123,13 @@ export const SHELTER_FEATURE_FLAG = Object.freeze({
   // abrigo pode ter (ou não) a sua loja. Default OFF. Ver
   // `src/modules/shelter/domain/store/products.js`.
   SHELTER_STORE_V1: 'shelter_store_v1',
+  // ROADMAP V2 · Fase 0 — Notificações acionáveis. Permite aceitar/recusar
+  // um convite (membro, e futuramente voluntário/lar) direto no sino de
+  // notificações, sem sair da tela. Os campos de ação já são gravados nas
+  // notificações (aditivos/retrocompatíveis); esta flag apenas LIGA os botões
+  // inline na UI. Default OFF. Fundação das Fases 1–3 (Pessoas). Ver
+  // docs/ROADMAP_SHELTER_ADMIN_V2.md.
+  SHELTER_ACTIONABLE_NOTIFICATIONS_V1: 'shelter_actionable_notifications_v1',
 });
 
 /**
@@ -415,6 +422,18 @@ export const SHELTER_FEATURE_FLAG_META = Object.freeze({
       + 'controle administrativo. Coleções: `clubs/{clubId}/store_settings`, '
       + '`store_products` (+`reviews`/`questions`) e `store_orders`. '
       + 'Default OFF.',
+  },
+  [SHELTER_FEATURE_FLAG.SHELTER_ACTIONABLE_NOTIFICATIONS_V1]: {
+    label: 'Abrigos · notificações acionáveis (aceitar/recusar convite)',
+    description:
+      'Liga os botões "Aceitar" e "Recusar" direto no sino de notificações '
+      + 'para convites (membro da equipe agora; voluntário e lar temporário '
+      + 'nas próximas fases). Sem sair da tela, o usuário responde ao convite '
+      + 'e o estado (pendente/aceito/recusado) fica registrado na própria '
+      + 'notificação. Os campos de ação são gravados de forma aditiva e '
+      + 'retrocompatível; com a flag OFF o comportamento é idêntico ao atual '
+      + '(a notificação apenas leva ao link). Fundação das fases de Pessoas '
+      + '(Equipe/Voluntários/Lares). Default OFF.',
   },
 });
 

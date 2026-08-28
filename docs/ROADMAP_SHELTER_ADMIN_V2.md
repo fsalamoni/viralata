@@ -333,7 +333,7 @@ Testes verdes. Ao final, relate feito x falta e o roadmap de acabamento.
 
 | Fase | Área | Flag | Worktree | Status |
 |---|---|---|---|---|
-| 0 | Notificações acionáveis | `SHELTER_ACTIONABLE_NOTIFICATIONS_V1` | `feat/shelter-fase0-actionable-notifications` | ⏳ pendente |
+| 0 | Notificações acionáveis | `SHELTER_ACTIONABLE_NOTIFICATIONS_V1` | `feat/shelter-fase0-actionable-notifications` | 👀 em review (código completo, flag OFF) |
 | 1 | Pessoas · Equipe | `SHELTER_TEAM_V2` | `feat/shelter-fase1-team` | ⏳ pendente |
 | 2 | Pessoas · Voluntários | `SHELTER_VOLUNTEERS_V2` | `feat/shelter-fase2-volunteers` | ⏳ pendente |
 | 3 | Pessoas · Lares Temporários | `SHELTER_FOSTER_V2` | `feat/shelter-fase3-foster` | ⏳ pendente |

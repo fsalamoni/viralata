@@ -26,7 +26,7 @@ import {
 import { db } from '@/core/config/firebase';
 import { logger } from '@/core/lib/logger';
 import { createAuditLog } from '@/core/services/auditService';
-import { notifyUsers, NOTIFICATION_TYPE } from '@/core/services/notificationService';
+import { notifyUsers, NOTIFICATION_TYPE, NOTIFICATION_ACTION_KIND, NOTIFICATION_ACTION_STATE } from '@/core/services/notificationService';
 import { CLUB_DIRECTORY_STATUS, isClubPubliclyVisible } from '@/modules/communities/domain/directory';
 import {
   CLUB_COLLECTIONS,
@@ -568,6 +568,12 @@ export async function inviteMemberToClub(club, target, inviter, profile) {
     type: NOTIFICATION_TYPE.CLUB_INVITE,
     link: `/comunidade/${club.id}`,
     actor: { uid: inviter.uid, displayName: inviterName },
+    // Fase 0 — notificação acionável: permite aceitar/recusar inline no sino.
+    action: {
+      kind: NOTIFICATION_ACTION_KIND.CLUB_INVITE,
+      ref: { clubId: club.id, inviteId: id },
+      state: NOTIFICATION_ACTION_STATE.PENDING,
+    },
   });
   // TASK-351: targetUserId = admin convidando target.user_id
   await createAuditLog({ action: 'club_member_invited', actor: inviter, targetUserId: target.user_id, details: { club_id: club.id } });
