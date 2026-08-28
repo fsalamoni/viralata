@@ -26,7 +26,7 @@ import {
   Building2, MapPin, PawPrint, Heart, Users, Calendar,
   ArrowLeft, Sparkles, Info, HandCoins, MessageCircle, Mail,
   Phone, Globe, Award, HeartHandshake, ExternalLink,
-  Search, BarChart3,
+  Search, BarChart3, Megaphone,
 } from 'lucide-react';
 import { collection, getDocs, query as fsQuery, where, orderBy, limit } from 'firebase/firestore';
 import { db } from '@/core/config/firebase';
@@ -47,6 +47,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import PageHero from '@/components/PageHero';
 import ClubCover from '@/modules/organizations/components/ClubCover';
+import ShelterMuralPublicBlock from '@/modules/shelter/components/ShelterMuralPublicBlock';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
 import { cn } from '@/core/lib/utils';
@@ -407,6 +408,7 @@ export default function ShelterPublic() {
   const { isAuthenticated } = useAuth();
   const arenaCls = useArenaPageClasses('bg-card');
   const enabled = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_FOUNDATION);
+  const shelterMuralV2 = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_MURAL_V2);
 
   const [adoptOpen, setAdoptOpen] = useState(false);
   const [donateOpen, setDonateOpen] = useState(false);
@@ -620,6 +622,11 @@ export default function ShelterPublic() {
             <TabsTrigger value="exhibitions" role="tab">
               <Calendar className="mr-1.5 h-3.5 w-3.5" /> Vitrines
             </TabsTrigger>
+            {shelterMuralV2 && (
+              <TabsTrigger value="mural" role="tab">
+                <Megaphone className="mr-1.5 h-3.5 w-3.5" /> Mural
+              </TabsTrigger>
+            )}
             <TabsTrigger value="team" role="tab">
               <Users className="mr-1.5 h-3.5 w-3.5" /> Equipe
             </TabsTrigger>
@@ -815,6 +822,25 @@ export default function ShelterPublic() {
               </div>
             </section>
           </TabsContent>
+
+          {/* Mural (Fase 4 — SHELTER_MURAL_V2) */}
+          {shelterMuralV2 && (
+            <TabsContent value="mural" className="mt-6">
+              <section className="arena-section-card">
+                <div className="arena-section-card-header">
+                  <h3 className="arena-section-card-title flex items-center gap-2 text-base">
+                    <Megaphone className="h-4 w-4" /> Mural do abrigo
+                  </h3>
+                  <p className="arena-section-card-description">
+                    Avisos, eventos e conquistas publicados pelo abrigo.
+                  </p>
+                </div>
+                <div className="arena-section-card-body">
+                  <ShelterMuralPublicBlock clubId={shelterId} club={club} />
+                </div>
+              </section>
+            </TabsContent>
+          )}
 
           {/* Equipe */}
           <TabsContent value="team" className="mt-6">
