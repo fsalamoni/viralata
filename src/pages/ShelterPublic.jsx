@@ -105,11 +105,14 @@ async function fetchAdoptionCount(clubId) {
 }
 
 /** Vitrines públicas (próximas) */
-async function fetchExhibitions(clubId) {
+async function fetchExhibitions(clubId, useOps = false) {
   if (!db || !clubId) return [];
+  // Com SHELTER_EXHIBITION_OPS_V1 ON, ordena pelo campo real do admin
+  // (`datetime_start`); com a flag OFF, mantém `event_date` (comportamento atual).
+  const orderField = useOps ? 'datetime_start' : 'event_date';
   const q = fsQuery(
     collection(db, 'clubs', clubId, 'exhibitions'),
-    orderBy('event_date', 'asc'),
+    orderBy(orderField, 'asc'),
     limit(6),
   );
   const snap = await getDocs(q).catch(() => ({ docs: [] }));
@@ -169,10 +172,15 @@ function PetMiniCard({ pet, linkPrefix = '/pets' }) {
 }
 
 /** Card de vitrine — visual mais rico com imagem de capa e tipografia clara */
-function ExhibitionCard({ exhibition }) {
+function ExhibitionCard({ exhibition, useOps = false }) {
   const cover = exhibition.cover_url || exhibition.photo_url;
-  const startDate = exhibition.event_date ? formatDate(exhibition.event_date) : null;
-  const isPast = exhibition.event_date && new Date(exhibition.event_date) < new Date();
+  // Com a flag ON, tolera o schema real do admin (datetime_start/venue/notes);
+  // com a flag OFF, usa apenas os campos legados (comportamento atual intacto).
+  const rawDate = exhibition.event_date || (useOps ? exhibition.datetime_start : null);
+  const location = exhibition.location || (useOps ? exhibition.venue?.address : null);
+  const description = exhibition.description || (useOps ? exhibition.notes : null);
+  const startDate = rawDate ? formatDate(rawDate) : null;
+  const isPast = rawDate && new Date(rawDate) < new Date();
 
   return (
     <section className={cn('arena-section-card overflow-hidden group', isPast && 'opacity-75')}>
@@ -201,15 +209,15 @@ function ExhibitionCard({ exhibition }) {
               {startDate}
             </span>
           )}
-          {exhibition.location && (
+          {location && (
             <span className="flex items-center gap-1">
               <MapPin className="h-3 w-3" />
-              {exhibition.location}
+              {location}
             </span>
           )}
         </div>
-        {exhibition.description && (
-          <p className="mt-2 text-xs text-muted-foreground line-clamp-2">{exhibition.description}</p>
+        {description && (
+          <p className="mt-2 text-xs text-muted-foreground line-clamp-2">{description}</p>
         )}
       </div>
     </section>
@@ -409,6 +417,7 @@ export default function ShelterPublic() {
   const arenaCls = useArenaPageClasses('bg-card');
   const enabled = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_FOUNDATION);
   const shelterMuralV2 = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_MURAL_V2);
+  const shelterExhibitionOpsV1 = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_EXHIBITION_OPS_V1);
 
   const [adoptOpen, setAdoptOpen] = useState(false);
   const [donateOpen, setDonateOpen] = useState(false);
@@ -445,8 +454,8 @@ export default function ShelterPublic() {
   });
 
   const { data: exhibitions = [], isLoading: isExhibitionsLoading } = useQuery({
-    queryKey: ['shelter-public-exhibitions', shelterId],
-    queryFn: () => fetchExhibitions(shelterId),
+    queryKey: ['shelter-public-exhibitions', shelterId, shelterExhibitionOpsV1],
+    queryFn: () => fetchExhibitions(shelterId, shelterExhibitionOpsV1),
     enabled: enabled && Boolean(shelterId),
   });
 
@@ -814,7 +823,7 @@ export default function ShelterPublic() {
                   <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2" role="list">
                     {exhibitions.map((ex) => (
                       <li key={ex.id}>
-                        <ExhibitionCard exhibition={ex} />
+                        <ExhibitionCard exhibition={ex} useOps={shelterExhibitionOpsV1} />
                       </li>
                     ))}
                   </ul>

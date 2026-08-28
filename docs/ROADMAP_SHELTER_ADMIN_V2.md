@@ -338,7 +338,7 @@ Testes verdes. Ao final, relate feito x falta e o roadmap de acabamento.
 | 2 | Pessoas · Voluntários | `SHELTER_VOLUNTEERS_V2` | `feat/shelter-fase2-volunteers` | 👀 em review (código completo, flag OFF) |
 | 3 | Pessoas · Lares Temporários | `SHELTER_FOSTER_V2` | `feat/shelter-fase3-foster` | 👀 em review (código completo, flag OFF) |
 | 4 | Engajamento · Mural | `SHELTER_MURAL_V2` | `feat/shelter-fase4-mural` | 👀 em review (código completo, flag OFF) |
-| 5 | Engajamento · Vitrines | `SHELTER_EXHIBITION_OPS_V1` | `feat/shelter-fase5-vitrines` | ⏳ pendente |
+| 5 | Engajamento · Vitrines | `SHELTER_EXHIBITION_OPS_V1` | `feat/shelter-fase5-vitrines` | 👀 em review (código completo, flag OFF) |
 | 6 | Documentos do abrigo | `SHELTER_DOCUMENTS_V1` | `feat/shelter-fase6-documents` | ⏳ pendente |
 | 7 | Loja do abrigo | `SHELTER_STORE_V2` | `feat/shelter-fase7-store` | ⏳ pendente |
 
@@ -350,6 +350,10 @@ Testes verdes. Ao final, relate feito x falta e o roadmap de acabamento.
 
 - **Fase 0**: notificações são usadas em toda a plataforma — mudanças devem ser **estritamente aditivas** e atrás de flag; garantir zero regressão com flag OFF.
 - **Fase 5**: confirmar o schema público das vitrines (`exhibitions_public` vs. `clubs/{clubId}/exhibitions/{id}`) e os campos de data (`datetime_start` vs. `event_date`) antes de mexer na página pública.
+  - **CONFIRMADO (2026-08)**: a fonte de verdade do admin é `clubs/{clubId}/exhibitions/{id}` com `datetime_start`/`datetime_end` (ISO), `venue.address`, `title`, `notes`. **Não existe** `event_date`, `location`, `description` nem `cover_url` no schema real (`src/modules/shelter/domain/operational/exhibition.js`).
+  - **Gap 1 — mirror vazio**: `exhibitions_public` (lido por `PublicExhibitionDetail.jsx` via `exhibitionPublicService`) **não tem nenhum writer** no código — a coleção fica vazia, então a página de detalhe pública nunca renderiza dados reais. Falta: escrever o espelho público (Cloud Function `onWrite` ou no serviço de admin) na publicação da vitrine.
+  - **Gap 2 — leitura anônima bloqueada**: as `firestore.rules` exigem membership do clube para ler `clubs/{clubId}/exhibitions` → visitante anônimo não lista vitrines em `ShelterPublic.jsx`. Falta: regra de leitura pública para vitrines publicadas (ou depender do mirror do Gap 1).
+  - **Gap 3 — orderBy divergente**: `ShelterPublic.fetchExhibitions` ordenava por `event_date` (inexistente). Com `SHELTER_EXHIBITION_OPS_V1` ON passa a ordenar por `datetime_start` e o card tolera `datetime_start`/`venue.address`/`notes`; com a flag OFF o comportamento legado é preservado byte-a-byte.
 - **Fase 6**: editor interno é sensível a XSS — sanitizar entradas/HTML; manter imutabilidade de termos aceitos.
 - **Fase 7**: carrinho/checkout sem processador de pagamento próprio nesta rodada; manter off-platform com ponto de extensão.
 - **Todas**: manter isolamento multi-tenant; `audit_log` em toda mutação; a11y e responsividade validadas.
