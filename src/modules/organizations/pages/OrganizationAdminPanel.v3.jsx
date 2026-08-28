@@ -85,6 +85,7 @@ const IndicatorsTab = lazy(() => import('@/modules/shelter/components/Indicators
 const DashboardPage = lazy(() => import('@/modules/shelter/components/DashboardPage'));
 const KanbanPage = lazy(() => import('@/modules/shelter/components/KanbanPage'));
 const ExhibitionsList = lazy(() => import('@/modules/shelter/components/ExhibitionsList'));
+const ExhibitionsManagerV2 = lazy(() => import('@/modules/shelter/components/ExhibitionsManagerV2'));
 const VolunteersAdminTab = lazy(() => import('@/modules/shelter/components/VolunteersAdminTab'));
 const MedicalRecordsList = lazy(() => import('@/modules/shelter/components/MedicalRecordsList'));
 const MedicationsList = lazy(() => import('@/modules/shelter/components/MedicationsList'));
@@ -454,6 +455,7 @@ export default function OrganizationAdminPanelV3() {
   const shelterTeamV2 = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_TEAM_V2);
   const shelterFosterV2 = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_FOSTER_V2);
   const shelterMuralV2 = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_MURAL_V2);
+  const shelterExhibitionOpsV1 = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_EXHIBITION_OPS_V1);
 
   // Item 7: no acesso de abrigo (persona shelter_staff), esconde os "escapes"
   // para a visão pública — o usuário está no painel privado do abrigo.
@@ -928,7 +930,13 @@ export default function OrganizationAdminPanelV3() {
           <SafeTab label="kanban"><KanbanPage clubId={orgId} /></SafeTab>
         )}
         {activeGroupKey === 'engagement' && activeSubKey === 'exhibitions' && shelterFoundation && shelterExhibitions && (
-          <SafeTab label="exhibitions"><ExhibitionsList shelterClubId={orgId} /></SafeTab>
+          <SafeTab label="exhibitions">
+            {shelterExhibitionOpsV1 ? (
+              <ExhibitionsManagerV2 shelterClubId={orgId} actor={{ uid: user?.uid, displayName: user?.displayName }} />
+            ) : (
+              <ExhibitionsList shelterClubId={orgId} />
+            )}
+          </SafeTab>
         )}
 
         {activeGroupKey === 'finance' && activeSubKey === 'donations' && (
