@@ -170,6 +170,19 @@ export const SHELTER_FEATURE_FLAG = Object.freeze({
   // (ClubFeedTab) é renderizado sem qualquer alteração. Default OFF. Ver
   // docs/ROADMAP_SHELTER_ADMIN_V2.md.
   SHELTER_MURAL_V2: 'shelter_mural_v2',
+  // ROADMAP V2 · Fase 5 — Engajamento · Vitrines. Transforma a Vitrine num
+  // GERENCIADOR INTEGRAL DE EVENTO: planejamento (checklist, local/venue,
+  // estrutura física, orçamento), logística (transporte, alimentação, água,
+  // energia, internet — itens, responsáveis e custos), mutirão de saúde
+  // (vacinas/cirurgias/consultas por pet, agenda e status) e fila de
+  // tratativas de adoção/doação (funil com etapas e reuniões com adotantes).
+  // Torna a lista de vitrines FUNCIONAL no painel (selecionar → detalhes +
+  // gestão do evento), reutilizando ExhibitionsList/ExhibitionDetails. Usa um
+  // campo ADITIVO `ops` no MESMO doc `clubs/{clubId}/exhibitions/{id}` (sem
+  // subcoleção nova, sem mudança em firestore.rules — a regra de update não
+  // tem hasOnly()). Com a flag OFF, a lista atual de vitrines é renderizada
+  // sem qualquer alteração. Default OFF. Ver docs/ROADMAP_SHELTER_ADMIN_V2.md.
+  SHELTER_EXHIBITION_OPS_V1: 'shelter_exhibition_ops_v1',
 });
 
 /**
@@ -530,6 +543,21 @@ export const SHELTER_FEATURE_FLAG_META = Object.freeze({
       + 'ADITIVOS em `club_posts` (status, scheduled_for, pinned, tags, mentions, '
       + 'moderation). Com a flag OFF, o mural atual é renderizado sem qualquer '
       + 'alteração. Depende da Fase 0. Default OFF.',
+  },
+  [SHELTER_FEATURE_FLAG.SHELTER_EXHIBITION_OPS_V1]: {
+    label: 'Abrigos · Vitrines v1 (gerenciador integral de evento)',
+    description:
+      'Transforma a Vitrine num gerenciador integral de evento no painel do '
+      + 'abrigo: torna a lista funcional (selecionar → detalhes) e adiciona '
+      + 'planejamento (checklist, local/venue, estrutura física, orçamento), '
+      + 'logística (transporte, alimentação, água, energia, internet — itens, '
+      + 'responsáveis e custos), mutirão de saúde (vacinas/cirurgias/consultas '
+      + 'por pet, com agenda e status) e fila de tratativas de adoção/doação '
+      + '(funil com etapas e reuniões com adotantes). Reaproveita a escala de '
+      + 'voluntários (shifts) e o log pós-evento existentes. Usa um campo '
+      + 'ADITIVO `ops` no MESMO doc `clubs/{clubId}/exhibitions/{id}` (sem '
+      + 'subcoleção nova e sem mudança nas firestore.rules). Com a flag OFF, a '
+      + 'lista de vitrines atual é mantida sem qualquer alteração. Default OFF.',
   },
 });
 
