@@ -399,7 +399,7 @@ export async function updateMemberProfile(clubId, member, input, actor) {
   if (!member?.user_id) throw new Error('Membro inválido.');
   // A regra de firestore já limita `affectedKeys` aos campos visuais. Aqui
   // no cliente só aplicamos trim + caps.
-  const allowed = ['user_name', 'user_email', 'photo_url', 'title', 'bio', 'history', 'phone', 'whatsapp', 'privacy_map'];
+  const allowed = ['user_name', 'user_email', 'photo_url', 'title', 'bio', 'history', 'phone', 'whatsapp', 'address', 'privacy_map'];
   const sanitized = {};
   allowed.forEach((key) => {
     if (input[key] === undefined) return;

@@ -130,6 +130,14 @@ export const SHELTER_FEATURE_FLAG = Object.freeze({
   // inline na UI. Default OFF. Fundação das Fases 1–3 (Pessoas). Ver
   // docs/ROADMAP_SHELTER_ADMIN_V2.md.
   SHELTER_ACTIONABLE_NOTIFICATIONS_V1: 'shelter_actionable_notifications_v1',
+  // ROADMAP V2 · Fase 1 — Pessoas · Equipe. Substitui a aba "Equipe" por uma
+  // versão enriquecida: conceito de membro permanente com atribuição, convite
+  // por notificação (aceitar/recusar inline via Fase 0), blocos de permissão
+  // por escopo explícitos (rótulos + descrições + agrupamento), tabela rica
+  // (nível/telefone/e-mail/endereço) e status/link de documentos e termos do
+  // abrigo. Com a flag OFF, a aba Equipe atual é renderizada sem alteração.
+  // Default OFF. Depende da Fase 0. Ver docs/ROADMAP_SHELTER_ADMIN_V2.md.
+  SHELTER_TEAM_V2: 'shelter_team_v2',
 });
 
 /**
@@ -434,6 +442,19 @@ export const SHELTER_FEATURE_FLAG_META = Object.freeze({
       + 'retrocompatível; com a flag OFF o comportamento é idêntico ao atual '
       + '(a notificação apenas leva ao link). Fundação das fases de Pessoas '
       + '(Equipe/Voluntários/Lares). Default OFF.',
+  },
+  [SHELTER_FEATURE_FLAG.SHELTER_TEAM_V2]: {
+    label: 'Abrigos · Equipe v2 (membros, permissões e documentos)',
+    description:
+      'Enriquece a aba "Equipe" do painel do abrigo: deixa explícito que a '
+      + 'equipe é formada por MEMBROS permanentes (com ao menos uma atribuição, '
+      + 'e decisão/administração opcional), distintos de voluntários e lares '
+      + '(transitórios). Adiciona convite por notificação com aceitar/recusar '
+      + 'inline (usa a Fase 0), blocos de permissão por escopo com rótulos e '
+      + 'descrições, uma tabela rica de membros (nível de acesso, telefone, '
+      + 'e-mail, endereço) e o status/vínculo dos documentos e termos do abrigo. '
+      + 'Com a flag OFF, a aba Equipe atual é mantida sem qualquer alteração. '
+      + 'Depende da Fase 0. Default OFF.',
   },
 });
 

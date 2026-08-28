@@ -71,6 +71,7 @@ const stagger = { show: { transition: { staggerChildren: 0.08 } } };
 
 const ClubAdminTab = lazy(() => import('@/modules/organizations/components/ClubAdminTab'));
 const ClubTeamTab = lazy(() => import('@/modules/organizations/components/ClubTeamTab'));
+const ClubTeamTabV2 = lazy(() => import('@/modules/organizations/components/ClubTeamTabV2'));
 const ClubPetsDataGrid = lazy(() => import('@/modules/organizations/components/ClubPetsDataGrid'));
 const TasksBoard = lazy(() => import('@/modules/shelter/components/tasks/TasksBoard'));
 const ClubFeedTab = lazy(() => import('@/modules/organizations/components/ClubFeedTab'));
@@ -448,6 +449,7 @@ export default function OrganizationAdminPanelV3() {
   const shelterDonations = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_DONATIONS);
   const shelterFinance = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_FINANCE);
   const shelterStore = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_STORE_V1);
+  const shelterTeamV2 = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_TEAM_V2);
 
   // Item 7: no acesso de abrigo (persona shelter_staff), esconde os "escapes"
   // para a visão pública — o usuário está no painel privado do abrigo.
@@ -877,7 +879,11 @@ export default function OrganizationAdminPanelV3() {
 
         {activeGroupKey === 'people' && activeSubKey === 'team' && (
           <SafeTab label="team">
-            <ClubTeamTab club={club} viewerMembership={membership} viewerUid={user?.uid} />
+            {shelterTeamV2 ? (
+              <ClubTeamTabV2 club={club} viewerMembership={membership} viewerUid={user?.uid} />
+            ) : (
+              <ClubTeamTab club={club} viewerMembership={membership} viewerUid={user?.uid} />
+            )}
           </SafeTab>
         )}
         {activeGroupKey === 'people' && activeSubKey === 'volunteers' && shelterFoundation && shelterVolunteers && shelterVolunteerProfileV1 && canViewVolunteers && (

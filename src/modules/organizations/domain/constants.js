@@ -388,6 +388,9 @@ export const ORG_TEAM_LIMITS = Object.freeze({
   NAME_MAX: 120,
   PHONE_MAX: 30,
   WHATSAPP_MAX: 30,
+  // Endereço do membro — campo administrativo (Fase 1 · SHELTER_TEAM_V2),
+  // exibido apenas na tabela de equipe para a equipe do abrigo.
+  ADDRESS_MAX: 240,
 });
 
 /* =================== Coleções do Firestore =================== */

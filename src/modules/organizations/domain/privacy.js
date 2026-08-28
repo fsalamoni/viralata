@@ -85,6 +85,14 @@ export function filterMemberForViewer(member, { viewer, club } = {}) {
       out[`${field}_hidden`] = true;
     }
   });
+  // Endereço (Fase 1 · SHELTER_TEAM_V2) NÃO faz parte do privacy_map: é um campo
+  // administrativo, visível apenas para a equipe do abrigo. Nunca o exponha a um
+  // viewer externo. O guard `if (out.address)` mantém o comportamento idêntico
+  // para membros antigos (que não possuem endereço).
+  if (out.address) {
+    const isSelf = Boolean(viewer?.uid && member.user_id === viewer.uid);
+    if (!viewer?.isMemberOfClub && !isSelf) out.address = '';
+  }
   return out;
 }
 
