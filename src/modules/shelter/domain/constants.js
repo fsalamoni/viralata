@@ -159,6 +159,17 @@ export const SHELTER_FEATURE_FLAG = Object.freeze({
   // sem alteração. Default OFF. Depende das Fases 0 e 2. Ver
   // docs/ROADMAP_SHELTER_ADMIN_V2.md.
   SHELTER_FOSTER_V2: 'shelter_foster_v2',
+  // ROADMAP V2 · Fase 4 — Engajamento · Mural. Enriquece a aba "Mural" do
+  // painel do abrigo com um composer avançado (agendamento, rascunho, tags e
+  // menções), gestão (fixar, arquivar, buscar/filtrar/ordenar), moderação das
+  // interações do público (ocultar/reexibir comentários) e um painel de
+  // analytics (alcance, curtidas, comentários por post). Adiciona também uma
+  // view pública do mural na página do abrigo (`/abrigos/:shelterId`). Usa
+  // campos ADITIVOS em `club_posts` (`status`, `scheduled_for`, `pinned`,
+  // `tags`, `mentions`, `moderation`). Com a flag OFF, o mural atual
+  // (ClubFeedTab) é renderizado sem qualquer alteração. Default OFF. Ver
+  // docs/ROADMAP_SHELTER_ADMIN_V2.md.
+  SHELTER_MURAL_V2: 'shelter_mural_v2',
 });
 
 /**
@@ -506,6 +517,19 @@ export const SHELTER_FEATURE_FLAG_META = Object.freeze({
       + '(propor/aceitar/prorrogar/finalizar) intacta. Com a flag OFF, a lista de '
       + 'lares atual é mantida sem qualquer alteração. Depende das Fases 0 e 2. '
       + 'Default OFF.',
+  },
+  [SHELTER_FEATURE_FLAG.SHELTER_MURAL_V2]: {
+    label: 'Abrigos · Mural v2 (composer avançado, moderação, analytics, view pública)',
+    description:
+      'Enriquece a aba "Mural" do painel do abrigo: composer avançado com '
+      + 'agendamento de publicação, rascunhos, categorias/tags e menções a '
+      + 'membros; gestão com fixar/destacar, arquivar e busca/filtro/ordenação; '
+      + 'moderação das interações do público (ocultar/reexibir comentários); e '
+      + 'um painel de analytics (alcance, curtidas e comentários por post). '
+      + 'Adiciona uma view pública do mural na página do abrigo. Usa campos '
+      + 'ADITIVOS em `club_posts` (status, scheduled_for, pinned, tags, mentions, '
+      + 'moderation). Com a flag OFF, o mural atual é renderizado sem qualquer '
+      + 'alteração. Depende da Fase 0. Default OFF.',
   },
 });
 
