@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
-  Check, Copy, RefreshCw, Edit2, Trash2, Mail, Phone, MessageCircle, Lock, Info, Users,
+  Check, Copy, RefreshCw, Edit2, Trash2, Mail, Phone, MessageCircle, Lock, Users,
   ShieldCheck, FileText, Clock, X, MapPin, ExternalLink, UserCheck,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -19,7 +19,7 @@ import { ClubJoinRequests } from './ClubJoinRequests';
 import { ClubAddMembers } from './ClubAddMembers';
 import ClubMemberEditorDialog from './ClubMemberEditorDialog';
 import {
-  CLUB_ROLE, CLUB_PERMISSION_LABELS, MEMBER_INVITE_STATUS,
+  CLUB_ROLE, CLUB_PERMISSION_LABELS,
 } from '@/modules/organizations/domain/constants';
 import {
   isClubOwner, effectiveClubPermissions, canEditMember, canManageClubTeam,
