@@ -11,6 +11,7 @@ import {
   extendFosterPlacement,
   endFosterPlacement,
   cancelFosterPlacement,
+  updateFosterAvailability,
 } from '@/modules/shelter/services/fosterService';
 
 const STALE_TIME_MS = 30_000;
@@ -83,6 +84,21 @@ export function useCancelFoster(shelterClubId) {
   return useMutation({
     mutationFn: ({ fosterId, reason, actor }) =>
       cancelFosterPlacement(shelterClubId, fosterId, reason, actor),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['fosters', shelterClubId] });
+    },
+  });
+}
+
+/**
+ * Fase 3 (SHELTER_FOSTER_V2): edita a disponibilidade declarada de um lar
+ * (datas à disposição, capacidade e tipos de pet aceitos).
+ */
+export function useUpdateFosterAvailability(shelterClubId) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ fosterId, input, actor }) =>
+      updateFosterAvailability(shelterClubId, fosterId, input, actor),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['fosters', shelterClubId] });
     },

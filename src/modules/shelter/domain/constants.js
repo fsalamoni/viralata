@@ -148,6 +148,17 @@ export const SHELTER_FEATURE_FLAG = Object.freeze({
   // sem alteração. Default OFF. Depende das Fases 0 e 1. Ver
   // docs/ROADMAP_SHELTER_ADMIN_V2.md.
   SHELTER_VOLUNTEERS_V2: 'shelter_volunteers_v2',
+  // ROADMAP V2 · Fase 3 — Pessoas · Lares Temporários. Enriquece a aba "Lares":
+  // deixa explícito que o lar temporário é uma ESPÉCIE de voluntário (membro
+  // transitório) que fica em uma LISTA PRÓPRIA à disposição para acolher pets;
+  // adiciona disponibilidade (datas, quantidade e tipos de pets), vínculo/
+  // promoção por notificação (aceitar/recusar inline via Fase 0), tabela rica
+  // (disponível hoje, período, capacidade, tipos de pet, contato/endereço),
+  // referência dos blocos de permissão concedíveis e status/link do termo de
+  // lar temporário. Com a flag OFF, a lista de placements atual é renderizada
+  // sem alteração. Default OFF. Depende das Fases 0 e 2. Ver
+  // docs/ROADMAP_SHELTER_ADMIN_V2.md.
+  SHELTER_FOSTER_V2: 'shelter_foster_v2',
 });
 
 /**
@@ -479,6 +490,22 @@ export const SHELTER_FEATURE_FLAG_META = Object.freeze({
       + 'podem ser concedidos e o status/vínculo do termo de voluntariado. Com a '
       + 'flag OFF, a rostagem de voluntários atual é mantida sem qualquer '
       + 'alteração. Depende das Fases 0 e 1. Default OFF.',
+  },
+  [SHELTER_FEATURE_FLAG.SHELTER_FOSTER_V2]: {
+    label: 'Abrigos · Lares Temporários v2 (lista própria, disponibilidade e documentos)',
+    description:
+      'Enriquece a aba "Lares" do painel do abrigo: deixa explícito que o lar '
+      + 'temporário é uma ESPÉCIE de voluntário (membro transitório) que fica em '
+      + 'uma LISTA PRÓPRIA à disposição dos membros com atribuição para acolher '
+      + 'pets. Adiciona disponibilidade (datas à disposição, quantidade e tipos '
+      + 'de pets aceitos), vínculo/promoção por notificação com aceitar/recusar '
+      + 'inline (usa a Fase 0), uma tabela rica (disponível hoje, período de '
+      + 'disponibilidade, capacidade, tipos de pet, telefone, e-mail, endereço), '
+      + 'a referência dos blocos de permissão que podem ser concedidos e o '
+      + 'status/vínculo do termo de lar temporário. Mantém a gestão de placements '
+      + '(propor/aceitar/prorrogar/finalizar) intacta. Com a flag OFF, a lista de '
+      + 'lares atual é mantida sem qualquer alteração. Depende das Fases 0 e 2. '
+      + 'Default OFF.',
   },
 });
 
