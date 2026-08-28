@@ -92,6 +92,7 @@ const TimelineList = lazy(() => import('@/modules/shelter/components/TimelineLis
 const PetOpsTab = lazy(() => import('@/modules/shelter/components/PetOpsTab'));
 const StoreAdmin = lazy(() => import('@/modules/shelter/components/store/StoreAdmin'));
 const FostersList = lazy(() => import('@/modules/shelter/components/FostersList'));
+const FostersListV2 = lazy(() => import('@/modules/shelter/components/FostersListV2'));
 const ShelterDonationsTab = lazy(() => import('@/modules/shelter/components/ShelterDonationsTab'));
 const ShelterFinanceTab = lazy(() => import('@/modules/shelter/components/ShelterFinanceTab'));
 
@@ -450,6 +451,7 @@ export default function OrganizationAdminPanelV3() {
   const shelterFinance = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_FINANCE);
   const shelterStore = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_STORE_V1);
   const shelterTeamV2 = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_TEAM_V2);
+  const shelterFosterV2 = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_FOSTER_V2);
 
   // Item 7: no acesso de abrigo (persona shelter_staff), esconde os "escapes"
   // para a visão pública — o usuário está no painel privado do abrigo.
@@ -898,7 +900,11 @@ export default function OrganizationAdminPanelV3() {
         )}
         {activeGroupKey === 'people' && activeSubKey === 'foster' && shelterFoundation && shelterFoster && (
           <SafeTab label="foster">
-            <FostersList shelterClubId={orgId} canAbriho={canManageTeam} actor={{ uid: user?.uid, displayName: user?.displayName }} />
+            {shelterFosterV2 ? (
+              <FostersListV2 shelterClubId={orgId} canAbriho={canManageTeam} actor={{ uid: user?.uid, displayName: user?.displayName }} />
+            ) : (
+              <FostersList shelterClubId={orgId} canAbriho={canManageTeam} actor={{ uid: user?.uid, displayName: user?.displayName }} />
+            )}
           </SafeTab>
         )}
 
