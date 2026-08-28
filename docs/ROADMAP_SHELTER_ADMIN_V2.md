@@ -335,7 +335,7 @@ Testes verdes. Ao final, relate feito x falta e o roadmap de acabamento.
 |---|---|---|---|---|
 | 0 | Notificações acionáveis | `SHELTER_ACTIONABLE_NOTIFICATIONS_V1` | `feat/shelter-fase0-actionable-notifications` | 👀 em review (código completo, flag OFF) |
 | 1 | Pessoas · Equipe | `SHELTER_TEAM_V2` | `feat/shelter-fase1-team` | 👀 em review (código completo, flag OFF) |
-| 2 | Pessoas · Voluntários | `SHELTER_VOLUNTEERS_V2` | `feat/shelter-fase2-volunteers` | ⏳ pendente |
+| 2 | Pessoas · Voluntários | `SHELTER_VOLUNTEERS_V2` | `feat/shelter-fase2-volunteers` | 👀 em review (código completo, flag OFF) |
 | 3 | Pessoas · Lares Temporários | `SHELTER_FOSTER_V2` | `feat/shelter-fase3-foster` | ⏳ pendente |
 | 4 | Engajamento · Mural | `SHELTER_MURAL_V2` | `feat/shelter-fase4-mural` | ⏳ pendente |
 | 5 | Engajamento · Vitrines | `SHELTER_EXHIBITION_OPS_V1` | `feat/shelter-fase5-vitrines` | ⏳ pendente |

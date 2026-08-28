@@ -138,6 +138,16 @@ export const SHELTER_FEATURE_FLAG = Object.freeze({
   // abrigo. Com a flag OFF, a aba Equipe atual é renderizada sem alteração.
   // Default OFF. Depende da Fase 0. Ver docs/ROADMAP_SHELTER_ADMIN_V2.md.
   SHELTER_TEAM_V2: 'shelter_team_v2',
+  // ROADMAP V2 · Fase 2 — Pessoas · Voluntários. Enriquece a aba "Voluntários":
+  // deixa explícito que voluntário é um "membro" TRANSITÓRIO (não permanente),
+  // que pode ser PROMOVIDO a membro por quem tem atribuição; adiciona convite/
+  // promoção por notificação (aceitar/recusar inline via Fase 0), tabela rica
+  // (atividades a que se dispõe, "disponível hoje", período, contato/endereço),
+  // referência dos blocos de permissão concedíveis e status/link do termo de
+  // voluntariado. Com a flag OFF, a rostagem de voluntários atual é renderizada
+  // sem alteração. Default OFF. Depende das Fases 0 e 1. Ver
+  // docs/ROADMAP_SHELTER_ADMIN_V2.md.
+  SHELTER_VOLUNTEERS_V2: 'shelter_volunteers_v2',
 });
 
 /**
@@ -455,6 +465,20 @@ export const SHELTER_FEATURE_FLAG_META = Object.freeze({
       + 'e-mail, endereço) e o status/vínculo dos documentos e termos do abrigo. '
       + 'Com a flag OFF, a aba Equipe atual é mantida sem qualquer alteração. '
       + 'Depende da Fase 0. Default OFF.',
+  },
+  [SHELTER_FEATURE_FLAG.SHELTER_VOLUNTEERS_V2]: {
+    label: 'Abrigos · Voluntários v2 (transitório, promoção e disponibilidade)',
+    description:
+      'Enriquece a aba "Voluntários" do painel do abrigo: deixa explícito que o '
+      + 'voluntário é um "membro" TRANSITÓRIO (não permanente), que faz parte da '
+      + 'equipe de modo temporário e pode ser PROMOVIDO a membro permanente por '
+      + 'quem tem atribuição. Adiciona promoção/convite por notificação com '
+      + 'aceitar/recusar inline (usa a Fase 0), uma tabela rica (atividades a que '
+      + 'o voluntário se dispõe, "disponível hoje", período de disponibilidade, '
+      + 'telefone, e-mail, endereço), a referência dos blocos de permissão que '
+      + 'podem ser concedidos e o status/vínculo do termo de voluntariado. Com a '
+      + 'flag OFF, a rostagem de voluntários atual é mantida sem qualquer '
+      + 'alteração. Depende das Fases 0 e 1. Default OFF.',
   },
 });
 

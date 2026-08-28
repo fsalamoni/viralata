@@ -335,6 +335,18 @@ export async function joinShelterAsVolunteer(input, actor) {
     updated_at: serverTimestamp(),
   };
 
+  // Fase 2 (SHELTER_VOLUNTEERS_V2): snapshot ADITIVO das atividades (skills) e
+  // disponibilidade (availability) do perfil global — o abrigo não lê
+  // users/{uid}/volunteer_profile diretamente (LGPD/defense-in-depth). Só é
+  // gravado quando o perfil tem os dados; ausência = rostagem legada (sem
+  // impacto na UI atual). Retrocompatível e inofensivo com a flag OFF.
+  if (Array.isArray(profile.skills) && profile.skills.length > 0) {
+    doc_data.skills = profile.skills;
+  }
+  if (Array.isArray(profile.availability) && profile.availability.length > 0) {
+    doc_data.availability = profile.availability;
+  }
+
   try {
     await setDoc(ref, doc_data);
   } catch (setDocErr) {
@@ -422,6 +434,11 @@ export async function updateShelterVolunteer(shelterClubId, volunteerUid, input,
 
   if (parsed.background_check_notes !== undefined) {
     update.background_check_notes = parsed.background_check_notes;
+  }
+
+  // Fase 2 (SHELTER_VOLUNTEERS_V2): endereço administrado pelo abrigo (aditivo).
+  if (parsed.volunteer_address !== undefined) {
+    update.volunteer_address = parsed.volunteer_address;
   }
 
   if (Object.keys(update).length === 1) {
