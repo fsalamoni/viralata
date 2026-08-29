@@ -205,6 +205,7 @@ export function cartToOrderPayloads(cart, buyer = {}, perShelter = {}) {
       buyer_name: String(buyer.buyer_name || buyer.name || '').trim(),
       contact: String(buyer.contact || '').trim(),
       message: String(buyer.message || '').trim(),
+      shelter_name: g.club_name,
     };
     if (extra.payment_method) payload.payment_method = extra.payment_method;
     if (extra.delivery_method && DELIVERY_METHOD_ORDER.includes(extra.delivery_method)) {

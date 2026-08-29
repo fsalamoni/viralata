@@ -395,6 +395,9 @@ export const orderCreateSchema = z.object({
   payment_method: z.enum(Object.values(PAYMENT_METHOD)).optional(),
   delivery_method: z.enum(DELIVERY_METHOD_ORDER).optional(),
   shipping_address: z.string().trim().max(500).optional().default(''),
+  // Nome do abrigo no momento da compra — snapshot para exibição em "Meus
+  // Pedidos" (o pedido não guarda o nome de outra forma). Opcional/aditivo.
+  shelter_name: z.string().trim().max(160).optional(),
 });
 
 /**

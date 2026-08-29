@@ -94,6 +94,7 @@ describe('store/storeCart — carrinho', () => {
     expect(payloads).toHaveLength(2);
     const p1 = payloads.find((p) => p.club_id === 'c1');
     expect(p1.payload.buyer_name).toBe('Ana');
+    expect(p1.payload.shelter_name).toBe('Abrigo 1'); // snapshot do nome p/ "Meus Pedidos"
     expect(p1.payload.payment_method).toBe(PAYMENT_METHOD.PIX);
     expect(p1.payload.shipping_address).toBe('Rua 1');
     expect(p1.payload.items[0].name).toContain('— P'); // rótulo da variação embutido

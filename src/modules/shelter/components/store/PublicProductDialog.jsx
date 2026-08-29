@@ -125,6 +125,7 @@ export default function PublicProductDialog({ open, onOpenChange, clubId, produc
           message: order.message.trim(),
           payment_method: order.payment || payOpts[0],
           shipping_address: order.shipping.trim(),
+          shelter_name: clubName,
         },
       });
       setMode('done');
