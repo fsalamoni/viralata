@@ -28,7 +28,7 @@ import {
   LayoutDashboard, Kanban, Eye, Heart, Stethoscope, Pill, Clock, Home,
   Compass, Users2, Megaphone, Receipt, Settings as SettingsIcon,
   AlertCircle, RefreshCw, Sparkles, ListTodo, Store,
-  Activity, Server, Database, ServerCog,
+  Activity, Server, Database, ServerCog, FileText,
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -97,6 +97,7 @@ const FostersListV2 = lazy(() => import('@/modules/shelter/components/FostersLis
 const ClubMuralTabV2 = lazy(() => import('@/modules/shelter/components/ClubMuralTabV2'));
 const ShelterDonationsTab = lazy(() => import('@/modules/shelter/components/ShelterDonationsTab'));
 const ShelterFinanceTab = lazy(() => import('@/modules/shelter/components/ShelterFinanceTab'));
+const ShelterDocumentsCentral = lazy(() => import('@/modules/shelter/components/ShelterDocumentsCentral'));
 
 // ============================================================================
 // CONSTANTS
@@ -124,6 +125,7 @@ const TAB_ICONS = {
   timeline: Clock,
   foster: Home,
   store: Store,
+  documents: FileText,
 };
 
 const TAB_TO_GROUP = {
@@ -149,6 +151,7 @@ const TAB_TO_GROUP = {
   reports: { group: 'finance', label: 'Relatórios', icon: BarChart2 },
   indicators: { group: 'finance', label: 'Indicadores', icon: TrendingUp },
   settings: { group: 'settings', label: 'Configurações', icon: ShieldCheck },
+  documents: { group: 'settings', label: 'Documentos', icon: FileText },
   // Tabelas operacionais V1 (SHELTER_PET_OPS_TABLES_V1) — Medicações,
   // Consultas, Tratamentos, Vacinas, Cuidados, Adoções, Devoluções.
   ...Object.fromEntries(PET_OPS_TAB_ORDER.map((v) => {
@@ -456,6 +459,7 @@ export default function OrganizationAdminPanelV3() {
   const shelterFosterV2 = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_FOSTER_V2);
   const shelterMuralV2 = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_MURAL_V2);
   const shelterExhibitionOpsV1 = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_EXHIBITION_OPS_V1);
+  const shelterDocumentsV1 = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_DOCUMENTS_V1);
 
   // Item 7: no acesso de abrigo (persona shelter_staff), esconde os "escapes"
   // para a visão pública — o usuário está no painel privado do abrigo.
@@ -521,12 +525,13 @@ export default function OrganizationAdminPanelV3() {
     if (shelterFoundation && shelterFinance) tabs.push({ key: 'shelter_finance', label: 'Prestação', icon: TAB_ICONS.finance });
     if (shelterFoundation && shelterReports) tabs.push({ key: 'reports', label: 'Relatórios', icon: TAB_ICONS.reports });
     if (shelterFoundation && shelterIndicators) tabs.push({ key: 'indicators', label: 'Indicadores', icon: TAB_ICONS.indicators });
+    if (shelterFoundation && shelterDocumentsV1) tabs.push({ key: 'documents', label: 'Documentos', icon: TAB_ICONS.documents });
     return tabs;
   }, [
     shelterFoundation, shelterDashboard, shelterKanban, shelterExhibitions,
     shelterVolunteers, shelterVolunteerProfileV1, canViewVolunteers,
     shelterHealthRecords, shelterMedication, shelterPetTimeline, shelterPetOpsTables, shelterFoster,
-    shelterDonations, shelterFinance, shelterReports, shelterIndicators,
+    shelterDonations, shelterFinance, shelterReports, shelterIndicators, shelterDocumentsV1,
   ]);
 
   // All visible tabs
@@ -970,6 +975,14 @@ export default function OrganizationAdminPanelV3() {
         {activeGroupKey === 'settings' && activeSubKey === 'settings' && (
           <SafeTab label="settings">
             <ClubAdminTab club={club} />
+          </SafeTab>
+        )}
+        {activeGroupKey === 'settings' && activeSubKey === 'documents' && shelterFoundation && shelterDocumentsV1 && (
+          <SafeTab label="documents">
+            <ShelterDocumentsCentral
+              shelterClubId={orgId}
+              actor={{ uid: user?.uid, displayName: user?.displayName }}
+            />
           </SafeTab>
         )}
         {activeGroupKey === 'settings' && activeSubKey === 'dashboard' && shelterFoundation && shelterDashboard && (

@@ -183,6 +183,22 @@ export const SHELTER_FEATURE_FLAG = Object.freeze({
   // tem hasOnly()). Com a flag OFF, a lista atual de vitrines é renderizada
   // sem qualquer alteração. Default OFF. Ver docs/ROADMAP_SHELTER_ADMIN_V2.md.
   SHELTER_EXHIBITION_OPS_V1: 'shelter_exhibition_ops_v1',
+
+  // Fase 6 — Documentos do abrigo. Central de documentos (nova sub-aba em
+  // Configurações) que unifica formulários, termos e contratos do abrigo com
+  // status/versão/vínculos; editor interno (construtor de formulário de adoção
+  // in-app + editor de termos/contratos em Markdown) com versionamento
+  // append-only e `content_hash` (imutabilidade de termos aceitos); vínculos ao
+  // catálogo legal versionado da plataforma (`LEGAL_PAGES`) e aos fluxos
+  // (adoção/voluntário/lar/membro); analytics de aceite derivadas dos dados já
+  // legíveis pelo abrigo (contratos, entrevistas, adoption_workflow). Usa um
+  // campo ADITIVO `documents` no MESMO doc `clubs/{clubId}` (sem subcoleção
+  // nova, sem mudança em firestore.rules — a regra de update do clube não tem
+  // hasOnly() e exige owner/admin, auto-gating a escrita). Sanitização: sem
+  // HTML cru (Markdown + skipHtml na renderização, strip de tags na escrita).
+  // Com a flag OFF, nada é lido/escrito e o painel atual permanece inalterado.
+  // Default OFF. Ver docs/ROADMAP_SHELTER_ADMIN_V2.md.
+  SHELTER_DOCUMENTS_V1: 'shelter_documents_v1',
 });
 
 /**
@@ -558,6 +574,21 @@ export const SHELTER_FEATURE_FLAG_META = Object.freeze({
       + 'ADITIVO `ops` no MESMO doc `clubs/{clubId}/exhibitions/{id}` (sem '
       + 'subcoleção nova e sem mudança nas firestore.rules). Com a flag OFF, a '
       + 'lista de vitrines atual é mantida sem qualquer alteração. Default OFF.',
+  },
+  [SHELTER_FEATURE_FLAG.SHELTER_DOCUMENTS_V1]: {
+    label: 'Abrigos · Documentos v1 (central + editor + versionamento + analytics de aceite)',
+    description:
+      'Adiciona uma central de documentos (sub-aba em Configurações) que unifica '
+      + 'formulários, termos e contratos do abrigo com status, versão e vínculos; '
+      + 'editor interno com construtor de formulário de adoção in-app e editor de '
+      + 'termos/contratos em Markdown, com versionamento append-only e content_hash '
+      + '(imutabilidade de termos aceitos, LGPD/Lei 14.063/2020); vínculos ao '
+      + 'catálogo legal versionado da plataforma e aos fluxos (adoção, voluntário, '
+      + 'lar temporário, membro); e analytics de aceite derivadas dos dados já '
+      + 'legíveis pelo abrigo (contratos, entrevistas, adoção). Usa um campo '
+      + 'ADITIVO `documents` no MESMO doc `clubs/{clubId}` (sem subcoleção nova e '
+      + 'sem mudança nas firestore.rules). Sanitização sem HTML cru (Markdown + '
+      + 'skipHtml). Com a flag OFF, o painel atual permanece inalterado. Default OFF.',
   },
 });
 

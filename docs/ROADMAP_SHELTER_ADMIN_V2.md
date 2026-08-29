@@ -339,7 +339,7 @@ Testes verdes. Ao final, relate feito x falta e o roadmap de acabamento.
 | 3 | Pessoas · Lares Temporários | `SHELTER_FOSTER_V2` | `feat/shelter-fase3-foster` | 👀 em review (código completo, flag OFF) |
 | 4 | Engajamento · Mural | `SHELTER_MURAL_V2` | `feat/shelter-fase4-mural` | 👀 em review (código completo, flag OFF) |
 | 5 | Engajamento · Vitrines | `SHELTER_EXHIBITION_OPS_V1` | `feat/shelter-fase5-vitrines` | 👀 em review (código completo, flag OFF) |
-| 6 | Documentos do abrigo | `SHELTER_DOCUMENTS_V1` | `feat/shelter-fase6-documents` | ⏳ pendente |
+| 6 | Documentos do abrigo | `SHELTER_DOCUMENTS_V1` | `feat/shelter-fase6-documents` | 👀 em review (código completo, flag OFF) |
 | 7 | Loja do abrigo | `SHELTER_STORE_V2` | `feat/shelter-fase7-store` | ⏳ pendente |
 
 **Legenda**: ⏳ pendente · 🔨 em progresso · 👀 em review · ✅ concluído (flag validada em produção).
@@ -355,6 +355,11 @@ Testes verdes. Ao final, relate feito x falta e o roadmap de acabamento.
   - **Gap 2 — leitura anônima bloqueada**: as `firestore.rules` exigem membership do clube para ler `clubs/{clubId}/exhibitions` → visitante anônimo não lista vitrines em `ShelterPublic.jsx`. Falta: regra de leitura pública para vitrines publicadas (ou depender do mirror do Gap 1).
   - **Gap 3 — orderBy divergente**: `ShelterPublic.fetchExhibitions` ordenava por `event_date` (inexistente). Com `SHELTER_EXHIBITION_OPS_V1` ON passa a ordenar por `datetime_start` e o card tolera `datetime_start`/`venue.address`/`notes`; com a flag OFF o comportamento legado é preservado byte-a-byte.
 - **Fase 6**: editor interno é sensível a XSS — sanitizar entradas/HTML; manter imutabilidade de termos aceitos.
+  - **Armazenamento aditivo**: o registry `documents` (`{ items: Document[], updated_at, updated_by_uid }`) mora no próprio doc `clubs/{clubId}` (não em subcoleção), gravado por dot-path (`'documents.items'`). Motivo: a regra de update do doc do clube não tem `hasOnly()` e já exige owner/admin — escritas aditivas passam e a própria regra faz o gate. `firestore.rules` **inalterado**. O registry guarda só **templates** (sem PII), então residir no doc mundialmente legível é seguro (como banners/store_products).
+  - **XSS**: sem DOMPurify no repo. Corpos são Markdown; `sanitizeText`/`stripHtmlTags` removem tags/comentários/declarações HTML **na escrita** (regex exige letra após `<`, preservando "a < b", "<3" e sintaxe Markdown). Render usa `MarkdownContent` (react-markdown com `skipHtml`) — defesa em profundidade.
+  - **Imutabilidade**: `publishDocument` calcula SHA-256 (`computeDocumentHash` → `sha256:<hex>`) do corpo (termos/contrato/política) ou do `JSON.stringify(form_schema)` (formulário) e anexa uma versão; `appendVersion` recusa sobrescrever número de versão existente. Corpos de versões antigas **não** são retidos no registry (só metadados/hashes) — a prova de imutabilidade é o hash em cada versão + nos registros de aceite.
+  - **Analytics de aceite**: computados (não persistidos) de coleções que o abrigo já lê — `adoption_workflow` (aceite = `terms_accepted_at`), `contracts` (aceite = `fully_signed`), `interviews` (completed/evaluated). Leitura best-effort (falha → zeros por coleção). Sem PII.
+  - **Formulário de adoção in-app**: entregue como documento de categoria `form` com construtor + pré-visualização. **Falta**: submissão gravando em `adoption_workflow` e migração do Google Forms webhook.
 - **Fase 7**: carrinho/checkout sem processador de pagamento próprio nesta rodada; manter off-platform com ponto de extensão.
 - **Todas**: manter isolamento multi-tenant; `audit_log` em toda mutação; a11y e responsividade validadas.
 
