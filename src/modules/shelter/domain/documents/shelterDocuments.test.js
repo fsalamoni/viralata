@@ -79,6 +79,14 @@ describe('shelter/shelterDocuments domain', () => {
       expect(stripHtmlTags('# Título\n\n- item 1\n- item 2')).toBe('# Título\n\n- item 1\n- item 2');
     });
 
+    it('is complete against reveal/nesting (fixpoint)', () => {
+      // Remover a tag interna não pode revelar uma nova tag válida.
+      expect(stripHtmlTags('<scr<script>ipt>alert(1)</script>')).not.toMatch(/<script/i);
+      expect(stripHtmlTags('<<script>script>x')).not.toMatch(/<script/i);
+      // Comentário aninhado: nenhum "<" (abridor de tag/comentário) sobrevive.
+      expect(stripHtmlTags('<!--<!-- -->-->keep')).not.toMatch(/</);
+    });
+
     it('trims and clamps', () => {
       expect(sanitizeText('  <b>hi</b>  ', 100)).toBe('hi');
       expect(sanitizeText('abcdef', 3)).toBe('abc');

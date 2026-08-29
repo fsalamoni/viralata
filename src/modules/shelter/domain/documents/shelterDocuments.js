@@ -179,12 +179,22 @@ export function fieldTypeHasOptions(type) {
  * e títulos Markdown permanecem intactos, pois o regex exige uma letra logo
  * após "<"). A renderização usa Markdown com `skipHtml`, então isto é defesa
  * em profundidade — o HTML nunca é interpretado.
+ *
+ * A remoção é reaplicada até um **ponto fixo**: remover uma tag/comentário pode
+ * revelar outro (ex.: "<scr<script>ipt>" → "<script>"), então iteramos até a
+ * string estabilizar. Cada passo só remove caracteres, logo o laço converge.
  */
 export function stripHtmlTags(value) {
-  return String(value ?? '')
-    .replace(/<!--[\s\S]*?-->/g, '')
-    .replace(/<\/?[a-zA-Z][^>]*>/g, '')
-    .replace(/<![^>]*>/g, '');
+  let out = String(value ?? '');
+  let prev;
+  do {
+    prev = out;
+    out = out
+      .replace(/<!--[\s\S]*?-->/g, '')
+      .replace(/<![^>]*>/g, '')
+      .replace(/<\/?[a-zA-Z][^>]*>/g, '');
+  } while (out !== prev);
+  return out;
 }
 
 /** Sanitiza + apara + limita uma string a `max` caracteres. */
