@@ -15,6 +15,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
+import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
 import {
   PRODUCT_CATEGORY_LABEL, formatBRL, isInStock,
@@ -55,6 +56,7 @@ function MarketProductCard({ product, onOpen }) {
 export default function MarketplacePage() {
   const enabled = useFeatureFlag(FEATURE_FLAG.PLATFORM_MARKETPLACE_V1);
   const storeV2 = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_STORE_V2);
+  const wrapperClass = useArenaPageClasses('arena-page mx-auto max-w-6xl px-5 py-6 pb-12 space-y-6');
   const { user } = useAuth();
   const { data, isLoading } = useMarketplaceEnriched(enabled);
   const products = data?.products || [];
@@ -92,7 +94,7 @@ export default function MarketplacePage() {
   if (!enabled) return null;
 
   return (
-    <div className="arena-page mx-auto max-w-6xl px-5 py-6 pb-12 space-y-6">
+    <div className={wrapperClass}>
       <header className="flex items-start justify-between gap-3">
         <div className="space-y-1">
           <h1 className="flex items-center gap-2 text-2xl font-extrabold text-foreground">
