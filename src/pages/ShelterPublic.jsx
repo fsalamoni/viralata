@@ -177,7 +177,7 @@ function ExhibitionCard({ exhibition, useOps = false }) {
   // Com a flag ON, tolera o schema real do admin (datetime_start/venue/notes);
   // com a flag OFF, usa apenas os campos legados (comportamento atual intacto).
   const rawDate = exhibition.event_date || (useOps ? exhibition.datetime_start : null);
-  const location = exhibition.location || (useOps ? exhibition.venue?.address : null);
+  const venueLocation = exhibition.location || (useOps ? exhibition.venue?.address : null);
   const description = exhibition.description || (useOps ? exhibition.notes : null);
   const startDate = rawDate ? formatDate(rawDate) : null;
   const isPast = rawDate && new Date(rawDate) < new Date();
@@ -209,10 +209,10 @@ function ExhibitionCard({ exhibition, useOps = false }) {
               {startDate}
             </span>
           )}
-          {location && (
+          {venueLocation && (
             <span className="flex items-center gap-1">
               <MapPin className="h-3 w-3" />
-              {location}
+              {venueLocation}
             </span>
           )}
         </div>
@@ -229,7 +229,6 @@ function TeamMemberCard({ member }) {
   const name = member.display_name || member.name || 'Membro';
   const photo = member.photo_url || member.avatar_url;
   const role = member.role || 'volunteer';
-  const roleColor = { owner: 'bg-amber-100 text-amber-800', admin: 'bg-blue-100 text-blue-800', volunteer: 'bg-secondary text-muted-foreground' }[role] || 'bg-secondary text-muted-foreground';
 
   return (
     <section className="arena-section-card">
