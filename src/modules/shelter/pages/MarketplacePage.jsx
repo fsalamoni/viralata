@@ -15,11 +15,13 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { FEATURE_FLAG } from '@/core/featureFlags';
+import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
 import {
   PRODUCT_CATEGORY_LABEL, formatBRL, isInStock,
 } from '@/modules/shelter/domain/store/products';
 import { useMarketplaceEnriched } from '@/modules/shelter/hooks/useShelterStore';
 import PublicProductDialog from '@/modules/shelter/components/store/PublicProductDialog';
+import CartButton from '@/modules/shelter/components/store/CartButton';
 
 function MarketProductCard({ product, onOpen }) {
   const cover = product.images?.[0]?.url;
@@ -52,6 +54,7 @@ function MarketProductCard({ product, onOpen }) {
 
 export default function MarketplacePage() {
   const enabled = useFeatureFlag(FEATURE_FLAG.PLATFORM_MARKETPLACE_V1);
+  const storeV2 = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_STORE_V2);
   const { user } = useAuth();
   const { data, isLoading } = useMarketplaceEnriched(enabled);
   const products = data?.products || [];
@@ -90,13 +93,21 @@ export default function MarketplacePage() {
 
   return (
     <div className="arena-page mx-auto max-w-6xl px-5 py-6 pb-12 space-y-6">
-      <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-2xl font-extrabold text-foreground">
-          <ShoppingBag className="h-6 w-6 text-primary" /> Mercado
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Produtos de todas as lojas dos abrigos. Cada compra ajuda os resgatados.
-        </p>
+      <header className="flex items-start justify-between gap-3">
+        <div className="space-y-1">
+          <h1 className="flex items-center gap-2 text-2xl font-extrabold text-foreground">
+            <ShoppingBag className="h-6 w-6 text-primary" /> Mercado
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Produtos de todas as lojas dos abrigos. Cada compra ajuda os resgatados.
+          </p>
+        </div>
+        {storeV2 && (
+          <div className="flex items-center gap-2">
+            <Link to="/meus-pedidos" className="hidden text-sm font-medium text-primary hover:underline sm:inline">Meus pedidos</Link>
+            <CartButton />
+          </div>
+        )}
       </header>
 
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
@@ -167,6 +178,7 @@ export default function MarketplacePage() {
         product={selected}
         settings={selectedSettings}
         actor={{ uid: user?.uid, name: user?.displayName }}
+        clubName={selected?.shelter_name}
       />
     </div>
   );

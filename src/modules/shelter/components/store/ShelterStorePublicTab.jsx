@@ -12,11 +12,14 @@ import {
 } from '@/components/ui/select';
 import { cn } from '@/core/lib/utils';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
+import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
+import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
 import {
   PRODUCT_CATEGORY_LABEL, formatBRL, isInStock,
 } from '@/modules/shelter/domain/store/products';
 import { useStoreSettings, usePublicStoreProducts } from '@/modules/shelter/hooks/useShelterStore';
 import PublicProductDialog from './PublicProductDialog';
+import CartButton from './CartButton';
 
 export function ProductGridCard({ product, onOpen }) {
   const cover = product.images?.[0]?.url;
@@ -50,6 +53,7 @@ export function ProductGridCard({ product, onOpen }) {
 
 export default function ShelterStorePublicTab({ clubId, clubName }) {
   const { user } = useAuth();
+  const storeV2 = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_STORE_V2);
   const { data: settings, isLoading: loadingSettings } = useStoreSettings(clubId);
   const isPublic = settings?.enabled && settings?.public_visible;
   const { data: products = [], isLoading } = usePublicStoreProducts(clubId, Boolean(isPublic));
@@ -106,6 +110,7 @@ export default function ShelterStorePublicTab({ clubId, clubName }) {
             </SelectContent>
           </Select>
         )}
+        {storeV2 && <CartButton />}
       </div>
 
       {isLoading ? (

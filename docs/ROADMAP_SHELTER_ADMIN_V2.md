@@ -56,7 +56,7 @@ Resumo do que **já existe** hoje no código, para não reconstruir o que está 
 - Textos legais versionados em `src/modules/shelter/domain/legal/` (≈22 arquivos), `termsAcceptanceService` + modais de aceite. Módulo **contratos** (`src/modules/contracts/`): contrato de adoção com assinatura digital (status pending_shelter_signature → fully_signed → cancelled), `ShelterContractsList` em `/abrigos/:shelterId/contracts`. Módulo **entrevistas** (`src/modules/interview/`): `ShelterInterviewsList` em `/abrigos/:shelterId/interviews`. Formulários de adoção hoje via **Google Forms webhook** (sem construtor interno).
 
 ### 2.5 Loja
-- `src/modules/shelter/domain/store/`, `shelterStoreService`, `StoreAdmin` + painéis, `ShelterStorePublicTab`, `MarketplacePage` (`/mercado`). Pagamento off-platform (PIX/externo). Flag `SHELTER_STORE_V1`. **Falta**: carrinho, checkout, pedidos, fulfillment, analytics; separação clara admin vs. loja pública.
+- `src/modules/shelter/domain/store/`, `shelterStoreService`, `StoreAdmin` + painéis, `ShelterStorePublicTab`, `MarketplacePage` (`/mercado`). Pagamento off-platform (PIX/externo). Flag `SHELTER_STORE_V1`. **Falta**: ~~carrinho, checkout, pedidos, fulfillment, analytics~~ (entregue na Fase 7 · `SHELTER_STORE_V2`); refinamento contínuo de UX admin vs. loja pública.
 
 ### 2.6 Notificações (fundação dos convites)
 - `src/core/services/notificationService.js`: coleção `notifications`, real-time (`useNotifications.js` onSnapshot). `NotificationsMenu.jsx` mostra dropdown **sem** botões de ação. `buildPayload()` **não** tem campos de ação/CTA. Convite de membro já dispara notificação (tipo `CLUB_INVITE`, mensagem "Toque para aceitar ou recusar") mas **só linka para fora** — não há aceitar/recusar inline. **Este é o gap fundamental, pedido 3× (equipe, voluntários, lares).**
@@ -340,7 +340,7 @@ Testes verdes. Ao final, relate feito x falta e o roadmap de acabamento.
 | 4 | Engajamento · Mural | `SHELTER_MURAL_V2` | `feat/shelter-fase4-mural` | 👀 em review (código completo, flag OFF) |
 | 5 | Engajamento · Vitrines | `SHELTER_EXHIBITION_OPS_V1` | `feat/shelter-fase5-vitrines` | 👀 em review (código completo, flag OFF) |
 | 6 | Documentos do abrigo | `SHELTER_DOCUMENTS_V1` | `feat/shelter-fase6-documents` | 👀 em review (código completo, flag OFF) |
-| 7 | Loja do abrigo | `SHELTER_STORE_V2` | `feat/shelter-fase7-store` | ⏳ pendente |
+| 7 | Loja do abrigo | `SHELTER_STORE_V2` | `feat/shelter-fase7-store` | 👀 em review (código completo, flag OFF) |
 
 **Legenda**: ⏳ pendente · 🔨 em progresso · 👀 em review · ✅ concluído (flag validada em produção).
 
@@ -361,6 +361,11 @@ Testes verdes. Ao final, relate feito x falta e o roadmap de acabamento.
   - **Analytics de aceite**: computados (não persistidos) de coleções que o abrigo já lê — `adoption_workflow` (aceite = `terms_accepted_at`), `contracts` (aceite = `fully_signed`), `interviews` (completed/evaluated). Leitura best-effort (falha → zeros por coleção). Sem PII.
   - **Formulário de adoção in-app**: entregue como documento de categoria `form` com construtor + pré-visualização. **Falta**: submissão gravando em `adoption_workflow` e migração do Google Forms webhook.
 - **Fase 7**: carrinho/checkout sem processador de pagamento próprio nesta rodada; manter off-platform com ponto de extensão.
+  - **Reuso aditivo da Fase 1 (CONFIRMADO 2026-08)**: a Loja v1 já grava `clubs/{clubId}/store_products/{id}` (público) + `/private/main` (custo/fornecedores) e `clubs/{clubId}/store_orders/{id}` com `items[]`, `status` (pending→confirmed→paid→shipped→delivered/cancelled), `total_cents`, `buyer_uid`, `shelter_club_id`, `activity[]`. A Fase 7 **reusa** `createOrder`/`updateProduct` e adiciona campos **aditivos**: `variants[]` (rótulo/preço/estoque/SKU) no produto e `fulfillment` (transportadora/rastreio/previsão) no pedido. Schemas sem `hasOnly()` → escritas aditivas passam sem tocar `firestore.rules`.
+  - **Carrinho client-side**: o carrinho mora em `localStorage` (`viralata_store_cart_v2`), **não** no Firestore — store singleton (`hooks/cartStore.js`) com emitter + `useSyncExternalStore`, SSR-safe e sincronizado entre abas. Identidade da linha = `club_id::product_id::variant_id`. Multi-abrigo; no checkout, um `createOrder` por abrigo (best-effort: falha de um não aborta os outros).
+  - **Rastreio do comprador**: `listMyOrders(uid)` usa `collectionGroup('store_orders') where buyer_uid == uid` **sem** `orderBy` (campo único auto-indexado; ordenação client-side) → `firestore.indexes.json` **inalterado**. Regras já permitem o comprador ler o próprio pedido.
+  - **Pagamento off-platform com ponto de extensão**: registry de provedores em `storeCart.js` (`registerPaymentProvider`/`listAvailablePaymentProviders`/`resolvePaymentInstructions`) com 4 provedores embutidos (PIX/link externo/dinheiro na retirada/a combinar). É a costura para um gateway futuro sem reescrever o checkout.
+  - **Sem regressão com flag OFF**: todas as superfícies novas (subaba Analytics, controles de fulfillment, campo de variações, `CartButton`/`AddToCartButton`, rota `/meus-pedidos`) são montadas **apenas** com `SHELTER_STORE_V2` ON; com a flag OFF o payload do produto não inclui `variants` e nada muda no comportamento v1.
 - **Todas**: manter isolamento multi-tenant; `audit_log` em toda mutação; a11y e responsividade validadas.
 
 ---

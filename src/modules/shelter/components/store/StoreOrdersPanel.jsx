@@ -9,11 +9,14 @@ import {
   Select, SelectTrigger, SelectValue, SelectContent, SelectItem,
 } from '@/components/ui/select';
 import { cn } from '@/core/lib/utils';
+import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
+import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
 import {
   ORDER_STATUS, ORDER_STATUS_LABEL, ORDER_STATUS_ORDER,
   PAYMENT_METHOD_LABEL, formatBRL,
 } from '@/modules/shelter/domain/store/products';
 import { useStoreOrders, useStoreMutations } from '@/modules/shelter/hooks/useShelterStore';
+import OrderFulfillmentControls from './OrderFulfillmentControls';
 
 function fmtDate(v) {
   if (!v) return '';
@@ -32,7 +35,7 @@ const STATUS_BADGE = {
   [ORDER_STATUS.CANCELLED]: 'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300',
 };
 
-function OrderCard({ order, onStatus }) {
+function OrderCard({ order, onStatus, clubId, actor, showFulfillment }) {
   const [open, setOpen] = useState(false);
   return (
     <div className="rounded-xl border border-border bg-card p-3">
@@ -75,6 +78,7 @@ function OrderCard({ order, onStatus }) {
               </SelectContent>
             </Select>
           </div>
+          {showFulfillment && <OrderFulfillmentControls clubId={clubId} order={order} actor={actor} />}
         </div>
       )}
     </div>
@@ -82,6 +86,7 @@ function OrderCard({ order, onStatus }) {
 }
 
 export default function StoreOrdersPanel({ clubId, actor }) {
+  const storeV2 = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_STORE_V2);
   const { data: orders = [], isLoading } = useStoreOrders(clubId);
   const { setOrderStatus } = useStoreMutations(clubId);
 
@@ -105,7 +110,9 @@ export default function StoreOrdersPanel({ clubId, actor }) {
 
   return (
     <div className="space-y-2">
-      {orders.map((o) => <OrderCard key={o.id} order={o} onStatus={handleStatus} />)}
+      {orders.map((o) => (
+        <OrderCard key={o.id} order={o} onStatus={handleStatus} clubId={clubId} actor={actor} showFulfillment={storeV2} />
+      ))}
     </div>
   );
 }
