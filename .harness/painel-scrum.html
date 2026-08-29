@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.1.0",
-  "generatedAt": "2026-07-24T16:38:51.367Z",
+  "generatedAt": "2026-08-29T03:45:00.000Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W29",
@@ -396,80 +396,7 @@
     "endsAt": "2026-07-22",
     "goal": "DS_V2 Fase 4 — Reaplicar design system oficial v1.0 bloco a bloco, cada área com feature flag default OFF. Começar pelo Bloco A (docs) ✅, agora Bloco B (tokens + Material Symbols). User valida visualmente cada bloco antes da próxima. Zero regressão em regra de negócio."
   },
-  "activeWorktrees": [
-    {
-      "id": "club-painel",
-      "branch": "fix/club-detail-painel",
-      "head": "545d08d6b878ce9dae0b8d9fdc4ef86cc8ea9ca7",
-      "headTitle": "",
-      "path": "/tmp/club-painel",
-      "status": "in-sync",
-      "commitsAhead": 0,
-      "primarySession": null,
-      "sessionTitle": null,
-      "focus": []
-    },
-    {
-      "id": "pet-ops-docs",
-      "branch": "docs/pet-ops-v3-documentation",
-      "head": "798676f6038e054a5b3e0782f6717747e355dc9c",
-      "headTitle": "",
-      "path": "/tmp/pet-ops-docs",
-      "status": "in-sync",
-      "commitsAhead": 0,
-      "primarySession": null,
-      "sessionTitle": null,
-      "focus": []
-    },
-    {
-      "id": "pet-ops-v3",
-      "branch": "feature/pet-ops-v3",
-      "head": "3c88dffc1a9f96ca926b10fa0a249a43ad28d5fe",
-      "headTitle": "",
-      "path": "/tmp/pet-ops-v3",
-      "status": "in-sync",
-      "commitsAhead": 0,
-      "primarySession": null,
-      "sessionTitle": null,
-      "focus": []
-    },
-    {
-      "id": "pet-v3-gender",
-      "branch": "fix/pet-detail-gender-label",
-      "head": "c27f5494c670e75e4fd0983f691b4ac9c4e5669d",
-      "headTitle": "",
-      "path": "/tmp/pet-v3-gender",
-      "status": "in-sync",
-      "commitsAhead": 0,
-      "primarySession": null,
-      "sessionTitle": null,
-      "focus": []
-    },
-    {
-      "id": "pet-v3-polish",
-      "branch": "fix/pet-detail-view-polish",
-      "head": "1a3683788258c803d2c28175dca85fb9617b552b",
-      "headTitle": "",
-      "path": "/tmp/pet-v3-polish",
-      "status": "in-sync",
-      "commitsAhead": 0,
-      "primarySession": null,
-      "sessionTitle": null,
-      "focus": []
-    },
-    {
-      "id": "pet-v3-redesign",
-      "branch": "feature/pet-detail-view-v3-redesign",
-      "head": "92435765a8df9423e6c80ec5a2cc0e71a50b83a3",
-      "headTitle": "",
-      "path": "/tmp/pet-v3-redesign",
-      "status": "in-sync",
-      "commitsAhead": 0,
-      "primarySession": null,
-      "sessionTitle": null,
-      "focus": []
-    }
-  ],
+  "activeWorktrees": [],
   "activeSessions": [
     {
       "id": "mvs_311d078987d0414a90f57ef28b789b18",
@@ -18345,6 +18272,428 @@
       "epic": "TASK-V3-PET-OPS-LOG",
       "sw": "sw-v72.4",
       "time": "20min"
+    },
+    {
+      "id": "TASK-931",
+      "type": "infra",
+      "category": "shelter",
+      "status": "backlog",
+      "priority": "high",
+      "owner": null,
+      "branch": null,
+      "flag": "SHELTER_ACTIONABLE_NOTIFICATIONS_V1",
+      "worktree": null,
+      "pr": null,
+      "title": "Rollout Fase 0 (notificações acionáveis): smoke flag OFF → ativar → 24h",
+      "tags": [
+        "rollout",
+        "fase-0",
+        "flag-on",
+        "monitoramento"
+      ],
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-942"
+      ],
+      "evidence": "docs/ROADMAP_SHELTER_ADMIN_V2.md §14–§16 (conclusão do roadmap, 2026-08-29)",
+      "description": "Ativar SHELTER_ACTIONABLE_NOTIFICATIONS_V1 em /admin/flags após smoke com flag OFF. Monitorar 24h (Sentry, Cloud Functions, billing). Rollback = flag OFF. Critério: convite mostra Aceitar/Recusar inline; estado grava sem erro; fallback link-only intacto.",
+      "createdAt": "2026-08-29",
+      "updatedAt": "2026-08-29"
+    },
+    {
+      "id": "TASK-932",
+      "type": "infra",
+      "category": "shelter",
+      "status": "backlog",
+      "priority": "high",
+      "owner": null,
+      "branch": null,
+      "flag": "SHELTER_TEAM_V2",
+      "worktree": null,
+      "pr": null,
+      "title": "Rollout Fase 1 (Equipe v2): smoke flag OFF → ativar → 24h",
+      "tags": [
+        "rollout",
+        "fase-1",
+        "flag-on",
+        "monitoramento"
+      ],
+      "blockedBy": [
+        "TASK-931"
+      ],
+      "relatedTasks": [],
+      "evidence": "docs/ROADMAP_SHELTER_ADMIN_V2.md §14–§16 (conclusão do roadmap, 2026-08-29)",
+      "description": "Ativar SHELTER_TEAM_V2 (requer Fase 0 ON). Smoke flag OFF, ativar, 24h. Critério: tabela de membros, blocos de permissão e convite por notificação funcionam; owner mantém todas as permissões.",
+      "createdAt": "2026-08-29",
+      "updatedAt": "2026-08-29"
+    },
+    {
+      "id": "TASK-933",
+      "type": "infra",
+      "category": "shelter",
+      "status": "backlog",
+      "priority": "high",
+      "owner": null,
+      "branch": null,
+      "flag": "SHELTER_VOLUNTEERS_V2",
+      "worktree": null,
+      "pr": null,
+      "title": "Rollout Fase 2 (Voluntários v2): smoke flag OFF → ativar → 24h",
+      "tags": [
+        "rollout",
+        "fase-2",
+        "flag-on",
+        "monitoramento"
+      ],
+      "blockedBy": [
+        "TASK-931",
+        "TASK-932"
+      ],
+      "relatedTasks": [
+        "TASK-937"
+      ],
+      "evidence": "docs/ROADMAP_SHELTER_ADMIN_V2.md §14–§16 (conclusão do roadmap, 2026-08-29)",
+      "description": "Ativar SHELTER_VOLUNTEERS_V2 (requer Fases 0 e 1 ON). Smoke flag OFF, ativar, 24h. Critério: tabela de voluntários (atividades/disponível hoje/período), promoção por notificação e snapshot no roster funcionam.",
+      "createdAt": "2026-08-29",
+      "updatedAt": "2026-08-29"
+    },
+    {
+      "id": "TASK-934",
+      "type": "infra",
+      "category": "shelter",
+      "status": "backlog",
+      "priority": "high",
+      "owner": null,
+      "branch": null,
+      "flag": "SHELTER_FOSTER_V2",
+      "worktree": null,
+      "pr": null,
+      "title": "Rollout Fase 3 (Lares Temporários v2): smoke flag OFF → ativar → 24h",
+      "tags": [
+        "rollout",
+        "fase-3",
+        "flag-on",
+        "monitoramento"
+      ],
+      "blockedBy": [
+        "TASK-931",
+        "TASK-933"
+      ],
+      "relatedTasks": [],
+      "evidence": "docs/ROADMAP_SHELTER_ADMIN_V2.md §14–§16 (conclusão do roadmap, 2026-08-29)",
+      "description": "Ativar SHELTER_FOSTER_V2 (requer Fases 0 e 2 ON). Smoke flag OFF, ativar, 24h. Critério: lista própria de lares, disponibilidade (datas/capacidade/tipos), placements intactos, termo com assinatura+hash.",
+      "createdAt": "2026-08-29",
+      "updatedAt": "2026-08-29"
+    },
+    {
+      "id": "TASK-935",
+      "type": "infra",
+      "category": "shelter",
+      "status": "backlog",
+      "priority": "high",
+      "owner": null,
+      "branch": null,
+      "flag": "SHELTER_DOCUMENTS_V1",
+      "worktree": null,
+      "pr": null,
+      "title": "Rollout Fase 6 (Documentos v1): smoke flag OFF → ativar → 24h",
+      "tags": [
+        "rollout",
+        "fase-6",
+        "flag-on",
+        "monitoramento"
+      ],
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-941"
+      ],
+      "evidence": "docs/ROADMAP_SHELTER_ADMIN_V2.md §14–§16 (conclusão do roadmap, 2026-08-29)",
+      "description": "Ativar SHELTER_DOCUMENTS_V1 (independente; útil cedo p/ termos dos fluxos de Pessoas). Smoke flag OFF, ativar, 24h. Critério: central com versionamento append-only + content_hash; nenhum HTML cru renderizado.",
+      "createdAt": "2026-08-29",
+      "updatedAt": "2026-08-29"
+    },
+    {
+      "id": "TASK-936",
+      "type": "infra",
+      "category": "shelter",
+      "status": "backlog",
+      "priority": "medium",
+      "owner": null,
+      "branch": null,
+      "flag": "SHELTER_MURAL_V2",
+      "worktree": null,
+      "pr": null,
+      "title": "Rollout Fase 4 (Mural v2): smoke flag OFF → ativar → 24h",
+      "tags": [
+        "rollout",
+        "fase-4",
+        "flag-on",
+        "monitoramento"
+      ],
+      "blockedBy": [
+        "TASK-931"
+      ],
+      "relatedTasks": [],
+      "evidence": "docs/ROADMAP_SHELTER_ADMIN_V2.md §14–§16 (conclusão do roadmap, 2026-08-29)",
+      "description": "Ativar SHELTER_MURAL_V2 (Fase 0 p/ menções/CTA). Smoke flag OFF, ativar, 24h. Critério: agendamento publica no horário; moderação de comentários; analytics; view pública do mural.",
+      "createdAt": "2026-08-29",
+      "updatedAt": "2026-08-29"
+    },
+    {
+      "id": "TASK-937",
+      "type": "infra",
+      "category": "shelter",
+      "status": "backlog",
+      "priority": "medium",
+      "owner": null,
+      "branch": null,
+      "flag": "SHELTER_EXHIBITION_OPS_V1",
+      "worktree": null,
+      "pr": null,
+      "title": "Rollout Fase 5 (Vitrines ops v1): smoke flag OFF → ativar → 24h",
+      "tags": [
+        "rollout",
+        "fase-5",
+        "flag-on",
+        "monitoramento"
+      ],
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-933",
+        "TASK-939",
+        "TASK-940"
+      ],
+      "evidence": "docs/ROADMAP_SHELTER_ADMIN_V2.md §14–§16 (conclusão do roadmap, 2026-08-29)",
+      "description": "Ativar SHELTER_EXHIBITION_OPS_V1 (ideal Fase 2 p/ escala). Smoke flag OFF, ativar, 24h. Critério: lista→detalhes, planejamento/logística/saúde/adoção, escala de voluntários. NÃO confiar na página pública de detalhe até TASK-939 (writer do mirror).",
+      "createdAt": "2026-08-29",
+      "updatedAt": "2026-08-29"
+    },
+    {
+      "id": "TASK-938",
+      "type": "infra",
+      "category": "shelter",
+      "status": "backlog",
+      "priority": "medium",
+      "owner": null,
+      "branch": null,
+      "flag": "SHELTER_STORE_V2",
+      "worktree": null,
+      "pr": null,
+      "title": "Rollout Fase 7 (Loja v2): smoke flag OFF → ativar → 24h",
+      "tags": [
+        "rollout",
+        "fase-7",
+        "flag-on",
+        "monitoramento"
+      ],
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-943",
+        "TASK-944"
+      ],
+      "evidence": "docs/ROADMAP_SHELTER_ADMIN_V2.md §14–§16 (conclusão do roadmap, 2026-08-29)",
+      "description": "Ativar SHELTER_STORE_V2 (EXIGE SHELTER_STORE_V1 já ON). Smoke flag OFF, ativar, 24h. Critério: carrinho multi-abrigo, checkout (1 pedido/abrigo), /meus-pedidos, analytics, fulfillment, variações; nenhuma escrita de variants com a flag OFF.",
+      "createdAt": "2026-08-29",
+      "updatedAt": "2026-08-29"
+    },
+    {
+      "id": "TASK-939",
+      "type": "feature",
+      "category": "shelter",
+      "status": "backlog",
+      "priority": "high",
+      "owner": null,
+      "branch": null,
+      "flag": "SHELTER_EXHIBITION_OPS_V1",
+      "worktree": null,
+      "pr": null,
+      "title": "GAP Fase 5: escrever o mirror público exhibitions_public (detalhe público vazio)",
+      "tags": [
+        "gap",
+        "fase-5",
+        "vitrines",
+        "public-mirror"
+      ],
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-937",
+        "TASK-940"
+      ],
+      "evidence": "docs/ROADMAP_SHELTER_ADMIN_V2.md §14–§16 (conclusão do roadmap, 2026-08-29)",
+      "description": "A coleção exhibitions_public (lida por PublicExhibitionDetail via exhibitionPublicService) não tem writer — a página de detalhe pública nunca renderiza dados reais. Escrever o espelho público na publicação da vitrine (Cloud Function onWrite ou no serviço de admin), mapeando datetime_start/venue.address/title/notes. Sem PII além do já público.",
+      "createdAt": "2026-08-29",
+      "updatedAt": "2026-08-29"
+    },
+    {
+      "id": "TASK-940",
+      "type": "security",
+      "category": "shelter",
+      "status": "backlog",
+      "priority": "high",
+      "owner": null,
+      "branch": null,
+      "flag": "SHELTER_EXHIBITION_OPS_V1",
+      "worktree": null,
+      "pr": null,
+      "title": "GAP Fase 5: leitura anônima de vitrines publicadas (firestore.rules)",
+      "tags": [
+        "gap",
+        "fase-5",
+        "vitrines",
+        "firestore-rules",
+        "needs-rules-change"
+      ],
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-937",
+        "TASK-939"
+      ],
+      "evidence": "docs/ROADMAP_SHELTER_ADMIN_V2.md §14–§16 (conclusão do roadmap, 2026-08-29)",
+      "description": "firestore.rules exigem membership do clube para ler clubs/{clubId}/exhibitions → visitante anônimo não lista vitrines em ShelterPublic. Adicionar regra de leitura pública para vitrines PUBLICADAS (ou depender do mirror de TASK-939). ATENÇÃO: exige mudança em firestore.rules — fora do escopo aditivo atual; planejar com deny-by-default e return explícito.",
+      "createdAt": "2026-08-29",
+      "updatedAt": "2026-08-29"
+    },
+    {
+      "id": "TASK-941",
+      "type": "feature",
+      "category": "shelter",
+      "status": "backlog",
+      "priority": "medium",
+      "owner": null,
+      "branch": null,
+      "flag": "SHELTER_DOCUMENTS_V1",
+      "worktree": null,
+      "pr": null,
+      "title": "GAP Fase 6: submissão do formulário de adoção in-app → adoption_workflow",
+      "tags": [
+        "gap",
+        "fase-6",
+        "documentos",
+        "adoption-form"
+      ],
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-935"
+      ],
+      "evidence": "docs/ROADMAP_SHELTER_ADMIN_V2.md §14–§16 (conclusão do roadmap, 2026-08-29)",
+      "description": "O construtor de formulário de adoção entrega o documento (categoria form) mas a submissão ainda não grava em adoption_workflow (hoje via Google Forms webhook). Implementar submissão in-app gravando em adoption_workflow e planejar migração do webhook do Google Forms.",
+      "createdAt": "2026-08-29",
+      "updatedAt": "2026-08-29"
+    },
+    {
+      "id": "TASK-942",
+      "type": "refactor",
+      "category": "shelter",
+      "status": "backlog",
+      "priority": "low",
+      "owner": null,
+      "branch": null,
+      "flag": "SHELTER_ACTIONABLE_NOTIFICATIONS_V1",
+      "worktree": null,
+      "pr": null,
+      "title": "GAP Fase 0: não gravar campos action_* quando a flag está OFF (otimização)",
+      "tags": [
+        "gap",
+        "fase-0",
+        "otimizacao"
+      ],
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-931"
+      ],
+      "evidence": "docs/ROADMAP_SHELTER_ADMIN_V2.md §14–§16 (conclusão do roadmap, 2026-08-29)",
+      "description": "Os fluxos de convite (Fases 1/2/3) gravam action_kind/action_ref/action_state mesmo com SHELTER_ACTIONABLE_NOTIFICATIONS_V1 OFF (~50 bytes/convite inertes). Opcional: condicionar a escrita à flag. Não bloqueante — sem crash e sem regressão hoje.",
+      "createdAt": "2026-08-29",
+      "updatedAt": "2026-08-29"
+    },
+    {
+      "id": "TASK-943",
+      "type": "feature",
+      "category": "shelter",
+      "status": "backlog",
+      "priority": "medium",
+      "owner": null,
+      "branch": null,
+      "flag": "SHELTER_STORE_V2",
+      "worktree": null,
+      "pr": null,
+      "title": "GAP Fase 7: integrar gateway de pagamento real via registry de provedores",
+      "tags": [
+        "gap",
+        "fase-7",
+        "loja",
+        "pagamento"
+      ],
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-938"
+      ],
+      "evidence": "docs/ROADMAP_SHELTER_ADMIN_V2.md §14–§16 (conclusão do roadmap, 2026-08-29)",
+      "description": "Hoje o pagamento é off-platform (PIX/link externo/dinheiro/a combinar) via registry em storeCart.js (registerPaymentProvider/resolvePaymentInstructions). Plugar um processador real (ex.: PIX dinâmico/gateway) usando o ponto de extensão, sem reescrever o checkout.",
+      "createdAt": "2026-08-29",
+      "updatedAt": "2026-08-29"
+    },
+    {
+      "id": "TASK-944",
+      "type": "feature",
+      "category": "shelter",
+      "status": "backlog",
+      "priority": "low",
+      "owner": null,
+      "branch": null,
+      "flag": "SHELTER_STORE_V2",
+      "worktree": null,
+      "pr": null,
+      "title": "GAP Fase 7: persistência do carrinho cross-device (hoje localStorage)",
+      "tags": [
+        "gap",
+        "fase-7",
+        "loja",
+        "carrinho"
+      ],
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-938"
+      ],
+      "evidence": "docs/ROADMAP_SHELTER_ADMIN_V2.md §14–§16 (conclusão do roadmap, 2026-08-29)",
+      "description": "O carrinho vive em localStorage (viralata_store_cart_v2), por navegador. Opcional: persistir por usuário (Firestore) para sincronizar entre dispositivos. Exigiria nova coleção + firestore.rules — avaliar custo/benefício.",
+      "createdAt": "2026-08-29",
+      "updatedAt": "2026-08-29"
+    },
+    {
+      "id": "TASK-945",
+      "type": "test",
+      "category": "shelter",
+      "status": "backlog",
+      "priority": "medium",
+      "owner": null,
+      "branch": null,
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "title": "Cobertura e2e/componente das superfícies V2 + smoke:routes com flags toggladas",
+      "tags": [
+        "gap",
+        "transversal",
+        "e2e",
+        "playwright",
+        "smoke"
+      ],
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-931",
+        "TASK-932",
+        "TASK-933",
+        "TASK-934",
+        "TASK-935",
+        "TASK-936",
+        "TASK-937",
+        "TASK-938"
+      ],
+      "evidence": "docs/ROADMAP_SHELTER_ADMIN_V2.md §14–§16 (conclusão do roadmap, 2026-08-29)",
+      "description": "Adicionar testes de componente/e2e (Playwright) para as superfícies novas das Fases 0–7 e rodar scripts/smoke-routes.mjs (35 rotas) com as flags ligadas/desligadas para provar 0 regressão e as rotas novas (/meus-pedidos, /mercado, /vitrines, /eventos, /mural, /lares-temporarios). Hoje as fases se apoiam em unit tests de domínio/serviço + typecheck/lint/build.",
+      "createdAt": "2026-08-29",
+      "updatedAt": "2026-08-29"
     }
   ],
   "definitionOfDone": [
@@ -18609,7 +18958,7 @@
       "feat/ds-v2-motion-2026-07-16",
       "feat/ds-v2-audit-2026-07-16"
     ],
-    "mainCommit": "a8cb2efc58b045b727c535b8eaf8e4a98b5db436",
+    "mainCommit": "6e447fa97bf580d211510580dee159587dc2e262",
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -18619,13 +18968,13 @@
     ],
     "openTODOs": 5,
     "openLegalReviews": 3,
-    "totalTasks": 659,
-    "done": 634,
+    "totalTasks": 757,
+    "done": 711,
     "inProgress": 0,
     "inReview": 0,
     "blocked": 0,
     "ready": 0,
-    "backlog": 8,
+    "backlog": 39,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
     "contribuicaoCoder": {
@@ -18654,7 +19003,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-07-24T16:38:51.411Z — via sync.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-08-29 — conclusão do ROADMAP_SHELTER_ADMIN_V2 (15 tasks de rollout/gap; Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
@@ -18688,7 +19037,7 @@
     "risksMitigated": 4,
     "risksAccepted": 2,
     "risksMonitoring": 2,
-    "lastTaskId": "TASK-717",
+    "lastTaskId": "TASK-945",
     "lastUpdated": "2026-07-20T01:20:23.364Z",
     "dsV2Phase": "Fase 4 — CONCLUÍDA",
     "dsV2Blocos": {

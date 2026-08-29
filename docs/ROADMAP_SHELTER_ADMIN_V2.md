@@ -370,4 +370,144 @@ Testes verdes. Ao final, relate feito x falta e o roadmap de acabamento.
 
 ---
 
+## 14. Auditoria de integração cross-fase (2026-08-29)
+
+> **Objetivo**: confirmar que as superfícies **compartilhadas** entre fases funcionam quando **múltiplas flags** estão ON ao mesmo tempo, e que com as flags OFF não há regressão. Auditoria **read-only** (nenhum arquivo alterado por ela).
+
+> **Nota sobre nomes de flag**: o prompt de conclusão citou `SHELTER_TEAM_V1`/`SHELTER_VOLUNTEERS_V1`/`SHELTER_FOSTER_V1`, mas os identificadores reais no código são **`SHELTER_TEAM_V2`**, **`SHELTER_VOLUNTEERS_V2`** e **`SHELTER_FOSTER_V2`** (as fases 1–3 são "v2" da respectiva aba). Ver `src/modules/shelter/domain/constants.js`.
+
+### 14.1 Defaults confirmados
+Todas as 8 flags nascem **OFF**: o spread `Object.values(SHELTER_FEATURE_FLAG).map((k) => [k, false])` em `src/core/featureFlags.js:738-740` define `false` para cada flag do abrigo, e **nenhuma** das 8 aparece na lista de overrides `true` que vem depois (`featureFlags.js:742-771`). ✅
+
+### 14.2 Superfície A — Notificações acionáveis (Fase 0) reusadas por Fases 1/2/3
+- **Implementação**: campos aditivos de ação são gravados por `buildNotificationActionFields()` (`src/core/services/notificationService.js`), que retorna `{ action_kind:null, action_ref:null, action_state:null }` quando não há ação (Firestore-safe, retrocompatível). O sino (`NotificationsMenu.jsx`) só renderiza os botões Aceitar/Recusar quando `SHELTER_ACTIONABLE_NOTIFICATIONS_V1` está ON; caso contrário cai no item link-only legado.
+- **Combinação assimétrica (Fase 1/2/3 ON, Fase 0 OFF)**: o convite é criado e **funciona** (aceite/recusa continuam via fluxo do convite); a notificação apenas não mostra os botões inline (fallback link-only). **Sem crash.** ✅
+- **Combinação assimétrica (Fase 0 ON, Fase 1/2/3 OFF)**: se existir um convite pendente, os botões renderizam e funcionam; sem convites novos, nada aparece. ✅
+- **Achado menor (não bloqueante)**: o fluxo de convite grava os campos `action_*` mesmo com a Fase 0 OFF (≈50 bytes/convite inertes). Otimização opcional → **TASK-942**.
+- **Regressão com tudo OFF**: sino é link-only, idêntico ao legado. ✅
+
+### 14.3 Superfície B — Documentos (Fase 6) ↔ fluxos e legais
+- **Implementação**: os vínculos de documento a fluxos são **enums estáticos** (`DOC_AUDIENCE`: `volunteer`/`foster`/`member` em `src/modules/shelter/domain/documents/shelterDocuments.js`), não leituras vivas de outra fase; o catálogo legal (`src/modules/shelter/domain/legal/`) é hardcoded e não lê flags; a central de documentos self-gate em `SHELTER_DOCUMENTS_V1` (`OrganizationAdminPanel.v3.jsx`).
+- **Combinação assimétrica (Fase 6 ON, Fase 2/3 OFF)**: um documento vinculado ao fluxo "voluntário"/"lar" **não quebra** — o alvo é uma string de enum, não um lookup na coleção de voluntários/lares. ✅
+- **Regressão com Fase 6 OFF**: aba Documentos oculta; painel legado inalterado. ✅
+- **Gap funcional conhecido (não é regressão)**: submissão do formulário de adoção in-app ainda não grava em `adoption_workflow` (hoje via Google Forms webhook) → **TASK-941**.
+
+### 14.4 Superfície C — Voluntários (Fase 2) ↔ Vitrines (Fase 5)
+- **Implementação**: caminhos de dados **independentes** — roster de voluntários em `clubs/{clubId}/volunteers/{uid}` (gate `SHELTER_VOLUNTEERS_V2`) e escala da vitrine em `clubs/{clubId}/exhibitions/{exId}/shifts/{id}` (gate `SHELTER_EXHIBITION_OPS_V1`). A escala usa contador de vagas (`slots_filled`), **não** um join na coleção de voluntários.
+- **Combinação assimétrica (Fase 5 ON, Fase 2 OFF ou vice-versa)**: cada aba gate a própria UI, nenhuma lê a flag da outra; **sem acoplamento rígido, sem crash**. ✅
+- **Regressão com flags OFF**: Vitrines cai para lista read-only (`ExhibitionsList`); Voluntários cai para `VolunteersRoster` legado. ✅
+- **Gap funcional conhecido (não é regressão)**: o espelho público `exhibitions_public` **não tem writer** (página de detalhe pública fica vazia) e a leitura anônima de `clubs/{clubId}/exhibitions` depende das `firestore.rules` → **TASK-939** (writer) e **TASK-940** (regra de leitura pública).
+
+### 14.5 Veredito
+**Zero risco de regressão com as flags OFF. Nenhum crash nas combinações assimétricas testadas.** Não há estado mutável compartilhado entre fases. Um único achado menor (14.2) é otimização opcional. Os "gaps" listados são **funcionalidades a completar** (não regressões) e foram abertos como tasks (§16).
+
+---
+
+## 15. Plano de rollout progressivo
+
+> **Princípio**: ligar **uma flag por vez**, em produção, respeitando as **dependências** entre fases; validar antes com smoke (flag OFF), abrir janela de ativação, monitorar 24h, e ter rollback trivial (voltar a flag para OFF em `/admin/flags`, sem deploy).
+
+### 15.1 Ordem de ativação (por dependência e risco)
+
+| Ordem | Fase | Flag | Depende de (deve já estar ON) | Task |
+|---|---|---|---|---|
+| 1 | 0 · Notificações acionáveis | `SHELTER_ACTIONABLE_NOTIFICATIONS_V1` | — (fundação) | TASK-931 |
+| 2 | 1 · Equipe v2 | `SHELTER_TEAM_V2` | Fase 0 | TASK-932 |
+| 3 | 2 · Voluntários v2 | `SHELTER_VOLUNTEERS_V2` | Fases 0, 1 | TASK-933 |
+| 4 | 3 · Lares Temporários v2 | `SHELTER_FOSTER_V2` | Fases 0, 2 | TASK-934 |
+| 5 | 6 · Documentos v1 | `SHELTER_DOCUMENTS_V1` | — (independente; útil cedo p/ termos dos fluxos de Pessoas) | TASK-935 |
+| 6 | 4 · Mural v2 | `SHELTER_MURAL_V2` | Fase 0 (menções/CTA) | TASK-936 |
+| 7 | 5 · Vitrines v1 (ops) | `SHELTER_EXHIBITION_OPS_V1` | — (idealmente Fase 2 p/ escala) | TASK-937 |
+| 8 | 7 · Loja v2 | `SHELTER_STORE_V2` | **`SHELTER_STORE_V1`** (pré-requisito) | TASK-938 |
+
+**Guardas de dependência** (checar antes de ligar):
+- Não ligar **Voluntários v2** antes de **Equipe v2** + **Fase 0**.
+- Não ligar **Lares v2** antes de **Voluntários v2**.
+- **Loja v2** exige **Loja v1** já ativa (a v2 é aditiva sobre a v1).
+- **Documentos v1** pode subir cedo (item 5) para que Equipe/Voluntários/Lares já apontem termos versionados; não bloqueia nem é bloqueada.
+
+### 15.2 Procedimento por fase (runbook)
+Para **cada** ativação:
+1. **Pré-ativação (flag OFF)**: `npm run build` + `npm run smoke:routes` (35 rotas, ver §16 Fase 7) num preview; confirmar 0 quebradas e que as rotas novas da fase respondem (200 público ou redirect→/login quando protegida).
+2. **Ativar**: ligar **somente** a flag da fase em `/admin/flags` (master admin). Nada de deploy — é runtime.
+3. **Fumaça pós-ativação**: repetir o smoke com a flag ON; abrir manualmente a aba/superfície da fase no painel do abrigo e a superfície pública correspondente.
+4. **Monitorar 24h**: Sentry (erros JS), Crashlytics (se app mobile/PWA), logs de **Cloud Functions** (crons/webhooks/triggers), e **billing API** (pico de leituras/gravações Firestore). Critério de rollback: erro novo atribuível à fase, pico anômalo de custo, ou quebra de fluxo público.
+5. **Rollback (se preciso)**: voltar a flag para OFF em `/admin/flags` (efeito imediato, comportamento legado restaurado). Registrar incidente e reabrir a task da fase.
+6. **Concluir**: só então marcar a fase como ✅ em §12 e `resolvedAt` na task de rollout.
+
+### 15.3 Sinais de saúde por fase (o que observar)
+- **Fase 0**: taxa de aceite/recusa inline vs. link; erros ao gravar `action_state`.
+- **Fases 1–3**: convites enviados vs. aceitos; erros de permissão (deny-by-default disparando indevidamente).
+- **Fase 4 (Mural)**: posts agendados publicando no horário; comentários ocultados/reexibidos; alcance.
+- **Fase 5 (Vitrines)**: criação de evento/ops; escala de voluntários; **não** confiar na página pública de detalhe até o writer do mirror (TASK-939).
+- **Fase 6 (Documentos)**: versões append-only com `content_hash`; nenhum HTML cru renderizado.
+- **Fase 7 (Loja)**: pedidos criados por abrigo no checkout; fulfillment; `/meus-pedidos` do comprador; nenhuma escrita de `variants` com a flag OFF.
+
+---
+
+## 16. Checklist da Regra A por fase (UX · Papéis · Regras · Integrações · Pós-deploy)
+
+> Legenda: **[x]** entregue · **[ ]** falta (com a task aberta). "Pós-deploy" = ativação em produção + 24h de monitoramento (runbook §15.2). Gaps viram tasks em `.harness/SCRUM_TASKS.json` (TASK-931 a TASK-945).
+
+### Fase 0 — Notificações acionáveis (`SHELTER_ACTIONABLE_NOTIFICATIONS_V1`)
+- **UX**: [x] botões Aceitar/Recusar inline no sino; [x] estado pendente/aceito/recusado; [x] fallback link-only com flag OFF.
+- **Papéis**: [x] convidado responde; [x] emissor vê o estado.
+- **Regras**: [x] campos de ação aditivos/retrocompatíveis; [x] sem mudança em `firestore.rules`.
+- **Integrações**: [x] reusada por Fases 1/2/3; [ ] gate da escrita de `action_*` quando a flag está OFF (otimização) → **TASK-942**.
+- **Pós-deploy**: [ ] ativar + 24h → **TASK-931**.
+
+### Fase 1 — Equipe v2 (`SHELTER_TEAM_V2`)
+- **UX**: [x] tabela rica (acesso, telefone, e-mail, endereço); [x] blocos de permissão rotulados; [x] status/vínculo de documentos.
+- **Papéis**: [x] membro permanente vs. transitório explícito; [x] owner = todas as permissões.
+- **Regras**: [x] convite por notificação (usa Fase 0); [x] additive, sem `firestore.rules`.
+- **Integrações**: [x] documentos/termos (Fase 6, via enum); [x] Fase 0.
+- **Pós-deploy**: [ ] ativar + 24h → **TASK-932**.
+
+### Fase 2 — Voluntários v2 (`SHELTER_VOLUNTEERS_V2`)
+- **UX**: [x] tabela (atividades, "disponível hoje", período, contato); [x] referência de blocos de permissão concedíveis.
+- **Papéis**: [x] transitório; [x] promoção a membro por quem tem atribuição.
+- **Regras**: [x] promoção/convite por notificação (Fase 0); [x] snapshot de perfil no roster do abrigo (rules impedem ler `volunteer_profile` global).
+- **Integrações**: [x] Fases 0 e 1; [x] escala de Vitrines (Fase 5) por caminho independente.
+- **Pós-deploy**: [ ] ativar + 24h → **TASK-933**.
+
+### Fase 3 — Lares Temporários v2 (`SHELTER_FOSTER_V2`)
+- **UX**: [x] lista própria; [x] disponibilidade (datas, capacidade, tipos de pet); [x] tabela rica.
+- **Papéis**: [x] espécie de voluntário (transitório); [x] promoção/atribuição por membro com atribuição.
+- **Regras**: [x] vínculo/promoção por notificação (Fase 0); [x] placements (propor/aceitar/prorrogar/finalizar) intactos; [x] termo com assinatura+hash.
+- **Integrações**: [x] Fases 0 e 2; [x] documentos (Fase 6, via enum).
+- **Pós-deploy**: [ ] ativar + 24h → **TASK-934**.
+
+### Fase 4 — Mural v2 (`SHELTER_MURAL_V2`)
+- **UX**: [x] composer avançado (agendamento, rascunho, tags, menções); [x] fixar/arquivar/busca; [x] moderação de comentários; [x] analytics; [x] view pública.
+- **Papéis**: [x] admin/membro com permissão `feed`; [x] público interage.
+- **Regras**: [x] campos aditivos em `club_posts`; [x] sem `firestore.rules`.
+- **Integrações**: [x] Fase 0 (menções/CTA).
+- **Pós-deploy**: [ ] ativar + 24h → **TASK-936**.
+
+### Fase 5 — Vitrines v1 / ops (`SHELTER_EXHIBITION_OPS_V1`)
+- **UX**: [x] lista funcional → detalhes; [x] planejamento/logística/saúde/adoção; [x] escala de voluntários; [x] log pós-evento.
+- **Papéis**: [x] admin/membro; [x] voluntários na escala.
+- **Regras**: [x] campo `ops` aditivo no mesmo doc; [x] sem `firestore.rules`.
+- **Integrações**: [x] escala reusa voluntários; [ ] **writer do mirror `exhibitions_public`** (detalhe público vazio) → **TASK-939**; [ ] **leitura anônima** de vitrines publicadas (rules) → **TASK-940**.
+- **Pós-deploy**: [ ] ativar + 24h → **TASK-937**.
+
+### Fase 6 — Documentos v1 (`SHELTER_DOCUMENTS_V1`)
+- **UX**: [x] central (formulários/termos/contratos) com status/versão/vínculos; [x] editor Markdown + construtor de formulário; [x] pré-visualização.
+- **Papéis**: [x] owner/admin editam; [x] vínculo por audiência (membro/voluntário/lar/adoção).
+- **Regras**: [x] versionamento append-only + `content_hash` (imutabilidade); [x] sanitização (Markdown + skipHtml); [x] campo `documents` aditivo; [x] sem `firestore.rules`.
+- **Integrações**: [x] catálogo legal versionado; [x] fluxos via enum; [ ] **submissão do formulário de adoção in-app → `adoption_workflow`** + migração Google Forms → **TASK-941**.
+- **Pós-deploy**: [ ] ativar + 24h → **TASK-935**.
+
+### Fase 7 — Loja v2 (`SHELTER_STORE_V2`)
+- **UX**: [x] carrinho multi-abrigo; [x] checkout (um pedido por abrigo); [x] `/meus-pedidos`; [x] analytics admin; [x] fulfillment; [x] variações.
+- **Papéis**: [x] comprador (auth); [x] admin da loja (CRUD/fulfillment/analytics).
+- **Regras**: [x] `variants`/`fulfillment` aditivos; [x] rastreio do comprador sem `orderBy` (sem novo índice); [x] sem `firestore.rules`.
+- **Integrações**: [x] reusa `createOrder`/`updateProduct` da Loja v1; [x] pagamento off-platform com registry de provedores; [ ] **gateway de pagamento real** via ponto de extensão → **TASK-943**; [ ] persistência do carrinho cross-device (hoje `localStorage`) → **TASK-944**.
+- **Pós-deploy**: [ ] ativar + 24h (exige Loja v1 ON) → **TASK-938**.
+
+### Transversal
+- [ ] **Cobertura de testes e2e/componente** (Playwright) das superfícies V2 + rodar `smoke:routes` com as flags toggladas → **TASK-945**.
+
+---
+
 *Documento vivo. Atualize §12 e `.harness/SCRUM_TASKS.json` ao concluir cada fase.*
