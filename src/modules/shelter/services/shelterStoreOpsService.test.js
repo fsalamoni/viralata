@@ -142,6 +142,13 @@ describe('setOrderFulfillment', () => {
     mockGetDoc.mockResolvedValue({ exists: () => true, data: () => ({}) });
     await expect(svc.setOrderFulfillment('A', 'o1', ACTOR, { tracking_url: 'not-a-url' })).rejects.toBeTruthy();
   });
+
+  it('lança erro explícito e não grava quando o pedido não existe', async () => {
+    mockGetDoc.mockResolvedValue({ exists: () => false, data: () => ({}) });
+    await expect(svc.setOrderFulfillment('A', 'inexistente', ACTOR, { carrier: 'Correios' }))
+      .rejects.toThrow(/não encontrado/i);
+    expect(mockUpdateDoc).not.toHaveBeenCalled();
+  });
 });
 
 describe('saveProductVariants', () => {

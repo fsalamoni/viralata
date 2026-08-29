@@ -401,6 +401,10 @@ Todas as 8 flags nascem **OFF**: o spread `Object.values(SHELTER_FEATURE_FLAG).m
 ### 14.5 Veredito
 **Zero risco de regressão com as flags OFF. Nenhum crash nas combinações assimétricas testadas.** Não há estado mutável compartilhado entre fases. Um único achado menor (14.2) é otimização opcional. Os "gaps" listados são **funcionalidades a completar** (não regressões) e foram abertos como tasks (§16).
 
+### 14.6 Hardening aplicado nesta rodada (code review)
+- **Fase 7 (Loja) — `setOrderFulfillment`**: adicionada guarda `if (!snap.exists()) throw new Error('Pedido não encontrado.')` antes do `updateDoc`, alinhando ao padrão já usado em `exhibitionOpsService`/`shelterDocumentsService` (evita erro Firestore `not-found` cru ao gravar envio de um pedido inexistente). Teste de cobertura adicionado (`shelterStoreOpsService.test.js`). Sem mudança de comportamento no caminho feliz; 829 testes de `src/modules/shelter/**` verdes.
+- **Fase 4 (Mural) — `sortMuralPosts(posts, now)`**: o parâmetro `now` é intencionalmente descartado (`void now`) — a ordenação depende só de estado fixado + `pinned_at`/`createdMs` (independente do tempo); mantido por uniformidade de assinatura com os demais helpers do módulo. Não é bug; sem alteração.
+
 ---
 
 ## 15. Plano de rollout progressivo

@@ -108,7 +108,8 @@ export async function setOrderFulfillment(clubId, orderId, actor, fulfillment, {
   if (!clubId || !orderId) throw new Error('clubId e orderId são obrigatórios');
   const parsed = orderFulfillmentSchema.parse(fulfillment || {});
   const snap = await getDoc(orderRef(clubId, orderId));
-  const current = snap.exists() ? snap.data() : {};
+  if (!snap.exists()) throw new Error('Pedido não encontrado.');
+  const current = snap.data();
   const activity = [
     ...(Array.isArray(current.activity) ? current.activity : []),
     {
