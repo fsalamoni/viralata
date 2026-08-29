@@ -26,7 +26,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
-import { FEATURE_FLAG } from '@/core/featureFlags';
+import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
 import { useUiPreferences, FOOTER_MODES } from '@/core/hooks/useUiPreferences';
 import { LEGAL_PAGES } from '@/modules/shelter/domain/legal';
 import { cn } from '@/core/lib/utils';
@@ -118,7 +118,7 @@ export function useLegalFooterHeight(mode) {
 }
 
 export default function LegalFooter() {
-  const enabled = useFeatureFlag(FEATURE_FLAG.SHELTER_LEGAL_TERMS_V1);
+  const enabled = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_LEGAL_TERMS_V1);
   const [uiPrefs] = useUiPreferences();
   const links = buildFooterLinks(enabled);
   const footerRef = useRef(null);

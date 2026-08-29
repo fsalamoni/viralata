@@ -32,6 +32,7 @@ import {
 } from 'firebase/firestore';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
+import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
 import { logger } from '@/core/lib/logger';
 import { cn } from '@/core/lib/utils';
 
@@ -146,7 +147,7 @@ function PetRow({ pet }) {
 
 export function ShelterAdminDashboard({ clubId }) {
   const { user } = useAuth();
-  const flagEnabled = useFeatureFlag('SHELTER_ADMIN_DASHBOARD_V1');
+  const flagEnabled = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_ADMIN_DASHBOARD_V1);
   // FIX: todas as 3 views agora usam useArenaPageClasses em vez de
   // className hardcoded 'container py-8 max-w-Xxl', garantindo consistência DS_V2.
   const disabledClass = useArenaPageClasses('arena-page mx-auto max-w-2xl px-4 py-8');

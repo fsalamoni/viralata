@@ -23,6 +23,7 @@ import PageHero from '@/components/PageHero';
 import Seo from '@/components/Seo';
 import { getFosterPublicHistory } from '@/modules/shelter/services/fosterHistoryPublicService';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
+import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
 
 const STATUS_META = {
   ended_adopted: {
@@ -144,7 +145,7 @@ function plural(count) {
 
 export default function PublicFosterHistory() {
   const { uid } = useParams();
-  const flagEnabled = useFeatureFlag('SHELTER_FOSTER_PUBLIC_HISTORY_V1');
+  const flagEnabled = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_FOSTER_PUBLIC_HISTORY_V1);
   const [state, setState] = useState({
     loading: true,
     denied: false,

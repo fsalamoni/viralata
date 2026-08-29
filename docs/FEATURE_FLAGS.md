@@ -44,6 +44,8 @@ return <OldFeature />;
 | `SHELTER_SECURITY_HARDENING` | `shelter_security_hardening` | OFF | TBD |
 | `SHELTER_PLATFORM_HEALTH` | `shelter_platform_health` | OFF | TBD |
 | `SHELTER_CUTOVER` | `shelter_cutover` | OFF | TBD |
+| `SHELTER_FOSTER_DASHBOARD_V1` | `shelter_foster_dashboard_v1` | OFF | Painel pessoal do Lar Temporário (`/lares-temporarios/dashboard`): pets sob guarda, próximos fins de placement e histórico de adoções via LT. |
+| `SHELTER_ADOPTER_DASHBOARD_V1` | `shelter_adopter_dashboard_v1` | OFF | Dashboard unificado do adotante (`/meu-painel`): adoções concluídas/em andamento, favoritos, % de perfil, milestones pós-adoção e notificações. |
 | `ABRIGO` | `abrigo` | OFF | TBD |
 | `TBD` | `ad_slots` | OFF | TBD |
 | `TBD` | `home_stats_v1` | OFF | TBD |

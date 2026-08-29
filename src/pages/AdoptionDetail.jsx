@@ -24,7 +24,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 import { useArenaPageClasses } from '@/core/lib/useArenaPageClasses';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
-import { FEATURE_FLAG } from '@/core/featureFlags';
+import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
 import { getApplication } from '@/modules/shelter/services/adoptionService';
 import { getPostAdoption } from '@/modules/shelter/services/postAdoptionService';
 import { parseTimestamp } from '@/core/utils/timestamp';
@@ -190,7 +190,7 @@ function LoadingSkeleton({ wrapperClass }) {
 export default function AdoptionDetail() {
   const { clubId, applicationId } = useParams();
   const wrapperClass = useArenaPageClasses('arena-page mx-auto w-full max-w-2xl px-4 py-6 sm:px-6');
-  const returnEnabled = useFeatureFlag(FEATURE_FLAG.SHELTER_POST_ADOPTION_RETURN);
+  const returnEnabled = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_POST_ADOPTION_RETURN);
   const [returnDialogOpen, setReturnDialogOpen] = useState(false);
   const [pauseDialogOpen, setPauseDialogOpen] = useState(false);
 
