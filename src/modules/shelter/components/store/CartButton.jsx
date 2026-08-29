@@ -13,6 +13,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
 } from '@/components/ui/dialog';
 import { cn } from '@/core/lib/utils';
+import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { formatBRL } from '@/modules/shelter/domain/store/products';
 import { maxQtyFor } from '@/modules/shelter/domain/store/storeCart';
 import { useCart } from '@/modules/shelter/hooks/useShelterStoreV2';
@@ -120,6 +121,8 @@ export function CartModal({ open, onOpenChange, actor }) {
 }
 
 export default function CartButton({ actor, className, variant = 'outline', size = 'icon' }) {
+  const { user } = useAuth();
+  const resolvedActor = actor || { uid: user?.uid, name: user?.displayName };
   const { count } = useCart();
   const [open, setOpen] = useState(false);
   return (
@@ -139,7 +142,7 @@ export default function CartButton({ actor, className, variant = 'outline', size
           </span>
         )}
       </Button>
-      <CartModal open={open} onOpenChange={setOpen} actor={actor} />
+      <CartModal open={open} onOpenChange={setOpen} actor={resolvedActor} />
     </>
   );
 }
