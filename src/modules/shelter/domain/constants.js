@@ -199,6 +199,23 @@ export const SHELTER_FEATURE_FLAG = Object.freeze({
   // Com a flag OFF, nada é lido/escrito e o painel atual permanece inalterado.
   // Default OFF. Ver docs/ROADMAP_SHELTER_ADMIN_V2.md.
   SHELTER_DOCUMENTS_V1: 'shelter_documents_v1',
+
+  // Fase 7 — Loja do abrigo v2. Aprimora a Loja v1 de forma ADITIVA, sem
+  // quebrar nada: (admin) painel de analytics de vendas (receita realizada vs.
+  // pipeline, ticket médio, mais vendidos, conversão), controles de
+  // fulfillment (transportadora/código de rastreio/URL) nos pedidos e editor
+  // de variações do produto (tamanho/cor com preço/estoque próprios);
+  // (público) CARRINHO multi-abrigo (localStorage), CHECKOUT que registra um
+  // pedido por abrigo reutilizando `createOrder` e ACOMPANHAMENTO de pedido em
+  // `/meus-pedidos` (o comprador lê os próprios pedidos — regra já existente).
+  // Pagamentos seguem OFF-PLATFORM, agora com um ponto de extensão para
+  // processadores externos. Campos novos (`variants` no produto, `fulfillment`
+  // no pedido) são opcionais/aditivos; buyer-scoped queries usam índice de
+  // campo único (auto). Sem subcoleção nova e SEM mudança em firestore.rules.
+  // Depende de SHELTER_STORE_V1. Com a flag OFF, a loja atual permanece
+  // inalterada (compra unitária, sem carrinho). Default OFF. Ver
+  // docs/ROADMAP_SHELTER_ADMIN_V2.md.
+  SHELTER_STORE_V2: 'shelter_store_v2',
 });
 
 /**
@@ -589,6 +606,20 @@ export const SHELTER_FEATURE_FLAG_META = Object.freeze({
       + 'ADITIVO `documents` no MESMO doc `clubs/{clubId}` (sem subcoleção nova e '
       + 'sem mudança nas firestore.rules). Sanitização sem HTML cru (Markdown + '
       + 'skipHtml). Com a flag OFF, o painel atual permanece inalterado. Default OFF.',
+  },
+  [SHELTER_FEATURE_FLAG.SHELTER_STORE_V2]: {
+    label: 'Abrigos · Loja v2 (carrinho, checkout, pedidos, fulfillment, analytics)',
+    description:
+      'Aprimora a Loja do Abrigo de forma aditiva (depende de SHELTER_STORE_V1). '
+      + 'Público: carrinho multi-abrigo, checkout que registra um pedido por '
+      + 'abrigo e acompanhamento de pedido em /meus-pedidos. Admin: painel de '
+      + 'analytics de vendas (receita realizada vs. pipeline, ticket médio, mais '
+      + 'vendidos, conversão), controles de fulfillment (transportadora/rastreio) '
+      + 'nos pedidos e editor de variações do produto (preço/estoque por variação). '
+      + 'Pagamentos off-platform com ponto de extensão para processadores externos. '
+      + 'Campos novos (`variants`, `fulfillment`) são opcionais/aditivos; sem '
+      + 'subcoleção nova e sem mudança nas firestore.rules. Com a flag OFF, a loja '
+      + 'atual permanece inalterada (compra unitária). Default OFF.',
   },
 });
 

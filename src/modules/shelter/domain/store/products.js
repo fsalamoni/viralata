@@ -290,6 +290,22 @@ export const supplierSchema = z.object({
   notes: z.string().trim().max(500).optional(),
 });
 
+/**
+ * Variação de um produto (Loja v2 — SHELTER_STORE_V2). Ex.: tamanho P/M/G ou
+ * cor. Campo ADITIVO e opcional em `productBase.variants` — quando ausente, o
+ * produto se comporta exatamente como na Loja v1 (preço/estoque únicos). Se
+ * `price_cents` for definido, sobrepõe o preço do produto para aquela variação;
+ * `stock_quantity` (quando o produto controla estoque) é o estoque próprio da
+ * variação.
+ */
+export const variantSchema = z.object({
+  id: z.string().trim().max(60).optional(),
+  label: z.string().trim().min(1, 'Rótulo da variação é obrigatório').max(80),
+  price_cents: centsSchema.optional(),
+  stock_quantity: z.number().int().min(0).max(1_000_000).optional(),
+  sku: z.string().trim().max(80).optional(),
+});
+
 /** Campos comuns de produto (create/edit compartilham). */
 const productBase = {
   name: z.string().trim().min(2, 'Nome é obrigatório').max(160),
@@ -319,6 +335,8 @@ const productBase = {
   // Mídia:
   images: z.array(mediaItemSchema).max(12).optional().default([]),
   videos: z.array(mediaItemSchema).max(4).optional().default([]),
+  // Variações (Loja v2 — aditivo/opcional; vazio = produto simples da v1):
+  variants: z.array(variantSchema).max(30).optional().default([]),
   status: z.enum(Object.values(PRODUCT_STATUS)).optional().default(PRODUCT_STATUS.DRAFT),
 };
 
@@ -364,6 +382,9 @@ export const orderItemSchema = z.object({
   price_cents: centsSchema,
   qty: z.number().int().min(1).max(999).default(1),
   image_url: z.string().url().optional(),
+  // Variação escolhida (Loja v2 — aditivo/opcional):
+  variant_id: z.string().max(60).optional(),
+  variant_label: z.string().max(120).optional(),
 });
 
 export const orderCreateSchema = z.object({
@@ -374,6 +395,20 @@ export const orderCreateSchema = z.object({
   payment_method: z.enum(Object.values(PAYMENT_METHOD)).optional(),
   delivery_method: z.enum(DELIVERY_METHOD_ORDER).optional(),
   shipping_address: z.string().trim().max(500).optional().default(''),
+});
+
+/**
+ * Dados de fulfillment/envio de um pedido (Loja v2 — SHELTER_STORE_V2). Campo
+ * ADITIVO gravado em `fulfillment` no doc do pedido; opcional e sem efeito na
+ * Loja v1. Usado pelo admin ao marcar um pedido como enviado.
+ */
+export const orderFulfillmentSchema = z.object({
+  carrier: z.string().trim().max(120).optional().default(''),
+  tracking_code: z.string().trim().max(120).optional().default(''),
+  tracking_url: z.union([z.string().trim().url('URL inválida').max(500), z.literal('')]).optional().default(''),
+  shipped_at: z.string().trim().max(40).optional().default(''),
+  estimated_delivery: z.string().trim().max(40).optional().default(''),
+  notes: z.string().trim().max(1000).optional().default(''),
 });
 
 /** Divide o payload de produto em { publicData, privateData }. */
