@@ -16,7 +16,7 @@ import { useState } from 'react';
 import { collectionGroup, query, where, getDocs, orderBy } from 'firebase/firestore';
 import { db } from '@/core/config/firebase';
 import { parseTimestamp } from '@/core/utils/timestamp';
-import { FEATURE_FLAG } from '@/core/featureFlags';
+import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 
 const STATUS_LABELS = {
@@ -105,7 +105,7 @@ function ReturnItem({ post }) {
  * @param {{ shelterClubId: string }} props
  */
 export function PostAdoptionReturnedList({ shelterClubId }) {
-  const enabled = useFeatureFlag(FEATURE_FLAG.SHELTER_POST_ADOPTION_RETURN);
+  const enabled = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_POST_ADOPTION_RETURN);
 
   const { data: returned = [], isLoading, isError } = useQuery({
     queryKey: ['shelter', shelterClubId, 'postAdoptionReturned'],

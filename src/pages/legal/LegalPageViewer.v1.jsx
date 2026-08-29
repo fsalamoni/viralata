@@ -31,7 +31,7 @@ import { Button } from '@/components/ui/button';
 import { LegalPage, LegalSection } from '@/components/legal-page';
 import PageNotFound from '@/pages/PageNotFound';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
-import { FEATURE_FLAG } from '@/core/featureFlags';
+import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
 import { getLegalPageBySlug, LEGAL_PAGES } from '@/modules/shelter/domain/legal';
 
 // Slug → texto. Mantido aqui (em vez de constants do módulo
@@ -55,7 +55,7 @@ const TEXT_BY_SLUG = {
 export default function LegalPageViewer() {
   const { '*': slugPath } = useParams();
   const slug = (slugPath || '').replace(/\/$/, '');
-  const enabled = useFeatureFlag(FEATURE_FLAG.SHELTER_LEGAL_TERMS_V1);
+  const enabled = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_LEGAL_TERMS_V1);
 
   // Valida o slug contra o catálogo conhecido
   const page = useMemo(() => getLegalPageBySlug(slug), [slug]);

@@ -216,6 +216,17 @@ export const SHELTER_FEATURE_FLAG = Object.freeze({
   // inalterada (compra unitária, sem carrinho). Default OFF. Ver
   // docs/ROADMAP_SHELTER_ADMIN_V2.md.
   SHELTER_STORE_V2: 'shelter_store_v2',
+  // TASK-306 — Painel pessoal do Lar Temporário (rota
+  // /lares-temporarios/dashboard): pets sob guarda agora, próximos fins de
+  // placement (7d) e histórico de adoções via LT, com ações markAsReturned e
+  // endFosterPlacement. Com a flag OFF, a rota mostra o placeholder "em
+  // rollout gradual". Default OFF.
+  SHELTER_FOSTER_DASHBOARD_V1: 'shelter_foster_dashboard_v1',
+  // TASK-339 — Dashboard unificado do Adotante (rota /meu-painel): adoções
+  // concluídas e em andamento, pets favoritos, % de perfil completo, próximas
+  // milestones de pós-adoção e notificações não lidas. Com a flag OFF, a rota
+  // mostra o placeholder "Painel do adotante em breve". Default OFF.
+  SHELTER_ADOPTER_DASHBOARD_V1: 'shelter_adopter_dashboard_v1',
 });
 
 /**
@@ -620,6 +631,25 @@ export const SHELTER_FEATURE_FLAG_META = Object.freeze({
       + 'Campos novos (`variants`, `fulfillment`) são opcionais/aditivos; sem '
       + 'subcoleção nova e sem mudança nas firestore.rules. Com a flag OFF, a loja '
       + 'atual permanece inalterada (compra unitária). Default OFF.',
+  },
+  [SHELTER_FEATURE_FLAG.SHELTER_FOSTER_DASHBOARD_V1]: {
+    label: 'Abrigos · painel pessoal do Lar Temporário',
+    description:
+      'Painel pessoal do Lar Temporário (rota /lares-temporarios/dashboard). '
+      + 'Mostra os pets sob a minha guarda agora, os próximos fins de placement '
+      + '(7 dias) e o histórico de adoções realizadas via LT, com as ações de '
+      + 'marcar como devolvido e encerrar o acolhimento (com avaliação e '
+      + 'feedback). Com a flag OFF, a rota exibe o aviso "em rollout gradual". '
+      + 'Default OFF.',
+  },
+  [SHELTER_FEATURE_FLAG.SHELTER_ADOPTER_DASHBOARD_V1]: {
+    label: 'Adotante · dashboard unificado (Meu Painel)',
+    description:
+      'Dashboard unificado do adotante (rota /meu-painel). Reúne adoções '
+      + 'concluídas e em andamento, pets favoritos, percentual de perfil '
+      + 'completo, próximas milestones de acompanhamento pós-adoção e '
+      + 'notificações não lidas. Com a flag OFF, a rota exibe o aviso "Painel '
+      + 'do adotante em breve". Default OFF.',
   },
 });
 

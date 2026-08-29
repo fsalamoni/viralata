@@ -40,6 +40,7 @@ import { toast as sonnerToast } from 'sonner';
 import { cn } from '@/core/lib/utils';
 import { logger } from '@/core/lib/logger';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
+import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
 
 const STATUS_META = {
   active: { label: 'Ativo', color: 'emerald' },
@@ -271,7 +272,7 @@ export default function FosterDashboard() {
   const [loading, setLoading] = useState(true);
   const [endTarget, setEndTarget] = useState(null);
   const [endSubmitting, setEndSubmitting] = useState(false);
-  const flagEnabled = useFeatureFlag('SHELTER_FOSTER_DASHBOARD_V1');
+  const flagEnabled = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_FOSTER_DASHBOARD_V1);
 
   useEffect(() => {
     if (!user?.uid) {

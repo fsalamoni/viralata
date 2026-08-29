@@ -25,7 +25,7 @@ import { Button } from '@/components/ui/button';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { createAuditLog } from '@/core/services/auditService';
-import { FEATURE_FLAG } from '@/core/featureFlags';
+import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
 import {
   CONSENT_VERSION,
   buildConsentRecord,
@@ -71,7 +71,7 @@ function clearStoredConsent() {
  * ou recusa, o banner desaparece.
  */
 export function CookieBanner() {
-  const enabled = useFeatureFlag(FEATURE_FLAG.SHELTER_LEGAL_TERMS_V1);
+  const enabled = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_LEGAL_TERMS_V1);
   const { user } = useAuth();
   const [visible, setVisible] = useState(false);
   const [hydrated, setHydrated] = useState(false);
