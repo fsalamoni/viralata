@@ -85,6 +85,9 @@ describe('shelter/shelterDocuments domain', () => {
       expect(stripHtmlTags('<<script>script>x')).not.toMatch(/<script/i);
       // Comentário aninhado: nenhum "<" (abridor de tag/comentário) sobrevive.
       expect(stripHtmlTags('<!--<!-- -->-->keep')).not.toMatch(/</);
+      // Abridor de comentário sem fechamento não pode sobreviver.
+      expect(stripHtmlTags('<!--unclosed comment')).not.toMatch(/<!--/);
+      expect(stripHtmlTags('a<!--b-->c<!--d')).not.toMatch(/<!--/);
     });
 
     it('trims and clamps', () => {

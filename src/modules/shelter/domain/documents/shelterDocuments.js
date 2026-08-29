@@ -190,9 +190,10 @@ export function stripHtmlTags(value) {
   do {
     prev = out;
     out = out
-      .replace(/<!--[\s\S]*?-->/g, '')
-      .replace(/<![^>]*>/g, '')
-      .replace(/<\/?[a-zA-Z][^>]*>/g, '');
+      .replace(/<!--[\s\S]*?-->/g, '')     // comentários HTML completos
+      .replace(/<\/?[a-zA-Z][^>]*>/g, '')  // tags de abertura/fechamento
+      .replace(/<![^>]*>/g, '')            // declarações (<!DOCTYPE …>)
+      .replace(/<!--/g, '');               // abridor de comentário solto (sem fechamento)
   } while (out !== prev);
   return out;
 }
