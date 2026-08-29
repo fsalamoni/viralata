@@ -51,7 +51,7 @@ export function computeShelterStats(pets = [], now = Date.now()) {
     const createdMs = toMillis(p?.created_at);
     if (createdMs != null && now - createdMs <= 30 * DAY_MS) newLast30 += 1;
 
-    const d = daysInShelter(p);
+    const d = daysInShelter(p, new Date(now));
     if (typeof d === 'number' && d >= 0) {
       staySum += d;
       stayCount += 1;

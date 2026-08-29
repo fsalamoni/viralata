@@ -60,6 +60,12 @@ export function normalizeMemberInput(input = {}) {
     title: cap(trimOrEmpty(input.title), ORG_TEAM_LIMITS.TITLE_MAX),
     bio: cap(trimOrEmpty(input.bio), ORG_TEAM_LIMITS.BIO_MAX),
     history: cap(trimOrEmpty(input.history), ORG_TEAM_LIMITS.HISTORY_MAX),
+    // Endereço é opcional e admin-only (Fase 1). Só entra no payload quando o
+    // caller efetivamente fornece o campo, para não escrever `address:''` nos
+    // fluxos V1 que não conhecem esse campo.
+    ...(input.address !== undefined
+      ? { address: cap(trimOrEmpty(input.address), ORG_TEAM_LIMITS.ADDRESS_MAX) }
+      : {}),
     privacy_map: normalizePrivacyMap(input.privacy_map),
   };
 }

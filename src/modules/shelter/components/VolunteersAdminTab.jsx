@@ -23,11 +23,13 @@ import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
 import { canManageVolunteers } from '@/modules/organizations/domain/permissions';
 import { VolunteersRoster } from '@/modules/shelter/components/VolunteersRoster';
+import { VolunteersRosterV2 } from '@/modules/shelter/components/VolunteersRosterV2';
 import { ParticipationsList } from '@/modules/shelter/components/ParticipationsList';
 import { ParticipationForm } from '@/modules/shelter/components/ParticipationForm';
 
 export function VolunteersAdminTab({ shelterClubId, club, membership, currentUserUid }) {
   const isV1Enabled = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_VOLUNTEER_PROFILE_V1);
+  const isV2Enabled = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_VOLUNTEERS_V2);
   const canManage = canManageVolunteers(club, membership, currentUserUid);
   const [formOpen, setFormOpen] = useState(false);
 
@@ -49,7 +51,15 @@ export function VolunteersAdminTab({ shelterClubId, club, membership, currentUse
         </TabsList>
 
         <TabsContent value="roster" className="mt-6 px-1">
-          <VolunteersRoster shelterClubId={shelterClubId} canAbriho={canManage} />
+          {isV2Enabled ? (
+            <VolunteersRosterV2
+              shelterClubId={shelterClubId}
+              actor={{ uid: currentUserUid }}
+              canAbriho={canManage}
+            />
+          ) : (
+            <VolunteersRoster shelterClubId={shelterClubId} canAbriho={canManage} />
+          )}
         </TabsContent>
 
         <TabsContent value="participations" className="mt-6 px-1 space-y-4">

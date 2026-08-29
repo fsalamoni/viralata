@@ -26,7 +26,7 @@ import {
   Building2, MapPin, PawPrint, Heart, Users, Calendar,
   ArrowLeft, Sparkles, Info, HandCoins, MessageCircle, Mail,
   Phone, Globe, Award, HeartHandshake, ExternalLink,
-  Search, BarChart3,
+  Search, BarChart3, Megaphone,
 } from 'lucide-react';
 import { collection, getDocs, query as fsQuery, where, orderBy, limit } from 'firebase/firestore';
 import { db } from '@/core/config/firebase';
@@ -47,6 +47,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import PageHero from '@/components/PageHero';
 import ClubCover from '@/modules/organizations/components/ClubCover';
+import ShelterMuralPublicBlock from '@/modules/shelter/components/ShelterMuralPublicBlock';
 import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
 import { cn } from '@/core/lib/utils';
@@ -104,11 +105,14 @@ async function fetchAdoptionCount(clubId) {
 }
 
 /** Vitrines públicas (próximas) */
-async function fetchExhibitions(clubId) {
+async function fetchExhibitions(clubId, useOps = false) {
   if (!db || !clubId) return [];
+  // Com SHELTER_EXHIBITION_OPS_V1 ON, ordena pelo campo real do admin
+  // (`datetime_start`); com a flag OFF, mantém `event_date` (comportamento atual).
+  const orderField = useOps ? 'datetime_start' : 'event_date';
   const q = fsQuery(
     collection(db, 'clubs', clubId, 'exhibitions'),
-    orderBy('event_date', 'asc'),
+    orderBy(orderField, 'asc'),
     limit(6),
   );
   const snap = await getDocs(q).catch(() => ({ docs: [] }));
@@ -168,10 +172,15 @@ function PetMiniCard({ pet, linkPrefix = '/pets' }) {
 }
 
 /** Card de vitrine — visual mais rico com imagem de capa e tipografia clara */
-function ExhibitionCard({ exhibition }) {
+function ExhibitionCard({ exhibition, useOps = false }) {
   const cover = exhibition.cover_url || exhibition.photo_url;
-  const startDate = exhibition.event_date ? formatDate(exhibition.event_date) : null;
-  const isPast = exhibition.event_date && new Date(exhibition.event_date) < new Date();
+  // Com a flag ON, tolera o schema real do admin (datetime_start/venue/notes);
+  // com a flag OFF, usa apenas os campos legados (comportamento atual intacto).
+  const rawDate = exhibition.event_date || (useOps ? exhibition.datetime_start : null);
+  const venueLocation = exhibition.location || (useOps ? exhibition.venue?.address : null);
+  const description = exhibition.description || (useOps ? exhibition.notes : null);
+  const startDate = rawDate ? formatDate(rawDate) : null;
+  const isPast = rawDate && new Date(rawDate) < new Date();
 
   return (
     <section className={cn('arena-section-card overflow-hidden group', isPast && 'opacity-75')}>
@@ -200,15 +209,15 @@ function ExhibitionCard({ exhibition }) {
               {startDate}
             </span>
           )}
-          {exhibition.location && (
+          {venueLocation && (
             <span className="flex items-center gap-1">
               <MapPin className="h-3 w-3" />
-              {exhibition.location}
+              {venueLocation}
             </span>
           )}
         </div>
-        {exhibition.description && (
-          <p className="mt-2 text-xs text-muted-foreground line-clamp-2">{exhibition.description}</p>
+        {description && (
+          <p className="mt-2 text-xs text-muted-foreground line-clamp-2">{description}</p>
         )}
       </div>
     </section>
@@ -220,7 +229,6 @@ function TeamMemberCard({ member }) {
   const name = member.display_name || member.name || 'Membro';
   const photo = member.photo_url || member.avatar_url;
   const role = member.role || 'volunteer';
-  const roleColor = { owner: 'bg-amber-100 text-amber-800', admin: 'bg-blue-100 text-blue-800', volunteer: 'bg-secondary text-muted-foreground' }[role] || 'bg-secondary text-muted-foreground';
 
   return (
     <section className="arena-section-card">
@@ -407,6 +415,8 @@ export default function ShelterPublic() {
   const { isAuthenticated } = useAuth();
   const arenaCls = useArenaPageClasses('bg-card');
   const enabled = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_FOUNDATION);
+  const shelterMuralV2 = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_MURAL_V2);
+  const shelterExhibitionOpsV1 = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_EXHIBITION_OPS_V1);
 
   const [adoptOpen, setAdoptOpen] = useState(false);
   const [donateOpen, setDonateOpen] = useState(false);
@@ -443,8 +453,8 @@ export default function ShelterPublic() {
   });
 
   const { data: exhibitions = [], isLoading: isExhibitionsLoading } = useQuery({
-    queryKey: ['shelter-public-exhibitions', shelterId],
-    queryFn: () => fetchExhibitions(shelterId),
+    queryKey: ['shelter-public-exhibitions', shelterId, shelterExhibitionOpsV1],
+    queryFn: () => fetchExhibitions(shelterId, shelterExhibitionOpsV1),
     enabled: enabled && Boolean(shelterId),
   });
 
@@ -620,6 +630,11 @@ export default function ShelterPublic() {
             <TabsTrigger value="exhibitions" role="tab">
               <Calendar className="mr-1.5 h-3.5 w-3.5" /> Vitrines
             </TabsTrigger>
+            {shelterMuralV2 && (
+              <TabsTrigger value="mural" role="tab">
+                <Megaphone className="mr-1.5 h-3.5 w-3.5" /> Mural
+              </TabsTrigger>
+            )}
             <TabsTrigger value="team" role="tab">
               <Users className="mr-1.5 h-3.5 w-3.5" /> Equipe
             </TabsTrigger>
@@ -807,7 +822,7 @@ export default function ShelterPublic() {
                   <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2" role="list">
                     {exhibitions.map((ex) => (
                       <li key={ex.id}>
-                        <ExhibitionCard exhibition={ex} />
+                        <ExhibitionCard exhibition={ex} useOps={shelterExhibitionOpsV1} />
                       </li>
                     ))}
                   </ul>
@@ -815,6 +830,25 @@ export default function ShelterPublic() {
               </div>
             </section>
           </TabsContent>
+
+          {/* Mural (Fase 4 — SHELTER_MURAL_V2) */}
+          {shelterMuralV2 && (
+            <TabsContent value="mural" className="mt-6">
+              <section className="arena-section-card">
+                <div className="arena-section-card-header">
+                  <h3 className="arena-section-card-title flex items-center gap-2 text-base">
+                    <Megaphone className="h-4 w-4" /> Mural do abrigo
+                  </h3>
+                  <p className="arena-section-card-description">
+                    Avisos, eventos e conquistas publicados pelo abrigo.
+                  </p>
+                </div>
+                <div className="arena-section-card-body">
+                  <ShelterMuralPublicBlock clubId={shelterId} club={club} />
+                </div>
+              </section>
+            </TabsContent>
+          )}
 
           {/* Equipe */}
           <TabsContent value="team" className="mt-6">

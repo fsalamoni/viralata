@@ -18,6 +18,8 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
 } from '@/components/ui/dialog';
 import { cn } from '@/core/lib/utils';
+import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
+import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
 import {
   PRODUCT_STATUS, PRODUCT_STATUS_LABEL, PRODUCT_STATUS_ORDER,
   PRODUCT_CATEGORY_LABEL, PRODUCT_CATEGORY_ORDER,
@@ -25,6 +27,7 @@ import {
   toCents, centsToInput, formatBRL, unitProfitCents, profitMarginPct, genId,
 } from '@/modules/shelter/domain/store/products';
 import ProductMediaField from './ProductMediaField';
+import ProductVariantsField from './ProductVariantsField';
 
 function num(v) { const n = Number.parseInt(v, 10); return Number.isFinite(n) ? n : undefined; }
 
@@ -35,7 +38,7 @@ const emptyForm = {
   cost: '', internal_notes: '',
   delivery_methods: [], shipping_cost: '', lead_time_days: '', ship_from_city: '', ship_from_state: '',
   weight_grams: '', dimensions_cm: '',
-  images: [], videos: [], suppliers: [],
+  images: [], videos: [], suppliers: [], variants: [],
 };
 
 function fromProduct(p) {
@@ -65,6 +68,13 @@ function fromProduct(p) {
     images: p.images || [],
     videos: p.videos || [],
     suppliers: (p.suppliers || []).map((s) => ({ ...s, id: s.id || genId('sup') })),
+    variants: (p.variants || []).map((v) => ({
+      id: v.id || genId('var'),
+      label: v.label || '',
+      price: v.price_cents != null ? centsToInput(v.price_cents) : '',
+      stock: v.stock_quantity != null ? String(v.stock_quantity) : '',
+      sku: v.sku || '',
+    })),
   };
 }
 
@@ -104,6 +114,7 @@ function SectionTitle({ children }) {
 }
 
 export default function ProductFormDialog({ open, onOpenChange, onSave, product, uid, saving }) {
+  const storeV2 = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_STORE_V2);
   const [f, setF] = useState(emptyForm);
   const [err, setErr] = useState('');
   const isEdit = Boolean(product?.id);
@@ -167,6 +178,17 @@ export default function ProductFormDialog({ open, onOpenChange, onSave, product,
       images: f.images,
       videos: f.videos,
     };
+    if (storeV2) {
+      payload.variants = (f.variants || [])
+        .filter((v) => (v.label || '').trim())
+        .map((v) => ({
+          id: v.id,
+          label: v.label.trim(),
+          price_cents: v.price ? toCents(v.price) : undefined,
+          stock_quantity: v.stock !== '' && v.stock != null ? (num(v.stock) ?? 0) : undefined,
+          sku: (v.sku || '').trim() || undefined,
+        }));
+    }
     onSave(payload);
   }
 
@@ -262,6 +284,13 @@ export default function ProductFormDialog({ open, onOpenChange, onSave, product,
               <Input id="p-sku" value={f.sku} onChange={set('sku')} placeholder="Opcional" />
             </div>
           </div>
+
+          {storeV2 && (
+            <>
+              <SectionTitle>Variações</SectionTitle>
+              <ProductVariantsField variants={f.variants} onChange={(v) => setF((p) => ({ ...p, variants: v }))} />
+            </>
+          )}
 
           {/* Custos e fornecedores (privado) */}
           <SectionTitle>Custos e fornecedores · interno</SectionTitle>

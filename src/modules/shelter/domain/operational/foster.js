@@ -51,6 +51,42 @@ export const FOSTER_EXPERIENCE = Object.freeze([
   'professional',   // Trabalha com animais
 ]);
 
+// ─── Fase 3 (SHELTER_FOSTER_V2) · Disponibilidade do lar temporário ─────
+//
+// Aditivos. Um lar temporário é uma espécie de voluntário em lista própria;
+// indica as DATAS em que fica à disposição para acolher pets, a QUANTIDADE
+// (capacidade) e os TIPOS de pet que aceita. Campos opcionais — placements
+// existentes seguem válidos sem eles (sem regressão).
+
+/** Tipos de pet que um lar temporário pode se dispor a acolher. */
+export const FOSTER_PET_TYPES = Object.freeze([
+  'dog',            // Cães (adultos)
+  'cat',            // Gatos (adultos)
+  'puppy',          // Filhotes de cão
+  'kitten',         // Filhotes de gato
+  'senior',         // Idosos
+  'special_needs',  // Necessidades especiais (tratamento/reabilitação)
+  'small_animal',   // Pequenos animais (roedores, aves, etc.)
+  'other',          // Outros
+]);
+
+export const FOSTER_PET_TYPE_LABELS = Object.freeze({
+  dog: 'Cães',
+  cat: 'Gatos',
+  puppy: 'Filhotes (cão)',
+  kitten: 'Filhotes (gato)',
+  senior: 'Idosos',
+  special_needs: 'Necessidades especiais',
+  small_animal: 'Pequenos animais',
+  other: 'Outros',
+});
+
+/** Uma janela de disponibilidade (datas calendário, granularidade de dia). */
+export const fosterAvailabilityDateSchema = z.object({
+  start_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), // YYYY-MM-DD
+  end_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),   // YYYY-MM-DD
+}).strict();
+
 // ─── Schema do foster (perfil do lar temporário) ──────────────────────
 
 const fosterProfileSchema = z.object({
@@ -101,6 +137,12 @@ export const fosterPlacementSchema = z.object({
   pet_returned_healthy: z.boolean().optional(), // animal voltou saudável
   foster_rating: z.number().int().min(1).max(5).optional(),
   foster_feedback: z.string().max(2000).optional(),
+  // ─── Fase 3 (SHELTER_FOSTER_V2) · Disponibilidade declarada (aditivo) ──
+  // Datas em que o lar fica à disposição, capacidade e tipos de pet aceitos.
+  // Opcionais: placements existentes seguem válidos sem eles.
+  availability_dates: z.array(fosterAvailabilityDateSchema).max(60).optional(),
+  capacity: z.number().int().min(0).max(50).optional(),
+  accepted_pet_types: z.array(z.enum(FOSTER_PET_TYPES)).max(FOSTER_PET_TYPES.length).optional(),
   // Audit
   created_at: z.unknown().optional(),
   updated_at: z.unknown().optional(),
@@ -144,6 +186,18 @@ export const endFosterPlacementSchema = z.object({
   pet_returned_healthy: z.boolean().optional(),
   foster_rating: z.number().int().min(1).max(5).optional(),
   foster_feedback: z.string().max(2000).optional(),
+}).strict();
+
+/**
+ * Fase 3 (SHELTER_FOSTER_V2) · Schema para o abrigo editar a disponibilidade
+ * declarada de um lar temporário (datas à disposição, capacidade e tipos de
+ * pet aceitos). Todos os campos são opcionais — envie só o que mudou. Aditivo:
+ * não altera o ciclo de vida (status) do placement.
+ */
+export const updateFosterAvailabilitySchema = z.object({
+  availability_dates: z.array(fosterAvailabilityDateSchema).max(60).optional(),
+  capacity: z.number().int().min(0).max(50).optional(),
+  accepted_pet_types: z.array(z.enum(FOSTER_PET_TYPES)).max(FOSTER_PET_TYPES.length).optional(),
 }).strict();
 
 // ─── Helpers ────────────────────────────────────────────────────────────

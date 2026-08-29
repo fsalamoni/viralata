@@ -123,6 +123,99 @@ export const SHELTER_FEATURE_FLAG = Object.freeze({
   // abrigo pode ter (ou não) a sua loja. Default OFF. Ver
   // `src/modules/shelter/domain/store/products.js`.
   SHELTER_STORE_V1: 'shelter_store_v1',
+  // ROADMAP V2 · Fase 0 — Notificações acionáveis. Permite aceitar/recusar
+  // um convite (membro, e futuramente voluntário/lar) direto no sino de
+  // notificações, sem sair da tela. Os campos de ação já são gravados nas
+  // notificações (aditivos/retrocompatíveis); esta flag apenas LIGA os botões
+  // inline na UI. Default OFF. Fundação das Fases 1–3 (Pessoas). Ver
+  // docs/ROADMAP_SHELTER_ADMIN_V2.md.
+  SHELTER_ACTIONABLE_NOTIFICATIONS_V1: 'shelter_actionable_notifications_v1',
+  // ROADMAP V2 · Fase 1 — Pessoas · Equipe. Substitui a aba "Equipe" por uma
+  // versão enriquecida: conceito de membro permanente com atribuição, convite
+  // por notificação (aceitar/recusar inline via Fase 0), blocos de permissão
+  // por escopo explícitos (rótulos + descrições + agrupamento), tabela rica
+  // (nível/telefone/e-mail/endereço) e status/link de documentos e termos do
+  // abrigo. Com a flag OFF, a aba Equipe atual é renderizada sem alteração.
+  // Default OFF. Depende da Fase 0. Ver docs/ROADMAP_SHELTER_ADMIN_V2.md.
+  SHELTER_TEAM_V2: 'shelter_team_v2',
+  // ROADMAP V2 · Fase 2 — Pessoas · Voluntários. Enriquece a aba "Voluntários":
+  // deixa explícito que voluntário é um "membro" TRANSITÓRIO (não permanente),
+  // que pode ser PROMOVIDO a membro por quem tem atribuição; adiciona convite/
+  // promoção por notificação (aceitar/recusar inline via Fase 0), tabela rica
+  // (atividades a que se dispõe, "disponível hoje", período, contato/endereço),
+  // referência dos blocos de permissão concedíveis e status/link do termo de
+  // voluntariado. Com a flag OFF, a rostagem de voluntários atual é renderizada
+  // sem alteração. Default OFF. Depende das Fases 0 e 1. Ver
+  // docs/ROADMAP_SHELTER_ADMIN_V2.md.
+  SHELTER_VOLUNTEERS_V2: 'shelter_volunteers_v2',
+  // ROADMAP V2 · Fase 3 — Pessoas · Lares Temporários. Enriquece a aba "Lares":
+  // deixa explícito que o lar temporário é uma ESPÉCIE de voluntário (membro
+  // transitório) que fica em uma LISTA PRÓPRIA à disposição para acolher pets;
+  // adiciona disponibilidade (datas, quantidade e tipos de pets), vínculo/
+  // promoção por notificação (aceitar/recusar inline via Fase 0), tabela rica
+  // (disponível hoje, período, capacidade, tipos de pet, contato/endereço),
+  // referência dos blocos de permissão concedíveis e status/link do termo de
+  // lar temporário. Com a flag OFF, a lista de placements atual é renderizada
+  // sem alteração. Default OFF. Depende das Fases 0 e 2. Ver
+  // docs/ROADMAP_SHELTER_ADMIN_V2.md.
+  SHELTER_FOSTER_V2: 'shelter_foster_v2',
+  // ROADMAP V2 · Fase 4 — Engajamento · Mural. Enriquece a aba "Mural" do
+  // painel do abrigo com um composer avançado (agendamento, rascunho, tags e
+  // menções), gestão (fixar, arquivar, buscar/filtrar/ordenar), moderação das
+  // interações do público (ocultar/reexibir comentários) e um painel de
+  // analytics (alcance, curtidas, comentários por post). Adiciona também uma
+  // view pública do mural na página do abrigo (`/abrigos/:shelterId`). Usa
+  // campos ADITIVOS em `club_posts` (`status`, `scheduled_for`, `pinned`,
+  // `tags`, `mentions`, `moderation`). Com a flag OFF, o mural atual
+  // (ClubFeedTab) é renderizado sem qualquer alteração. Default OFF. Ver
+  // docs/ROADMAP_SHELTER_ADMIN_V2.md.
+  SHELTER_MURAL_V2: 'shelter_mural_v2',
+  // ROADMAP V2 · Fase 5 — Engajamento · Vitrines. Transforma a Vitrine num
+  // GERENCIADOR INTEGRAL DE EVENTO: planejamento (checklist, local/venue,
+  // estrutura física, orçamento), logística (transporte, alimentação, água,
+  // energia, internet — itens, responsáveis e custos), mutirão de saúde
+  // (vacinas/cirurgias/consultas por pet, agenda e status) e fila de
+  // tratativas de adoção/doação (funil com etapas e reuniões com adotantes).
+  // Torna a lista de vitrines FUNCIONAL no painel (selecionar → detalhes +
+  // gestão do evento), reutilizando ExhibitionsList/ExhibitionDetails. Usa um
+  // campo ADITIVO `ops` no MESMO doc `clubs/{clubId}/exhibitions/{id}` (sem
+  // subcoleção nova, sem mudança em firestore.rules — a regra de update não
+  // tem hasOnly()). Com a flag OFF, a lista atual de vitrines é renderizada
+  // sem qualquer alteração. Default OFF. Ver docs/ROADMAP_SHELTER_ADMIN_V2.md.
+  SHELTER_EXHIBITION_OPS_V1: 'shelter_exhibition_ops_v1',
+
+  // Fase 6 — Documentos do abrigo. Central de documentos (nova sub-aba em
+  // Configurações) que unifica formulários, termos e contratos do abrigo com
+  // status/versão/vínculos; editor interno (construtor de formulário de adoção
+  // in-app + editor de termos/contratos em Markdown) com versionamento
+  // append-only e `content_hash` (imutabilidade de termos aceitos); vínculos ao
+  // catálogo legal versionado da plataforma (`LEGAL_PAGES`) e aos fluxos
+  // (adoção/voluntário/lar/membro); analytics de aceite derivadas dos dados já
+  // legíveis pelo abrigo (contratos, entrevistas, adoption_workflow). Usa um
+  // campo ADITIVO `documents` no MESMO doc `clubs/{clubId}` (sem subcoleção
+  // nova, sem mudança em firestore.rules — a regra de update do clube não tem
+  // hasOnly() e exige owner/admin, auto-gating a escrita). Sanitização: sem
+  // HTML cru (Markdown + skipHtml na renderização, strip de tags na escrita).
+  // Com a flag OFF, nada é lido/escrito e o painel atual permanece inalterado.
+  // Default OFF. Ver docs/ROADMAP_SHELTER_ADMIN_V2.md.
+  SHELTER_DOCUMENTS_V1: 'shelter_documents_v1',
+
+  // Fase 7 — Loja do abrigo v2. Aprimora a Loja v1 de forma ADITIVA, sem
+  // quebrar nada: (admin) painel de analytics de vendas (receita realizada vs.
+  // pipeline, ticket médio, mais vendidos, conversão), controles de
+  // fulfillment (transportadora/código de rastreio/URL) nos pedidos e editor
+  // de variações do produto (tamanho/cor com preço/estoque próprios);
+  // (público) CARRINHO multi-abrigo (localStorage), CHECKOUT que registra um
+  // pedido por abrigo reutilizando `createOrder` e ACOMPANHAMENTO de pedido em
+  // `/meus-pedidos` (o comprador lê os próprios pedidos — regra já existente).
+  // Pagamentos seguem OFF-PLATFORM, agora com um ponto de extensão para
+  // processadores externos. Campos novos (`variants` no produto, `fulfillment`
+  // no pedido) são opcionais/aditivos; buyer-scoped queries usam índice de
+  // campo único (auto). Sem subcoleção nova e SEM mudança em firestore.rules.
+  // Depende de SHELTER_STORE_V1. Com a flag OFF, a loja atual permanece
+  // inalterada (compra unitária, sem carrinho). Default OFF. Ver
+  // docs/ROADMAP_SHELTER_ADMIN_V2.md.
+  SHELTER_STORE_V2: 'shelter_store_v2',
 });
 
 /**
@@ -415,6 +508,118 @@ export const SHELTER_FEATURE_FLAG_META = Object.freeze({
       + 'controle administrativo. Coleções: `clubs/{clubId}/store_settings`, '
       + '`store_products` (+`reviews`/`questions`) e `store_orders`. '
       + 'Default OFF.',
+  },
+  [SHELTER_FEATURE_FLAG.SHELTER_ACTIONABLE_NOTIFICATIONS_V1]: {
+    label: 'Abrigos · notificações acionáveis (aceitar/recusar convite)',
+    description:
+      'Liga os botões "Aceitar" e "Recusar" direto no sino de notificações '
+      + 'para convites (membro da equipe agora; voluntário e lar temporário '
+      + 'nas próximas fases). Sem sair da tela, o usuário responde ao convite '
+      + 'e o estado (pendente/aceito/recusado) fica registrado na própria '
+      + 'notificação. Os campos de ação são gravados de forma aditiva e '
+      + 'retrocompatível; com a flag OFF o comportamento é idêntico ao atual '
+      + '(a notificação apenas leva ao link). Fundação das fases de Pessoas '
+      + '(Equipe/Voluntários/Lares). Default OFF.',
+  },
+  [SHELTER_FEATURE_FLAG.SHELTER_TEAM_V2]: {
+    label: 'Abrigos · Equipe v2 (membros, permissões e documentos)',
+    description:
+      'Enriquece a aba "Equipe" do painel do abrigo: deixa explícito que a '
+      + 'equipe é formada por MEMBROS permanentes (com ao menos uma atribuição, '
+      + 'e decisão/administração opcional), distintos de voluntários e lares '
+      + '(transitórios). Adiciona convite por notificação com aceitar/recusar '
+      + 'inline (usa a Fase 0), blocos de permissão por escopo com rótulos e '
+      + 'descrições, uma tabela rica de membros (nível de acesso, telefone, '
+      + 'e-mail, endereço) e o status/vínculo dos documentos e termos do abrigo. '
+      + 'Com a flag OFF, a aba Equipe atual é mantida sem qualquer alteração. '
+      + 'Depende da Fase 0. Default OFF.',
+  },
+  [SHELTER_FEATURE_FLAG.SHELTER_VOLUNTEERS_V2]: {
+    label: 'Abrigos · Voluntários v2 (transitório, promoção e disponibilidade)',
+    description:
+      'Enriquece a aba "Voluntários" do painel do abrigo: deixa explícito que o '
+      + 'voluntário é um "membro" TRANSITÓRIO (não permanente), que faz parte da '
+      + 'equipe de modo temporário e pode ser PROMOVIDO a membro permanente por '
+      + 'quem tem atribuição. Adiciona promoção/convite por notificação com '
+      + 'aceitar/recusar inline (usa a Fase 0), uma tabela rica (atividades a que '
+      + 'o voluntário se dispõe, "disponível hoje", período de disponibilidade, '
+      + 'telefone, e-mail, endereço), a referência dos blocos de permissão que '
+      + 'podem ser concedidos e o status/vínculo do termo de voluntariado. Com a '
+      + 'flag OFF, a rostagem de voluntários atual é mantida sem qualquer '
+      + 'alteração. Depende das Fases 0 e 1. Default OFF.',
+  },
+  [SHELTER_FEATURE_FLAG.SHELTER_FOSTER_V2]: {
+    label: 'Abrigos · Lares Temporários v2 (lista própria, disponibilidade e documentos)',
+    description:
+      'Enriquece a aba "Lares" do painel do abrigo: deixa explícito que o lar '
+      + 'temporário é uma ESPÉCIE de voluntário (membro transitório) que fica em '
+      + 'uma LISTA PRÓPRIA à disposição dos membros com atribuição para acolher '
+      + 'pets. Adiciona disponibilidade (datas à disposição, quantidade e tipos '
+      + 'de pets aceitos), vínculo/promoção por notificação com aceitar/recusar '
+      + 'inline (usa a Fase 0), uma tabela rica (disponível hoje, período de '
+      + 'disponibilidade, capacidade, tipos de pet, telefone, e-mail, endereço), '
+      + 'a referência dos blocos de permissão que podem ser concedidos e o '
+      + 'status/vínculo do termo de lar temporário. Mantém a gestão de placements '
+      + '(propor/aceitar/prorrogar/finalizar) intacta. Com a flag OFF, a lista de '
+      + 'lares atual é mantida sem qualquer alteração. Depende das Fases 0 e 2. '
+      + 'Default OFF.',
+  },
+  [SHELTER_FEATURE_FLAG.SHELTER_MURAL_V2]: {
+    label: 'Abrigos · Mural v2 (composer avançado, moderação, analytics, view pública)',
+    description:
+      'Enriquece a aba "Mural" do painel do abrigo: composer avançado com '
+      + 'agendamento de publicação, rascunhos, categorias/tags e menções a '
+      + 'membros; gestão com fixar/destacar, arquivar e busca/filtro/ordenação; '
+      + 'moderação das interações do público (ocultar/reexibir comentários); e '
+      + 'um painel de analytics (alcance, curtidas e comentários por post). '
+      + 'Adiciona uma view pública do mural na página do abrigo. Usa campos '
+      + 'ADITIVOS em `club_posts` (status, scheduled_for, pinned, tags, mentions, '
+      + 'moderation). Com a flag OFF, o mural atual é renderizado sem qualquer '
+      + 'alteração. Depende da Fase 0. Default OFF.',
+  },
+  [SHELTER_FEATURE_FLAG.SHELTER_EXHIBITION_OPS_V1]: {
+    label: 'Abrigos · Vitrines v1 (gerenciador integral de evento)',
+    description:
+      'Transforma a Vitrine num gerenciador integral de evento no painel do '
+      + 'abrigo: torna a lista funcional (selecionar → detalhes) e adiciona '
+      + 'planejamento (checklist, local/venue, estrutura física, orçamento), '
+      + 'logística (transporte, alimentação, água, energia, internet — itens, '
+      + 'responsáveis e custos), mutirão de saúde (vacinas/cirurgias/consultas '
+      + 'por pet, com agenda e status) e fila de tratativas de adoção/doação '
+      + '(funil com etapas e reuniões com adotantes). Reaproveita a escala de '
+      + 'voluntários (shifts) e o log pós-evento existentes. Usa um campo '
+      + 'ADITIVO `ops` no MESMO doc `clubs/{clubId}/exhibitions/{id}` (sem '
+      + 'subcoleção nova e sem mudança nas firestore.rules). Com a flag OFF, a '
+      + 'lista de vitrines atual é mantida sem qualquer alteração. Default OFF.',
+  },
+  [SHELTER_FEATURE_FLAG.SHELTER_DOCUMENTS_V1]: {
+    label: 'Abrigos · Documentos v1 (central + editor + versionamento + analytics de aceite)',
+    description:
+      'Adiciona uma central de documentos (sub-aba em Configurações) que unifica '
+      + 'formulários, termos e contratos do abrigo com status, versão e vínculos; '
+      + 'editor interno com construtor de formulário de adoção in-app e editor de '
+      + 'termos/contratos em Markdown, com versionamento append-only e content_hash '
+      + '(imutabilidade de termos aceitos, LGPD/Lei 14.063/2020); vínculos ao '
+      + 'catálogo legal versionado da plataforma e aos fluxos (adoção, voluntário, '
+      + 'lar temporário, membro); e analytics de aceite derivadas dos dados já '
+      + 'legíveis pelo abrigo (contratos, entrevistas, adoção). Usa um campo '
+      + 'ADITIVO `documents` no MESMO doc `clubs/{clubId}` (sem subcoleção nova e '
+      + 'sem mudança nas firestore.rules). Sanitização sem HTML cru (Markdown + '
+      + 'skipHtml). Com a flag OFF, o painel atual permanece inalterado. Default OFF.',
+  },
+  [SHELTER_FEATURE_FLAG.SHELTER_STORE_V2]: {
+    label: 'Abrigos · Loja v2 (carrinho, checkout, pedidos, fulfillment, analytics)',
+    description:
+      'Aprimora a Loja do Abrigo de forma aditiva (depende de SHELTER_STORE_V1). '
+      + 'Público: carrinho multi-abrigo, checkout que registra um pedido por '
+      + 'abrigo e acompanhamento de pedido em /meus-pedidos. Admin: painel de '
+      + 'analytics de vendas (receita realizada vs. pipeline, ticket médio, mais '
+      + 'vendidos, conversão), controles de fulfillment (transportadora/rastreio) '
+      + 'nos pedidos e editor de variações do produto (preço/estoque por variação). '
+      + 'Pagamentos off-platform com ponto de extensão para processadores externos. '
+      + 'Campos novos (`variants`, `fulfillment`) são opcionais/aditivos; sem '
+      + 'subcoleção nova e sem mudança nas firestore.rules. Com a flag OFF, a loja '
+      + 'atual permanece inalterada (compra unitária). Default OFF.',
   },
 });
 

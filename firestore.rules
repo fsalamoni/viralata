@@ -2034,15 +2034,15 @@ service cloud.firestore {
     // bio/privacy/contact (mas NÃO o role/permissions).
 
     // Permite que um membro edite APENAS seus próprios campos visuais
-    // (title, bio, history, whatsapp, phone, privacy_map) — sem mexer em
-    // role/permissions, que continuam exclusivos de admin/team.
+    // (title, bio, history, whatsapp, phone, address, privacy_map) — sem mexer
+    // em role/permissions, que continuam exclusivos de admin/team.
     match /club_members/{memberId} {
       allow update: if isPlatformAdmin()
         || (isClubOwnerOrAdmin(resource.data.club_id)
             && !isClubOwnerUid(resource.data.club_id, resource.data.user_id))
         || (resource.data.user_id == request.auth.uid
             && request.resource.data.diff(resource.data).affectedKeys().hasOnly(
-              ['title', 'bio', 'history', 'phone', 'whatsapp', 'photo_url',
+              ['title', 'bio', 'history', 'phone', 'whatsapp', 'address', 'photo_url',
                'user_name', 'user_email', 'privacy_map', 'updated_at']
             ));
     }

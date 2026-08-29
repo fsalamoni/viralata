@@ -23,6 +23,7 @@ import {
   acceptFosterPlacementSchema,
   extendFosterPlacementSchema,
   endFosterPlacementSchema,
+  updateFosterAvailabilitySchema,
   assertValidFosterTransition,
 } from '@/modules/shelter/domain/operational/foster';
 
@@ -347,4 +348,68 @@ export async function cancelFosterPlacement(shelterClubId, fosterId, reason, act
   }).catch(() => {});
 
   return { id: fosterId, status: 'cancelled' };
+}
+
+// ─── Fase 3 (SHELTER_FOSTER_V2): Disponibilidade declarada do lar ──────
+//
+// Aditivo. O abrigo registra as datas em que o lar fica à disposição, a
+// capacidade (quantidade de pets) e os tipos de pet aceitos. Não altera o
+// status/ciclo de vida do placement — apenas grava campos de disponibilidade.
+
+/**
+ * Atualiza a disponibilidade declarada de um placement de lar temporário.
+ *
+ * @param {string} shelterClubId
+ * @param {string} fosterId
+ * @param {object} input - {availability_dates?, capacity?, accepted_pet_types?}
+ * @param {object} actor - {uid, displayName?}
+ */
+export async function updateFosterAvailability(shelterClubId, fosterId, input, actor) {
+  if (!db) throw new Error('Firebase não disponível');
+  if (!shelterClubId || !fosterId) throw new Error('Parâmetros inválidos');
+  if (!actor?.uid) throw new Error('actor.uid é obrigatório');
+
+  const parsed = updateFosterAvailabilitySchema.parse(input);
+
+  // Valida cada janela de disponibilidade (fim >= início).
+  for (const win of parsed.availability_dates || []) {
+    if (win.end_date < win.start_date) {
+      throw new Error('Em cada janela, end_date deve ser >= start_date.');
+    }
+  }
+
+  const ref = doc(db, CLUBS_COLLECTION, shelterClubId, FOSTERS_SUBCOLLECTION, fosterId);
+  const snap = await getDoc(ref);
+  if (!snap.exists()) throw new Error('Placement não encontrado.');
+  const current = snap.data();
+  if (current.shelter_club_id !== shelterClubId) {
+    throw new Error('Cross-tenant access blocked.');
+  }
+
+  // Só grava as chaves realmente enviadas (patch aditivo).
+  const update = { updated_at: serverTimestamp() };
+  if (parsed.availability_dates !== undefined) update.availability_dates = parsed.availability_dates;
+  if (parsed.capacity !== undefined) update.capacity = parsed.capacity;
+  if (parsed.accepted_pet_types !== undefined) update.accepted_pet_types = parsed.accepted_pet_types;
+
+  await updateDoc(ref, update);
+
+  await createAuditLog({
+    action: 'foster_availability_updated',
+    actor,
+    details: {
+      foster_id: fosterId,
+      shelter_club_id: shelterClubId,
+      has_dates: parsed.availability_dates !== undefined,
+      capacity: parsed.capacity,
+      accepted_pet_types: parsed.accepted_pet_types,
+    },
+  }).catch((err) => {
+    logger.warn('fosterService.updateFosterAvailability', {
+      msg: 'audit failed (non-blocking)',
+      err: String(err),
+    });
+  });
+
+  return { id: fosterId };
 }

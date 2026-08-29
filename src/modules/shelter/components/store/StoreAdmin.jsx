@@ -6,15 +6,18 @@
 import React, { useMemo, useState } from 'react';
 import {
   LayoutDashboard, Package, ShoppingBag, Settings2, Store,
-  Boxes, DollarSign, TrendingUp, AlertTriangle, Eye, EyeOff,
+  Boxes, DollarSign, TrendingUp, AlertTriangle, Eye, EyeOff, BarChart3,
 } from 'lucide-react';
 import { cn } from '@/core/lib/utils';
 import { Button } from '@/components/ui/button';
+import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
+import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
 import { computeStoreStats, formatBRL } from '@/modules/shelter/domain/store/products';
 import { useStoreSettings, useStoreProducts } from '@/modules/shelter/hooks/useShelterStore';
 import ProductsPanel from './ProductsPanel';
 import StoreOrdersPanel from './StoreOrdersPanel';
 import StoreSettingsPanel from './StoreSettingsPanel';
+import StoreAnalyticsPanel from './StoreAnalyticsPanel';
 
 const SUBTABS = [
   { key: 'dashboard', label: 'Painel', icon: LayoutDashboard },
@@ -91,10 +94,18 @@ function StoreDashboard({ products, settings }) {
 
 export default function StoreAdmin({ clubId, actor }) {
   const [sub, setSub] = useState('dashboard');
+  const storeV2 = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_STORE_V2);
   const { data: settings } = useStoreSettings(clubId);
   const { data: products = [] } = useStoreProducts(clubId);
 
   const enabled = settings?.enabled;
+
+  const subtabs = useMemo(() => {
+    if (!storeV2) return SUBTABS;
+    const list = [...SUBTABS];
+    list.splice(1, 0, { key: 'analytics', label: 'Analytics', icon: BarChart3 });
+    return list;
+  }, [storeV2]);
 
   return (
     <div className="space-y-4">
@@ -121,7 +132,7 @@ export default function StoreAdmin({ clubId, actor }) {
       ) : (
         <>
           <div className="flex flex-wrap gap-1 rounded-xl border border-border bg-muted/40 p-1">
-            {SUBTABS.map(({ key, label, icon: Icon }) => (
+            {subtabs.map(({ key, label, icon: Icon }) => (
               <button
                 key={key}
                 type="button"
@@ -137,6 +148,7 @@ export default function StoreAdmin({ clubId, actor }) {
           </div>
 
           {sub === 'dashboard' && <StoreDashboard products={products} settings={settings} />}
+          {storeV2 && sub === 'analytics' && <StoreAnalyticsPanel clubId={clubId} />}
           {sub === 'products' && <ProductsPanel clubId={clubId} actor={actor} />}
           {sub === 'orders' && <StoreOrdersPanel clubId={clubId} actor={actor} />}
           {sub === 'settings' && <StoreSettingsPanel clubId={clubId} actor={actor} />}

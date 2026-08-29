@@ -1,15 +1,26 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Bell, MessageCircle, Heart, Building2, PawPrint, MessagesSquare, CalendarDays, CheckCheck,
+  Check, X, Loader2,
 } from 'lucide-react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuItem,
 } from '@/components/ui/dropdown-menu';
 import { EmptyState } from '@/components/ui/empty-state';
 import { useNotifications } from '@/modules/notifications/hooks/useNotifications';
-import { NOTIFICATION_TYPE, resolveNotificationTarget } from '@/core/services/notificationService';
+import {
+  NOTIFICATION_TYPE,
+  NOTIFICATION_ACTION_KIND,
+  NOTIFICATION_ACTION_STATE,
+  resolveNotificationTarget,
+  updateNotificationActionState,
+} from '@/core/services/notificationService';
+import { useRespondClubInviteFromNotification } from '@/modules/organizations/hooks/useClubs';
+import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
+import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
 import { cn } from '@/core/lib/utils';
 import { usePlatformSettings } from '@/core/lib/FeatureFlagsContext';
 
@@ -47,11 +58,113 @@ function timeAgo(notification) {
   return new Date(ms).toLocaleDateString('pt-BR');
 }
 
+/** Uma notificação é um convite de membro respondível inline? */
+function isActionableClubInvite(notification) {
+  return (
+    notification?.action_kind === NOTIFICATION_ACTION_KIND.CLUB_INVITE
+    && notification?.action_state === NOTIFICATION_ACTION_STATE.PENDING
+    && Boolean(notification?.action_ref?.clubId)
+  );
+}
+
+/**
+ * Item de notificação com convite acionável (Fase 0): mostra a mesma linha da
+ * lista + botões "Aceitar"/"Recusar". Renderizado como container simples (não
+ * DropdownMenuItem) para o menu NÃO fechar/navegar ao responder — o usuário vê
+ * o feedback na hora. Ao concluir, o listener em tempo real atualiza
+ * `action_state` e este item volta a ser uma notificação comum.
+ */
+function NotificationInviteItem({ notification, meta }) {
+  const Icon = meta.icon;
+  const respond = useRespondClubInviteFromNotification();
+  const [submitting, setSubmitting] = useState(null); // 'accept' | 'decline' | null
+
+  const handle = async (decision) => {
+    if (submitting) return;
+    setSubmitting(decision);
+    try {
+      const res = await respond.mutateAsync({
+        clubId: notification.action_ref.clubId,
+        decision,
+      });
+      const notFound = res?.resolved === false;
+      const finalState = notFound
+        ? NOTIFICATION_ACTION_STATE.EXPIRED
+        : (decision === 'accept'
+          ? NOTIFICATION_ACTION_STATE.ACCEPTED
+          : NOTIFICATION_ACTION_STATE.DECLINED);
+      await updateNotificationActionState(notification.id, finalState).catch(() => {});
+      if (notFound) {
+        toast.info('Este convite não está mais disponível.');
+      } else if (decision === 'accept') {
+        toast.success('Convite aceito! Você agora faz parte.');
+      } else {
+        toast.success('Convite recusado.');
+      }
+    } catch {
+      toast.error('Não foi possível responder ao convite. Tente novamente.');
+      setSubmitting(null);
+    }
+  };
+
+  return (
+    <div
+      className={cn(
+        'flex w-full items-start gap-3 border-b border-border/60 px-4 py-3 text-left last:border-0',
+        !notification.read && 'bg-primary/5',
+      )}
+    >
+      <span className={cn('flex h-8 w-8 shrink-0 items-center justify-center rounded-full', meta.tone)}>
+        <Icon className="h-4 w-4" />
+      </span>
+      <div className="min-w-0 flex-1">
+        <span className="block text-sm font-medium text-foreground">{notification.title}</span>
+        {notification.message && (
+          <span className="block text-xs text-muted-foreground">{notification.message}</span>
+        )}
+        <span className="mt-0.5 block text-[11px] text-muted-foreground/80">{timeAgo(notification)}</span>
+        <div className="mt-2 flex items-center gap-2">
+          <Button
+            type="button"
+            size="sm"
+            className="h-8 gap-1 px-3"
+            disabled={!!submitting}
+            onClick={() => handle('accept')}
+          >
+            {submitting === 'accept' ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <Check className="h-3.5 w-3.5" />
+            )}
+            Aceitar
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            className="h-8 gap-1 px-3"
+            disabled={!!submitting}
+            onClick={() => handle('decline')}
+          >
+            {submitting === 'decline' ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <X className="h-3.5 w-3.5" />
+            )}
+            Recusar
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /** Sino de notificações do header: painel dropdown com a lista real (antes só contava, não mostrava). */
 export default function NotificationsMenu() {
   const navigate = useNavigate();
   const { notifications, unreadCount, markAsRead } = useNotifications();
   const { settings } = usePlatformSettings();
+  const actionableEnabled = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_ACTIONABLE_NOTIFICATIONS_V1);
   const dropdownLimit = settings.operational_limits.notifications_dropdown_limit;
 
   const handleClick = async (notification) => {
@@ -103,6 +216,15 @@ export default function NotificationsMenu() {
             notifications.slice(0, dropdownLimit).map((notification) => {
               const meta = TYPE_META[notification.type] || { icon: Bell, tone: 'bg-secondary text-secondary-foreground' };
               const Icon = meta.icon;
+              if (actionableEnabled && isActionableClubInvite(notification)) {
+                return (
+                  <NotificationInviteItem
+                    key={notification.id}
+                    notification={notification}
+                    meta={meta}
+                  />
+                );
+              }
               return (
                 <DropdownMenuItem
                   key={notification.id}

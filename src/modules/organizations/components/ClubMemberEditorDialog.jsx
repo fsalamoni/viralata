@@ -30,15 +30,15 @@ import { normalizePrivacyMap } from '../domain/privacy';
  * (`public` | `followers` | `members` | `private`). Os campos
  * de privacidade são salvos no `privacy_map` do member.
  */
-export default function ClubMemberEditorDialog({ open, onOpenChange, member, canEditProfile = true }) {
+export default function ClubMemberEditorDialog({ open, onOpenChange, member, canEditProfile = true, showAddress = false }) {
   const updateProfile = useUpdateMemberProfile(member?.club_id || '');
-  const [form, setForm] = useState(() => buildForm(member));
+  const [form, setForm] = useState(() => buildForm(member, showAddress));
   const [saving, setSaving] = useState(false);
 
   // Re-inicializa quando o member muda (ex.: admin abre outro).
   React.useEffect(() => {
-    if (open) setForm(buildForm(member));
-  }, [open, member]);
+    if (open) setForm(buildForm(member, showAddress));
+  }, [open, member, showAddress]);
 
   const setField = (key) => (e) => setForm((p) => ({ ...p, [key]: e.target.value }));
   const setPrivacy = (field) => (value) =>
@@ -128,6 +128,21 @@ export default function ClubMemberEditorDialog({ open, onOpenChange, member, can
               <Input type="tel" value={form.whatsapp} onChange={setField('whatsapp')} maxLength={30} placeholder="31999990000" />
             </PrivacyField>
           </div>
+          {showAddress && (
+            <div className="space-y-1.5">
+              <Label>Endereço</Label>
+              <Textarea
+                value={form.address}
+                onChange={setField('address')}
+                rows={2}
+                maxLength={240}
+                placeholder="Rua, número, bairro, cidade/UF"
+              />
+              <p className="text-[10px] text-muted-foreground">
+                Campo administrativo — visível apenas para a equipe do abrigo, não aparece no card público.
+              </p>
+            </div>
+          )}
           <DialogFooter>
             <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>Cancelar</Button>
             <Button type="submit" disabled={saving || !canEditProfile}>
@@ -140,7 +155,7 @@ export default function ClubMemberEditorDialog({ open, onOpenChange, member, can
   );
 }
 
-function buildForm(member) {
+function buildForm(member, showAddress = false) {
   if (!member) return null;
   return {
     user_name: member.user_name || '',
@@ -151,6 +166,9 @@ function buildForm(member) {
     history: member.history || '',
     phone: member.phone || '',
     whatsapp: member.whatsapp || '',
+    // Endereço só entra no formulário (e, portanto, no payload salvo) quando o
+    // caller habilita o campo — mantém o fluxo V1 byte-a-byte quando desligado.
+    ...(showAddress ? { address: member.address || '' } : {}),
     privacy_map: normalizePrivacyMap(member.privacy_map),
   };
 }

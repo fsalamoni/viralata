@@ -231,6 +231,14 @@ export const shelterVolunteerRosterSchema = z.object({
   terms_accepted_at: z.string().datetime().optional(),
   terms_version: z.string().max(20).optional(),
   signature_text: z.string().max(120).optional(),
+  // ── Fase 2 (SHELTER_VOLUNTEERS_V2) — campos ADITIVOS/opcionais ──────
+  // Snapshot das habilidades/atividades e da disponibilidade do perfil
+  // global, capturado no join (o abrigo NÃO lê users/{uid}/volunteer_profile
+  // diretamente). Retrocompatível: rostagens antigas simplesmente não os têm.
+  skills: z.array(z.enum(VOLUNTEER_SKILLS)).max(20).optional(),
+  availability: z.array(availabilityItemSchema).max(30).optional(),
+  // Endereço administrado pelo abrigo (não vem do perfil global; opcional).
+  volunteer_address: z.string().max(240).optional(),
   // Audit
   created_at: z.unknown().optional(),
   updated_at: z.unknown().optional(),
@@ -270,6 +278,8 @@ export const updateShelterVolunteerSchema = z.object({
   background_check_notes: z.string().max(1000).optional(),
   exit_reason: z.enum(VOLUNTEER_EXIT_REASONS).optional(),
   exit_note: z.string().max(500).optional(),
+  // Fase 2 (SHELTER_VOLUNTEERS_V2): endereço administrado pelo abrigo (aditivo).
+  volunteer_address: z.string().max(240).optional(),
 }).strict();
 
 /**

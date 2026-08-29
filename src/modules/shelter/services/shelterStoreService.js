@@ -306,6 +306,7 @@ export async function createOrder(clubId, actor, payload) {
   }];
   const ref = await addDoc(ordersCol(clubId), stripUndefined({
     shelter_club_id: clubId,
+    shelter_name: parsed.shelter_name,
     items: parsed.items,
     total_cents: total,
     status: ORDER_STATUS.PENDING,
@@ -328,9 +329,10 @@ export async function setOrderStatus(clubId, orderId, actor, status) {
   if (!db) return;
   if (!Object.values(ORDER_STATUS).includes(status)) throw new Error('Status inválido');
   const snap = await getDoc(orderRef(clubId, orderId));
-  const current = snap.exists() ? snap.data() : {};
+  if (!snap.exists()) throw new Error('Pedido não encontrado.');
+  const current = snap.data();
   const activity = [
-    ...(current.activity || []),
+    ...(Array.isArray(current.activity) ? current.activity : []),
     {
       id: genId('act'), type: 'status', at: new Date().toISOString(),
       by_name: actor?.name || actor?.displayName || 'Gestor',

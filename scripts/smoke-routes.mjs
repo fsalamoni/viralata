@@ -19,7 +19,16 @@ const ROUTES = [
   '/voluntarios/seja',
   '/organizacoes',
   '/comunidade',
-  '/public-debug',
+  // Superfícies públicas das fases do Admin do Abrigo V2 (flags default OFF).
+  // Com a flag OFF a rota renderiza o comportamento legado; o smoke só verifica
+  // que nenhuma rota quebra (200 público ou redirect→/login quando protegida).
+  '/vitrines', // Fase 5 — vitrines públicas
+  '/eventos', // eventos unificados (vitrines + comunidades)
+  '/mural', // Fase 4 — mural público
+  '/lares-temporarios', // Fase 3 — programas de lar temporário (público)
+  '/lares-temporarios/dashboard', // Fase 3 — dashboard de lares (público)
+  '/mercado', // Fase 7 — loja pública (protegida → redirect→/login sem auth)
+  '/meus-pedidos', // Fase 7 — acompanhamento de pedidos (protegida → redirect→/login)
   '/page-not-found',
   '/admin',
   '/admin/saude',

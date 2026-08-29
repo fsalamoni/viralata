@@ -28,7 +28,7 @@ import {
   LayoutDashboard, Kanban, Eye, Heart, Stethoscope, Pill, Clock, Home,
   Compass, Users2, Megaphone, Receipt, Settings as SettingsIcon,
   AlertCircle, RefreshCw, Sparkles, ListTodo, Store,
-  Activity, Server, Database, ServerCog,
+  Activity, Server, Database, ServerCog, FileText,
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -71,6 +71,7 @@ const stagger = { show: { transition: { staggerChildren: 0.08 } } };
 
 const ClubAdminTab = lazy(() => import('@/modules/organizations/components/ClubAdminTab'));
 const ClubTeamTab = lazy(() => import('@/modules/organizations/components/ClubTeamTab'));
+const ClubTeamTabV2 = lazy(() => import('@/modules/organizations/components/ClubTeamTabV2'));
 const ClubPetsDataGrid = lazy(() => import('@/modules/organizations/components/ClubPetsDataGrid'));
 const TasksBoard = lazy(() => import('@/modules/shelter/components/tasks/TasksBoard'));
 const ClubFeedTab = lazy(() => import('@/modules/organizations/components/ClubFeedTab'));
@@ -84,6 +85,7 @@ const IndicatorsTab = lazy(() => import('@/modules/shelter/components/Indicators
 const DashboardPage = lazy(() => import('@/modules/shelter/components/DashboardPage'));
 const KanbanPage = lazy(() => import('@/modules/shelter/components/KanbanPage'));
 const ExhibitionsList = lazy(() => import('@/modules/shelter/components/ExhibitionsList'));
+const ExhibitionsManagerV2 = lazy(() => import('@/modules/shelter/components/ExhibitionsManagerV2'));
 const VolunteersAdminTab = lazy(() => import('@/modules/shelter/components/VolunteersAdminTab'));
 const MedicalRecordsList = lazy(() => import('@/modules/shelter/components/MedicalRecordsList'));
 const MedicationsList = lazy(() => import('@/modules/shelter/components/MedicationsList'));
@@ -91,8 +93,11 @@ const TimelineList = lazy(() => import('@/modules/shelter/components/TimelineLis
 const PetOpsTab = lazy(() => import('@/modules/shelter/components/PetOpsTab'));
 const StoreAdmin = lazy(() => import('@/modules/shelter/components/store/StoreAdmin'));
 const FostersList = lazy(() => import('@/modules/shelter/components/FostersList'));
+const FostersListV2 = lazy(() => import('@/modules/shelter/components/FostersListV2'));
+const ClubMuralTabV2 = lazy(() => import('@/modules/shelter/components/ClubMuralTabV2'));
 const ShelterDonationsTab = lazy(() => import('@/modules/shelter/components/ShelterDonationsTab'));
 const ShelterFinanceTab = lazy(() => import('@/modules/shelter/components/ShelterFinanceTab'));
+const ShelterDocumentsCentral = lazy(() => import('@/modules/shelter/components/ShelterDocumentsCentral'));
 
 // ============================================================================
 // CONSTANTS
@@ -120,6 +125,7 @@ const TAB_ICONS = {
   timeline: Clock,
   foster: Home,
   store: Store,
+  documents: FileText,
 };
 
 const TAB_TO_GROUP = {
@@ -145,6 +151,7 @@ const TAB_TO_GROUP = {
   reports: { group: 'finance', label: 'Relatórios', icon: BarChart2 },
   indicators: { group: 'finance', label: 'Indicadores', icon: TrendingUp },
   settings: { group: 'settings', label: 'Configurações', icon: ShieldCheck },
+  documents: { group: 'settings', label: 'Documentos', icon: FileText },
   // Tabelas operacionais V1 (SHELTER_PET_OPS_TABLES_V1) — Medicações,
   // Consultas, Tratamentos, Vacinas, Cuidados, Adoções, Devoluções.
   ...Object.fromEntries(PET_OPS_TAB_ORDER.map((v) => {
@@ -448,6 +455,11 @@ export default function OrganizationAdminPanelV3() {
   const shelterDonations = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_DONATIONS);
   const shelterFinance = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_FINANCE);
   const shelterStore = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_STORE_V1);
+  const shelterTeamV2 = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_TEAM_V2);
+  const shelterFosterV2 = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_FOSTER_V2);
+  const shelterMuralV2 = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_MURAL_V2);
+  const shelterExhibitionOpsV1 = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_EXHIBITION_OPS_V1);
+  const shelterDocumentsV1 = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_DOCUMENTS_V1);
 
   // Item 7: no acesso de abrigo (persona shelter_staff), esconde os "escapes"
   // para a visão pública — o usuário está no painel privado do abrigo.
@@ -513,12 +525,13 @@ export default function OrganizationAdminPanelV3() {
     if (shelterFoundation && shelterFinance) tabs.push({ key: 'shelter_finance', label: 'Prestação', icon: TAB_ICONS.finance });
     if (shelterFoundation && shelterReports) tabs.push({ key: 'reports', label: 'Relatórios', icon: TAB_ICONS.reports });
     if (shelterFoundation && shelterIndicators) tabs.push({ key: 'indicators', label: 'Indicadores', icon: TAB_ICONS.indicators });
+    if (shelterFoundation && shelterDocumentsV1) tabs.push({ key: 'documents', label: 'Documentos', icon: TAB_ICONS.documents });
     return tabs;
   }, [
     shelterFoundation, shelterDashboard, shelterKanban, shelterExhibitions,
     shelterVolunteers, shelterVolunteerProfileV1, canViewVolunteers,
     shelterHealthRecords, shelterMedication, shelterPetTimeline, shelterPetOpsTables, shelterFoster,
-    shelterDonations, shelterFinance, shelterReports, shelterIndicators,
+    shelterDonations, shelterFinance, shelterReports, shelterIndicators, shelterDocumentsV1,
   ]);
 
   // All visible tabs
@@ -877,7 +890,11 @@ export default function OrganizationAdminPanelV3() {
 
         {activeGroupKey === 'people' && activeSubKey === 'team' && (
           <SafeTab label="team">
-            <ClubTeamTab club={club} viewerMembership={membership} viewerUid={user?.uid} />
+            {shelterTeamV2 ? (
+              <ClubTeamTabV2 club={club} viewerMembership={membership} viewerUid={user?.uid} />
+            ) : (
+              <ClubTeamTab club={club} viewerMembership={membership} viewerUid={user?.uid} />
+            )}
           </SafeTab>
         )}
         {activeGroupKey === 'people' && activeSubKey === 'volunteers' && shelterFoundation && shelterVolunteers && shelterVolunteerProfileV1 && canViewVolunteers && (
@@ -892,13 +909,21 @@ export default function OrganizationAdminPanelV3() {
         )}
         {activeGroupKey === 'people' && activeSubKey === 'foster' && shelterFoundation && shelterFoster && (
           <SafeTab label="foster">
-            <FostersList shelterClubId={orgId} canAbriho={canManageTeam} actor={{ uid: user?.uid, displayName: user?.displayName }} />
+            {shelterFosterV2 ? (
+              <FostersListV2 shelterClubId={orgId} canAbriho={canManageTeam} actor={{ uid: user?.uid, displayName: user?.displayName }} />
+            ) : (
+              <FostersList shelterClubId={orgId} canAbriho={canManageTeam} actor={{ uid: user?.uid, displayName: user?.displayName }} />
+            )}
           </SafeTab>
         )}
 
         {activeGroupKey === 'engagement' && activeSubKey === 'feed' && (
           <SafeTab label="feed">
-            <ClubFeedTab clubId={orgId} club={club} membership={membership} canManageFeed={canManageFeed} />
+            {shelterMuralV2 ? (
+              <ClubMuralTabV2 clubId={orgId} club={club} membership={membership} canManageFeed={canManageFeed} />
+            ) : (
+              <ClubFeedTab clubId={orgId} club={club} membership={membership} canManageFeed={canManageFeed} />
+            )}
           </SafeTab>
         )}
         {activeGroupKey === 'engagement' && activeSubKey === 'chat' && (
@@ -910,7 +935,13 @@ export default function OrganizationAdminPanelV3() {
           <SafeTab label="kanban"><KanbanPage clubId={orgId} /></SafeTab>
         )}
         {activeGroupKey === 'engagement' && activeSubKey === 'exhibitions' && shelterFoundation && shelterExhibitions && (
-          <SafeTab label="exhibitions"><ExhibitionsList shelterClubId={orgId} /></SafeTab>
+          <SafeTab label="exhibitions">
+            {shelterExhibitionOpsV1 ? (
+              <ExhibitionsManagerV2 shelterClubId={orgId} actor={{ uid: user?.uid, displayName: user?.displayName }} />
+            ) : (
+              <ExhibitionsList shelterClubId={orgId} />
+            )}
+          </SafeTab>
         )}
 
         {activeGroupKey === 'finance' && activeSubKey === 'donations' && (
@@ -944,6 +975,14 @@ export default function OrganizationAdminPanelV3() {
         {activeGroupKey === 'settings' && activeSubKey === 'settings' && (
           <SafeTab label="settings">
             <ClubAdminTab club={club} />
+          </SafeTab>
+        )}
+        {activeGroupKey === 'settings' && activeSubKey === 'documents' && shelterFoundation && shelterDocumentsV1 && (
+          <SafeTab label="documents">
+            <ShelterDocumentsCentral
+              shelterClubId={orgId}
+              actor={{ uid: user?.uid, displayName: user?.displayName }}
+            />
           </SafeTab>
         )}
         {activeGroupKey === 'settings' && activeSubKey === 'dashboard' && shelterFoundation && shelterDashboard && (

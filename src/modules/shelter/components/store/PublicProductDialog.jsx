@@ -20,6 +20,8 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
 } from '@/components/ui/dialog';
 import { cn } from '@/core/lib/utils';
+import { useFeatureFlag } from '@/core/lib/FeatureFlagsContext';
+import { SHELTER_FEATURE_FLAG } from '@/modules/shelter/domain/constants';
 import {
   DELIVERY_METHOD_LABEL, PAYMENT_METHOD, PAYMENT_METHOD_LABEL,
   formatBRL, isInStock, ratingSummary,
@@ -29,6 +31,7 @@ import {
 } from '@/modules/shelter/hooks/useShelterStore';
 import * as storeSvc from '@/modules/shelter/services/shelterStoreService';
 import { ProductMediaGallery } from './ProductMediaField';
+import AddToCartButton from './AddToCartButton';
 
 /** Hook local para createOrder (a família principal é keyed por produto). */
 function useCreateOrder(clubId) {
@@ -76,7 +79,8 @@ function buildPaymentOptions(settings) {
   return opts.length ? opts : [PAYMENT_METHOD.TO_ARRANGE];
 }
 
-export default function PublicProductDialog({ open, onOpenChange, clubId, product, settings, actor }) {
+export default function PublicProductDialog({ open, onOpenChange, clubId, product, settings, actor, clubName }) {
+  const storeV2 = useFeatureFlag(SHELTER_FEATURE_FLAG.SHELTER_STORE_V2);
   const productId = product?.id;
   const { data: reviews = [] } = useProductReviews(clubId, productId, Boolean(open && productId));
   const { data: questions = [] } = useProductQuestions(clubId, productId, Boolean(open && productId));
@@ -121,6 +125,7 @@ export default function PublicProductDialog({ open, onOpenChange, clubId, produc
           message: order.message.trim(),
           payment_method: order.payment || payOpts[0],
           shipping_address: order.shipping.trim(),
+          shelter_name: clubName,
         },
       });
       setMode('done');
@@ -280,6 +285,16 @@ export default function PublicProductDialog({ open, onOpenChange, clubId, produc
             <Button className="w-full" disabled={!stock} onClick={() => setMode('buy')}>
               <ShoppingCart className="mr-1.5 h-4 w-4" /> {stock ? 'Comprar' : 'Esgotado'}
             </Button>
+
+            {storeV2 && (
+              <AddToCartButton
+                product={product}
+                clubId={clubId}
+                clubName={clubName}
+                className="w-full"
+                variant="outline"
+              />
+            )}
 
             {/* Perguntas */}
             <section className="space-y-2 border-t border-border pt-3">
