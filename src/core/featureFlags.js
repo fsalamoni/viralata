@@ -884,6 +884,44 @@ export const DEFAULT_FEATURE_FLAGS = Object.freeze({
 });
 
 /**
+ * CUTOVER 2026-08-30 — "versão mais nova" da plataforma.
+ *
+ * Lista das flags que compõem a atualização mais recente (páginas V3 +
+ * TODAS as features do abrigo que nascem ligadas). O admin da plataforma
+ * pediu que TUDO isto nasça LIGADO na versão no ar.
+ *
+ * Além de virarem `true` por default (ver DEFAULT_FEATURE_FLAGS acima),
+ * estas flags são forçadas UMA ÚNICA VEZ para `true` na migração de flags
+ * (`migrateLegacyFlags`, gate `CUTOVER_NEWEST_VERSION`). Isso é necessário
+ * porque contas que já visitaram `/admin/flags` têm o mapa COMPLETO de
+ * flags persistido no Firestore (inclusive estas em `false`), e o valor
+ * persistido vence o default. Após o cutover ser aplicado e persistido,
+ * o admin volta a ter controle total (pode desligar qualquer uma).
+ *
+ * A lista é derivada dos defaults para se manter em sincronia sozinha:
+ *  - todas as páginas V3 (prefixo `v3_page_`);
+ *  - toda flag do abrigo (`SHELTER_FEATURE_FLAG`) que é default `true`.
+ * EXCEÇÃO: `shelter_cutover` (chave de migração Org→Abrigo, não é feature
+ * de usuário) NÃO entra. As V4 Personas também não (não são default `true`
+ * e seu rollout é gradual por design).
+ */
+export const NEWEST_VERSION_CUTOVER_FLAGS = Object.freeze([
+  // Páginas V3 (redesenho) — a versão mais nova de cada tela.
+  ...Object.values(FEATURE_FLAG).filter(
+    (v) => typeof v === 'string' && v.startsWith('v3_page_'),
+  ),
+  // Fundação + TODAS as features do abrigo que nascem ligadas (default true),
+  // exceto `shelter_cutover`.
+  ...(SHELTER_FEATURE_FLAG
+    ? Object.values(SHELTER_FEATURE_FLAG).filter(
+        (v) =>
+          DEFAULT_FEATURE_FLAGS[v] === true &&
+          v !== SHELTER_FEATURE_FLAG.SHELTER_CUTOVER,
+      )
+    : []),
+]);
+
+/**
  * Normaliza um mapa de flags vindo do Firestore, garantindo booleanos e
  * preenchendo as ausentes com `false`. Ignora chaves desconhecidas.
  * @param {Record<string, unknown>|null|undefined} raw

@@ -40,11 +40,15 @@ export default function AdminFlags() {
   // sobrevivam à limpeza de cache. Sem isto, os valores migrados ficavam
   // apenas em memória e eram sobrepostos pelos valores estocados do Firestore
   // a cada reload (após cache clear).
+  // CUTOVER 2026-08-30: só persiste DEPOIS que as settings carregaram
+  // (settingsLoading=false garante que migratedFlagsRef.current já foi
+  // populado pelo subscribe). Persistir com o ref nulo gravaria a versão
+  // nova SEM o mapa forçado-true e abortaria o cutover.
   useEffect(() => {
-    if (isPlatformAdmin) {
+    if (isPlatformAdmin && !settingsLoading && migratedFlagsRef.current) {
       markFlagsMigrationApplied(user, migratedFlagsRef.current);
     }
-  }, [isPlatformAdmin, user]);
+  }, [isPlatformAdmin, user, settingsLoading]);
 
   if (!isPlatformAdmin) {
     return (
