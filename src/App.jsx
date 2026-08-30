@@ -36,6 +36,10 @@ const SearchPage = lazy(() => import('@/pages/SearchPage'));
 const PublicExhibitions = lazy(() => import('@/pages/PublicExhibitions'));
 const EventsUnified = lazy(() => import('@/pages/EventsUnified'));
 const FosterDashboard = lazy(() => import('@/pages/FosterDashboard'));
+// AdopterDashboard é export nomeado (não default) → interop com React.lazy.
+const AdopterDashboard = lazy(() =>
+  import('@/modules/adopter/pages/AdopterDashboard').then((m) => ({ default: m.AdopterDashboard })),
+);
 const ShelterAdminDashboard = lazy(() => import('@/modules/shelter/components/ShelterAdminDashboard'));
 const PublicExhibitionDetail = lazy(() => import('@/pages/PublicExhibitionDetail'));
 const PublicFosterPrograms = lazy(() => import('@/pages/PublicFosterPrograms'));
@@ -388,6 +392,12 @@ export default function App() {
                 <Route
                   path="/lares-temporarios/dashboard"
                   element={<ProtectedRoute>{withLayout('FosterDashboard', FosterDashboard)}</ProtectedRoute>}
+                />
+                {/* TASK-339: painel unificado do adotante (auto-gated pela flag
+                    SHELTER_ADOPTER_DASHBOARD_V1; exibe aviso "em breve" se OFF). */}
+                <Route
+                  path="/meu-painel"
+                  element={<ProtectedRoute>{withLayout('AdopterDashboard', AdopterDashboard)}</ProtectedRoute>}
                 />
                 {/* BUG CRÍTICO-4 (2026-07-20): rota abrigo onboarding agora exige auth */}
                 <Route
