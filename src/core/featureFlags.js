@@ -793,6 +793,10 @@ export const DEFAULT_FEATURE_FLAGS = Object.freeze({
   [SHELTER_FEATURE_FLAG.SHELTER_EXHIBITION_WORKFLOW_V1]: true,
   [SHELTER_FEATURE_FLAG.SHELTER_VOLUNTEERS_V2]: true,
   [SHELTER_FEATURE_FLAG.SHELTER_SMART_SEARCH]: true,
+  // `shelter_legal_terms` NÃO tem leitor de UI — é só um item da checklist
+  // de cutover (REQUIRED_FLAGS_FOR_CUTOVER). Quem controla a UI legal
+  // (banner de cookies, rodapé, páginas legais, termos de adoção) é
+  // `shelter_legal_terms_v1`. São independentes; ambas ON = cutover pleno.
   [SHELTER_FEATURE_FLAG.SHELTER_LEGAL_TERMS]: true,
   [SHELTER_FEATURE_FLAG.SHELTER_LEGAL_TERMS_V1]: true,
   [SHELTER_FEATURE_FLAG.SHELTER_SECURITY_HARDENING]: true,
