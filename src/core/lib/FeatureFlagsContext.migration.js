@@ -89,7 +89,8 @@ export function migrateLegacyFlags(rawFlags, appliedVersion = 0) {
   // controle total (pode desligar qualquer uma). Não toca em flags fora da
   // lista (ex.: shelter_cutover, V4 Personas, flags antigas do abrigo).
   if ((appliedVersion || 0) < CUTOVER_NEWEST_VERSION) {
-    const base = result === stored ? { ...stored } : result;
+    // Cópia incondicional: nunca muta `stored` nem o objeto do Critério 1/2.
+    const base = { ...result };
     let cutoverChanged = false;
     for (const k of NEWEST_VERSION_CUTOVER_FLAGS) {
       if (base[k] !== true) {

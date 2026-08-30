@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/core/lib/FirebaseAuthContext';
 import { FEATURE_FLAG_META, FEATURE_FLAG } from '@/core/featureFlags';
-import { usePlatformSettings, migratedFlagsRef } from '@/core/lib/FeatureFlagsContext';
+import { usePlatformSettings } from '@/core/lib/FeatureFlagsContext';
 import { setFeatureFlag, listFeatureFlagHistory, markFlagsMigrationApplied } from '@/core/services/platformSettingsService';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
@@ -40,15 +40,19 @@ export default function AdminFlags() {
   // sobrevivam à limpeza de cache. Sem isto, os valores migrados ficavam
   // apenas em memória e eram sobrepostos pelos valores estocados do Firestore
   // a cada reload (após cache clear).
-  // CUTOVER 2026-08-30: só persiste DEPOIS que as settings carregaram
-  // (settingsLoading=false garante que migratedFlagsRef.current já foi
-  // populado pelo subscribe). Persistir com o ref nulo gravaria a versão
-  // nova SEM o mapa forçado-true e abortaria o cutover.
+  // CUTOVER 2026-08-30: usa `settings.feature_flags` (o MESMO mapa migrado,
+  // já com o cutover aplicado) — um valor de estado, garantidamente populado
+  // quando `settingsLoading=false`. Isso evita gravar a versão nova SEM o
+  // mapa forçado-true (o que abortaria o cutover). Guardado por um ref para
+  // rodar uma única vez.
+  const didPersistMigrationRef = useRef(false);
   useEffect(() => {
-    if (isPlatformAdmin && !settingsLoading && migratedFlagsRef.current) {
-      markFlagsMigrationApplied(user, migratedFlagsRef.current);
+    const migratedMap = settings?.feature_flags;
+    if (isPlatformAdmin && !settingsLoading && migratedMap && !didPersistMigrationRef.current) {
+      didPersistMigrationRef.current = true;
+      markFlagsMigrationApplied(user, migratedMap);
     }
-  }, [isPlatformAdmin, user, settingsLoading]);
+  }, [isPlatformAdmin, user, settingsLoading, settings]);
 
   if (!isPlatformAdmin) {
     return (
