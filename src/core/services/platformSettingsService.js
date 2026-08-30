@@ -19,6 +19,17 @@ import {
 const COL = 'platform_settings';
 const DOC_ID = 'global';
 
+/**
+ * Anexa a meta de migração (`_migrations`) — descartada por
+ * `normalizePlatformSettings` — ao objeto normalizado, para que o gate de
+ * cutover em `migrateLegacyFlags` consiga ler `_migrations.flags`. Só é
+ * preenchido a partir de dados reais do Firestore; nos fallbacks (defaults/
+ * erro) fica ausente → versão 0 → cutover aplica (comportamento desejado).
+ */
+function withMigrationsMeta(normalized, raw) {
+  return { ...normalized, _migrations: (raw && typeof raw === 'object' ? raw._migrations : null) || null };
+}
+
 function settingsRef() {
   return doc(db, COL, DOC_ID);
 }
@@ -32,7 +43,8 @@ export async function getPlatformSettings() {
   try {
     if (!db) return normalizePlatformSettings(PLATFORM_SETTINGS_DEFAULTS);
     const snap = await getDoc(settingsRef());
-    return normalizePlatformSettings(snap.exists() ? snap.data() : null);
+    const raw = snap.exists() ? snap.data() : null;
+    return withMigrationsMeta(normalizePlatformSettings(raw), raw);
   } catch {
     return normalizePlatformSettings(PLATFORM_SETTINGS_DEFAULTS);
   }
@@ -53,7 +65,8 @@ export function subscribePlatformSettings(cb) {
     return onSnapshot(
       settingsRef(),
       (snap) => {
-        cb(normalizePlatformSettings(snap.exists() ? snap.data() : null));
+        const raw = snap.exists() ? snap.data() : null;
+        cb(withMigrationsMeta(normalizePlatformSettings(raw), raw));
       },
       () => cb(normalizePlatformSettings(PLATFORM_SETTINGS_DEFAULTS)),
     );
@@ -75,7 +88,7 @@ export function subscribePlatformSettings(cb) {
  * `FeatureFlagsContext.migrateLegacyFlags`. Aumentar quando a lógica de
  * upgrade mudar.
  */
-export const FLAGS_MIGRATION_VERSION = 5; // Bumped to 5 (2026-07-20) — added SHELTER_ADMIN_DASHBOARD_V1 flag. Pre-existing users need this in Firestore so the new admin dashboard works on their account.
+export const FLAGS_MIGRATION_VERSION = 6; // Bumped to 6 (2026-08-30) — CUTOVER "versão mais nova": força páginas V3 + fundação/features novas do abrigo (NEWEST_VERSION_CUTOVER_FLAGS) para ON uma vez em contas cujo doc já tinha essas flags persistidas em false. Ver CUTOVER_NEWEST_VERSION.
 
 /**
  * Marca a migração de flags como aplicada no doc `platform_settings/global`.
@@ -94,17 +107,20 @@ export const FLAGS_MIGRATION_VERSION = 5; // Bumped to 5 (2026-07-20) — added 
  *                                    (lidos de migratedFlagsRef em FeatureFlagsContext)
  */
 export async function markFlagsMigrationApplied(actor = null, migratedFlags = null) {
+  // CUTOVER 2026-08-30: nunca gravar o marker de versão SEM o mapa de flags
+  // migrado. Persistir `_migrations.flags = FLAGS_MIGRATION_VERSION` sozinho
+  // (sem os valores forçados-true) faria o gate de cutover parar de rodar e
+  // as features voltariam a sumir. Se não há mapa, não há o que confirmar.
+  if (!migratedFlags || typeof migratedFlags !== 'object') {
+    return;
+  }
   try {
     const writeData = {
       _migrations: { flags: FLAGS_MIGRATION_VERSION },
       updated_at: serverTimestamp(),
     };
     // TASK-815: persiste os flags migrados para que sobrevivam à limpeza de cache.
-    // mergedFlags pode vir de migratedFlagsRef (AdminFlags) ou ser null em
-    // contextos não-admin onde a escrita Firestore não é necessária.
-    if (migratedFlags && typeof migratedFlags === 'object') {
-      writeData.feature_flags = { ...migratedFlags };
-    }
+    writeData.feature_flags = { ...migratedFlags };
     await setDoc(settingsRef(), writeData, { merge: true });
     if (actor) {
       await createAuditLog({

@@ -29,7 +29,9 @@ export function FeatureFlagsProvider({ children }) {
 
   useEffect(() => {
     const unsubscribe = subscribePlatformSettings((settings) => {
-      const migrated = migrateLegacyFlags(settings.feature_flags);
+      // Passa a versão de migração persistida (settings._migrations.flags) para
+      // o gate de cutover (Critério 3). Ausente/undefined → 0 → cutover aplica.
+      const migrated = migrateLegacyFlags(settings.feature_flags, settings?._migrations?.flags);
       setSettings({ ...settings, feature_flags: migrated });
       setFlags(migrated);
       migratedFlagsRef.current = migrated;

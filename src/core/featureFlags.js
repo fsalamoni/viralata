@@ -770,6 +770,50 @@ export const DEFAULT_FEATURE_FLAGS = Object.freeze({
   // (admin pessoal do abrigo). V3 do ShelterAdminDashboard.
   [SHELTER_FEATURE_FLAG.SHELTER_ADMIN_DASHBOARD_V1]: true,
 
+  // ─── CUTOVER SHELTER (2026-08-30) ───────────────────────────────────────
+  // O administrador da plataforma pediu que TODAS as features do abrigo
+  // (desenvolvidas nos últimos PRs) fiquem ativas por default, na versão
+  // mais nova. Estas flags são aditivas e auto-gated (cada tela verifica a
+  // própria flag). `shelter_foundation` é o portão-mestre que habilita as
+  // abas do painel do abrigo. Podem ser desligadas em /admin/flags sem
+  // migração de dados.
+  // EXCEÇÃO: `shelter_cutover` (chave de migração Org→Abrigo, não é feature
+  // de usuário) permanece OFF por default.
+  [SHELTER_FEATURE_FLAG.SHELTER_FOUNDATION]: true,
+  [SHELTER_FEATURE_FLAG.SHELTER_ONBOARDING_WIZARD]: true,
+  [SHELTER_FEATURE_FLAG.SHELTER_APPLICATION_SCORING]: true,
+  [SHELTER_FEATURE_FLAG.SHELTER_ANIMAL_UNIFIED_PROFILE]: true,
+  [SHELTER_FEATURE_FLAG.SHELTER_ADOPTION_WORKFLOW]: true,
+  [SHELTER_FEATURE_FLAG.SHELTER_ADOPTER_FULL_PROFILE]: true,
+  [SHELTER_FEATURE_FLAG.SHELTER_POST_ADOPTION_FOLLOWUP]: true,
+  [SHELTER_FEATURE_FLAG.SHELTER_POST_ADOPTION_RETURN]: true,
+  [SHELTER_FEATURE_FLAG.SHELTER_FOSTER_PUBLIC_HISTORY_V1]: true,
+  [SHELTER_FEATURE_FLAG.SHELTER_GALLERY]: true,
+  [SHELTER_FEATURE_FLAG.SHELTER_EXHIBITION_RSVPS]: true,
+  [SHELTER_FEATURE_FLAG.SHELTER_EXHIBITION_WORKFLOW_V1]: true,
+  [SHELTER_FEATURE_FLAG.SHELTER_VOLUNTEERS_V2]: true,
+  [SHELTER_FEATURE_FLAG.SHELTER_SMART_SEARCH]: true,
+  // `shelter_legal_terms` NÃO tem leitor de UI — é só um item da checklist
+  // de cutover (REQUIRED_FLAGS_FOR_CUTOVER). Quem controla a UI legal
+  // (banner de cookies, rodapé, páginas legais, termos de adoção) é
+  // `shelter_legal_terms_v1`. São independentes; ambas ON = cutover pleno.
+  [SHELTER_FEATURE_FLAG.SHELTER_LEGAL_TERMS]: true,
+  [SHELTER_FEATURE_FLAG.SHELTER_LEGAL_TERMS_V1]: true,
+  [SHELTER_FEATURE_FLAG.SHELTER_SECURITY_HARDENING]: true,
+  [SHELTER_FEATURE_FLAG.SHELTER_PLATFORM_HEALTH]: true,
+  [SHELTER_FEATURE_FLAG.SHELTER_FCM_V1]: true,
+  [SHELTER_FEATURE_FLAG.SHELTER_STORE_V1]: true,
+  [SHELTER_FEATURE_FLAG.SHELTER_STORE_V2]: true,
+  [SHELTER_FEATURE_FLAG.SHELTER_ACTIONABLE_NOTIFICATIONS_V1]: true,
+  [SHELTER_FEATURE_FLAG.SHELTER_TEAM_V2]: true,
+  [SHELTER_FEATURE_FLAG.SHELTER_FOSTER_V2]: true,
+  [SHELTER_FEATURE_FLAG.SHELTER_MURAL_V2]: true,
+  [SHELTER_FEATURE_FLAG.SHELTER_EXHIBITION_OPS_V1]: true,
+  [SHELTER_FEATURE_FLAG.SHELTER_DOCUMENTS_V1]: true,
+  [SHELTER_FEATURE_FLAG.SHELTER_FOSTER_DASHBOARD_V1]: true,
+  [SHELTER_FEATURE_FLAG.SHELTER_ADOPTER_DASHBOARD_V1]: true,
+  // `shelter_cutover` permanece no default do spread (false).
+
   // Community flags:
   [FEATURE_FLAG.COMMUNITY_EVENT_DETAIL_V1]: false,
 
@@ -789,31 +833,34 @@ export const DEFAULT_FEATURE_FLAGS = Object.freeze({
   [FEATURE_FLAG.DS_V2_MOTION]: false,
   [FEATURE_FLAG.DS_V2_AUDIT]: false,
 
-  // V3 Redesign — todas OFF por default. Cada página será ativada após
-  // validação visual no admin master. Ver docs/PLAN_V3_REDESIGN.md.
-  [FEATURE_FLAG.V3_PAGE_FEED]: false,
-  [FEATURE_FLAG.V3_PAGE_HOME]: false,
-  [FEATURE_FLAG.V3_PAGE_LOGIN]: false,
-  [FEATURE_FLAG.V3_PAGE_LEGAL]: false,
-  [FEATURE_FLAG.V3_PAGE_PET_DETAIL]: false,
+  // V3 Redesign — CUTOVER (2026-08-30): todas as páginas V3 (validadas e
+  // production-ready) passam a nascer LIGADAS, tornando a versão mais nova
+  // o padrão do site no ar. O admin pode desligar qualquer uma em
+  // /admin/flags para voltar à V1 sem migração de dados.
+  // Ver docs/PLAN_V3_REDESIGN.md.
+  [FEATURE_FLAG.V3_PAGE_FEED]: true,
+  [FEATURE_FLAG.V3_PAGE_HOME]: true,
+  [FEATURE_FLAG.V3_PAGE_LOGIN]: true,
+  [FEATURE_FLAG.V3_PAGE_LEGAL]: true,
+  [FEATURE_FLAG.V3_PAGE_PET_DETAIL]: true,
   // TASK-V3-PET-DETAIL-VIEW: ON por default (rota /pet/:petId pública).
   // Quando user pediu 'arrume os botões de editar/excluir' — esta flag
   // é a solução (página V3 não tem esses botões, só o admin tem).
   [FEATURE_FLAG.PET_DETAIL_VIEW_V1]: true,
-  [FEATURE_FLAG.V3_PAGE_COMMUNITY_DETAIL]: false,
-  [FEATURE_FLAG.V3_PAGE_CLUB_DETAIL]: false,
-  [FEATURE_FLAG.V3_PAGE_PROFILE]: false,
-  [FEATURE_FLAG.V3_PAGE_CHAT]: false,
-  [FEATURE_FLAG.V3_PAGE_ADOPTION]: false,
-  [FEATURE_FLAG.V3_PAGE_ORG_ADMIN]: false,
-  [FEATURE_FLAG.V3_PAGE_COMMUNITY_ADMIN]: false,
-  [FEATURE_FLAG.V3_PAGE_SHELTER_ADMIN]: false,
-  [FEATURE_FLAG.V3_PAGE_SEARCH]: false,
-  [FEATURE_FLAG.V3_PAGE_EVENTS]: false,
-  [FEATURE_FLAG.V3_PAGE_FOSTER]: false,
-  [FEATURE_FLAG.V3_PAGE_VOLUNTEER]: false,
-  [FEATURE_FLAG.V3_PAGE_MURAL]: false,
-  [FEATURE_FLAG.V3_PAGE_ADMIN]: false,
+  [FEATURE_FLAG.V3_PAGE_COMMUNITY_DETAIL]: true,
+  [FEATURE_FLAG.V3_PAGE_CLUB_DETAIL]: true,
+  [FEATURE_FLAG.V3_PAGE_PROFILE]: true,
+  [FEATURE_FLAG.V3_PAGE_CHAT]: true,
+  [FEATURE_FLAG.V3_PAGE_ADOPTION]: true,
+  [FEATURE_FLAG.V3_PAGE_ORG_ADMIN]: true,
+  [FEATURE_FLAG.V3_PAGE_COMMUNITY_ADMIN]: true,
+  [FEATURE_FLAG.V3_PAGE_SHELTER_ADMIN]: true,
+  [FEATURE_FLAG.V3_PAGE_SEARCH]: true,
+  [FEATURE_FLAG.V3_PAGE_EVENTS]: true,
+  [FEATURE_FLAG.V3_PAGE_FOSTER]: true,
+  [FEATURE_FLAG.V3_PAGE_VOLUNTEER]: true,
+  [FEATURE_FLAG.V3_PAGE_MURAL]: true,
+  [FEATURE_FLAG.V3_PAGE_ADMIN]: true,
   [FEATURE_FLAG.ADMIN_PARTNER_SPACES_V1]: true,
   [FEATURE_FLAG.PUBLIC_PARTNER_BANNERS_V1]: true,
 
@@ -835,6 +882,44 @@ export const DEFAULT_FEATURE_FLAGS = Object.freeze({
   [FEATURE_FLAG.V4_PERSONA_VOLUNTEER_POOL]: false,
   [FEATURE_FLAG.V4_PERSONA_PET_TRANSFER]: false,
 });
+
+/**
+ * CUTOVER 2026-08-30 — "versão mais nova" da plataforma.
+ *
+ * Lista das flags que compõem a atualização mais recente (páginas V3 +
+ * TODAS as features do abrigo que nascem ligadas). O admin da plataforma
+ * pediu que TUDO isto nasça LIGADO na versão no ar.
+ *
+ * Além de virarem `true` por default (ver DEFAULT_FEATURE_FLAGS acima),
+ * estas flags são forçadas UMA ÚNICA VEZ para `true` na migração de flags
+ * (`migrateLegacyFlags`, gate `CUTOVER_NEWEST_VERSION`). Isso é necessário
+ * porque contas que já visitaram `/admin/flags` têm o mapa COMPLETO de
+ * flags persistido no Firestore (inclusive estas em `false`), e o valor
+ * persistido vence o default. Após o cutover ser aplicado e persistido,
+ * o admin volta a ter controle total (pode desligar qualquer uma).
+ *
+ * A lista é derivada dos defaults para se manter em sincronia sozinha:
+ *  - todas as páginas V3 (prefixo `v3_page_`);
+ *  - toda flag do abrigo (`SHELTER_FEATURE_FLAG`) que é default `true`.
+ * EXCEÇÃO: `shelter_cutover` (chave de migração Org→Abrigo, não é feature
+ * de usuário) NÃO entra. As V4 Personas também não (não são default `true`
+ * e seu rollout é gradual por design).
+ */
+export const NEWEST_VERSION_CUTOVER_FLAGS = Object.freeze([
+  // Páginas V3 (redesenho) — a versão mais nova de cada tela.
+  ...Object.values(FEATURE_FLAG).filter(
+    (v) => typeof v === 'string' && v.startsWith('v3_page_'),
+  ),
+  // Fundação + TODAS as features do abrigo que nascem ligadas (default true),
+  // exceto `shelter_cutover`.
+  ...(SHELTER_FEATURE_FLAG
+    ? Object.values(SHELTER_FEATURE_FLAG).filter(
+        (v) =>
+          DEFAULT_FEATURE_FLAGS[v] === true &&
+          v !== SHELTER_FEATURE_FLAG.SHELTER_CUTOVER,
+      )
+    : []),
+]);
 
 /**
  * Normaliza um mapa de flags vindo do Firestore, garantindo booleanos e
