@@ -41,9 +41,10 @@ jobs:
         run: npm ci
         working-directory: functions
 
+      # Gate real (TASK-970): testes do frontend vermelhos bloqueiam o deploy.
+      # Baseline 2026-10-11: 2868 verdes.
       - name: Run tests
         run: npm test -- --run --reporter=verbose
-        continue-on-error: true
 
       - name: Run Functions tests
         run: npm test
@@ -60,8 +61,12 @@ jobs:
           VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
           VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
           VITE_FIRESTORE_DATABASE_ID: ${{ secrets.VITE_FIRESTORE_DATABASE_ID }}
+          # TASK-951: sem o secret o errorTracker usa fallback local (sem Sentry)
+          VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
+          VITE_RELEASE: ${{ github.sha }}
 
       - name: Deploy to Firebase Hosting (Preview — PRs)
+        id: preview
         if: github.event_name == 'pull_request'
         # continue-on-error: quota de channels do Firebase Hosting (limite ~50
         # channels ativos por projeto) estoura com HTTP 429 quando muitos PRs
@@ -75,6 +80,16 @@ jobs:
           projectId: viralata-4cf0b
           channelId: pr-${{ github.event.pull_request.number }}
 
+      # TASK-950/970: smoke das 35 rotas no canal de preview do PR. Pulado
+      # quando o preview não subiu (quota de channels, ver continue-on-error acima).
+      - name: Smoke 35 rotas (preview do PR)
+        if: github.event_name == 'pull_request' && steps.preview.outputs.details_url != ''
+        run: |
+          npx playwright install --with-deps chromium
+          npm run smoke:routes
+        env:
+          SMOKE_BASE_URL: ${{ steps.preview.outputs.details_url }}
+
       - name: Deploy to Firebase Hosting (Production — main or dispatch)
         if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_dispatch' && inputs.skip_hosting != 'true')
         uses: FirebaseExtended/action-hosting-deploy@v0
@@ -83,6 +98,17 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           projectId: viralata-4cf0b
           channelId: live
+
+      # TASK-950: evidência pós-deploy em produção (35 rotas). Não bloqueia os
+      # steps seguintes (rules/functions) — falha fica visível no run.
+      - name: Smoke 35 rotas (produção)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        continue-on-error: true
+        run: |
+          npx playwright install --with-deps chromium
+          npm run smoke:routes
+        env:
+          SMOKE_BASE_URL: https://viralata.web.app
 
       - name: Deploy Firestore rules/indexes & Storage rules (Production — main or dispatch)
         if: always() && ((github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_dispatch' && inputs.skip_hosting != 'true'))
