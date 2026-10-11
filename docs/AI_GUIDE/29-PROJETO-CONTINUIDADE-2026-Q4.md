@@ -102,6 +102,8 @@ Este projeto responde ao pedido do owner em 2026-10-11: *"crie um projeto comple
 | 10 | Docs canônicos stale (STATE/ROADMAP/FEATURE_FLAGS de julho) | datas nos arquivos | TASK-947 + este doc |
 | 11 | Board com 24 placeholders e 8 IDs duplicados | `sync.cjs --check` | TASK-946 (feito no seed) |
 | 12 | Tasks de decisão `done` só com link de roadmap (TASK-020..024, 034, 019) | campo `evidence` | TASK-948 (auditoria) |
+| 13 | **Deploy das Cloud Functions falha em todo push em main e o CI fica verde** (descoberto no merge do PR #254) | log do run 38179168437: `Permissions denied enabling cloudscheduler.googleapis.com`; step com `continue-on-error`; run de 30/08 (PR #253) com o mesmo step em 11 s | TASK-980 (owner habilita a API), TASK-979 |
+| 14 | **Runtime Node 20 das Functions é descomissionado em 2026-10-30** (depois disso não há deploy) | mesmo log: "Runtime Node.js 20 was deprecated… decommissioned on 2026-10-30" | TASK-981 |
 
 ### §2.5 Pedido do design "minimalista e intuitivo"
 
@@ -189,6 +191,10 @@ Legenda de prioridade: 🔴 critical · 🟠 high · 🟡 medium · ⚪ low. Own
 | TASK-952 | 🟠 | `/healthz` HTTP + uptime check + alerta | `curl /healthz` 200; alerta em falha simulada |
 | TASK-953 | 🟠 | Alertas de erro/billing por email real | email de teste recebido (depende TASK-960) |
 | TASK-954 | 🟡 | Runbook de incidente e rollback por flag (`30-RUNBOOK-INCIDENTES.md`) | revisado pelo owner, linkado no START-HERE |
+| **TASK-980** | 🔴 | **Destravar o deploy das Functions** (owner habilita Cloud Scheduler API; remover `continue-on-error`) | step verde em minutos; `healthCheck`, `onExhibitionWriteMirror`, `onFosterWriteMirror` publicadas |
+| **TASK-981** | 🟠 | Migrar Functions para Node 22 **antes de 2026-10-30** | deploy verde em Node 22; testes das Functions verdes |
+
+**Estado pós-merge do PR #254 (2026-10-11, run 38179168437)**: Hosting, regras e índices do Firestore, Storage e CORS publicados; smoke de produção 35/35. **Functions não publicadas** (TASK-980), logo `/healthz` e os escritores dos espelhos ainda não estão ativos; TASK-951 aguarda o secret do DSN. Tasks 939/949/952 ficaram `blocked` por TASK-980.
 
 ### E4 — Rollout V4 Personas (W44–W49)
 **Objetivo**: executar as 5 etapas de D-PERSONA-FLAG-GRADUAL até 100 %.
@@ -321,6 +327,7 @@ O projeto encerra quando os marcos M1–M5 estão cumpridos ou quando o owner re
 | R-03 | Espelhos públicos expõem PII | baixa | crítico | writer só com campos allowlist; teste de rules em `tests/security` |
 | R-04 | Bundle de 7,2 MB prejudica mobile/4G | média | médio | TASK-968/978 |
 | R-05 | Nova fachada: task fechada sem código | média | alto | TASK-948 + §8.2 + revisão de PR exigindo evidência |
+| R-07 | Falhas de deploy mascaradas por `continue-on-error` (Functions nunca publicadas pelo CI; prazo Node 20 em 2026-10-30) | alta | alto | TASK-980 (destravar + tornar bloqueante), TASK-981 (Node 22), TASK-979 (testes) |
 | R-06 | Piloto sem abrigos disponíveis | média | alto | owner indica abrigos em W44; alternativa: ONG parceira já cadastrada |
 | RISK-004 | Feed com 500+ pets | média | médio | TASK-969 |
 | RISK-007 | TODO jurídico | alta | médio | TASK-964 |
@@ -341,4 +348,5 @@ O projeto encerra quando os marcos M1–M5 estão cumpridos ou quando o owner re
 
 | Data | Versão | Mudança |
 |---|---|---|
+| 2026-10-11 | 1.1.0 | Pós-merge do PR #254: deploy verificado (Hosting/regras/índices/CORS OK, smoke 35/35); descoberto que o deploy das Functions falha mascarado por `continue-on-error` (achados 13 e 14, TASK-980/981, R-07); TASK-946/947/950/940 `done`, 951/952/939/949 `blocked`, 970 reaberta com o escopo restante. |
 | 2026-10-11 | 1.0.0 | Criação. Seed de 33 tasks novas + 15 reenquadradas + 6 normalizadas; roadmap `PROJ-2026Q4-E1..E8`; sprint W42. |

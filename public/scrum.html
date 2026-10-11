@@ -387,7 +387,7 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.1.0",
-  "generatedAt": "2026-10-11T22:07:33.654Z",
+  "generatedAt": "2026-10-11T22:20:08.425Z",
   "project": "viralata",
   "currentSprint": {
     "id": "SPRINT-2026-W42",
@@ -400,8 +400,8 @@
     {
       "id": "viralata",
       "branch": "ccr-227b9899-iv0bcc",
-      "head": "a3a8f139d7e13203132003bac7c48608bcffa2a7",
-      "headTitle": "chore: merge origin/main (topbar finalizer) — painel re-embedado com sync.cjs",
+      "head": "a0215329b01486edf5914bbbbbfc6e9b8ee28429",
+      "headTitle": "chore(scrum): topbar finalizer 6428857 (pós-deploy)",
       "path": "/home/user/viralata",
       "status": "in-sync",
       "commitsAhead": 0,
@@ -18546,7 +18546,7 @@
       "id": "TASK-939",
       "type": "feature",
       "category": "shelter",
-      "status": "in_review",
+      "status": "blocked",
       "priority": "high",
       "owner": "claude-code-session_01BTZs9DMV62kPsqFscGK84z",
       "branch": "ccr-227b9899-iv0bcc",
@@ -18562,21 +18562,23 @@
         "projeto-2026-q4",
         "E2"
       ],
-      "blockedBy": [],
+      "blockedBy": [
+        "TASK-980"
+      ],
       "relatedTasks": [
         "TASK-937",
         "TASK-940"
       ],
-      "evidence": "docs/ROADMAP_SHELTER_ADMIN_V2.md §14–§16 (conclusão do roadmap, 2026-08-29)",
+      "evidence": "docs/ROADMAP_SHELTER_ADMIN_V2.md §14–§16 (conclusão do roadmap, 2026-08-29) BLOCKED: Function onExhibitionWriteMirror não publicada (TASK-980); regras/índices já em produção",
       "description": "A coleção exhibitions_public (lida por PublicExhibitionDetail via exhibitionPublicService) não tem writer — a página de detalhe pública nunca renderiza dados reais. Escrever o espelho público na publicação da vitrine (Cloud Function onWrite ou no serviço de admin), mapeando datetime_start/venue.address/title/notes. Sem PII além do já público.",
       "createdAt": "2026-08-29",
-      "updatedAt": "2026-10-11T20:09:01"
+      "updatedAt": "2026-10-11"
     },
     {
       "id": "TASK-940",
       "type": "security",
       "category": "shelter",
-      "status": "in_review",
+      "status": "done",
       "priority": "high",
       "owner": "claude-code-session_01BTZs9DMV62kPsqFscGK84z",
       "branch": "ccr-227b9899-iv0bcc",
@@ -18598,10 +18600,11 @@
         "TASK-937",
         "TASK-939"
       ],
-      "evidence": "docs/ROADMAP_SHELTER_ADMIN_V2.md §14–§16 (conclusão do roadmap, 2026-08-29)",
+      "evidence": "docs/ROADMAP_SHELTER_ADMIN_V2.md §14–§16 (conclusão do roadmap, 2026-08-29) https://github.com/fsalamoni/viralata/actions/runs/38179168437 step 'Deploy Firestore rules/indexes': regras exhibitions_public/foster_placements_public (read true, write false) + 2 índices publicados",
       "description": "firestore.rules exigem membership do clube para ler clubs/{clubId}/exhibitions → visitante anônimo não lista vitrines em ShelterPublic. Adicionar regra de leitura pública para vitrines PUBLICADAS (ou depender do mirror de TASK-939). ATENÇÃO: exige mudança em firestore.rules — fora do escopo aditivo atual; planejar com deny-by-default e return explícito.",
       "createdAt": "2026-08-29",
-      "updatedAt": "2026-10-11T20:09:02"
+      "updatedAt": "2026-10-11T22:19:34",
+      "resolvedAt": "2026-10-11"
     },
     {
       "id": "TASK-941",
@@ -18758,7 +18761,7 @@
     {
       "type": "chore",
       "category": "docs",
-      "status": "in_review",
+      "status": "done",
       "priority": "high",
       "owner": "claude-code-session_01BTZs9DMV62kPsqFscGK84z",
       "branch": "ccr-227b9899-iv0bcc",
@@ -18767,9 +18770,9 @@
       "pr": "#254",
       "blockedBy": [],
       "relatedTasks": [],
-      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md",
+      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md https://github.com/fsalamoni/viralata/actions/runs/38179168437 (merge ce44c26; sync.cjs --check exit 0)",
       "createdAt": "2026-10-11",
-      "updatedAt": "2026-10-11T20:09:02",
+      "updatedAt": "2026-10-11T22:19:34",
       "id": "TASK-946",
       "tags": [
         "projeto-2026-q4",
@@ -18777,12 +18780,13 @@
         "scrum"
       ],
       "title": "E1: Higiene do board — dropar placeholders V3, dedupe IDs, normalizar status pending",
-      "description": "Executado por .harness/_add-projeto-2026-q4-tasks.cjs: 8 IDs duplicados removidos, 16 placeholders \"a definir no step-2\" dropados, 6 tasks `pending` -> `ready`. Critério: `node .harness/sync.cjs --check` exit 0, 0 IDs duplicados, 0 status fora de `columns`."
+      "description": "Executado por .harness/_add-projeto-2026-q4-tasks.cjs: 8 IDs duplicados removidos, 16 placeholders \"a definir no step-2\" dropados, 6 tasks `pending` -> `ready`. Critério: `node .harness/sync.cjs --check` exit 0, 0 IDs duplicados, 0 status fora de `columns`.",
+      "resolvedAt": "2026-10-11"
     },
     {
       "type": "docs",
       "category": "docs",
-      "status": "in_review",
+      "status": "done",
       "priority": "high",
       "owner": "claude-code-session_01BTZs9DMV62kPsqFscGK84z",
       "branch": "ccr-227b9899-iv0bcc",
@@ -18791,9 +18795,9 @@
       "pr": "#254",
       "blockedBy": [],
       "relatedTasks": [],
-      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md",
+      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md https://github.com/fsalamoni/viralata/actions/runs/38179168437 (docs/FEATURE_FLAGS.md gerado; audit-feature-flags 102/102)",
       "createdAt": "2026-10-11",
-      "updatedAt": "2026-10-11T20:09:01",
+      "updatedAt": "2026-10-11T22:19:34",
       "id": "TASK-947",
       "tags": [
         "projeto-2026-q4",
@@ -18801,7 +18805,8 @@
         "docs"
       ],
       "title": "E1: Regenerar docs/FEATURE_FLAGS.md com os defaults reais pós-cutover",
-      "description": "docs/FEATURE_FLAGS.md (2026-07-14) diz que todas as SHELTER_* estão OFF; desde o PR #253 (2026-08-30) 19 páginas V3 + 44 flags de abrigo estão ON por default. Regenerar a tabela a partir de src/core/featureFlags.js (DEFAULT_FEATURE_FLAGS + META) e fazer scripts/audit-feature-flags.cjs validar default + descrição. Critério: tabela sem \"TBD\", default de cada flag igual ao código, audit script verde."
+      "description": "docs/FEATURE_FLAGS.md (2026-07-14) diz que todas as SHELTER_* estão OFF; desde o PR #253 (2026-08-30) 19 páginas V3 + 44 flags de abrigo estão ON por default. Regenerar a tabela a partir de src/core/featureFlags.js (DEFAULT_FEATURE_FLAGS + META) e fazer scripts/audit-feature-flags.cjs validar default + descrição. Critério: tabela sem \"TBD\", default de cada flag igual ao código, audit script verde.",
+      "resolvedAt": "2026-10-11"
     },
     {
       "type": "chore",
@@ -18830,21 +18835,23 @@
     {
       "type": "feature",
       "category": "shelter",
-      "status": "in_review",
+      "status": "blocked",
       "priority": "high",
       "owner": "claude-code-session_01BTZs9DMV62kPsqFscGK84z",
       "branch": "ccr-227b9899-iv0bcc",
       "flag": "SHELTER_FOSTER_V2",
       "worktree": null,
       "pr": "#254",
-      "blockedBy": [],
+      "blockedBy": [
+        "TASK-980"
+      ],
       "relatedTasks": [
         "TASK-939",
         "TASK-940"
       ],
-      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md",
+      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md BLOCKED: Function onFosterWriteMirror não publicada (TASK-980); regras/índices já em produção",
       "createdAt": "2026-10-11",
-      "updatedAt": "2026-10-11T20:09:02",
+      "updatedAt": "2026-10-11",
       "id": "TASK-949",
       "tags": [
         "projeto-2026-q4",
@@ -18858,7 +18865,7 @@
     {
       "type": "infra",
       "category": "ci",
-      "status": "in_review",
+      "status": "done",
       "priority": "high",
       "owner": "claude-code-session_01BTZs9DMV62kPsqFscGK84z",
       "branch": "ccr-227b9899-iv0bcc",
@@ -18876,9 +18883,9 @@
         "TASK-937",
         "TASK-938"
       ],
-      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md",
+      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md https://github.com/fsalamoni/viralata/actions/runs/38179168437 step 'Smoke 35 rotas (produção)': Total 35, Quebradas 0 em 2026-10-11",
       "createdAt": "2026-10-11",
-      "updatedAt": "2026-10-11T20:09:02",
+      "updatedAt": "2026-10-11T22:19:34",
       "id": "TASK-950",
       "tags": [
         "projeto-2026-q4",
@@ -18887,23 +18894,24 @@
         "evidencia"
       ],
       "title": "E2: Smoke de produção pós-cutover (35 rotas) + evidência para TASK-931..938",
-      "description": "Rodar `npm run smoke:routes` contra https://viralata.web.app (flags ON por default) e `npm run smoke:prod`; anexar saída ao campo evidence das tasks TASK-931..938. Critério: 35/35 rotas OK (200 ou redirect→/login nas protegidas), zero erro de console nas rotas públicas (scripts/capture-errors.mjs)."
+      "description": "Rodar `npm run smoke:routes` contra https://viralata.web.app (flags ON por default) e `npm run smoke:prod`; anexar saída ao campo evidence das tasks TASK-931..938. Critério: 35/35 rotas OK (200 ou redirect→/login nas protegidas), zero erro de console nas rotas públicas (scripts/capture-errors.mjs).",
+      "resolvedAt": "2026-10-11"
     },
     {
       "type": "infra",
       "category": "infra",
-      "status": "in_review",
+      "status": "blocked",
       "priority": "critical",
-      "owner": "claude-code-session_01BTZs9DMV62kPsqFscGK84z",
+      "owner": "human",
       "branch": "ccr-227b9899-iv0bcc",
       "flag": null,
       "worktree": null,
       "pr": "#254",
       "blockedBy": [],
       "relatedTasks": [],
-      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md",
+      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md BLOCKED: código/SDK em produção (PR #254); critério exige VITE_SENTRY_DSN (secret do GitHub, owner) e erro de teste visível no Sentry",
       "createdAt": "2026-10-11",
-      "updatedAt": "2026-10-11T20:09:01",
+      "updatedAt": "2026-10-11",
       "id": "TASK-951",
       "tags": [
         "projeto-2026-q4",
@@ -18917,18 +18925,20 @@
     {
       "type": "infra",
       "category": "infra",
-      "status": "in_review",
+      "status": "blocked",
       "priority": "high",
       "owner": "claude-code-session_01BTZs9DMV62kPsqFscGK84z",
       "branch": "ccr-227b9899-iv0bcc",
       "flag": null,
       "worktree": null,
       "pr": "#254",
-      "blockedBy": [],
+      "blockedBy": [
+        "TASK-980"
+      ],
       "relatedTasks": [],
-      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md",
+      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md BLOCKED: Functions não publicadas: CI falha em 'Deploy Cloud Functions' (Cloud Scheduler API sem permissão) — ver TASK-980",
       "createdAt": "2026-10-11",
-      "updatedAt": "2026-10-11T20:09:01",
+      "updatedAt": "2026-10-11",
       "id": "TASK-952",
       "tags": [
         "projeto-2026-q4",
@@ -19384,7 +19394,7 @@
     {
       "type": "infra",
       "category": "ci",
-      "status": "in_review",
+      "status": "in_progress",
       "priority": "high",
       "owner": "claude-code-session_01BTZs9DMV62kPsqFscGK84z",
       "branch": "ccr-227b9899-iv0bcc",
@@ -19395,7 +19405,7 @@
       "relatedTasks": [],
       "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md",
       "createdAt": "2026-10-11",
-      "updatedAt": "2026-10-11T20:09:02",
+      "updatedAt": "2026-10-11",
       "id": "TASK-970",
       "tags": [
         "projeto-2026-q4",
@@ -19404,7 +19414,7 @@
         "e2e"
       ],
       "title": "E7: Rodar Playwright (smoke + public-routes + legal) no CI contra o canal de preview de cada PR",
-      "description": ".github/workflows/deploy.yml roda vitest + build + deploy, mas nunca executa tests/e2e. Adicionar job pós \"Deploy Preview\" com E2E_BASE_URL = URL do preview, specs: smoke.spec.js, public-routes.spec.js, legal.spec.js, a11y.spec.js (chromium). Critério: job obrigatório verde em PR; falha bloqueia merge."
+      "description": ".github/workflows/deploy.yml roda vitest + build + deploy, mas nunca executa tests/e2e. Adicionar job pós \"Deploy Preview\" com E2E_BASE_URL = URL do preview, specs: smoke.spec.js, public-routes.spec.js, legal.spec.js, a11y.spec.js (chromium). Critério: job obrigatório verde em PR; falha bloqueia merge. STATUS 2026-10-11 (PR #254): entregue só o smoke das 35 rotas (scripts/smoke-routes.mjs via Playwright/Chromium) no preview do PR e em produção, e o gate bloqueante dos testes do frontend. FALTA: rodar as specs de tests/e2e (smoke, public-routes, legal, a11y) no CI contra o preview e torná-las obrigatórias. Não marcar done antes disso."
     },
     {
       "type": "bug",
@@ -19631,12 +19641,73 @@
       ],
       "blockedBy": [],
       "relatedTasks": [
-        "TASK-970"
+        "TASK-970",
+        "TASK-980",
+        "TASK-981"
       ],
       "evidence": "npm test em functions/ (2026-10-11): 4 failed | 24 passed; createContractCore.test.js (Firebase app não inicializado), generateEventIcsCore.test.js (escape ICS/acentos), sendPushNotification.test.js (dryRun/tokens inválidos/validateInput), volunteerTriggers.test.js (exports safe wrapper ausentes)",
-      "description": "Os testes das Cloud Functions falham em main há tempo sem ninguém ver porque deploy.yml roda \"Run Functions tests\" com continue-on-error. Corrigir os 4 arquivos (alinhar código ou teste: escape ICS, sendPushCore sem Firestore em dryRun, exports de volunteerTriggers, init do admin app em createContractCore) e então remover o continue-on-error do step. Critério: npm test em functions/ 100% verde; step de CI bloqueante.",
+      "description": "Os testes das Cloud Functions falham em main há tempo sem ninguém ver porque deploy.yml roda \"Run Functions tests\" com continue-on-error. Corrigir os 4 arquivos (alinhar código ou teste: escape ICS, sendPushCore sem Firestore em dryRun, exports de volunteerTriggers, init do admin app em createContractCore) e então remover o continue-on-error do step. Critério: npm test em functions/ 100% verde; step de CI bloqueante. NOTA 2026-10-11: o deploy das Functions também falha e é mascarado pelo mesmo continue-on-error (ver TASK-980); tratar os dois juntos.",
       "createdAt": "2026-10-11",
       "updatedAt": "2026-10-11"
+    },
+    {
+      "type": "infra",
+      "category": "infra",
+      "status": "ready",
+      "priority": "critical",
+      "owner": "human",
+      "branch": null,
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-939",
+        "TASK-949",
+        "TASK-952",
+        "TASK-979"
+      ],
+      "evidence": "https://github.com/fsalamoni/viralata/actions/runs/38179168437 (step Deploy Cloud Functions: \"Permissions denied enabling cloudscheduler.googleapis.com\"). Run 33291361225 (30/08, PR #253): mesmo step em 11 s — falha antiga mascarada por continue-on-error.",
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11",
+      "id": "TASK-980",
+      "tags": [
+        "projeto-2026-q4",
+        "E3",
+        "functions",
+        "ci",
+        "iam",
+        "anti-fachada"
+      ],
+      "title": "E3: Destravar o deploy das Cloud Functions — habilitar Cloud Scheduler API e tornar o step de CI bloqueante",
+      "description": "O step \"Deploy Cloud Functions\" do deploy.yml falha em TODO deploy de main: a service account do CI não consegue habilitar cloudscheduler.googleapis.com (exigida pelas funções onSchedule). Como o step tem continue-on-error, o run aparece verde e as Functions (crons, triggers de voluntários/busca, espelhos públicos, healthCheck) provavelmente nunca foram publicadas pelo CI. Ações: (1) OWNER: habilitar a API em https://console.cloud.google.com/apis/library/cloudscheduler.googleapis.com?project=viralata-4cf0b e conferir os papéis da SA (Cloud Functions Admin, Cloud Build Editor, Artifact Registry Admin, Service Account User, Cloud Scheduler Admin) conforme o comentário do próprio deploy.yml; (2) rodar o workflow_dispatch e confirmar o deploy; (3) remover continue-on-error do step para a falha ficar visível; (4) listar as Functions realmente publicadas (firebase functions:list) e comparar com functions/index.js. Critério: step verde com duração de minutos, healthCheck/onExhibitionWriteMirror/onFosterWriteMirror listadas, curl /healthz 200."
+    },
+    {
+      "type": "infra",
+      "category": "infra",
+      "status": "ready",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-980"
+      ],
+      "evidence": "https://github.com/fsalamoni/viralata/actions/runs/38179168437 (log: \"Runtime Node.js 20 was deprecated on 2026-04-30 and will be decommissioned on 2026-10-30, after which you will not be able to deploy without upgrading\"; \"package.json indicates an outdated version of firebase-functions\")",
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11",
+      "id": "TASK-981",
+      "tags": [
+        "projeto-2026-q4",
+        "E3",
+        "functions",
+        "node-runtime"
+      ],
+      "title": "E3: Migrar o runtime das Cloud Functions de Node 20 para Node 22 antes de 2026-10-30 e atualizar firebase-functions",
+      "description": "Prazo duro: depois de 2026-10-30 não será possível publicar Functions em Node 20. Atualizar functions/package.json (engines.node = 22), rodar npm test em functions/ e atualizar firebase-functions para a versão atual. Fazer junto de TASK-979 (testes vermelhos) para validar a migração. Critério: deploy em Node 22 verde e testes das Functions 100% verdes."
     }
   ],
   "definitionOfDone": [
@@ -19912,10 +19983,10 @@
     "openTODOs": 5,
     "openLegalReviews": 3,
     "totalTasks": 783,
-    "done": 711,
-    "inProgress": 0,
-    "inReview": 9,
-    "blocked": 1,
+    "done": 715,
+    "inProgress": 1,
+    "inReview": 0,
+    "blocked": 5,
     "ready": 45,
     "backlog": 0,
     "risksTotal": 8,
@@ -19946,7 +20017,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-10-11T22:07:33.669Z — via sync.cjs (Regra B §B.1)",
+    "lastUpdate": "2026-10-11T22:20:08.436Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
@@ -20473,7 +20544,7 @@
   "decisionsUpdatedAt": "2026-07-15T23:57:00Z"
 }
   </script>
-  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-08-29T12:32:04.183Z">
+  <!-- auto-sync-badge --><meta name="auto-sync-last" content="2026-10-11T22:20:00.902Z">
   </head>
 <body>
 
@@ -20489,7 +20560,7 @@
     </div>
     <div class="sprint-info">
       <span class="pill mono">main @ 6428857</span>
-      <span class="pill">0 worktrees ativos</span>
+      <span class="pill">+1 worktree ativo</span>
       <span class="pill goal">Goal: estabilizar pós-22 fases + fechar worktrees</span>
     </div>
     <div class="topbar-actions">
