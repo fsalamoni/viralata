@@ -1,6 +1,7 @@
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/core/config/firebase';
 import { logger } from '@/core/lib/logger';
+import { captureError } from '@/core/services/errorTracker';
 import { parseTimestamp } from '@/core/utils/timestamp';
 
 export const AUDIT_ACTION_LABELS = {
@@ -312,8 +313,8 @@ export function safeCreateAuditLog(payload) {
         stack: err?.stack,
       });
 
-      // TODO: Wire Sentry.captureException once Sentry SDK is added (TASK-239).
-      // Sentry.captureException(err, { tags: { audit_failure: true, action: actionTag } });
+      // TASK-951: vai para o Sentry quando há DSN; senão fila local do errorTracker.
+      captureError(err, { audit_failure: true, action: actionTag });
 
       throw err;
     }

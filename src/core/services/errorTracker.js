@@ -29,13 +29,12 @@ const queue = [];
 
 async function tryLoadSentry() {
   try {
-    // Dynamic import - não quebra build se não tiver
-    const SENTRY_PKG = '@' + 'sentry/react';
-    Sentry = await import(/* @vite-ignore */ SENTRY_PKG).catch(() => null);
-    if (Sentry) {
-      sentryAvailable = true;
-      return true;
-    }
+    // Import dinâmico estático: o Vite gera um chunk separado que só é
+    // baixado quando há DSN (TASK-951). Sem DSN, nada do Sentry entra no
+    // caminho crítico.
+    Sentry = await import('@sentry/react');
+    sentryAvailable = true;
+    return true;
   } catch (e) {
     // Sentry não disponível
   }
@@ -63,8 +62,11 @@ export async function initErrorTracker(config = {}) {
   const sampleRate = config.sampleRate ?? 0.1;
   const enableInDev = config.enableInDev ?? false;
 
-  if (!dsn && env === 'development' && !enableInDev) {
-    return; // sem DSN e em dev, skip
+  if (!dsn) {
+    return; // sem DSN: fallback localStorage; não carrega o chunk do Sentry
+  }
+  if (env === 'development' && !enableInDev) {
+    return;
   }
 
   const loaded = await tryLoadSentry();
@@ -72,8 +74,11 @@ export async function initErrorTracker(config = {}) {
     Sentry.init({
       dsn,
       environment: env,
+      // release = SHA do deploy (VITE_RELEASE no CI) para correlacionar erro ↔ bundle
+      release: import.meta.env?.VITE_RELEASE || undefined,
       sampleRate,
       tracesSampleRate: sampleRate,
+      sendDefaultPii: false, // LGPD: sem IP/cookies/headers por default
       beforeSend(event) {
         // Filtra erros conhecidos (ex: ResizeObserver loop)
         if (event.exception?.values?.[0]?.value?.includes('ResizeObserver')) {
