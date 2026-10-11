@@ -67,6 +67,7 @@ Este projeto responde ao pedido do owner em 2026-10-11: *"crie um projeto comple
 | Rotas em `src/App.jsx` | 90 · smoke cobre 35 (`scripts/smoke-routes.mjs`) |
 | E2E Playwright | 11 specs em `tests/e2e/` — **não rodam no CI** (`deploy.yml` só roda vitest + build) |
 | Cloud Functions | 30+ exports (crons, triggers, callables); `/healthz` **não exposto** |
+| `npm test` em `functions/` | **12 testes falhando em 4 arquivos** (createContractCore, generateEventIcsCore, sendPushNotification, volunteerTriggers); invisível porque o step de CI tem `continue-on-error` → TASK-979 |
 
 ### §2.3 Decisões do owner (2026-07-15) e situação no código
 
@@ -230,6 +231,7 @@ Legenda de prioridade: 🔴 critical · 🟠 high · 🟡 medium · ⚪ low. Own
 | TASK-968 | 🟡 | Lighthouse ≥ 90 nas 5 rotas públicas + orçamento de bundle (7,2 MB precache hoje) |
 | TASK-969 | 🟡 | RISK-004: paginação por cursor no feed (limit 500 client-side) |
 | TASK-971 | 🟡 | Fechar 4 TODOs de produto (adoptedCount fixo, VolunteerPool, contracts collectionGroup, 1º pet do wizard) |
+| TASK-979 | 🟠 | Corrigir os 12 testes das Cloud Functions que falham em main e tornar o step de CI bloqueante |
 
 ### E8 — Produto e crescimento (W45–W51)
 
