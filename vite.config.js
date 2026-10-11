@@ -98,6 +98,9 @@ export default defineConfig(({ mode }) => {
             // planilhas de animais (aba Animais do painel de organização), nunca
             // no carregamento inicial.
             if (n.includes('/xlsx/')) return 'vendor-spreadsheet';
+            // Sentry (TASK-951) — só carregado via import() quando há DSN;
+            // fora do chunk 'vendor' para não estourar o limite de precache (2 MiB).
+            if (n.includes('/@sentry/') || n.includes('/@sentry-internal/')) return 'vendor-sentry';
             // Firebase — dividido por serviço para melhor cache
             if (n.includes('@firebase/firestore') || n.includes('/firebase/firestore')) return 'vendor-firebase-firestore';
             if (n.includes('@firebase/auth')      || n.includes('/firebase/auth'))      return 'vendor-firebase-auth';

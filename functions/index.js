@@ -116,6 +116,14 @@ exports.onClubWrite = onClubWrite;
 exports.onFosterWrite = onFosterWrite;
 exports.onVolunteerWrite = onVolunteerWrite;
 
+// Espelhos públicos (TASK-939 / TASK-949): exhibitions_public, foster_placements_public
+const { onExhibitionWriteMirror, onFosterWriteMirror } = require('./publicMirrors');
+exports.onExhibitionWriteMirror = onExhibitionWriteMirror;
+exports.onFosterWriteMirror = onFosterWriteMirror;
+
+// /healthz (TASK-952): HTTP GET, roteado pelo Hosting (firebase.json rewrites)
+exports.healthCheck = require('./healthCheck').healthCheck;
+
 // ─── Volunteer triggers (TASK-220) ────────────────────────────────────────
 const { onDocumentCreated: _onDocCreated, onDocumentUpdated: _onDocUpdated } = require('firebase-functions/v2/firestore');
 

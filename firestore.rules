@@ -921,6 +921,19 @@ service cloud.firestore {
       allow delete: if isPlatformAdmin();
     }
 
+    // ─── Espelhos públicos (TASK-939 / TASK-949) ─────────────────────────
+    // Projeções sem PII de clubs/{clubId}/exhibitions e clubs/{clubId}/fosters,
+    // escritas SOMENTE pelo Admin SDK (functions/publicMirrors.js). Leitura
+    // anônima: páginas /vitrines, /eventos, /lares-temporarios.
+    match /exhibitions_public/{exhibitionId} {
+      allow read: if true;
+      allow write: if false; // só Cloud Function
+    }
+    match /foster_placements_public/{placementId} {
+      allow read: if true;
+      allow write: if false; // só Cloud Function
+    }
+
     // ─── Fase 21: Painel de Saúde da Plataforma (admin master) ─────────────
     // Coleções de observabilidade/admin. Apenas platform_admin lê; escrita
     // é via Cloud Function (admin SDK) para os snapshots, e via admin

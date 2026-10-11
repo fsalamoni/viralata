@@ -4,7 +4,7 @@
  */
 import { chromium } from 'playwright';
 
-const BASE = 'http://127.0.0.1:4174';
+const BASE = process.env.SMOKE_BASE_URL || 'http://127.0.0.1:4174';
 
 const ROUTES = [
   '/',

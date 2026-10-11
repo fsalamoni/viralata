@@ -28,6 +28,7 @@ docs/AI_GUIDE/
 ├── 18-REGENCY-INDEX.md           Índice de REGENCY_*.md
 ├── 19-FAQ-AND-MISTAKES.md        FAQ + armadilhas comuns
 ├── 20-FIRESTORE-SECURITY.md      Boas práticas segurança
+├── 29-PROJETO-CONTINUIDADE-2026-Q4.md  ★ PROJETO ATUAL (épicos E1..E8, backlog, sprints)
 ├── EXAMPLE_FEATURE_V3.md         Exemplo real de feature
 ├── TEMPLATE_REGENCY.md           Template para novos specs
 ├── INDEX.md                      Este arquivo
