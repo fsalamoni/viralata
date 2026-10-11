@@ -5,9 +5,33 @@
 > projeto (humano, agente ou sessão paralela). Ele é atualizado em cada
 > movimento, merge ou task. Para detalhes, siga o índice da Seção 10.
 >
-> **Última atualização**: 2026-07-13 00:55 BRT
-> **Versão**: 1.2.0
-> **Mantido por**: Mavis (viralata-coder, sessão `mvs_f1e04f28717d42cdba05e221b7b4b6f3`)
+> **Última atualização**: 2026-10-11 (bloco §-1); seções 0–16 abaixo refletem 2026-07-13 e são histórico
+> **Versão**: 1.3.0
+> **Mantido por**: sessões de agente (última: Claude Code, branch `ccr-227b9899-iv0bcc`)
+
+---
+
+## -1. Atualização 2026-10-11 — Projeto de Continuidade 2026-Q4
+
+> **Leia `docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md`** — é o documento
+> canônico do ciclo atual. Este bloco resume o estado real; o resto deste
+> arquivo é o snapshot de julho (válido como histórico das 22 fases).
+
+| Métrica | Valor (2026-10-11) | Fonte |
+|---|---|---|
+| `origin/main` HEAD | `a7251d4` (só `chore(scrum)` desde 2026-08-30) | `git log` |
+| Último PR de código | **#253** cutover (19 páginas V3 + 44 flags de abrigo ON por default) | GitHub |
+| Testes | **2868 verdes** (234 arquivos) | `npx vitest run` |
+| Lint / Typecheck | 0 / 0 erros | `npm run lint`, `npm run typecheck` |
+| Build | OK · `sw-v92.js` · precache 231 entradas / 7.230 KiB | `npm run build` |
+| Board | **782 tasks** · 711 done · 53 ready · 1 blocked · 17 dropped · 0 IDs duplicados | `sync.cjs --check` exit 0 |
+| Projeto 2026-Q4 | 54 tasks (tag `projeto-2026-q4`, épicos E1..E8), sprint `SPRINT-2026-W42` | `.harness/SCRUM_TASKS.json` |
+| Flags OFF relevantes | `V4_PERSONA_*` (11), `PLATFORM_MARKETPLACE_V1`, `A11Y_IMPROVEMENTS_V1`, `HOME_STATS_V1` + 5 de layout | `src/core/featureFlags.js` |
+| PRs / Issues abertos | 0 / 0 | GitHub |
+
+**Fachadas encontradas e reabertas** (detalhe em `29-PROJETO… §2.4`): Sentry sem SDK (TASK-951), `/admin/cargos` sem rota (TASK-963), espelhos públicos sem writer (TASK-939/940/949), email transacional em stub (TASK-960), push FCM vs decisão P2 (TASK-961), `adoptedCount` fixo na landing (TASK-971).
+
+**Decisões aguardando o owner**: TASK-960 (email), TASK-961 (push), TASK-964 (jurídico), TASK-974 (abrigos piloto), TASK-977 (flags de layout). Defaults assumidos em `29-PROJETO… §7`.
 
 ---
 
@@ -424,6 +448,7 @@ mavis communication send --to <root> --content "TASK-XXX in_review, PR #N"
 
 | Data | Versão | Mudança |
 |---|---|---|
+| 2026-10-11 | 1.3.0 | Bloco §-1 com estado real pós-cutover (#253) e ponteiro para o Projeto de Continuidade 2026-Q4 (`docs/AI_GUIDE/29-…`). |
 | 2026-07-12 21:30 | 1.1.0 | Criação inicial pós-PR #73. Documento canônico de estado. |
 | 2026-07-11 14:21 | 1.0.0 | Versão antiga (Fase 22 finalizada) |
 | Antes | 0.x | Versões de fase por fase |

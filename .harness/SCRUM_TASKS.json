@@ -1,16 +1,29 @@
 {
   "$schema": "./SCRUM_TASKS.schema.md",
   "version": "1.1.0",
-  "generatedAt": "2026-08-29T03:45:00.000Z",
+  "generatedAt": "2026-10-11T19:48:45.056Z",
   "project": "viralata",
   "currentSprint": {
-    "id": "SPRINT-2026-W29",
-    "label": "Sprint 2026-W29 (BATCH: features + DS_V2 reaplicação)",
-    "startedAt": "2026-07-15",
-    "endsAt": "2026-07-22",
-    "goal": "DS_V2 Fase 4 — Reaplicar design system oficial v1.0 bloco a bloco, cada área com feature flag default OFF. Começar pelo Bloco A (docs) ✅, agora Bloco B (tokens + Material Symbols). User valida visualmente cada bloco antes da próxima. Zero regressão em regra de negócio."
+    "id": "SPRINT-2026-W42",
+    "label": "Sprint 2026-W42/W43 (Projeto 2026-Q4 · kickoff E1 + E2 + E3)",
+    "startedAt": "2026-10-12",
+    "endsAt": "2026-10-25",
+    "goal": "Verdade do board (E1), smoke/evidência pós-cutover e espelhos públicos (E2), Sentry + /healthz (E3). Decisões humanas destravadas: email (TASK-960), push (TASK-961), flags de layout (TASK-977)."
   },
-  "activeWorktrees": [],
+  "activeWorktrees": [
+    {
+      "id": "viralata",
+      "branch": "ccr-227b9899-iv0bcc",
+      "head": "a7251d42a93a0fdd6cd781d5f3597aef7461998a",
+      "headTitle": "chore(scrum): topbar auto-update f3b23cf (workflow)",
+      "path": "/home/user/viralata",
+      "status": "in-sync",
+      "commitsAhead": 0,
+      "primarySession": null,
+      "sessionTitle": null,
+      "focus": []
+    }
+  ],
   "activeSessions": [
     {
       "id": "mvs_311d078987d0414a90f57ef28b789b18",
@@ -16472,82 +16485,114 @@
     {
       "id": "TASK-V3-HOME-F1",
       "title": "V3 HOME Feature #1 — a definir no step-2",
-      "status": "backlog",
+      "status": "dropped",
       "phase": "V3-HOME",
       "priority": "medium",
       "parentTask": "TASK-V3-HOME",
       "createdAt": "2026-07-18T01:55:43.875Z",
-      "evidence": {}
+      "evidence": {},
+      "owner": "unassigned",
+      "category": "design",
+      "notes": "Dropped em 2026-10-11: placeholder \"a definir no step-2\" nunca foi definido. Superseded pelo docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md.",
+      "updatedAt": "2026-10-11"
     },
     {
       "id": "TASK-V3-HOME-F2",
       "title": "V3 HOME Feature #2 — a definir no step-2",
-      "status": "backlog",
+      "status": "dropped",
       "phase": "V3-HOME",
       "priority": "medium",
       "parentTask": "TASK-V3-HOME",
       "createdAt": "2026-07-18T01:55:43.875Z",
-      "evidence": {}
+      "evidence": {},
+      "owner": "unassigned",
+      "category": "design",
+      "notes": "Dropped em 2026-10-11: placeholder \"a definir no step-2\" nunca foi definido. Superseded pelo docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md.",
+      "updatedAt": "2026-10-11"
     },
     {
       "id": "TASK-V3-HOME-F3",
       "title": "V3 HOME Feature #3 — a definir no step-2",
-      "status": "backlog",
+      "status": "dropped",
       "phase": "V3-HOME",
       "priority": "medium",
       "parentTask": "TASK-V3-HOME",
       "createdAt": "2026-07-18T01:55:43.875Z",
-      "evidence": {}
+      "evidence": {},
+      "owner": "unassigned",
+      "category": "design",
+      "notes": "Dropped em 2026-10-11: placeholder \"a definir no step-2\" nunca foi definido. Superseded pelo docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md.",
+      "updatedAt": "2026-10-11"
     },
     {
       "id": "TASK-V3-HOME-F4",
       "title": "V3 HOME Feature #4 — a definir no step-2",
-      "status": "backlog",
+      "status": "dropped",
       "phase": "V3-HOME",
       "priority": "medium",
       "parentTask": "TASK-V3-HOME",
       "createdAt": "2026-07-18T01:55:43.875Z",
-      "evidence": {}
+      "evidence": {},
+      "owner": "unassigned",
+      "category": "design",
+      "notes": "Dropped em 2026-10-11: placeholder \"a definir no step-2\" nunca foi definido. Superseded pelo docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md.",
+      "updatedAt": "2026-10-11"
     },
     {
       "id": "TASK-V3-HOME-F5",
       "title": "V3 HOME Feature #5 — a definir no step-2",
-      "status": "backlog",
+      "status": "dropped",
       "phase": "V3-HOME",
       "priority": "medium",
       "parentTask": "TASK-V3-HOME",
       "createdAt": "2026-07-18T01:55:43.878Z",
-      "evidence": {}
+      "evidence": {},
+      "owner": "unassigned",
+      "category": "design",
+      "notes": "Dropped em 2026-10-11: placeholder \"a definir no step-2\" nunca foi definido. Superseded pelo docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md.",
+      "updatedAt": "2026-10-11"
     },
     {
       "id": "TASK-V3-HOME-F6",
       "title": "V3 HOME Feature #6 — a definir no step-2",
-      "status": "backlog",
+      "status": "dropped",
       "phase": "V3-HOME",
       "priority": "medium",
       "parentTask": "TASK-V3-HOME",
       "createdAt": "2026-07-18T01:55:43.878Z",
-      "evidence": {}
+      "evidence": {},
+      "owner": "unassigned",
+      "category": "design",
+      "notes": "Dropped em 2026-10-11: placeholder \"a definir no step-2\" nunca foi definido. Superseded pelo docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md.",
+      "updatedAt": "2026-10-11"
     },
     {
       "id": "TASK-V3-HOME-F7",
       "title": "V3 HOME Feature #7 — a definir no step-2",
-      "status": "backlog",
+      "status": "dropped",
       "phase": "V3-HOME",
       "priority": "medium",
       "parentTask": "TASK-V3-HOME",
       "createdAt": "2026-07-18T01:55:43.878Z",
-      "evidence": {}
+      "evidence": {},
+      "owner": "unassigned",
+      "category": "design",
+      "notes": "Dropped em 2026-10-11: placeholder \"a definir no step-2\" nunca foi definido. Superseded pelo docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md.",
+      "updatedAt": "2026-10-11"
     },
     {
       "id": "TASK-V3-HOME-F8",
       "title": "V3 HOME Feature #8 — a definir no step-2",
-      "status": "backlog",
+      "status": "dropped",
       "phase": "V3-HOME",
       "priority": "medium",
       "parentTask": "TASK-V3-HOME",
       "createdAt": "2026-07-18T01:55:43.878Z",
-      "evidence": {}
+      "evidence": {},
+      "owner": "unassigned",
+      "category": "design",
+      "notes": "Dropped em 2026-10-11: placeholder \"a definir no step-2\" nunca foi definido. Superseded pelo docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md.",
+      "updatedAt": "2026-10-11"
     },
     {
       "id": "TASK-V3-LOGIN-F1",
@@ -16642,170 +16687,130 @@
       "title": "Validação com usuários (3 adoções reais)",
       "type": "research",
       "category": "ux",
-      "status": "pending",
+      "status": "ready",
       "priority": "low",
       "owner": "human",
-      "parent": "TASK-V3-HOME"
-    },
-    {
-      "id": "TASK-V3-HOME-F1",
-      "title": "V3 HOME Feature #1 — a definir no step-2",
-      "status": "backlog",
-      "phase": "V3-HOME",
-      "priority": "medium",
-      "parentTask": "TASK-V3-HOME",
-      "createdAt": "2026-07-18T03:01:01.234Z",
-      "evidence": {}
-    },
-    {
-      "id": "TASK-V3-HOME-F2",
-      "title": "V3 HOME Feature #2 — a definir no step-2",
-      "status": "backlog",
-      "phase": "V3-HOME",
-      "priority": "medium",
-      "parentTask": "TASK-V3-HOME",
-      "createdAt": "2026-07-18T03:01:01.234Z",
-      "evidence": {}
-    },
-    {
-      "id": "TASK-V3-HOME-F3",
-      "title": "V3 HOME Feature #3 — a definir no step-2",
-      "status": "backlog",
-      "phase": "V3-HOME",
-      "priority": "medium",
-      "parentTask": "TASK-V3-HOME",
-      "createdAt": "2026-07-18T03:01:01.234Z",
-      "evidence": {}
-    },
-    {
-      "id": "TASK-V3-HOME-F4",
-      "title": "V3 HOME Feature #4 — a definir no step-2",
-      "status": "backlog",
-      "phase": "V3-HOME",
-      "priority": "medium",
-      "parentTask": "TASK-V3-HOME",
-      "createdAt": "2026-07-18T03:01:01.234Z",
-      "evidence": {}
-    },
-    {
-      "id": "TASK-V3-HOME-F5",
-      "title": "V3 HOME Feature #5 — a definir no step-2",
-      "status": "backlog",
-      "phase": "V3-HOME",
-      "priority": "medium",
-      "parentTask": "TASK-V3-HOME",
-      "createdAt": "2026-07-18T03:01:01.239Z",
-      "evidence": {}
-    },
-    {
-      "id": "TASK-V3-HOME-F6",
-      "title": "V3 HOME Feature #6 — a definir no step-2",
-      "status": "backlog",
-      "phase": "V3-HOME",
-      "priority": "medium",
-      "parentTask": "TASK-V3-HOME",
-      "createdAt": "2026-07-18T03:01:01.239Z",
-      "evidence": {}
-    },
-    {
-      "id": "TASK-V3-HOME-F7",
-      "title": "V3 HOME Feature #7 — a definir no step-2",
-      "status": "backlog",
-      "phase": "V3-HOME",
-      "priority": "medium",
-      "parentTask": "TASK-V3-HOME",
-      "createdAt": "2026-07-18T03:01:01.239Z",
-      "evidence": {}
-    },
-    {
-      "id": "TASK-V3-HOME-F8",
-      "title": "V3 HOME Feature #8 — a definir no step-2",
-      "status": "backlog",
-      "phase": "V3-HOME",
-      "priority": "medium",
-      "parentTask": "TASK-V3-HOME",
-      "createdAt": "2026-07-18T03:01:01.239Z",
-      "evidence": {}
+      "parent": "TASK-V3-HOME",
+      "tags": [
+        "projeto-2026-q4",
+        "E7",
+        "E8"
+      ],
+      "createdAt": "2026-07-20",
+      "updatedAt": "2026-10-11",
+      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md"
     },
     {
       "id": "TASK-V3-ADMIN-F1",
       "title": "V3 ADMIN Feature #1 — a definir no step-2",
-      "status": "backlog",
+      "status": "dropped",
       "phase": "V3-ADMIN",
       "priority": "medium",
       "parentTask": "TASK-V3-ADMIN",
       "createdAt": "2026-07-18T05:55:58.529Z",
-      "evidence": {}
+      "evidence": {},
+      "owner": "unassigned",
+      "category": "design",
+      "notes": "Dropped em 2026-10-11: placeholder \"a definir no step-2\" nunca foi definido. Superseded pelo docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md.",
+      "updatedAt": "2026-10-11"
     },
     {
       "id": "TASK-V3-ADMIN-F2",
       "title": "V3 ADMIN Feature #2 — a definir no step-2",
-      "status": "backlog",
+      "status": "dropped",
       "phase": "V3-ADMIN",
       "priority": "medium",
       "parentTask": "TASK-V3-ADMIN",
       "createdAt": "2026-07-18T05:55:58.529Z",
-      "evidence": {}
+      "evidence": {},
+      "owner": "unassigned",
+      "category": "design",
+      "notes": "Dropped em 2026-10-11: placeholder \"a definir no step-2\" nunca foi definido. Superseded pelo docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md.",
+      "updatedAt": "2026-10-11"
     },
     {
       "id": "TASK-V3-ADMIN-F3",
       "title": "V3 ADMIN Feature #3 — a definir no step-2",
-      "status": "backlog",
+      "status": "dropped",
       "phase": "V3-ADMIN",
       "priority": "medium",
       "parentTask": "TASK-V3-ADMIN",
       "createdAt": "2026-07-18T05:55:58.529Z",
-      "evidence": {}
+      "evidence": {},
+      "owner": "unassigned",
+      "category": "design",
+      "notes": "Dropped em 2026-10-11: placeholder \"a definir no step-2\" nunca foi definido. Superseded pelo docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md.",
+      "updatedAt": "2026-10-11"
     },
     {
       "id": "TASK-V3-ADMIN-F4",
       "title": "V3 ADMIN Feature #4 — a definir no step-2",
-      "status": "backlog",
+      "status": "dropped",
       "phase": "V3-ADMIN",
       "priority": "medium",
       "parentTask": "TASK-V3-ADMIN",
       "createdAt": "2026-07-18T05:55:58.529Z",
-      "evidence": {}
+      "evidence": {},
+      "owner": "unassigned",
+      "category": "design",
+      "notes": "Dropped em 2026-10-11: placeholder \"a definir no step-2\" nunca foi definido. Superseded pelo docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md.",
+      "updatedAt": "2026-10-11"
     },
     {
       "id": "TASK-V3-ADMIN-F5",
       "title": "V3 ADMIN Feature #5 — a definir no step-2",
-      "status": "backlog",
+      "status": "dropped",
       "phase": "V3-ADMIN",
       "priority": "medium",
       "parentTask": "TASK-V3-ADMIN",
       "createdAt": "2026-07-18T05:55:58.530Z",
-      "evidence": {}
+      "evidence": {},
+      "owner": "unassigned",
+      "category": "design",
+      "notes": "Dropped em 2026-10-11: placeholder \"a definir no step-2\" nunca foi definido. Superseded pelo docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md.",
+      "updatedAt": "2026-10-11"
     },
     {
       "id": "TASK-V3-ADMIN-F6",
       "title": "V3 ADMIN Feature #6 — a definir no step-2",
-      "status": "backlog",
+      "status": "dropped",
       "phase": "V3-ADMIN",
       "priority": "medium",
       "parentTask": "TASK-V3-ADMIN",
       "createdAt": "2026-07-18T05:55:58.530Z",
-      "evidence": {}
+      "evidence": {},
+      "owner": "unassigned",
+      "category": "design",
+      "notes": "Dropped em 2026-10-11: placeholder \"a definir no step-2\" nunca foi definido. Superseded pelo docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md.",
+      "updatedAt": "2026-10-11"
     },
     {
       "id": "TASK-V3-ADMIN-F7",
       "title": "V3 ADMIN Feature #7 — a definir no step-2",
-      "status": "backlog",
+      "status": "dropped",
       "phase": "V3-ADMIN",
       "priority": "medium",
       "parentTask": "TASK-V3-ADMIN",
       "createdAt": "2026-07-18T05:55:58.530Z",
-      "evidence": {}
+      "evidence": {},
+      "owner": "unassigned",
+      "category": "design",
+      "notes": "Dropped em 2026-10-11: placeholder \"a definir no step-2\" nunca foi definido. Superseded pelo docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md.",
+      "updatedAt": "2026-10-11"
     },
     {
       "id": "TASK-V3-ADMIN-F8",
       "title": "V3 ADMIN Feature #8 — a definir no step-2",
-      "status": "backlog",
+      "status": "dropped",
       "phase": "V3-ADMIN",
       "priority": "medium",
       "parentTask": "TASK-V3-ADMIN",
       "createdAt": "2026-07-18T05:55:58.530Z",
-      "evidence": {}
+      "evidence": {},
+      "owner": "unassigned",
+      "category": "design",
+      "notes": "Dropped em 2026-10-11: placeholder \"a definir no step-2\" nunca foi definido. Superseded pelo docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md.",
+      "updatedAt": "2026-10-11"
     },
     {
       "id": "TASK-V3-PROFILE",
@@ -16863,30 +16868,51 @@
       "title": "Testes unitários V3",
       "type": "test",
       "category": "profile",
-      "status": "pending",
+      "status": "ready",
       "priority": "medium",
       "owner": "Mavis",
-      "parent": "TASK-V3-PROFILE"
+      "parent": "TASK-V3-PROFILE",
+      "tags": [
+        "projeto-2026-q4",
+        "E7"
+      ],
+      "createdAt": "2026-07-20",
+      "updatedAt": "2026-10-11",
+      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md"
     },
     {
       "id": "TASK-V3-PROFILE-6",
       "title": "Teste E2E Playwright (tabs + export)",
       "type": "test",
       "category": "profile",
-      "status": "pending",
+      "status": "ready",
       "priority": "medium",
       "owner": "Mavis",
-      "parent": "TASK-V3-PROFILE"
+      "parent": "TASK-V3-PROFILE",
+      "tags": [
+        "projeto-2026-q4",
+        "E7"
+      ],
+      "createdAt": "2026-07-20",
+      "updatedAt": "2026-10-11",
+      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md"
     },
     {
       "id": "TASK-V3-PROFILE-7",
       "title": "Lighthouse ≥ 90 em prod",
       "type": "perf",
       "category": "profile",
-      "status": "pending",
+      "status": "ready",
       "priority": "medium",
       "owner": "Mavis",
-      "parent": "TASK-V3-PROFILE"
+      "parent": "TASK-V3-PROFILE",
+      "tags": [
+        "projeto-2026-q4",
+        "E7"
+      ],
+      "createdAt": "2026-07-20",
+      "updatedAt": "2026-10-11",
+      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md"
     },
     {
       "id": "TASK-V3-ADOPTION",
@@ -16964,20 +16990,34 @@
       "title": "Testes unitários V3",
       "type": "test",
       "category": "adoption",
-      "status": "pending",
+      "status": "ready",
       "priority": "medium",
       "owner": "Mavis",
-      "parent": "TASK-V3-ADOPTION"
+      "parent": "TASK-V3-ADOPTION",
+      "tags": [
+        "projeto-2026-q4",
+        "E7"
+      ],
+      "createdAt": "2026-07-20",
+      "updatedAt": "2026-10-11",
+      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md"
     },
     {
       "id": "TASK-V3-ADOPTION-8",
       "title": "E2E Playwright (wizard completo)",
       "type": "test",
       "category": "e2e",
-      "status": "pending",
+      "status": "ready",
       "priority": "medium",
       "owner": "Mavis",
-      "parent": "TASK-V3-ADOPTION"
+      "parent": "TASK-V3-ADOPTION",
+      "tags": [
+        "projeto-2026-q4",
+        "E7"
+      ],
+      "createdAt": "2026-07-20",
+      "updatedAt": "2026-10-11",
+      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md"
     },
     {
       "id": "TASK-V3-ADMIN",
@@ -17891,185 +17931,189 @@
       "id": "TASK-931",
       "type": "infra",
       "category": "shelter",
-      "status": "backlog",
+      "status": "ready",
       "priority": "high",
-      "owner": null,
+      "owner": "unassigned",
       "branch": null,
       "flag": "SHELTER_ACTIONABLE_NOTIFICATIONS_V1",
       "worktree": null,
       "pr": null,
-      "title": "Rollout Fase 0 (notificações acionáveis): smoke flag OFF → ativar → 24h",
+      "title": "Rollout Fase 0 (notificações acionáveis): validação pós-cutover (smoke + 24h)",
       "tags": [
         "rollout",
         "fase-0",
         "flag-on",
-        "monitoramento"
+        "monitoramento",
+        "projeto-2026-q4",
+        "E2"
       ],
       "blockedBy": [],
       "relatedTasks": [
         "TASK-942"
       ],
       "evidence": "docs/ROADMAP_SHELTER_ADMIN_V2.md §14–§16 (conclusão do roadmap, 2026-08-29)",
-      "description": "Ativar SHELTER_ACTIONABLE_NOTIFICATIONS_V1 em /admin/flags após smoke com flag OFF. Monitorar 24h (Sentry, Cloud Functions, billing). Rollback = flag OFF. Critério: convite mostra Aceitar/Recusar inline; estado grava sem erro; fallback link-only intacto.",
+      "description": "NOTA 2026-10-11: a flag já está ON por default desde o cutover (PR #253, 2026-08-30). O que resta desta task é a VALIDAÇÃO pós-ativação: smoke (scripts/smoke-routes.mjs) na rota/aba da fase, checagem manual do critério abaixo em produção e 24h de observação (Sentry/Functions/billing). Registrar evidência (link do run + print) antes de marcar done.\n\nCritério original: Ativar SHELTER_ACTIONABLE_NOTIFICATIONS_V1 em /admin/flags após smoke com flag OFF. Monitorar 24h (Sentry, Cloud Functions, billing). Rollback = flag OFF. Critério: convite mostra Aceitar/Recusar inline; estado grava sem erro; fallback link-only intacto.",
       "createdAt": "2026-08-29",
-      "updatedAt": "2026-08-29"
+      "updatedAt": "2026-10-11"
     },
     {
       "id": "TASK-932",
       "type": "infra",
       "category": "shelter",
-      "status": "backlog",
+      "status": "ready",
       "priority": "high",
-      "owner": null,
+      "owner": "unassigned",
       "branch": null,
       "flag": "SHELTER_TEAM_V2",
       "worktree": null,
       "pr": null,
-      "title": "Rollout Fase 1 (Equipe v2): smoke flag OFF → ativar → 24h",
+      "title": "Rollout Fase 1 (Equipe v2): validação pós-cutover (smoke + 24h)",
       "tags": [
         "rollout",
         "fase-1",
         "flag-on",
-        "monitoramento"
+        "monitoramento",
+        "projeto-2026-q4",
+        "E2"
       ],
-      "blockedBy": [
-        "TASK-931"
-      ],
+      "blockedBy": [],
       "relatedTasks": [],
       "evidence": "docs/ROADMAP_SHELTER_ADMIN_V2.md §14–§16 (conclusão do roadmap, 2026-08-29)",
-      "description": "Ativar SHELTER_TEAM_V2 (requer Fase 0 ON). Smoke flag OFF, ativar, 24h. Critério: tabela de membros, blocos de permissão e convite por notificação funcionam; owner mantém todas as permissões.",
+      "description": "NOTA 2026-10-11: a flag já está ON por default desde o cutover (PR #253, 2026-08-30). O que resta desta task é a VALIDAÇÃO pós-ativação: smoke (scripts/smoke-routes.mjs) na rota/aba da fase, checagem manual do critério abaixo em produção e 24h de observação (Sentry/Functions/billing). Registrar evidência (link do run + print) antes de marcar done.\n\nCritério original: Ativar SHELTER_TEAM_V2 (requer Fase 0 ON). Smoke flag OFF, ativar, 24h. Critério: tabela de membros, blocos de permissão e convite por notificação funcionam; owner mantém todas as permissões.",
       "createdAt": "2026-08-29",
-      "updatedAt": "2026-08-29"
+      "updatedAt": "2026-10-11"
     },
     {
       "id": "TASK-933",
       "type": "infra",
       "category": "shelter",
-      "status": "backlog",
+      "status": "ready",
       "priority": "high",
-      "owner": null,
+      "owner": "unassigned",
       "branch": null,
       "flag": "SHELTER_VOLUNTEERS_V2",
       "worktree": null,
       "pr": null,
-      "title": "Rollout Fase 2 (Voluntários v2): smoke flag OFF → ativar → 24h",
+      "title": "Rollout Fase 2 (Voluntários v2): validação pós-cutover (smoke + 24h)",
       "tags": [
         "rollout",
         "fase-2",
         "flag-on",
-        "monitoramento"
+        "monitoramento",
+        "projeto-2026-q4",
+        "E2"
       ],
-      "blockedBy": [
-        "TASK-931",
-        "TASK-932"
-      ],
+      "blockedBy": [],
       "relatedTasks": [
         "TASK-937"
       ],
       "evidence": "docs/ROADMAP_SHELTER_ADMIN_V2.md §14–§16 (conclusão do roadmap, 2026-08-29)",
-      "description": "Ativar SHELTER_VOLUNTEERS_V2 (requer Fases 0 e 1 ON). Smoke flag OFF, ativar, 24h. Critério: tabela de voluntários (atividades/disponível hoje/período), promoção por notificação e snapshot no roster funcionam.",
+      "description": "NOTA 2026-10-11: a flag já está ON por default desde o cutover (PR #253, 2026-08-30). O que resta desta task é a VALIDAÇÃO pós-ativação: smoke (scripts/smoke-routes.mjs) na rota/aba da fase, checagem manual do critério abaixo em produção e 24h de observação (Sentry/Functions/billing). Registrar evidência (link do run + print) antes de marcar done.\n\nCritério original: Ativar SHELTER_VOLUNTEERS_V2 (requer Fases 0 e 1 ON). Smoke flag OFF, ativar, 24h. Critério: tabela de voluntários (atividades/disponível hoje/período), promoção por notificação e snapshot no roster funcionam.",
       "createdAt": "2026-08-29",
-      "updatedAt": "2026-08-29"
+      "updatedAt": "2026-10-11"
     },
     {
       "id": "TASK-934",
       "type": "infra",
       "category": "shelter",
-      "status": "backlog",
+      "status": "ready",
       "priority": "high",
-      "owner": null,
+      "owner": "unassigned",
       "branch": null,
       "flag": "SHELTER_FOSTER_V2",
       "worktree": null,
       "pr": null,
-      "title": "Rollout Fase 3 (Lares Temporários v2): smoke flag OFF → ativar → 24h",
+      "title": "Rollout Fase 3 (Lares Temporários v2): validação pós-cutover (smoke + 24h)",
       "tags": [
         "rollout",
         "fase-3",
         "flag-on",
-        "monitoramento"
+        "monitoramento",
+        "projeto-2026-q4",
+        "E2"
       ],
-      "blockedBy": [
-        "TASK-931",
-        "TASK-933"
-      ],
+      "blockedBy": [],
       "relatedTasks": [],
       "evidence": "docs/ROADMAP_SHELTER_ADMIN_V2.md §14–§16 (conclusão do roadmap, 2026-08-29)",
-      "description": "Ativar SHELTER_FOSTER_V2 (requer Fases 0 e 2 ON). Smoke flag OFF, ativar, 24h. Critério: lista própria de lares, disponibilidade (datas/capacidade/tipos), placements intactos, termo com assinatura+hash.",
+      "description": "NOTA 2026-10-11: a flag já está ON por default desde o cutover (PR #253, 2026-08-30). O que resta desta task é a VALIDAÇÃO pós-ativação: smoke (scripts/smoke-routes.mjs) na rota/aba da fase, checagem manual do critério abaixo em produção e 24h de observação (Sentry/Functions/billing). Registrar evidência (link do run + print) antes de marcar done.\n\nCritério original: Ativar SHELTER_FOSTER_V2 (requer Fases 0 e 2 ON). Smoke flag OFF, ativar, 24h. Critério: lista própria de lares, disponibilidade (datas/capacidade/tipos), placements intactos, termo com assinatura+hash.",
       "createdAt": "2026-08-29",
-      "updatedAt": "2026-08-29"
+      "updatedAt": "2026-10-11"
     },
     {
       "id": "TASK-935",
       "type": "infra",
       "category": "shelter",
-      "status": "backlog",
+      "status": "ready",
       "priority": "high",
-      "owner": null,
+      "owner": "unassigned",
       "branch": null,
       "flag": "SHELTER_DOCUMENTS_V1",
       "worktree": null,
       "pr": null,
-      "title": "Rollout Fase 6 (Documentos v1): smoke flag OFF → ativar → 24h",
+      "title": "Rollout Fase 6 (Documentos v1): validação pós-cutover (smoke + 24h)",
       "tags": [
         "rollout",
         "fase-6",
         "flag-on",
-        "monitoramento"
+        "monitoramento",
+        "projeto-2026-q4",
+        "E2"
       ],
       "blockedBy": [],
       "relatedTasks": [
         "TASK-941"
       ],
       "evidence": "docs/ROADMAP_SHELTER_ADMIN_V2.md §14–§16 (conclusão do roadmap, 2026-08-29)",
-      "description": "Ativar SHELTER_DOCUMENTS_V1 (independente; útil cedo p/ termos dos fluxos de Pessoas). Smoke flag OFF, ativar, 24h. Critério: central com versionamento append-only + content_hash; nenhum HTML cru renderizado.",
+      "description": "NOTA 2026-10-11: a flag já está ON por default desde o cutover (PR #253, 2026-08-30). O que resta desta task é a VALIDAÇÃO pós-ativação: smoke (scripts/smoke-routes.mjs) na rota/aba da fase, checagem manual do critério abaixo em produção e 24h de observação (Sentry/Functions/billing). Registrar evidência (link do run + print) antes de marcar done.\n\nCritério original: Ativar SHELTER_DOCUMENTS_V1 (independente; útil cedo p/ termos dos fluxos de Pessoas). Smoke flag OFF, ativar, 24h. Critério: central com versionamento append-only + content_hash; nenhum HTML cru renderizado.",
       "createdAt": "2026-08-29",
-      "updatedAt": "2026-08-29"
+      "updatedAt": "2026-10-11"
     },
     {
       "id": "TASK-936",
       "type": "infra",
       "category": "shelter",
-      "status": "backlog",
+      "status": "ready",
       "priority": "medium",
-      "owner": null,
+      "owner": "unassigned",
       "branch": null,
       "flag": "SHELTER_MURAL_V2",
       "worktree": null,
       "pr": null,
-      "title": "Rollout Fase 4 (Mural v2): smoke flag OFF → ativar → 24h",
+      "title": "Rollout Fase 4 (Mural v2): validação pós-cutover (smoke + 24h)",
       "tags": [
         "rollout",
         "fase-4",
         "flag-on",
-        "monitoramento"
+        "monitoramento",
+        "projeto-2026-q4",
+        "E2"
       ],
-      "blockedBy": [
-        "TASK-931"
-      ],
+      "blockedBy": [],
       "relatedTasks": [],
       "evidence": "docs/ROADMAP_SHELTER_ADMIN_V2.md §14–§16 (conclusão do roadmap, 2026-08-29)",
-      "description": "Ativar SHELTER_MURAL_V2 (Fase 0 p/ menções/CTA). Smoke flag OFF, ativar, 24h. Critério: agendamento publica no horário; moderação de comentários; analytics; view pública do mural.",
+      "description": "NOTA 2026-10-11: a flag já está ON por default desde o cutover (PR #253, 2026-08-30). O que resta desta task é a VALIDAÇÃO pós-ativação: smoke (scripts/smoke-routes.mjs) na rota/aba da fase, checagem manual do critério abaixo em produção e 24h de observação (Sentry/Functions/billing). Registrar evidência (link do run + print) antes de marcar done.\n\nCritério original: Ativar SHELTER_MURAL_V2 (Fase 0 p/ menções/CTA). Smoke flag OFF, ativar, 24h. Critério: agendamento publica no horário; moderação de comentários; analytics; view pública do mural.",
       "createdAt": "2026-08-29",
-      "updatedAt": "2026-08-29"
+      "updatedAt": "2026-10-11"
     },
     {
       "id": "TASK-937",
       "type": "infra",
       "category": "shelter",
-      "status": "backlog",
+      "status": "ready",
       "priority": "medium",
-      "owner": null,
+      "owner": "unassigned",
       "branch": null,
       "flag": "SHELTER_EXHIBITION_OPS_V1",
       "worktree": null,
       "pr": null,
-      "title": "Rollout Fase 5 (Vitrines ops v1): smoke flag OFF → ativar → 24h",
+      "title": "Rollout Fase 5 (Vitrines ops v1): validação pós-cutover (smoke + 24h)",
       "tags": [
         "rollout",
         "fase-5",
         "flag-on",
-        "monitoramento"
+        "monitoramento",
+        "projeto-2026-q4",
+        "E2"
       ],
       "blockedBy": [],
       "relatedTasks": [
@@ -18078,27 +18122,29 @@
         "TASK-940"
       ],
       "evidence": "docs/ROADMAP_SHELTER_ADMIN_V2.md §14–§16 (conclusão do roadmap, 2026-08-29)",
-      "description": "Ativar SHELTER_EXHIBITION_OPS_V1 (ideal Fase 2 p/ escala). Smoke flag OFF, ativar, 24h. Critério: lista→detalhes, planejamento/logística/saúde/adoção, escala de voluntários. NÃO confiar na página pública de detalhe até TASK-939 (writer do mirror).",
+      "description": "NOTA 2026-10-11: a flag já está ON por default desde o cutover (PR #253, 2026-08-30). O que resta desta task é a VALIDAÇÃO pós-ativação: smoke (scripts/smoke-routes.mjs) na rota/aba da fase, checagem manual do critério abaixo em produção e 24h de observação (Sentry/Functions/billing). Registrar evidência (link do run + print) antes de marcar done.\n\nCritério original: Ativar SHELTER_EXHIBITION_OPS_V1 (ideal Fase 2 p/ escala). Smoke flag OFF, ativar, 24h. Critério: lista→detalhes, planejamento/logística/saúde/adoção, escala de voluntários. NÃO confiar na página pública de detalhe até TASK-939 (writer do mirror).",
       "createdAt": "2026-08-29",
-      "updatedAt": "2026-08-29"
+      "updatedAt": "2026-10-11"
     },
     {
       "id": "TASK-938",
       "type": "infra",
       "category": "shelter",
-      "status": "backlog",
+      "status": "ready",
       "priority": "medium",
-      "owner": null,
+      "owner": "unassigned",
       "branch": null,
       "flag": "SHELTER_STORE_V2",
       "worktree": null,
       "pr": null,
-      "title": "Rollout Fase 7 (Loja v2): smoke flag OFF → ativar → 24h",
+      "title": "Rollout Fase 7 (Loja v2): validação pós-cutover (smoke + 24h)",
       "tags": [
         "rollout",
         "fase-7",
         "flag-on",
-        "monitoramento"
+        "monitoramento",
+        "projeto-2026-q4",
+        "E2"
       ],
       "blockedBy": [],
       "relatedTasks": [
@@ -18106,17 +18152,17 @@
         "TASK-944"
       ],
       "evidence": "docs/ROADMAP_SHELTER_ADMIN_V2.md §14–§16 (conclusão do roadmap, 2026-08-29)",
-      "description": "Ativar SHELTER_STORE_V2 (EXIGE SHELTER_STORE_V1 já ON). Smoke flag OFF, ativar, 24h. Critério: carrinho multi-abrigo, checkout (1 pedido/abrigo), /meus-pedidos, analytics, fulfillment, variações; nenhuma escrita de variants com a flag OFF.",
+      "description": "NOTA 2026-10-11: a flag já está ON por default desde o cutover (PR #253, 2026-08-30). O que resta desta task é a VALIDAÇÃO pós-ativação: smoke (scripts/smoke-routes.mjs) na rota/aba da fase, checagem manual do critério abaixo em produção e 24h de observação (Sentry/Functions/billing). Registrar evidência (link do run + print) antes de marcar done.\n\nCritério original: Ativar SHELTER_STORE_V2 (EXIGE SHELTER_STORE_V1 já ON). Smoke flag OFF, ativar, 24h. Critério: carrinho multi-abrigo, checkout (1 pedido/abrigo), /meus-pedidos, analytics, fulfillment, variações; nenhuma escrita de variants com a flag OFF.",
       "createdAt": "2026-08-29",
-      "updatedAt": "2026-08-29"
+      "updatedAt": "2026-10-11"
     },
     {
       "id": "TASK-939",
       "type": "feature",
       "category": "shelter",
-      "status": "backlog",
+      "status": "ready",
       "priority": "high",
-      "owner": null,
+      "owner": "unassigned",
       "branch": null,
       "flag": "SHELTER_EXHIBITION_OPS_V1",
       "worktree": null,
@@ -18126,7 +18172,9 @@
         "gap",
         "fase-5",
         "vitrines",
-        "public-mirror"
+        "public-mirror",
+        "projeto-2026-q4",
+        "E2"
       ],
       "blockedBy": [],
       "relatedTasks": [
@@ -18136,15 +18184,15 @@
       "evidence": "docs/ROADMAP_SHELTER_ADMIN_V2.md §14–§16 (conclusão do roadmap, 2026-08-29)",
       "description": "A coleção exhibitions_public (lida por PublicExhibitionDetail via exhibitionPublicService) não tem writer — a página de detalhe pública nunca renderiza dados reais. Escrever o espelho público na publicação da vitrine (Cloud Function onWrite ou no serviço de admin), mapeando datetime_start/venue.address/title/notes. Sem PII além do já público.",
       "createdAt": "2026-08-29",
-      "updatedAt": "2026-08-29"
+      "updatedAt": "2026-10-11"
     },
     {
       "id": "TASK-940",
       "type": "security",
       "category": "shelter",
-      "status": "backlog",
+      "status": "ready",
       "priority": "high",
-      "owner": null,
+      "owner": "unassigned",
       "branch": null,
       "flag": "SHELTER_EXHIBITION_OPS_V1",
       "worktree": null,
@@ -18155,7 +18203,9 @@
         "fase-5",
         "vitrines",
         "firestore-rules",
-        "needs-rules-change"
+        "needs-rules-change",
+        "projeto-2026-q4",
+        "E2"
       ],
       "blockedBy": [],
       "relatedTasks": [
@@ -18165,15 +18215,15 @@
       "evidence": "docs/ROADMAP_SHELTER_ADMIN_V2.md §14–§16 (conclusão do roadmap, 2026-08-29)",
       "description": "firestore.rules exigem membership do clube para ler clubs/{clubId}/exhibitions → visitante anônimo não lista vitrines em ShelterPublic. Adicionar regra de leitura pública para vitrines PUBLICADAS (ou depender do mirror de TASK-939). ATENÇÃO: exige mudança em firestore.rules — fora do escopo aditivo atual; planejar com deny-by-default e return explícito.",
       "createdAt": "2026-08-29",
-      "updatedAt": "2026-08-29"
+      "updatedAt": "2026-10-11"
     },
     {
       "id": "TASK-941",
       "type": "feature",
       "category": "shelter",
-      "status": "backlog",
+      "status": "ready",
       "priority": "medium",
-      "owner": null,
+      "owner": "unassigned",
       "branch": null,
       "flag": "SHELTER_DOCUMENTS_V1",
       "worktree": null,
@@ -18183,7 +18233,9 @@
         "gap",
         "fase-6",
         "documentos",
-        "adoption-form"
+        "adoption-form",
+        "projeto-2026-q4",
+        "E2"
       ],
       "blockedBy": [],
       "relatedTasks": [
@@ -18192,15 +18244,15 @@
       "evidence": "docs/ROADMAP_SHELTER_ADMIN_V2.md §14–§16 (conclusão do roadmap, 2026-08-29)",
       "description": "O construtor de formulário de adoção entrega o documento (categoria form) mas a submissão ainda não grava em adoption_workflow (hoje via Google Forms webhook). Implementar submissão in-app gravando em adoption_workflow e planejar migração do webhook do Google Forms.",
       "createdAt": "2026-08-29",
-      "updatedAt": "2026-08-29"
+      "updatedAt": "2026-10-11"
     },
     {
       "id": "TASK-942",
       "type": "refactor",
       "category": "shelter",
-      "status": "backlog",
+      "status": "ready",
       "priority": "low",
-      "owner": null,
+      "owner": "unassigned",
       "branch": null,
       "flag": "SHELTER_ACTIONABLE_NOTIFICATIONS_V1",
       "worktree": null,
@@ -18209,7 +18261,9 @@
       "tags": [
         "gap",
         "fase-0",
-        "otimizacao"
+        "otimizacao",
+        "projeto-2026-q4",
+        "E2"
       ],
       "blockedBy": [],
       "relatedTasks": [
@@ -18218,42 +18272,44 @@
       "evidence": "docs/ROADMAP_SHELTER_ADMIN_V2.md §14–§16 (conclusão do roadmap, 2026-08-29)",
       "description": "Os fluxos de convite (Fases 1/2/3) gravam action_kind/action_ref/action_state mesmo com SHELTER_ACTIONABLE_NOTIFICATIONS_V1 OFF (~50 bytes/convite inertes). Opcional: condicionar a escrita à flag. Não bloqueante — sem crash e sem regressão hoje.",
       "createdAt": "2026-08-29",
-      "updatedAt": "2026-08-29"
+      "updatedAt": "2026-10-11"
     },
     {
       "id": "TASK-943",
       "type": "feature",
       "category": "shelter",
-      "status": "backlog",
+      "status": "ready",
       "priority": "medium",
-      "owner": null,
+      "owner": "unassigned",
       "branch": null,
       "flag": "SHELTER_STORE_V2",
       "worktree": null,
       "pr": null,
-      "title": "GAP Fase 7: integrar gateway de pagamento real via registry de provedores",
+      "title": "GAP Fase 7: PIX manual no checkout da loja (chave + QR estático + comprovante) via registry de provedores",
       "tags": [
         "gap",
         "fase-7",
         "loja",
-        "pagamento"
+        "pagamento",
+        "projeto-2026-q4",
+        "E2"
       ],
       "blockedBy": [],
       "relatedTasks": [
         "TASK-938"
       ],
       "evidence": "docs/ROADMAP_SHELTER_ADMIN_V2.md §14–§16 (conclusão do roadmap, 2026-08-29)",
-      "description": "Hoje o pagamento é off-platform (PIX/link externo/dinheiro/a combinar) via registry em storeCart.js (registerPaymentProvider/resolvePaymentInstructions). Plugar um processador real (ex.: PIX dinâmico/gateway) usando o ponto de extensão, sem reescrever o checkout.",
+      "description": "Decisão P5 (2026-07-15): PIX MANUAL, sem CNPJ e sem gateway. Implementar o provedor \"pix_manual\" no registry (registerPaymentProvider em storeCart.js): instruções de pagamento com chave PIX do abrigo + QR estático (payload BR Code) + upload de comprovante no pedido + marcação manual \"pago\" pelo admin no fulfillment. Sem integração externa.",
       "createdAt": "2026-08-29",
-      "updatedAt": "2026-08-29"
+      "updatedAt": "2026-10-11"
     },
     {
       "id": "TASK-944",
       "type": "feature",
       "category": "shelter",
-      "status": "backlog",
+      "status": "ready",
       "priority": "low",
-      "owner": null,
+      "owner": "unassigned",
       "branch": null,
       "flag": "SHELTER_STORE_V2",
       "worktree": null,
@@ -18263,7 +18319,9 @@
         "gap",
         "fase-7",
         "loja",
-        "carrinho"
+        "carrinho",
+        "projeto-2026-q4",
+        "E2"
       ],
       "blockedBy": [],
       "relatedTasks": [
@@ -18272,15 +18330,15 @@
       "evidence": "docs/ROADMAP_SHELTER_ADMIN_V2.md §14–§16 (conclusão do roadmap, 2026-08-29)",
       "description": "O carrinho vive em localStorage (viralata_store_cart_v2), por navegador. Opcional: persistir por usuário (Firestore) para sincronizar entre dispositivos. Exigiria nova coleção + firestore.rules — avaliar custo/benefício.",
       "createdAt": "2026-08-29",
-      "updatedAt": "2026-08-29"
+      "updatedAt": "2026-10-11"
     },
     {
       "id": "TASK-945",
       "type": "test",
       "category": "shelter",
-      "status": "backlog",
+      "status": "ready",
       "priority": "medium",
-      "owner": null,
+      "owner": "unassigned",
       "branch": null,
       "flag": null,
       "worktree": null,
@@ -18291,7 +18349,9 @@
         "transversal",
         "e2e",
         "playwright",
-        "smoke"
+        "smoke",
+        "projeto-2026-q4",
+        "E2"
       ],
       "blockedBy": [],
       "relatedTasks": [
@@ -18307,7 +18367,862 @@
       "evidence": "docs/ROADMAP_SHELTER_ADMIN_V2.md §14–§16 (conclusão do roadmap, 2026-08-29)",
       "description": "Adicionar testes de componente/e2e (Playwright) para as superfícies novas das Fases 0–7 e rodar scripts/smoke-routes.mjs (35 rotas) com as flags ligadas/desligadas para provar 0 regressão e as rotas novas (/meus-pedidos, /mercado, /vitrines, /eventos, /mural, /lares-temporarios). Hoje as fases se apoiam em unit tests de domínio/serviço + typecheck/lint/build.",
       "createdAt": "2026-08-29",
-      "updatedAt": "2026-08-29"
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "type": "chore",
+      "category": "docs",
+      "status": "in_review",
+      "priority": "high",
+      "owner": "claude-code-session_01BTZs9DMV62kPsqFscGK84z",
+      "branch": "ccr-227b9899-iv0bcc",
+      "flag": null,
+      "worktree": null,
+      "pr": "branch ccr-227b9899-iv0bcc (PR a abrir)",
+      "blockedBy": [],
+      "relatedTasks": [],
+      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md",
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11T19:48:44",
+      "id": "TASK-946",
+      "tags": [
+        "projeto-2026-q4",
+        "E1",
+        "scrum"
+      ],
+      "title": "E1: Higiene do board — dropar placeholders V3, dedupe IDs, normalizar status pending",
+      "description": "Executado por .harness/_add-projeto-2026-q4-tasks.cjs: 8 IDs duplicados removidos, 16 placeholders \"a definir no step-2\" dropados, 6 tasks `pending` -> `ready`. Critério: `node .harness/sync.cjs --check` exit 0, 0 IDs duplicados, 0 status fora de `columns`."
+    },
+    {
+      "type": "docs",
+      "category": "docs",
+      "status": "ready",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "blockedBy": [],
+      "relatedTasks": [],
+      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md",
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11",
+      "id": "TASK-947",
+      "tags": [
+        "projeto-2026-q4",
+        "E1",
+        "docs"
+      ],
+      "title": "E1: Regenerar docs/FEATURE_FLAGS.md com os defaults reais pós-cutover",
+      "description": "docs/FEATURE_FLAGS.md (2026-07-14) diz que todas as SHELTER_* estão OFF; desde o PR #253 (2026-08-30) 19 páginas V3 + 44 flags de abrigo estão ON por default. Regenerar a tabela a partir de src/core/featureFlags.js (DEFAULT_FEATURE_FLAGS + META) e fazer scripts/audit-feature-flags.cjs validar default + descrição. Critério: tabela sem \"TBD\", default de cada flag igual ao código, audit script verde."
+    },
+    {
+      "type": "chore",
+      "category": "audit",
+      "status": "ready",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "blockedBy": [],
+      "relatedTasks": [],
+      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md",
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11",
+      "id": "TASK-948",
+      "tags": [
+        "projeto-2026-q4",
+        "E1",
+        "anti-fachada"
+      ],
+      "title": "E1: Auditoria anti-fachada das tasks de decisão P1..P20 marcadas done sem código",
+      "description": "Amostra encontrada em 2026-10-11: TASK-380 (/admin/cargos) done sem rota nem página; TASK-239 (Sentry) done sem @sentry/react no package.json; TASK-020..024 done apontando só para seções do ROADMAP. Verificar cada task derivada das decisões P1..P20 e D-01/04/07 com grep no código; para cada uma sem implementação real, reabrir como task nova (ou anotar `notes` com o que realmente existe). Critério: lista em docs com (task, evidência real, veredito)."
+    },
+    {
+      "type": "feature",
+      "category": "shelter",
+      "status": "ready",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": "SHELTER_FOSTER_V2",
+      "worktree": null,
+      "pr": null,
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-939",
+        "TASK-940"
+      ],
+      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md",
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11",
+      "id": "TASK-949",
+      "tags": [
+        "projeto-2026-q4",
+        "E2",
+        "cloud-functions",
+        "firestore-rules"
+      ],
+      "title": "E2: Writer + regra pública do espelho foster_placements_public (adiado no PR #253)",
+      "description": "Mesma situação de exhibitions_public (TASK-939/940): fosterPublicService lê foster_placements_public mas nenhuma Function escreve e firestore.rules não tem regra. Implementar Cloud Function onWrite em clubs/{clubId}/foster_placements que espelha só campos públicos (sem PII do lar), regra `allow read: if true; allow write: if false`, backfill one-shot e índice composto se a query exigir. Critério: /lares-temporarios lista placements reais; teste de rules em tests/security."
+    },
+    {
+      "type": "infra",
+      "category": "ci",
+      "status": "ready",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-931",
+        "TASK-932",
+        "TASK-933",
+        "TASK-934",
+        "TASK-935",
+        "TASK-936",
+        "TASK-937",
+        "TASK-938"
+      ],
+      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md",
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11",
+      "id": "TASK-950",
+      "tags": [
+        "projeto-2026-q4",
+        "E2",
+        "smoke",
+        "evidencia"
+      ],
+      "title": "E2: Smoke de produção pós-cutover (35 rotas) + evidência para TASK-931..938",
+      "description": "Rodar `npm run smoke:routes` contra https://viralata.web.app (flags ON por default) e `npm run smoke:prod`; anexar saída ao campo evidence das tasks TASK-931..938. Critério: 35/35 rotas OK (200 ou redirect→/login nas protegidas), zero erro de console nas rotas públicas (scripts/capture-errors.mjs)."
+    },
+    {
+      "type": "infra",
+      "category": "infra",
+      "status": "ready",
+      "priority": "critical",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "blockedBy": [],
+      "relatedTasks": [],
+      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md",
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11",
+      "id": "TASK-951",
+      "tags": [
+        "projeto-2026-q4",
+        "E3",
+        "sentry",
+        "observabilidade"
+      ],
+      "title": "E3: Instalar @sentry/react e ligar errorTracker + auditService (TASK-239 ficou sem SDK)",
+      "description": "src/core/services/errorTracker.js já faz dynamic import de @sentry/react, mas o pacote não está em package.json e VITE_SENTRY_DSN não existe em .env.example; auditService.js:315 ainda tem TODO \"Wire Sentry.captureException\". Fazer: npm i @sentry/react, VITE_SENTRY_DSN no .env.example + secret no GitHub Actions, initErrorTracker no main.jsx com release = bundle hash (scripts/bundle-hash.mjs), captureException no auditService. Critério: erro de teste aparece no Sentry com release e user id anonimizado; sem PII em breadcrumbs (LGPD)."
+    },
+    {
+      "type": "infra",
+      "category": "infra",
+      "status": "ready",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "blockedBy": [],
+      "relatedTasks": [],
+      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md",
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11",
+      "id": "TASK-952",
+      "tags": [
+        "projeto-2026-q4",
+        "E3",
+        "healthz",
+        "uptime"
+      ],
+      "title": "E3: Expor /healthz (Cloud Function HTTP) e configurar uptime check externo",
+      "description": "functions/healthCheck.js + healthCheckCore.js existem mas index.js não exporta endpoint HTTP \"healthz\" e firebase.json não roteia. Exportar onRequest `healthz` (status Firestore/Auth/Storage, versão do bundle), rota /healthz no hosting rewrite, e um uptime check (Cloud Monitoring ou cron externo) com alerta por email. Critério: curl https://viralata.web.app/healthz retorna 200 JSON; alerta dispara em falha simulada."
+    },
+    {
+      "type": "infra",
+      "category": "infra",
+      "status": "ready",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "blockedBy": [
+        "TASK-960"
+      ],
+      "relatedTasks": [],
+      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md",
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11",
+      "id": "TASK-953",
+      "tags": [
+        "projeto-2026-q4",
+        "E3",
+        "alertas",
+        "billing"
+      ],
+      "title": "E3: Alertas de erro/billing em produção chegando por email real",
+      "description": "functions/adminAlerts.js + platformHealthCron.js existem, mas o emailProviderAdapter usa StubProvider por default (só console.log). Depende de TASK-960 (provedor de email configurado). Configurar thresholds (error rate, leituras Firestore/dia, custo), destinatário = email do DPO/owner, e testar um disparo real. Critério: email recebido com o alerta de teste; log em admin_alerts."
+    },
+    {
+      "type": "docs",
+      "category": "docs",
+      "status": "ready",
+      "priority": "medium",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "blockedBy": [],
+      "relatedTasks": [],
+      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md",
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11",
+      "id": "TASK-954",
+      "tags": [
+        "projeto-2026-q4",
+        "E3",
+        "runbook"
+      ],
+      "title": "E3: Runbook de incidente e rollback por flag (docs/AI_GUIDE/30-RUNBOOK-INCIDENTES.md)",
+      "description": "Consolidar em um runbook: como ler Sentry/Functions logs, como desligar uma flag em /admin/flags (rollback sem deploy), como reverter um deploy no Firebase Hosting, como acionar o protocolo de breach ANPD 48h (TASK-187), quem é o DPO. Critério: doc revisado pelo owner e linkado no 00-START-HERE §1.4."
+    },
+    {
+      "type": "feature",
+      "category": "test",
+      "status": "ready",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": "V4_PERSONA_ENABLED",
+      "worktree": null,
+      "pr": null,
+      "blockedBy": [],
+      "relatedTasks": [],
+      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md",
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11",
+      "id": "TASK-955",
+      "tags": [
+        "projeto-2026-q4",
+        "E4",
+        "e2e",
+        "personas"
+      ],
+      "title": "E4 (etapa 1/5): E2E Playwright das 6 personas em preview/staging",
+      "description": "D-PERSONA-FLAG-GRADUAL etapa 1. Cobrir: /acesso (seleção forçada no 1º acesso), switcher (só com 2+ personas), /entrar/abrigo, /entrar/comunidade, /onboarding/adotante, /onboarding/doador, /voluntarios/pool, gate de persona em rotas. Rodar contra o canal de preview com V4_PERSONA_ENABLED ON via settings de teste. Critério: specs verdes no preview; adicionadas a tests/e2e/personas.spec.mjs."
+    },
+    {
+      "type": "infra",
+      "category": "infra",
+      "status": "ready",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": "V4_PERSONA_ENABLED",
+      "worktree": null,
+      "pr": null,
+      "blockedBy": [
+        "TASK-955"
+      ],
+      "relatedTasks": [],
+      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md",
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11",
+      "id": "TASK-956",
+      "tags": [
+        "projeto-2026-q4",
+        "E4",
+        "migration",
+        "personas"
+      ],
+      "title": "E4 (etapa 2/5): Script de migração de dados em produção (dry-run + apply)",
+      "description": "D-PERSONA-MIGRATION-AUTO: users com pets pessoais -> persona donor; membros de clube -> shelter_staff:clubId; roster -> volunteer:clubId; personas_enabled backfill (máx 16, regex das rules). Script em scripts/migrate-personas-v4.mjs com --dry-run (relatório) e --apply (batches de 400, idempotente). Critério: dry-run em produção sem erro; apply validado em 3 contas de teste antes do owner."
+    },
+    {
+      "type": "feature",
+      "category": "core",
+      "status": "ready",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": "V4_PERSONA_ENABLED",
+      "worktree": null,
+      "pr": null,
+      "blockedBy": [
+        "TASK-956"
+      ],
+      "relatedTasks": [],
+      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md",
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11",
+      "id": "TASK-957",
+      "tags": [
+        "projeto-2026-q4",
+        "E4",
+        "rollout",
+        "personas"
+      ],
+      "title": "E4 (etapa 3/5): Ativar V4 para o owner e validar manualmente as 6 personas",
+      "description": "Ligar V4_PERSONA_ENABLED + 11 sub-flags só para a conta do owner (override por user ou flag + allowlist). Percorrer o checklist de docs/REVISAO_PAGINAS.md por persona. Critério: nenhum item 🔄/⬜ pendente no REVISAO_PAGINAS; bugs abertos como tasks."
+    },
+    {
+      "type": "feature",
+      "category": "design",
+      "status": "ready",
+      "priority": "medium",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "blockedBy": [],
+      "relatedTasks": [],
+      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md",
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11",
+      "id": "TASK-958",
+      "tags": [
+        "projeto-2026-q4",
+        "E4",
+        "ux",
+        "personas"
+      ],
+      "title": "E4: Concluir docs/REVISAO_PAGINAS.md — páginas ainda 🔄 (ClubDetail público, ClubsDirectory, CommunityAdminPanel, ...)",
+      "description": "Fechar a revisão página a página por persona iniciada em 2026-08-06. Para cada página 🔄: aplicar os ajustes listados em Observações, validar topbar/bottom tab bar por persona (D-PERSONA-SWITCHER-VISIBILITY), zero ponto de admin em página pública (§6.2). Critério: todas as linhas ✅ com data."
+    },
+    {
+      "type": "feature",
+      "category": "core",
+      "status": "ready",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": "V4_PERSONA_ENABLED",
+      "worktree": null,
+      "pr": null,
+      "blockedBy": [
+        "TASK-957"
+      ],
+      "relatedTasks": [],
+      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md",
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11",
+      "id": "TASK-959",
+      "tags": [
+        "projeto-2026-q4",
+        "E4",
+        "rollout",
+        "flags-migration"
+      ],
+      "title": "E4 (etapas 4-5/5): Liberação gradual 10% → 50% → 100% + migrateLegacyFlags + bump FLAGS_MIGRATION_VERSION",
+      "description": "Após validação do owner: liberar por coorte (hash do uid) 10%/50%/100% com 48h entre etapas e monitoramento (Sentry, suporte). Ao chegar em 100%: default true em DEFAULT_FEATURE_FLAGS, critério em FeatureFlagsContext.migration.js, bump de FLAGS_MIGRATION_VERSION, teste em migration.test.js (regra §3.2/§3.3 das CORE-DIRECTIVES). Critério: 100% dos users com persona ativa; zero regressão nas rotas legadas (smoke)."
+    },
+    {
+      "type": "decision",
+      "category": "infra",
+      "status": "ready",
+      "priority": "critical",
+      "owner": "human",
+      "branch": null,
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "blockedBy": [],
+      "relatedTasks": [],
+      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md",
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11",
+      "id": "TASK-960",
+      "tags": [
+        "projeto-2026-q4",
+        "E5",
+        "email",
+        "decisao"
+      ],
+      "title": "E5: Provedor de email real em produção — Resend (decisão P1) vs SendGrid (código atual) e configurar EMAIL_PROVIDER",
+      "description": "Conflito: decisão P1/D-04 (2026-07-15) escolheu Resend; functions/emailProviderAdapter.js só tem StubProvider (default) e SendGridProvider (@sendgrid/mail). Em produção hoje NENHUM email transacional sai (stub). Owner confirma o provedor; implementar ResendProvider (ou manter SendGrid e registrar D-* revogando P1); setar EMAIL_PROVIDER + API key como secret das Functions; domínio/remetente verificado; teste real de envio. Critério: email de convite de equipe chega em caixa real; bounce webhook ativo."
+    },
+    {
+      "type": "decision",
+      "category": "infra",
+      "status": "ready",
+      "priority": "high",
+      "owner": "human",
+      "branch": null,
+      "flag": "SHELTER_FCM_V1",
+      "worktree": null,
+      "pr": null,
+      "blockedBy": [],
+      "relatedTasks": [],
+      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md",
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11",
+      "id": "TASK-961",
+      "tags": [
+        "projeto-2026-q4",
+        "E5",
+        "push",
+        "decisao"
+      ],
+      "title": "E5: Push — decisão P2 (Web Push API, sem FCM) vs código (fcmService + SHELTER_FCM_V1 ON): confirmar e alinhar",
+      "description": "Decisão P2 diz \"NÃO usar FCM\"; o código entrega push via FCM (src/modules/notifications/services/fcmService.js, functions/sendPushNotification.js) com a flag ON. Owner decide: (a) manter FCM e registrar D-PUSH-FCM revogando P2, ou (b) migrar para Web Push puro (VAPID). Em ambos: validar entrega real em PWA instalado (Android/desktop), permissão pedida só após gesto do usuário, opt-out no /preferencias. Critério: push de teste recebido em 2 dispositivos; decisão registrada em 13-DECISIONS.md."
+    },
+    {
+      "type": "feature",
+      "category": "core",
+      "status": "ready",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "blockedBy": [
+        "TASK-960",
+        "TASK-961"
+      ],
+      "relatedTasks": [],
+      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md",
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11",
+      "id": "TASK-962",
+      "tags": [
+        "projeto-2026-q4",
+        "E5",
+        "notificacoes",
+        "e2e"
+      ],
+      "title": "E5: Notificações transacionais ponta a ponta em produção (convite equipe/voluntário, status de adoção, lembrete de escala)",
+      "description": "Com email (TASK-960) e push (TASK-961) reais: percorrer os fluxos onVolunteerCreatedNotifyAdmin, onAdoptionWorkflowStatusUpdated, sendShiftReminders, convites de equipe (SHELTER_TEAM_V2) com contas de teste e confirmar sino + email + push. Critério: matriz fluxo × canal preenchida com evidência; falhas viram tasks."
+    },
+    {
+      "type": "feature",
+      "category": "admin",
+      "status": "ready",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "blockedBy": [],
+      "relatedTasks": [],
+      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md",
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11",
+      "id": "TASK-963",
+      "tags": [
+        "projeto-2026-q4",
+        "E6",
+        "lgpd",
+        "admin",
+        "anti-fachada"
+      ],
+      "title": "E6: Implementar /admin/cargos de verdade (P11/P12) — TASK-380 estava done sem rota nem página",
+      "description": "Não existe rota /admin/cargos em src/App.jsx nem página em src/modules/admin/pages (2026-10-11). Criar AdminRoles.jsx: tabela de papéis da plataforma (platform_admin, DPO/Encarregado, admin de abrigo, membro, voluntário, lar temporário, adotante) com responsabilidades e acessos (ler de docs/PERSONA_CAPABILITIES.md), bloco \"Encarregado (DPO)\" com nome + email editáveis (platform_settings.dpo_contact, default fsalamoni@gmail.com), audit_log na edição, rules só platform_admin escreve. Critério: rota no AdminDashboard, smoke:routes inclui /admin/cargos, teste runtime."
+    },
+    {
+      "type": "docs",
+      "category": "legal",
+      "status": "blocked",
+      "priority": "high",
+      "owner": "human-jurídico",
+      "branch": null,
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "blockedBy": [],
+      "relatedTasks": [],
+      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md",
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11",
+      "id": "TASK-964",
+      "tags": [
+        "projeto-2026-q4",
+        "E6",
+        "juridico"
+      ],
+      "title": "E6: Resolver os 8 TODO(JURÍDICO) nos textos legais (revisão humana)",
+      "description": "Arquivos com TODO(JURÍDICO) em src/modules/shelter/domain/legal/texts/: shelterOnboardingTerms.v1.js, cookies.js, avisosLegais.js, politicaDePrivacidade.js, termosDeUso.js, codigoDeConduta.js, adoptionTerms.v1.js, volunteerTerms.v2.js. Revisão por humano/jurídico; após aprovação, remover os TODOs, bump de versão do texto (content_hash muda -> re-aceite onde a lei exige). Critério: grep \"TODO(JURÍDICO)\" vazio; versões registradas em docs/legal/README.md.",
+      "notes": "Bloqueio externo: depende de revisão jurídica humana (RISK-007)."
+    },
+    {
+      "type": "feature",
+      "category": "lgpd",
+      "status": "ready",
+      "priority": "medium",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "blockedBy": [
+        "TASK-963"
+      ],
+      "relatedTasks": [],
+      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md",
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11",
+      "id": "TASK-965",
+      "tags": [
+        "projeto-2026-q4",
+        "E6",
+        "lgpd",
+        "dpo"
+      ],
+      "title": "E6: Contato do DPO lido de platform_settings em rodapé, política de privacidade e cookies (sem hardcode)",
+      "description": "Hoje o email do DPO está hardcoded em textos legais (cookies.js, shelterOnboardingTerms, donationTerms) e em AdminFlags.jsx. Centralizar em platform_settings.dpo_contact (editável em /admin/cargos, TASK-963) e interpolar nos textos/rodapé. Critério: trocar o email no admin reflete em todas as superfícies sem deploy."
+    },
+    {
+      "type": "security",
+      "category": "lgpd",
+      "status": "ready",
+      "priority": "medium",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "blockedBy": [],
+      "relatedTasks": [],
+      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md",
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11",
+      "id": "TASK-966",
+      "tags": [
+        "projeto-2026-q4",
+        "E6",
+        "lgpd",
+        "evidencia"
+      ],
+      "title": "E6: Validar em produção \"Baixar meus dados\" (Art. 18 V) e \"Excluir conta\" (Art. 18 VI, soft delete 30d + purge)",
+      "description": "Com uma conta de teste: exportar dados (JSON completo, sem dados de terceiros), solicitar exclusão, confirmar soft delete e anonimização; forçar accountPurgeCron em janela de teste e confirmar purge + audit_log. Critério: checklist em docs/AI_GUIDE/25-LGPD.md com evidência datada."
+    },
+    {
+      "type": "feature",
+      "category": "a11y",
+      "status": "ready",
+      "priority": "medium",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": "A11Y_IMPROVEMENTS_V1",
+      "worktree": null,
+      "pr": null,
+      "blockedBy": [],
+      "relatedTasks": [],
+      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md",
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11",
+      "id": "TASK-967",
+      "tags": [
+        "projeto-2026-q4",
+        "E7",
+        "a11y",
+        "rollout"
+      ],
+      "title": "E7: Ativar A11Y_IMPROVEMENTS_V1 (Kanban) + auditoria axe nas rotas públicas",
+      "description": "Flag OFF com 3 readers (KanbanBoard/Column/Card). Rodar tests/e2e/a11y.spec.js e scripts/_axe_feed.mjs nas rotas públicas, corrigir violações sérias/críticas, ativar a flag, bump migração. Critério: 0 violações critical/serious no axe em /, /feed, /pets/:id, /organizacoes/:id, /login; flag ON."
+    },
+    {
+      "type": "feature",
+      "category": "perf",
+      "status": "ready",
+      "priority": "medium",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-V3-PROFILE-7",
+        "TASK-978"
+      ],
+      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md",
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11",
+      "id": "TASK-968",
+      "tags": [
+        "projeto-2026-q4",
+        "E7",
+        "perf",
+        "lighthouse"
+      ],
+      "title": "E7: Lighthouse ≥ 90 (performance e a11y) nas 5 rotas públicas principais + orçamento de bundle",
+      "description": "Precache PWA está em ~5,5 MB (metrics.bundleSizeKB). Medir Lighthouse em /, /feed, /pets/:id, /organizacoes/:id, /busca (mobile, 4G); aplicar code-splitting por rota (lazy), remover páginas *.v1.jsx do bundle quando a V3 estiver estável (TASK-978), imagens com srcset. Critério: relatório com antes/depois commitado em docs/AUDITS; orçamento de bundle checado em CI (scripts/bundle-hash.mjs)."
+    },
+    {
+      "type": "feature",
+      "category": "perf",
+      "status": "ready",
+      "priority": "medium",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "blockedBy": [],
+      "relatedTasks": [],
+      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md",
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11",
+      "id": "TASK-969",
+      "tags": [
+        "projeto-2026-q4",
+        "E7",
+        "perf",
+        "feed",
+        "risk-004"
+      ],
+      "title": "E7: RISK-004 — paginação por cursor no feed de pets (hoje limit 500 client-side)",
+      "description": "usePets carrega até 500 pets e filtra no cliente. Implementar paginação por cursor (startAfter) com infinite scroll e filtros server-side onde houver índice; manter haversine client-side para raio. Critério: feed com 2.000 pets de mock (loadMockData) carrega a 1ª página < 1,5 s em 4G; índices novos em firestore.indexes.json (sem single-field collectionGroup)."
+    },
+    {
+      "type": "infra",
+      "category": "ci",
+      "status": "ready",
+      "priority": "high",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "blockedBy": [],
+      "relatedTasks": [],
+      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md",
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11",
+      "id": "TASK-970",
+      "tags": [
+        "projeto-2026-q4",
+        "E7",
+        "ci",
+        "e2e"
+      ],
+      "title": "E7: Rodar Playwright (smoke + public-routes + legal) no CI contra o canal de preview de cada PR",
+      "description": ".github/workflows/deploy.yml roda vitest + build + deploy, mas nunca executa tests/e2e. Adicionar job pós \"Deploy Preview\" com E2E_BASE_URL = URL do preview, specs: smoke.spec.js, public-routes.spec.js, legal.spec.js, a11y.spec.js (chromium). Critério: job obrigatório verde em PR; falha bloqueia merge."
+    },
+    {
+      "type": "bug",
+      "category": "core",
+      "status": "ready",
+      "priority": "medium",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "blockedBy": [],
+      "relatedTasks": [],
+      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md",
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11",
+      "id": "TASK-971",
+      "tags": [
+        "projeto-2026-q4",
+        "E7",
+        "todo",
+        "dados-reais"
+      ],
+      "title": "E7: Fechar TODOs de produto no código (adoptedCount 500 fixo, VolunteerPool sem busca, contracts collectionGroup, 1º pet do wizard)",
+      "description": "src/core/hooks/useHomeStats.js:37 retorna adoptedCount 500 hardcoded; src/pages/VolunteerPool.jsx:92 TODO busca real por região/raio/espécie; src/modules/contracts/services/contractsService.js:176 query manual no lugar de collectionGroup + índice; ShelterOnboardingWizard.jsx:367 não cria o 1º pet. Resolver cada um (contagem real via getCountFromServer em adoptions, etc.). Critério: grep \"TODO\" nesses 4 pontos vazio; testes cobrindo."
+    },
+    {
+      "type": "feature",
+      "category": "shelter",
+      "status": "ready",
+      "priority": "medium",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": "PLATFORM_MARKETPLACE_V1",
+      "worktree": null,
+      "pr": null,
+      "blockedBy": [],
+      "relatedTasks": [],
+      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md",
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11",
+      "id": "TASK-972",
+      "tags": [
+        "projeto-2026-q4",
+        "E8",
+        "rollout",
+        "marketplace"
+      ],
+      "title": "E8: Rollout do marketplace /mercado (PLATFORM_MARKETPLACE_V1, hoje OFF)",
+      "description": "Flag OFF com readers em MarketplacePage.jsx, PersonaTopbar.jsx e App.jsx. Pré-requisito: SHELTER_STORE_V1 ON (ok) e ao menos 1 loja com produtos públicos reais. Smoke com flag OFF, ativar em /admin/flags, 24h, depois default true + migração. Critério: /mercado lista produtos reais com filtros; item de menu visível em todas as personas exceto abrigo."
+    },
+    {
+      "type": "feature",
+      "category": "core",
+      "status": "ready",
+      "priority": "low",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": "HOME_STATS_V1",
+      "worktree": null,
+      "pr": null,
+      "blockedBy": [
+        "TASK-971"
+      ],
+      "relatedTasks": [],
+      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md",
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11",
+      "id": "TASK-973",
+      "tags": [
+        "projeto-2026-q4",
+        "E8",
+        "home"
+      ],
+      "title": "E8: HOME_STATS_V1 com números reais (depende de TASK-971) e ativar",
+      "description": "Após adoptedCount real: validar contagens (pets, abrigos, cidades, adoções) e ativar HOME_STATS_V1 na landing. Critério: números batem com /admin/metricas; flag ON."
+    },
+    {
+      "type": "feature",
+      "category": "ux",
+      "status": "ready",
+      "priority": "high",
+      "owner": "human",
+      "branch": null,
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "blockedBy": [],
+      "relatedTasks": [
+        "TASK-V3-HOME-8"
+      ],
+      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md",
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11",
+      "id": "TASK-974",
+      "tags": [
+        "projeto-2026-q4",
+        "E8",
+        "piloto",
+        "go-to-market"
+      ],
+      "title": "E8: Piloto com 3 abrigos reais (onboarding assistido + feedback estruturado)",
+      "description": "Selecionar 3 abrigos/ONGs, criar os clubes via /abrigo/:clubId/onboarding (ShelterOnboardingWizard), importar planilha de animais, publicar 1 vitrine, cadastrar 2 voluntários. Coletar feedback com roteiro (docs/AI_GUIDE/31-PILOTO-ABRIGOS.md) e abrir tasks dos achados. Critério: 3 abrigos ativos com pets publicados; relatório do piloto commitado."
+    },
+    {
+      "type": "feature",
+      "category": "core",
+      "status": "ready",
+      "priority": "medium",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "blockedBy": [],
+      "relatedTasks": [],
+      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md",
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11",
+      "id": "TASK-975",
+      "tags": [
+        "projeto-2026-q4",
+        "E8",
+        "seo"
+      ],
+      "title": "E8: SEO — meta tags por pet/abrigo/vitrine, sitemap com rotas dinâmicas e Search Console",
+      "description": "scripts/generate-sitemap.mjs roda no prebuild só com rotas estáticas. Gerar entradas dinâmicas (pets disponíveis, abrigos, vitrines publicadas) via Function agendada que grava public/sitemap.xml ou endpoint /sitemap.xml; Open Graph/Twitter por pet (já existe share image) e por abrigo; registrar no Search Console. Critério: sitemap com URLs dinâmicas válido; OG preview correto em 3 páginas."
+    },
+    {
+      "type": "docs",
+      "category": "docs",
+      "status": "ready",
+      "priority": "medium",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "blockedBy": [],
+      "relatedTasks": [],
+      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md",
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11",
+      "id": "TASK-976",
+      "tags": [
+        "projeto-2026-q4",
+        "E8",
+        "faq",
+        "regra-a"
+      ],
+      "title": "E8: FAQ institucional e guia do abrigo (Regra A §1 \"FAQ institucional\")",
+      "description": "Páginas públicas /ajuda (FAQ do adotante, do abrigo, do voluntário, do lar temporário) renderizadas a partir de Markdown via AdminContentEditor (CMS já existente), com link no rodapé e no onboarding do abrigo. Critério: 4 FAQs publicadas; rota no smoke:routes; sem HTML cru (sanitização)."
+    },
+    {
+      "type": "decision",
+      "category": "design",
+      "status": "ready",
+      "priority": "medium",
+      "owner": "human",
+      "branch": null,
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "blockedBy": [],
+      "relatedTasks": [],
+      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md",
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11",
+      "id": "TASK-977",
+      "tags": [
+        "projeto-2026-q4",
+        "E8",
+        "decisao",
+        "flags"
+      ],
+      "title": "E8: Decidir destino das flags de layout ainda OFF (PAGE_HERO_ENABLED, STANDARDIZED_PAGE_LAYOUT, COMMUNITY_NGO_PARITY, AD_SLOTS, COMMUNITY_EVENT_DETAIL_V1)",
+      "description": "Cinco flags continuam OFF com readers no código desde julho. Para cada uma o owner decide: ativar (com smoke + 24h) ou remover flag + código morto. Critério: decisão registrada em 13-DECISIONS.md; PR de ativação ou remoção por flag."
+    },
+    {
+      "type": "refactor",
+      "category": "refactor",
+      "status": "ready",
+      "priority": "low",
+      "owner": "unassigned",
+      "branch": null,
+      "flag": null,
+      "worktree": null,
+      "pr": null,
+      "blockedBy": [
+        "TASK-950"
+      ],
+      "relatedTasks": [],
+      "evidence": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md",
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11",
+      "id": "TASK-978",
+      "tags": [
+        "projeto-2026-q4",
+        "E8",
+        "divida",
+        "v1-cleanup"
+      ],
+      "title": "E8: Remover páginas *.v1.jsx e flags v3_page_* após 30 dias de cutover estável",
+      "description": "Cutover V3 em 2026-08-30 com as 19 flags v3_page_* ON. Após estabilidade (sem rollback em 30 dias e TASK-950 verde): remover os componentes *.v1.jsx, os gates por flag e as 19 flags (com migração que ignora chaves removidas), reduzindo o bundle (TASK-968). Critério: build sem *.v1.jsx; smoke 35/35; migration test cobrindo remoção."
     }
   ],
   "definitionOfDone": [
@@ -18572,7 +19487,7 @@
       "feat/ds-v2-motion-2026-07-16",
       "feat/ds-v2-audit-2026-07-16"
     ],
-    "mainCommit": "6e447fa97bf580d211510580dee159587dc2e262",
+    "mainCommit": null,
     "ciRun": "https://github.com/fsalamoni/viralata/actions/runs/29161968679",
     "deployStatus": "rodando — run #221 disparado",
     "smokeTest": "25/25 rotas (10 públicas + 15 admin) — todas passaram",
@@ -18582,13 +19497,13 @@
     ],
     "openTODOs": 5,
     "openLegalReviews": 3,
-    "totalTasks": 757,
+    "totalTasks": 782,
     "done": 711,
     "inProgress": 0,
-    "inReview": 0,
-    "blocked": 0,
-    "ready": 0,
-    "backlog": 39,
+    "inReview": 1,
+    "blocked": 1,
+    "ready": 52,
+    "backlog": 0,
     "risksTotal": 8,
     "sessionNote": "Sessao mvs_311d078987d0414a90f57ef28b789b18 em wt-e79e15ca. 122 tasks: 35 done, 2 in_progress, 3 in_review, 75 ready. 5 commits ahead of main (5da437b). sync.cjs + protocolo + JSON commitados (67a4c7a).",
     "contribuicaoCoder": {
@@ -18602,7 +19517,7 @@
       ],
       "facilitation": "Coordenação entre sessoes, dedup, status reports via scratchpad, recomendações de merge"
     },
-    "dropped": 1,
+    "dropped": 17,
     "subdivided": "2026-07-11 14:33 — usuário pediu tasks granulares para acompanhar evolução. 58 novas tasks (TASK-059 a TASK-116), cada uma em bloco independente.",
     "subdivisionByCategory": {
       "Legal Docs por documento (TASK-059 a TASK-070)": 12,
@@ -18617,7 +19532,7 @@
       "Ativar flag (TASK-113 a TASK-116)": 4
     },
     "dedup": "2026-07-11 14:34 — removed 58 duplicate IDs (race condition com sessão Mavis paralela).",
-    "lastUpdate": "2026-08-29 — conclusão do ROADMAP_SHELTER_ADMIN_V2 (15 tasks de rollout/gap; Regra B §B.1)",
+    "lastUpdate": "2026-10-11T19:48:45.067Z — via sync.cjs (Regra B §B.1)",
     "regraAAnalysis": "2026-07-11 20:10 — orquestrador com 3 passes paralelos (SHELTER, CORE+Community+Admin, cross-cutting) + 4ª re-avaliação independente. 72 tasks granulares adicionadas cobrindo gaps da Regra A (5 eixos por feature: UX, papéis, regras, integrações, pós-deploy).",
     "fourthEyeReview": "2026-07-11 20:14 — Re-avaliação independente (4 olhos) concluída. Comparação entre meu dependency map (síntese de 3 passes paralelos: SHELTER, CORE+Community+Admin, cross-cutting) e os findings do Verifier/General: 3 gaps reais identificados que meu map não cobriu (TASK-193/194/195 — defeitos bloqueantes do pacote legal v2 commit a66e030). Adicionados como critical. Mapeamento: TASK-193 = TODO(JURÍDICO) em textos; TASK-194 = audit_log missing; TASK-195 = smoke test missing. 4 olhos comparativo confirma que o General cobriu navegação (1.5 eixos, 11 findings) e o Verifier cobriu legal v2 (14 checks, FAIL) — ambos complementam meu map. Adicionei tarefas correspondentes. Confiança no map: 95%.",
     "semanticEvents": [
@@ -18688,14 +19603,14 @@
     "dsV2EndDate": "2026-07-16",
     "dsV2DurationDays": 0,
     "counts": {
-      "total": 489,
-      "done": 484,
-      "ready": 0,
+      "total": 782,
+      "done": 711,
+      "ready": 53,
       "inProgress": 0,
       "inReview": 0,
-      "blocked": 0,
-      "backlog": 4,
-      "dropped": 1
+      "blocked": 1,
+      "backlog": 0,
+      "dropped": 17
     },
     "in_progress": 0,
     "in_review": 0,
@@ -18710,7 +19625,22 @@
       "ready": 0,
       "inProgress": 0
     },
-    "completedTasks": 16
+    "completedTasks": 16,
+    "projeto2026Q4": {
+      "doc": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md",
+      "epics": [
+        "E1 — Verdade do board e da documentação",
+        "E2 — Fechar gaps do rollout V2 do painel do abrigo",
+        "E3 — Observabilidade e operação",
+        "E4 — Rollout V4 Personas (5 etapas)",
+        "E5 — Comunicação: email + push alinhados às decisões",
+        "E6 — LGPD e legal: fechamento",
+        "E7 — Qualidade, performance e acessibilidade",
+        "E8 — Produto e crescimento"
+      ],
+      "tasksSeeded": 33,
+      "tasksTotal": 54
+    }
   },
   "protocol": {
     "scrumUpdate": {
@@ -18741,51 +19671,56 @@
         "Sentry + Crashlytics em produção",
         "MFA TOTP para admins (TASK-189)",
         "Cookie banner LGPD (TASK-381)"
-      ]
+      ],
+      "note": "2026-10-11: Sentry reaberto como TASK-951 (TASK-239 sem SDK). Demais entregáveis done."
     },
     {
       "id": "FASE-23-AVALIACAO-360",
       "title": "Fase 23 - Avaliação 360 de voluntários",
-      "status": "ready",
+      "status": "done",
       "deliverables": [
         "Formulários de avaliação (auto + pares + equipe)",
         "Sistema de ocorrências (positivas/neutras/negativas)",
         "Certificado + relatório (TASK-378/601)",
         "Documento de atividades (TASK-379)"
-      ]
+      ],
+      "note": "Fechada em 2026-10-11: tasks listadas estão done no board (ver docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md §2)."
     },
     {
       "id": "FASE-24-MODELO-VOLUNTARIOS",
       "title": "Fase 24 - Modelo híbrido de voluntários",
-      "status": "ready",
+      "status": "done",
       "deliverables": [
         "Registro global de voluntários (/voluntarios)",
         "Vínculo abrigo OU disponibilidade plataforma",
         "Convites temporários",
         "Foster com capability (TASK-600)"
-      ]
+      ],
+      "note": "Fechada em 2026-10-11: tasks listadas estão done no board (ver docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md §2)."
     },
     {
       "id": "FASE-25-CARGOS-PIX",
       "title": "Fase 25 - Cargos + PIX manual",
-      "status": "ready",
+      "status": "in_progress",
       "deliverables": [
         "Página de cargos (/admin/cargos) (TASK-380)",
         "PIX manual sem CNPJ (TASK-386)",
         "Web Push API (TASK-385)",
         "Email DPO editável"
-      ]
+      ],
+      "note": "2026-10-11: PIX manual (TASK-386) done; /admin/cargos reaberto como TASK-963 (TASK-380 sem implementação); Web Push virou TASK-961."
     },
     {
       "id": "FASE-26-DECISOES-PENDENTES",
       "title": "Fase 26 - Aguarda decisões humanas",
-      "status": "blocked",
+      "status": "done",
       "deliverables": [
         "Aguarda TASK-209 (termo v2 jurídico)",
         "Aguarda TASK-187 (breach ANPD 48h)",
         "Aguarda TASK-368 (DPO sign-off)",
         "Aguarda TASK-365 (SendGrid vs Resend)"
-      ]
+      ],
+      "note": "Fechada em 2026-10-11: tasks listadas estão done no board (ver docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md §2)."
     },
     {
       "id": "ROAD-FASE-4",
@@ -18794,6 +19729,111 @@
       "startedAt": "2026-07-16",
       "parent": "desing-system",
       "completedAt": "2026-07-16T19:06:16.783Z"
+    },
+    {
+      "id": "PROJ-2026Q4-E1",
+      "title": "Projeto 2026-Q4 · E1 — Verdade do board e da documentação",
+      "status": "in_progress",
+      "deliverables": [
+        "TASK-946",
+        "TASK-947",
+        "TASK-948"
+      ],
+      "doc": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md"
+    },
+    {
+      "id": "PROJ-2026Q4-E2",
+      "title": "Projeto 2026-Q4 · E2 — Fechar gaps do rollout V2 do painel do abrigo",
+      "status": "ready",
+      "deliverables": [
+        "TASK-931..938 (validação pós-cutover)",
+        "TASK-939/940/949 (espelhos públicos)",
+        "TASK-941 (form de adoção in-app)",
+        "TASK-943 (PIX manual)",
+        "TASK-944",
+        "TASK-945",
+        "TASK-950"
+      ],
+      "doc": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md"
+    },
+    {
+      "id": "PROJ-2026Q4-E3",
+      "title": "Projeto 2026-Q4 · E3 — Observabilidade e operação",
+      "status": "ready",
+      "deliverables": [
+        "TASK-951 (Sentry)",
+        "TASK-952 (/healthz)",
+        "TASK-953 (alertas)",
+        "TASK-954 (runbook)"
+      ],
+      "doc": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md"
+    },
+    {
+      "id": "PROJ-2026Q4-E4",
+      "title": "Projeto 2026-Q4 · E4 — Rollout V4 Personas (5 etapas)",
+      "status": "ready",
+      "deliverables": [
+        "TASK-955",
+        "TASK-956",
+        "TASK-957",
+        "TASK-958",
+        "TASK-959"
+      ],
+      "doc": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md"
+    },
+    {
+      "id": "PROJ-2026Q4-E5",
+      "title": "Projeto 2026-Q4 · E5 — Comunicação: email + push alinhados às decisões",
+      "status": "ready",
+      "deliverables": [
+        "TASK-960",
+        "TASK-961",
+        "TASK-962"
+      ],
+      "doc": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md"
+    },
+    {
+      "id": "PROJ-2026Q4-E6",
+      "title": "Projeto 2026-Q4 · E6 — LGPD e legal: fechamento",
+      "status": "ready",
+      "deliverables": [
+        "TASK-963 (/admin/cargos)",
+        "TASK-964 (TODO jurídico)",
+        "TASK-965",
+        "TASK-966"
+      ],
+      "doc": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md"
+    },
+    {
+      "id": "PROJ-2026Q4-E7",
+      "title": "Projeto 2026-Q4 · E7 — Qualidade, performance e acessibilidade",
+      "status": "ready",
+      "deliverables": [
+        "TASK-V3-PROFILE-5/6/7",
+        "TASK-V3-ADOPTION-7/8",
+        "TASK-967",
+        "TASK-968",
+        "TASK-969",
+        "TASK-970",
+        "TASK-971"
+      ],
+      "doc": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md"
+    },
+    {
+      "id": "PROJ-2026Q4-E8",
+      "title": "Projeto 2026-Q4 · E8 — Produto e crescimento",
+      "status": "ready",
+      "deliverables": [
+        "TASK-972 (/mercado)",
+        "TASK-973",
+        "TASK-974 (piloto 3 abrigos)",
+        "TASK-V3-HOME-8",
+        "TASK-975 (SEO)",
+        "TASK-976 (FAQ)",
+        "TASK-977",
+        "TASK-978"
+      ],
+      "doc": "docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md"
     }
   ],
   "sprintHistory": [
@@ -18806,7 +19846,7 @@
     {
       "id": "SPRINT-2026-W29",
       "period": "2026-07-15 → 2026-07-22",
-      "status": "active",
+      "status": "completed",
       "delivered": 0
     },
     {
@@ -18843,6 +19883,14 @@
       "merges": 11,
       "commits": 11,
       "duration": "~1h30 (mesma sessão)"
+    },
+    {
+      "id": "SPRINT-2026-W42",
+      "period": "2026-10-12 → 2026-10-25",
+      "status": "active",
+      "event": "Kickoff Projeto Continuidade 2026-Q4 (docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md)",
+      "timestamp": "2026-10-11T19:45:05.224Z",
+      "tasksAdded": 33
     }
   ],
   "decisions": [

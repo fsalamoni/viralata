@@ -1,5 +1,12 @@
 # Feature Flags — Viralata
 
+> **AVISO (2026-10-11)**: a tabela abaixo está desatualizada. Desde o cutover
+> (PR #253, 2026-08-30) as 19 flags `v3_page_*` e 44 flags `SHELTER_*` estão
+> **ON por default**; `shelter_cutover`, `V4_PERSONA_*`, `PLATFORM_MARKETPLACE_V1`,
+> `A11Y_IMPROVEMENTS_V1`, `HOME_STATS_V1` e 5 flags de layout seguem OFF.
+> Fonte de verdade: `DEFAULT_FEATURE_FLAGS` em `src/core/featureFlags.js`.
+> Regeneração desta tabela: **TASK-947** (Projeto 2026-Q4, E1).
+
 **Última atualização**: 2026-07-14
 **Regra de ouro**: toda flag tem `defaultValue: false` e só vai pra `true` após validação manual.
 

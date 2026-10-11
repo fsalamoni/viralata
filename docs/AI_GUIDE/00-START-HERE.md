@@ -159,6 +159,7 @@
 | 26 | `26-ACCESSIBILITY.md` | ~11KB | WCAG 2.1 AA |
 | 27 | `27-PERFORMANCE-FEED.md` | ~7KB | Otimização Feed (LazyAdSlot) |
 | 28 | `28-VOLUNTEER-SIGNUP-BUGFIX.md` | ~8KB | Bugfix: toast API + signature_text |
+| 29 | `29-PROJETO-CONTINUIDADE-2026-Q4.md` | ~25KB | ★ Projeto atual: meta, épicos E1..E8, backlog, sprints, decisões pendentes |
 
 ### §3.2. Documentos por Módulo (subpasta `modules/`)
 

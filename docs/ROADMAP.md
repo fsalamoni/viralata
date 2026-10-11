@@ -1,5 +1,12 @@
 # Roadmap — Viralata
 
+> **2026-10-11 — Ciclo atual**: o desenvolvimento continua pelo
+> **Projeto de Continuidade 2026-Q4** em
+> [`docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md`](./AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md)
+> (8 épicos E1..E8, 54 tasks com a tag `projeto-2026-q4`, sprints W42–W51,
+> marcos M1–M5). Tudo abaixo desta nota é o roadmap das fases já concluídas
+> (DS, 22 fases do abrigo, V3, V4, painel V2) e permanece como histórico.
+
 > Plano de organização do desenvolvimento por fases. **Leia primeiro
 > `docs/STATE.md`** — o documento canônico de estado atual, atualizado em
 > cada movimento, com índice dos demais docs e o plano de ataque.
