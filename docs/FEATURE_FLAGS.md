@@ -1,66 +1,142 @@
 # Feature Flags — Viralata
 
-> **AVISO (2026-10-11)**: a tabela abaixo está desatualizada. Desde o cutover
-> (PR #253, 2026-08-30) as 19 flags `v3_page_*` e 44 flags `SHELTER_*` estão
-> **ON por default**; `shelter_cutover`, `V4_PERSONA_*`, `PLATFORM_MARKETPLACE_V1`,
-> `A11Y_IMPROVEMENTS_V1`, `HOME_STATS_V1` e 5 flags de layout seguem OFF.
-> Fonte de verdade: `DEFAULT_FEATURE_FLAGS` em `src/core/featureFlags.js`.
-> Regeneração desta tabela: **TASK-947** (Projeto 2026-Q4, E1).
-
-**Última atualização**: 2026-07-14
-**Regra de ouro**: toda flag tem `defaultValue: false` e só vai pra `true` após validação manual.
+> **Gerado automaticamente** por `scripts/generate-feature-flags-doc.cjs` em 2026-10-11.
+> Não edite à mão: rode o script e commite. Validação: `node scripts/audit-feature-flags.cjs`.
+>
+> Fonte de verdade: `DEFAULT_FEATURE_FLAGS` em `src/core/featureFlags.js` e
+> `SHELTER_FEATURE_FLAG` em `src/modules/shelter/domain/constants.js`.
+> Valor persistido em `platform_settings/global.feature_flags` (editável em `/admin/flags`)
+> vence o default. Mudança de default exige critério em
+> `FeatureFlagsContext.migration.js` + bump de `FLAGS_MIGRATION_VERSION` (CORE-DIRECTIVES §3).
 
 ## Como usar
 
 ```jsx
 import { useFeatureFlag, FEATURE_FLAG } from '@/core/lib/FeatureFlagsContext';
 
-const showNewFeature = useFeatureFlag(FEATURE_FLAG.SHELTER_KANBAN);
-if (showNewFeature) {
-  return <NewFeature />;
-}
-return <OldFeature />;
+const enabled = useFeatureFlag(FEATURE_FLAG.SHELTER_KANBAN);
 ```
 
-## Flags ativas
+## Resumo
 
-| Flag | Key | Default | Descrição |
-|------|-----|---------|-----------|
-| `SHELTER_FOUNDATION` | `shelter_foundation` | OFF | TBD |
-| `SHELTER_ANIMAL_UNIFIED_PROFILE` | `shelter_animal_unified_profile` | OFF | TBD |
-| `SHELTER_PET_TIMELINE` | `shelter_pet_timeline` | OFF | TBD |
-| `SHELTER_ADOPTION_WORKFLOW` | `shelter_adoption_workflow` | OFF | TBD |
-| `SHELTER_ADOPTER_FULL_PROFILE` | `shelter_adopter_full_profile` | OFF | TBD |
-| `SHELTER_POST_ADOPTION_FOLLOWUP` | `shelter_post_adoption_followup` | OFF | TBD |
-| `SHELTER_FOSTER` | `shelter_foster` | OFF | TBD |
-| `SHELTER_HEALTH_RECORDS` | `shelter_health_records` | OFF | TBD |
-| `SHELTER_MEDICATION` | `shelter_medication` | OFF | TBD |
-| `SHELTER_GALLERY` | `shelter_gallery` | OFF | TBD |
-| `SHELTER_EXHIBITIONS` | `shelter_exhibitions` | OFF | TBD |
-| `SHELTER_EXHIBITION_RSVPS` | `shelter_exhibition_rsvps` | OFF | TBD |
-| `SHELTER_EXHIBITION_WORKFLOW_V1` | `shelter_exhibition_workflow_v1` | OFF | TBD |
-| `SHELTER_VOLUNTEERS` | `shelter_volunteers` | OFF | TBD |
-| `SHELTER_VOLUNTEER_PROFILE_V1` | `shelter_volunteer_profile_v1` | OFF | TBD |
-| `SHELTER_DASHBOARD` | `shelter_dashboard` | OFF | TBD |
-| `SHELTER_KANBAN` | `shelter_kanban` | OFF | TBD |
-| `SHELTER_REPORTS` | `shelter_reports` | OFF | TBD |
-| `SHELTER_INDICATORS` | `shelter_indicators` | OFF | TBD |
-| `SHELTER_SMART_SEARCH` | `shelter_smart_search` | OFF | TBD |
-| `SHELTER_LEGAL_TERMS` | `shelter_legal_terms` | OFF | TBD |
-| `SHELTER_LEGAL_TERMS_V1` | `shelter_legal_terms_v1` | OFF | TBD |
-| `SHELTER_SECURITY_HARDENING` | `shelter_security_hardening` | OFF | TBD |
-| `SHELTER_PLATFORM_HEALTH` | `shelter_platform_health` | OFF | TBD |
-| `SHELTER_CUTOVER` | `shelter_cutover` | OFF | TBD |
-| `SHELTER_FOSTER_DASHBOARD_V1` | `shelter_foster_dashboard_v1` | OFF | Painel pessoal do Lar Temporário (`/lares-temporarios/dashboard`): pets sob guarda, próximos fins de placement e histórico de adoções via LT. |
-| `SHELTER_ADOPTER_DASHBOARD_V1` | `shelter_adopter_dashboard_v1` | OFF | Dashboard unificado do adotante (`/meu-painel`): adoções concluídas/em andamento, favoritos, % de perfil, milestones pós-adoção e notificações. |
-| `ABRIGO` | `abrigo` | OFF | TBD |
-| `TBD` | `ad_slots` | OFF | TBD |
-| `TBD` | `home_stats_v1` | OFF | TBD |
-| `PET_FEED_RELIABILITY_FIX` | `pet_feed_reliability_fix` | **ON** (legado) | Correção de confiabilidade do feed |
-| `MURAL_LIKES_AND_COMMENTS` | `mural_likes_and_comments` | **ON** (legado) | Mural com curtidas e comentários |
-| `PET_ADOPTION_GATING` | `pet_adoption_gating` | **ON** (legado) | Bloqueio de adoção explicado |
-| `MURAL_RICH_POSTS` | `mural_rich_posts` | **ON** (legado) | Mural com posts ricos (anexos) |
-| `TBD` | `page_hero_enabled` | OFF | TBD |
-| `TBD` | `standardized_page_layout` | OFF | TBD |
-| `TBD` | `community_ngo_parity` | OFF | TBD |
-| `MOCK_DATA_PANEL` | `mock_data_panel` | **ON** (legado) | Painel de dados demo (mock data) |
+| Total | ON por default | OFF por default |
+|---|---|---|
+| 102 | 71 | 31 |
+
+Marcos: cutover V3 + abrigo em 2026-08-30 (PR #253) ligou as 19 `v3_page_*` e
+as flags `SHELTER_*` de produto. `shelter_cutover` (chave de migração),
+`V4_PERSONA_*`, `PLATFORM_MARKETPLACE_V1`, `A11Y_IMPROVEMENTS_V1`,
+`HOME_STATS_V1` e as flags de layout seguem OFF — rollout em
+`docs/AI_GUIDE/29-PROJETO-CONTINUIDADE-2026-Q4.md` (E4, E7, E8).
+
+## Flags OFF por default (31)
+
+| Flag | Key | Default | Label | Descrição | Arquivos que leem |
+|---|---|---|---|---|---|
+| `A11Y_IMPROVEMENTS_V1` | `a11y_improvements_v1` | OFF | Acessibilidade WCAG AA | Foco visível em dialogs, aria-label em botões de ícone, roles ARIA no kanban (region/list/option), Escape fecha lightbox, contraste em badges, alt text em imagens. Aditivo — desligada, a UI funciona sem as melhorias. | 2 |
+| `AD_SLOTS` | `ad_slots` | OFF | Espaço de anúncios | Exibe um card "Conteúdo patrocinado" no feed de pets e no painel de gestão de pets da ONG. Apenas o placeholder visual — não há integração com uma rede de anúncios real. Desligado, nenhum card aparece. | 3 |
+| `COMMUNITY_EVENT_DETAIL_V1` | `community_event_detail_v1` | OFF | Comunidade · detalhe de evento + RSVP | Cria a página pública de evento em /comunidade/:id/eventos/:eventId com painel de participantes e RSVP going/maybe/not_going. Cards de evento na aba Eventos da comunidade ganham link para a página. Sem a flag, cards não são clicáveis. Puramente aditivo. | 2 |
+| `COMMUNITY_NGO_PARITY` | `community_ngo_parity` | OFF | Comunidade · paridade visual com a ONG | Quando ligada, a página pública da comunidade passa a usar o mesmo padrão visual da capa da ONG (`<ClubCover>`-like): banner gradiente, avatar-iniciais sobreposto, nome, cidade e chips Padronizados. E o painel de administração da comunidade passa a usar o mesmo padrão visual do painel da | 1 |
+| `DS_V2_AUDIT` | `ds_v2_audit` | OFF | DS_V2 · Auditoria + correções de tokens | Substituições de tokens literais (bg-emerald-* → bg-success) em badge.jsx, user-avatar.jsx, AdminMockData.jsx. Relatório em docs/AUDIT_DS_V2.md. Aderente à paleta oficial spec §2.1. | 1 |
+| `DS_V2_COMPONENTS` | `ds_v2_components` | OFF | DS_V2 · Componentes refatorados | Button (7 variantes, 46/36/52px), Card (4 variantes, 22/24px), Input (46px, raio 12), Dialog (raio 24, padding 32), Table (zebragem), Avatar (xs/sm/md/lg + gradiente oficial). 100% compatível com shadcn. | 1 |
+| `DS_V2_DOCS` | `ds_v2_docs` | OFF | DS_V2 · Doc oficial (Fase 4) | Reaplicação da spec v1.0 em docs/. Sem código a ligar — Bloco A. | 1 |
+| `DS_V2_MOTION` | `ds_v2_motion` | OFF | DS_V2 · Motion wrappers | useReducedMotionSafe hook + wrappers <FadeIn>, <Stagger>, <HoverLift>. Respeita prefers-reduced-motion. framer-motion ^12.42.2 já instalado. Aplicar opt-in: <FadeIn>, <Stagger>, <HoverLift> são drop-in. | 1 |
+| `DS_V2_PAGES_ADMIN` | `ds_v2_pages_admin` | OFF | DS_V2 · Admin (audit only) | AdminDashboard, AdminMetrics, AdminPets, AdminUsers, AdminReports, AdminContentEditor validados. Audit only — já usam arena-admin-header, arena-stats-grid, arena-section-card. | 1 |
+| `DS_V2_PAGES_ADOPTION` | `ds_v2_pages_adoption` | OFF | DS_V2 · Adoção (audit only) | AdoptionDetail, AdoptionWizard, MyApplications validados contra spec. Audit only — já estavam alinhados após Fases 0-2 do roadmap. | 1 |
+| `DS_V2_PAGES_CHAT` | `ds_v2_pages_chat` | OFF | DS_V2 · Chat/Profile/Login (audit only) | ChatPage, Profile, Login, Onboarding, institucionais validados. Audit only — chat já tem messages, profile usa Button, login usa card. | 1 |
+| `DS_V2_PAGES_HOME` | `ds_v2_pages_home` | OFF | DS_V2 · Home (refinamentos) | Icon Material Symbols no hero (size 130 filled, spec §4.2 marca), Avatar component nas histórias, H1 Sora 800 explícito. Home já estava bem alinhada (arena-*); este flag ativa o refinamento final. | 1 |
+| `DS_V2_PAGES_ORG` | `ds_v2_pages_org` | OFF | DS_V2 · Organizações (audit only) | ClubsDirectory, ClubDetail, EventDetail, OrganizationsHub, OrganizationAdminPanel validados. Audit only — 30+ arquivos já usam arena-* (panel, admin-tabs, stats-grid, chip, heading). | 1 |
+| `DS_V2_PAGES_PETS` | `ds_v2_pages_pets` | OFF | DS_V2 · Pets (PetCard + PetDetail) | PetCard (referência spec §3.3) com aspect-ratio 1.3, Card size="pet", Icon Material Symbols para espécie, hover-lift. PetDetail com Avatar component no bloco do responsável. PetFeed grid 1/2/3/4 já alinhado. | 1 |
+| `DS_V2_TOKENS` | `ds_v2_tokens` | OFF | DS_V2 · Tokens + Material Symbols | Adiciona a fonte variável Material Symbols Outlined (var font, FILL 0-1, wght 500) e o componente <Icon> canônico. Coexistência com lucide-react. Aditivo — desligada, lucide continua sendo o ícone padrão. | 1 |
+| `HOME_STATS_V1` | `home_stats_v1` | OFF | Home · Viralata em números | Exibe na Home os contadores agregados da plataforma (pets cadastrados, adoções concretizadas, abrigos ativos). Contagem via aggregate query do Firestore. Desligado, o bloco não aparece. | 4 |
+| `PAGE_HERO_ENABLED` | `page_hero_enabled` | OFF | Cabeçalho-padrão das páginas (PageHero) | Quando ligada, as páginas que usam `<PageHero>` passam a renderizar o card gradiente laranja→rosa (a cor-padrão da plataforma) com o título da página dentro do card. A Home, a capa da ONG (`ClubDetail`) e a capa de comunidade têm padrões visuais próprios e não são afetadas. Desligada, cada `<PageHero>` | 1 |
+| `PLATFORM_MARKETPLACE_V1` | `platform_marketplace_v1` | OFF | Plataforma · Marketplace geral (/mercado) | Compila os produtos públicos de todas as lojas dos abrigos numa vitrine única em /mercado, com filtros e ordenação (abrigo, cidade, estado, categoria, preço). Aparece na navegação de todas as personas exceto o acesso de abrigo. Requer `shelter_store_v1` para haver produtos a agregar. Aditivo — desligada, a rota e o item de menu | 1 |
+| `SHELTER_CUTOVER` | `shelter_cutover` | OFF | Abrigos · cutover final | Migração final: clubs → shelters, remoção de feature flags, validação completa em produção. Liga só no final, depois de todas as outras fases validadas. | 5 |
+| `STANDARDIZED_PAGE_LAYOUT` | `standardized_page_layout` | OFF | Layout-padrão das páginas (largura + espaçamento) | Quando ligada, todas as páginas autenticadas passam a usar o mesmo wrapper raiz (`arena-page mx-auto max-w-6xl px-5 py-6 pb-12 space-y-6`) — 1152px de largura, 24px de padding lateral e vertical, 24px de gap entre seções. Resolve a inconsistência histórica entre páginas com max-w-3xl/4xl/5xl/6xl, | 2 |
+| `V4_PERSONA_ADOPTER` | `v4_persona_adopter` | OFF | V4 Personas · Adotante (D-PERSONA-MULTI, D-PERSONA-FEED-EXCLUSIVE-ADOPTER) | Persona 1 — Adotante (legacy). Pode ver o feed de pets para adoção. Já é default para qualquer user com profile_completed. Esta flag existe para consistência com as outras 5 personas e para permitir rollback individual. SÓ funciona se V4_PERSONA_ENABLED = true. | 1 |
+| `V4_PERSONA_COMMUNITY_STAFF` | `v4_persona_community_staff` | OFF | V4 Personas · Membro de Comunidade | Persona 4 — Membro de comunidade. Pode gerenciar 1+ comunidades. Estrutura análoga a shelter_staff (multi-community). Entrada por CommunityEntry. | 1 |
+| `V4_PERSONA_DONOR` | `v4_persona_donor` | OFF | V4 Personas · Doador (D-PERSONA-DONOR-ONBOARDING, Q24) | Persona 2 — Doador. Pode cadastrar pets para doação e gerenciá- los via /dashboard/doador. Onboarding dedicado com 9 campos (Q24): donor_motivation, has_donated_before, pets_count, experience_with_species[], experience_years, donor_accepts_home_check, donor_accepts_post_adoption_followup, | 1 |
+| `V4_PERSONA_ENABLED` | `v4_persona_enabled` | OFF | V4 Personas · Master switch (D-PERSONA-FLAG-GRADUAL, Q30) | Liga o sistema de personas V4 (6 personas dedicadas: Adotante, Doador, Membro de Abrigo, Membro de Comunidade, Voluntário, Platform Admin). Default OFF. Quando OFF, todas as 6 personas comportam-se como V3 legacy (user = adotante). Para ativar, ligue este master + ao menos uma persona individual. Rollout | 1 |
+| `V4_PERSONA_PET_TRANSFER` | `v4_persona_pet_transfer` | OFF | V4 Personas · Transfer pet pessoal → abrigo (D-PERSONA-PET-TRANSFER, Q20) | Habilita o PetTransferDialog: doador pode transferir pet pessoal para um abrigo. IRREVERSÍVEL (Q20) — audit log obrigatório. Atualiza owner_type para "organization". Use com cautela: uma vez transferido, o pet é do abrigo. | 1 |
+| `V4_PERSONA_PLATFORM_ADMIN` | `v4_persona_platform_admin` | OFF | V4 Personas · Platform Admin (D-PERSONA-ADMIN-OVERRIDE, Q7, Q9) | Persona 6 — Platform Admin (admin master). Visível SÓ para user com role=platform_admin. Override total: vê tudo de todas as personas. SÓ pode ser atribuído pelo owner fixo (fsalamoni@gmail.com) — D-PERSONA-ADMIN-OWNER-ONLY (Q8). NÃO pode se auto-rebaixar (D-PERSONA-ADMIN-CANNOT-DEMOTE, Q22). | 1 |
+| `V4_PERSONA_SELECTION` | `v4_persona_selection` | OFF | V4 Personas · Tela /acesso primeiro acesso (D-PERSONA-FIRST-ACCESS-FORCED, Q16) | Tela PersonaSelection (/acesso) onde o user escolhe a persona inicial. Aparece no primeiro acesso (Q16) e quando user quer adicionar nova persona via switcher. SÓ funciona se V4_PERSONA_ENABLED = true. | 1 |
+| `V4_PERSONA_SHELTER_STAFF` | `v4_persona_shelter_staff` | OFF | V4 Personas · Membro de Abrigo (D-PERSONA-MULTI-CLUB, Q17) | Persona 3 — Membro de abrigo. Pode gerenciar 1+ abrigos (multi- club Q17) via ShelterPicker no TopBar. Entrada por código de convite OU criar novo abrigo (D-PERSONA-SHELTER- ENTRY, Q25). Multi-club: dados isolados por abrigo, troca instantânea entre abrigos no switcher do TopBar. | 1 |
+| `V4_PERSONA_SWITCHER` | `v4_persona_switcher` | OFF | V4 Personas · Botão switch no TopBar (D-PERSONA-SWITCHER-VISIBILITY, Q15) | Mostra o PersonaSwitcher no TopBar (botão dropdown com persona ativa + lista de personas disponíveis). SÓ aparece se user tem 2+ personas habilitadas (D-PERSONA-SWITCHER-VISIBILITY, Q15). Troca é instantânea, sem confirmação (D-PERSONA-SWITCH-NO- CONFIRM, Q14). Personas incompletas têm badge "Incompleto" | 1 |
+| `V4_PERSONA_VOLUNTEER` | `v4_persona_volunteer` | OFF | V4 Personas · Voluntário (D-PERSONA-MULTI-ROSTER-ISOLATED, Q18) | Persona 5 — Voluntário. Pode ser voluntário em 1+ abrigos (multi-roster Q18) com dados isolados por abrigo via VolunteerShelterPicker no TopBar. Se não estiver vinculado a nenhum abrigo, entra no POOL encontrável (D-PERSONA-VOLUNTEER- POOL, Q26). | 1 |
+| `V4_PERSONA_VOLUNTEER_POOL` | `v4_persona_volunteer_pool` | OFF | V4 Personas · Pool de Voluntários (D-PERSONA-VOLUNTEER-POOL, Q26) | Permite que voluntários sem abrigo vinculado entrem no POOL encontrável (D-PERSONA-VOLUNTEER-POOL, Q26). Abrigos podem buscar/browse para convidar. Filtros: cidade, estado, raio (km), espécies. Rota: /voluntarios/pool. Por enquanto, busca "Em breve" — integração real pendente. | 1 |
+
+## Flags ON por default (71)
+
+| Flag | Key | Default | Label | Descrição | Arquivos que leem |
+|---|---|---|---|---|---|
+| `ADMIN_PARTNER_SPACES_V1` | `admin_partner_spaces_v1` | **ON** | Admin · Espaço de Parceiros | Liga o painel admin de parceiros publicitários em /admin/parceiros (CRUD de parceiros, banners com rotação, relatórios e tracking LGPD-compliant). | 1 |
+| `MOCK_DATA_PANEL` | `mock_data_panel` | **ON** | Painel de dados demo (mock data) | Expõe a rota `/admin/mock-data` com botões para carregar e limpar os conjuntos de dados mockados. Útil para demos, treinamento e validação visual de UX. Os documentos são marcados com `_mock: true`, então a limpeza é precisa e não toca em nada criado por usuários reais. Restrito ao | 2 |
+| `MURAL_LIKES_AND_COMMENTS` | `mural_likes_and_comments` | **ON** | Mural · curtidas e comentários | Permite curtir/descurtir os posts do mural e ler/adicionar/excluir comentários diretamente na interface. Usa `community_post_likes` e `community_post_comments` (já existentes no Firestore). Desligada, o mural renderiza em modo somente leitura, sem qualquer alteração no comportamento atual. | 1 |
+| `MURAL_RICH_POSTS` | `mural_rich_posts` | **ON** | Mural · posts com anexos | Permite ao admin da comunidade (e membros com permissão `feed`) criar posts no mural com anexos (fotos, vídeos, PDFs, documentos), além de curtidas e comentários. Os anexos são armazenados via `storageService.uploadImage` (Firebase Storage). Desligada, o mural renderiza em modo somente leitura ou sem | 1 |
+| `PET_ADOPTION_GATING` | `pet_adoption_gating` | **ON** | Explicação de bloqueio na adoção/chat | Mostra um card na página do pet com o(s) motivo(s) de o usuário não conseguir adotar nem abrir chat com o responsável (perfil incompleto, pet já adotado/em processo, você é o dono, etc.). As validações de permissão já ficam ativas mesmo com a flag desligada — ela apenas controla o texto explicativo. Desligada, | 1 |
+| `PET_DETAIL_VIEW_V1` | `pet_detail_view_v1` | **ON** | V3 · Visualização pública de pet (/pet/:petId) | Página PÚBLICA de visualização de um pet (sem abas, sem botões de gestão). Apresenta o pet de forma atraente para que o visitante se interesse e queira adotar. Tem botão flutuante "Quero adotar" + "Administrar" (este último só visível para quem tem permissão de gestão do pet). | 1 |
+| `PET_FEED_RELIABILITY_FIX` | `pet_feed_reliability_fix` | **ON** | Feed de pets · correção de confiabilidade | Aplica os filtros (espécie, porte, cidade, raio) no cliente, sobre uma única query do Firestore. Elimina o cruzamento de índices compostos que vinha derrubando o feed com `failed-precondition`. Quando o filtro de localização zera a lista mas ainda há pets compatíveis, exibe um banner explicando o fallback e mantém os | 1 |
+| `PUBLIC_PARTNER_BANNERS_V1` | `public_partner_banners_v1` | **ON** | Público · Banners de Parceiros | Liga o componente AdSlotBanner para rotação client-side de banners em posições do app (Feed, Home, Search, Detalhes). Requer parceiros ativos com banners para renderizar. | 1 |
+| `SHELTER_ACTIONABLE_NOTIFICATIONS_V1` | `shelter_actionable_notifications_v1` | **ON** | Abrigos · notificações acionáveis (aceitar/recusar convite) | Liga os botões "Aceitar" e "Recusar" direto no sino de notificações para convites (membro da equipe agora; voluntário e lar temporário nas próximas fases). Sem sair da tela, o usuário responde ao convite e o estado (pendente/aceito/recusado) fica registrado na própria notificação. Os campos de ação são gravados de forma aditiva e | 1 |
+| `SHELTER_ADMIN_DASHBOARD_V1` | `shelter_admin_dashboard_v1` | **ON** | Abrigos · dashboard pessoal do admin | Dashboard pessoal do admin do abrigo (rota /abrigos/:clubId/admin/dashboard). Mostra minhas tasks kanban (collectionGroup kanban_cards onde estou em assignees), applications recentes (adoption_workflow), pets cadastrados por mim e devoluções no abrigo. V3 do ShelterAdminDashboard. | 1 |
+| `SHELTER_ADOPTER_DASHBOARD_V1` | `shelter_adopter_dashboard_v1` | **ON** | Adotante · dashboard unificado (Meu Painel) | Dashboard unificado do adotante (rota /meu-painel). Reúne adoções concluídas e em andamento, pets favoritos, percentual de perfil completo, próximas milestones de acompanhamento pós-adoção e notificações não lidas. Com a flag OFF, a rota exibe o aviso "Painel do adotante em breve". Default OFF. | 1 |
+| `SHELTER_ADOPTER_FULL_PROFILE` | `shelter_adopter_full_profile` | **ON** | Abrigos · perfil completo do adotante | Adiciona CPF, RG, Instagram, questionário, avaliação, observações ao perfil do adotante. Obrigatório para chat/adoção. Integração com Google Forms via webhook. | 4 |
+| `SHELTER_ADOPTION_WORKFLOW` | `shelter_adoption_workflow` | **ON** | Abrigos · workflow de adoção | Pipeline formal de adoção: aplicação → review → entrevista → home check → aprovação → trial → finalização. Com devolução rastreável. Substitui adoption_interests (convive via alias). | 3 |
+| `SHELTER_ANIMAL_UNIFIED_PROFILE` | `shelter_animal_unified_profile` | **ON** | Abrigos · cadastro único do animal | Adiciona campos profissionais ao doc pet (nome no resgate, data, responsável, local, microchip, Asilomar, tipo de intake, etc.). Habilita nova aba "Cadastro" no PetDetail. | 3 |
+| `SHELTER_APPLICATION_SCORING` | `shelter_application_scoring` | **ON** | Abrigos · scoring de compatibilidade nas applications | Exibe score de compatibilidade adotante×pet nas ApplicationsList. Baseado em critérios configuráveis (porte, espécie, experiência, moradia). Score é calculado client-side no componente e salvo no doc application em background. Sem efeito se a application não tiver answers preenchidos. | 2 |
+| `SHELTER_DASHBOARD` | `shelter_dashboard` | **ON** | Abrigos · dashboard em tempo real | Tela inicial do painel do abrigo com cards clicáveis: cães/gatos no abrigo, em LT, resgates/adoções do mês, castrações pendentes, medicações, pós-adoção, processos. Métricas customizáveis. | 2 |
+| `SHELTER_DOCUMENTS_V1` | `shelter_documents_v1` | **ON** | Abrigos · Documentos v1 (central + editor + versionamento + analytics de aceite) | Adiciona uma central de documentos (sub-aba em Configurações) que unifica formulários, termos e contratos do abrigo com status, versão e vínculos; editor interno com construtor de formulário de adoção in-app e editor de termos/contratos em Markdown, com versionamento append-only e content_hash (imutabilidade de termos aceitos, LGPD/Lei 14.063/2020); vínculos ao | 1 |
+| `SHELTER_DONATIONS` | `shelter_donations` | **ON** | Abrigos · chamados de doação (campanhas) | CRUD completo de campanhas de doação no painel do abrigo: criar/editar/listar/deletar campanha com itens (ração/veterinário/medicamento), meta de valor, prazo, status, e comprovantes. Coleção `clubs/{clubId}/shelter_donations` + | 4 |
+| `SHELTER_EXHIBITION_OPS_V1` | `shelter_exhibition_ops_v1` | **ON** | Abrigos · Vitrines v1 (gerenciador integral de evento) | Transforma a Vitrine num gerenciador integral de evento no painel do abrigo: torna a lista funcional (selecionar → detalhes) e adiciona planejamento (checklist, local/venue, estrutura física, orçamento), logística (transporte, alimentação, água, energia, internet — itens, responsáveis e custos), mutirão de saúde (vacinas/cirurgias/consultas | 1 |
+| `SHELTER_EXHIBITION_RSVPS` | `shelter_exhibition_rsvps` | **ON** | Abrigos · escalas e RSVP de vitrines | Convocação de voluntários por evento (sim/não/talvez). Disponibilidade, observações, escalas por turno. | 2 |
+| `SHELTER_EXHIBITION_WORKFLOW_V1` | `shelter_exhibition_workflow_v1` | **ON** | Abrigos · vitrines e eventos (workflow completo) | Workflow completo de vitrines / eventos da Fase 11: cadastro da vitrine (título, local, janela), coalizão entre abrigos (co-organizadores + pets externos), escalas de trabalho por turno/role, e log do destino de cada animal pós-evento (voltou/adotado/transferido/óbito). State machine com | 6 |
+| `SHELTER_EXHIBITIONS` | `shelter_exhibitions` | **ON** | Abrigos · vitrines e eventos | Eventos de exposição onde abrigos levam animais. Coalizão entre múltiplos abrigos + pets externos. Registro do destino de cada animal pós-evento. | 2 |
+| `SHELTER_FCM_V1` | `shelter_fcm_v1` | **ON** | Abrigos · push notifications (FCM v1) | Firebase Cloud Messaging: service worker registra FCM token em `users/{uid}.fcm_tokens[]`; Cloud Function sendPushNotification onCall com type + link. Triggers: onCreate adoption_workflow (→ abrigo), onUpdate adoption_workflow.status (→ adotante), onCreate kanban_tasks (→ assignee). Permissão pedida após 1ª | 1 |
+| `SHELTER_FINANCE` | `shelter_finance` | **ON** | Abrigos · prestação de contas | Lançamentos de entrada/saída do abrigo, saldo agregado por período, gráfico de evolução temporal e exportação CSV pública (LGPD Art. 18 V — transparência financeira). Coleção `clubs/{clubId}/shelter_ledger`. | 3 |
+| `SHELTER_FOSTER` | `shelter_foster` | **ON** | Abrigos · lares temporários | Cadastro de LTs com histórico de animais. Indicador de adoção direta pelo LT sem passar pelo workflow completo. | 4 |
+| `SHELTER_FOSTER_DASHBOARD_V1` | `shelter_foster_dashboard_v1` | **ON** | Abrigos · painel pessoal do Lar Temporário | Painel pessoal do Lar Temporário (rota /lares-temporarios/dashboard). Mostra os pets sob a minha guarda agora, os próximos fins de placement (7 dias) e o histórico de adoções realizadas via LT, com as ações de marcar como devolvido e encerrar o acolhimento (com avaliação e feedback). Com a flag OFF, a rota exibe o aviso "em rollout gradual". | 1 |
+| `SHELTER_FOSTER_PUBLIC_HISTORY_V1` | `shelter_foster_public_history_v1` | **ON** | Abrigos · histórico público do LT | Página pública /lares-temporarios/:uid/historico com pets que passaram pelo LT (consent_to_show_history=true). Exibe foto + nome + status final de cada pet. | 1 |
+| `SHELTER_FOSTER_V2` | `shelter_foster_v2` | **ON** | Abrigos · Lares Temporários v2 (lista própria, disponibilidade e documentos) | Enriquece a aba "Lares" do painel do abrigo: deixa explícito que o lar temporário é uma ESPÉCIE de voluntário (membro transitório) que fica em uma LISTA PRÓPRIA à disposição dos membros com atribuição para acolher pets. Adiciona disponibilidade (datas à disposição, quantidade e tipos de pets aceitos), vínculo/promoção por notificação com aceitar/recusar | 1 |
+| `SHELTER_FOUNDATION` | `shelter_foundation` | **ON** | Abrigos · fundação | Renomeia "Organizações" para "Abrigos" e prepara o módulo shelter/. Habilita a estrutura-base para as próximas 21 fases do Sistema de Gestão do Abrigo. Sem isso, as outras flags SHELTER_* não têm onde rodar. | 3 |
+| `SHELTER_GALLERY` | `shelter_gallery` | **ON** | Abrigos · galeria de fotos | Galeria categorizada por fase (resgate, perfil, saúde, LT, adoção, pós-adoção, vitrines, outros). Soft delete com lixeira e restauração pelo owner/admin. | 3 |
+| `SHELTER_HEALTH_RECORDS` | `shelter_health_records` | **ON** | Abrigos · prontuário de saúde | Registros médicos por animal: consultas, cirurgias, internações, exames, vacinas, vermifugos, antipulgas, tratamentos. Vinculado a eventos da timeline. | 3 |
+| `SHELTER_INDICATORS` | `shelter_indicators` | **ON** | Abrigos · indicadores de vitrines e voluntários | Taxa de adoção por evento, número de participantes, transportes, frequência de voluntários, horas totais. | 2 |
+| `SHELTER_KANBAN` | `shelter_kanban` | **ON** | Abrigos · kanban de tarefas | Painel kanban com colunas customizáveis, drag-and-drop, atribuição por membro/voluntário. Tipos: medicação, castração, vacina, contato pós-adoção, processo, outros. Log de cada movimentação. | 4 |
+| `SHELTER_LEGAL_TERMS` | `shelter_legal_terms` | **ON** | Abrigos · termos e políticas completos (guarda-chuva) | Placeholder guarda-chuva da fase de termos e políticas. NÃO liga a nada por si só. Use `shelter_legal_terms_v1` (ou a flag específica do sub-PR) para ligar a UI/service de cada incremento desta fase. | 3 |
+| `SHELTER_LEGAL_TERMS_V1` | `shelter_legal_terms_v1` | **ON** | Abrigos · termos e políticas legais v1 | Liga a entrega da Fase 19 (Legal Terms v1): termo de voluntariado integral v2 com LGPD e Lei 14.063/2020; termo de adoção com aceite + signature_text no submit da application; termo de adesão (DPA, operadora=Viralata / controlador=Abrigo) aceito no cadastro do abrigo e gravado em | 3 |
+| `SHELTER_MEDICATION` | `shelter_medication` | **ON** | Abrigos · controle de medicamentos | Prescrição individual com doses administradas (cada dose tem check). Notificações 30min antes. Dashboard mostra pendentes. | 3 |
+| `SHELTER_MURAL_V2` | `shelter_mural_v2` | **ON** | Abrigos · Mural v2 (composer avançado, moderação, analytics, view pública) | Enriquece a aba "Mural" do painel do abrigo: composer avançado com agendamento de publicação, rascunhos, categorias/tags e menções a membros; gestão com fixar/destacar, arquivar e busca/filtro/ordenação; moderação das interações do público (ocultar/reexibir comentários); e um painel de analytics (alcance, curtidas e comentários por post). | 1 |
+| `SHELTER_ONBOARDING_WIZARD` | `shelter_onboarding_wizard` | **ON** | Abrigos · onboarding wizard 5 passos | Wizard de onboarding do abrigo (5 passos: logo+capa, endereço, equipe, termos DPA, primeiro pet). Salva progresso em clubs/{clubId}/onboarding_progress. Ativado após DPA em CreateClub. | 1 |
+| `SHELTER_PET_OPS_TABLES_V1` | `shelter_pet_ops_tables_v1` | **ON** | Abrigos · tabelas operacionais | Substitui as abas "Prontuário" e "Timeline" (Operacional) por 7 tabelas agregadas do abrigo: Medicações, Consultas veterinárias, Tratamentos, Vacinas e vermifugação, Cuidados, Adoções e Devoluções. Cada tabela agrega as subcoleções de cada pet do abrigo (pets/{petId}/...), com passado + agendados, filtros, ordenação, | 1 |
+| `SHELTER_PET_TIMELINE` | `shelter_pet_timeline` | **ON** | Abrigos · linha do tempo do animal | Histórico cronológico completo de cada animal (resgate, intake, vacinas, adoções, devoluções, etc.). Auto-preenchido pelas features do abrigo. | 3 |
+| `SHELTER_PLATFORM_HEALTH` | `shelter_platform_health` | **ON** | Abrigos · saúde da plataforma | Dashboard admin master: saúde, custos Firebase, capacidade, movimentação, gerenciamento de admins, alertas. | 2 |
+| `SHELTER_POST_ADOPTION_FOLLOWUP` | `shelter_post_adoption_followup` | **ON** | Abrigos · acompanhamento pós-adoção | Tarefas automáticas em 3 sem, 3 meses, 1, 2 e 3 anos após cada adoção. Dashboard mostra pendentes. Notificações ao responsável. | 2 |
+| `SHELTER_POST_ADOPTION_RETURN` | `shelter_post_adoption_return` | **ON** | Abrigos · UI devolução + pausa pós-adoção | Dialog para adotante devolver animal ou pausar acompanhamento. Lista de devolvidos no dashboard do abrigo com timeline. | 1 |
+| `SHELTER_REPORTS` | `shelter_reports` | **ON** | Abrigos · relatórios | Relatórios automáticos com gráficos: resgates/adoções por mês/ano, comparativos, saldo mensal, devoluções, tempo médio até adoção, castrados/não. Export CSV/PDF. | 2 |
+| `SHELTER_SECURITY_HARDENING` | `shelter_security_hardening` | **ON** | Abrigos · segurança avançada | Firebase App Check, rate limiting, regras reforçadas, alertas de segurança no admin panel, audit log expandido. | 2 |
+| `SHELTER_SMART_SEARCH` | `shelter_smart_search` | **ON** | Abrigos · busca inteligente | Busca global multi-filtro em todas as entidades (animais, adotantes, abrigos, lares temporários, vitrines). Filtros combinados, por período, por responsável, por LT. CommandPalette Cmd+K. Backend Meilisearch self-hosted. | 6 |
+| `SHELTER_STORE_V1` | `shelter_store_v1` | **ON** | Abrigos · Loja do Abrigo (marketplace próprio) | Habilita a aba principal "Loja" no painel do abrigo: cadastro de produtos com todas as informações (fornecedores, custos, lucro, estoque, prazo/forma de entrega, frete, descrição, material, fotos e vídeos), gestão de pedidos, perguntas e avaliações. Cada abrigo liga (ou não) a sua loja e a visibilidade pública nas Configurações | 2 |
+| `SHELTER_STORE_V2` | `shelter_store_v2` | **ON** | Abrigos · Loja v2 (carrinho, checkout, pedidos, fulfillment, analytics) | Aprimora a Loja do Abrigo de forma aditiva (depende de SHELTER_STORE_V1). Público: carrinho multi-abrigo, checkout que registra um pedido por abrigo e acompanhamento de pedido em /meus-pedidos. Admin: painel de analytics de vendas (receita realizada vs. pipeline, ticket médio, mais vendidos, conversão), controles de fulfillment (transportadora/rastreio) | 1 |
+| `SHELTER_TEAM_V2` | `shelter_team_v2` | **ON** | Abrigos · Equipe v2 (membros, permissões e documentos) | Enriquece a aba "Equipe" do painel do abrigo: deixa explícito que a equipe é formada por MEMBROS permanentes (com ao menos uma atribuição, e decisão/administração opcional), distintos de voluntários e lares (transitórios). Adiciona convite por notificação com aceitar/recusar inline (usa a Fase 0), blocos de permissão por escopo com rótulos e | 1 |
+| `SHELTER_VOLUNTEER_PROFILE_V1` | `shelter_volunteer_profile_v1` | **ON** | Abrigos · voluntários v1 (perfil + roster + participation) | Liga a Gestão de Voluntários v1: perfil global do voluntário (skills, availability, radius, transporte) em `users/{uid}/volunteer_profile/main`; rostagem per-shelter em `clubs/{clubId}/volunteers/{uid}` com background check per-shelter; e participations (turnos em eventos) em | 11 |
+| `SHELTER_VOLUNTEERS` | `shelter_volunteers` | **ON** | Abrigos · gestão de voluntários (guarda-chuva) | Placeholder guarda-chuva da fase de voluntários. NÃO liga a nada por si só. Use `shelter_volunteer_profile_v1` (ou a flag específica do sub-PR) para ligar a UI/service de cada incremento desta fase. | 2 |
+| `SHELTER_VOLUNTEERS_V2` | `shelter_volunteers_v2` | **ON** | Abrigos · Voluntários v2 (transitório, promoção e disponibilidade) | Enriquece a aba "Voluntários" do painel do abrigo: deixa explícito que o voluntário é um "membro" TRANSITÓRIO (não permanente), que faz parte da equipe de modo temporário e pode ser PROMOVIDO a membro permanente por quem tem atribuição. Adiciona promoção/convite por notificação com aceitar/recusar inline (usa a Fase 0), uma tabela rica (atividades a que | 1 |
+| `V3_PAGE_ADMIN` | `v3_page_admin` | **ON** | V3 · Admin (16 páginas) | Redesign das 16 páginas do painel admin master. Inclui gerenciador de Espaço de Parceiros (TASK-V3-PARTNER-1). | 1 |
+| `V3_PAGE_ADOPTION` | `v3_page_adoption` | **ON** | V3 · Adoção (fluxo wizard + detail) | Redesign do fluxo de adoção (wizard + detail). | 1 |
+| `V3_PAGE_CHAT` | `v3_page_chat` | **ON** | V3 · Chat (/chat) | Redesign do chat. | 1 |
+| `V3_PAGE_CLUB_DETAIL` | `v3_page_club_detail` | **ON** | V3 · ClubDetail (/organizacoes/:id) | Redesign da página do abrigo. Harmonizar FosterCtaCard (verde-água) com VolunteerCtaCard (laranja). | 1 |
+| `V3_PAGE_COMMUNITY_ADMIN` | `v3_page_community_admin` | **ON** | V3 · CommunityAdminPanel | Redesign do painel admin da comunidade. | 1 |
+| `V3_PAGE_COMMUNITY_DETAIL` | `v3_page_community_detail` | **ON** | V3 · CommunityDetail (/comunidades/:slug) | Redesign da página de comunidade. Hoje tem layout 2 colunas (Conteúdo + Gestão) — refatorar. | 1 |
+| `V3_PAGE_EVENTS` | `v3_page_events` | **ON** | V3 · Eventos (/eventos + detalhes) | Redesign do feed de eventos e detalhes. | 1 |
+| `V3_PAGE_FEED` | `v3_page_feed` | **ON** | V3 · Feed (/feed) | Redesign da página /feed. 6 filtros (espécie, porte, idade, sexo, cidade, raio), ordenação, paginação responsiva por viewport, SwipeDeck com UNDO + haptic, "Ver todos os pets" começa fechado (Collapsible). Doc: docs/REGENCY_FEED_V3.md. | 1 |
+| `V3_PAGE_FOSTER` | `v3_page_foster` | **ON** | V3 · Lar Temporário (público + dashboard) | Redesign das páginas de Lar Temporário. | 1 |
+| `V3_PAGE_HOME` | `v3_page_home` | **ON** | V3 · Home (/) | Redesign da home/landing. | 1 |
+| `V3_PAGE_LEGAL` | `v3_page_legal` | **ON** | V3 · Páginas legais (privacidade, termos, legislação) | Redesign das páginas legais (já parcialmente refatoradas pelo TASK-021 CMS Markdown). | 1 |
+| `V3_PAGE_LOGIN` | `v3_page_login` | **ON** | V3 · Login (/login) | Redesign da página de login. | 1 |
+| `V3_PAGE_MURAL` | `v3_page_mural` | **ON** | V3 · Mural (/mural) | Redesign do mural público. | 1 |
+| `V3_PAGE_ORG_ADMIN` | `v3_page_org_admin` | **ON** | V3 · OrganizationAdminPanel | Redesign do painel admin da organização. | 1 |
+| `V3_PAGE_PET_DETAIL` | `v3_page_pet_detail` | **ON** | V3 · PetDetail (/pets/:id) | Redesign da página de detalhe do pet. | 1 |
+| `V3_PAGE_PROFILE` | `v3_page_profile` | **ON** | V3 · Perfil (/perfil) | Redesign do perfil do adotante. Hoje tem tabs estranhas ("Dados pessoais, Adotante, Visual, Voluntário, Lares Temp, Adoções, Privacidade") e "Salvar perfil" sticky mal posicionado. | 1 |
+| `V3_PAGE_SEARCH` | `v3_page_search` | **ON** | V3 · Busca (/busca) | Redesign da busca global. | 1 |
+| `V3_PAGE_SHELTER_ADMIN` | `v3_page_shelter_admin` | **ON** | V3 · ShelterAdminDashboard | Redesign do dashboard admin do abrigo. | 1 |
+| `V3_PAGE_VOLUNTEER` | `v3_page_volunteer` | **ON** | V3 · Voluntariado (programa + signup + termo) | Redesign das páginas de Voluntariado. | 1 |

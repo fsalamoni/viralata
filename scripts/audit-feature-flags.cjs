@@ -69,7 +69,9 @@ function extractFlags() {
       // description: ... (pode ser string multi-linha com `+`)
       // Tenta match simples: description: 'string' OU description:\n  'string1' + 'string2'
       let descFound = '';
-      const descSimple = body.match(/description:\s*'([^']*)'/);
+      // Só aceita o match simples quando a string NÃO continua com `+ '...'`
+      // (descrições multi-linha); senão cai no join das partes abaixo.
+      const descSimple = body.match(/description:\s*'([^']*)'(?!\s*\n?\s*\+)/);
       if (descSimple) {
         descFound = descSimple[1];
       } else {
@@ -110,6 +112,10 @@ function findReferences(key) {
   return refs;
 }
 
+// Reutilizado por scripts/generate-feature-flags-doc.cjs (TASK-947).
+module.exports = { extractFlags, findReferences };
+if (require.main !== module) return;
+
 const flags = extractFlags();
 console.log('='.repeat(110));
 console.log('Feature Flag Audit (TASK-088)');
@@ -129,8 +135,9 @@ for (const f of flags) {
   // SAFE default: false ou undefined
   const hasDefault = f.defaultValue === false
     || f.defaultValue === undefined
-    // Aceitar default=true se está documentado como legado
-    || (f.defaultValue === true && docs.match(new RegExp('\`' + f.key + '\`\\s*\\|\\s*\\*\\*ON\\*\\*\\s*\\(legado\\)')))
+    // Aceitar default=true se está documentado como ON em docs/FEATURE_FLAGS.md
+    // (legado ou cutover 2026-08-30 — a tabela é gerada do código, TASK-947)
+    || (f.defaultValue === true && docs.match(new RegExp('\`' + f.key + '\`\\s*\\|\\s*\\*\\*ON\\*\\*')))
   const hasLabel = !!f.label;
   const hasDesc = !!f.description;
   const inDocs = docs.includes(f.key);
