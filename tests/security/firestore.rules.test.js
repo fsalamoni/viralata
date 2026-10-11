@@ -129,3 +129,15 @@ describe('firestore.rules — TASK-212 (multi-tenant volunteer)', () => {
     });
   });
 });
+
+describe('firestore.rules — TASK-939/949 (espelhos públicos)', () => {
+  for (const col of ['exhibitions_public', 'foster_placements_public']) {
+    it(`${col}: leitura anônima, escrita bloqueada (só Cloud Function)`, () => {
+      const idx = RULES.indexOf(`match /${col}/`);
+      expect(idx).toBeGreaterThan(-1);
+      const block = RULES.substring(idx, idx + 300);
+      expect(block).toMatch(/allow read: if true;/);
+      expect(block).toMatch(/allow write: if false;/);
+    });
+  }
+});
